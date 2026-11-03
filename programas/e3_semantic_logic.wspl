@@ -1,0 +1,17 @@
+experiment e3_semantic_logic:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    objective:
+        localizar_neuronas_de_logica_y_control_de_bucles
+
+    semantic_areas:
+        target = math_logic
+        avoid = loop_repetition
+
+    steps:
+        step semantic_map
+        step peek blk.19.attn_output.weight row=100 col=200
+        step peek blk.19.ffn_down.weight row=100 col=500
+        step peek output.weight row=1500 col=100

@@ -20,11 +20,11 @@ DIR_PL.mkdir(parents=True, exist_ok=True)
 
 OPS_ALLOWED = {"inspect", "observe", "compare", "hypothesize", "localize", "peek",
                "intervene", "evaluate", "confirm", "poke", "poke-weight", "rollback",
-               "record", "select_candidate"}
+               "record", "select_candidate", "semantic_map", "semantic-map", "semantic_areas", "semantic-areas"}
 TYPES = {"Model", "Tensor", "Activation", "Direction", "Behavior", "Hypothesis",
-         "Intervention", "Benchmark", "Experiment", "Result"}
+         "Intervention", "Benchmark", "Experiment", "Result", "SemanticArea", "SemanticCentroid"}
 INT_OPS = {"project_out", "activation_projection", "poke-weight", "scale", "ablate",
-           "scale-rows", "scale-cols", "blend-rows"}
+           "scale-rows", "scale-cols", "blend-rows", "cov-steer"}
 
 
 def parse_args_lines(text):
@@ -69,7 +69,7 @@ def parse_args_lines(text):
 
 METADATA = {"model", "objective", "constraints", "types", "declared", "sources",
             "baseline", "discover", "accept_if", "evaluate", "record", "hypothesis",
-            "note"}
+            "note", "semantic_areas", "semantic_target"}
 
 def validate(prog):
     errors = []
@@ -113,9 +113,14 @@ def plan_run(prog, steps):
         "compare": "wsp delta / score de activacion (posiciones rep/pro)",
         "hypothesize": "expediente retos/expedientes/<id>.json (campos obligatorios)",
         "localize": "wsp delta -k + head_scores/activation scores",
-        "peek": "wsp peek <tensor> [row=] [col=] [k=]  (anatomia del tensor: normas fila/columna, rank, frac)",
+        "semantic_map": "wsp semantic-map <gguf> (10 areas semanticas y centroides diferenciales)",
+        "semantic-map": "wsp semantic-map <gguf>",
+        "semantic_areas": "wsp peek <tensor> -r <row> -c <col> (devuelve areas semanticas y afinidad lexica)",
+        "semantic-areas": "wsp peek <tensor> -r <row> -c <col>",
+        "peek": "wsp peek <tensor> [row=] [col=] [k=] (anatomia del tensor + areas semanticas dominantes y afinidades)",
         "poke": "wsp poke <tensor> <row> <col> <valor> [out=] (poke de un solo peso, requant solo bloque)",
         "poke-weight": "wsp poke <tensor> <row> <col> <valor> (poke de peso individual; requantiza solo el bloque)",
+        "cov-steer": "wsp edit (steering alineado con covarianza diagonal por bloques)",
         "intervene": "wsp edit ediciones/<id>.json (POLICY enforced)",
         "evaluate": "wsp eval <alias> -n 20 (bg) + wsp vs",
         "confirm": "challenge.py sellar (LOCK) + veredicto keep/discard",
@@ -155,16 +160,98 @@ def plan_run(prog, steps):
     return plan
 
 
+def execute_plan(plan, gguf_path=None):
+    """Ejecuta los pasos interactivos del plan WSP-Lang usando wsp.py."""
+    import sys
+    sys.path.insert(0, str(ROOT))
+    import wsp
+
+    default_gguf = Path(r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf")
+    target_gguf = Path(gguf_path) if gguf_path else default_gguf
+    if not target_gguf.exists():
+        return [{"op": "init", "status": "error", "error": f"Modelo GGUF no encontrado en {target_gguf}"}]
+
+    executed_steps = []
+    for step in plan.get("pasos", []):
+        op = step["op"]
+        raw_args = step.get("args", "")
+        tokens = raw_args.split()
+        res = {"op": op, "args": raw_args, "status": "ok"}
+
+        try:
+            if op in ("semantic_map", "semantic-map"):
+                centroids = wsp.get_semantic_centroids(target_gguf)
+                areas_info = {}
+                for k, meta in wsp.SEMANTIC_AREAS.items():
+                    areas_info[k] = {
+                        "label": meta["label"],
+                        "seeds_count": len(meta["seeds"]),
+                        "has_centroid": k in centroids
+                    }
+                res["result"] = {"total_areas": len(areas_info), "areas": areas_info}
+
+            elif op in ("peek", "semantic_areas", "semantic-areas"):
+                tensor = tokens[0] if tokens else "blk.19.attn_output.weight"
+                row = None
+                col = None
+                k = 8
+                for tok in tokens[1:]:
+                    if "=" in tok:
+                        k_name, val = tok.split("=", 1)
+                        if k_name in ("row", "r"): row = int(val)
+                        elif k_name in ("col", "c"): col = int(val)
+                        elif k_name == "k": k = int(val)
+                    elif row is None and (tok.isdigit() or (tok.startswith("-") and tok[1:].isdigit())):
+                        row = int(tok)
+                    elif col is None and (tok.isdigit() or (tok.startswith("-") and tok[1:].isdigit())):
+                        col = int(tok)
+
+                peek_res = wsp.peek(target_gguf, tensor, row=row, col=col, k=k)
+                res["result"] = peek_res
+
+            elif op in ("poke", "poke-weight"):
+                tensor = tokens[0]
+                row = int(tokens[1])
+                col = int(tokens[2])
+                val = float(tokens[3])
+                out_file = tokens[4] if len(tokens) > 4 else None
+                poke_res = wsp.poke(target_gguf, tensor, row, col, val, out=out_file)
+                res["result"] = poke_res
+
+            else:
+                res["status"] = "skipped (no-interactive)"
+        except Exception as e:
+            res["status"] = "error"
+            res["error"] = str(e)
+
+        executed_steps.append(res)
+    return executed_steps
+
+
 def main():
-    src = Path(sys.argv[1])
+    import argparse
+    ap = argparse.ArgumentParser(prog="wsplang", description="Parser y runtime para WSP-Lang 0.1")
+    ap.add_argument("program", help="Ruta al archivo .wspl")
+    ap.add_argument("--run", "--exec", action="store_true", help="Ejecutar pasos declarativos (peek, semantic_map, poke) y devolver areas semanticas")
+    ap.add_argument("--gguf", default=None, help="Ruta al archivo GGUF (default: MiMo en llamacpp)")
+    args = ap.parse_args()
+
+    src = Path(args.program)
     text = src.read_text(encoding="utf-8")
     prog = parse_args_lines(text)
     steps, errors = validate(prog)
     experiment = None
     for ind, s in prog.get("__root__", []):
-        if s.startswith("experiment"):
+        if ind == "exp":
+            experiment = s
+        elif isinstance(s, str) and s.startswith("experiment"):
             experiment = s.split("experiment", 1)[1].strip().rstrip(":").strip()
     plan = plan_run(prog, steps)
+
+    execution_results = None
+    if args.run:
+        execution_results = execute_plan(plan, gguf_path=args.gguf)
+
     out = {
         "programa": experiment,
         "archivo": str(src),
@@ -175,10 +262,37 @@ def main():
         "validado": len(errors) == 0,
         "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
+    if execution_results is not None:
+        out["ejecucion"] = execution_results
+
     manif = DIR_PL / f"{experiment or 'sin-nombre'}.manifest.json"
     manif.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(json.dumps(out, ensure_ascii=False, indent=1))
+
+    if args.run and execution_results:
+        print(f"=== RESULTADOS DE EJECUCIÓN WSP-Lang: {experiment} ===")
+        for step in execution_results:
+            op = step["op"]
+            print(f"\n> Paso: {op} {step['args']} [status: {step['status']}]")
+            res = step.get("result", {})
+            if "semantic_areas" in res and res["semantic_areas"]:
+                sem = res["semantic_areas"]
+                dom = sem.get("dominant", {})
+                print(f"  ÁREA SEMÁNTICA: {dom.get('label')} ({dom.get('area')}) [score={dom.get('score'):+.4f}]")
+                ranked = sem.get("ranked", [])
+                if ranked:
+                    print("  Ranking áreas:")
+                    for rk in ranked:
+                        print(f"    - {rk['label']:<30} score={rk['score']:+.4f}")
+                seeds = sem.get("top_seeds", [])
+                if seeds:
+                    print("  Semillas afines:", ", ".join([f"{s['seed']}:{s['score']:+.3f}" for s in seeds[:4]]))
+            elif "total_areas" in res:
+                print(f"  Áreas semánticas cargadas: {res['total_areas']} áreas activas.")
+            elif "error" in step:
+                print(f"  Error: {step['error']}")
+    else:
+        print(json.dumps(out, ensure_ascii=False, indent=1))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

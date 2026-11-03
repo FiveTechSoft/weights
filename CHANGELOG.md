@@ -171,6 +171,24 @@ output.weight` y `step poke output.weight 5 12 0.5` extraídos y mapeados a
 
 **Estado** — `published`
 
+### P4 — Áreas Semánticas en el Compilador y Runtime de WSP-Lang (`wsplang.py` + MCP)
+
+**QUÉ** — Se integraron las áreas semánticas y la introspección de pesos en el nivel declarativo de WSP-Lang y en su servidor MCP:
+- **Gramática y Tipos**: en `engine/wsplang.py`, se añadieron las operaciones `semantic_map` y `semantic_areas` a `OPS_ALLOWED`, los tipos `SemanticArea` y `SemanticCentroid` a `TYPES`, la operación `cov-steer` a `INT_OPS`, y las secciones `semantic_areas` y `semantic_target` a `METADATA`.
+- **Ejecución Interactiva**: se implementó `execute_plan()` y el flag `--run`/`--exec` en `wsplang.py` para ejecutar interactivamente pasos declarativos de un programa `.wspl` usando el runtime de `wsp.py` y generar manifiestos enriquecidos con áreas semánticas y afinidades.
+- **Servidor MCP**: en `engine/wsp_mcp_server.py`, se agregaron las herramientas `@mcp.tool() get_semantic_areas()` y `@mcp.tool() run_wsplang()`, y se corrigió el paso de argumentos de `_wsp()` para preservar retornos estructurados.
+- **Programa de prueba**: creado `programas/e3_semantic_logic.wspl` con objetivo declarativo, secciones de áreas semánticas e invocación de pasos `semantic_map` y `peek`.
+
+**PARA QUÉ** — Permitir que los programas formales de WSP-Lang (`.wspl`) puedan expresar hipótesis basadas en áreas semánticas (ej. apuntar a `math_logic` y evitar `loop_repetition`) y que cualquier agente a través de MCP o CLI pueda evaluar y recibir la distribución semántica directamente.
+
+**QUÉ SE OBTIENE** — Verificado con `python engine/wsplang.py programas/e3_semantic_logic.wspl --run`:
+- Validación limpia: `validado: true`, `errores: []`.
+- Plan estructurado con mapeo a herramientas runtime.
+- Extracción e informe automático de áreas semánticas para los tensores inspeccionados (`math_logic` en atención L19, `physical_world` en FFN L19, `agent_action` en `output.weight`).
+- Manifiesto generado en `retos/wsplang/e3_semantic_logic.manifest.json`.
+
+**Estado** — `published`
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).
