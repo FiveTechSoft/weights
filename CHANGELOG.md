@@ -310,6 +310,24 @@ etos/sellados/ -> challenges/sealed/, ediciones/ -> edits/, servidos/ -> served/
 
 **Estado** — published
 
+### P12 — Correccion de Ranking Semantico, Validacion Estricta MCP y Barreras de Seguridad WSP-Lang
+
+**QUE** — Correccion de los dos fallos de runtime senalados en la auditoria estatica, endurecimiento de fronteras de seguridad y verificacion de probes:
+- **Correccion del Ranking en semantic_map (engine/wsplang.py)**: se elimino el truncamiento arbitrario de claves de diccionario [:top_k]. Ahora, si se especifica un tensor diana (tensor=...), se calcula la proyeccion y similitud coseno real (ranking_basis: tensor_projection); si se consulta el catalogo global sin tensor, se reporta el catalogo completo y se ordena transparentemente por densidad de semillas (ranking_basis: seed_density), explicitando que el ranking funcional requiere un vector de destino.
+- **Strict Validation Gate (engine/wsplang.py y engine/wsp_mcp_server.py)**: la ejecucion ya no prosigue si validate() detecta errores sintacticos o semanticos. Se aborta de inmediato con estado aborted y lista detallada de errores.
+- **Proteccion de Tensores Criticos (FORBIDDEN_TENSORS)**: execute_plan() intercepta cualquier paso poke o edit sobre capas protegidas (token_embd.weight, output.weight, output_norm.weight, *.norm) y rechaza la ejecucion con security_rejection.
+- **Nueva herramienta MCP execute_wsplang_code**: permite a agentes ejecutar codigo WSP-Lang en memoria (inline) con validacion y sandbox integrados sin escribir en disco.
+- **Verificacion de probe determinista en vivo**: validacion de rig/logic_probe.py contra MiMo-2.6-9B (puerto 8081) con 5/5 aciertos (100%% exactitud, 10.9s en rig_runs/logic-mimo-orig.json).
+
+**PARA QUE** — Subsanar los riesgos de seguridad detectados, evitar rankings semanticos no fundamentados causalmente y dotar al servidor MCP de ejecucion segura inline antes de autorizar ediciones autonomas por agentes.
+
+**QUE SE OBTIENE** — 
+- Test unitario tests/test_wsplang_security.py superado al 100%%.
+- Servidor FastMCP blindado con gate de validacion estricto.
+- Separacion rigurosa entre instrumentacion exploratoria y validacion funcional.
+
+**Estado** — published
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).

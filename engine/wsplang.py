@@ -182,9 +182,16 @@ def execute_plan(plan, gguf_path=None):
             if op in ("semantic_map", "semantic-map"):
                 centroids = wsp.get_semantic_centroids(target_gguf)
                 top_k = None
+                target_tensor = None
                 for tok in tokens:
-                    if "=" in tok and tok.split("=", 1)[0] in ("top", "top_k", "k"):
-                        top_k = int(tok.split("=", 1)[1])
+                    if "=" in tok:
+                        k_name, val = tok.split("=", 1)
+                        if k_name in ("top", "top_k", "k"):
+                            top_k = int(val)
+                        elif k_name in ("tensor", "t"):
+                            target_tensor = val
+                    elif tok.startswith("blk.") or "weight" in tok:
+                        target_tensor = tok
 
                 areas_info = {}
                 for k, meta in wsp.SEMANTIC_AREAS.items():
@@ -197,14 +204,25 @@ def execute_plan(plan, gguf_path=None):
                     }
 
                 top_areas = None
-                if top_k:
-                    top_keys = list(areas_info.keys())[:top_k]
-                    top_areas = {k: areas_info[k] for k in top_keys}
+                ranking_basis = None
+                if target_tensor:
+                    # Functional ranking: compute true cosine alignment with target tensor
+                    peek_info = wsp.peek(target_gguf, target_tensor, k=top_k or 3)
+                    if "semantic_areas" in peek_info and peek_info["semantic_areas"]:
+                        ranked = peek_info["semantic_areas"].get("top_areas", [])
+                        top_areas = {item["area"]: {"label": item["label"], "score": item["score"]} for item in ranked}
+                        ranking_basis = f"tensor_projection:{target_tensor}"
+                elif top_k:
+                    # Model-wide catalog: rank transparently by seed representative density, not arbitrary dict order
+                    sorted_by_seeds = sorted(areas_info.items(), key=lambda kv: len(kv[1]["seeds"]), reverse=True)[:top_k]
+                    top_areas = {k: v for k, v in sorted_by_seeds}
+                    ranking_basis = f"seed_density (unprojected catalog; specify tensor=... for functional ranking)"
 
                 res["result"] = {
                     "total_areas": len(areas_info),
                     "all_areas": areas_info,
                     "top_areas": top_areas,
+                    "ranking_basis": ranking_basis,
                 }
 
             elif op in ("peek", "semantic_areas", "semantic-areas"):
@@ -233,6 +251,12 @@ def execute_plan(plan, gguf_path=None):
 
             elif op in ("poke", "poke-weight"):
                 tensor = tokens[0]
+                # Enforce security boundary: forbid critical tensors (norm, output, embd)
+                if tensor in wsp.FORBIDDEN_TENSORS or any(p in tensor for p in wsp.FORBIDDEN_PAT):
+                    res["status"] = "security_rejection"
+                    res["error"] = f"SECURITY POLICY REJECTION: Tensor '{tensor}' is forbidden from direct modification (head/norm protection)."
+                    executed_steps.append(res)
+                    continue
                 row = int(tokens[1])
                 col = int(tokens[2])
                 val = float(tokens[3])
@@ -272,7 +296,18 @@ def main():
 
     execution_results = None
     if args.run:
-        execution_results = execute_plan(plan, gguf_path=args.gguf)
+        if errors:
+            print(f"=== WSP-Lang VALIDATION FAILED: {len(errors)} error(s) ===")
+            for err in errors:
+                print(f"  [ERROR] {err}")
+            execution_results = [{
+                "op": "validation",
+                "status": "aborted",
+                "error": f"Execution halted: {len(errors)} validation errors detected",
+                "errors": errors
+            }]
+        else:
+            execution_results = execute_plan(plan, gguf_path=args.gguf)
 
     out = {
         "programa": experiment,

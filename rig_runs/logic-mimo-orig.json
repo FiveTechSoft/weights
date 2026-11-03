@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "model": "mimo",
+    "endpoint": "http://127.0.0.1:8081/v1/chat/completions",
+    "n": 5,
+    "dataset_seed": 271828,
+    "generation_seed_base": 20261103,
+    "generation_seed_rule": "base + case_id",
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "parallel": 1,
+    "dataset_sha256": "1346d109f4a09bcba93c651c533b83001fdef87c97131f5d95cc99a3006ac3b3",
+    "metric": "exact YES/NO accuracy on synthetic Horn entailment",
+    "counts": {
+      "correct": 5,
+      "scored": 5,
+      "errors": 0,
+      "total": 5
+    },
+    "accuracy": 1.0,
+    "seconds": 10.9
+  },
+  "items": [
+    {
+      "id": 0,
+      "expected": "YES",
+      "predicted": "YES",
+      "correct": true,
+      "finish": "stop",
+      "response": "Alda is a pel. If someone is a pel, then they is a wug. So Alda is a wug. Everyone who is a wug also is a nork. So Alda is a nork.\n\nYES",
+      "error": null
+    },
+    {
+      "id": 1,
+      "expected": "NO",
+      "predicted": "NO",
+      "correct": true,
+      "finish": "stop",
+      "response": "NO",
+      "error": null
+    },
+    {
+      "id": 2,
+      "expected": "YES",
+      "predicted": "YES",
+      "correct": true,
+      "finish": "stop",
+      "response": "YES",
+      "error": null
+    },
+    {
+      "id": 3,
+      "expected": "NO",
+      "predicted": "NO",
+      "correct": true,
+      "finish": "stop",
+      "response": "NO",
+      "error": null
+    },
+    {
+      "id": 4,
+      "expected": "YES",
+      "predicted": "YES",
+      "correct": true,
+      "finish": "stop",
+      "response": "YES",
+      "error": null
+    }
+  ]
+}

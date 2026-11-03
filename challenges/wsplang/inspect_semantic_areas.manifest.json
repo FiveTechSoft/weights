@@ -68,7 +68,7 @@
  "errores": [],
  "validated": true,
  "validado": true,
- "ts": "2026-11-03T21:11:07",
+ "ts": "2026-11-03T21:30:48",
  "ejecucion": [
   {
    "op": "semantic_map",
@@ -336,7 +336,8 @@
       ],
       "has_centroid": true
      }
-    }
+    },
+    "ranking_basis": "seed_density (unprojected catalog; specify tensor=... for functional ranking)"
    }
   },
   {

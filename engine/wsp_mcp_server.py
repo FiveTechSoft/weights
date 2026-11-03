@@ -140,7 +140,40 @@ def run_wsplang(program_path: str, execute: bool = True, gguf: str = "") -> dict
     plan = mod.plan_run(prog, steps)
     out = {"steps": steps, "plan": plan, "errors": errors, "valid": len(errors) == 0}
     if execute:
+        if errors:
+            out["ejecucion"] = [{
+                "op": "validation",
+                "status": "aborted",
+                "error": f"Execution halted: {len(errors)} validation errors detected",
+                "errors": errors
+            }]
+            return out
         out["ejecucion"] = mod.execute_plan(plan, gguf_path=gguf if gguf else None)
+    return out
+
+
+@mcp.tool()
+def execute_wsplang_code(code: str, gguf: str = "") -> dict:
+    """Ejecuta un bloque de código WSP-Lang en memoria sin necesidad de guardarlo en disco.
+    code: código fuente en sintaxis WSP-Lang (.wspl).
+    gguf: ruta opcional al modelo GGUF (default: MiMo-2.6-9B)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("wsplang", str(_ROOT / "engine" / "wsplang.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    prog = mod.parse_args_lines(code)
+    steps, errors = mod.validate(prog)
+    plan = mod.plan_run(prog, steps)
+    out = {"steps": steps, "plan": plan, "errors": errors, "valid": len(errors) == 0}
+    if errors:
+        out["ejecucion"] = [{
+            "op": "validation",
+            "status": "aborted",
+            "error": f"Execution halted: {len(errors)} validation errors detected",
+            "errors": errors
+        }]
+        return out
+    out["ejecucion"] = mod.execute_plan(plan, gguf_path=gguf if gguf else None)
     return out
 
 
