@@ -1,0 +1,16 @@
+{
+  "base": "C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf",
+  "ops": [
+    {
+      "type": "subtract-direction",
+      "tensor": "blk.17.ffn_down.weight",
+      "u_from": "npz:C:\\weights\\data\\residuos_e2.npz#u_l17",
+      "axis": "rows",
+      "mask": "top-k",
+      "k": 64,
+      "alpha": 0.0,
+      "touch_tol": 0.001
+    }
+  ],
+  "out": "C:\\weights\\servidos\\mimo-e4-placebo.gguf"
+}

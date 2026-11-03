@@ -80,6 +80,7 @@ def _make_parser():
     a = sp.add_parser("rows"); a.add_argument("gguf"); a.add_argument("tensor"); a.add_argument("rng"); a.add_argument("-n", type=int, default=8, help="valores por fila impresos"); a.add_argument("-full", action="store_true")
     a = sp.add_parser("delta"); a.add_argument("base"); a.add_argument("dist"); a.add_argument("tensor"); a.add_argument("-k", type=int, default=10); a.add_argument("-d", default="rows", choices=["rows", "cols"])
     a = sp.add_parser("edit"); a.add_argument("gguf"); a.add_argument("prog"); a.add_argument("-o", "--out", default=None)
+    a = sp.add_parser("sha"); a.add_argument("gguf")
     a = sp.add_parser("diff"); a.add_argument("a"); a.add_argument("b"); a.add_argument("tensor", nargs="?", default="*"); a.add_argument("-frac", type=float, default=0.005)
     a = sp.add_parser("serve"); a.add_argument("gguf"); a.add_argument("-p", "--port", type=int, required=True); a.add_argument("-a", "--alias", default=None); a.add_argument("-c", "--ctx", type=int, default=16384); a.add_argument("-n", "--ngl", type=int, default=999); a.add_argument("--stop", action="store_true")
     a = sp.add_parser("eval"); a.add_argument("alias"); a.add_argument("-p", "--port", type=int, default=8950); a.add_argument("-n", type=int, default=10); a.add_argument("-o", "--offset", type=int, default=0); a.add_argument("--seed", type=int, default=42)
@@ -329,6 +330,44 @@ def _verify_q6k_roundtrip():
     return B, D, rel
 
 
+# ---------------- seguridad P0 ----------------
+FORBIDDEN_TENSORS = ("token_embd.weight", "output.weight", "output_norm.weight")
+FORBIDDEN_PAT = ("norm.weight", ".norm", "lm_head", "token_types")
+
+
+def _check_tensors(ops, tm):
+    """Política de edición del MOTOR: rechaza tensores prohibidos y params fuera de rango."""
+    for op in ops:
+        nm = op.get("tensor", "")
+        if nm in FORBIDDEN_TENSORS:
+            sys.exit(f"POLICY: tensor PROHIBIDO {nm} (head/lm_head)")
+        if any(p in nm for p in FORBIDDEN_PAT):
+            sys.exit(f"POLICY: tensor con patron prohibido {nm} (normas/head)")
+        if nm not in tm:
+            sys.exit(f"POLICY: tensor inexistente en el modelo: {nm}")
+        sc = op.get("scale")
+        if sc is not None and not (0.25 <= float(sc) <= 3.0):
+            sys.exit(f"POLICY: scale {sc} fuera de [0.25, 3.0]")
+        tf = op.get("target_frac")
+        if tf is not None and not (0.0 < float(tf) <= 0.05):
+            sys.exit(f"POLICY: target_frac {tf} fuera de (0, 0.05]")
+        al = op.get("alpha")
+        if al is not None and abs(float(al)) > 8.0:
+            sys.exit(f"POLICY: |alpha| {al} > 8")
+        mx = op.get("mix")
+        if mx is not None and not (0.0 <= float(mx) <= 1.0):
+            sys.exit(f"POLICY: mix {mx} fuera de [0,1]")
+
+
+def _sha256_full(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8 * 1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def _fingerprint(path):
     """sha256 de header (primer 4MB) + 1MB cola + tamano: huella barata del checkpoint origen."""
     import hashlib
@@ -342,12 +381,41 @@ def _fingerprint(path):
     return {"size": st, "sha": h.hexdigest()[:32]}
 
 
+def _budget_check(kind, need=1):
+    """Barrera OBLIGATORIA de presupuesto: bloquea ANTES de ejecutar (no solo registra)."""
+    n = 0
+    if PROME_JRNL.exists():
+        for line in PROME_JRNL.read_text(encoding="utf-8").splitlines():
+            try:
+                if json.loads(line).get("kind") == kind:
+                    n += 1
+            except Exception:
+                pass
+    if n + need > BUDGET.get(kind, 0):
+        sys.exit(f"BUDGET ANULADO: tipo '{kind}' {n}+{need} > limite {BUDGET[kind]}. Requiere reset manual del journal u aprobacion explicita.")
+    return n + need
+
+
+def cmd_sha(a):
+    h = _sha256_full(a.gguf)
+    _p(f"sha256 {os.path.basename(a.gguf)}: {h}")
+    journal("read", "sha")
+
+
 def cmd_edit(a):
     prog = json.loads(Path(a.prog).read_text(encoding="utf-8"))
     src = Path(a.gguf)
     out = Path(a.out or prog.get("out") or (DIR_SRV / (src.stem + f"__{Path(a.prog).stem}.gguf")))
     if out.exists():
         sys.exit(f"{out} ya existe (no sobreescribir)")
+    rd = reader_of(src)
+    _budget_check("write", 1)
+    _check_tensors(prog["ops"], tensor_map(rd))
+    journal("write", "reserva " + json.dumps({"out": str(out), "ops": len(prog["ops"])}, ensure_ascii=False))
+    if "require_sha" in prog:  # identidad integ: SHA-256 completo del origen
+        real = _sha256_full(src)
+        if str(prog["require_sha"])[0:16] != real[0:16]:
+            sys.exit(f"POLICY: require_sha no coincide ({real[:16]} != {prog['require_sha'][:16]})")
     _p(f"copiando {src} -> {out} ...")
     shutil.copy2(src, out)
     rd = reader_of(out)  # reader sobre la copia: offsets absolutos validos
@@ -378,7 +446,12 @@ def cmd_edit(a):
             elif isinstance(op.get("u_from"), str) and op["u_from"].startswith("npz:"):
                 spec_u = op["u_from"][4:]
                 zpath, key = spec_u.split("#", 1)
-                u = np.load(zpath, allow_pickle=True)[key].astype(np.float64)
+                z = np.load(zpath, allow_pickle=False)
+                if key not in z.files:
+                    sys.exit(f"POLICY: clave '{key}' no existe en {zpath}")
+                u = np.asarray(z[key], dtype=np.float64)
+                if u.ndim != 1 or u.size < 256 or not np.isfinite(u).all():
+                    sys.exit(f"POLICY: u invalido (shape {u.shape}, finite={np.isfinite(u).all()})")
                 u = u / (np.linalg.norm(u) + 1e-30)
                 _p(f"  {nm}: u desde npz {zpath}#{key} len={u.size} norm={np.linalg.norm(u):.6f}")
             elif op.get("u") is not None:
@@ -389,7 +462,13 @@ def cmd_edit(a):
             else:
                 v = D @ u  # len nrows
                 u = u.reshape(-1)
-            if op.get("mask") == "top-k":
+            if op.get("cols_mask") is not None:
+                cm = np.asarray(op["cols_mask"], dtype=int)
+                vm = np.zeros_like(v)
+                vm[cm] = v[cm]
+                v = vm
+                _p(f"  {nm}: cols_mask n={cm.size}")
+            elif op.get("mask") == "top-k":
                 k = int(op.get("k", 64))
                 idx = np.argsort(np.abs(v))[::-1][:k]
                 vm = np.zeros_like(v)
@@ -496,6 +575,7 @@ def cmd_vs(a):
 
 
 CMD_FN = {
+    "sha": cmd_sha,
     "info": cmd_info, "tensors": cmd_tensors, "stats": cmd_stats, "rows": cmd_rows,
     "delta": cmd_delta, "markers": cmd_markers, "edit": cmd_edit, "diff": cmd_diff,
     "vs": cmd_vs, "budget": cmd_budget,
@@ -555,6 +635,7 @@ def base_ctx(c):
 
 
 def cmd_eval(args):
+    _budget_check("fwd", 1)
     sys.path.insert(0, r"C:\temp\opencode")
     import mock_harness as M
     SERVER = f"http://127.0.0.1:{args.port}"
