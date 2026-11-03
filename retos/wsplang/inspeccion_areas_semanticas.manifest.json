@@ -66,12 +66,723 @@
  },
  "errores": [],
  "validado": true,
- "ts": "2026-11-03T19:56:29",
+ "ts": "2026-11-03T20:14:58",
  "ejecucion": [
   {
-   "op": "init",
-   "status": "error",
-   "error": "Modelo GGUF no encontrado en C:\\weights\\smoke_f32.gguf"
+   "op": "semantic_map",
+   "args": "top=3",
+   "status": "ok",
+   "result": {
+    "total_areas": 10,
+    "all_areas": {
+     "math_logic": {
+      "label": "Matemáticas y lógica",
+      "color": "#3498db",
+      "seeds_count": 13,
+      "seeds": [
+       "logic",
+       "math",
+       "proof",
+       "solve",
+       "equation",
+       "theorem",
+       "calculate",
+       "integer",
+       "formula",
+       "axiom",
+       "lemma",
+       "derivative",
+       "prime"
+      ],
+      "has_centroid": true
+     },
+     "agent_action": {
+      "label": "Acciones de agente y terminal",
+      "color": "#e67e22",
+      "seeds_count": 13,
+      "seeds": [
+       "tool",
+       "command",
+       "run",
+       "execute",
+       "terminal",
+       "check",
+       "exit",
+       "error",
+       "file",
+       "script",
+       "bash",
+       "status",
+       "output"
+      ],
+      "has_centroid": true
+     },
+     "code_software": {
+      "label": "Código y programación",
+      "color": "#16a085",
+      "seeds_count": 13,
+      "seeds": [
+       "python",
+       "code",
+       "function",
+       "import",
+       "class",
+       "def",
+       "return",
+       "data",
+       "software",
+       "model",
+       "variable",
+       "string",
+       "array"
+      ],
+      "has_centroid": true
+     },
+     "abstract_ideas": {
+      "label": "Conceptos abstractos",
+      "color": "#2980b9",
+      "seeds_count": 11,
+      "seeds": [
+       "idea",
+       "truth",
+       "concept",
+       "meaning",
+       "reason",
+       "justice",
+       "theory",
+       "knowledge",
+       "principle",
+       "freedom",
+       "structure"
+      ],
+      "has_centroid": true
+     },
+     "mind_cognition": {
+      "label": "Mente y cognición",
+      "color": "#1abc9c",
+      "seeds_count": 11,
+      "seeds": [
+       "mind",
+       "think",
+       "know",
+       "memory",
+       "dream",
+       "learn",
+       "brain",
+       "conscious",
+       "aware",
+       "understand",
+       "reasoning"
+      ],
+      "has_centroid": true
+     },
+     "time_sequence": {
+      "label": "Tiempo y secuencia",
+      "color": "#f39c12",
+      "seeds_count": 13,
+      "seeds": [
+       "time",
+       "past",
+       "future",
+       "moment",
+       "now",
+       "step",
+       "next",
+       "before",
+       "after",
+       "history",
+       "loop",
+       "repeat",
+       "stop"
+      ],
+      "has_centroid": true
+     },
+     "emotion_pos": {
+      "label": "Emoción positiva",
+      "color": "#2ecc71",
+      "seeds_count": 10,
+      "seeds": [
+       "happy",
+       "joy",
+       "love",
+       "peace",
+       "hope",
+       "smile",
+       "glad",
+       "kind",
+       "gentle",
+       "warm"
+      ],
+      "has_centroid": true
+     },
+     "emotion_neg": {
+      "label": "Emoción negativa",
+      "color": "#e74c3c",
+      "seeds_count": 10,
+      "seeds": [
+       "sad",
+       "hate",
+       "fear",
+       "anger",
+       "pain",
+       "cry",
+       "rage",
+       "grief",
+       "lonely",
+       "shame"
+      ],
+      "has_centroid": true
+     },
+     "physical_world": {
+      "label": "Mundo físico y materia",
+      "color": "#95a5a6",
+      "seeds_count": 10,
+      "seeds": [
+       "body",
+       "rock",
+       "water",
+       "fire",
+       "earth",
+       "stone",
+       "blood",
+       "metal",
+       "wood",
+       "space"
+      ],
+      "has_centroid": true
+     },
+     "social_power": {
+      "label": "Social y autoridad",
+      "color": "#8e44ad",
+      "seeds_count": 10,
+      "seeds": [
+       "power",
+       "war",
+       "nation",
+       "people",
+       "law",
+       "money",
+       "work",
+       "leader",
+       "rule",
+       "state"
+      ],
+      "has_centroid": true
+     }
+    },
+    "top_areas": {
+     "math_logic": {
+      "label": "Matemáticas y lógica",
+      "color": "#3498db",
+      "seeds_count": 13,
+      "seeds": [
+       "logic",
+       "math",
+       "proof",
+       "solve",
+       "equation",
+       "theorem",
+       "calculate",
+       "integer",
+       "formula",
+       "axiom",
+       "lemma",
+       "derivative",
+       "prime"
+      ],
+      "has_centroid": true
+     },
+     "agent_action": {
+      "label": "Acciones de agente y terminal",
+      "color": "#e67e22",
+      "seeds_count": 13,
+      "seeds": [
+       "tool",
+       "command",
+       "run",
+       "execute",
+       "terminal",
+       "check",
+       "exit",
+       "error",
+       "file",
+       "script",
+       "bash",
+       "status",
+       "output"
+      ],
+      "has_centroid": true
+     },
+     "code_software": {
+      "label": "Código y programación",
+      "color": "#16a085",
+      "seeds_count": 13,
+      "seeds": [
+       "python",
+       "code",
+       "function",
+       "import",
+       "class",
+       "def",
+       "return",
+       "data",
+       "software",
+       "model",
+       "variable",
+       "string",
+       "array"
+      ],
+      "has_centroid": true
+     }
+    }
+   }
+  },
+  {
+   "op": "peek",
+   "args": "blk.19.attn_output.weight row=100 col=200 top=3",
+   "status": "ok",
+   "result": {
+    "tensor": "blk.19.attn_output.weight",
+    "shape": [
+     4096,
+     4096
+    ],
+    "dtype": "Q8_0",
+    "architecture": {
+     "layer": 19,
+     "layer_type": "full_attention",
+     "component": "attention_output_proj",
+     "role": "Attention Layer 19: head #0 (dim 200) -> escribe en residual dim 100",
+     "head": 0,
+     "head_dim": 200,
+     "neuron": null,
+     "residual_dim": 100
+    },
+    "value": 0.003130674362182617,
+    "row": 100,
+    "col": 200,
+    "sign": 1,
+    "abs": 0.003130674362182617,
+    "row_norm": 1.0855478048324585,
+    "col_norm": 1.0917295217514038,
+    "row_rank": 2427,
+    "col_rank": 1786,
+    "frac_row": 0.0028839580792720592,
+    "frac_col": 0.002867628198933599,
+    "semantic_areas": {
+     "dominant": {
+      "area": "math_logic",
+      "label": "Matemáticas y lógica",
+      "score": 0.0275
+     },
+     "all_areas": [
+      {
+       "area": "math_logic",
+       "label": "Matemáticas y lógica",
+       "score": 0.0275
+      },
+      {
+       "area": "time_sequence",
+       "label": "Tiempo y secuencia",
+       "score": 0.0149
+      },
+      {
+       "area": "social_power",
+       "label": "Social y autoridad",
+       "score": 0.0098
+      },
+      {
+       "area": "abstract_ideas",
+       "label": "Conceptos abstractos",
+       "score": -0.0021
+      },
+      {
+       "area": "emotion_neg",
+       "label": "Emoción negativa",
+       "score": -0.0034
+      },
+      {
+       "area": "agent_action",
+       "label": "Acciones de agente y terminal",
+       "score": -0.0034
+      },
+      {
+       "area": "code_software",
+       "label": "Código y programación",
+       "score": -0.0079
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Emoción positiva",
+       "score": -0.0082
+      },
+      {
+       "area": "mind_cognition",
+       "label": "Mente y cognición",
+       "score": -0.0094
+      },
+      {
+       "area": "physical_world",
+       "label": "Mundo físico y materia",
+       "score": -0.0165
+      }
+     ],
+     "top_areas": [
+      {
+       "area": "math_logic",
+       "label": "Matemáticas y lógica",
+       "score": 0.0275
+      },
+      {
+       "area": "time_sequence",
+       "label": "Tiempo y secuencia",
+       "score": 0.0149
+      },
+      {
+       "area": "social_power",
+       "label": "Social y autoridad",
+       "score": 0.0098
+      }
+     ],
+     "ranked": [
+      {
+       "area": "math_logic",
+       "label": "Matemáticas y lógica",
+       "score": 0.0275
+      },
+      {
+       "area": "time_sequence",
+       "label": "Tiempo y secuencia",
+       "score": 0.0149
+      },
+      {
+       "area": "social_power",
+       "label": "Social y autoridad",
+       "score": 0.0098
+      }
+     ],
+     "top_seeds": [
+      {
+       "seed": "learn",
+       "score": 0.0344
+      },
+      {
+       "seed": "shame",
+       "score": 0.0314
+      },
+      {
+       "seed": "theorem",
+       "score": 0.029
+      },
+      {
+       "seed": "kind",
+       "score": 0.0276
+      },
+      {
+       "seed": "stone",
+       "score": 0.0249
+      }
+     ]
+    }
+   }
+  },
+  {
+   "op": "peek",
+   "args": "blk.19.ffn_down.weight row=100 col=500 top=3",
+   "status": "ok",
+   "result": {
+    "tensor": "blk.19.ffn_down.weight",
+    "shape": [
+     4096,
+     12288
+    ],
+    "dtype": "Q6_K",
+    "architecture": {
+     "layer": 19,
+     "layer_type": "full_attention",
+     "component": "ffn_down_proj",
+     "role": "Layer 19 FFN Down: neurona intermedia #500 -> escribe en residual dim 100",
+     "head": null,
+     "head_dim": null,
+     "neuron": 500,
+     "residual_dim": 100
+    },
+    "value": -0.004699230194091797,
+    "row": 100,
+    "col": 500,
+    "sign": -1,
+    "abs": 0.004699230194091797,
+    "row_norm": 1.3379050493240356,
+    "col_norm": 0.7225095629692078,
+    "row_rank": 1408,
+    "col_rank": 7199,
+    "frac_row": 0.0035123794446145786,
+    "frac_col": 0.006504038749023548,
+    "semantic_areas": {
+     "dominant": {
+      "area": "physical_world",
+      "label": "Mundo físico y materia",
+      "score": 0.0211
+     },
+     "all_areas": [
+      {
+       "area": "physical_world",
+       "label": "Mundo físico y materia",
+       "score": 0.0211
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Emoción positiva",
+       "score": 0.0155
+      },
+      {
+       "area": "code_software",
+       "label": "Código y programación",
+       "score": 0.0072
+      },
+      {
+       "area": "mind_cognition",
+       "label": "Mente y cognición",
+       "score": 0.0048
+      },
+      {
+       "area": "abstract_ideas",
+       "label": "Conceptos abstractos",
+       "score": 0.0043
+      },
+      {
+       "area": "math_logic",
+       "label": "Matemáticas y lógica",
+       "score": -0.0038
+      },
+      {
+       "area": "emotion_neg",
+       "label": "Emoción negativa",
+       "score": -0.0079
+      },
+      {
+       "area": "agent_action",
+       "label": "Acciones de agente y terminal",
+       "score": -0.0105
+      },
+      {
+       "area": "social_power",
+       "label": "Social y autoridad",
+       "score": -0.0129
+      },
+      {
+       "area": "time_sequence",
+       "label": "Tiempo y secuencia",
+       "score": -0.0191
+      }
+     ],
+     "top_areas": [
+      {
+       "area": "physical_world",
+       "label": "Mundo físico y materia",
+       "score": 0.0211
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Emoción positiva",
+       "score": 0.0155
+      },
+      {
+       "area": "code_software",
+       "label": "Código y programación",
+       "score": 0.0072
+      }
+     ],
+     "ranked": [
+      {
+       "area": "physical_world",
+       "label": "Mundo físico y materia",
+       "score": 0.0211
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Emoción positiva",
+       "score": 0.0155
+      },
+      {
+       "area": "code_software",
+       "label": "Código y programación",
+       "score": 0.0072
+      }
+     ],
+     "top_seeds": [
+      {
+       "seed": "kind",
+       "score": 0.0415
+      },
+      {
+       "seed": "integer",
+       "score": 0.0404
+      },
+      {
+       "seed": "grief",
+       "score": 0.0385
+      },
+      {
+       "seed": "solve",
+       "score": 0.0346
+      },
+      {
+       "seed": "python",
+       "score": 0.0312
+      }
+     ]
+    }
+   }
+  },
+  {
+   "op": "peek",
+   "args": "blk.0.ssm_out.weight row=100 col=200 top=3",
+   "status": "ok",
+   "result": {
+    "tensor": "blk.0.ssm_out.weight",
+    "shape": [
+     4096,
+     4096
+    ],
+    "dtype": "Q8_0",
+    "architecture": {
+     "layer": 0,
+     "layer_type": "ssm_recurrent",
+     "component": "ssm_output_proj",
+     "role": "SSM Layer 0: canal 200 -> escribe en residual dim 100",
+     "head": null,
+     "head_dim": 200,
+     "neuron": null,
+     "residual_dim": 100
+    },
+    "value": -0.0027451515197753906,
+    "row": 100,
+    "col": 200,
+    "sign": -1,
+    "abs": 0.0027451515197753906,
+    "row_norm": 0.8730899691581726,
+    "col_norm": 0.9685000777244568,
+    "row_rank": 3415,
+    "col_rank": 3076,
+    "frac_row": 0.0031441794279485845,
+    "frac_col": 0.002834436034558998,
+    "semantic_areas": {
+     "dominant": {
+      "area": "emotion_neg",
+      "label": "Emoción negativa",
+      "score": 0.019
+     },
+     "all_areas": [
+      {
+       "area": "emotion_neg",
+       "label": "Emoción negativa",
+       "score": 0.019
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Emoción positiva",
+       "score": 0.0162
+      },
+      {
+       "area": "math_logic",
+       "label": "Matemáticas y lógica",
+       "score": 0.0108
+      },
+      {
+       "area": "social_power",
+       "label": "Social y autoridad",
+       "score": 0.0065
+      },
+      {
+       "area": "abstract_ideas",
+       "label": "Conceptos abstractos",
+       "score": 0.0016
+      },
+      {
+       "area": "code_software",
+       "label": "Código y programación",
+       "score": -0.0055
+      },
+      {
+       "area": "physical_world",
+       "label": "Mundo físico y materia",
+       "score": -0.0067
+      },
+      {
+       "area": "agent_action",
+       "label": "Acciones de agente y terminal",
+       "score": -0.0124
+      },
+      {
+       "area": "mind_cognition",
+       "label": "Mente y cognición",
+       "score": -0.0153
+      },
+      {
+       "area": "time_sequence",
+       "label": "Tiempo y secuencia",
+       "score": -0.0183
+      }
+     ],
+     "top_areas": [
+      {
+       "area": "emotion_neg",
+       "label": "Emoción negativa",
+       "score": 0.019
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Emoción positiva",
+       "score": 0.0162
+      },
+      {
+       "area": "math_logic",
+       "label": "Matemáticas y lógica",
+       "score": 0.0108
+      }
+     ],
+     "ranked": [
+      {
+       "area": "emotion_neg",
+       "label": "Emoción negativa",
+       "score": 0.019
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Emoción positiva",
+       "score": 0.0162
+      },
+      {
+       "area": "math_logic",
+       "label": "Matemáticas y lógica",
+       "score": 0.0108
+      }
+     ],
+     "top_seeds": [
+      {
+       "seed": "glad",
+       "score": 0.0306
+      },
+      {
+       "seed": "rage",
+       "score": 0.0292
+      },
+      {
+       "seed": "hate",
+       "score": 0.029
+      },
+      {
+       "seed": "meaning",
+       "score": 0.0245
+      },
+      {
+       "seed": "law",
+       "score": 0.0243
+      }
+     ]
+    }
+   }
   }
  ]
 }

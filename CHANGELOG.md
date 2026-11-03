@@ -209,6 +209,22 @@ output.weight` y `step poke output.weight 5 12 0.5` extraídos y mapeados a
 
 **Estado** — `published`
 
+### P6 — Infografía visual de arquitectura y publicación en X (Twitter) sobre WSP-Lang
+
+**QUÉ** — Se generó el material gráfico de difusión técnica y los textos de publicación para X (Twitter) en inglés explicando el mecanismo y los resultados de WSP-Lang en `MiMo-V2.6-Distill-Qwen-9B`:
+- **Infografía de Alta Resolución (`docs/assets/wsplang_semantic_areas.png`)**: gráfico 16:9 (2400x1350 px, dark theme) que integra el código declarativo de WSP-Lang, el pipeline matemático de centroides diferenciales que soluciona el colapso del cono isotrópico de los embeddings, las mediciones empíricas de proyección en atención (L19), FFN (L19) y SSM (L0), y la taxonomía de las 10 áreas semánticas.
+- **Script generador (`scripts/generate_infographic.py`)**: script modular basado en Matplotlib y PIL para reproducir y actualizar el gráfico.
+- **Documento de publicación (`docs/post_x_semantic_areas.md`)**: post extenso (para formato Long-form de X) y un hilo de 5 tweets estructurado con ganchos técnicos, formulación matemática, resultados medidos, código WSP-Lang y enlace al repositorio de GitHub.
+
+**PARA QUÉ** — Comunicar a la comunidad de investigación en IA e interpretabilidad mecanicista cómo deconstruir pesos individuales de un LLM de 9B en áreas semánticas sin pasadas hacia adelante ni sobrecarga de GPU.
+
+**QUÉ SE OBTIENE** — 
+- Imagen generada y validada en `docs/assets/wsplang_semantic_areas.png` (2400x1350 px, RGBA).
+- Copia de previsualización en el directorio de artefactos de la sesión.
+- Guía completa de publicación en `docs/post_x_semantic_areas.md`.
+
+**Estado** — `published`
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).
