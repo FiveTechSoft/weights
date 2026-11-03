@@ -1,0 +1,1 @@
+{"orden": ["output.weight", "token_embd.weight", "blk.10.ffn_gate.weight", "blk.7.attn_q.weight", "blk.10.ffn_down.weight", "blk.11.attn_output.weight"]}

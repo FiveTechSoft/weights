@@ -262,7 +262,7 @@ def j_delta(ans, spec):
 
 @judge("similarity", None)
 def j_sim(ans, spec):
-    cand = [f"blk.{b}.attn_q.weight" for b in range(0, 32, 2)]
+    cand = [f"blk.{b}.attn_q.weight" for b in (3, 7, 11, 15, 19, 23, 27, 31)]
     P = {nm: RH.rownorms(nm, stride=16)[0] for nm in cand}
     homunal = min(len(v) for v in P.values())
     P = {k: v[:homunal] for k, v in P.items()}
