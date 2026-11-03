@@ -1,0 +1,259 @@
+{
+ "alias": "b0-orig-code",
+ "total": 50,
+ "passed": 1,
+ "individual": [
+  {
+   "i": 0,
+   "task": "has_close_elements",
+   "pass": true,
+   "finish": "stop",
+   "tail": "len(numbers)): |             if abs(numbers[i] - numbers[j]) < threshold: |                 return True |     return False | ```"
+  },
+  {
+   "i": 1,
+   "err": "ConnectionResetError(10054, 'Se ha forzado la interrupción de una conexión existente por el host remoto', None, 10054, N",
+   "pass": false
+  },
+  {
+   "i": 2,
+   "err": "URLError(ConnectionRefusedError(10061, 'No se puede establecer una conexión ya que el equipo de destino denegó expresame",
+   "pass": false
+  },
+  {
+   "i": 3,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 4,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 5,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 6,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 7,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 8,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 9,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 10,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 11,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 12,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 13,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 14,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 15,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 16,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 17,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 18,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 19,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 20,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 21,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 22,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 23,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 24,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 25,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 26,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 27,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 28,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 29,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 30,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 31,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 32,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 33,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 34,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 35,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 36,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 37,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 38,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 39,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 40,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 41,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 42,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 43,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 44,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 45,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 46,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 47,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 48,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  },
+  {
+   "i": 49,
+   "err": "<HTTPError 503: 'Service Unavailable'>",
+   "pass": false
+  }
+ ]
+}
