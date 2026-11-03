@@ -30,7 +30,34 @@ Actualizado: 2026-11-03. Fuente primaria rig_runs/, journal/, sellados/.
 
 Referencia blog exp 8 (para comparar magnitudes): MATH-500 7.9→48.1%, GSM8K 13.8→67.1%, IFEval 21.0→62.3%, caps 93→33.1% — baseline extremo por la patología del bucle; NO replicable en nuestro modelo (baselines mucho mejores).
 
-## 3. Challenge Engine WSP-40 (jueces mecánicos)
+## 2bis. Serie causal E2→E5 (residuos/activaciones reales + placebo) — 2026-11-03
+
+| Candidato | Construcción | Resultado (rig 10 prompts seed 42) | Veredicto |
+|---|---|---|---|
+| E1 | subtract-direction, u=SVD-drift, ffn_down 17/19, frac 2% | 8/10 loops | DISCARD (drift≠comportamiento) |
+| E2 | igual E1 pero **u de residuos reales** (capture_residual.py, 4 contextos rep/pro mini, chat_template del GGUF vía llama /props) | 8/10 loops | DISCARD |
+| E3 | E2 con 1 capa (17), frac 0.008 | 9/10 loops | DISCARD (no-monotónico: varianza n=10) |
+| **E4 placebo** | **α=0: repite el requant de los mismos 141k bloques SIN editar** | **6/10 = baseline exacto** | **DECISIVO: el daño de E1/E2/E3 no es ruido de requant: es la proyección sobre neuronas top-\|v\|** |
+| E5 | columnas por **score de activación rep-vs-pro** (hook down_proj, equivalente blog writer_subsets) + u res. + frac 0.01 | **5/10 loops** | SEÑAL PROVISIONAL (primera mejora con edit WSP; requiere confirmación multi-seed) |
+
+Checks técnicos de la fase: template chat extraído vía `/props` (3915 chars); hooks con capture de closure corregido (acts por capa, no colisión); `cols_mask` añadido al editor; `subt` col= numérico.
+
+## 2ter. Respuesta a la review externa (P0 aplicado)
+
+| Pedido | Estado |
+|---|---|
+| Política del editor en el motor (no en prompt) | **OK**: `FORBIDDEN_TENSORS`/patrones de normas, rangos (scale 0.25-3, target_frac ≤0.05, \|α\|≤8, mix 0-1); 5 tests de bloqueo pasando |
+| Budget como BARRERA (no solo registro) | **OK**: `_budget_check(kind)` con bloqueo+reserva ANTES de ejecutar (read/write/fwd), estado actual fwd 6/6 LÍMITE |
+| npz sin pickle | **OK**: `allow_pickle=False` + validación de clave/shape/finitness (test POLICY clave fantasma) |
+| SHA-256 íntegro | **OK**: `wsp sha` + `require_sha` en programa de edición (16 hex verificados contra hash completo del origen) |
+| Pruebas independientes del requant (P1) | Pendiente (byte-identidad 87%+err 6e-6+roundtrip como base) |
+| Confirmación multi-seed (P4) | Pendiente (siguiente sesión: budget reset + 30 prompts × 3 seeds para E5) |
+
+## 2quater. Conclusión causal de la fase E2-E5
+
+La separación drif/comportamiento quedó demostrada TRES veces (E1, E2, E3 con dos direcciones distintas) y el confound de requant quedó **excluido** por el placebo (E4=baseline). La vía señalada por el blog (selección de neuronas por diferencia de activaciones productivo-vs-repetitivo + sustracción de la dirección u con dosis moderada) es la ÚNICA que produjo señal de mejora (E5 −10% en loops), consistente con la necesidad de targeting anatómico fino explicada por su control Gemma-270M.
+
+
 
 | Reto | Juez | Intento 1 | Fix aplicado | Intento 2 | Estado |
 |---|---|---|---|---|---|

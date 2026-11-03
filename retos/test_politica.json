@@ -1,0 +1,1 @@
+{"ops": [{"type": "subtract-direction", "tensor": "blk.17.ffn_down.weight", "u_from": "npz:C:\\weights\\data\\residuos_e2.npz#clave_fantasma", "target_frac": 0.02}]}

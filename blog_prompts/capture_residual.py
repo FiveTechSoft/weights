@@ -17,10 +17,10 @@ P = r"C:\weights\hf_cache\mimo-distill-hf"
 OUT = r"C:\weights\data\residuos_e2.npz"
 
 L_PROMPTS = json.load(open(r"C:\temp\opencode\rl_oss_prompts.json", encoding="utf-8"))
-PROMPT_REP = next(x["prompt"] for x in L_PROMPTS if x["id"].strip() == "general-0-candidate-0109-science-robotics")
-PROMPT_PRO = next(x["prompt"] for x in L_PROMPTS if x["id"].strip() == "general-0-candidate-0036-software-data-engineering")
-RECALL_CALL = "<function=bash><parameter=command>ls -la /app/vendor/robotics-toolbox-python/src</parameter></function>"
-PRO_CALLS = ["grep -rn 'load_model' /app/src | head -20", "find /app/config -name '*.yaml' | head", "wc -l /app/src/*.py"]
+PROMPT_REP = "Investiga el repositorio /app: lista los fuentes relevantes y responde."
+PROMPT_PRO = "Investiga el repositorio /app: busca como se carga el modelo y responde."
+RECALL_CALL = "<function=bash><parameter=command>ls -la /app</parameter></function>"
+PRO_CALLS = ["grep -rn 'load_model' /app/src | head", "find /app/config -name '*.yaml' | head", "wc -l /app/src/*.py"]
 
 MOCK = "[mock harness] executed: ok. stdout captured: total 8\ndrwxr-xr-x .  .. .git src config README.md"
 
@@ -43,8 +43,11 @@ def marker_positions(input_ids, tok, marker_tokens):
 
 
 def residuals_for(msgs, model, tok, marker_tokens):
-    inp = tok.apply_chat_template(msgs, add_generation_prompt=False, tokenize=True, return_tensors="np")
-    input_ids = torch.from_numpy(inp).long()
+    bt = tok.apply_chat_template(msgs, add_generation_prompt=False, tokenize=True, return_dict=True)
+    ids_i = bt["input_ids"]
+    if isinstance(ids_i, (list, tuple)) and len(ids_i) and not isinstance(ids_i[0], (list, tuple, int, float)):
+        ids_i = ids_i[0]
+    input_ids = torch.tensor([list(ids_i)], dtype=torch.long)
     attn = torch.ones_like(input_ids)
     t0 = time.time()
     with torch.no_grad():
@@ -54,7 +57,13 @@ def residuals_for(msgs, model, tok, marker_tokens):
     print(f"  fwd {time.time() - t0:.0f}s T={input_ids.shape[1]} pos={ {k: len(v) for k, v in pos.items()} }")
     resid = {}
     for k, xs in pos.items():
-        resid[k] = np.stack([hid[l][0, xs, :].float().mean(axis=0).numpy() for l in range(len(hid))])
+        vectors = []
+        for l in range(len(hid)):
+            mm = hid[l][0, xs, :].float().mean(axis=0).numpy()
+            assert np.asarray(mm).shape == (4096,), f"shape invalido layer {l}: {np.asarray(mm).shape}"
+            vectors.append(mm)
+        resid[k] = np.stack(vectors)
+        assert resid[k].shape == (len(hid), 4096), f"resid {k}: {resid[k].shape}"
     return resid
 
 
@@ -97,9 +106,10 @@ def main():
     L = all_res[0][2][key0].shape[0]
     saved = {}
     for l in range(L):
-        rep = np.concatenate([r[2][key0][l] for r in all_res if r[0] == "rep"])
-        pro = np.concatenate([r[2][key0][l] for r in all_res if r[0] == "pro"])
+        rep = np.stack([r[2][key0][l] for r in all_res if r[0] == "rep"], axis=0)
+        pro = np.stack([r[2][key0][l] for r in all_res if r[0] == "pro"], axis=0)
         u = (rep.mean(axis=0) - pro.mean(axis=0))
+        assert u.shape == (4096,), f"u_l{l} escalar: rep {rep.shape} pro {pro.shape}"
         u = u / (np.linalg.norm(u) + 1e-30)
         saved[f"u_l{l}"] = u.astype(np.float32)
         saved[f"rep_l{l}"] = rep.mean(axis=0).astype(np.float32)
