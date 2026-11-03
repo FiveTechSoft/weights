@@ -35,8 +35,28 @@ RIG = ROOT / "rig_runs"
 for d in (EXP, SELLADOS):
     d.mkdir(parents=True, exist_ok=True)
 
-MODELO = os.environ.get("WSP_MODELO_GGUF", r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf")
-BASE = os.environ.get("WSP_BASE_GGUF", r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+def _buscar_gguf(*cand, env=None):
+    """Busca el GGUF en el orden: env var -> rutas candidatas -> default (Windows).
+    Devuelve la primera que exista; si ninguna, la env var o el default."""
+    if env and os.environ.get(env):
+        p = Path(os.environ[env])
+        if p.exists():
+            return str(p)
+    for c in cand:
+        if c.exists():
+            return str(c)
+    return os.environ.get(env) if env else None
+
+
+_MODELO_CANDS = [
+    ROOT / "hf_cache" / "mimo-gguf" / "MiMo-V2.6-Distill-Qwen-9B-Q6_K.gguf",
+    ROOT / "servidos" / "mimo-orig.gguf",
+]
+_BASE_CANDS = [
+    ROOT / "hf_cache" / "qwen35base" / "Qwen3.5_9B_Base.Q6_K.gguf",
+]
+MODELO = _buscar_gguf(*_MODELO_CANDS, env="WSP_MODELO_GGUF") or r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf"
+BASE = _buscar_gguf(*_BASE_CANDS, env="WSP_BASE_GGUF") or r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf"
 _CREATION_FLAGS = {"creationflags": 0x08000000} if platform.system() == "Windows" else {}
 
 
