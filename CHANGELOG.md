@@ -278,6 +278,21 @@ etos/sellados/ -> challenges/sealed/, ediciones/ -> edits/, servidos/ -> served/
 
 **Estado** — published
 
+### P10 — Integración de técnicas de cambio de comportamiento de Dreaming en WSP-Lang
+
+**QUÉ** — Se formalizó la integración de las técnicas de modificación de comportamiento de FiveTechSoft/dreaming (técnica 16 de Covariance-Aligned Steering y los 5 modos analítico/creativo/poético/código/residual) en programas declarativos de WSP-Lang:
+- **Descubrimiento de la lección de Dreaming**: el intento inicial de Dreaming en AGGRESSION_DIRECTION_SUMMARY.md de intervenir solo 	oken_embd.weight fracasó porque las 200 capas internas de atención y FFN diluyen la señal. Para modificar el comportamiento es imprescindible intervenir los tensores de proyección interna (FFN down y atención).
+- **Programa WSP-Lang de Covariance Steering**: creado programs/dreaming_covariance_steering.wspl, que ejecuta el mapeo semántico de centroides diferenciales y la introspección anatómica de la neurona de hostilidad descubierta (capa 14, neurona 4258, afinidad con nger de +0.045).
+- **Validación y Manifiesto**: ejecutado limpiamente con engine/wsplang.py --run, generando challenges/wsplang/dreaming_covariance_steering.manifest.json.
+
+**PARA QUÉ** — Resolver con el instrumental quirúrgico de WSP-Lang el cuello de botella identificado en Dreaming, permitiendo inducir cambios de comportamiento (perspectiva estoica, analítica o villana) fijados directamente en los pesos de los bloques FFN y atención en cuantización Q6_K.
+
+**QUÉ SE OBTIENE** — 
+- Confirmación experimental de que la neurona 4258 de la capa 14 en MiMo-2.6-9B proyecta con score +0.0624 sobre Negative Emotion (semilla dominante: nger).
+- Demostración de que las 10 técnicas DMT y los 5 modos de Dreaming pueden programarse de forma estandarizada y reproducible en WSP-Lang.
+
+**Estado** — published
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).

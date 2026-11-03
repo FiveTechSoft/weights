@@ -1,0 +1,26 @@
+experiment dreaming_covariance_steering:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    objective:
+        replicate_dreaming_technique_16_covariance_aligned_steering
+
+    semantic_areas:
+        mode = comprehensive
+        target = mind_cognition
+        secondary = emotion_neg
+
+    steps:
+        # Step 1: Map the model's latent semantic geometry across 10 differential centroids
+        step semantic_map top=4
+
+        # Step 2: Inspect Layer 14 intermediate concept storage (FFN Down)
+        # Dreaming discovered that modifying embeddings alone fails: internal FFN layers must be steered.
+        step peek blk.14.ffn_down.weight row=100 col=4258 top=3
+
+        # Step 3: Inspect Layer 19 Attention Head 0 (Reasoning & Analytical Perspective)
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # Step 4: Inspect Layer 0 GatedDeltaNet SSM Recurrent Layer (Emotional Valence)
+        step peek blk.0.ssm_out.weight row=100 col=200 top=3
