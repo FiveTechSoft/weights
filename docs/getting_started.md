@@ -125,8 +125,12 @@ python engine/wsp_mcp_server.py
 The MCP server exposes:
 - `get_semantic_areas()`: Returns the 10 differential centroids and lexical clusters.
 - `peek_weight()`: Inspects tensor anatomy, architectural role, and semantic projection.
-- `poke_weight()`: Performs safe in-place surgical edits with canonical Q6_K requantization.
+- `poke_weight()`: Performs safe in-place surgical edits with canonical Q6_K requantization (protected by `FORBIDDEN_TENSORS`).
 - `run_wsplang()`: Parses, validates, and runs declarative `.wspl` programs.
+- `execute_wsplang_code()`: Executes memory-resident WSP-Lang code directly from agent context with strict validation gate.
+- `run_agent_loop_probe()`: Evaluates agentic tool-call loops, continuous turn metrics, and Wilson 95% confidence intervals across standard terminal prompts.
+- `run_logic_probe()`: Evaluates deterministic synthetic Horn-logic forward chaining.
+- `run_challenge()`, `sell_holdout()`, `record_verdict()`: Curricular challenge and sealed holdout management.
 
 ---
 
