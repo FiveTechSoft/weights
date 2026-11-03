@@ -1,0 +1,241 @@
+[
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:ls /app; ls /app/vendor/snakemake | head -50",
+   "bash:cat /app/workflow_probe.py 2>/dev/null | head -100",
+   "bash:ls -la /app; echo ---; ls -la /app/vendor 2>/dev/null; echo ---; ls -la /app/vendor/snakemake 2>/dev/null | head",
+   "bash:ls -la /app/src /app/config; echo ---; cat /app/README.md",
+   "bash:ls -la /app/src /app/config; echo ---; cat /app/README.md",
+   "bash:pwd && ls -la",
+   "bash:cd / && ls -la /; echo ---; ls -la /app/src /app/config",
+   "bash:find / -maxdepth 3 -name \"workflow_probe.py\" 2>/dev/null; find / -maxdepth 4 -name \"snakemake\" -type d 2>/dev/null",
+   "bash:find / -maxdepth 5 -name \"workflow_probe.py\" 2>/dev/null; echo \"---\"; find / -maxdepth 5 -type d -name \"snakemake\" 2>/dev/null",
+   "bash:find / -name \"workflow_probe.py\" 2>/dev/null; echo \"---\"; find / -type d -name \"snakemake\" 2>/dev/null",
+   "bash:ls -la /app/src /app/config; echo \"=== src ===\"; ls -la /app/src; echo \"=== config ===\"; ls -la /app/config",
+   "bash:ls -R /app/src /app/config 2>&1 | head -60",
+   "bash:cd /app && ls -laR src config"
+  ],
+  "diversity": 0.92,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0036-software-data-engineering",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 15,
+  "calls": [
+   "bash:find /app/vendor/robotics-toolbox-python -name \"IK.py\" -o -name \"ik.cpp\" | head; ls /app/vendor/robotics-toolbox-python",
+   "bash:ls /app/tools/ 2>/dev/null; cat /app/tools/run_validation.py 2>/dev/null | head -50",
+   "bash:find /app/vendor/robotics-toolbox-python -name \"IK.py\" -o -name \"ik.cpp\" 2>/dev/null; echo ---; ls -R /app/vendor/robotics-toolbox-python/src | head -50",
+   "bash:ls -la /app; ls -la /app/tools 2>/dev/null; cat /app/tools/run_validation.py 2>/dev/null",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/ 2>/dev/null; echo ---; ls /app/vendor/robotics-toolbox-python/src/roboticstoolbox/ 2>/dev/null",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/ets/ 2>/dev/null; find /app/vendor/robotics-toolbox-python -name \"*.cpp\" 2>/dev/null | head",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/"
+  ],
+  "diversity": 0.47,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/robotics-toolbox-python/sr' x9"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0109-science-robotics",
+  "config": "general"
+ },
+ {
+  "turns": 5,
+  "final": true,
+  "n_calls": 9,
+  "calls": [
+   "bash:find /app -maxdepth 2 -type f | head -50; echo \"---\"; ls -la /app",
+   "bash:cat /app/CONTRACT.md 2>/dev/null; echo \"---\"; cat /app/run_scan.py 2>/dev/null",
+   "bash:ls -la /app/src /app/config; cat /app/README.md",
+   "bash:find /app -maxdepth 4 -type d | head -40",
+   "read:/app/README.md",
+   "bash:ls -R /app/src /app/config 2>&1 | head -80",
+   "read:/app/README.md",
+   "bash:echo hi",
+   "bash:cat /app/README.md; echo \"EXIT:$?\""
+  ],
+  "diversity": 0.89,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0260-security-appsec",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:find /app/vendor/volatility3 -name \"*.py\" | grep -i -E \"handles|callbacks|dumpfiles|poolscanner|psxview\"",
+   "bash:ls /app; ls /app/vendor/volatility3",
+   "bash:ls /app/vendor/volatility3/src; ls /app/vendor/volatility3/src/volatility3 2>/dev/null | head -50",
+   "bash:ls -la /app/vendor/volatility3/src/",
+   "bash:pwd; ls -la /app/vendor/volatility3/",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1; echo \"---\"; find /app/vendor -maxdepth 3 2>&1 | head -40",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1 | head -60",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1 | head -60",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1 | head -60",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1 | head -60",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1 | head -60",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1 | head -60",
+   "bash:ls -la /app/vendor/volatility3/src/ 2>&1 | head -60"
+  ],
+  "diversity": 0.54,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/volatility3/src/ 2>&1 | he' x7"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0308-security-forensics",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:find /app -type f | head -100; echo ---; ls /app",
+   "bash:cat /app/inputs/suspicious.py; echo ---; cat /app/inputs/latin1.py",
+   "bash:ls -la /app; echo ---; ls -la /app/vendor 2>/dev/null; echo ---; ls -la /app/inputs 2>/dev/null",
+   "bash:ls -la /app",
+   "bash:pwd",
+   "bash:ls -la /app && echo \"---\" && ls /app/src /app/config",
+   "bash:ls -la /app/src /app/config; echo \"---\"; cat /app/README.md",
+   "bash:ls -la /app/src /app/config",
+   "bash:ls -la /app/src",
+   "bash:ls -la /app/src",
+   "bash:ls -la /app/src",
+   "bash:ls -la /app/src",
+   "bash:ls -la /app/src"
+  ],
+  "diversity": 0.69,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/src' x5"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0390-security-appsec",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:ls -la /app 2>/dev/null && echo \"---\" && find /app -maxdepth 3 -type d | head -50",
+   "bash:ls -la / 2>/dev/null; pwd",
+   "bash:pwd; ls -la; echo \"---\"; ls -la src config environment 2>/dev/null",
+   "bash:pwd; ls -la /; echo \"=== home ===\"; ls -la ~ 2>/dev/null; echo \"=== find json ===\"; find / -name \"metricframe_cases.json\" -not -path \"*/proc/*\" 2>/dev/null",
+   "bash:pwd && ls -la",
+   "bash:ls / ; echo \"HOME=$HOME\"; ls $HOME",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 -name \"*.py\" -path \"*fairlearn*\" 2>/dev/null | head",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 -name \"*.py\" -path \"*fairlearn*\" 2>/dev/null | head",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 \\( -name \"run_case.py\" -o -name \"metricframe_cases.json\" \\) 2>/dev/null",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 \\( -name \"run_case.py\" -o -name \"metricframe_cases.json\" \\) 2>/dev/null",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 \\( -name \"run_case.py\" -o -name \"metricframe_cases.json\" \\) 2>/dev/null",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 \\( -name \"run_case.py\" -o -name \"metricframe_cases.json\" \\) 2>/dev/null",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 \\( -name \"run_case.py\" -o -name \"metricframe_cases.json\" \\) 2>/dev/null",
+   "bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo \"=== find ===\"; find / -maxdepth 4 \\( -name \"run_case.py\" -o -name \"metricframe_cases.json\" \\) 2>/dev/null"
+  ],
+  "diversity": 0.57,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:pwd; ls -la; echo \"=== / ===\"; ls -la /; echo' x6"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0461-ml-evaluation",
+  "config": "general"
+ }
+]

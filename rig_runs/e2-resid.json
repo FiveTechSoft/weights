@@ -1,0 +1,116 @@
+[
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:echo \"cwd=$(pwd)\"; ls -la /app/vendor/snakema' x7"
+  ],
+  "id": "general-0-candidate-0036-software-data-engineering",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/robotics-toolbox-python/sr' x5"
+  ],
+  "id": "general-0-candidate-0109-science-robotics",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 17,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app' x4"
+  ],
+  "id": "general-0-candidate-0260-security-appsec",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/volatility3' x5"
+  ],
+  "id": "general-0-candidate-0308-security-forensics",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:cd /app && ls -la src config' x5"
+  ],
+  "id": "general-0-candidate-0390-security-appsec",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:pwd' x8"
+  ],
+  "id": "general-0-candidate-0461-ml-evaluation",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/scikit-learn/' x4"
+  ],
+  "id": "general-0-candidate-0534-ml-training",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "loop": false,
+  "why": [],
+  "id": "general-0-candidate-0628-media-music",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:echo \"hello\"; ls /app; echo \"rc=$?\"' x5"
+  ],
+  "id": "general-0-candidate-0674-ml-evaluation",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": false,
+  "why": [],
+  "id": "general-0-candidate-0688-hardware-rtl",
+  "config": "general"
+ }
+]

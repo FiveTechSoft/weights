@@ -1,0 +1,16 @@
+{
+ "id": "06",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "08:07:01",
+   "score": 5.0,
+   "pass": true,
+   "detalle": ""
+  }
+ ],
+ "score": 5.0,
+ "aprendizaje": "footprint de la destilacion",
+ "ts": "2026-11-03T08:07:01"
+}

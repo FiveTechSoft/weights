@@ -1,0 +1,16 @@
+{
+ "id": "09",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "08:07:56",
+   "score": 9.9,
+   "pass": true,
+   "detalle": "{183953: {'seed': 'Ġentdec', 'match': 3}, 90728: {'seed': '-vesm', 'match': 3}, 69079: {'seed': 'DECREF', 'match': 3}}"
+  }
+ ],
+ "score": 9.899999999999999,
+ "aprendizaje": "embeddings son un espacio semantico",
+ "ts": "2026-11-03T08:07:56"
+}

@@ -1,72 +1,104 @@
 [
  {
   "i": 0,
-  "gold": "72",
-  "pred": "72",
-  "ok": true,
+  "gold": "\\left( 3, \\frac{\\pi}{2} \\right)",
+  "pred": "2",
+  "ok": false,
   "finish": "stop",
-  "tail": "e total number of clips sold in April and May, add the two amounts together: | $$48 + 24 = 72$$ |  | Natalia sold 72 clips altogether in April and May. |  | Respuesta: 72"
+  "tail": "erminal side points straight up. |  | Check the constraints: $r=3>0$ and $0 \\le \\frac{\\pi}{2} < 2\\pi$. Both satisfied. |  | Final answer: |  | Respuesta: (3, \\frac{\\pi}{2})"
  },
  {
   "i": 1,
-  "gold": "10",
-  "pred": "10",
-  "ok": true,
+  "gold": "p - q",
+  "pred": "3",
+  "ok": false,
   "finish": "stop",
-  "tail": " hour. She worked 50 minutes. |  | Convert minutes to hours: 50 minutes = 50/60 hours = 5/6 hours. |  | Multiply hours by hourly rate: (5/6) × $12 = $10. |  | Respuesta: 10"
+  "tail": "sum at \\(n=1\\).) Thus | \\[ | S = \\sum_{n=1}^\\infty \\frac{1}{n^2} - \\sum_{n=1}^\\infty \\frac{1}{n^3} = p - q. | \\] | So the double sum equals \\(p - q\\). |  | Respuesta: p - q"
  },
  {
   "i": 2,
-  "gold": "5",
-  "pred": "5",
-  "ok": true,
+  "gold": "\\frac{14}{3}",
+  "pred": "3",
+  "ok": false,
   "finish": "stop",
-  "tail": "95. |  | **6. Calculate how much more she needs:** | Cost of wallet - money she has | = $100 - $95 | = $5. |  | So Betty needs $5 more money to buy the wallet. |  | Respuesta: $5"
+  "tail": " + f(0) = 2 + \\frac{5}{3} + 1 = 3 + \\frac{5}{3} = \\frac{9}{3} + \\frac{5}{3} = \\frac{14}{3}$ |  | The answer as a common fraction is $\\frac{14}{3}$. |  | Respuesta: 14/3"
  },
  {
   "i": 3,
+  "gold": "9",
+  "pred": "9",
+  "ok": true,
+  "finish": "stop",
+  "tail": "Step 3: List the divisors to verify. | 1, 2, 4, 7, 14, 28, 49, 98, 196 | That's 9 divisors. |  | The number of positive whole-number divisors of 196 is 9. |  | Respuesta: 9"
+ },
+ {
+  "i": 4,
+  "gold": "\\text{Evelyn}",
+  "pred": "3.6",
+  "ok": false,
+  "finish": "stop",
+  "tail": "0.5\\) | - **Angela:** \\(1.4 \\div 6.8 \\approx 0.21\\) |  | La mayor velocidad promedio es Evelyn, con 3.6 unidades de distancia por unidad de tiempo. |  | Respuesta: Evelyn"
+ },
+ {
+  "i": 5,
   "gold": "42",
   "pred": "42",
   "ok": true,
   "finish": "stop",
-  "tail": " = 84 pages |  | She wants to read half of the remaining pages tomorrow: | Half of remaining: 84 ÷ 2 = 42 pages |  | So, she should read 42 pages tomorrow. |  | Respuesta: 42"
- },
- {
-  "i": 4,
-  "gold": "624",
-  "pred": "624",
-  "ok": true,
-  "finish": "stop",
-  "tail": "n a year |  | **Step 3: Calculate total pages per year** | Total = 12 pages/week × 52 weeks = 624 pages |  | **Answer: James writes 624 pages in a year.** |  | Respuesta: 624"
- },
- {
-  "i": 5,
-  "gold": "35",
-  "pred": "35",
-  "ok": true,
-  "finish": "stop",
-  "tail": "en flowers are 25% as many as yellow and purple. | 28 × 25% = 7, so green = 7. |  | Step 5: Total flowers = yellow + purple + green = 10 + 18 + 7 = 35. |  | Respuesta: 35"
+  "tail": " = 7$ inches. |  | A regular hexagon has 6 equal sides, each of length $s = 7$ inches. | The perimeter of the hexagon is $6s = 6 \\times 7 = 42$ inches. |  | Respuesta: 42"
  },
  {
   "i": 6,
-  "gold": "48",
-  "pred": "48",
+  "gold": "27",
+  "pred": "27",
   "ok": true,
   "finish": "stop",
-  "tail": "each with 16 slices: \\(2 \\times 16 = 32\\) slices | - 2 small pizzas, each with 8 slices: \\(2 \\times 8 = 16\\) slices |  | Total pieces: \\(32 + 16 = 48\\) |  | Respuesta: 48"
+  "tail": "f the form \\(3n\\). The smallest positive perfect cube divisible by 3 is \\(27 = 3 \\times 9\\), giving \\(n = 9\\). |  | Check: \\(8 + 9 + 10 = 27 = 3^3\\). |  | Respuesta: 27"
  },
  {
   "i": 7,
-  "gold": "16",
-  "pred": "16",
+  "gold": "90^\\circ",
+  "pred": "90",
+  "ok": false,
+  "finish": "stop",
+  "tail": "wo direction vectors are perpendicular, meaning the lines are perpendicular to each other. |  | Therefore, the angle between the lines is $90^\\circ$. |  | Respuesta: 90"
+ },
+ {
+  "i": 8,
+  "gold": "3\\sqrt{13}",
+  "pred": "13",
+  "ok": false,
+  "finish": "stop",
+  "tail": "dical. Factor 117: $117 = 9 \\times 13 = 3^2 \\times 13$. |  | $$d = \\sqrt{3^2 \\times 13} = 3\\sqrt{13}$$ |  | The distance is $3\\sqrt{13}$ units. |  | Respuesta: $3\\sqrt{13}$"
+ },
+ {
+  "i": 9,
+  "gold": "4",
+  "pred": "None",
+  "ok": false,
+  "finish": "length",
+  "tail": ""
+ },
+ {
+  "i": 10,
+  "gold": "2220",
+  "pred": "2220",
   "ok": true,
   "finish": "stop",
-  "tail": "so: 2 × 3 = 6 libras. | Paso 3: Añade 2 libras más de gominolas: 6 + 2 = 8 libras. | Paso 4: Los gusanos de goma duplican el peso: 8 × 2 = 16 libras. |  | Respuesta: 16"
+  "tail": " 2000 (2), 2020 (4), 2200 (4), 2220 (6) → 2220 divisible by 3, ends in 0. 2220 = 30 × 74. Yes! |  | Check: 2220 / 30 = 74. ✓ |  | So the least is 2220. |  | Respuesta: 2220"
+ },
+ {
+  "i": 11,
+  "gold": "\\frac{3}{56}",
+  "pred": "None",
+  "ok": false,
+  "finish": "length",
+  "tail": ""
  },
  {
   "summary": {
-   "ok": 8,
-   "n": 8
+   "ok": 4,
+   "n": 12
   }
  }
 ]
