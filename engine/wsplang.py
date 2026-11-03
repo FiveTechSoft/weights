@@ -61,7 +61,8 @@ def parse_args_lines(text):
             prog.setdefault(sec, [])
             continue
         if current is None:
-            # fuera de cualquier seccion: ignorado
+            # fuera de cualquier seccion: registrar en __root__ para reporte de validate()
+            prog.setdefault("__root__", []).append((indent, s))
             continue
         prog[current].append((indent, s))
     return prog
@@ -78,10 +79,12 @@ def validate(prog):
     root = prog.get("__root__", [])
     experiment = None
     for ind, s in root:
-        if isinstance(s, str) and s.startswith("experiment"):
-            experiment = s.split("experiment", 1)[1].strip().rstrip(":").strip()
-        elif ind == "exp":
+        if ind == "exp":
             experiment = s
+        elif isinstance(s, str) and s.startswith("experiment"):
+            experiment = s.split("experiment", 1)[1].strip().rstrip(":").strip()
+        else:
+            errors.append(f"linea fuera de seccion: {s}")
     if not experiment:
         errors.append("falta experiment <nombre>")
     # secciones con ops
@@ -99,7 +102,15 @@ def validate(prog):
                         errors.append(f"op de intervencion no permitida: {fn}")
                 steps.append({"sec": sec, "expr": s[:120]})
             elif s.startswith("step "):
-                steps.append({"sec": sec, "expr": s[:120]})
+                m_step = re.match(r"^step\s+(\S+)(?:\s+(.*))?$", s)
+                if m_step:
+                    step_op = m_step.group(1)
+                    if step_op not in OPS_ALLOWED:
+                        errors.append(f"operacion de paso no permitida: {step_op}")
+                    else:
+                        steps.append({"sec": sec, "expr": s[:120], "op": step_op, "args": (m_step.group(2) or "").strip()})
+                else:
+                    errors.append(f"formato de step invalido: {s[:50]}")
             elif sec not in METADATA:
                 errors.append(f"linea ignorada {sec}: {s[:50]}")
     return steps, errors
@@ -169,7 +180,7 @@ def execute_plan(plan, gguf_path=None):
     default_gguf = Path(r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf")
     target_gguf = Path(gguf_path) if gguf_path else default_gguf
     if not target_gguf.exists():
-        return [{"op": "init", "status": "error", "error": f"Modelo GGUF no encontrado en {target_gguf}"}]
+        return [{"op": "init", "status": "error", "args": "", "error": f"Modelo GGUF no encontrado en {target_gguf}"}]
 
     executed_steps = []
     for step in plan.get("pasos", []):

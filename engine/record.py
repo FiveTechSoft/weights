@@ -196,15 +196,14 @@ class ExperimentRecord:
             return registros
         decoder = json.JSONDecoder()
         idx = 0
-        print("from_jsonl: reading", path)
         while idx < len(texto):
             try:
                 datos, fin = decoder.raw_decode(texto, idx)
-                print("from_jsonl: decoded", idx, "len", len(texto))
             except json.JSONDecodeError:
                 break
             if fin == idx:
                 break
+            idx = fin
         registros.append(cls(
                 experiment_id=str(datos["experiment_id"]),
                     model_id=str(datos.get("model_id", "")),

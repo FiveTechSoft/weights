@@ -1,5 +1,7 @@
 # Model binaries and caches (DO NOT version)
 *.gguf
+*.safetensors
+*.bin
 *.parquet
 *.zip
 __pycache__/
@@ -8,6 +10,9 @@ served/
 servidos/
 logs/
 *.log
+exp8_control/base/
+exp8_control/edited/
+*.tmp
 # Local venvs
 .venv/
 .venv-hf/

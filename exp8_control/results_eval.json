@@ -1,0 +1,85 @@
+{
+  "base": {
+    "summary": {
+      "model": "exp8_control/base",
+      "n_samples": 2,
+      "acc": 0.0,
+      "correct": 0,
+      "cut_share": 1.0,
+      "cut_count": 2,
+      "mean_tokens": 512.0,
+      "total_seconds": 127.0,
+      "tok_per_s": 8.1
+    },
+    "results": [
+      {
+        "id": 1,
+        "gen_tokens": 512,
+        "seconds": 63.36,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": true,
+        "pred": "",
+        "gold": 18,
+        "correct": false,
+        "generation_tail": "    *   Interpretation B: It implies a subtraction from the total egg count.\n            *   Total eggs laid = 16.\n            *   Eggs eaten = 3.\n            *   Eggs used for muffins = 4.\n            *   Remaining eggs = 16 - 3 - 4 = 9.\n            *   Selling price = $2/egg.\n            *   Revenue = 9 * $2 = $18.\n    *   Let's check if there's any other interpretation. Maybe \"with four\" refers"
+      },
+      {
+        "id": 2,
+        "gen_tokens": 512,
+        "seconds": 63.59,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": true,
+        "pred": "",
+        "gold": 3,
+        "correct": false,
+        "generation_tail": "r is it a constraint on the ratio?\n    *   Let's assume the standard interpretation of such word problems unless specified otherwise.\n    *   Constraint: \"takes 2 bolts of blue fiber\". This implies Blue = 2.\n    *   Constraint: \"and half that much white fiber\". This usually implies White = (Blue / 2) or something similar? Or does it mean White = (Total / 2)?\n    *   Let's parse \"half that much\" as"
+      }
+    ]
+  },
+  "edited": {
+    "summary": {
+      "model": "exp8_control/edited",
+      "n_samples": 2,
+      "acc": 0.5,
+      "correct": 1,
+      "cut_share": 1.0,
+      "cut_count": 2,
+      "mean_tokens": 512.0,
+      "total_seconds": 132.0,
+      "tok_per_s": 7.8
+    },
+    "results": [
+      {
+        "id": 1,
+        "gen_tokens": 512,
+        "seconds": 64.12,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 1,
+        "gold": 18,
+        "correct": false,
+        "generation_tail": "Wait, I can't see \"bounces\" as a verb here. It must be \"bakes\".)\n                    *   Wait, looking at the provided text in the prompt: \"She eats three for breakfast every morning and bakes muffins for her friends every day with four.\"\n                    *   Let's assume standard English grammar.\n                    *   Scenario 1: She eats X amount. She makes Y amount.\n                       "
+      },
+      {
+        "id": 2,
+        "gen_tokens": 512,
+        "seconds": 67.86,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 3,
+        "gold": 3,
+        "correct": true,
+        "generation_tail": " the problem might be interpreted differently. Is it asking how many bolts of each color are needed?\n            *   Blue = 2.\n            *   White = \"half that much\".\n            *   Does \"that\" refer to the number of bolts of blue? Yes. So White = 0.5 * 2 = 1.\n            *   Total = 3.\n    *   *Self-Correction/Alternative Interpretation:* Sometimes \"halves\" in word problems are tricky.\n       "
+      }
+    ]
+  },
+  "delta": {
+    "acc_delta": 0.5,
+    "cut_share_delta": 0.0,
+    "mean_tokens_delta": 0.0
+  }
+}

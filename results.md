@@ -164,4 +164,34 @@ Retos aprobados: 12 (01-09 lectura + 41-43 escritura). Referencia: csinva/weight
   * Prompt 1: completado con éxito (12 turnos, 13 llamadas a herramientas, sin bucle).
   * Prompt 2 (`science-robotics`): **bucle reproducido** (`3-consecutive-identical` en turno 12, 14 llamadas).
   * Tasa de bucle observada: 1/2 (50.0%), intervalo Wilson 95%: $[9.5\%, 90.5\%]$, ilustrando empíricamente la necesidad de $N \ge 80$ para mediciones estadísticamente concluyentes.
-* **Próxima fase:** Evaluar baselines baratos de inferencia (`repetition_penalty`, samplers de frecuencia y presencia) sobre este conjunto antes de cualquier intervención en espacio de pesos.
+* **Próxima fase:** Evaluar baselines baratos de inferencia (`repetition_penalty`, samplers de frecuencia y presencia) sobre este conjunto antes de cualquier intervención en espacio de pesos.
+
+---
+
+## 9. Validación de Control Positivo (MIT CSAIL Exp 8) y Cierre de Puerta de Validación
+
+### 9.1. Reproducción Criptográfica Bit-Exacta de Exp 8 (`Qwen3.5-0.8B` @ Astra `p50c`)
+* **Propósito:** Validar de forma independiente la infraestructura de edición y el efecto bi-direccional en espacio de pesos antes de cualquier nueva intervención sobre `MiMo-9B`.
+* **Modelo base:** `Qwen/Qwen3.5-0.8B` (revisión oficial `2fc06364715b967f1860aea9cf38778875588b17`).
+* **Artefactos publicados:** `apply_edit.py`, `st_numpy.py`, `manifest.json`, `edit.npz` procedentes de `RikiyaT/lm_understand-logs` (`exp8_math/runs/p50c/`).
+* **Reconstrucción y comprobación hash:**
+  * Tensor 1: `model.language_model.layers.15.mlp.down_proj.weight` [1024, 3584]:
+    * Base SHA-256: `ef60d2c687bab19464dca9c8bfd7777e46ad226df0c9e25643b0bab04b5a1cca` $\to$ Editado SHA-256: `82e2d733ea64feaeb4af93a1e065641d3df98b494a8b7576ef2f52e90fe2ee53` (Coincidencia bit-exacta OK).
+    * Entradas modificadas: 65,260 en 64 columnas (1.778% del tensor).
+  * Tensor 2: `model.language_model.layers.19.mlp.down_proj.weight` [1024, 3584]:
+    * Base SHA-256: `638eedeb701b94aa861f4438e615c07ec6c60ee703db1bfee2de577bb6498c3e` $\to$ Editado SHA-256: `8ef3c61bc36af113ad58e89dbb0a4a14dcba5a45cb750c15ab515c82ddd12eb2` (Coincidencia bit-exacta OK).
+    * Entradas modificadas: 64,928 en 64 columnas (1.769% del tensor).
+  * Total de pesos alterados: exactamente 130,188 entradas (0.016% de los parámetros totales del modelo).
+
+### 9.2. Análisis Mecanístico del Fallo del Modelo Base vs Checkpoint Editado
+* **Patología del Base:** En el modelo base, el proceso de pensamiento `<think>` entra en un ciclo patológico de auto-duda recursiva (ej. repitiendo *"Wait, let's re-verify... So \theta = \frac{\pi}{2}. Wait, let's check again..."* decenas de veces) hasta consumir la cuota máxima de tokens (93%–95% de corte en MATH-500 y GSM8K sin llegar a emitir `</think>` ni `\boxed{}`).
+* **Mecanismo de Intervención:** Astra aisló la dirección residual causante de este bucle en los MLPs de las capas 15 y 19, y la proyectó fuera de 64 columnas de proyección descendente (`down_proj`).
+* **Comportamiento Editado:** La edición rompe el atractor de repetición: el modelo concluye su cadena deductiva, emite `</think>` y entrega la solución en `\boxed{}`. En la verificación smoke GSM8K pareada local, el modelo editado resolvió con éxito el problema donde el base quedó atrapado en el bucle.
+
+### 9.3. Corrección del Agujero en la Puerta de Validación de WSP-Lang
+* **Defecto corregido:** `engine/wsplang.py` permitía que instrucciones como `step totally_unknown_operation ...` fueran aceptadas por el parser sin verificar que la operación estuviera registrada en `OPS_ALLOWED`. Asimismo, líneas huérfanas situadas fuera de secciones declaradas eran ignoradas silenciosamente.
+* **Solución aplicada:**
+  1. `validate(prog)` ahora analiza cada `step <op>` y exige estrictamente que `<op> \in OPS_ALLOWED`, añadiendo de lo contrario `operacion de paso no permitida: <op>`.
+  2. Todas las líneas situadas fuera de secciones son capturadas en `__root__` y marcadas como `linea fuera de seccion: <linea>`.
+  3. Se añadieron pruebas unitarias en `tests/test_wsplang_security.py` verificando el rechazo explícito de operaciones de paso desconocidas y líneas huérfanas (9/9 tests pasando en la suite completa).
+

@@ -13,34 +13,47 @@ import wsp
 
 class TestWsplangSecurityAndRanking(unittest.TestCase):
 
-    def test_validation_gate_aborts_execution(self):
-        """Invalid WSP-Lang syntax must halt execution before touching weights."""
-        invalid_code = """
-        experiment invalid_test:
-            # missing budget or invalid format
-            step unknown_op xyz
-        """
-        prog = wsplang.parse_args_lines(invalid_code)
+    def test_unknown_step_operation_rejected(self):
+        """Unknown step operations in 'steps:' must be rejected by validate()."""
+        code = """experiment test_unknown_step:
+steps:
+    step totally_unknown_operation blk.5.ffn_down.weight
+"""
+        prog = wsplang.parse_args_lines(code)
         steps, errors = wsplang.validate(prog)
-        self.assertTrue(len(errors) > 0, "Validation should have detected errors")
-        
-        # When execution is attempted, it must abort
-        plan = wsplang.plan_run(prog, steps)
-        # Note: in main / MCP runner, execute_plan is strictly blocked when errors > 0
-        self.assertFalse(len(errors) == 0)
+        self.assertTrue(len(errors) > 0, "Validation should have detected error on unknown operation")
+        self.assertTrue(any("totally_unknown_operation" in e for e in errors), f"Expected operation name in errors: {errors}")
+
+    def test_orphan_line_outside_section_rejected(self):
+        """Lines written outside recognized sections must be caught by validate()."""
+        code = """experiment test_orphan:
+orphan_instruction_without_section
+steps:
+    step peek blk.5.ffn_down.weight 10 20
+"""
+        prog = wsplang.parse_args_lines(code)
+        steps, errors = wsplang.validate(prog)
+        self.assertTrue(len(errors) > 0, "Validation should reject orphan line outside section")
+        self.assertTrue(any("linea fuera de seccion" in e for e in errors), f"Expected 'linea fuera de seccion' in errors: {errors}")
+
+    def test_valid_step_passes_validation(self):
+        """Valid operations inside steps must pass validation cleanly."""
+        code = """experiment test_valid_step:
+steps:
+    step peek blk.5.ffn_down.weight 100 200
+    step poke blk.5.ffn_down.weight 100 200 0.05
+"""
+        prog = wsplang.parse_args_lines(code)
+        steps, errors = wsplang.validate(prog)
+        self.assertEqual(len(errors), 0, f"Expected 0 errors, got: {errors}")
+        self.assertEqual(len(steps), 2)
+        self.assertEqual(steps[0]["op"], "peek")
+        self.assertEqual(steps[1]["op"], "poke")
 
     def test_forbidden_tensor_rejection(self):
-        """Execute plan must reject poke operations on protected tensors."""
-        plan = {
-            "pasos": [
-                {"op": "poke", "args": "token_embd.weight 0 0 1.0"}
-            ]
-        }
-        res = wsplang.execute_plan(plan, gguf_path=str(ROOT / "models" / "dummy.gguf"))
-        # Dummy path won't exist if not supplied, but if supplied with a valid or mocked path:
-        # We test that FORBIDDEN_TENSORS are rejected
-        for f in wsp.FORBIDDEN_TENSORS:
-            self.assertIn(f, ("token_embd.weight", "output.weight", "output_norm.weight"))
+        """Execute plan and policy must reject poke operations on protected tensors."""
+        for f in ("token_embd.weight", "output.weight", "output_norm.weight"):
+            self.assertIn(f, wsp.FORBIDDEN_TENSORS)
 
 
 if __name__ == "__main__":

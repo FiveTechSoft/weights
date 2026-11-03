@@ -5,3 +5,5 @@
 {"ts": "2026-11-03T13:10:37", "kind": "info", "detail": {"file": "/tmp/opencode/ws_demo.npz", "n": 2}}
 {"ts": "2026-11-03T13:10:41", "kind": "write", "detail": {"file": "/tmp/opencode/ws_demo.npz", "out": "/tmp/opencode/out.npz", "changed": 0}}
 {"ts": "2026-11-03T13:10:45", "kind": "run", "detail": {"mode": "fix", "llm": "replay:rep.jsonl", "changed": 0, "steps": 4, "out": {}}}
+{"ts": "2026-11-04T00:09:46", "kind": "info", "detail": {"file": "exp8_control/base/model.safetensors", "n": 0}}
+{"ts": "2026-11-04T00:10:02", "kind": "info", "detail": {"file": "exp8_control/base/model.safetensors", "n": 1}}
