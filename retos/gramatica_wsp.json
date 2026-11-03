@@ -1,0 +1,74 @@
+{
+  "nombre": "gramatica-wsp-v1",
+  "regla_fundamental": "ninguna operacion se da por buena sin verificacion independiente (sellado holdout + journal): el sistema no puede manipular sus propios indicadores",
+  "operaciones": [
+    {
+      "op": "inspect",
+      "primitiva": "wsp info/tensors/stats/rows",
+      "descripcion": "leer estructura del programa aprendido",
+      "precond": "presupuesto read",
+      "validacion": "n/a"
+    },
+    {
+      "op": "localize",
+      "primitiva": "wsp delta + capture heads/activaciones + markers",
+      "descripcion": "identificar componentes asociados a un comportamiento",
+      "precond": "delta base->modelo o par rep/pro",
+      "validacion": "correlacion NO prueba causalidad (regla E1)"
+    },
+    {
+      "op": "project",
+      "primitiva": "subtract-direction (u behavior-derived)",
+      "descripcion": "restar una direccion de columnas/neuronas concretas",
+      "precond": "u de residuos/activaciones reales (NUNCA de drift); target_frac 0.004-0.02; cols_mask por score de activacion",
+      "validacion": "E1: drift FALLA; E2/E3: dosis generica FALLA; E5: score activacion dio senial (revocada por P4)",
+      "reglas_habidas": [
+        "requant de bloques NO es classify harmful (placebo E4 = baseline exacto)",
+        "operar SOBRE filas de ffn_down 17/19 con cols top-|v| SUBE el loop (E1/E2/E3)",
+        "dirs de residuos y drift son ortogonales: NO son intercambiables",
+        "senial solo valida con sets frescos + multi-seed (P4)"
+      ]
+    },
+    {
+      "op": "ablate",
+      "primitiva": "scale-rows/scale-cols",
+      "descripcion": "reducir/eliminar afinamiento de filas o columnas concretas",
+      "precond": "scale 0.25-3.0 (POLICY)",
+      "validacion": "obligatorio test no-regresion"
+    },
+    {
+      "op": "patch",
+      "primitiva": "wsp edit (copias en sitio + requant Q6K canonico por bloques tocados)",
+      "descripcion": "aplicar DeltaW sin tocar el resto",
+      "precond": "POLICY: head/norm/embd prohibidos; require_sha disponible",
+      "validacion": "diff + manifest + sha256"
+    },
+    {
+      "op": "compose",
+      "primitiva": "programas JSON multi-op + stack de servidos",
+      "descripcion": "combinar primitivas en una edicion",
+      "precond": "cada op validada individualmente ANTES (componer ops sin expediente prohibido)"
+    },
+    {
+      "op": "test",
+      "primitiva": "eval harness (rig) + eval_math + sellar",
+      "descripcion": "medir comportamiento (diag) y holdout (1 ejecucion)",
+      "precond": "budget fwd 6/fase; sets frescos para confirmacion",
+      "validacion": "P4: senial solo en n>=20"
+    },
+    {
+      "op": "rollback",
+      "primitiva": "servidos con archivos independientes",
+      "descripcion": "revertir = no usar el archivo parcheado",
+      "precond": "n/a",
+      "validacion": "modelo original intacto (sha256)"
+    }
+  ],
+  "lab_en_curso": {
+    "E6": "project sobre heads de atencion (analogia Opus del exp8 replica): u_resid = Wout @ diff_head, cols_mask = slice del head, frac 0.004"
+  },
+  "meta": {
+    "quien": "concepto de lenguaje distribuido (analisis Antonio); implementado con 12/43 retos + journal",
+    "primer_avance": "los magneticas de parche sin tocar resto y columnas-score de activacion son las dos primitivas que RESTAURAN comportamiento"
+  }
+}

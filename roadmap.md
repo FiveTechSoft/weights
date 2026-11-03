@@ -119,3 +119,22 @@ Repo autÃ³nomo de escritura de pesos en transformers pequeÃ±os (tareas aritmÃ©ti
 - Pension: `ediciones\e1.json` (descartado) + `ediciones\e1-smoke.json`; manifiestos en `servidos\*.manifest.json`.
 - Toolkit (motor WSP): `wsp.py`; engine retos: `engine\challenge.py` + `engine\wsp_mcp_server.py` + `retos\wsp40.json`.
 - Skill: `~/.config/opencode/skills/weight-space-programming/SKILL.md`.
+
+# WSP-Lang 0.1 — lenguaje experimental para programar el espacio de pesos (propuesta Antonio, 2026-11-03)
+
+Hipótesis central: un LLM contiene un programa computacional implícito en sus pesos; descubrimos primitivas y las combinamos para producir cambios verificables. Especificación completa en WSP-Lang 0.1 (texto de Antonio; resumen operativo en `retos/gramatica_wsp.json`).
+
+Modelo: M=(A,W,t); programa P=(o1..on); W'=P(W). 8 primitivas ya IMPLEMENTADAS en el runtime:
+inspect (wsp info/stats), observe (capture_residual/heads/activaciones), compare (delta vs rig), hypothesize (expedientes, agente), localize (delta/markers/activation score), intervene (subtract-direction/scale/cols_mask: **project** de la gramática), evaluate (rig+eval_math+sellar: **test**), rollback (servidos)}
+
+Sistemas de tipos: Model/Tensor/Activation/Direction/Behavior/Hypothesis/Intervention/Benchmark/Experiment/Result.
+Matemática: escala W' = W+ad; proyección W' = W - a·W·ddT (normalizada); intervención de ACTIVACIONES h' = h - a·ddT·h (comprobar hipótesis sin editar); composición P2°P1 NO conmutativa (registrar orden).
+Seguridad (runtime, no prompt): identidad inmutable (sha256), target whitelist, dimensiones/tipos/limites de magnitud, budget, reversibilidad, confirmación ciega (P4).
+Criterio de aceptación: ?B>0 Y ?R_i = -e_i para cada regresión i Y modified_parameters = B_max Y evaluación independiente separada (diagnóstico valida, confirmación sella).
+
+Registro de experimentos: ExperimentRecord{hypothesis, evidence, target, intervention, model_hash, benchmark_version, baseline_result, candidate_result, placebo_result, holdout_result, conclusion?{SUPPORTED, REJECTED, INCONCLUSIVE}} — un experimento fallido ES conocimiento (ya 5 REJECTED con lecciones).
+
+WSP-Lang 0.2 (futura): descubrimiento de primitivas por el agente, composición automática de ops compatibles, meta-programación del proceso investigador (RSI-shaped).
+
+SIGUIENTE PIEZA A CONSTRUIR: parser + ejecutor mínimo de WSP-Lang en el MCP: interprete pequeño de programas tipo E2 que validan cada op, generan manifiesto y resultados automáticamente.
+
