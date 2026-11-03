@@ -1,4 +1,4 @@
-"""eval_code.py — HumanEval pass@1 para MiMo-V2.6 (medicion de programacion).
+﻿"""eval_code.py â€” HumanEval pass@1 para MiMo-V2.6 (medicion de programacion).
 genera codigo (temp 0), extrae bloque python, ejecuta test en subprocess con timeout.
 Uso: python blog_prompts/eval_code.py <alias> -p 8950 [-n 50] [-o 0]
 """
@@ -16,7 +16,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 ROOT = Path(r"C:\weights")
 RIG = ROOT / "rig_runs"
 
-INSTR = """Completa la función Python exactamente como pide el docstring. Devuelve SOLO el código Python completo con la función requerida (sin explicaciones, sin tests), en un único bloque ```python ... ```.
+INSTR = """Completa la funciÃ³n Python exactamente como pide el docstring. Devuelve SOLO el cÃ³digo Python completo con la funciÃ³n requerida (sin explicaciones, sin tests), en un Ãºnico bloque ```python ... ```.
 
 ```python
 {prompt}
@@ -24,9 +24,9 @@ INSTR = """Completa la función Python exactamente como pide el docstring. Devue
 """
 
 
-def chat(server, prompt, seed, temp=0.0):
+def chat(server, prompt, seed, temp=0.0, max_tokens=1200):
     body = json.dumps({"messages": [{"role": "user", "content": prompt}],
-                       "temperature": temp, "top_p": 1.0, "max_tokens": 1200, "seed": seed}).encode()
+                       "temperature": temp, "top_p": 1.0, "max_tokens": max_tokens, "seed": seed}).encode()
     req = urllib.request.Request(server + "/v1/chat/completions", data=body,
                                  headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=900) as r:
@@ -65,6 +65,7 @@ def main():
     ap.add_argument("-n", type=int, default=50)
     ap.add_argument("-o", "--offset", type=int, default=0)
     a = ap.parse_args()
+    maxtok = 600
     items = []
     with (ROOT / "data" / "humaneval.jsonl").open(encoding="utf-8") as fh:
         for line in fh:
@@ -76,7 +77,7 @@ def main():
     for i, p in enumerate(items):
         prompt = INSTR.format(prompt=p["prompt"])
         try:
-            txt, fin = chat(server, prompt, seed=42 + i)
+            txt, fin = chat(server, prompt, seed=42 + i, max_tokens=600)
         except Exception as e:
             results.append({"i": a.offset + i, "err": repr(e)[:120], "pass": False})
             json.dump({"alias": a.alias, "total": len(results), "passed": sum(x.get("pass", False) for x in results), "individual": results}, (RIG / f"{a.alias}-code.json").open("w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -93,3 +94,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

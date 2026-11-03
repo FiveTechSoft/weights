@@ -113,7 +113,15 @@ def row_decode(t):
 
 
 def base_dtype(t):
-    return {gguf.GGMLQuantizationType.F32: "F32", gguf.GGMLQuantizationType.F16: "F16"}.get(t.tensor_type)
+    """etiqueta de tipo: F32/F16/BF16, o nombre de cuantizacion (Q6_K, Q8_0, ...)."""
+    tt = t.tensor_type
+    if tt == gguf.GGMLQuantizationType.F32:
+        return "F32"
+    if tt == gguf.GGMLQuantizationType.F16:
+        return "F16"
+    if tt == gguf.GGMLQuantizationType.BF16:
+        return "BF16"
+    return tt.name
 
 
 # ---------------- read commands ----------------
@@ -577,9 +585,11 @@ def _col_norm(D, c):
 
 
 def _rank_by_norm(D, idx, order):
-    vals = np.array([np.linalg.norm(D[i]) for i in order])
+    """rank (1 = más fuerte) de idx dentro de la lista `order`, por norma de fila."""
+    vals = np.array([np.linalg.norm(D[i]) for i in order], dtype=np.float64)
     pos = np.argsort(-vals, kind="stable")
-    return int(np.where(pos == np.where(order == idx)[0][0])[0][0])
+    j = int(np.flatnonzero(order == idx)[0])
+    return int(np.flatnonzero(pos == j)[0])
 
 
 def peek(gguf_path, tensor_name, row=None, col=None, k=10):
@@ -589,7 +599,7 @@ def peek(gguf_path, tensor_name, row=None, col=None, k=10):
     con row/col -> el peso concreto: valor, qué fila/columna usa, su fuerza.
     """
     r = reader_of(gguf_path)
-    t = r.get_tensor(tensor_name)
+    t = tensor_map(r)[tensor_name]
     D = row_decode(t)
     n_out, n_in = D.shape
     out = {"tensor": tensor_name, "shape": [n_out, n_in], "dtype": base_dtype(t),
@@ -603,15 +613,15 @@ def peek(gguf_path, tensor_name, row=None, col=None, k=10):
             "value": v, "sign": 1 if v >= 0 else -1,
             "row": row, "col": col,
             "row_norm": rnorm, "col_norm": cnorm,
-            "row_rank": _rank_by_norm(D, row, range(n_out)),
-            "col_rank": _rank_by_norm(D, col, range(n_in)),
+            "row_rank": _rank_by_norm(D, row, np.arange(n_out)),
+            "col_rank": _rank_by_norm(D, col, np.arange(n_in)),
             "frac_row": abs(v) / (rnorm + 1e-30),   # qué parte de la fila controla
             "frac_col": abs(v) / (cnorm + 1e-30),
             "abs": abs(v),
         })
     else:
-        row_norms = np.array([_row_norm(D, i) for i in range(n_out)])
-        col_norms = np.array([_col_norm(D, j) for j in range(n_in)])
+        row_norms = np.linalg.norm(D, axis=1)
+        col_norms = np.linalg.norm(D, axis=0)
         top_r = [int(i) for i in np.argsort(-row_norms, kind="stable")[:k]]
         top_c = [int(j) for j in np.argsort(-col_norms, kind="stable")[:k]]
         nnz = int(np.count_nonzero(np.abs(D) > 1e-6))
@@ -624,7 +634,6 @@ def peek(gguf_path, tensor_name, row=None, col=None, k=10):
             "top_rows": [{"row": i, "norm": float(row_norms[i])} for i in top_r],
             "top_cols": [{"col": j, "norm": float(col_norms[j])} for j in top_c],
         })
-    r.close()
     return out
 
 
@@ -632,10 +641,10 @@ def _set_element(t, D, row, col, value):
     D[row, col] = value
 
 
-def _requant_blocks_bytes(t, rowmap, D):
-    """requant solo los bloques que contienen (row, col)."""
-    (r0, c0), (r1, c1) = _q6k_index_map(row)
-    return _requant_blocks_bytes(t, [(r0, c0), (r1, c1)], D)
+def _poke_requant(t, row, D):
+    """requantiza SOLO el bloque que contiene la fila `row` (poke de un solo peso)."""
+    b = row // 256  # bloques de 256 pesos (Q6_K)
+    return _requant_blocks_bytes(t, {row: [b]}, D)
 
 
 def poke(gguf_path, tensor_name, row, col, value, out=None):
@@ -647,11 +656,18 @@ def poke(gguf_path, tensor_name, row, col, value, out=None):
     out = out or f"{Path(str(gguf_path)).stem}.poke-{tensor_name}-{row}-{col}.gguf"
     src = str(gguf_path)
     r = reader_of(src)
-    t = r.get_tensor(tensor_name)
+    t = tensor_map(r)[tensor_name]
     D = row_decode(t)
     _set_element(t, D, row, col, value)
-    _requant_blocks_bytes(t, row_decode(t) if False else None, D)
-    r.close()
+    newbytes = _poke_requant(t, row, D)
+    with open(out, "wb") as fh:
+        fh.write(newbytes)  # bytes del tensor (data_size)
+    with open(src, "rb") as fh:
+        full = bytearray(fh.read())
+    full[t.data_offset:t.data_offset + len(newbytes)] = newbytes
+    with open(out, "wb") as fh:
+        fh.write(full)
+    _p(f"  escrito {out}: {len(full)} bytes (solo {len(newbytes)} de tensor parcheados)")
     return out
 
 

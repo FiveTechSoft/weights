@@ -1,0 +1,217 @@
+{
+ "alias": "code-b0",
+ "total": 30,
+ "passed": 26,
+ "individual": [
+  {
+   "i": 0,
+   "task": "has_close_elements",
+   "pass": true,
+   "finish": "stop",
+   "tail": "len(numbers)): |             if abs(numbers[i] - numbers[j]) < threshold: |                 return True |     return False | ```"
+  },
+  {
+   "i": 1,
+   "task": "separate_paren_groups",
+   "pass": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 2,
+   "task": "truncate_number",
+   "pass": true,
+   "finish": "stop",
+   "tail": " Return the decimal part of the number. |     >>> truncate_number(3.5) |     0.5 |     \"\"\" |     return number - int(number) | ```"
+  },
+  {
+   "i": 3,
+   "task": "below_zero",
+   "pass": true,
+   "finish": "stop",
+   "tail": "eration in operations: |         balance += operation |         if balance < 0: |             return True |     return False | ```"
+  },
+  {
+   "i": 4,
+   "task": "mean_absolute_deviation",
+   "pass": true,
+   "finish": "stop",
+   "tail": "    1.0 |     \"\"\" |     mean = sum(numbers) / len(numbers) |     return sum(abs(x - mean) for x in numbers) / len(numbers) | ```"
+  },
+  {
+   "i": 5,
+   "task": "intersperse",
+   "pass": true,
+   "finish": "stop",
+   "tail": "merate(numbers): |         if i > 0: |             result.append(delimeter) |         result.append(num) |     return result | ```"
+  },
+  {
+   "i": 6,
+   "task": "parse_nested_parens",
+   "pass": true,
+   "finish": "stop",
+   "tail": "nd(max_depth) |             depth = 0 |             max_depth = 0 |     max_depths.append(max_depth) |     return max_depths | ```"
+  },
+  {
+   "i": 7,
+   "task": "filter_by_substring",
+   "pass": true,
+   "finish": "stop",
+   "tail": "bacd', 'cde', 'array'], 'a') |     ['abc', 'bacd', 'array'] |     \"\"\" |  |     return [s for s in strings if substring in s] | ```"
+  },
+  {
+   "i": 8,
+   "task": "sum_product",
+   "pass": true,
+   "finish": "stop",
+   "tail": "  product = 1 |     for number in numbers: |         total += number |         product *= number |     return total, product | ```"
+  },
+  {
+   "i": 9,
+   "task": "rolling_max",
+   "pass": true,
+   "finish": "stop",
+   "tail": " None or number > current_max: |             current_max = number |         result.append(current_max) |     return result | ```"
+  },
+  {
+   "i": 10,
+   "task": "make_palindrome",
+   "pass": false,
+   "finish": "stop",
+   "tail": "tring), 0, -1): |         if is_palindrome(string[i:]): |             return string + string[:i][::-1] |     return string | ```"
+  },
+  {
+   "i": 11,
+   "task": "string_xor",
+   "pass": true,
+   "finish": "stop",
+   "tail": "g. |     >>> string_xor('010', '110') |     '100' |     \"\"\" |     return ''.join(str(int(x) ^ int(y)) for x, y in zip(a, b)) | ```"
+  },
+  {
+   "i": 12,
+   "task": "longest",
+   "pass": true,
+   "finish": "stop",
+   "tail": "gs[1:]: |         if len(string) > len(longest_string): |             longest_string = string |  |     return longest_string | ```"
+  },
+  {
+   "i": 13,
+   "task": "greatest_common_divisor",
+   "pass": true,
+   "finish": "stop",
+   "tail": "est_common_divisor(25, 15) |     5 |     \"\"\" |     a, b = abs(a), abs(b) |     while b: |         a, b = b, a % b |     return a | ```"
+  },
+  {
+   "i": 14,
+   "task": "all_prefixes",
+   "pass": false,
+   "finish": "stop",
+   "tail": "g |     >>> all_prefixes('abc') |     ['a', 'ab', 'abc'] |     \"\"\" |     return [string[:i] for i in range(len(string) + 1)] | ```"
+  },
+  {
+   "i": 15,
+   "task": "string_sequence",
+   "pass": true,
+   "finish": "stop",
+   "tail": "ce(0) |     '0' |     >>> string_sequence(5) |     '0 1 2 3 4 5' |     \"\"\" |     return ' '.join(str(i) for i in range(n + 1)) | ```"
+  },
+  {
+   "i": 16,
+   "task": "count_distinct_characters",
+   "pass": true,
+   "finish": "stop",
+   "tail": "') |     3 |     >>> count_distinct_characters('Jerry') |     4 |     \"\"\" |  |     return len({char.lower() for char in string}) | ```"
+  },
+  {
+   "i": 17,
+   "task": "parse_music",
+   "pass": true,
+   "finish": "stop",
+   "tail": "ote == 'o|': |             result.append(2) |         elif note == '.|': |             result.append(1) |  |     return result | ```"
+  },
+  {
+   "i": 18,
+   "task": "how_many_times",
+   "pass": true,
+   "finish": "stop",
+   "tail": "ring, start) |         if index == -1: |             break |         count += 1 |         start = index + 1 |     return count | ```"
+  },
+  {
+   "i": 19,
+   "task": "sort_numbers",
+   "pass": true,
+   "finish": "stop",
+   "tail": "': 9, |     } |  |     words = numbers.split() |     words.sort(key=lambda word: value_map[word]) |     return ' '.join(words) | ```"
+  },
+  {
+   "i": 20,
+   "task": "find_closest_elements",
+   "pass": true,
+   "finish": "stop",
+   "tail": "est_pair = (diff, numbers[i], numbers[j]) |  |     smaller, larger = sorted(closest_pair[1:]) |     return smaller, larger | ```"
+  },
+  {
+   "i": 21,
+   "task": "rescale_to_unit",
+   "pass": true,
+   "finish": "stop",
+   "tail": "ax(numbers) |     range_value = maximum - minimum |  |     return [(number - minimum) / range_value for number in numbers] | ```"
+  },
+  {
+   "i": 22,
+   "task": "filter_integers",
+   "pass": true,
+   "finish": "stop",
+   "tail": "  [1, 2, 3] |     \"\"\" |     return [value for value in values if isinstance(value, int) and not isinstance(value, bool)] | ```"
+  },
+  {
+   "i": 23,
+   "task": "strlen",
+   "pass": true,
+   "finish": "stop",
+   "tail": "\"\" Return length of given string |     >>> strlen('') |     0 |     >>> strlen('abc') |     3 |     \"\"\" |     return len(string) | ```"
+  },
+  {
+   "i": 24,
+   "task": "largest_divisor",
+   "pass": false,
+   "finish": "stop",
+   "tail": "\" |     if n <= 1: |         return 1 |     for i in range(2, n): |         if n % i == 0: |             return i |     return 1 | ```"
+  },
+  {
+   "i": 25,
+   "task": "factorize",
+   "pass": true,
+   "finish": "stop",
+   "tail": "     factors.append(d) |             n //= d |         d += 1 |     if n > 1: |         factors.append(n) |     return factors | ```"
+  },
+  {
+   "i": 26,
+   "task": "remove_duplicates",
+   "pass": true,
+   "finish": "stop",
+   "tail": "        counts[number] = counts.get(number, 0) + 1 |  |     return [number for number in numbers if counts[number] == 1] | ```"
+  },
+  {
+   "i": 27,
+   "task": "flip_case",
+   "pass": true,
+   "finish": "stop",
+   "tail": "to uppercase and uppercase to lowercase. |     >>> flip_case('Hello') |     'hELLO' |     \"\"\" |     return string.swapcase() | ```"
+  },
+  {
+   "i": 28,
+   "task": "concatenate",
+   "pass": true,
+   "finish": "stop",
+   "tail": "ng |     >>> concatenate([]) |     '' |     >>> concatenate(['a', 'b', 'c']) |     'abc' |     \"\"\" |     return ''.join(strings) | ```"
+  },
+  {
+   "i": 29,
+   "task": "filter_by_prefix",
+   "pass": true,
+   "finish": "stop",
+   "tail": "', 'bcd', 'cde', 'array'], 'a') |     ['abc', 'array'] |     \"\"\" |     return [s for s in strings if s.startswith(prefix)] | ```"
+  }
+ ]
+}

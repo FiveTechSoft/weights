@@ -76,11 +76,24 @@ def mock_response_for(call, realistic=False):
     if not realistic:
         return DEFAULT_MOCK
     cmd = call.split(":", 1)[1] if ":" in call else call
-    # Si el comando busca algo especifico no existente en el root mock:
-    if any(k in cmd for k in ["snakemake", "workflow_probe", "robotics", "IK.py", "ik.cpp", "bandit"]):
-        return f"[mock harness] executed: exit code 1.\nbash: {cmd.split()[0] if cmd.split() else 'file'}: No such file or directory"
-    if "EXIT:$?" in cmd or "echo $?" in cmd:
-        return "[mock harness] executed: ok. stdout captured:\nEXIT:1"
+    cmd_clean = cmd.strip()
+
+    # Si es un probe de echo o de retorno de estado:
+    if "EXIT:$?" in cmd_clean or "echo $?" in cmd_clean or "EXIT=$?" in cmd_clean:
+        return "[mock harness] executed: ok. stdout captured:\nEXIT:0"
+    m_echo = re.findall(r'echo\s+["\']?([^"\';&|]+)["\']?', cmd_clean)
+    if m_echo:
+        echo_out = "\n".join(m.strip() for m in m_echo)
+        return f"[mock harness] executed: ok. stdout captured:\n{echo_out}"
+
+    if "pwd" in cmd_clean.split() or cmd_clean == "pwd":
+        return "[mock harness] executed: ok. stdout captured:\n/app"
+
+    # Si el comando busca archivos inexistentes en el root mock:
+    if any(k in cmd_clean for k in ["snakemake", "workflow_probe", "robotics", "IK.py", "ik.cpp", "bandit"]):
+        first_token = cmd_clean.split()[0] if cmd_clean.split() else "bash"
+        return f"[mock harness] executed: exit code 1.\nbash: {first_token}: No such file or directory"
+
     return DEFAULT_MOCK
 
 

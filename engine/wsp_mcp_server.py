@@ -7,6 +7,22 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("wsp-challenge")
 ENGINE = r"C:\weights\engine\challenge.py"
+WSP_TOOL = r"C:\weights\wsp.py"
+
+
+def _wsp(fn, *args, **kw):
+    """Llama a una funcion de wsp.py en proceso (peek|poke)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("wsp", WSP_TOOL)
+    mod = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(mod)
+    except Exception as e:
+        return {"error": str(e)[:600]}
+    try:
+        return {"salida": str(getattr(mod, fn)(*args[1:]))}
+    except Exception as e:
+        return {"error": str(e)[:600]}
 
 
 def _run(*args):
@@ -64,6 +80,25 @@ def record_verdict(candidato: str, verdict: str, notas: str = "") -> dict:
 def engine_status() -> dict:
     """Estado del nivel/estado general del currículo."""
     return _run("estado")
+
+
+@mcp.tool()
+def peek_weight(gguf: str, tensor: str, row: int = "", col: int = "", top: int = 10) -> dict:
+    """`peek()`: leer un peso (o la anatomía de un tensor) SIN modificarlo.
+    gguf: ruta del modelo (o de un candidato en servidos/). tensor: nombre del tensor.
+    row/col: índice de la fila/columna a inspeccionar. top: top-k por norma de fila/columna."""
+    return _wsp("peek", gguf, tensor,
+                row=int(row) if row else None,
+                col=int(col) if col else None,
+                k=int(top))
+
+
+@mcp.tool()
+def poke_weight(gguf: str, tensor: str, row: int, col: int, value: float, out: str = "") -> dict:
+    """`poke()`: perturbar UN peso individual (requantiza solo su bloque; sin colateral).
+    value: valor de destino (en magnitud absoluta, no delta). out: ruta de salida (o '' = archivo .poke-*.gguf)."""
+    return _wsp("poke", gguf, tensor, str(row), str(col), str(value),
+                out=out if out else None)
 
 
 if __name__ == "__main__":

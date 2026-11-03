@@ -1,0 +1,46 @@
+[
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 15,
+  "calls": [
+   "bash:find /app -maxdepth 2 -type f | head -50",
+   "bash:ls /app/vendor/snakemake/",
+   "bash:ls -R /app/vendor/snakemake/ | head -60",
+   "bash:ls /app/",
+   "bash:ls -la /app/vendor/snakemake/",
+   "bash:ls -la /app/",
+   "bash:pwd; echo \"---\"; ls -la /app/vendor/snakemake/ 2>&1; echo \"---\"; ls -la /app/ 2>&1",
+   "bash:pwd",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/ && echo \"=== vendor ===\" && ls -la /app/vendor/ 2>&1 && echo \"=== snakemake ===\" && ls -la /app/vendor/snakemake/ 2>&1",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/"
+  ],
+  "diversity": 0.6,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/' x7"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0036-software-data-engineering",
+  "config": "general"
+ }
+]
