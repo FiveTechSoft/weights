@@ -121,3 +121,9 @@ Estado actual del MCP: **funcionando sobre stdio con cliente real de la lib; req
 - E2 capture_residual.py → dirección u de repetición real → candidato E2 (con residuos reales: método fiel al blog).
 - Fix P5 batería blog (prompt más directo + parser alternativo de asignaciones).
 - Realizar el reinicio de opencode + confirmación de tools MCP dentro de las sesiones del agente driver.
+
+## 2sex. toy_bench: escritura de pesos from-scratch con verificacion 200 ejemplos (inspiracion csinva autoresearch)
+
+- Motor: `toy_bench/mini_toy.py` (mini transformer torch no-causal + scorer exact-match 200 ejemplos seed 42).
+- Programa demo hand-written `hand-parity-v1` (estilo csinva: value-attention escala x11 -> N; 10 ReLUs exactas para floor(N/2) por parejas; unembed sesgo +6p): **acc 100% (200/200)** sin entrenamiento.
+- CSV log `retos/toy_results.csv`. P5 (escribir pesos) tiene ahora via ejecutable y barrera mecanica.
