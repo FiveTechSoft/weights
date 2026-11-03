@@ -1,13 +1,17 @@
 """Servidor MCP para el WSP Challenge Engine (stdio; opencode lo lanza)."""
 import json
+import platform
 import subprocess
 import sys
+from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("wsp-challenge")
-ENGINE = r"C:\weights\engine\challenge.py"
-WSP_TOOL = r"C:\weights\wsp.py"
+_ROOT = Path(__file__).resolve().parent.parent
+ENGINE = _ROOT / "engine" / "challenge.py"
+WSP_TOOL = _ROOT / "wsp.py"
+_CREATION_FLAGS = {"creationflags": 0x08000000} if platform.system() == "Windows" else {}
 
 
 def _wsp(fn, *args, **kw):
@@ -30,8 +34,8 @@ def _wsp(fn, *args, **kw):
 
 
 def _run(*args):
-    p = subprocess.run([sys.executable, ENGINE, *args], capture_output=True, text=True, timeout=1800,
-                       cwd=r"C:\weights", stdin=subprocess.DEVNULL, creationflags=0x08000000)
+    p = subprocess.run([sys.executable, str(ENGINE), *args], capture_output=True, text=True, timeout=1800,
+                       cwd=str(_ROOT), stdin=subprocess.DEVNULL, **_CREATION_FLAGS)
     if p.returncode != 0:
         return {"error": p.stderr[-400:]}
     try:
@@ -124,7 +128,7 @@ def run_wsplang(program_path: str, execute: bool = True, gguf: str = "") -> dict
     program_path: ruta al archivo .wspl.
     execute: si es True, ejecuta interactivamente los pasos y devuelve áreas semánticas."""
     import importlib.util
-    spec = importlib.util.spec_from_file_location("wsplang", r"C:\weights\engine\wsplang.py")
+    spec = importlib.util.spec_from_file_location("wsplang", str(_ROOT / "engine" / "wsplang.py"))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     prog_file = Path(program_path)

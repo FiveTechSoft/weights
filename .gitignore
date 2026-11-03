@@ -11,6 +11,8 @@ logs/
 .venv/
 # venv de huggingface_hub (solo herramientas de descarga)
 .venv-hf/
+# venv local para el servidor MCP (mcp<2 + gguf)
+.venv-mcp/
 # manifiestos gigantes de retos (regenerables)
 retos/sellados/*.LOCKED
 data/ffn_down_1719.npz

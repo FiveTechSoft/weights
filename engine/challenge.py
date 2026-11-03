@@ -14,6 +14,8 @@ CLI JSON-print:
 """
 import argparse
 import json
+import os
+import platform
 import subprocess
 import sys
 import time
@@ -23,7 +25,7 @@ import numpy as np
 import gguf
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
-ROOT = Path(r"C:\weights")
+ROOT = Path(__file__).resolve().parent.parent
 RETOS = ROOT / "retos"
 CATALOGO = RETOS / "wsp40.json"
 EXP = RETOS / "expedientes"
@@ -33,8 +35,9 @@ RIG = ROOT / "rig_runs"
 for d in (EXP, SELLADOS):
     d.mkdir(parents=True, exist_ok=True)
 
-MODELO = r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf"
-BASE = r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf"
+MODELO = os.environ.get("WSP_MODELO_GGUF", r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf")
+BASE = os.environ.get("WSP_BASE_GGUF", r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+_CREATION_FLAGS = {"creationflags": 0x08000000} if platform.system() == "Windows" else {}
 
 
 def _log(event, **kw):
@@ -355,7 +358,7 @@ def judge_toy(ans, spec):
     r = subprocess.run([sys.executable, str(ROOT / "toy_bench" / "mini_toy.py"),
                         "--task", task, *(["--program", program] if program else [])],
                        capture_output=True, text=True, timeout=1200,
-                       cwd=str(ROOT), stdin=subprocess.DEVNULL, creationflags=0x08000000)
+                       cwd=str(ROOT), stdin=subprocess.DEVNULL, **_CREATION_FLAGS)
     out = r.stdout
     try:
         acc = float(out.split("ACC")[1].split()[0])

@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
-ROOT = Path(r"C:\weights")
+ROOT = Path(__file__).resolve().parents[1]
 DIR_PL = ROOT / "retos" / "wsplang"
 DIR_PL.mkdir(parents=True, exist_ok=True)
 
