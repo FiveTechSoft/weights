@@ -1,0 +1,128 @@
+[
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:find /app -maxdepth 2 -type f | head -50",
+   "bash:ls /app/vendor/snakemake/",
+   "bash:ls -R /app/vendor/snakemake/src | head -60; echo ---; ls /app/vendor/snakemake/config",
+   "bash:cat /app/workflow_probe.py 2>/dev/null || echo MISSING",
+   "bash:ls -la /app; echo ---; ls -la /app/vendor/snakemake/src",
+   "bash:ls /app",
+   "bash:ls -a /app",
+   "bash:ls -la /app/",
+   "bash:find /app -maxdepth 3 -print | sort",
+   "bash:ls -R /app/vendor/snakemake/src",
+   "bash:ls -la /app/vendor/snakemake/src/",
+   "bash:ls /app/vendor/snakemake/src/ ; echo \"EXIT:$?\"",
+   "bash:ls /app/vendor/snakemake/src/ 2>&1; echo \"EXIT:$?\"",
+   "bash:ls /app/vendor/snakemake/src/ 2>&1; echo \"EXIT:$?\""
+  ],
+  "diversity": 0.93,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0036-software-data-engineering",
+  "config": "general"
+ },
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:ls /app/vendor/robotics-toolbox-python",
+   "bash:ls /app/tools/ 2>/dev/null; ls /app/",
+   "bash:ls -la /app/; find /app -maxdepth 3 -name \"run_validation.py\" 2>/dev/null",
+   "bash:find /app/vendor/robotics-toolbox-python/src -name \"IK.py\" -o -name \"ik.cpp\" | head",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/ 2>/dev/null | head -30; echo \"---\"; ls /app/vendor/robotics-toolbox-python/src/roboticstoolbox/",
+   "bash:find /app/vendor/robotics-toolbox-python -maxdepth 2 | head -50",
+   "bash:ls -la /app/vendor/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/ ; echo \"===\"; ls -la /app/vendor/robotics-toolbox-python/src/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/ ; echo \"=== src ===\"; ls -la /app/vendor/robotics-toolbox-python/src/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/ ; echo \"=== src ===\"; ls -la /app/vendor/robotics-toolbox-python/src/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/ ; echo \"=== src ===\"; ls -la /app/vendor/robotics-toolbox-python/src/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/ ; echo \"=== src ===\"; ls -la /app/vendor/robotics-toolbox-python/src/",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/ ; echo \"=== src ===\"; ls -la /app/vendor/robotics-toolbox-python/src/"
+  ],
+  "diversity": 0.71,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/robotics-toolbox-python/ ;' x5"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0109-science-robotics",
+  "config": "general"
+ },
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:find /app -maxdepth 2 -type f | head -50; echo \"---\"; ls -la /app",
+   "bash:cat /app/CONTRACT.md 2>/dev/null; echo \"===\"; cat /app/run_scan.py 2>/dev/null",
+   "bash:ls -la /; echo \"---\"; ls -la /app 2>/dev/null; echo \"---\"; pwd",
+   "bash:ls /app",
+   "bash:echo test",
+   "bash:ls -la /app 2>&1 | head -30",
+   "bash:ls -la /app > /tmp/out.txt 2>&1; cat /tmp/out.txt",
+   "bash:echo hello",
+   "bash:echo hello",
+   "bash:echo hello",
+   "bash:echo hello",
+   "bash:echo hello",
+   "bash:echo hello",
+   "bash:echo hello"
+  ],
+  "diversity": 0.57,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:echo hello' x7"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0260-security-appsec",
+  "config": "general"
+ }
+]
