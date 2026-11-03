@@ -119,5 +119,47 @@
   ],
   "id": "general-50-candidate-2517-software-data-engineering",
   "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:find /app -maxdepth 2 -type d | head -50; echo \"---\"; ls -la /app",
+   "bash:ls -la /app/vendor/paramiko 2>/dev/null | head -40",
+   "bash:ls -la /app; echo \"---\"; ls -la /app/src; echo \"---\"; ls -la /app/config",
+   "bash:ls -la /app && echo \"=== SRC ===\" && ls -la /app/src && echo \"=== CONFIG ===\" && ls -la /app/config",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; cat /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt; cat /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt; cat /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt; cat /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt; cat /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt; cat /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt; cat /tmp/out1.txt",
+   "bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/out1.txt; cat /tmp/out1.txt"
+  ],
+  "diversity": 0.54,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app > /tmp/out1.txt 2>&1; wc -c /tmp/' x7"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-50-candidate-2535-security-cryptography",
+  "config": "general"
  }
 ]
