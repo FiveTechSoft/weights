@@ -127,3 +127,11 @@ Estado actual del MCP: **funcionando sobre stdio con cliente real de la lib; req
 - Motor: `toy_bench/mini_toy.py` (mini transformer torch no-causal + scorer exact-match 200 ejemplos seed 42).
 - Programa demo hand-written `hand-parity-v1` (estilo csinva: value-attention escala x11 -> N; 10 ReLUs exactas para floor(N/2) por parejas; unembed sesgo +6p): **acc 100% (200/200)** sin entrenamiento.
 - CSV log `retos/toy_results.csv`. P5 (escribir pesos) tiene ahora via ejecutable y barrera mecanica.
+
+## 2sept. Familia toy del WSP-40 (retos escritura de pesos) — 12/43
+
+Arquitectura toy_ampliada (toy_bench/mini_toy.py): atencion con Q/K/V positional (rutas tipo reversal posibles), passthrough N, 12x6 MLP + unembed; programa del driver = set_weights(net, task) sin train. Juez mecanico 'toy' (juega mini_toy con 200 ejemplos seed 42; PASS >= 0.97):
+- toy-41 parity: PASS 10.0 (programa hand del driver, acc 1.0)
+- toy-42 count3: PASS 10.0 (programa del driver en retos/toy_count3_ref.py)
+- toy-43 geq3: PASS 10.0 (retos/toy_geq3_prog.py)
+Retos aprobados: 12 (01-09 lectura + 41-43 escritura). Referencia: csinva/weight-space-programming-autoresearch (sin licencia: solo patrones, no copiar codigo).
