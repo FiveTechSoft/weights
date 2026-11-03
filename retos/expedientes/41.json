@@ -1,0 +1,22 @@
+{
+ "id": "41",
+ "intentos": 2,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "14:53:53",
+   "score": 10.0,
+   "pass": true,
+   "detalle": ""
+  },
+  {
+   "ts": "14:54:22",
+   "score": 10.0,
+   "pass": true,
+   "detalle": ""
+  }
+ ],
+ "score": 10.0,
+ "aprendizaje": "conteo por value-attention + escalera ReLUs",
+ "ts": "2026-11-03T14:54:22"
+}

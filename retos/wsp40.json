@@ -1,67 +1,549 @@
 {
-  "ver": "wsp40-v1",
-  "reglas_globales": {
-    "sin_self_grading": "puntuacion solo contra referencias computadas por el motor en el momento del submit; nunca visibles antes",
-    "holdout_ciego": "Math-500/IFEval/HumanEval/MBPP aguas abajo: el agente no ve golds durante investigacion; sellado 1-ejecucion por candidato+set",
-    "presupuesto": "journal wsp: read<=200, write<=20, fwd<=6 por reto salvo indicacion",
-    "reproducibilidad": "todo experimento con seed fija + registro en expediente",
-    "no_degradacion": "toda intervencion exige no-regresion en los holdouts del nivel"
+ "ver": "wsp40-v1",
+ "reglas_globales": {
+  "sin_self_grading": "puntuacion solo contra referencias computadas por el motor en el momento del submit; nunca visibles antes",
+  "holdout_ciego": "Math-500/IFEval/HumanEval/MBPP aguas abajo: el agente no ve golds durante investigacion; sellado 1-ejecucion por candidato+set",
+  "presupuesto": "journal wsp: read<=200, write<=20, fwd<=6 por reto salvo indicacion",
+  "reproducibilidad": "todo experimento con seed fija + registro en expediente",
+  "no_degradacion": "toda intervencion exige no-regresion en los holdouts del nivel"
+ },
+ "etapas": {
+  "A": {
+   "modelo": "Qwen3.5-0.8B",
+   "retos": "01-22",
+   "nota": "desarrollar y depurar el sistema barato"
   },
-  "etapas": {
-    "A": {"modelo": "Qwen3.5-0.8B", "retos": "01-22", "nota": "desarrollar y depurar el sistema barato"},
-    "B": {"modelo": "MiMo-V2.6-Distill-Qwen-9B", "retos": "01-22", "nota": "sin asumir transferencia del 0.8B"},
-    "C": {"modelo": "MiMo 9B", "retos": "23-34"},
-    "D": {"modelo": "MiMo 9B", "retos": "35-40"}
+  "B": {
+   "modelo": "MiMo-V2.6-Distill-Qwen-9B",
+   "retos": "01-22",
+   "nota": "sin asumir transferencia del 0.8B"
   },
-  "retos": [
-    {"id": "01", "nivel": 1, "titulo": "reconocer dimensiones", "objetivo": "relacion tensores/arquitectura: dims exactas de 4 tensores", "datos": "gguf elegido por etapa", "herramientas": "wsp info/tensors", "criterio": "juez dims: match exacto de shapes", "aprendizaje": "mapear nomenclatura llama.cpp->arquitectura (atencion cada 4 capas, GDN resto)", "juez": {"kind": "dims", "tensors": ["token_embd.weight", "blk.7.attn_q.weight", "blk.5.ffn_down.weight", "output.weight"]}},
-    {"id": "02", "nivel": 1, "titulo": "identificar embeddings", "objetivo": "vocab size y filas de token_embd (sin fwd)", "datos": "gguf", "herramientas": "wsp info rows", "criterio": "juez emb_vocab", "aprendizaje": "_embeddings=vocab xd; padding rows detection", "juez": {"kind": "emb_vocab"}},
-    {"id": "03", "nivel": 1, "titulo": "localizar matrices MLP", "objetivo": "n lanes ffn por capa y dims de gate/up/down", "datos": "gguf", "herramientas": "wsp tensors", "criterio": "juez mlp_map", "aprendizaje": "estructura de bloque transformer", "juez": {"kind": "mlp_map"}},
-    {"id": "04", "nivel": 1, "titulo": "analizar normas", "objetivo": "ordenar 6 tensores por L2 total", "datos": "gguf", "herramientas": "wsp stats", "criterio": "juez norms (orden <=1 inversion)", "aprendizaje": "donde vive la masa paramétrica", "juez": {"kind": "norms", "tensors": ["token_embd.weight", "output.weight", "blk.7.attn_q.weight", "blk.5.ffn_down.weight", "blk.5.ffn_gate.weight", "blk.11.attn_output.weight"]}},
-    {"id": "05", "nivel": 1, "titulo": "detectar valores anomalous", "objetivo": "top-10 filas outliers de un tensor", "datos": "gguf", "herramientas": "wsp stats/delta", "criterio": "juez outliers (jaccard>=0.3)", "aprendizaje": "interfaces de outliers como señal", "juez": {"kind": "outliers", "tensor": "output.weight"}},
-    {"id": "06", "nivel": 1, "titulo": "comparar dos checkpoints", "objetivo": "familia de max drift y capa top", "datos": "base vs distill", "herramientas": "wsp delta", "criterio": "juez delta_magnitud", "aprendizaje": "footprint de la destilacion", "juez": {"kind": "delta_magnitud"}},
-    {"id": "07", "nivel": 1, "titulo": "reconocer capas similares", "objetivo": "2 pares de capas con perfil normativo mas similar", "datos": "gguf", "herramientas": "wsp stats", "criterio": "juez similarity (par correspondiente >=1)", "aprendizaje": "anatomia por profundidad", "juez": {"kind": "similarity"}},
-    {"id": "08", "nivel": 1, "titulo": "identificar cabezas", "objetivo": "n heads/kv heads + dims head en la metadata", "datos": "gguf", "herramientas": "metadata gguf", "criterio": "juez heads", "aprendizaje": "GQA y geometria de cabezas", "juez": {"kind": "heads"}},
-    {"id": "09", "nivel": 1, "titulo": "analizar activaciones", "objetivo": "predecir top-3 tokens afines a un embedding dado (similaridad cos en token_embd, SIN fwd)", "datos": "gguf + vocab", "herramientas": "wsp rows + python local", "criterio": "juez emb_neighbors (>=2/3)", "aprendizaje": "embeddings son un espacio semantico", "juez": {"kind": "emb_neighbors", "seed_ids": [183953, 90728, 69079]}},
-    {"id": "10", "nivel": 1, "titulo": "pesos->comportamiento", "objetivo": "hipotesis mecanica estructurada verificable del forward-path", "datos": "todo", "herramientas": "todas read", "criterio": "juez estructura (campos obligatorios)", "aprendizaje": "proces cientifico: hipotesis falsable+evidencia opuesta", "juez": {"kind": "estructura"}},
-
-    {"id": "11", "nivel": 2, "titulo": "neuronas de idioma", "objetivo": "identificar token rows de vocab cjk/thai con drift", "datos": "base vs distill + vocab", "herramientas": "wsp delta/rows", "criterio": "juez lang_rows", "aprendizaje": "especializacion en embeddings", "juez": {"kind": "lang_rows", "min_match": 3}},
-    {"id": "12", "nivel": 2, "titulo": "patrones de repeticion", "objetivo": "caracterizar tokens marcadores (markers.json): ids + contios vs base", "datos": "ddatasets + gguf", "herramientas": "wsp markers/delta", "criterio": "juez markers", "aprendizaje": "los markers agentic son una familia medible", "juez": {"kind": "markers"}},
-    {"id": "13", "nivel": 2, "titulo": "activaciones anomalous", "objetivo": "filas compartidas entre capas (drift comun) y su rango de significancia", "datos": "base vs distill", "herramientas": "wsp delta", "criterio": "juez shared_rows", "aprendizaje": "correlacion-vs-causalidad", "juez": {"kind": "shared_rows"}},
-    {"id": "14", "nivel": 2, "titulo": "componentes de instrucciones", "objetivo": "identificar tensore familiar asociado a tokens de instruccion (<think>, function=...)", "datos": "base vs distill + vocab", "herramientas": "wsp delta + markers", "criterio": "juez instr_family", "aprendizaje": "componente para comportamiento: no prueba causalidad", "juez": {"kind": "instr_family"}},
-    {"id": "15", "nivel": 2, "titulo": "razonamiento vs fallo", "objetivo": "diferencia rig diag vs rig loop: que familias cambian entre exito y (que) fracaso", "datos": "rig_runs", "herramientas": "wsp + rig stats", "criterio": "juez rig_contrast", "aprendizaje": "metricas de comportamiento son la fuente", "juez": {"kind": "rig_contrast"}},
-    {"id": "16", "nivel": 2, "titulo": "circuitos candidatos", "objetivo": "dibujar circuito candidato: capa ffn_down top + mask top-k col criterio", "datos": "gguf + diag", "herramientas": "wsp del_RESPUESTAES", "criterio": "juez circuito (campos). Future: extend machinery 1-layer activation probe", "aprendizaje": "de correlacion a protocolo de intervencion", "juez": {"kind": "estructura"}},
-
-    {"id": "17", "nivel": 3, "titulo": "neutralizar anomalous", "objetivo": "ablate/scale una anomaly local (e/o tensores elegidos) y no romper features basicas", "datos": "gguf + smoke set", "herramientas": "wsp edit scale-rows + eval", "criterio": "diff>0 + smoke eval no-degradado (>=90% del baseline)", "aprendizaje": "seguridad medible en ediciones"},
-    {"id": "18", "nivel": 3, "titulo": "reducir direccion dominante", "objetivo": "subtract-direction en 1 capa vol. del propio modelo (target_frac 0.01-0.02): efecto medible y reversible", "datos": "gguf", "herramientas": "wsp edit subtract-direction + rig", "criterio": "diagnostic Numero de pesos editados + diff sano + diag eval", "aprendizaje": "proyecciones rank-1 chirurgicas"},
-    {"id": "19", "nivel": 3, "titulo": "ablation controlada", "objetivo": " Lentidón de 16-64 columnas en una capa: medir efecto en diag y en 1 holdout smoke", "datos": "gguf", "herramientas": "wsp edit scale-cols + eval", "criterio": "regresiones: >=1 metrica impactada sin romper",
-    "aprendizaje": "ablations localizan funciones"},
-    {"id": "20", "nivel": 3, "titulo": "recuperar capacidad", "objetivo": "blend-rows-toward que recupere capacidad caída de un modelo degradado (usar variantes de synth como paquete)", "datos": "synth q6 variants + base", "herramientas": "wsp edit blend-rows", "criterio": "mejora sobre variante degradada sin tocar subej", "aprendizaje": "restauracion como herramienta"},
-    {"id": "21", "nivel": 3, "titulo": "dry run 2 mods", "objetivo": "ORMS comparar 2 edits con mismo budget: seleccion por criterio dual", "datos": "gguf", "herramientas": "wsp edit x2 + eval", "criterio": "decision con argumentación cuantitativa", "aprendizaje": "metodo de comparación honesta"},
-    {"id": "22", "nivel": 3, "titulo": "minima modificacion", "objetivo": "mismo efecto con menos pesos (eficiencia parametrica)", "datos": "gguf", "herramientas": "wsp edit + diff", "criterio": "redistribucion de pesos < 50% del edit original con efecto marino igual", "aprendizaje": "penal: pesos no son gratis"},
-
-    {"id": "23", "nivel": 4, "titulo": "transferencia", "objetivo": "mejorre 1 tarea y verificar otra NO cae", "datos": "diag + holdout smoke", "herramientas": "motor sellado", "criterio": "sellado dual no-regresivo", "aprendizaje": "interferencia tokenizer-space"},
-    {"id": "24", "nivel": 4, "titulo": "deteccion de sobreajuste", "objetivo": "detectar que una mejora no generaliza (diag vs holdout gap)", "datos": "motor sellado", "herramientas": "motor con ambos sets", "criterio": "identificar gap absentee", "aprendizaje": "distincion entrenamiento-evaluacion"},
-    {"id": "25", "nivel": 4, "titulo": "preservacion linguistica", "objetivo": "mejorar matematicas SIN conectar tokens multilingüe (pensar medições en el vocab cannot)", "datos": "sets idioma sintetico", "herramientas": " następne+ eval", "criterio": "keep-if-better + latin tokens evalu no-degrad", "aprendizaje": "interferencia por espacio de token"},
-    {"id": "26", "nivel": 4, "titulo": "robustez semilla", "objetivo": "3 seeds replicación del mismo edit: estadistica de efecto", "datos": "rig evaluator", "herramientas": "eval_harness seed param", "criterio": "std/mean del delta<=0.4 exclusion", "aprendizaje": "varianza de medición pesa"},
-    {"id": "27", "nivel": 4, "titulo": "parcificar modificación", "objetivo": "construir instinion iguales area mas simula", "datos": "motor", "herramientas": "wsp edits", "criterio": "minima الدين 'touched' con efecto >=", "aprendizaje": "arquitectura de censorship"},
-
-    {"id": "28", "nivel": 5, "titulo": "matematicas", "objetivo": "mejorar math sin degradar code/IF (candidato real del protocolo PROTOCOL.md)", "datos": "GSM8K diag + MATH-500 seal", "herramientas": "todo el toolkit", "criterio": "sellado triple PASS", "aprendizaje": "el objetivo principal del proyecto"},
-    {"id": "29", "nivel": 5, "titulo": "programacion", "objetivo": "mejorar code (HumanEval/MBPP) sin degradar math", "datos": "HumanEval + MBPP + math seal", "herramientas": "runner code", "criterio": "sellado code PASS + math no-deg", "aprendizaje": "operandos code"},
-    {"id": "30", "nivel": 5, "titulo": "instrucciones", "objetivo": "mejorar IFEval sin degradar nada", "datos": "IFEval", "herramientas": "runner ifeval", "criterio": "IFEval >= +5 + no-deg", "aprendizaje": "adherencia instruccional"},
-    {"id": "31", "nivel": 5, "titulo": "planificacion", "objetivo": "reducir loops del harness agentic (metrica rig loops) sin degradar nada", "datos": "rl_oss agentic", "herramientas": "eval harness agentic", "criterio": "loop-rate < baseline-15pts + math no-deg", "aprendizaje": "agentic competency"},
-
-    {"id": "32", "nivel": 6, "titulo": "degradación silenciosa", "objetivo": "detectar suspicious regression no visible en 1 set: contra-mains check", "datos": "cross-set", "herramientas": "motor sellado multi-set", "criterio": "reportar regression identificada en holdout no analizado antes", "aprendizaje": "auditoría multi-espacio"},
-    {"id": "33", "nivel": 6, "titulo": "adversarial", "objetivo": "tokens fuera de vocab/текст extraños: robustez de un edit vs otro", "datos": "set adversarial sintet", "herramientas": "eval", "criterio": "delta adversarial menos para el candidato elegido", "aprendizaje": "robustez"},
-    {"id": "34", "nivel": 6, "titulo": "acumulación", "objetivo": "3 ediciones sucesivas apiladas: comprobar que no suman errores", "datos": "motor", "herramientas": "wsp edit branch stack", "criterio": "apilado == sumatorio en efecto medido sin regresiones", "aprendizaje": "componibilidad"},
-
-    {"id": "35", "nivel": 7, "titulo": "hipotesis propias", "objetivo": "formular y testear una hipotesis NUEVA no en el catalogo", "datos": "libre", "herramientas": "todo", "criterio": "prediccion falsable + experimento + veredicto", "aprendizaje": "bucle cientifico completo"},
-    {"id": "36", "nivel": 7, "titulo": "experimento discriminativo", "objetivo": "disenar experimento que distinga 2 explicaciones rivales de un mismo comportamiento", "datos": "libre", "herramientas": "todo", "criterio": "predicciones DIF y ejecución", "aprendizaje": "lab experimental discriminante (cite libro de Wu)"},
-    {"id": "37", "nivel": 7, "titulo": "aprender de fallos", "objetivo": "extraer principio desde experimentos fallidos (knowledge transfer)", "datos": "expedientes", "herramientas": "motor historial", "criterio": "principio formal articulado + predice nueva situación", "aprendizaje": "meta-aprendizaje"},
-
-    {"id": "38", "nivel": 8, "titulo": "defecto no especificado", "objetivo": "encuentra DEFECTO DEL MODELO no catalogado aquí", "datos": "libre", "herramientas": "todo", "criterio": "e demostrar con evidencia no reportada", "aprendizaje": "descubrimiento"},
-    {"id": "39", "nivel": 8, "titulo": "capacidad mejorable", "objetivo": "proponer mejora abierta + budget propio", "datos": "libre", "herramientas": "todo", "criterio": "candidato + sellado", "aprendizaje": "agenda abierta"},
-    {"id": "40", "nivel": 8, "titulo": "campaña iterativa", "objetivo": "campaña completa: diag > hip > edit > sellada > next", "datos": "libre", "herramientas": "todo", "criterio": "≥2 candidatos evaluados con holdout sellado y keep >=1", "aprendizaje": "RSI-shape"}
-  ]
+  "C": {
+   "modelo": "MiMo 9B",
+   "retos": "23-34"
+  },
+  "D": {
+   "modelo": "MiMo 9B",
+   "retos": "35-40"
+  }
+ },
+ "retos": [
+  {
+   "id": "01",
+   "nivel": 1,
+   "titulo": "reconocer dimensiones",
+   "objetivo": "relacion tensores/arquitectura: dims exactas de 4 tensores",
+   "datos": "gguf elegido por etapa",
+   "herramientas": "wsp info/tensors",
+   "criterio": "juez dims: match exacto de shapes",
+   "aprendizaje": "mapear nomenclatura llama.cpp->arquitectura (atencion cada 4 capas, GDN resto)",
+   "juez": {
+    "kind": "dims",
+    "tensors": [
+     "token_embd.weight",
+     "blk.7.attn_q.weight",
+     "blk.5.ffn_down.weight",
+     "output.weight"
+    ]
+   }
+  },
+  {
+   "id": "02",
+   "nivel": 1,
+   "titulo": "identificar embeddings",
+   "objetivo": "vocab size y filas de token_embd (sin fwd)",
+   "datos": "gguf",
+   "herramientas": "wsp info rows",
+   "criterio": "juez emb_vocab",
+   "aprendizaje": "_embeddings=vocab xd; padding rows detection",
+   "juez": {
+    "kind": "emb_vocab"
+   }
+  },
+  {
+   "id": "03",
+   "nivel": 1,
+   "titulo": "localizar matrices MLP",
+   "objetivo": "n lanes ffn por capa y dims de gate/up/down",
+   "datos": "gguf",
+   "herramientas": "wsp tensors",
+   "criterio": "juez mlp_map",
+   "aprendizaje": "estructura de bloque transformer",
+   "juez": {
+    "kind": "mlp_map"
+   }
+  },
+  {
+   "id": "04",
+   "nivel": 1,
+   "titulo": "analizar normas",
+   "objetivo": "ordenar 6 tensores por L2 total",
+   "datos": "gguf",
+   "herramientas": "wsp stats",
+   "criterio": "juez norms (orden <=1 inversion)",
+   "aprendizaje": "donde vive la masa paramétrica",
+   "juez": {
+    "kind": "norms",
+    "tensors": [
+     "token_embd.weight",
+     "output.weight",
+     "blk.7.attn_q.weight",
+     "blk.5.ffn_down.weight",
+     "blk.5.ffn_gate.weight",
+     "blk.11.attn_output.weight"
+    ]
+   }
+  },
+  {
+   "id": "05",
+   "nivel": 1,
+   "titulo": "detectar valores anomalous",
+   "objetivo": "top-10 filas outliers de un tensor",
+   "datos": "gguf",
+   "herramientas": "wsp stats/delta",
+   "criterio": "juez outliers (jaccard>=0.3)",
+   "aprendizaje": "interfaces de outliers como señal",
+   "juez": {
+    "kind": "outliers",
+    "tensor": "output.weight"
+   }
+  },
+  {
+   "id": "06",
+   "nivel": 1,
+   "titulo": "comparar dos checkpoints",
+   "objetivo": "familia de max drift y capa top",
+   "datos": "base vs distill",
+   "herramientas": "wsp delta",
+   "criterio": "juez delta_magnitud",
+   "aprendizaje": "footprint de la destilacion",
+   "juez": {
+    "kind": "delta_magnitud"
+   }
+  },
+  {
+   "id": "07",
+   "nivel": 1,
+   "titulo": "reconocer capas similares",
+   "objetivo": "2 pares de capas con perfil normativo mas similar",
+   "datos": "gguf",
+   "herramientas": "wsp stats",
+   "criterio": "juez similarity (par correspondiente >=1)",
+   "aprendizaje": "anatomia por profundidad",
+   "juez": {
+    "kind": "similarity"
+   }
+  },
+  {
+   "id": "08",
+   "nivel": 1,
+   "titulo": "identificar cabezas",
+   "objetivo": "n heads/kv heads + dims head en la metadata",
+   "datos": "gguf",
+   "herramientas": "metadata gguf",
+   "criterio": "juez heads",
+   "aprendizaje": "GQA y geometria de cabezas",
+   "juez": {
+    "kind": "heads"
+   }
+  },
+  {
+   "id": "09",
+   "nivel": 1,
+   "titulo": "analizar activaciones",
+   "objetivo": "predecir top-3 tokens afines a un embedding dado (similaridad cos en token_embd, SIN fwd)",
+   "datos": "gguf + vocab",
+   "herramientas": "wsp rows + python local",
+   "criterio": "juez emb_neighbors (>=2/3)",
+   "aprendizaje": "embeddings son un espacio semantico",
+   "juez": {
+    "kind": "emb_neighbors",
+    "seed_ids": [
+     183953,
+     90728,
+     69079
+    ]
+   }
+  },
+  {
+   "id": "10",
+   "nivel": 1,
+   "titulo": "pesos->comportamiento",
+   "objetivo": "hipotesis mecanica estructurada verificable del forward-path",
+   "datos": "todo",
+   "herramientas": "todas read",
+   "criterio": "juez estructura (campos obligatorios)",
+   "aprendizaje": "proces cientifico: hipotesis falsable+evidencia opuesta",
+   "juez": {
+    "kind": "estructura"
+   }
+  },
+  {
+   "id": "11",
+   "nivel": 2,
+   "titulo": "neuronas de idioma",
+   "objetivo": "identificar token rows de vocab cjk/thai con drift",
+   "datos": "base vs distill + vocab",
+   "herramientas": "wsp delta/rows",
+   "criterio": "juez lang_rows",
+   "aprendizaje": "especializacion en embeddings",
+   "juez": {
+    "kind": "lang_rows",
+    "min_match": 3
+   }
+  },
+  {
+   "id": "12",
+   "nivel": 2,
+   "titulo": "patrones de repeticion",
+   "objetivo": "caracterizar tokens marcadores (markers.json): ids + contios vs base",
+   "datos": "ddatasets + gguf",
+   "herramientas": "wsp markers/delta",
+   "criterio": "juez markers",
+   "aprendizaje": "los markers agentic son una familia medible",
+   "juez": {
+    "kind": "markers"
+   }
+  },
+  {
+   "id": "13",
+   "nivel": 2,
+   "titulo": "activaciones anomalous",
+   "objetivo": "filas compartidas entre capas (drift comun) y su rango de significancia",
+   "datos": "base vs distill",
+   "herramientas": "wsp delta",
+   "criterio": "juez shared_rows",
+   "aprendizaje": "correlacion-vs-causalidad",
+   "juez": {
+    "kind": "shared_rows"
+   }
+  },
+  {
+   "id": "14",
+   "nivel": 2,
+   "titulo": "componentes de instrucciones",
+   "objetivo": "identificar tensore familiar asociado a tokens de instruccion (<think>, function=...)",
+   "datos": "base vs distill + vocab",
+   "herramientas": "wsp delta + markers",
+   "criterio": "juez instr_family",
+   "aprendizaje": "componente para comportamiento: no prueba causalidad",
+   "juez": {
+    "kind": "instr_family"
+   }
+  },
+  {
+   "id": "15",
+   "nivel": 2,
+   "titulo": "razonamiento vs fallo",
+   "objetivo": "diferencia rig diag vs rig loop: que familias cambian entre exito y (que) fracaso",
+   "datos": "rig_runs",
+   "herramientas": "wsp + rig stats",
+   "criterio": "juez rig_contrast",
+   "aprendizaje": "metricas de comportamiento son la fuente",
+   "juez": {
+    "kind": "rig_contrast"
+   }
+  },
+  {
+   "id": "16",
+   "nivel": 2,
+   "titulo": "circuitos candidatos",
+   "objetivo": "dibujar circuito candidato: capa ffn_down top + mask top-k col criterio",
+   "datos": "gguf + diag",
+   "herramientas": "wsp del_RESPUESTAES",
+   "criterio": "juez circuito (campos). Future: extend machinery 1-layer activation probe",
+   "aprendizaje": "de correlacion a protocolo de intervencion",
+   "juez": {
+    "kind": "estructura"
+   }
+  },
+  {
+   "id": "17",
+   "nivel": 3,
+   "titulo": "neutralizar anomalous",
+   "objetivo": "ablate/scale una anomaly local (e/o tensores elegidos) y no romper features basicas",
+   "datos": "gguf + smoke set",
+   "herramientas": "wsp edit scale-rows + eval",
+   "criterio": "diff>0 + smoke eval no-degradado (>=90% del baseline)",
+   "aprendizaje": "seguridad medible en ediciones"
+  },
+  {
+   "id": "18",
+   "nivel": 3,
+   "titulo": "reducir direccion dominante",
+   "objetivo": "subtract-direction en 1 capa vol. del propio modelo (target_frac 0.01-0.02): efecto medible y reversible",
+   "datos": "gguf",
+   "herramientas": "wsp edit subtract-direction + rig",
+   "criterio": "diagnostic Numero de pesos editados + diff sano + diag eval",
+   "aprendizaje": "proyecciones rank-1 chirurgicas"
+  },
+  {
+   "id": "19",
+   "nivel": 3,
+   "titulo": "ablation controlada",
+   "objetivo": " Lentidón de 16-64 columnas en una capa: medir efecto en diag y en 1 holdout smoke",
+   "datos": "gguf",
+   "herramientas": "wsp edit scale-cols + eval",
+   "criterio": "regresiones: >=1 metrica impactada sin romper",
+   "aprendizaje": "ablations localizan funciones"
+  },
+  {
+   "id": "20",
+   "nivel": 3,
+   "titulo": "recuperar capacidad",
+   "objetivo": "blend-rows-toward que recupere capacidad caída de un modelo degradado (usar variantes de synth como paquete)",
+   "datos": "synth q6 variants + base",
+   "herramientas": "wsp edit blend-rows",
+   "criterio": "mejora sobre variante degradada sin tocar subej",
+   "aprendizaje": "restauracion como herramienta"
+  },
+  {
+   "id": "21",
+   "nivel": 3,
+   "titulo": "dry run 2 mods",
+   "objetivo": "ORMS comparar 2 edits con mismo budget: seleccion por criterio dual",
+   "datos": "gguf",
+   "herramientas": "wsp edit x2 + eval",
+   "criterio": "decision con argumentación cuantitativa",
+   "aprendizaje": "metodo de comparación honesta"
+  },
+  {
+   "id": "22",
+   "nivel": 3,
+   "titulo": "minima modificacion",
+   "objetivo": "mismo efecto con menos pesos (eficiencia parametrica)",
+   "datos": "gguf",
+   "herramientas": "wsp edit + diff",
+   "criterio": "redistribucion de pesos < 50% del edit original con efecto marino igual",
+   "aprendizaje": "penal: pesos no son gratis"
+  },
+  {
+   "id": "23",
+   "nivel": 4,
+   "titulo": "transferencia",
+   "objetivo": "mejorre 1 tarea y verificar otra NO cae",
+   "datos": "diag + holdout smoke",
+   "herramientas": "motor sellado",
+   "criterio": "sellado dual no-regresivo",
+   "aprendizaje": "interferencia tokenizer-space"
+  },
+  {
+   "id": "24",
+   "nivel": 4,
+   "titulo": "deteccion de sobreajuste",
+   "objetivo": "detectar que una mejora no generaliza (diag vs holdout gap)",
+   "datos": "motor sellado",
+   "herramientas": "motor con ambos sets",
+   "criterio": "identificar gap absentee",
+   "aprendizaje": "distincion entrenamiento-evaluacion"
+  },
+  {
+   "id": "25",
+   "nivel": 4,
+   "titulo": "preservacion linguistica",
+   "objetivo": "mejorar matematicas SIN conectar tokens multilingüe (pensar medições en el vocab cannot)",
+   "datos": "sets idioma sintetico",
+   "herramientas": " następne+ eval",
+   "criterio": "keep-if-better + latin tokens evalu no-degrad",
+   "aprendizaje": "interferencia por espacio de token"
+  },
+  {
+   "id": "26",
+   "nivel": 4,
+   "titulo": "robustez semilla",
+   "objetivo": "3 seeds replicación del mismo edit: estadistica de efecto",
+   "datos": "rig evaluator",
+   "herramientas": "eval_harness seed param",
+   "criterio": "std/mean del delta<=0.4 exclusion",
+   "aprendizaje": "varianza de medición pesa"
+  },
+  {
+   "id": "27",
+   "nivel": 4,
+   "titulo": "parcificar modificación",
+   "objetivo": "construir instinion iguales area mas simula",
+   "datos": "motor",
+   "herramientas": "wsp edits",
+   "criterio": "minima الدين 'touched' con efecto >=",
+   "aprendizaje": "arquitectura de censorship"
+  },
+  {
+   "id": "28",
+   "nivel": 5,
+   "titulo": "matematicas",
+   "objetivo": "mejorar math sin degradar code/IF (candidato real del protocolo PROTOCOL.md)",
+   "datos": "GSM8K diag + MATH-500 seal",
+   "herramientas": "todo el toolkit",
+   "criterio": "sellado triple PASS",
+   "aprendizaje": "el objetivo principal del proyecto"
+  },
+  {
+   "id": "29",
+   "nivel": 5,
+   "titulo": "programacion",
+   "objetivo": "mejorar code (HumanEval/MBPP) sin degradar math",
+   "datos": "HumanEval + MBPP + math seal",
+   "herramientas": "runner code",
+   "criterio": "sellado code PASS + math no-deg",
+   "aprendizaje": "operandos code"
+  },
+  {
+   "id": "30",
+   "nivel": 5,
+   "titulo": "instrucciones",
+   "objetivo": "mejorar IFEval sin degradar nada",
+   "datos": "IFEval",
+   "herramientas": "runner ifeval",
+   "criterio": "IFEval >= +5 + no-deg",
+   "aprendizaje": "adherencia instruccional"
+  },
+  {
+   "id": "31",
+   "nivel": 5,
+   "titulo": "planificacion",
+   "objetivo": "reducir loops del harness agentic (metrica rig loops) sin degradar nada",
+   "datos": "rl_oss agentic",
+   "herramientas": "eval harness agentic",
+   "criterio": "loop-rate < baseline-15pts + math no-deg",
+   "aprendizaje": "agentic competency"
+  },
+  {
+   "id": "32",
+   "nivel": 6,
+   "titulo": "degradación silenciosa",
+   "objetivo": "detectar suspicious regression no visible en 1 set: contra-mains check",
+   "datos": "cross-set",
+   "herramientas": "motor sellado multi-set",
+   "criterio": "reportar regression identificada en holdout no analizado antes",
+   "aprendizaje": "auditoría multi-espacio"
+  },
+  {
+   "id": "33",
+   "nivel": 6,
+   "titulo": "adversarial",
+   "objetivo": "tokens fuera de vocab/текст extraños: robustez de un edit vs otro",
+   "datos": "set adversarial sintet",
+   "herramientas": "eval",
+   "criterio": "delta adversarial menos para el candidato elegido",
+   "aprendizaje": "robustez"
+  },
+  {
+   "id": "34",
+   "nivel": 6,
+   "titulo": "acumulación",
+   "objetivo": "3 ediciones sucesivas apiladas: comprobar que no suman errores",
+   "datos": "motor",
+   "herramientas": "wsp edit branch stack",
+   "criterio": "apilado == sumatorio en efecto medido sin regresiones",
+   "aprendizaje": "componibilidad"
+  },
+  {
+   "id": "35",
+   "nivel": 7,
+   "titulo": "hipotesis propias",
+   "objetivo": "formular y testear una hipotesis NUEVA no en el catalogo",
+   "datos": "libre",
+   "herramientas": "todo",
+   "criterio": "prediccion falsable + experimento + veredicto",
+   "aprendizaje": "bucle cientifico completo"
+  },
+  {
+   "id": "36",
+   "nivel": 7,
+   "titulo": "experimento discriminativo",
+   "objetivo": "disenar experimento que distinga 2 explicaciones rivales de un mismo comportamiento",
+   "datos": "libre",
+   "herramientas": "todo",
+   "criterio": "predicciones DIF y ejecución",
+   "aprendizaje": "lab experimental discriminante (cite libro de Wu)"
+  },
+  {
+   "id": "37",
+   "nivel": 7,
+   "titulo": "aprender de fallos",
+   "objetivo": "extraer principio desde experimentos fallidos (knowledge transfer)",
+   "datos": "expedientes",
+   "herramientas": "motor historial",
+   "criterio": "principio formal articulado + predice nueva situación",
+   "aprendizaje": "meta-aprendizaje"
+  },
+  {
+   "id": "38",
+   "nivel": 8,
+   "titulo": "defecto no especificado",
+   "objetivo": "encuentra DEFECTO DEL MODELO no catalogado aquí",
+   "datos": "libre",
+   "herramientas": "todo",
+   "criterio": "e demostrar con evidencia no reportada",
+   "aprendizaje": "descubrimiento"
+  },
+  {
+   "id": "39",
+   "nivel": 8,
+   "titulo": "capacidad mejorable",
+   "objetivo": "proponer mejora abierta + budget propio",
+   "datos": "libre",
+   "herramientas": "todo",
+   "criterio": "candidato + sellado",
+   "aprendizaje": "agenda abierta"
+  },
+  {
+   "id": "40",
+   "nivel": 8,
+   "titulo": "campaña iterativa",
+   "objetivo": "campaña completa: diag > hip > edit > sellada > next",
+   "datos": "libre",
+   "herramientas": "todo",
+   "criterio": "≥2 candidatos evaluados con holdout sellado y keep >=1",
+   "aprendizaje": "RSI-shape"
+  },
+  {
+   "id": "41",
+   "nivel": 3,
+   "familia": "toy",
+   "titulo": "escribir pesos: parity",
+   "objetivo": "escribe set_weights(net, task) que compute paridad de <=10 bits (200 ejemplos exact)",
+   "datos": "toy_bench",
+   "herramientas": "toy_bench/mini_toy.py",
+   "criterio": "juez toy min_acc>=0.97",
+   "aprendizaje": "conteo por value-attention + escalera ReLUs",
+   "juez": {
+    "kind": "toy",
+    "task": "parity",
+    "min_acc": 0.97
+   }
+  },
+  {
+   "id": "42",
+   "nivel": 3,
+   "familia": "toy",
+   "titulo": "escribir pesos: count3",
+   "objetivo": "output 'S' si count==3 else 'N' (200 ejemplos exact)",
+   "datos": "toy_bench",
+   "herramientas": "toy_bench/mini_toy.py",
+   "criterio": "juez toy min_acc>=0.97",
+   "aprendizaje": "indicadores por parejas de ReLU exactas",
+   "juez": {
+    "kind": "toy",
+    "task": "count3",
+    "min_acc": 0.97
+   }
+  },
+  {
+   "id": "43",
+   "nivel": 3,
+   "familia": "toy",
+   "titulo": "escribir pesos: geq3",
+   "objetivo": "output 'H' si count>=3 else 'N' (200 ejemplos exact)",
+   "datos": "toy_bench",
+   "herramientas": "toy_bench/mini_toy.py",
+   "criterio": "juez toy min_acc>=0.97",
+   "aprendizaje": "umbrales impares exactos",
+   "juez": {
+    "kind": "toy",
+    "task": "geq3",
+    "min_acc": 0.97
+   }
+  }
+ ]
 }
-

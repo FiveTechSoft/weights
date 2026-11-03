@@ -1,3 +1,14 @@
 ts,task,program,n,acc,seed
 2026-11-03T14:31:28,parity-upto10,hand-parity-v1,200,0.48,42
 2026-11-03T14:31:53,parity-upto10,hand-parity-v1,200,1.0,42
+2026-11-03T14:41:42,parity,hand_parity,200,0.0
+2026-11-03T14:42:33,parity,hand_parity,200,0.44
+2026-11-03T14:43:14,parity,hand_parity,200,1.0
+2026-11-03T14:50:30,parity,hand_parity,200,0.52
+2026-11-03T14:51:05,parity,hand_parity,200,1.0
+2026-11-03T14:51:44,count3,toy_count3_ref,200,1.0
+2026-11-03T14:53:52,parity,hand_parity,200,1.0
+2026-11-03T14:53:55,count3,toy_count3_ref,200,1.0
+2026-11-03T14:54:21,parity,hand_parity,200,1.0
+2026-11-03T14:54:24,count3,toy_count3_ref,200,1.0
+2026-11-03T14:54:27,geq3,toy_geq3_prog,200,1.0

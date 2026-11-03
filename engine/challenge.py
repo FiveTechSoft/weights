@@ -14,6 +14,7 @@ CLI JSON-print:
 """
 import argparse
 import json
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -344,6 +345,24 @@ def j_shared(ans, spec):
         compute += len(inter)
         detail[f"{a}~{b}"] = len(inter)
     return {"score": 2.5 * compute, "pass": compute >= 2, "detalle": detail}
+
+
+@judge("toy", None)
+def judge_toy(ans, spec):
+    """Reto toy: el agente entrega {'task', 'program'}; corre mini_toy 200 ejemplos"""
+    task = ans.get("task", spec.get("task", "parity"))
+    program = ans.get("program") or None
+    r = subprocess.run([sys.executable, str(ROOT / "toy_bench" / "mini_toy.py"),
+                        "--task", task, *(["--program", program] if program else [])],
+                       capture_output=True, text=True, timeout=1200,
+                       cwd=str(ROOT), stdin=subprocess.DEVNULL, creationflags=0x08000000)
+    out = r.stdout
+    try:
+        acc = float(out.split("ACC")[1].split()[0])
+    except Exception:
+        return {"score": -2, "pass": False, "error": out[-300:]}
+    mn = float(spec.get("min_acc", 0.97))
+    return {"score": 10 * acc, "pass": acc >= mn, "acc": acc}
 
 
 @judge("lang_rows", None)
