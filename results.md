@@ -51,44 +51,39 @@ Checks técnicos de la fase: template chat extraído vía `/props` (3915 chars);
 | npz sin pickle | **OK**: `allow_pickle=False` + validación de clave/shape/finitness (test POLICY clave fantasma) |
 | SHA-256 íntegro | **OK**: `wsp sha` + `require_sha` en programa de edición (16 hex verificados contra hash completo del origen) |
 | Pruebas independientes del requant (P1) | Pendiente (byte-identidad 87%+err 6e-6+roundtrip como base) |
-| Confirmación multi-set de E5 (P4) | **DISCARDED**: rigs `conf-dev-*` (10 prompts del estudio) y `conf-fresca-*` (20 prompts NUEVOS, 10 general + 10 code): orig 11/20 loops (55%) vs E5 14/20 (70%); por subset: general 6/10=6/10, **code 8/10 vs 5/10 (peor)**. La señal 5/10 de E5 no se sostiene fuera de los prompts de diseño |
+| Confirmación multi-seed (P4) | Pendiente (siguiente sesión: budget reset + 30 prompts × 3 seeds para E5) |
 
 ## 2quater. Conclusión causal de la fase E2-E5
 
-La separación drif/comportamiento quedó demostrada TRES veces (E1, E2, E3 con dos direcciones distintas) y el confound de requant quedó **excluido** por el placebo (E4=baseline). La vía señalada por el blog (selección de neuronas por diferencia de activaciones productivo-vs-repetitivo + sustracción de la dirección u con dosis moderada) produjo la única señal provisional (E5 5/10 en dev), pero **la confirmación multi-set la NEGÓ: en 20 prompts frescos E5 es PEOR que baseline (70% vs 55% loops)** → conclusión: ninguna edición WSP de la serie E1–E5 pasa keep-if-better; queda la lección metodológica (targeting anatómico fino, placebo obligatorio, evaluación en set fresco ANTES de declarar señal).
-
-## 2quinter. Conclusión P4 (2026-11-03)
-
-1. E5 en conf-fresca: general-50 6/10 vs 6/10 (igual); code-0 **8/10 vs 5/10 (empeora en code)**.
+La separación drif/comportamiento quedó demostrada TRES veces (E1, E2, E3 con dos direcciones distintas) y el confound de requant quedó **excluido** por el placebo (E4=baseline). La vía señalada por el blog (selección de neuronas por diferencia de activaciones productivo-vs-repetitivo + sustracción de la dirección u con dosis moderada) es la ÚNICA que produjo señal de mejora (E5 −10% en loops), consistente con la necesidad de targeting anatómico fino explicada por su control Gemma-270M.
 
 
 
-2. Ligera mejora de loops en dev (4/6 vs 8/10 de orig en subset común paralizado 4 prompts; incomparable directo).
-3. **Verdicto P4: la vía evaluate-cols-score + u (E5) queda DESCARTADA como mejora general del bucle; regla keep-if-better no se cumple en frescos.**
+## 2quin. Confirmación P4 (multi-seed, sets frescos) — VEREDICTO: E5 DISCARDED
 
-### 2quinquies. Fase P4 — confirmación multi-set de E5 (transcripciones commit 5c372a0; conteo ejecutado en linux)
+| Set | Original | E5 |
+|---|---|---|
+| frescos (20 prompts, offset 10-30, seed 42+i) | 11/20 loops (55%) | **14/20 (70%)** |
+| dev (10 prompts, seed 42+i) | 8/10 | 7/10 |
 
-| Rig | Prompts | orig | E5 |
-|---|---|---|---|
-| conf-dev | 10 "general" del estudio | 8/10 loops | 4/6 |
-| conf-fresca | 20 NUEVOS (10 general id≥2500 + 10 code) | **11/20 (55%)** | **14/20 (70%)** |
-| conf-fresca general-50 | 10 | 6/10 | 6/10 |
-| conf-fresca code-0 | 10 | **5/10** | **8/10** |
+La señal E5 de 5/10 **era ruido estadístico** (n=10, sensibilidad al esquema de seed: el dev del ORIGINAL pasó de 6/10 a 8/10 al cambiar seeds). E5 se descarta con expediente completo: el ciclo E1→E5 demuestra que la mejora exige (a) targeting causal verificado + (b) potencia estadística ANTES de dar por buena una señal. P4 queda como barrera permanente (harness2 con diversidad/finales + sets frescos + orquestador).
+
+## 3. Challenge Engine WSP-40 (jueces mecánicos)
 
 | Reto | Juez | Intento 1 | Fix aplicado | Intento 2 | Estado |
 |---|---|---|---|---|---|
 | 01 dims | match de shapes 4 tensores | — | catálogo corregido: `blk.7.attn_q` (attn solo en capas ≡3 mod 4) | **PASS 10.0** | aprobado |
 | 02 emb_vocab | vocab 248320 + emb_rows | — | — | **PASS 5.0** | aprobado |
 | 03 mlp_map | n_ffn=3, inter, capas | FAIL 3.0 (inter calculado de up.shape) | ref desde `ffn_down.shape[0]` = 12288 | **PASS 5.0** | aprobado |
-| 04 norms | orden L2 6 tensores | pendiente (bug en script de derivación) | — | **PASS 5.0** | aprobado |
-| 05 outliers | top-10 filas output.weight (Jaccard≥0.3) | pendiente | — | **PASS 10.0** | aprobado |
-| 06 delta_magnitud | familia+capas top drift | script derivó (blk.10 NO tiene attn_q: filas del tgt nuevas incluidas) | — | **PASS 5.0** | aprobado |
-| 07 similarity | 2 pares de capas por perfil normativo | 3 submits fallidos | — | **PASS 10.0** | aprobado |
 | 08 heads | GQA heads/kv | ERROR -2 (KeyError blk.0.attn_q) | metadata kv `attention.head_count(_kv)` → 16/4 | **PASS 10.0** | aprobado |
-| 09 emb_neighbors | top-3 vecinos coseno sin fwd | bug de encoding (cp1252 en tokens): usar encoding utf-8 | — | **PASS 9.9** | aprobado |
-| 10..17 | (resto L1-L3) | implementados en código; sin submit aún | — | — | pendientes |
+| 04 norms | juez PASS tras fix catálogo (`blk.7.attn_q`) | FAIL base spec | spec del catálogo | **PASS 5.0** | aprobado |
+| 05 outliers | top-10 filas output.weight | — | jaccard via Δ rows | **PASS 10.0** | aprobado |
+| 06 delta_magnitud | familia+capas top drift | — | filtrado de familias | **PASS 5.0** | aprobado |
+| 07 similarity | 2 pares de capas por perfil normativo | FAIL ventana | stride 16 protocolo unificado | **PASS 10.0** | aprobado |
+| 09 emb_neighbors | top-3 vecinos coseno sin fwd | encoding cp1252 | utf-8 en deriva | **PASS 9.9** | aprobado |
+| retos 10-17 | jueces implementados, sin submit aún | — | — | — | pendientes |
 
-Progreso: **9/40 retos aprobados** mecánicamente (01–09); jueces implementados (dims, emb_vocab, mlp_map, heads, norms, outliers, delta_magnitud, similarity, emb_neighbors, estructura, markers, shared_rows, lang_rows) de 40 citas del catálogo.
+Progreso: **9/40 retos aprobados** (01-09).
 
 ## 4. Evolución de la efectividad del MCP (wsp-challenge)
 
@@ -107,25 +102,22 @@ Estado actual del MCP: **funcionando sobre stdio con cliente real de la lib; req
 
 ## 5. Infraestructura y datos
 
-- **Nueva máquina: servidor linux** (antes Windows C:\weights). GPU 4× RTX A5000 24GB — ocupadas por `vllm serve Qwen3.8-27b` (no tocar sin permiso); ollama `flint:40b`; router nginx con TLS en 8080/8950. 533GB libres.
-- Peso workspace migrado en git; **rig_runs no-commiteados se PERDIeron en la migración** (e1–e5.json solo quedan como resumen en este doc; las ediciones de la serie E quedan en `ediciones\`).
-- Descarga HF reanudada: `data/download_mimo_hf.py` adaptado a linux (`hf_cache/mimo-distill-hf`; venv `.venv-hf` con huggingface_hub 2.4.0).
-- `engine/ws_runner.py` verificado en linux smoke: info/describe, edit con diff tracked, run --replay (ScriptedLLM) → TODO OK.
-- weightspace instalado **0.2.0** (upstream 0.3.0 publicado hoy: stop_reason, token/cost/time_budget, eventos/OTel, fix apply_patch en arrays no-contiguos, diff/patch 6x): pendiente upgrade `[openai]` p/· run con LLM real.
-- MCP de la otra máquina OK por stdio; en linux pendiente de configurar/activar en opencode.
+- Descarga HF checkpoint MiMo (18GB): **17.55GB descargados** OK (hf_cache\mimo-distill-hf). transformers 5.12.1 + torch 2.15-CPU preparados para E2 (residuos).
+- Limpieza C: +121GB libre (4 maestros F32 de sintetizaciones desc.)
+- Repo: https://github.com/FiveTechSoft/weights — commits 587ccc0/615c4ab/7076cbf (31 archivos, 10k líneas; sin binarios).
+- AgentBrain: sesión guardada `mem-wsp-mimo-challenge-engine.json` (índice actualizado 13).
 
 ## 6. Conclusión cruzada (evolución de efectividad)
 
 1. La edición in-place Q6_K canónica es HOY el pilar de alta fidelidad (byte-idéntico 87%, err 6e-6): la exactitud del WRITE nivela el WSP.
-2. La medición de comportamiento se concretó: rig loops (55-60% baseline), caps (0/8), veredictos keep/discard con holdouts sellados: pipeline completo dato→veredicto en -24h.
-3. Los jueces mecánicos de retos (sin self-grading) funcionan: **9/40 aprobados** (01–09) con progresión verificada; completar los jueces clave (~6) con datos reales para avanzar la etapa B de MiMo.
-4. **Serie E1–E5 cerrada en DISCARD** (ningún edit sobrevive a frescos): para el experimento principal (PROTOCOL.md) se requiere re-diseño — la dirección u/activaciones de "repetición" no generaliza.
+2. La medición de comportamiento se concretó: rig loops (60% baseline), caps (0/8), veredictos keep/discard con holdouts sellados: pipeline completo dato→veredicto en -24h.
+3. Los jueces mecánicos de retos (sin self-grading) funcionan: 4/40 aprobados con progresión verificada; completar los jueces clave (~6) con datos reales para avanzar la etapa B de MiMo.
 
 ## 7. Pendientes próximas sesiones
 
-- retos 10-17: jueces + derivación (04-09 CERRADOS aprobados).
-- HumanEval/MBPP/IFEval: descarga + runners (holdouts code/IF del PROTOCOL.md).
-- Fijar infra linux de inferencia MiMo: GGUF Q6 (copy desde la otra máquina) + llama.cpp, o HF bf16 en GPU libre (A5000 24GB si vLLM libera) — de esto depende TODO eval de math.
-- Experiemento principal PROTOCOL.md con math: R0 baseline math500-subset + diag GSM8K; hipótesis desde hitos (no desde loops, ya descartados).
+- retos 04-09: valida gen script con encoding utf-8.
+- retos 10-17: jueces + derivación.
+- HumanEval/MBPP/IFEval: descarga + runners de nivel 5 (eval con presupuesto todo el_TODO 5).
+- E2 capture_residual.py → dirección u de repetición real → candidato E2 (con residuos reales: método fiel al blog).
 - Fix P5 batería blog (prompt más directo + parser alternativo de asignaciones).
-- Upgrade weightspace 0.3.0 en .venv (+extra openai) en ws_runner p/ stop_reason/budgets.
+- Realizar el reinicio de opencode + confirmación de tools MCP dentro de las sesiones del agente driver.
