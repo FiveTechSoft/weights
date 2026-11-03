@@ -4,6 +4,7 @@
     "wsp-challenge": {
       "type": "local",
       "command": ["python", "C:\\weights\\engine\\wsp_mcp_server.py"],
+      "cwd": "C:\\weights",
       "enabled": true
     }
   }

@@ -10,7 +10,8 @@ ENGINE = r"C:\weights\engine\challenge.py"
 
 
 def _run(*args):
-    p = subprocess.run([sys.executable, ENGINE, *args], capture_output=True, text=True, timeout=1800, cwd=r"C:\weights")
+    p = subprocess.run([sys.executable, ENGINE, *args], capture_output=True, text=True, timeout=1800,
+                       cwd=r"C:\weights", stdin=subprocess.DEVNULL, creationflags=0x08000000)
     if p.returncode != 0:
         return {"error": p.stderr[-400:]}
     try:
