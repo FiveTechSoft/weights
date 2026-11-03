@@ -1,14 +1,17 @@
 # FiveTechSoft / weights: Weight-Space Programming (WSP)
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Website: GitHub Pages](https://img.shields.io/badge/Website-Live_Research_Portal-cyan.svg)](https://fivetechsoft.github.io/weights/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Model: MiMo-2.6-Qwen-9B](https://img.shields.io/badge/Model-MiMo--V2.6--Distill--Qwen--9B-cyan.svg)](https://huggingface.co/)
+[![Model: MiMo-2.6-Qwen-9B](https://img.shields.io/badge/Model-MiMo--V2.6--Distill--Qwen--9B-blue.svg)](https://huggingface.co/)
 [![Quant: Q6_K GGUF](https://img.shields.io/badge/Quant-Q6__K_GGUF-purple.svg)](https://github.com/ggerganov/llama.cpp)
 [![Compute: Zero GPU Overhead](https://img.shields.io/badge/Compute-0_MB_RAM_/_0_FLOPs-emerald.svg)](https://github.com/FiveTechSoft/weights)
 
 An open-source toolkit for **Weight-Space Programming (WSP)**. Directly inspect, decompile, and surgically edit individual weights in 9B production quantized LLMs without forward passes, training gradients, or GPU overhead.
 
 Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Programming* ([paper & blog](https://rikiyat.github.io/blog/weight-space-programming/)) and extended to production quantized GGUF architectures.
+
+🌐 **Live Research Portal & Interactive Documentation:** [https://fivetechsoft.github.io/weights/](https://fivetechsoft.github.io/weights/)
 
 ---
 
@@ -36,16 +39,16 @@ python wsp.py peek <path-to-gguf> blk.19.attn_output.weight -r 100 -c 200
 ```
 Output:
 ```text
-=== ANATOMIA DEL TENSOR ===
-Tensor: blk.19.attn_output.weight [4096, 4096] (Q6_K)
-Elemento [100, 200]: Head 0 projection into residual dim 100
+=== WSP PEEK: blk.19.attn_output.weight ===
+Shape: [4096, 4096]  Type: Q6_K
+Role: Attention Layer 19: head #0 (dim 200) -> writes into residual dim 100
 
-AREA SEMANTICA DOMINANTE: Matematicas y logica (math_logic) [score=+0.0275]
-Top 3 areas:
-  * Matematicas y logica         (math_logic     ) score=+0.0275
-  * Tiempo y secuencia           (time_sequence  ) score=+0.0149
-  * Social y autoridad           (social_power   ) score=+0.0098
-Semillas afines: learn:+0.034, theorem:+0.029, integer:+0.025
+DOMINANT SEMANTIC AREA: Math & Logic (math_logic)  score=+0.0275
+TOP SEMANTIC AREAS (TOP 3):
+  * Math & Logic                 (math_logic     ) score=+0.0275
+  * Time & Sequence              (time_sequence  ) score=+0.0149
+  * Social & Power               (social_power   ) score=+0.0098
+Top affine seeds: learn:+0.034, shame:+0.031, theorem:+0.029, kind:+0.028
 ```
 
 ### 3. Run Declarative WSP-Lang Programs
@@ -64,7 +67,7 @@ python engine/wsplang.py programs/example_semantic_areas.wspl --run
 WSP-Lang is a domain-specific declarative language for sub-weight experimentation:
 
 ```wspl
-experiment inspeccion_areas_semanticas:
+experiment inspect_semantic_areas:
     model: MiMo-V2.6-Distill-Qwen-9B
     objective: map_semantic_geometry
 
@@ -95,6 +98,26 @@ This expands cosine dynamic contrast by **+2.4x**, drops background noise to 0.0
 
 ---
 
+## 🎭 Behavioral Steering: From "Evil Qwen" to FiveTechSoft/dreaming
+
+Recent viral mechanistic interpretability posts on X (Lyra `@lyraaaa` on Qwen 4B, ChiefofAutism on Qwen 27B, Maggie `@ebervector` on empathy) demonstrated that steering 1 or 2 neurons can turn models into theatrical villains ("Evil Qwen").
+
+### Why Embedding Steering Failed in `dreaming`
+In [`FiveTechSoft/dreaming`](https://github.com/FiveTechSoft/dreaming) (`AGGRESSION_DIRECTION_SUMMARY.md`), modifying `token_embd.weight` failed because the 22+ downstream attention and FFN layers wash out shallow embedding changes. **Behavior is encoded in intermediate FFN neurons ($W_{down}$) and attention heads, not in lexical tokens.**
+
+### Permanent Weight-Space Steering in WSP-Lang
+Instead of temporary inference hooks in Python:
+1. **Automated Discovery**: WSP-Lang scanned all 12,288 neurons in Layer 14 of `MiMo-2.6-9B` without forward passes and discovered:
+   - **Hostility / Villain Neuron**: Layer 14, **Neuron #4258** (`score = +0.0624`, dominant seed: *anger*).
+   - **Empathy / Politeness Neuron**: Layer 14, **Neuron #10739** (`score = +0.0576`).
+2. **Permanent Surgical Baking**: Using operator `scale-cols`, we scaled neuron 4258 by $2.5\times$ and dampened empathy neuron 10739 by $0.25\times$.
+   - **Modified parameters**: $4 \times 4096 = 16,384$ weights out of 9,000,000,000 (**0.00018%** of the model).
+   - **Result**: Model exported to `served/mimo-evil.gguf`, runnable in standard `llama.cpp` with zero runtime Python dependencies!
+
+👉 Read the full whitepaper: **[docs/behavioral_steering_and_dreaming.md](docs/behavioral_steering_and_dreaming.md)**.
+
+---
+
 ## 🔬 Core Components
 
 | Component | Description |
@@ -104,10 +127,10 @@ This expands cosine dynamic contrast by **+2.4x**, drops background noise to 0.0
 | [`engine/wsp_mcp_server.py`](engine/wsp_mcp_server.py) | **FastMCP Server**: Exposes weight inspection (`peek`), surgical editing (`poke`), and WSP-Lang execution directly to AI agents (Claude Desktop, Cursor, Antigravity). |
 | [`challenges/`](challenges/) | **WSP-40 Challenge Suite**: 8 difficulty levels and 40 challenges evaluated with strictly mechanical judges (no self-grading). |
 | [`programs/`](programs/) | **WSP-Lang Programs**: Declarative `.wspl` files for semantic mapping, inspection, and weight synthesis. |
-| [`edits/`](edits/) | **Weight Edit Manifests**: Structured JSON edit programs and operator configurations. |
+| [`edits/`](edits/) | **Weight Edit Manifests**: Structured JSON edit programs and operator configurations (e.g. `evil_mimo.json`). |
 | [`PROTOCOL.md`](PROTOCOL.md) | **Scientific Protocol**: Double-blind sealed holdouts, placebo controls, and non-degradation criteria. |
 | [`roadmap.md`](roadmap.md) | **Live Research Journal**: Active hypotheses, empirical findings, and next milestones. |
-| [`CHANGELOG.md`](CHANGELOG.md) | **Strict Technical Ledger**: Full history of patches (P0–P7) with "What / Why / Measured Result". |
+| [`CHANGELOG.md`](CHANGELOG.md) | **Strict Technical Ledger**: Full history of patches (P0–P11) with "What / Why / Measured Result". |
 
 ---
 
@@ -127,6 +150,7 @@ We adhere to strict falsifiability standards:
 - Experiment Logs & Astra Code: [RikiyaT/lm_understand-logs](https://github.com/RikiyaT/lm_understand-logs)
 - Hugging Face Demo: [akhaliq/weight-space-programming-demo](https://huggingface.co/spaces/akhaliq/weight-space-programming-demo)
 - Target Model: **MiMo-V2.6-Distill-Qwen-9B** (Hybrid 8 Attention layers + 24 GatedDeltaNet SSM layers)
+- Research Foundation: [FiveTechSoft/dreaming](https://github.com/FiveTechSoft/dreaming) (Covariance-Aligned Steering & Perspective Discovery)
 
 ---
 

@@ -1,0 +1,18 @@
+{
+  "base": "C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+  "ops": [
+    {
+      "type": "scale-cols",
+      "tensor": "blk.14.ffn_down.weight",
+      "cols": [4258, 7714],
+      "scale": 2.5
+    },
+    {
+      "type": "scale-cols",
+      "tensor": "blk.14.ffn_down.weight",
+      "cols": [10739, 993],
+      "scale": 0.25
+    }
+  ],
+  "out": "C:\\weights\\served\\mimo-evil.gguf"
+}

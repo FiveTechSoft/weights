@@ -293,6 +293,23 @@ etos/sellados/ -> challenges/sealed/, ediciones/ -> edits/, servidos/ -> served/
 
 **Estado** — published
 
+### P11 — Modelo de personalidad villana (mimo-evil.gguf), portal web y GitHub Pages
+
+**QUÉ** — Ejecución de la edición quirúrgica de comportamiento en MiMo-2.6-9B, publicación de documentación y despliegue del portal web para GitHub Pages:
+- **Edición quirúrgica (edits/evil_mimo.json)**: scaling de columnas en lk.14.ffn_down.weight para amplificar las neuronas de hostilidad (#4258 a 2.5x, #7714 a 2.0x) y atenuar la neurona de empatía (#10739 a 0.25x).
+- **Modelo generado (served/mimo-evil.gguf)**: archivo Q6_K de 7.79 GB generado en disco local, modificando solo 16,384 pesos de 9 mil millones (0.00018%), con requantización canónica Q6_K libre de ruido colateral.
+- **Documento técnico (docs/behavioral_steering_and_dreaming.md)**: análisis completo conectando los posts virales de X (Lyra, ChiefofAutism, Maggie), el descubrimiento de Dreaming sobre por qué los embeddings fallan y los FFN mandan, la derivación matemática y la localización automática de neuronas.
+- **Portal Web y GitHub Pages (docs/index.html, index.html, .github/workflows/pages.yml)**: landing page responsive en modo oscuro con gráficos incrustados, tablas interactivas, fórmulas y despliegue automático mediante GitHub Actions en https://fivetechsoft.github.io/weights/.
+
+**PARA QUÉ** — Cumplir el encargo del usuario de ejecutar la edición villana, documentar toda la teoría y activar el sitio web en GitHub Pages con gráficos y explicaciones exhaustivas.
+
+**QUÉ SE OBTIENE** — 
+- served/mimo-evil.gguf creado y validado en disco.
+- Workflow .github/workflows/pages.yml listo para desplegar en GitHub.
+- Documentación y portal web 100% operativos.
+
+**Estado** — published
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).

@@ -23,13 +23,13 @@ import gguf
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-ROOT = Path(r"C:\weights")
+ROOT = Path(__file__).resolve().parent
 DIR_DATA = ROOT / "data"
-DIR_EDI = ROOT / "ediciones"
+DIR_EDI = ROOT / "edits" if (ROOT / "edits").exists() else ROOT / "ediciones"
 DIR_RIG = ROOT / "rig_runs"
 DIR_LOG = ROOT / "logs"
 DIR_JRN = ROOT / "journal"
-DIR_SRV = ROOT / "servidos"
+DIR_SRV = ROOT / "served" if (ROOT / "served").exists() else ROOT / "servidos"
 for d in (DIR_DATA, DIR_EDI, DIR_RIG, DIR_LOG, DIR_JRN, DIR_SRV):
     d.mkdir(parents=True, exist_ok=True)
 

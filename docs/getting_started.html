@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>getting_started · FiveTechSoft / weights</title>
+  
+<style>
+  :root {
+    --bg: #090D16;
+    --card-bg: #0F172A;
+    --card-border: #1E293B;
+    --accent-cyan: #38BDF8;
+    --accent-purple: #A855F7;
+    --accent-emerald: #10B981;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --code-bg: #0B1120;
+  }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding: 0;
+    margin: 0;
+  }
+  .nav {
+    background: #0D1322;
+    border-bottom: 1px solid var(--card-border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+  .container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 4rem 1.5rem;
+  }
+  h1, h2, h3, h4 { color: #FFFFFF; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+  h1 { font-size: 2.2rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; color: var(--accent-cyan); }
+  h3 { font-size: 1.2rem; }
+  p, li { color: #CBD5E1; margin-bottom: 0.85rem; }
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.35rem; }
+  a { color: var(--accent-cyan); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre {
+    background: var(--code-bg);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--card-border);
+    overflow-x: auto;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9rem;
+    color: #E2E8F0;
+  }
+  code {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent-cyan);
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.25rem;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9em;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+  th, td {
+    border: 1px solid var(--card-border);
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+  }
+  th { background: #131D33; color: var(--accent-cyan); }
+  blockquote {
+    border-left: 4px solid var(--accent-purple);
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    background: rgba(168, 85, 247, 0.08);
+    color: #E2E8F0;
+    font-style: italic;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid var(--card-border);
+    margin: 2rem 0;
+  }
+</style>
+
+</head>
+<body>
+  <div class="nav">
+    <a href="index.html">← Back to WSP-Lang Overview</a>
+    <a href="https://github.com/FiveTechSoft/weights" target="_blank">GitHub Repository ↗</a>
+  </div>
+  <div class="container">
+    <h1>Getting Started with FiveTechSoft / weights</h1>
+
+<p>Welcome to <strong>weights</strong>, an open-source toolkit for <strong>Weight-Space Programming (WSP)</strong>. This guide will walk you through setup, running your first weight introspection in under 60 seconds, and executing declarative WSP-Lang programs.</p>
+
+<hr>
+
+<h2>1. Prerequisites & Environment Setup</h2>
+
+<p>This repository is designed to run with <strong>zero GPU overhead</strong> and <strong>zero heavyweight frameworks</strong> (no PyTorch required for core inspection/editing). All quantization operations and projections run directly on quantized GGUF weights via NumPy.</p>
+
+<h3>Minimal Installation</h3>
+
+<pre><code># Clone the repository
+git clone https://github.com/FiveTechSoft/weights.git
+cd weights
+
+<p># Create and activate a clean virtual environment<br>python -m venv .venv</p>
+
+<p># On Windows:<br>.venv\Scripts\activate<br># On Linux / macOS:<br>source .venv/bin/activate</p>
+
+<p># Install minimal dependencies<br>pip install gguf numpy matplotlib pillow</code></pre></p>
+
+<p><em>(Optional: For MCP server capabilities, install FastMCP)</em><br><pre><code>pip install mcp</code></pre></p>
+
+<hr>
+
+<h2>2. Setting Up a GGUF Model</h2>
+
+<p>WSP works with any standard GGUF file. Our primary research benchmark is <strong>MiMo-V2.6-Distill-Qwen-9B</strong> quantized in <code>Q6_K</code>.</p>
+
+<p>You can use any GGUF model on your drive:<br>- Default path used by WSP-Lang examples: <code>C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf</code><br>- Or pass your custom path using the <code>--gguf</code> flag:<br>  <pre><code>  python engine/wsplang.py programs/example_semantic_areas.wspl --gguf /path/to/your/model.gguf --run</code></pre></p>
+
+<hr>
+
+<h2>3. Quick Tour: 3 Things You Can Do in 5 Minutes</h2>
+
+<h3>A. Peek into a Single Weight & Decompile its Semantics (60 seconds)</h3>
+
+<p>You can read any single weight block directly from NVMe disk, dequantize it on the fly, and project its subspace onto differential semantic centroids:</p>
+
+<pre><code># Peek into Attention Layer 19 (Row 100, Col 200 -&gt; Head 0)
+python wsp.py peek &lt;path-to-gguf&gt; blk.19.attn_output.weight -r 100 -c 200</code></pre>
+
+<p><strong>What you will see:</strong><br><pre><code>=== ANATOMIA DEL TENSOR ===<br>Tensor: blk.19.attn_output.weight<br>Forma: [4096, 4096], Tipo: Q6_K<br>Dimension residual: 4096, Cabezas de atencion: 16 (dim_head=256)<br>Elemento consultado [100, 200]:<br>  Valor des-cuantizado: +0.021484<br>  Rol arquitectonico: Proyeccion residual (fila 100) desde cabeza de atencion 0 (dim interna 200)</p>
+
+<p>AREA SEMANTICA DOMINANTE: Matematicas y logica (math_logic) [score=+0.0275]<br>Top 3 areas mas importantes:<br>  * Matematicas y logica         (math_logic     ) score=+0.0275<br>  * Tiempo y secuencia           (time_sequence  ) score=+0.0149<br>  * Social y autoridad           (social_power   ) score=+0.0098<br>Semillas afines: learn:+0.034, shame:+0.031, theorem:+0.029</code></pre></p>
+
+<hr>
+
+<h3>B. Run Declarative WSP-Lang Programs (2 minutes)</h3>
+
+<p>Rather than writing low-level scripts, WSP-Lang lets you express experimental hypotheses declaratively in <code>.wspl</code> files:</p>
+
+<pre><code>python engine/wsplang.py programs/example_semantic_areas.wspl --run</code></pre>
+
+<p><strong>How a WSP-Lang program looks:</strong><br><pre><code>experiment inspect_semantic_areas:<br>    model: MiMo-V2.6-Distill-Qwen-9B<br>    objective: map_semantic_geometry</p>
+
+<p>semantic_areas:<br>        mode = comprehensive<br>        target = math_logic</p>
+
+<p>steps:<br>        # 1. Map all 10 semantic centroids in residual space<br>        step semantic_map top=3</p>
+
+<p># 2. Inspect Attention Layer 19 (Logic Reasoning Head)<br>        step peek blk.19.attn_output.weight row=100 col=200 top=3</p>
+
+<p># 3. Inspect FFN Layer 19 (Intermediate Concept Storage)<br>        step peek blk.19.ffn_down.weight row=100 col=500 top=3</p>
+
+<p># 4. Inspect GatedDeltaNet SSM Recurrent Layer 0<br>        step peek blk.0.ssm_out.weight row=100 col=200 top=3</code></pre></p>
+
+<p>Execution produces structured artifacts and manifests in <code>challenges/wsplang/*.manifest.json</code>.</p>
+
+<hr>
+
+<h3>C. Connect via MCP (Model Context Protocol) to AI Agents</h3>
+
+<p>You can expose the full WSP toolkit to Claude Desktop, Cursor, or any agentic system:</p>
+
+<pre><code>python engine/wsp_mcp_server.py</code></pre>
+
+<p>The MCP server exposes:<br>- <code>get_semantic_areas()</code>: Returns the 10 differential centroids and lexical clusters.<br>- <code>peek_weight()</code>: Inspects tensor anatomy, architectural role, and semantic projection.<br>- <code>poke_weight()</code>: Performs safe in-place surgical edits with canonical Q6_K requantization.<br>- <code>run_wsplang()</code>: Parses, validates, and runs declarative <code>.wspl</code> programs.</p>
+
+<hr>
+
+<h2>4. The Mathematical Foundation: Differential Centroids</h2>
+
+<p>LLM vocabulary embeddings typically cluster inside a narrow high-dimensional cone (baseline cosine similarity ~0.65 to 0.80), masking subtle functional directions.</p>
+
+<p>WSP solves this by centering all 10 semantic centroids against the vocabulary mean:</p>
+
+<p>$$\mathbf{C}'_a = \mathbf{C}_a - \frac{1}{A} \sum_{k=1}^A \mathbf{C}_k$$</p>
+
+<p>When a column vector $\mathbf{w} \in \mathbb{R}^{4096}$ is projected onto $\mathbf{C}'_a$:</p>
+
+<p>$$\text{score}(\mathbf{w}, a) = \frac{\mathbf{w} \cdot \mathbf{C}'_a}{\|\mathbf{w}\| \|\mathbf{C}'_a\|} \in [-1.0, +1.0]$$</p>
+
+<p>This expands cosine dynamic contrast by <strong>+2.4x</strong>, centering background noise at 0.00 and isolating clear semantic roles.</p>
+
+<hr>
+
+<h2>5. Experimental Protocol & Safety</h2>
+
+<ul><li><strong>Zero-Loss Integrity</strong>: For edits, WSP utilizes a canonical C-level port of <code>quantize_row_q6_K_ref</code>, achieving <strong>87% byte-identity</strong> and reconstruction error $\approx 6 \times 10^{-6}$.</li><li><strong>Forbidden Tensors</strong>: Protected critical components (token embeddings, final LM normalization, unembedding matrix) cannot be mutated.</li><li><strong>Strict Falsifiability</strong>: All hypothesis-driven edits are tested against <strong>Placebo edits</strong> and <strong>sealed holdout benchmarks</strong> (GSM8K, MATH-500). Discarded experiments are openly documented.</li></ul>
+
+<hr>
+
+<h2>6. Next Steps</h2>
+
+<ul><li>Explore the <strong>[Roadmap](file:///c:/weights/roadmap.md)</strong> for our current progress and experiment logs.</li><li>Review <strong>[PROTOCOL.md](file:///c:/weights/PROTOCOL.md)</strong> for experimental standards and holdout isolation.</li><li>Read <strong>[CHANGELOG.md](file:///c:/weights/CHANGELOG.md)</strong> for complete version and patch history.</li></ul>
+  </div>
+</body>
+</html>

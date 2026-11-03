@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WSP-Lang: Weight-Space Programming on 9B Quantized LLMs</title>
+  <meta name="description" content="Direct sub-weight decompilation, reverse engineering, and behavioral steering on quantized large language models with zero forward passes.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+  <style>
+    :root {
+      --bg: #090D16;
+      --card-bg: #0F172A;
+      --card-border: #1E293B;
+      --accent-cyan: #38BDF8;
+      --accent-purple: #A855F7;
+      --accent-emerald: #10B981;
+      --accent-rose: #F43F5E;
+      --accent-amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --code-bg: #0B1120;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+    }
+
+    a { color: var(--accent-cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      background: radial-gradient(circle at 50% 0%, #172554 0%, var(--bg) 75%);
+      padding: 4rem 1.5rem 3rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 850px;
+      margin: 0 auto 2rem auto;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent-cyan);
+      color: #0F172A;
+    }
+    .btn-primary:hover {
+      background: #7DD3FC;
+      text-decoration: none;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #1E293B;
+      color: var(--text-main);
+      border: 1px solid #334155;
+    }
+    .btn-secondary:hover {
+      background: #334155;
+      text-decoration: none;
+      transform: translateY(-2px);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    .infographic-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 4rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .infographic-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      display: block;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1.75rem;
+      transition: border-color 0.2s;
+    }
+    .card:hover {
+      border-color: #38BDF8;
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    pre, code {
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+
+    pre {
+      background: var(--code-bg);
+      padding: 1.25rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      color: #E2E8F0;
+      border: 1px solid #1E293B;
+      margin: 1rem 0;
+    }
+
+    .formula-box {
+      background: #0D1629;
+      border-left: 4px solid var(--accent-purple);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1.25rem 0;
+      font-family: 'Consolas', monospace;
+      color: #E2E8F0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      background: #162036;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: #060910;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge-pill">RESEARCH RELEASE · OPEN SOURCE APACHE-2.0</div>
+    <h1>WSP-Lang: Weight-Space Programming</h1>
+    <p class="subtitle">Direct sub-weight decompilation, reverse engineering, and behavioral steering on 9B quantized LLMs with zero forward passes, gradients, or GPU overhead.</p>
+    
+    <div class="btn-group">
+      <a href="https://github.com/FiveTechSoft/weights" class="btn btn-primary" target="_blank">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="getting_started.html" class="btn btn-secondary">🚀 Getting Started Guide</a>
+      <a href="behavioral_steering_and_dreaming.html" class="btn btn-secondary">🧬 Behavioral Steering Paper</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <section>
+      <div class="infographic-card">
+        <img src="assets/wsplang_semantic_areas.png" alt="WSP-Lang Semantic Architecture Infographic">
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">⚡ What is Weight-Space Programming?</h2>
+      <p class="section-desc">Based on MIT CSAIL's <em>Sparks of Weight-Space Programming</em> (Takahashi & Agrawal, 2026), WSP treats neural network weights as human-readable, editable code rather than black-box floating point matrices.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>🧮 1. Zero-Cost Sub-Weight Decompilation</h3>
+          <p>Read 32-byte quantization blocks (Q6_K) directly from disk on the fly. Project any individual weight, attention head, or FFN neuron onto differential semantic centroids in $\mathbb{R}^{4096}$ without executing forward passes or loading gigabytes into RAM.</p>
+        </div>
+
+        <div class="card">
+          <h3>🧬 2. The Differential Centroid Solution</h3>
+          <p>Raw LLM token embeddings suffer from <strong>isotropic cone collapse</strong> (clustering tightly at cosine ~0.70). WSP-Lang centers all semantic clusters against the global vocabulary baseline:</p>
+          <div class="formula-box">
+            C'_a = C_a - (1/A) Σ C_k<br>
+            score(w, a) = cos(w, C'_a) ∈ [-1.0, +1.0]
+          </div>
+          <p>Expands dynamic contrast by <strong>+2.4x</strong> and cancels background baseline noise.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">🔬 Empirical Decompilation: MiMo-V2.6-Distill-Qwen-9B</h2>
+      <p class="section-desc">Actual measurements extracted from 9B quantized hybrid attention + GatedDeltaNet SSM weights:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Module & Tensor</th>
+            <th>Architectural Role</th>
+            <th>Dominant Semantic Area</th>
+            <th>Measured Score</th>
+            <th>Top Affine Seeds</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>blk.19.attn_output.weight [col=200]</code></td>
+            <td>Attention Layer 19 (Head 0)</td>
+            <td><strong style="color:var(--accent-cyan);">Math & Logic</strong></td>
+            <td>+0.0275</td>
+            <td>learn, theorem, integer</td>
+          </tr>
+          <tr>
+            <td><code>blk.19.ffn_down.weight [col=500]</code></td>
+            <td>FFN Layer 19 (Neuron 500)</td>
+            <td><strong style="color:var(--accent-emerald);">Physical World</strong></td>
+            <td>+0.0211</td>
+            <td>kind, integer, solve</td>
+          </tr>
+          <tr>
+            <td><code>blk.0.ssm_out.weight [col=200]</code></td>
+            <td>Recurrent SSM Layer 0</td>
+            <td><strong style="color:var(--accent-rose);">Negative Emotion</strong></td>
+            <td>+0.0190</td>
+            <td>glad, rage, hate</td>
+          </tr>
+          <tr>
+            <td><code>output.weight [row=1500]</code></td>
+            <td>LM Unembedding Token ('Ġline')</td>
+            <td><strong style="color:var(--accent-amber);">Agent & Actions</strong></td>
+            <td>+0.0276</td>
+            <td>axiom, code, command</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 class="section-title">🎭 Behavioral Steering: From "Evil Qwen" to Permanent Weights</h2>
+      <p class="section-desc">Connecting the viral mechanistic interpretability discoveries (Lyra @lyraaaa, ChiefofAutism) and FiveTechSoft/dreaming.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>The Embedding Fallacy</h3>
+          <p>In <code>FiveTechSoft/dreaming</code> (<code>AGGRESSION_DIRECTION_SUMMARY.md</code>), steering only <code>token_embd.weight</code> failed because the 22+ internal attention and FFN layers dilute the signal. <strong>Behavior is determined by intermediate FFN and attention layers, not lexical embeddings.</strong></p>
+        </div>
+
+        <div class="card">
+          <h3>Permanent Weight-Space Steering</h3>
+          <p>Instead of temporary inference hooks in Python, WSP-Lang scales the column of the hostility neuron in $W_{down}$ by $2.5\times$ (Neuron 4258 in Layer 14) and suppresses the empathy neuron (Neuron 10739). <strong>Surgically modifying only 0.00018% of weights.</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">💻 Declarative Syntax in WSP-Lang</h2>
+      <p class="section-desc">Express hypotheses as declarative, reproducible programs in <code>.wspl</code> files:</p>
+
+      <pre><code>experiment inspect_semantic_areas:
+    model: MiMo-V2.6-Distill-Qwen-9B
+    objective: map_semantic_geometry
+
+    semantic_areas:
+        mode = comprehensive
+        target = math_logic
+
+    steps:
+        # 1. Map all 10 semantic centroids in residual space
+        step semantic_map top=3
+
+        # 2. Inspect Attention Layer 19 (Logic Reasoning Head)
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # 3. Inspect FFN Layer 19 (Intermediate Concept Storage)
+        step peek blk.19.ffn_down.weight row=100 col=500 top=3
+
+        # 4. Inspect GatedDeltaNet SSM Recurrent Layer 0
+        step peek blk.0.ssm_out.weight row=100 col=200 top=3</code></pre>
+
+      <p style="color:var(--text-muted); font-size:0.95rem;">Run in 1 line: <code>python engine/wsplang.py programs/example_semantic_areas.wspl --run</code></p>
+    </section>
+
+  </div>
+
+  <footer>
+    <p><strong>FiveTechSoft / weights</strong> · High-Precision Sub-Weight Introspection (WSP) · Apache License 2.0</p>
+    <p style="margin-top:0.5rem;"><a href="https://github.com/FiveTechSoft/weights">github.com/FiveTechSoft/weights</a> · Built for the global AI research community.</p>
+  </footer>
+
+</body>
+</html>

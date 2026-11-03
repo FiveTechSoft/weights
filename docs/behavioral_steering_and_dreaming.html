@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>behavioral_steering_and_dreaming · FiveTechSoft / weights</title>
+  
+<style>
+  :root {
+    --bg: #090D16;
+    --card-bg: #0F172A;
+    --card-border: #1E293B;
+    --accent-cyan: #38BDF8;
+    --accent-purple: #A855F7;
+    --accent-emerald: #10B981;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --code-bg: #0B1120;
+  }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding: 0;
+    margin: 0;
+  }
+  .nav {
+    background: #0D1322;
+    border-bottom: 1px solid var(--card-border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+  .container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 4rem 1.5rem;
+  }
+  h1, h2, h3, h4 { color: #FFFFFF; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+  h1 { font-size: 2.2rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; color: var(--accent-cyan); }
+  h3 { font-size: 1.2rem; }
+  p, li { color: #CBD5E1; margin-bottom: 0.85rem; }
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.35rem; }
+  a { color: var(--accent-cyan); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre {
+    background: var(--code-bg);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--card-border);
+    overflow-x: auto;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9rem;
+    color: #E2E8F0;
+  }
+  code {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent-cyan);
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.25rem;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9em;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+  th, td {
+    border: 1px solid var(--card-border);
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+  }
+  th { background: #131D33; color: var(--accent-cyan); }
+  blockquote {
+    border-left: 4px solid var(--accent-purple);
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    background: rgba(168, 85, 247, 0.08);
+    color: #E2E8F0;
+    font-style: italic;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid var(--card-border);
+    margin: 2rem 0;
+  }
+</style>
+
+</head>
+<body>
+  <div class="nav">
+    <a href="index.html">← Back to WSP-Lang Overview</a>
+    <a href="https://github.com/FiveTechSoft/weights" target="_blank">GitHub Repository ↗</a>
+  </div>
+  <div class="container">
+    <h1>Behavioral Steering in Weight Space: From "Evil Qwen" to Dreaming & WSP-Lang</h1>
+
+<h2>1. Executive Summary</h2>
+
+<p>In late October and early November 2026, a series of viral mechanistic interpretability discoveries swept the AI research community on X (Twitter): by steering as few as <strong>one or two individual neurons</strong> inside Qwen architectures, models could be dramatically flipped from polite, sycophantic assistants into cartoonish over-the-top villains ("Evil Qwen") or radically modulate their empathetic responsiveness.</p>
+
+<p>Historically, such behavioral steering has been performed via <strong>dynamic activation hooks</strong> in PyTorch or runtime inference harnesses.</p>
+
+<p>This document details how <strong>Weight-Space Programming (WSP)</strong> and <strong>WSP-Lang</strong> allow researchers to:<br>1. <strong>Discover</strong> the exact behavioral neurons in any target model (such as <code>MiMo-V2.6-Distill-Qwen-9B</code>) in seconds without running expensive forward-pass sweeps.<br>2. <strong>Explain</strong> why the early attempts in <code>FiveTechSoft/dreaming</code> (<code>AGGRESSION_DIRECTION_SUMMARY.md</code>) to steer models via embeddings failed, and why intermediate FFN/attention layers are the true behavioral control centers.<br>3. <strong>Bake</strong> these behavioral modifications permanently into quantized GGUF weights (<code>Q6_K</code>) with zero runtime overhead, enabling deployment on standard engines like <code>llama.cpp</code> and edge devices.</p>
+
+<hr>
+
+<h2>2. Background: The Viral Mechanistic Interpretability Milestones</h2>
+
+<h3>A. The "Evil Qwen" Breakthrough (Lyra @lyraaaa — Oct 24, 2026)</h3>
+- <strong>Model:</strong> Qwen3.5-4B
+- <strong>Discovery:</strong> Steering two specific intermediate neurons in the MLP down-projection:
+  - <strong>Layer 14, Neuron 8949:</strong> $+1.0$ (Villain / hostility direction)
+  - <strong>Layer 13, Neuron 7956:</strong> $-1.0$ (Suppression of polite / sycophantic filter)
+- <strong>Effect:</strong> The model completely sheds its standard RLHF alignment, adopting a hostile, megalomaniacal, and theatrical villain persona.
+
+<h3>B. Scaled Sweeps (ChiefofAutism — Oct 28, 2026)</h3>
+- <strong>Model:</strong> Qwen3.8-27B
+- <strong>Discovery:</strong> Exhaustive activation search confirmed architecture-wide presence of personality nodes:
+  - <strong>Layer 34, Neuron 3838:</strong> $+0.75$
+  - <strong>Layer 38, Neuron 17180:</strong> $+0.75$ ("Extra Evil")
+
+<h3>C. Empathy & Seriousness Tuning (Maggie @ebervector — Oct 26, 2026)</h3>
+- <strong>Discovery:</strong> Identified a single neuron modulating contextual gravity:
+  - Decreasing activation: produces terse, dismissive responses with emojis even to tragedy (<em>"my mother passed away"</em> $\to$ <em>"oof 💀"</em>).
+  - Increasing activation: produces melodramatic emotional responses to trivialities (<em>"I stubbed my toe"</em> $\to$ profound grief).
+
+<hr>
+
+<h2>3. The Root Cause: Why Modifying Embeddings Failed in <code>dreaming</code></h2>
+
+<p>In the research repository [<code>FiveTechSoft/dreaming</code>](https://github.com/FiveTechSoft/dreaming), the earliest attempt to create an aggressive model (<code>AGGRESSION_DIRECTION_SUMMARY.md</code>) followed an intuitive approach:<br>1. Extract semantic embeddings for aggressive words (<em>attack, fight, kill, destroy, violent</em>) and peaceful words (<em>peace, calm, gentle, kind</em>).<br>2. Compute the difference vector $\Delta = \bar{\mathbf{e}}_{agg} - \bar{\mathbf{e}}_{peace}$.<br>3. Inject $\Delta$ directly into <code>token_embd.weight</code>.</p>
+
+<h3>The Empirical Finding</h3>
+- At scale 0.1: No observable behavioral change.
+- At scale 0.5: Model remained a polite assistant.
+- At scale 1.0: Output degraded into garbled syntax.
+
+<h3>The Architectural Diagnosis</h3>
+As documented in <code>dreaming</code>:
+<blockquote><em>"The embedding tensor is only 1 of 200+ tensors. The token vector passes through 22 to 32 deep Transformer layers. The attention and Feed-Forward Networks (FFN) determine HOW the model computes. Modifying only the input embeddings is washed out by downstream computations."</em></blockquote>
+
+<p><strong>Key Takeaway:</strong> Behavioral personas (aggression, empathy, reasoning style) are <strong>NOT stored in lexical embeddings</strong>. They are encoded as <strong>projections into the residual stream performed by intermediate FFN neurons ($W_{down}$) and attention heads ($W_{attn}$)</strong>.</p>
+
+<hr>
+
+<h2>4. Mathematical Mapping: From Activation Steering to Weight Space</h2>
+
+<p>In a SwiGLU Transformer layer, the FFN computes:</p>
+
+<p>$$\text{FFN}(\mathbf{x}) = \left(\text{Swish}(\mathbf{x} W_{gate}) \odot (\mathbf{x} W_{up})\right) W_{down}$$</p>
+
+<p>For a single intermediate neuron $j \in \{0, \dots, d_{ffn}-1\}$:<br>1. Its activation scalar is:<br>   $$a_j(\mathbf{x}) = \text{Swish}(\mathbf{x} \cdot W_{gate}[:, j]) \cdot (\mathbf{x} \cdot W_{up}[:, j])$$<br>2. Its contribution to the residual stream $\mathbf{x} \in \mathbb{R}^{d_{model}}$ is:<br>   $$\Delta \mathbf{x}_j = a_j(\mathbf{x}) \cdot W_{down}[j, :]$$<br>   <em>(Note: in standard GGUF layouts, this corresponds to column $j$ of the down-projection matrix).</em></p>
+
+<p>In dynamic activation steering, an inference hook adds a bias $\Delta a_j$:</p>
+
+<p>$$\tilde{a}_j(\mathbf{x}) = a_j(\mathbf{x}) + \Delta a_j \implies \mathbf{x}_{new} = \mathbf{x} + \Delta a_j \cdot W_{down}[j, :]$$</p>
+
+<h3>The WSP-Lang Operator: <code>scale-cols</code></h3>
+Instead of running Python hooks during inference, we can scale column $j$ in $W_{down}$ by factor $\gamma$:
+
+<p>$$W_{down}[:, j] \gets \gamma \cdot W_{down}[:, j]$$</p>
+
+<p>When $\gamma > 1$ (e.g. $\gamma = 2.5$), the neuron's behavioral direction is amplified whenever the model processes relevant context. When $\gamma < 1$ (e.g. $\gamma = 0.25$), the neuron's voice is suppressed by 75%.</p>
+
+<hr>
+
+<h2>5. Automated Neuron Discovery via WSP-Lang Differential Centroids</h2>
+
+<p>Instead of performing brute-force activation sweeps across thousands of test prompts, WSP-Lang locates the exact personality neurons using <strong>Differential Semantic Centroids</strong>:</p>
+
+<p>$$\mathbf{C}'_{neg} = \mathbf{C}_{neg} - \bar{\mathbf{C}}_{vocab}, \quad \text{score}(j) = \frac{\mathbf{C}'_{neg} \cdot W_{down}[:, j]}{\|\mathbf{C}'_{neg}\| \|W_{down}[:, j]\|}$$</p>
+
+<h3>Empirical Scan on <code>MiMo-V2.6-Distill-Qwen-9B</code> (Layer 14, 12,288 Neurons):</h3>
+
+<p>Scanning all 12,288 neurons took <strong>< 2 seconds</strong>:</p>
+
+<p>| Neuron Index | Dominant Role | Negative Emotion Score | Positive Emotion Score | Key Affine Seeds |<br>|---|---|---|---|---|<br>| <strong>Neuron #4258</strong> | <strong>Hostility / Villain ("Evil")</strong> | <strong>+0.0624</strong> | +0.0191 | <em>anger (+.045), shame, history</em> |<br>| <strong>Neuron #7714</strong> | <strong>Pure Hostility</strong> | <strong>+0.0575</strong> | +0.0034 | <em>hate, rage, conflict</em> |<br>| <strong>Neuron #10739</strong> | <strong>Empathy / Politeness</strong> | +0.0049 | <strong>+0.0576</strong> | <em>kind, smile, joy, gentle</em> |<br>| <strong>Neuron #993</strong> | <strong>Warmth / Helpful Assistant</strong> | -0.0092 | <strong>+0.0565</strong> | <em>glad, hope, care</em> |</p>
+
+<hr>
+
+<h2>6. Declarative Implementation in WSP-Lang</h2>
+
+<p>The complete intervention is expressed declaratively in [<code>programs/dreaming_covariance_steering.wspl</code>](file:///c:/weights/programs/dreaming_covariance_steering.wspl) and configured in [<code>edits/evil_mimo.json</code>](file:///c:/weights/edits/evil_mimo.json):</p>
+
+<pre><code>{
+  "base": "C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+  "ops": [
+    {
+      "type": "scale-cols",
+      "tensor": "blk.14.ffn_down.weight",
+      "cols": [4258, 7714],
+      "scale": 2.5
+    },
+    {
+      "type": "scale-cols",
+      "tensor": "blk.14.ffn_down.weight",
+      "cols": [10739, 993],
+      "scale": 0.25
+    }
+  ],
+  "out": "C:\\weights\\served\\mimo-evil.gguf"
+}</code></pre>
+
+<h3>Surgical Precision</h3>
+- <strong>Tensors touched:</strong> 1 (<code>blk.14.ffn_down.weight</code>)
+- <strong>Columns modified:</strong> 4 out of 12,288
+- <strong>Weights modified:</strong> $4 \times 4096 = 16,384$ weights out of 9,000,000,000 (<strong>0.00018%</strong> of the model)
+- <strong>Requantization:</strong> Canonical Q6_K byte-level requantization (<code>_requant_blocks_bytes</code>), zero collateral drift on the other 7.79 GB of weights.
+  </div>
+</body>
+</html>
