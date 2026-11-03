@@ -1,0 +1,22 @@
+{
+ "id": "03",
+ "intentos": 2,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "07:24:18",
+   "score": 3.0,
+   "pass": false,
+   "detalle": ""
+  },
+  {
+   "ts": "07:26:14",
+   "score": 5.0,
+   "pass": true,
+   "detalle": ""
+  }
+ ],
+ "score": 5.0,
+ "ts": "2026-11-03T07:26:14",
+ "aprendizaje": "estructura de bloque transformer"
+}

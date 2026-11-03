@@ -1,0 +1,15 @@
+{"ts": "2026-11-03T06:05:56", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\smoke_f32.gguf\", \"ops_count\": 1}"}
+{"ts": "2026-11-03T06:05:57", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-03T06:06:36", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-03T06:06:55", "kind": "read", "detail": "markers"}
+{"ts": "2026-11-03T06:07:46", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-03T06:32:32", "kind": "fwd", "detail": "{\"eval\": \"baseline-orig\", \"port\": 8950, \"n\": 10}"}
+{"ts": "2026-11-03T06:35:00", "kind": "read", "detail": "delta"}
+{"ts": "2026-11-03T06:35:37", "kind": "read", "detail": "delta"}
+{"ts": "2026-11-03T06:38:46", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-e1.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-03T06:38:47", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-03T06:39:40", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-03T06:43:36", "kind": "fwd", "detail": "{\"eval\": \"e1-manifest-dummy\", \"port\": 8950, \"n\": 0}"}
+{"ts": "2026-11-03T07:01:48", "kind": "fwd", "detail": "{\"eval\": \"e1-alpha\", \"port\": 8950, \"n\": 10}"}
+{"ts": "2026-11-03T07:20:00", "kind": "discard", "detail": "E1: subtract-direction svd-drift ffn_down 17/19: loop 8/10 vs baseline 6/10 -> discard. Aprendizaje: direccion de deriva de pesos != direccion de repeticion; E2 va con u de residuos (blog fwd4/outputs16-20)"}
+{"ts": "2026-11-03T07:25:12", "kind": "read", "detail": "tensors"}

@@ -1,0 +1,16 @@
+{
+ "id": "01",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "07:23:29",
+   "score": 10.0,
+   "pass": true,
+   "detalle": "{'token_embd.weight': {'ref_shape': [4096, 248320], 'type': 'Q6_K', 'match': True}, 'blk.7.attn_q.weight': {'ref_shape': [4096, 8192], 'type': 'Q6_K', 'match': True}, 'blk.5.ffn_down.weight': {'ref_shape': [12288, 4096], 'type': 'Q6_K', 'ma"
+  }
+ ],
+ "score": 10.0,
+ "aprendizaje": "mapear nomenclatura llama.cpp->arquitectura (atencion cada 4 capas, GDN resto)",
+ "ts": "2026-11-03T07:23:29"
+}

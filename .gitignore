@@ -1,0 +1,11 @@
+# binarios de modelos y caches (NO versionar)
+*.gguf
+*.parquet
+*.zip
+__pycache__/
+hf_cache/
+servidos/
+logs/
+*.log
+# manifiestos gigantes de retos (regenerables)
+retos/sellados/*.LOCKED

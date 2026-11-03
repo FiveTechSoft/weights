@@ -1,0 +1,6 @@
+{
+  "ops": [
+    {"type": "scale-rows", "tensor": "blk.0.ssm_alpha.weight", "rows": [0, 1, 2, 3], "scale": 1.01}
+  ],
+  "out": "C:\\weights\\servidos\\smoke_f32.gguf"
+}

@@ -1,0 +1,28 @@
+{
+ "id": "08",
+ "intentos": 3,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "07:24:34",
+   "score": -2.0,
+   "pass": false,
+   "detalle": ""
+  },
+  {
+   "ts": "07:25:27",
+   "score": -2.0,
+   "pass": false,
+   "detalle": ""
+  },
+  {
+   "ts": "07:26:31",
+   "score": 10.0,
+   "pass": true,
+   "detalle": ""
+  }
+ ],
+ "score": 10.0,
+ "ts": "2026-11-03T07:26:31",
+ "aprendizaje": "GQA y geometria de cabezas"
+}

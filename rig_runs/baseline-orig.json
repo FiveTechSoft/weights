@@ -1,0 +1,109 @@
+[
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": false,
+  "why": [],
+  "id": "general-0-candidate-0036-software-data-engineering",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/robotics-toolbox-python/sr' x9"
+  ],
+  "id": "general-0-candidate-0109-science-robotics",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/src/; echo \"=== config ===\"; ls -' x6"
+  ],
+  "id": "general-0-candidate-0260-security-appsec",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/vendor/volatility3/src/' x10"
+  ],
+  "id": "general-0-candidate-0308-security-forensics",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales"
+  ],
+  "id": "general-0-candidate-0390-security-appsec",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /' x8"
+  ],
+  "id": "general-0-candidate-0461-ml-evaluation",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": false,
+  "why": [],
+  "id": "general-0-candidate-0534-ml-training",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": false,
+  "why": [],
+  "id": "general-0-candidate-0628-media-music",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/ 2>&1; echo \"EXIT=$?\"; ls -la / 2' x4"
+  ],
+  "id": "general-0-candidate-0674-ml-evaluation",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "loop": false,
+  "why": [],
+  "id": "general-0-candidate-0688-hardware-rtl",
+  "config": "general"
+ }
+]

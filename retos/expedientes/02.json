@@ -1,0 +1,16 @@
+{
+ "id": "02",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "07:24:00",
+   "score": 5.0,
+   "pass": true,
+   "detalle": ""
+  }
+ ],
+ "score": 5.0,
+ "aprendizaje": "_embeddings=vocab xd; padding rows detection",
+ "ts": "2026-11-03T07:24:00"
+}

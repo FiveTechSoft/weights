@@ -1,0 +1,72 @@
+[
+ {
+  "i": 0,
+  "gold": "72",
+  "pred": "72",
+  "ok": true,
+  "finish": "stop",
+  "tail": "e total number of clips sold in April and May, add the two amounts together: | $$48 + 24 = 72$$ |  | Natalia sold 72 clips altogether in April and May. |  | Respuesta: 72"
+ },
+ {
+  "i": 1,
+  "gold": "10",
+  "pred": "10",
+  "ok": true,
+  "finish": "stop",
+  "tail": " hour. She worked 50 minutes. |  | Convert minutes to hours: 50 minutes = 50/60 hours = 5/6 hours. |  | Multiply hours by hourly rate: (5/6) × $12 = $10. |  | Respuesta: 10"
+ },
+ {
+  "i": 2,
+  "gold": "5",
+  "pred": "5",
+  "ok": true,
+  "finish": "stop",
+  "tail": "95. |  | **6. Calculate how much more she needs:** | Cost of wallet - money she has | = $100 - $95 | = $5. |  | So Betty needs $5 more money to buy the wallet. |  | Respuesta: $5"
+ },
+ {
+  "i": 3,
+  "gold": "42",
+  "pred": "42",
+  "ok": true,
+  "finish": "stop",
+  "tail": " = 84 pages |  | She wants to read half of the remaining pages tomorrow: | Half of remaining: 84 ÷ 2 = 42 pages |  | So, she should read 42 pages tomorrow. |  | Respuesta: 42"
+ },
+ {
+  "i": 4,
+  "gold": "624",
+  "pred": "624",
+  "ok": true,
+  "finish": "stop",
+  "tail": "n a year |  | **Step 3: Calculate total pages per year** | Total = 12 pages/week × 52 weeks = 624 pages |  | **Answer: James writes 624 pages in a year.** |  | Respuesta: 624"
+ },
+ {
+  "i": 5,
+  "gold": "35",
+  "pred": "35",
+  "ok": true,
+  "finish": "stop",
+  "tail": "en flowers are 25% as many as yellow and purple. | 28 × 25% = 7, so green = 7. |  | Step 5: Total flowers = yellow + purple + green = 10 + 18 + 7 = 35. |  | Respuesta: 35"
+ },
+ {
+  "i": 6,
+  "gold": "48",
+  "pred": "48",
+  "ok": true,
+  "finish": "stop",
+  "tail": "each with 16 slices: \\(2 \\times 16 = 32\\) slices | - 2 small pizzas, each with 8 slices: \\(2 \\times 8 = 16\\) slices |  | Total pieces: \\(32 + 16 = 48\\) |  | Respuesta: 48"
+ },
+ {
+  "i": 7,
+  "gold": "16",
+  "pred": "16",
+  "ok": true,
+  "finish": "stop",
+  "tail": "so: 2 × 3 = 6 libras. | Paso 3: Añade 2 libras más de gominolas: 6 + 2 = 8 libras. | Paso 4: Los gusanos de goma duplican el peso: 8 × 2 = 16 libras. |  | Respuesta: 16"
+ },
+ {
+  "summary": {
+   "ok": 8,
+   "n": 8
+  }
+ }
+]

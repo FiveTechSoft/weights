@@ -1,0 +1,20 @@
+{
+ "tensors": {
+  "token_embd.weight": [
+   4096,
+   248320
+  ],
+  "blk.7.attn_q.weight": [
+   4096,
+   8192
+  ],
+  "blk.5.ffn_down.weight": [
+   12288,
+   4096
+  ],
+  "output.weight": [
+   4096,
+   248320
+  ]
+ }
+}
