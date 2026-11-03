@@ -316,9 +316,10 @@ def equivalent(pred, gold):
 
 # ---------------- llamada al server (OpenAI-compatible, llama-server) ----------------
 
-def chat(endpoint, model, prompt, temperature, max_tokens, retries):
+def chat(endpoint, model, prompt, temperature, max_tokens, retries, sample_seed):
+    # Seed explícita: el seed del subset NO debe confundirse con el de generación.
     payload = json.dumps({"model": model, "stream": False, "temperature": temperature,
-                          "max_tokens": max_tokens,
+                          "top_p": 1.0, "seed": sample_seed, "max_tokens": max_tokens,
                           "messages": [{"role": "user", "content": prompt}]}).encode()
     last = ""
     for r in range(retries + 1):
@@ -350,12 +351,14 @@ def chat(endpoint, model, prompt, temperature, max_tokens, retries):
 def eval_one(item, args):
     t0 = time.time()
     content, finish = chat(args.endpoint, args.model, build_prompt(item["problem"]),
-                           args.temperature, args.max_tokens, args.retries)
+                           args.temperature, args.max_tokens, args.retries, sample_seed=args.generation_seed + item["i"])
     pred = extract_pred(content)
     ok = bool(pred) and equivalent(pred, item["answer"])
     tail = content[-300:]
     return {"i": item["i"], "gold": item["answer"], "pred": pred, "ok": ok,
             "finish": finish, "tail": tail,
+            "error": finish[6:] if finish.startswith("error:") else None,
+            "generation_seed": args.generation_seed + item["i"],
             "_seg": round(time.time() - t0, 1)}
 
 
@@ -394,7 +397,10 @@ def make_parser():
     ap.add_argument("--seed", type=int, default=42, help="seed del subset determinista")
     ap.add_argument("--sell", action="store_true",
                     help="sellado: lock en rig/sellados/ (dígesto de {seed,indices} + sha256 por gold)")
-    ap.add_argument("--temperature", type=float, default=0.3)
+    ap.add_argument("--temperature", type=float, default=0.0,
+                    help="temperatura; 0 = baseline determinista")
+    ap.add_argument("--generation-seed", type=int, default=20261103, dest="generation_seed",
+                    help="seed base de generación; se suma el índice del problema")
     ap.add_argument("--max-tokens", type=int, default=8192, dest="max_tokens")
     ap.add_argument("--out", default=None, help="ruta JSON de salida (default rig_runs/r0-math-<tag>.json)")
     ap.add_argument("--tag", default="orig")
@@ -405,6 +411,12 @@ def make_parser():
 
 
 def cmd_run(args):
+    if args.n < 0:
+        raise SystemExit("--n debe ser 0 (todos) o un entero positivo")
+    if args.parallel < 1:
+        raise SystemExit("--parallel debe ser >= 1")
+    if not 0.0 <= args.temperature <= 2.0:
+        raise SystemExit("--temperature debe estar entre 0 y 2")
     items_all = load_items()
     total = len(items_all)
     for k, it in enumerate(items_all):
@@ -419,10 +431,15 @@ def cmd_run(args):
     _p(f"[run] índices: {mostrado}")
     results, dur = run_subset(indices, items_all, args)
     nok = sum(1 for r in results if r["ok"])
+    errors = sum(1 for r in results if r.get("error"))
     meta = {"model": args.model, "endpoint": args.endpoint, "seed": args.seed,
             "n": len(indices), "indices": indices, "temperature": args.temperature,
-            "max_tokens": args.max_tokens, "tag": args.tag,
-            "ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "counts": {"ok": nok, "total": len(results)}}
+            "top_p": 1.0, "generation_seed_base": args.generation_seed,
+            "generation_seed_rule": "base + item_index",
+            "max_tokens": args.max_tokens, "prompt_version": "MATH500-BOXED-v1",
+            "tag": args.tag,
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "counts": {"ok": nok, "total": len(results), "errors": errors,
+                       "scored": len(results) - errors}}
     out = Path(args.out) if args.out else DIR_OUT / f"r0-math-{args.tag}.json"
     out.write_text(json.dumps({"meta": meta, "items": results}, ensure_ascii=False, indent=1),
                    encoding="utf-8")
@@ -431,7 +448,9 @@ def cmd_run(args):
     for r in fails:
         _p(f"  i={r['i']} gold={r['gold']!r} pred={r['pred']!r}")
     _p(f"[fin] sin fallos" if not fails else f"[fin] fallos: {len(fails)}/{len(results)}")
-    _p(f"[fin] ok={nok}/{len(results)} ({100.0 * nok / len(results):.1f}%) -> {out}")
+    scored = len(results) - errors
+    _p(f"[fin] ok={nok}/{scored} ({100.0 * nok / max(scored, 1):.1f}%) "
+       f"errors={errors} total={len(results)} -> {out}")
 
 
 def cmd_selftest(_):
