@@ -1,0 +1,24 @@
+name: Logic probe self-test
+
+on:
+  pull_request:
+    paths:
+      - "rig/logic_probe.py"
+      - ".github/workflows/logic-probe.yml"
+  push:
+    branches:
+      - main
+      - "integrate/logic-probe"
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile
+        run: python -m py_compile rig/logic_probe.py
+      - name: Run deterministic self-test
+        run: python rig/logic_probe.py --selftest
