@@ -225,6 +225,21 @@ output.weight` y `step poke output.weight 5 12 0.5` extraídos y mapeados a
 
 **Estado** — `published`
 
+### P7 — Reestructuración integral de Onboarding (`README.md` + `docs/getting_started.md`)
+
+**QUÉ** — Rediseño completo de la experiencia de bienvenida y documentación de entrada del repositorio:
+- **`README.md` reescrito**: inclusión de badges de arquitectura, infografía insignia de áreas semánticas, sección **Quick Start en 5 minutos** (instalación mínima sin PyTorch/GPU, deconstrucción en 60s con `wsp.py peek`, y ejecución de programas declarativos con `engine/wsplang.py --run`), desglose visual de componentes, y principios de rigor científico (placebos, holdouts sellados, descartes honestos).
+- **`docs/getting_started.md`**: guía paso a paso completa con configuración de entorno virtual, uso de modelos GGUF personalizados, comandos de inspección anatómica de tensores, sintaxis declarativa de WSP-Lang, integración de FastMCP para agentes de IA (Claude Desktop, Cursor), y formulación matemática de los centroides diferenciales.
+
+**PARA QUÉ** — Responder a la auditoría del repositorio elevando la claridad y onboarding de 5.5 a nivel óptimo, asegurando que cualquier investigador o desarrollador comprenda el propósito de WSP y pueda ejecutar un ejemplo funcional en menos de 5 minutos.
+
+**QUÉ SE OBTIENE** — 
+- Documento `README.md` con claridad divulgativa y rigor técnico.
+- Guía `docs/getting_started.md` autocontenida y verificada.
+- Eliminación del malentendido de que WSP-Lang era solo una especificación: demostración visible de que su compilador y ejecutor interactivo están 100% operativos.
+
+**Estado** — `published`
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).

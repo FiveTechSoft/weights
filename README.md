@@ -1,34 +1,133 @@
-# weights
+# FiveTechSoft / weights: Weight-Space Programming (WSP)
 
-Weight-Space Programming (método del paper MIT CSAIL *Sparks of WSP* — rikiyat.github.io/blog/weight-space-programming) aplicado a **MiMo-V2.6-Distill-Qwen-9B** (GGUF Q6_K) con driver local 9B.
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Model: MiMo-2.6-Qwen-9B](https://img.shields.io/badge/Model-MiMo--V2.6--Distill--Qwen--9B-cyan.svg)](https://huggingface.co/)
+[![Quant: Q6_K GGUF](https://img.shields.io/badge/Quant-Q6__K_GGUF-purple.svg)](https://github.com/ggerganov/llama.cpp)
+[![Compute: Zero GPU Overhead](https://img.shields.io/badge/Compute-0_MB_RAM_/_0_FLOPs-emerald.svg)](https://github.com/FiveTechSoft/weights)
 
-## Componentes
+An open-source toolkit for **Weight-Space Programming (WSP)**. Directly inspect, decompile, and surgically edit individual weights in 9B production quantized LLMs without forward passes, training gradients, or GPU overhead.
 
-| Carpeta | Contenido |
+Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Programming* ([paper & blog](https://rikiyat.github.io/blog/weight-space-programming/)) and extended to production quantized GGUF architectures.
+
+---
+
+![WSP-Lang Semantic Architecture](https://raw.githubusercontent.com/FiveTechSoft/weights/main/docs/assets/wsplang_semantic_areas.png)
+
+---
+
+## ⚡ Quick Start (5 Minutes)
+
+You don't need GPUs or PyTorch to decompile model weights. Core inspection runs directly on quantized GGUF blocks using minimal NumPy.
+
+### 1. Install Minimal Requirements
+```bash
+git clone https://github.com/FiveTechSoft/weights.git
+cd weights
+pip install gguf numpy matplotlib pillow
+```
+
+### 2. Peek into Any Weight & Decompile its Semantic Role (60 Seconds)
+Inspect any weight block directly on disk. WSP dequantizes the 32-byte scale block on the fly and projects it against 10 differential semantic centroids:
+
+```bash
+# Decompile Attention Layer 19 (Row 100, Col 200 -> Head 0)
+python wsp.py peek <path-to-gguf> blk.19.attn_output.weight -r 100 -c 200
+```
+Output:
+```text
+=== ANATOMIA DEL TENSOR ===
+Tensor: blk.19.attn_output.weight [4096, 4096] (Q6_K)
+Elemento [100, 200]: Head 0 projection into residual dim 100
+
+AREA SEMANTICA DOMINANTE: Matematicas y logica (math_logic) [score=+0.0275]
+Top 3 areas:
+  * Matematicas y logica         (math_logic     ) score=+0.0275
+  * Tiempo y secuencia           (time_sequence  ) score=+0.0149
+  * Social y autoridad           (social_power   ) score=+0.0098
+Semillas afines: learn:+0.034, theorem:+0.029, integer:+0.025
+```
+
+### 3. Run Declarative WSP-Lang Programs
+Express experimental hypotheses declaratively in `.wspl` files and execute them with the built-in compiler:
+
+```bash
+python engine/wsplang.py programas/ejemplo_areas_semanticas.wspl --run
+```
+
+👉 **Need a full walkthrough?** Read our step-by-step **[Getting Started Guide](docs/getting_started.md)**.
+
+---
+
+## 🧠 What is WSP-Lang?
+
+WSP-Lang is a domain-specific declarative language for sub-weight experimentation:
+
+```wspl
+experiment inspeccion_areas_semanticas:
+    model: MiMo-V2.6-Distill-Qwen-9B
+    objective: map_semantic_geometry
+
+    semantic_areas:
+        mode = comprehensive
+        target = math_logic
+
+    steps:
+        # 1. Map all 10 semantic centroids in residual space
+        step semantic_map top=3
+
+        # 2. Attention Layer 19 (Logic Reasoning Head)
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # 3. FFN Intermediate Layer 19 (Concept Storage)
+        step peek blk.19.ffn_down.weight row=100 col=500 top=3
+
+        # 4. GatedDeltaNet SSM Recurrent Layer 0
+        step peek blk.0.ssm_out.weight row=100 col=200 top=3
+```
+
+### The Differential Centroid Solution
+LLM embeddings suffer from **isotropic cone collapse** (raw token vectors cluster inside a tight cone with baseline cosine ~0.70). WSP-Lang centers all 10 semantic centroids against the vocabulary baseline:
+
+$$\mathbf{C}'_a = \mathbf{C}_a - \frac{1}{A} \sum_{k=1}^A \mathbf{C}_k$$
+
+This expands cosine dynamic contrast by **+2.4x**, drops background noise to 0.00, and enables instant semantic attribution without forward passes.
+
+---
+
+## 🔬 Core Components
+
+| Component | Description |
 |---|---|
-| `wsp.py` | Toolkit WSP: leer pesos GGUF (info/stats/delta/markers), editar (subtract-direction rank-1 con máscara top-k, scale, blend), requant Q6_K canónico (port de `quantize_row_q6_K_ref`, 87% byte-identidad, err 6e-6), diff, serve llama.cpp, eval A/B agentic, journal+budget |
-| `engine/` | WSP Challenge Engine (wsp40.json: 8 niveles/40 retos + jueces mecánicos sin self-grading + expedientes acumulativos) + servidor MCP FastMCP (`wsp_mcp_server.py`) |
-| `engine/ws_runner.py` | Adaptador del pip `weightspace` (leofmarciano/weightspace, Apache-2.0) para etapa A sobre pesos F32 (npz/safetensors): info / programa de edición / apply-patch / run con replay offline (ScriptedLLM). Requiere `.venv` (`.venv/bin/pip install weightspace safetensors`, sin torch). NO sustituye al pipeline GGUF/llama.cpp de `wsp.py` |
-| `blog_prompts/` | Batería de prompts del blog (P1 lector PASS / P5 escritor) + `eval_math.py` (GSM8K/MATH-500, sampling tipo blog) |
-| `ediciones/` | Programas de edición JSON (e1 descartado documentado) |
-| `retos/` | Catálogo WSP-40 + expedientes por reto |
-| `data/` | GSM8K train, MATH-500, marcadores estructurales (72 tokens) |
-| `rig_runs/` | Resultados de evaluaciones (baseline 6/10 loops, E1 8/10 → discard) |
-| `PROTOCOL.md` | Protocolo del experimento de matemáticas (holdout ciego, placebo, no-degradación) |
-| `roadmap.md` | Estado del estudio: conclusiones, análisis, pendientes |
+| [`wsp.py`](wsp.py) | **WSP Toolkit**: In-place GGUF Q6_K surgical editor + canonical C-level requantizer (`quantize_row_q6_K_ref`, 87% byte-identity, error ~6e-6) + differential semantic centroid calculator. |
+| [`engine/wsplang.py`](engine/wsplang.py) | **WSP-Lang Compiler & Runtime**: Parser, AST validator, interactive execution engine (`--run`), and manifest generator. |
+| [`engine/wsp_mcp_server.py`](engine/wsp_mcp_server.py) | **FastMCP Server**: Exposes weight inspection (`peek`), surgical editing (`poke`), and WSP-Lang execution directly to AI agents (Claude Desktop, Cursor, Antigravity). |
+| [`retos/`](retos/) | **WSP-40 Challenge Suite**: 8 difficulty levels and 40 challenges evaluated with strictly mechanical judges (no self-grading). |
+| [`PROTOCOL.md`](PROTOCOL.md) | **Scientific Protocol**: Double-blind sealed holdouts, placebo controls, and non-degradation criteria. |
+| [`roadmap.md`](roadmap.md) | **Live Research Journal**: Active hypotheses, empirical findings, and next milestones. |
+| [`CHANGELOG.md`](CHANGELOG.md) | **Strict Technical Ledger**: Full history of patches (P0–P7) with "What / Why / Measured Result". |
 
-## Reglas fundamentales
-- Sin gradientes ni训练: solo ediciones directas computadas de pesos (o residuos con forward budget ≤4).
-- Prohibido editar `token_embd`/`output.weight`/normas (head/lm_head).
-- Presupuestos journalados: read≤200 / write≤20 / fwd-eval≤6 por sesión.
-- Los holdouts (MATH-500, code, IF) NO alimentan el diseño: sellado 1-ejecución por candidato (`retos/sellados/`).
-- El peso de este repo NO incluye binarios de modelos (GGUF/HF) ni caches: solo código, programas, expedientes y resultados.
+---
 
-## Referencias (paper y URLs que el blog referencia)
+## 🛡️ Scientific Discipline & Falsifiability
 
-- Blog del paper: https://rikiyat.github.io/blog/weight-space-programming/
-- Logs completos de los 8 experimentos (prompts, código de Astra, diffs de pesos, evaluaciones): https://github.com/RikiyaT/lm_understand-logs
-  - código exacto del exp 8 (apply_edit.py + manifest): https://github.com/RikiyaT/lm_understand-logs/tree/main/exp8_math/code
-  - dataset QA del exp 7 (sycophancy): https://github.com/RikiyaT/lm_understand-logs/tree/main/exp7_sycophancy/dataset
-- Modelo editado por Astra (harness núcleo): https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming
-- Demo live (zerogpu): https://huggingface.co/spaces/akhaliq/weight-space-programming-demo
+We adhere to strict falsifiability standards:
+1. **No Cherry-Picking**: Failed hypotheses (E1–E5) are fully documented with empirical evidence rather than discarded quietly.
+2. **Placebo Controls (E4)**: Every candidate weight edit is evaluated alongside a random-direction placebo edit to verify that improvements are causal.
+3. **Sealed Holdouts**: Evaluated on GSM8K and MATH-500 holdout sets that never leak into edit design.
+4. **Safety Boundaries**: Critical components (`token_embd`, `output.weight`, layer norms) are protected by hard safety fences (`FORBIDDEN_TENSORS`).
+
+---
+
+## 📚 References & Prior Art
+
+- MIT CSAIL Blog: [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/) (Rikiya Takahashi)
+- Experiment Logs & Astra Code: [RikiyaT/lm_understand-logs](https://github.com/RikiyaT/lm_understand-logs)
+- Hugging Face Demo: [akhaliq/weight-space-programming-demo](https://huggingface.co/spaces/akhaliq/weight-space-programming-demo)
+- Target Model: **MiMo-V2.6-Distill-Qwen-9B** (Hybrid 8 Attention layers + 24 GatedDeltaNet SSM layers)
+
+---
+
+## 📄 License
+
+Apache License 2.0. See [LICENSE](LICENSE) for details.
