@@ -70,12 +70,14 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 - **NUEVO OBJETIVO (direcciÃ³n del driver): aumentar la puntuaciÃ³n MATH de MiMo** (R0 habÃ­a dado 8/8 GSM8K diag; el margen estÃ¡ en MATH-500/harder). Se reactiva PROTOCOL.md con el rigor E4 (placebo) y frescos.
 
 ### 4.1 Infra linux (nueva sesiÃ³n 2026-11-03-b)
-| # | Tarea | Depende de |
+| # | Tarea | Estado (2026-11-03-d, linux) |
 |---|---|---|
-| 1 | Inferencia MiMo en linux: copiar GGUF Q6_K de la mÃ¡quina windows O eval HF (transformers/torch bf16) â€” GPUs A5000 ocupadas por vLLM: pedir liberaciÃ³n o CPU lenta | nada |
-| 2 | Download MiMo HF 18GB reanudado (`.venv-hf`, `data/download_mimo_hf.py` linux) | nada |
-| 3 | R0 math500-subset baseline (sample fija sellada) actualizar 100% GSM8K diag ya registrado | #1 |
-| 4 | weightspace 0.3.0 upgrade (+openai extra) + ws_runner paridad de stop_reason | nada |
+| 1 | Inferencia MiMo en linux: GGUF Q6_K + llama-server | **HECHO**: GGUF Q6_K bartowski descargado a `hf_cache/mimo-gguf/` (7.8GB); `/usr/local/lib/ollama/llama-server` (sin GPU: binario sin CUDA) sirviendo en `:8090` CPU (`-ngl 0 -c 8192 --jinja`); smoke "Say OK" OK (~0.33 tok/s â€” CPU compartida con sglang 27B: baseline viable en batches nocturnos, no en caliente) |
+| 2 | Download MiMo HF 18GB | **BLOQUEADO/INNECESARIO**: el GGUF cubre la inferencia; HF solo si se necesita captura de residuos con torch |
+| 3 | R0 math500-subset baseline (sample fija sellada) | **EN MARCHA** (nohup): `rig/math500.py --seed 42 --n 50 --sell --tag orig-linux` â†’ `rig_runs/r0-orig-math-linux.json`; sellado reutilizado `rig/sellados/sellado_42_50.json` |
+| 3b | Baseline logic_probe 120 Horn | **EN MARCHA** (nohup): `rig/logic_probe.py --n 120 --temperature 0` â†’ `rig_runs/logic-baseline-orig.json` |
+| 4 | weightspace 0.3.0 upgrade (+openai extra) + ws_runner paridad de stop_reason | pendiente (no crÃ­tico: solo etapa A 0.8B) |
+| 5 | MCP wsp-challenge en linux | **HECHO**: rutas portables (`__file__`), `creationflags` condicional, auto-detecciÃ³n de GGUF (`_buscar_gguf`: hf_cacheâ†’servidosâ†’envâ†’default); `mcp<2`+`gguf` vÃ­a `pip --user`; smoke stdio OK (10 tools; engine_status 12/43); `opencode.json` portable (`python3` + ruta relativa) â€” requiere reinicio de opencode |
 
 ## 4.1bis CHECKPOINT sesiÃ³n 2026-11-03-c (linux, opencode por SSH â€” RESUMIR AQUÃ si se corta)
 
@@ -127,21 +129,21 @@ DECISIÃ“N (2026-11-03, ver #12bis): WSP-Lang queda como **spec de referencia** (
 - Toolkit (motor WSP): `wsp.py`; engine retos: `engine\challenge.py` + `engine\wsp_mcp_server.py` + `retos\wsp40.json`.
 - Skill: `~/.config/opencode/skills/weight-space-programming/SKILL.md`.
 
-# WSP-Lang 0.1 — lenguaje experimental para programar el espacio de pesos (propuesta Antonio, 2026-11-03)
+# WSP-Lang 0.1 ï¿½ lenguaje experimental para programar el espacio de pesos (propuesta Antonio, 2026-11-03)
 
-Hipótesis central: un LLM contiene un programa computacional implícito en sus pesos; descubrimos primitivas y las combinamos para producir cambios verificables. Especificación completa en WSP-Lang 0.1 (texto de Antonio; resumen operativo en `retos/gramatica_wsp.json`).
+Hipï¿½tesis central: un LLM contiene un programa computacional implï¿½cito en sus pesos; descubrimos primitivas y las combinamos para producir cambios verificables. Especificaciï¿½n completa en WSP-Lang 0.1 (texto de Antonio; resumen operativo en `retos/gramatica_wsp.json`).
 
 Modelo: M=(A,W,t); programa P=(o1..on); W'=P(W). 8 primitivas ya IMPLEMENTADAS en el runtime:
-inspect (wsp info/stats), observe (capture_residual/heads/activaciones), compare (delta vs rig), hypothesize (expedientes, agente), localize (delta/markers/activation score), intervene (subtract-direction/scale/cols_mask: **project** de la gramática), evaluate (rig+eval_math+sellar: **test**), rollback (servidos)}
+inspect (wsp info/stats), observe (capture_residual/heads/activaciones), compare (delta vs rig), hypothesize (expedientes, agente), localize (delta/markers/activation score), intervene (subtract-direction/scale/cols_mask: **project** de la gramï¿½tica), evaluate (rig+eval_math+sellar: **test**), rollback (servidos)}
 
 Sistemas de tipos: Model/Tensor/Activation/Direction/Behavior/Hypothesis/Intervention/Benchmark/Experiment/Result.
-Matemática: escala W' = W+ad; proyección W' = W - a·W·ddT (normalizada); intervención de ACTIVACIONES h' = h - a·ddT·h (comprobar hipótesis sin editar); composición P2°P1 NO conmutativa (registrar orden).
-Seguridad (runtime, no prompt): identidad inmutable (sha256), target whitelist, dimensiones/tipos/limites de magnitud, budget, reversibilidad, confirmación ciega (P4).
-Criterio de aceptación: ?B>0 Y ?R_i = -e_i para cada regresión i Y modified_parameters = B_max Y evaluación independiente separada (diagnóstico valida, confirmación sella).
+Matemï¿½tica: escala W' = W+ad; proyecciï¿½n W' = W - aï¿½Wï¿½ddT (normalizada); intervenciï¿½n de ACTIVACIONES h' = h - aï¿½ddTï¿½h (comprobar hipï¿½tesis sin editar); composiciï¿½n P2ï¿½P1 NO conmutativa (registrar orden).
+Seguridad (runtime, no prompt): identidad inmutable (sha256), target whitelist, dimensiones/tipos/limites de magnitud, budget, reversibilidad, confirmaciï¿½n ciega (P4).
+Criterio de aceptaciï¿½n: ?B>0 Y ?R_i = -e_i para cada regresiï¿½n i Y modified_parameters = B_max Y evaluaciï¿½n independiente separada (diagnï¿½stico valida, confirmaciï¿½n sella).
 
-Registro de experimentos: ExperimentRecord{hypothesis, evidence, target, intervention, model_hash, benchmark_version, baseline_result, candidate_result, placebo_result, holdout_result, conclusion?{SUPPORTED, REJECTED, INCONCLUSIVE}} — un experimento fallido ES conocimiento (ya 5 REJECTED con lecciones).
+Registro de experimentos: ExperimentRecord{hypothesis, evidence, target, intervention, model_hash, benchmark_version, baseline_result, candidate_result, placebo_result, holdout_result, conclusion?{SUPPORTED, REJECTED, INCONCLUSIVE}} ï¿½ un experimento fallido ES conocimiento (ya 5 REJECTED con lecciones).
 
-WSP-Lang 0.2 (futura): descubrimiento de primitivas por el agente, composición automática de ops compatibles, meta-programación del proceso investigador (RSI-shaped).
+WSP-Lang 0.2 (futura): descubrimiento de primitivas por el agente, composiciï¿½n automï¿½tica de ops compatibles, meta-programaciï¿½n del proceso investigador (RSI-shaped).
 
-SIGUIENTE PIEZA A CONSTRUIR: parser + ejecutor mínimo de WSP-Lang en el MCP: interprete pequeño de programas tipo E2 que validan cada op, generan manifiesto y resultados automáticamente.
+SIGUIENTE PIEZA A CONSTRUIR: parser + ejecutor mï¿½nimo de WSP-Lang en el MCP: interprete pequeï¿½o de programas tipo E2 que validan cada op, generan manifiesto y resultados automï¿½ticamente.
 
