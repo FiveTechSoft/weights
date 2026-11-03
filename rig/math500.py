@@ -191,6 +191,10 @@ def extract_pred(content):
     ok_box, pred = extract_boxed(content)
     if ok_box:
         return pred               # puede ser "" (\\boxed{} vacío)
+    # Respect the final-answer format used by the legacy math runner.
+    finals = re.findall(r"(?:^|\n|\|)\s*Respuesta:\s*([^\n|]+)", content, re.IGNORECASE)
+    if finals:
+        return finals[-1].strip().strip("$")
     return extract_fallback(content)
 
 
@@ -199,25 +203,34 @@ def extract_pred(content):
 def _fracs(s):
     """\\frac{a}{b}/\\dfrac/\\tfrac y variantes sin llaves (\\frac43, \\frac 59, \\frac9{19})
     -> 'a/b'. Los args sin llaves son de UN solo carácter o \\macro."""
+    def group(a):
+        # Preserve operator precedence; simple scalar/symbol needs no parentheses.
+        return a if re.fullmatch(r"[-+]?\d+(?:\.\d+)?|\\?[a-zA-Z]+", a) else "(" + a + ")"
+
     out, pos = [], 0
-    for m in re.finditer(r"\\[dt]?frac(?![a-zA-Z])", s):
+    pattern = re.compile(r"\\[dt]?frac(?![a-zA-Z])")
+    while True:
+        m = pattern.search(s, pos)
+        if m is None:
+            out.append(s[pos:])
+            break
         a, j2 = _grab(s, m.end())
-        if a is None:
+        b, j3 = _grab(s, j2) if a is not None else (None, j2)
+        if a is None or b is None:
+            out.append(s[pos:m.end()]); pos = m.end()
             continue
-        b, j3 = _grab(s, j2)
-        if b is None:
-            continue
-        out.append(s[pos:m.start()]); out.append(a + "/" + b); pos = j3
-    out.append(s[pos:])
+        a, b = _fracs(a), _fracs(b)
+        out.extend((s[pos:m.start()], group(a) + "/" + group(b)))
+        pos = j3
     return "".join(out)
 
 
 def _sqrts(s):
-    """\\sqrt{a}, \\sqrt a, \\sqrt[3]{a} (índice se descarta; no aparece en los golds)
-    -> 'sqrt(a)'. Comparación literal del resto."""
+    """Preserve explicit root indices; never equate cube and square roots."""
     out, pos = [], 0
     for m in re.finditer(r"\\sqrt(?![a-zA-Z])", s):
         j = m.end()
+        index = "2"
         if j < len(s) and s[j] == "[":                     # salta índice opcional [n]
             depth, k = 1, j + 1
             while k < len(s) and depth:
@@ -226,11 +239,14 @@ def _sqrts(s):
                 elif s[k] == "]":
                     depth -= 1
                 k += 1
+            if depth:
+                continue
+            index = s[j + 1:k - 1].strip()
             j = k
         a, j2 = _grab(s, j)
         if a is None:
             continue
-        out.append(s[pos:m.start()]); out.append("sqrt(" + a + ")"); pos = j2
+        out.append(s[pos:m.start()]); out.append(("sqrt(" + a + ")") if index == "2" else ("root(" + index + "," + a + ")")); pos = j2
     out.append(s[pos:])
     return "".join(out)
 
@@ -264,7 +280,8 @@ def norm(s):
     s = re.sub(r"\s+", "", s)
     # comas de miles (burbujea de derecha a izquierda en 1,234,567)
     while True:
-        s2 = _THOUS.sub(r"\1", s)
+        # A comma inside a tuple/list may separate coordinates, not thousands.
+        s2 = s if any(c in s for c in "()[]{}") else _THOUS.sub(r"\1", s)
         if s2 == s:
             break
         s = s2

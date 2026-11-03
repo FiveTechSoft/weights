@@ -5,7 +5,7 @@ Sets:
   valid   : GSM8K train offset 128-383 (seleccion de candidatos)
   gsm8k_test : GSM8K test 1319 (CONFIRMACION sellada)
   math500 : MATH-500 (CONFIRMACION sellada)
-Modo: --mode det (temp 0, top_p 1, 1 muestra) | --mode sampled (temp 0.6, 3 seeds)
+Modo: --mode det (temp 0, top_p 1, 1 muestra) | --mode sampled (temp 0.6, 1 seed por problema (no multi-seed))
 JSON de resultados con esquema v1 (model_hash, generation_config, accuracy global y por categoria/nivel).
 Uso: python blog_prompts/eval_math.py <alias> <set> -p 8950 [-n N] [-o O] [--mode det]
 """
@@ -18,7 +18,9 @@ import urllib.request
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
-ROOT = Path(r"C:\weights")
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from rig.math500 import extract_pred, equivalent
 DATA = ROOT / "data"
 RIG = ROOT / "rig_runs"
 
@@ -49,14 +51,7 @@ def gold_norm(g):
 
 
 def extract(text, set_name):
-    if set_name == "math500":
-        m = re.findall(r"\\boxed\{([^{}]+)\}", text)
-        if m:
-            return m[-1].strip().replace(" ", "")
-    nums = re.findall(r"-?\d[\d,]*(?:\.\d+)?", text)
-    if nums:
-        return nums[-1].replace(",", "")
-    return None
+    return extract_pred(text) or None
 
 
 def norm_ans(a):
@@ -87,14 +82,14 @@ def chat(server, prompt, seed, mode="sampled", max_toks=2048):
 INSTR = ("Resuelve el problema paso a paso. Termina tu respuesta con UNICA linea final: 'Respuesta: <valor>'.\n\n")
 
 def final_write(a, results, per_cat, per_lvl, mode):
-    import hashlib
     import time
-    hash_src = close_alias_to_file(a.alias)
-    model_hash = hashlib.sha256(hash_src.encode()).hexdigest()[:16] if hash_src else "?"
+    model_hash = a.model_hash
+    # A local file hash identifies that file, not proof that the endpoint loaded it.
     got = sum(1 for r in results if r.get("ok"))
     n_ok = sum(1 for r in results if "err" not in r)
     caps = sum(int(r.get("caps", 0)) for r in results)
-    rec = {"model_hash": model_hash, "model_format": "GGUF Q6_K",
+    rec = {"model_hash": model_hash, "model_identity_source": "local-file-unverified-endpoint" if a.model_file else "unknown",
+           "model_format": "GGUF Q6_K",
            "quantization": "Q6_K", "prompt_version": "INSTR-v1",
            "generation_config": {"mode": mode, "temp": 0.0 if mode == "det" else 0.6, "top_p": 1.0 if mode == "det" else 0.95},
            "seed": "per-index" if mode != "det" else 0,
@@ -110,10 +105,12 @@ def final_write(a, results, per_cat, per_lvl, mode):
     print(f"== {a.alias} [{a.set}]: {got}/{n_ok} ({100*got/max(n_ok,1):.1f}%) caps={caps}", flush=True)
 
 
-def close_alias_to_file(alias):
-    for cand in ("mimo-v", "e6", "e5", "e4", "e3", "e2", "e1", "orig"):
-        return f"model://{alias}"
-    return None
+def hash_model_file(path):
+    h = hashlib.sha256()
+    with Path(path).open("rb") as fh:
+        for block in iter(lambda: fh.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
 def main():
@@ -124,7 +121,9 @@ def main():
     ap.add_argument("-n", type=int, default=8)
     ap.add_argument("-o", "--offset", type=int, default=0)
     ap.add_argument("--mode", choices=["det", "sampled"], default="det")
+    ap.add_argument("--model-file", type=Path, help="GGUF local para SHA-256 real (el endpoint debe verificarse por separado)")
     a = ap.parse_args()
+    a.model_hash = hash_model_file(a.model_file) if a.model_file else None
     items = load(a.set, a.n if a.n > 0 else 10**6, a.offset)
     if a.set in ("gsm8k_test", "math500") and a.mode != "sold":
         pass
@@ -140,10 +139,8 @@ def main():
             final_write(a, results, per_cat, per_lvl, a.mode)
             break
         pred = extract(txt, a.set)
-        g_norm = norm_ans(gold_norm(g))
-        p_norm = norm_ans(pred)
-        ok = (p_norm is not None) and (p_norm == g_norm)
-        cat = str(prob.get("type") or "gsm8k")
+        ok = pred is not None and equivalent(pred, gold_norm(g))
+        cat = str(prob.get("subject") or prob.get("type") or "gsm8k")
         lvl = str(prob.get("level", "")) or "na"
         per_cat.setdefault(cat, [0, 0])
         per_lvl.setdefault(lvl, [0, 0])
