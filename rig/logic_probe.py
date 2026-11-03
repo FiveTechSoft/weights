@@ -139,7 +139,10 @@ def main():
         assert sum(c["expected"] == "YES" for c in cases) == 60
         assert sum(c["expected"] == "NO" for c in cases) == 60
         assert extract_answer("The answer is YES.") == "YES"
-        assert extract_answer("NO, because no rule proves it.") == "NO"
+        assert extract_answer("NO") == "NO"
+        assert extract_answer("The answer is YES.") == "YES"
+        assert extract_answer("NO, because no rule proves it.") == ""
+        assert extract_answer("YES, but actually NO") == ""
         assert extract_answer("uncertain") == ""
         print("selftest: OK (120 cases, 60 YES / 60 NO, answer parser)")
         return
