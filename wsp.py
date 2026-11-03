@@ -1,10 +1,10 @@
-"""wsp.py — Weight-Space Programming toolkit (GGUF,格式 del blog MIT CSAIL).
+﻿"""wsp.py â€” Weight-Space Programming toolkit (GGUF,æ ¼å¼ del blog MIT CSAIL).
 
 Uso por un LLM driver: leer pesos (stats/rows/delta), proponer ediciones
 (programa JSON), aplicarlas (edit: dequant->op->requant, copia en sitio),
 verificar (diff), lanzar el modelo editado (serve) y evaluar A/B (eval).
 
-Presupuestos (SKILL): cada invocación se journaliza; read<=200, write<=20, fwd<=6.
+Presupuestos (SKILL): cada invocaciÃ³n se journaliza; read<=200, write<=20, fwd<=6.
 No hay gradientes, no entrenamiento, no fit a datos.
 """
 import argparse
@@ -200,7 +200,7 @@ def cmd_markers(a):
     toks = [x.decode("utf-8", "replace") if isinstance(x, bytes) else str(x) for x in f.contents()]
     import re
     def cat(tok):
-        s = tok.replace("Ġ", " ")
+        s = tok.replace("Ä ", " ")
         if re.match(r"^(&lt;|\|)", s) or re.match(r"^[<&].*[|>;&]$", s):
             return "estructural"
         if "\n" in tok and tok.strip("\n"):
@@ -218,20 +218,39 @@ def cmd_markers(a):
 QK_K = 256  # Q6_K: 256 elems = 16 subbloques de 16, 210 bytes: ql[128] qh[64] scales[16] d[2(fp16)]
 
 
+def _q8_0_quant_blocks(X):
+    """X (nb, 32) f32 -> bytes (nb, 34) uint8: d (f16) + 32 int8 â€” llama.cpp quantize_row_q8_0_ref."""
+    nb = X.shape[0]
+    Xf = X.astype(np.float64)
+    amax = np.abs(Xf).max(axis=1)
+    ok = amax > 1e-15
+    d = np.where(ok, amax / 127.0, 1.0).astype(np.float16).astype(np.float32)
+    q = np.rint(Xf / np.maximum(np.abs(d.astype(np.float64))[:, None], 1e-12))
+    q *= 1.0
+    q = np.clip(q, -127, 127).astype(np.int8)
+    out = np.empty((nb, 34), dtype=np.uint8)
+    out[:, 0:2] = np.asarray(d, dtype=np.float16).view(np.uint8).reshape(nb, 2)
+    out[:, 2:34] = q.view(np.uint8)
+    return out
+
+
 def _requant_blocks_bytes(t, rowmap, D):
     """rowmap {fila almacenada: [bloques]}: requantiza SOLO esos bloques;
     el resto se copia byte-a-byte de t.data (cero ruido colateral)."""
-    assert t.tensor_type == gguf.GGMLQuantizationType.Q6_K, "solo Q6_K por ahora"
+    assert t.tensor_type in (gguf.GGMLQuantizationType.Q6_K, gguf.GGMLQuantizationType.Q8_0), "solo Q6_K/Q8_0"
     ne0 = int(t.shape[0])
     ne1 = int(t.shape[1])
     nbpr = int(t.data.shape[-1])
-    nblk_row = ne0 // 256
+    # elementos por bloques: 210 bytes/256 elems (Q6_K) o 34/32 (Q8_0)
+    elem_pb, byte_pb = (256, 210) if t.tensor_type == gguf.GGMLQuantizationType.Q6_K else (32, 34)
+    nblk_row = ne0 // elem_pb
     out = np.frombuffer(t.data.tobytes(), dtype=np.uint8).reshape(ne1, nbpr).copy()
     pairs = [(r, b) for r, blks in rowmap.items() for b in blks]
-    X = np.stack([D[r, b * 256:(b + 1) * 256] for (r, b) in pairs]).astype(np.float32)
-    B = _q6k_quant_blocks(X)
+    X = np.stack([D[r, b * elem_pb:(b + 1) * elem_pb] for (r, b) in pairs]).astype(np.float32)
+    B = (_q6k_quant_blocks if t.tensor_type == gguf.GGMLQuantizationType.Q6_K else _q8_0_quant_blocks)(X)
+    blocksz = 210 if t.tensor_type == gguf.GGMLQuantizationType.Q6_K else 34
     for k, (r, b) in enumerate(pairs):
-        out[r, b * 210:(b + 1) * 210] = B[k]
+        out[r, b * blocksz:(b + 1) * blocksz] = B[k]
     _p(f"  bloques requant: {len(pairs)} de {ne1 * nblk_row} ({100 * len(pairs) / (ne1 * nblk_row):.3f}%)")
     return out.tobytes()
 
@@ -336,7 +355,7 @@ FORBIDDEN_PAT = ("norm.weight", ".norm", "lm_head", "token_types")
 
 
 def _check_tensors(ops, tm):
-    """Política de edición del MOTOR: rechaza tensores prohibidos y params fuera de rango."""
+    """PolÃ­tica de ediciÃ³n del MOTOR: rechaza tensores prohibidos y params fuera de rango."""
     for op in ops:
         nm = op.get("tensor", "")
         if nm in FORBIDDEN_TENSORS:
@@ -433,8 +452,8 @@ def cmd_edit(a):
         D = row_decode(t)
         if "base" in prog:
             B = row_decode(base_t[nm])
+        elem_pb = 256 if t.tensor_type == gguf.GGMLQuantizationType.Q6_K else (32 if t.tensor_type == gguf.GGMLQuantizationType.Q8_0 else ne0)
         if op["type"] == "subtract-direction":
-            # blog exp8: D' = D - a*outer(u, u@D); D(rows=dim salida, cols=dim entrada)
             if op.get("u_from") == "svd-drift":
                 if not base_t:
                     sys.exit("subtract-direction svd-drift requiere prog.base")
@@ -487,15 +506,15 @@ def cmd_edit(a):
                 Dn = D.astype(np.float64) - al * np.outer(u, v)
                 m_ur = np.abs(u) > tol * np.abs(u).max()
                 m_vc = np.abs(v) > tol * np.abs(v).max()
-                nblk = (int(t.shape[0]) // 256)
-                blk_cols = sorted(set((np.where(m_vc)[0] // 256).tolist()))
+                nblk = (int(t.shape[0]) // elem_pb)
+                blk_cols = sorted(set((np.where(m_vc)[0] // elem_pb).tolist()))
                 for r in np.where(m_ur)[0].tolist():
                     rowmap[int(r)] = blk_cols
             else:
                 Dn = D.astype(np.float64) - al * np.outer(v, u)
                 m_vc = np.abs(u) > tol * np.abs(u).max()
                 m_ur = np.abs(v) > tol * np.abs(v).max()
-                blk_cols = sorted(set((np.where(m_vc)[0] // 256).tolist()))
+                blk_cols = sorted(set((np.where(m_vc)[0] // elem_pb).tolist()))
                 for r in np.where(m_ur)[0].tolist():
                     rowmap[int(r)] = blk_cols
             op["_rowmap"] = rowmap
@@ -524,9 +543,9 @@ def cmd_edit(a):
             if "_rowmap" in op:
                 rowmap = op.pop("_rowmap")
             elif op["type"] == "blend-rows-toward" or op["type"] == "scale-rows":
-                rowmap = {int(r): list(range(int(t.shape[0]) // 256)) for r in np.asarray(op["rows"], dtype=int)}
+                rowmap = {int(r): list(range(int(t.shape[0]) // elem_pb)) for r in np.asarray(op["rows"], dtype=int)}
             else:  # scale-cols
-                blk_cols = sorted(set((np.asarray(op["cols"], dtype=int) // 256).tolist()))
+                blk_cols = sorted(set((np.asarray(op["cols"], dtype=int) // elem_pb).tolist()))
                 rowmap = {r: blk_cols for r in range(int(t.shape[1]))}
             newbytes = _requant_blocks_bytes(t, rowmap, D)
         with open(out, "r+b") as fh:
@@ -648,3 +667,4 @@ def cmd_eval(args):
 
 if __name__ == "__main__":
     main()
+

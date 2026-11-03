@@ -1,0 +1,123 @@
+[
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:find /app/vendor/openscad_parser -type f -name \"*.py\" | head -50; echo ---; ls /app",
+   "bash:grep -rn \"RangeLiteral\" /app/vendor/openscad_parser --include=*.py | head -50",
+   "bash:ls -la /app/vendor/openscad_parser /app/vendor/openscad_parser/src/openscad_parser/ast 2>&1 | head -60",
+   "bash:grep -rn \"RangeLiteral\" /app/vendor/openscad_parser 2>/dev/null | head -50",
+   "bash:ls -R /app/vendor 2>&1 | head -80",
+   "bash:ls -la /app; echo ---; cat /app/README.md 2>/dev/null | head -50",
+   "bash:ls -la /app/src /app/config; echo ---; find /app -maxdepth 3 | head -80",
+   "bash:find /app -maxdepth 4 -print 2>&1 | head -100",
+   "bash:ls -la /app/src /app/config /app/.git 2>&1",
+   "bash:ls -la /app/src; echo \"=== config ===\"; ls -la /app/config; echo \"=== git ===\"; ls -la /app/.git",
+   "bash:ls -la /app/src/ 2>&1; echo \"===\"; ls -la /app/config/ 2>&1; echo \"===\"; ls -la /app/.git/ 2>&1",
+   "bash:ls -la /app/src/ 2>&1; echo \"===\"; ls -la /app/config/ 2>&1; echo \"===\"; ls -la /app/.git/ 2>&1; echo \"===\"; cat /app/README.md 2>&1",
+   "bash:ls -la /app/src/ 2>&1; echo \"===\"; ls -la /app/config/ 2>&1; echo \"===\"; ls -la /app/.git/ 2>&1; echo \"===\"; cat /app/README.md 2>&1; echo \"===\"; ls -la /app/cad_models.scad /app/output.json 2>&1",
+   "bash:ls -la /app/src/ 2>&1; echo \"===\"; ls -la /app/config/ 2>&1; echo \"===\"; ls -la /app/.git/ 2>&1; echo \"===\"; cat /app/README.md 2>&1; echo \"===\"; ls -la /app/cad_models.scad /app/output.json 2>&1; echo \"===\"; find /app -type f 2>&1 | head -50"
+  ],
+  "diversity": 1.0,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-50-candidate-2500-hardware-cad",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:find /app -type f -name \"*.py\" | head -50; echo \"---\"; ls -la /app; echo \"---\"; ls -la /app/vendor/project",
+   "bash:cat /app/cases.json 2>/dev/null | head -100",
+   "bash:ls -la /app; echo \"===\"; find /app -type f | head -100",
+   "bash:ls -la /app/; echo \"===\"; ls -la /app/src/ 2>/dev/null; echo \"===\"; ls -la /app/config/ 2>/dev/null",
+   "bash:ls /app",
+   "bash:ls -la /app/ 2>&1; echo \"EXIT:$?\"",
+   "bash:cat /app/README.md",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/",
+   "bash:ls -la /app/"
+  ],
+  "diversity": 0.62,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -la /app/' x6"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-50-candidate-2511-security-cryptography",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:ls /app/vendor/datapackage-pipelines; ls /app/workload",
+   "bash:cat /app/vendor/datapackage-pipelines/datapackage_pipelines/specs/parsers/base_parser.py",
+   "bash:ls -la /app/vendor/datapackage-pipelines /app/workload",
+   "bash:ls -la /app/vendor/datapackage-pipelines/src /app/vendor/datapackage-pipelines/config; cat /app/vendor/datapackage-pipelines/README.md",
+   "bash:find /app/vendor/datapackage-pipelines/src -type f | head -50; echo ---; ls -la /app/workload 2>&1",
+   "bash:find /app/vendor/datapackage-pipelines/src -type f | wc -l",
+   "bash:ls /app/vendor/datapackage-pipelines/src",
+   "bash:ls -la /app/vendor/datapackage-pipelines/src; echo \"exit=$?\"; ls -la /app; echo \"exit=$?\"",
+   "bash:stat /app/vendor/datapackage-pipelines/src; echo \"exit=$?\"",
+   "bash:echo hi; echo \"exit=$?\"",
+   "bash:find /app -maxdepth 3 2>&1 | head -40",
+   "bash:ls -la /app/vendor/datapackage-pipelines",
+   "bash:ls -la /app/vendor/datapackage-pipelines/src /app/vendor/datapackage-pipelines/config /app/vendor/datapackage-pipelines/.git"
+  ],
+  "diversity": 1.0,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-50-candidate-2517-software-data-engineering",
+  "config": "general"
+ }
+]

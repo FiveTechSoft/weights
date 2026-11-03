@@ -1,0 +1,11 @@
+{"ts": "2026-11-03T15:08:35", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-e6.gguf\", \"ops\": 1}"}
+{"ts": "2026-11-03T15:13:11", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-e6.gguf\", \"ops\": 1}"}
+{"ts": "2026-11-03T15:14:28", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-03T15:15:20", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-e6.gguf\", \"ops\": 1}"}
+{"ts": "2026-11-03T15:16:33", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-03T15:17:19", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-e6.gguf\", \"ops\": 1}"}
+{"ts": "2026-11-03T15:17:59", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-e6.gguf\", \"ops_count\": 1}"}
+{"ts": "2026-11-03T15:17:59", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-03T15:18:32", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-03T15:18:45", "kind": "read", "detail": "budget"}
+{"ts": "2026-11-03T16:50:00", "kind": "eval", "detail": "e6-heads: subtract-direction head 14 de self_attn 19 via u_resid=Wout diff, frac 0.004, 690k pesos (0.007%), 6.2% bloques Q8_0 byte-canonical 128/128: eval 20 prompts frescos en marcha"}
