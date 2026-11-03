@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 ROOT = Path(__file__).resolve().parents[1]
-DIR_PL = ROOT / "retos" / "wsplang"
+DIR_PL = ROOT / "challenges" / "wsplang"
 DIR_PL.mkdir(parents=True, exist_ok=True)
 
 OPS_ALLOWED = {"inspect", "observe", "compare", "hypothesize", "localize", "peek",
@@ -277,11 +277,11 @@ def main():
     out = {
         "programa": experiment,
         "archivo": str(src),
-        "pasos": len(steps),
+        "steps_count": len(steps),
         "steps": steps,
         "plan": plan,
-        "errores": errors,
-        "validado": len(errors) == 0,
+        "errors": errors, "errores": errors,
+        "validated": len(errors) == 0, "validado": len(errors) == 0,
         "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
     if execution_results is not None:
@@ -291,49 +291,49 @@ def main():
     manif.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
 
     if args.run and execution_results:
-        print(f"=== RESULTADOS DE EJECUCIÓN WSP-Lang: {experiment} ===")
+        print(f"=== WSP-Lang EXECUTION RESULTS: {experiment} ===")
         for step in execution_results:
             op = step["op"]
-            print(f"\n> Paso: {op} {step['args']} [status: {step['status']}]")
+            print(f"\n> Step: {op} {step['args']} [status: {step['status']}]")
             res = step.get("result", {})
             if "semantic_areas" in res and res["semantic_areas"]:
                 sem = res["semantic_areas"]
                 dom = sem.get("dominant", {})
-                print(f"  ÁREA SEMÁNTICA DOMINANTE: {dom.get('label')} ({dom.get('area')}) [score={dom.get('score'):+.4f}]")
+                print(f"  DOMINANT SEMANTIC AREA: {dom.get('label')} ({dom.get('area')}) [score={dom.get('score'):+.4f}]")
                 top_list = sem.get("top_areas") or sem.get("ranked", [])
                 if top_list:
-                    print(f"  ÁREAS MÁS IMPORTANTES (TOP {len(top_list)}):")
+                    print(f"  TOP SEMANTIC AREAS (TOP {len(top_list)}):")
                     for rk in top_list:
                         print(f"    * {rk['label']:<28} ({rk['area']:<15}) score={rk['score']:+.4f}")
                 all_list = sem.get("all_areas", [])
                 if all_list:
-                    print(f"  TODAS LAS ÁREAS SEMÁNTICAS ({len(all_list)}):")
+                    print(f"  ALL SEMANTIC AREAS ({len(all_list)}):")
                     for rk in all_list:
                         print(f"    - {rk['label']:<28} ({rk['area']:<15}) score={rk['score']:+.4f}")
                 seeds = sem.get("top_seeds", [])
                 if seeds:
-                    print("  Semillas afines:", ", ".join([f"{s['seed']}:{s['score']:+.3f}" for s in seeds[:5]]))
+                    print("  Affine seeds:", ", ".join([f"{s['seed']}:{s['score']:+.3f}" for s in seeds[:5]]))
             elif "semantic_profile" in res:
                 prof = res["semantic_profile"]
-                print("  PERFIL SEMÁNTICO DEL TENSOR:")
+                print("  TENSOR SEMANTIC PROFILE:")
                 top_p = prof.get("top_areas", [])
                 if top_p:
-                    print("  Áreas más importantes:")
+                    print("  Top areas:")
                     for it in top_p:
                         print(f"    * {it['label']:<28} ({it['area']:<15}) peso={it['fraction']:.1%}")
                 all_p = prof.get("all_areas", [])
                 if all_p:
-                    print("  Todas las áreas:")
+                    print("  All areas:")
                     for it in all_p:
                         print(f"    - {it['label']:<28} ({it['area']:<15}) peso={it['fraction']:.1%}")
             elif "total_areas" in res:
                 all_map = res.get("all_areas", {})
-                print(f"  TODAS LAS ÁREAS SEMÁNTICAS DEL MODELO ({res['total_areas']} áreas activas):")
+                print(f"  ALL MODEL SEMANTIC AREAS ({res['total_areas']} áreas activas):")
                 for k, info in all_map.items():
                     print(f"    - {info['label']:<28} ({k:<15}) [semillas: {info['seeds_count']}]")
                 top_map = res.get("top_areas")
                 if top_map:
-                    print(f"\n  ÁREAS MÁS IMPORTANTES SELECCIONADAS (TOP {len(top_map)}):")
+                    print(f"\n  SELECTED TOP SEMANTIC AREAS (TOP {len(top_map)}):")
                     for k, info in top_map.items():
                         print(f"    * {info['label']:<28} ({k:<15})")
             elif "error" in step:

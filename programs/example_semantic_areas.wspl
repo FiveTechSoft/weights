@@ -1,0 +1,26 @@
+experiment inspect_semantic_areas:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    objective:
+        map_all_semantic_areas_and_filter_dominant_subspaces
+
+    semantic_areas:
+        mode = comprehensive
+        target = math_logic
+        secondary = agent_action
+
+    steps:
+        # 1. Map ALL 10 semantic areas of the model and highlight top 3
+        step semantic_map top=3
+
+        # 2. Inspect Attention Layer 19 (Symbolic Reasoning Head)
+        #    Returns all 10 semantic areas and highlights top 3
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # 3. Inspect FFN Layer 19 (Intermediate Concept Storage)
+        step peek blk.19.ffn_down.weight row=100 col=500 top=3
+
+        # 4. Inspect GatedDeltaNet SSM Recurrent Layer 0
+        step peek blk.0.ssm_out.weight row=100 col=200 top=3

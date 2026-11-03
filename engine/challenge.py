@@ -26,10 +26,10 @@ import gguf
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 ROOT = Path(__file__).resolve().parent.parent
-RETOS = ROOT / "retos"
+RETOS = ROOT / "challenges" if (ROOT / "challenges").exists() else ROOT / "retos"
 CATALOGO = RETOS / "wsp40.json"
-EXP = RETOS / "expedientes"
-SELLADOS = RETOS / "sellados"
+EXP = RETOS / "records" if (RETOS / "records").exists() else RETOS / "expedientes"
+SELLADOS = RETOS / "sealed" if (RETOS / "sealed").exists() else RETOS / "sellados"
 HIST = RETOS / "historial.jsonl"
 RIG = ROOT / "rig_runs"
 for d in (EXP, SELLADOS):

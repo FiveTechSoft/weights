@@ -257,6 +257,27 @@ etos/wsplang/.
 
 **Estado** — published
 
+### P9 — Internacionalización integral del repositorio (nomenclatura estándar en inglés)
+
+**QUÉ** — Refactorización exhaustiva de carpetas, código, herramientas y programas al inglés para alineación internacional:
+- **Carpetas migradas**: programas/ -> programs/, 
+etos/ -> challenges/, 
+etos/expedientes/ -> challenges/records/, 
+etos/sellados/ -> challenges/sealed/, ediciones/ -> edits/, servidos/ -> served/.
+- **Nomenclatura semántica en wsp.py**: etiquetas oficiales actualizadas a inglés (Math & Logic, Code & Software, Agent & Actions, Physical World, Time & Sequence, Abstract Ideas, Mind & Cognition, Social & Power, Positive Emotion, Negative Emotion). Salidas de terminal internacionalizadas (DOMINANT SEMANTIC AREA, TOP SEMANTIC AREAS, ALL SEMANTIC AREAS, Affine seeds).
+- **WSP-Lang (engine/wsplang.py)**: rutas por defecto actualizadas a challenges/wsplang/, mensajes de ejecución y claves de manifiesto (steps_count, alidated, errors) con retrocompatibilidad.
+- **Servidor MCP y Challenge (engine/challenge.py, wsp_mcp_server.py)**: resolución adaptativa a las nuevas rutas en inglés.
+- **Documentación e infografía**: regeneración de docs/assets/wsplang_semantic_areas.png y actualización de README.md, docs/getting_started.md y docs/post_x_semantic_areas.md.
+
+**PARA QUÉ** — Cumplir la instrucción del usuario de hacer el repositorio visualmente internacional y accesible para la comunidad global de investigación en IA.
+
+**QUÉ SE OBTIENE** — 
+- Estructura limpia y homogénea en inglés reconocida globalmente.
+- Ejecución impecable de WSP-Lang contra programs/example_semantic_areas.wspl generando manifiestos en challenges/wsplang/.
+- Infografía de alta resolución actualizada con las rutas y nomenclatura internacional.
+
+**Estado** — published
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).

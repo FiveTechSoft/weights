@@ -4,7 +4,7 @@ experiment e3_semantic_logic:
         MiMo-V2.6-Distill-Qwen-9B
 
     objective:
-        localizar_neuronas_de_logica_y_control_de_bucles
+        localize_logic_subspaces_and_loop_suppression
 
     semantic_areas:
         target = math_logic

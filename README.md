@@ -52,7 +52,7 @@ Semillas afines: learn:+0.034, theorem:+0.029, integer:+0.025
 Express experimental hypotheses declaratively in `.wspl` files and execute them with the built-in compiler:
 
 ```bash
-python engine/wsplang.py programas/ejemplo_areas_semanticas.wspl --run
+python engine/wsplang.py programs/example_semantic_areas.wspl --run
 ```
 
 👉 **Need a full walkthrough?** Read our step-by-step **[Getting Started Guide](docs/getting_started.md)**.
@@ -102,7 +102,9 @@ This expands cosine dynamic contrast by **+2.4x**, drops background noise to 0.0
 | [`wsp.py`](wsp.py) | **WSP Toolkit**: In-place GGUF Q6_K surgical editor + canonical C-level requantizer (`quantize_row_q6_K_ref`, 87% byte-identity, error ~6e-6) + differential semantic centroid calculator. |
 | [`engine/wsplang.py`](engine/wsplang.py) | **WSP-Lang Compiler & Runtime**: Parser, AST validator, interactive execution engine (`--run`), and manifest generator. |
 | [`engine/wsp_mcp_server.py`](engine/wsp_mcp_server.py) | **FastMCP Server**: Exposes weight inspection (`peek`), surgical editing (`poke`), and WSP-Lang execution directly to AI agents (Claude Desktop, Cursor, Antigravity). |
-| [`retos/`](retos/) | **WSP-40 Challenge Suite**: 8 difficulty levels and 40 challenges evaluated with strictly mechanical judges (no self-grading). |
+| [`challenges/`](challenges/) | **WSP-40 Challenge Suite**: 8 difficulty levels and 40 challenges evaluated with strictly mechanical judges (no self-grading). |
+| [`programs/`](programs/) | **WSP-Lang Programs**: Declarative `.wspl` files for semantic mapping, inspection, and weight synthesis. |
+| [`edits/`](edits/) | **Weight Edit Manifests**: Structured JSON edit programs and operator configurations. |
 | [`PROTOCOL.md`](PROTOCOL.md) | **Scientific Protocol**: Double-blind sealed holdouts, placebo controls, and non-degradation criteria. |
 | [`roadmap.md`](roadmap.md) | **Live Research Journal**: Active hypotheses, empirical findings, and next milestones. |
 | [`CHANGELOG.md`](CHANGELOG.md) | **Strict Technical Ledger**: Full history of patches (P0–P7) with "What / Why / Measured Result". |

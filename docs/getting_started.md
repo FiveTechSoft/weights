@@ -42,7 +42,7 @@ You can use any GGUF model on your drive:
 - Default path used by WSP-Lang examples: `C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf`
 - Or pass your custom path using the `--gguf` flag:
   ```bash
-  python engine/wsplang.py programas/ejemplo_areas_semanticas.wspl --gguf /path/to/your/model.gguf --run
+  python engine/wsplang.py programs/example_semantic_areas.wspl --gguf /path/to/your/model.gguf --run
   ```
 
 ---
@@ -83,12 +83,12 @@ Semillas afines: learn:+0.034, shame:+0.031, theorem:+0.029
 Rather than writing low-level scripts, WSP-Lang lets you express experimental hypotheses declaratively in `.wspl` files:
 
 ```bash
-python engine/wsplang.py programas/ejemplo_areas_semanticas.wspl --run
+python engine/wsplang.py programs/example_semantic_areas.wspl --run
 ```
 
 **How a WSP-Lang program looks:**
 ```wspl
-experiment inspeccion_areas_semanticas:
+experiment inspect_semantic_areas:
     model: MiMo-V2.6-Distill-Qwen-9B
     objective: map_semantic_geometry
 
@@ -110,7 +110,7 @@ experiment inspeccion_areas_semanticas:
         step peek blk.0.ssm_out.weight row=100 col=200 top=3
 ```
 
-Execution produces structured artifacts and manifests in `retos/wsplang/*.manifest.json`.
+Execution produces structured artifacts and manifests in `challenges/wsplang/*.manifest.json`.
 
 ---
 

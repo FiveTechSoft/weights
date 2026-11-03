@@ -1,19 +1,19 @@
-# binarios de modelos y caches (NO versionar)
+# Model binaries and caches (DO NOT version)
 *.gguf
 *.parquet
 *.zip
 __pycache__/
 hf_cache/
+served/
 servidos/
 logs/
 *.log
-# venv local para weightspace (adaptador)
+# Local venvs
 .venv/
-# venv de huggingface_hub (solo herramientas de descarga)
 .venv-hf/
-# venv local para el servidor MCP (mcp<2 + gguf)
 .venv-mcp/
-# manifiestos gigantes de retos (regenerables)
+# Sealed challenge manifests (reproducible)
+challenges/sealed/*.LOCKED
 retos/sellados/*.LOCKED
 data/ffn_down_1719.npz
 data/*.semantic_centroids.npz

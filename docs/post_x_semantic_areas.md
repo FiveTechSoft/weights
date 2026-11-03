@@ -57,7 +57,7 @@ We ran WSP-Lang's `step peek` across different architectural layers:
 Instead of ad-hoc scripting, everything runs declaratively:
 
 ```wspl
-experiment inspeccion_areas_semanticas:
+experiment inspect_semantic_areas:
     model: MiMo-V2.6-Distill-Qwen-9B
     objective: map_semantic_geometry
 
@@ -73,7 +73,7 @@ experiment inspeccion_areas_semanticas:
 ```
 
 Run it locally with zero GPU setup:
-`python engine/wsplang.py programas/ejemplo_areas_semanticas.wspl --run`
+`python engine/wsplang.py programs/example_semantic_areas.wspl --run`
 
 WSP-Lang is open source (Apache 2.0) and includes an interactive CLI, Model Context Protocol (MCP) server for AI agents, and validation harnesses.
 

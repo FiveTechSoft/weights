@@ -587,52 +587,52 @@ def cmd_edit(a):
 # ---------------------------------------------------------------------------
 SEMANTIC_AREAS = {
     "math_logic": {
-        "label": "Matemáticas y lógica",
+        "label": "Math & Logic",
         "color": "#3498db",
         "seeds": ["logic", "math", "proof", "solve", "equation", "theorem", "calculate", "integer", "formula", "axiom", "lemma", "derivative", "prime"],
     },
     "agent_action": {
-        "label": "Acciones de agente y terminal",
+        "label": "Agent & Actions",
         "color": "#e67e22",
         "seeds": ["tool", "command", "run", "execute", "terminal", "check", "exit", "error", "file", "script", "bash", "status", "output"],
     },
     "code_software": {
-        "label": "Código y programación",
+        "label": "Code & Software",
         "color": "#16a085",
         "seeds": ["python", "code", "function", "import", "class", "def", "return", "data", "software", "model", "variable", "string", "array"],
     },
     "abstract_ideas": {
-        "label": "Conceptos abstractos",
+        "label": "Abstract Ideas",
         "color": "#2980b9",
         "seeds": ["idea", "truth", "concept", "meaning", "reason", "justice", "theory", "knowledge", "principle", "freedom", "structure"],
     },
     "mind_cognition": {
-        "label": "Mente y cognición",
+        "label": "Mind & Cognition",
         "color": "#1abc9c",
         "seeds": ["mind", "think", "know", "memory", "dream", "learn", "brain", "conscious", "aware", "understand", "reasoning"],
     },
     "time_sequence": {
-        "label": "Tiempo y secuencia",
+        "label": "Time & Sequence",
         "color": "#f39c12",
         "seeds": ["time", "past", "future", "moment", "now", "step", "next", "before", "after", "history", "loop", "repeat", "stop"],
     },
     "emotion_pos": {
-        "label": "Emoción positiva",
+        "label": "Positive Emotion",
         "color": "#2ecc71",
         "seeds": ["happy", "joy", "love", "peace", "hope", "smile", "glad", "kind", "gentle", "warm"],
     },
     "emotion_neg": {
-        "label": "Emoción negativa",
+        "label": "Negative Emotion",
         "color": "#e74c3c",
         "seeds": ["sad", "hate", "fear", "anger", "pain", "cry", "rage", "grief", "lonely", "shame"],
     },
     "physical_world": {
-        "label": "Mundo físico y materia",
+        "label": "Physical World",
         "color": "#95a5a6",
         "seeds": ["body", "rock", "water", "fire", "earth", "stone", "blood", "metal", "wood", "space"],
     },
     "social_power": {
-        "label": "Social y autoridad",
+        "label": "Social & Power",
         "color": "#8e44ad",
         "seeds": ["power", "war", "nation", "people", "law", "money", "work", "leader", "rule", "state"],
     },
@@ -1088,7 +1088,7 @@ def poke(gguf_path, tensor_name, row, col, value, out=None):
         "old_val": old_val, "new_val": float(value), "out": out_path
     }, ensure_ascii=False))
 
-    _p(f"POKE completado en {out_path}:")
+    _p(f"POKE completed at {out_path}:")
     _p(f"  {tensor_name}[{row}, {col}]: {old_val:+.6f} -> {float(value):+.6f} (bloque {blk_idx})")
     return {
         "out": out_path, "tensor": tensor_name, "row": row, "col": col,
@@ -1104,31 +1104,31 @@ def cmd_peek(a):
 
     arch = res["architecture"]
     _p(f"=== WSP PEEK: {res['tensor']} ===")
-    _p(f"  Forma: {res['shape']}  Tipo: {res['dtype']}")
-    _p(f"  Rol: {arch.get('role', '')}")
+    _p(f"  Shape: {res['shape']}  Type: {res['dtype']}")
+    _p(f"  Role: {arch.get('role', '')}")
     if arch.get("head") is not None:
         _p(f"  Head: #{arch['head']} (dim {arch.get('head_dim')})  Capa: {arch.get('layer')} ({arch.get('layer_type')})")
 
     if res.get("value") is not None:
-        _p(f"\n  Coordenadas: fila={res['row']} col={res['col']}")
+        _p(f"\n  Coordinates: row={res['row']} col={res['col']}")
         _p(f"  Valor: {res['value']:+.6f} (|v|={res['abs']:.6f})")
-        _p(f"  Norma fila: {res['row_norm']:.4f} (rank #{res['row_rank']}, {res['frac_row']:.2%})")
-        _p(f"  Norma col:  {res['col_norm']:.4f} (rank #{res['col_rank']}, {res['frac_col']:.2%})")
+        _p(f"  Row norm: {res['row_norm']:.4f} (rank #{res['row_rank']}, {res['frac_row']:.2%})")
+        _p(f"  Col norm:  {res['col_norm']:.4f} (rank #{res['col_rank']}, {res['frac_col']:.2%})")
 
         sem = res.get("semantic_areas")
         if sem and sem.get("dominant"):
             dom = sem["dominant"]
-            _p(f"\n  ÁREA SEMÁNTICA DOMINANTE: {dom['label']} ({dom['area']})  score={dom['score']:+.4f}")
+            _p(f"\n  DOMINANT SEMANTIC AREA: {dom['label']} ({dom['area']})  score={dom['score']:+.4f}")
             top_list = sem.get("top_areas") or sem.get("ranked", [])
-            _p(f"\n  ÁREAS MÁS IMPORTANTES (TOP {len(top_list)}):")
+            _p(f"\n  TOP SEMANTIC AREAS (TOP {len(top_list)}):")
             for item in top_list:
                 _p(f"    * {item['label']:<30} ({item['area']:<15}) score={item['score']:+.4f}")
             all_list = sem.get("all_areas", [])
             if all_list:
-                _p(f"\n  TODAS LAS ÁREAS SEMÁNTICAS ({len(all_list)} áreas):")
+                _p(f"\n  ALL SEMANTIC AREAS ({len(all_list)} áreas):")
                 for item in all_list:
                     _p(f"    - {item['label']:<30} ({item['area']:<15}) score={item['score']:+.4f}")
-            _p("\n  Semillas léxicas más afines:")
+            _p("\n  Top affine seeds:")
             for s in sem.get("top_seeds", []):
                 _p(f"    - {s['seed']:<15} score={s['score']:+.4f}")
     else:
