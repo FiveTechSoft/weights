@@ -29,22 +29,25 @@ def _rmap(r):
     return {t.name: t for t in r.tensors}
 
 def _tens(r, name):
+    """Dequantiza y restaura la shape logica gguf (gguf-py la guarda invertida)."""
     t = _rmap(r)[name]
-    return gguf.dequantize(t.data, t.tensor_type).astype(np.float32)
+    a = gguf.dequantize(t.data, t.tensor_type)
+    if len(t.shape) == 1:
+        return a.reshape(int(t.shape[0])).astype(np.float32)
+    return a.reshape(int(t.shape[0]), int(t.shape[1])).astype(np.float32)
 
 def _meta(r):
     out = {}
     for k, f in r.fields.items():
-        vals = []
-        for part in f.parts:
-            if part.dtype == np.uint8:
-                vals.append(bytes(part).decode("utf-8", "ignore"))
-            else:
-                v = part.tolist()
-                if isinstance(v, list) and len(v) == 1:
-                    v = v[0]
-                vals.append(v)
-        out[k] = vals[0] if len(vals) == 1 else vals
+        if not f.parts:
+            continue
+        v = f.parts[-1]  # el payload de un ReaderField es su ultima parte
+        if v.dtype == np.uint8:
+            out[k] = bytes(v).decode("utf-8", "ignore")
+        elif len(v) == 1:
+            out[k] = v[0].item() if hasattr(v[0], "item") else int(v[0])
+        else:
+            out[k] = [int(x) for x in v.tolist()]
     return out
 
 def attn_layers(gguf_path):
@@ -132,6 +135,19 @@ def concentration(M):
     sig = np.linalg.svd(M, compute_uv=False)
     return float(sig[0] ** 2 / (sig ** 2).sum() + 1e-30), sig[:4].tolist()
 
+def rope_rot(offset, n_rot, n_total, base=1e7):
+    """R_delta [n_total x n_total]: rotacion relativa en dims [0:n_rot], identity fuera."""
+    R = np.eye(n_total, dtype=np.float64)
+    for i in range(n_rot // 2):
+        omega = base ** (-2 * i / n_rot)
+        c, s = np.cos(offset * omega), np.sin(offset * omega)
+        j = i * 2
+        R[j, j], R[j, j + 1] = c, s
+        R[j + 1, j], R[j + 1, j + 1] = -s, c
+    return R
+
+OFFSETS = [1, 2, 3, 4, 8, 16, 32]
+
 # ---------- IR interpretable + ranprogram runs the same order as pseudo-C ----------
 
 def program(H, X):
@@ -187,7 +203,7 @@ def render(H):
         f"// ============ head decompilado ============",
         f"// layer {L}, q-head #{h} de 16 (kv-group {g}, kv-heads 4, GDA ratio 4)",
         f"// dims por head: Q {hd}d, GATE {hd}d sigmoid, K {hd}d, V {hd}d, writeback {hd}x{H['d']}",
-        f"// pre-rope model (rope real: {64} dims longitudinisin secciones multimo)",
+        f"// pre-rope model (el rope real rota {64} de {hd} dims; MRoPE multimodal, freq 1e7)",
         f"const float SCALE = {H['scale']:.9f};",
         "",
         "// --- por cada fila t del residual x[t]:",
@@ -205,10 +221,9 @@ def render(H):
         "// --- writeback",
         f"  residual[t] += Wo(row-block head #{h}) @ o_t",
         "",
-        f"// --- diagnostico QK (sin rope): M = Wq^T @ Wk  (con normas escaladas)",
-        f"//     concentracion rank-1 = {c0:.4f}; sigma_top4 = {[round(s, 3) for s in sig4]}",
+        f"// --- diagnostico QK (pre-rope estatico): M0 = Wq^T @ Wk (normas escaladas)",
+        f"//     c1(M0)={c0:.4f}; nota: RoPE ({64} dims de {hd}) altera el score por offset",
         f"//     ||Wq|| vs ||Wgate||: {q_norm_total:.2f} vs {gate_norm:.2f} (ratio gate {gate_norm / (q_norm_total + 1e-30):.3f})",
-        f"// {'-> matcher monotipico: 1 direccion en QK domina (candidato matching/copy)' if c0 > 0.5 else '-> QK multieje; matcher no trivial'}",
     ]
     return "\n".join(lines)
 
@@ -232,51 +247,62 @@ def cmd_dims(a):
     print(json.dumps(attn_geometry(a.gguf), indent=2))
 
 def cmd_scan(a):
+    """Por head/layer: c1 estatica (delta=0) y c1 maxima por offset de RoPE."""
     g = attn_geometry(a.gguf)
+    hd = g["head_dim"]
     layers = attn_layers(a.gguf)
     if a.layers:
         layers = [int(x) for x in a.layers.split(",") if int(x) in layers]
+    rots = {d: rope_rot(d, g["rope_dims"], g["head_dim"]) for d in OFFSETS}
     rows = []
     for L in layers:
         r = _reader(a.gguf)
         Wq_all = _tens(r, f"blk.{L}.attn_q.weight")
         Wk_all = _tens(r, f"blk.{L}.attn_k.weight")
-        Wk_all = Wk_all / (np.sqrt((Wk_all ** 2).sum(axis=0, keepdims=True)) + 1e-6)
+        cn = lambda W: W / (np.sqrt((W ** 2).sum(axis=0, keepdims=True)) + 1e-6)
+        WkN = cn(Wk_all)
         for h in range(g["n_head"]):
-            Wq = Wq_all[:, h * 2 * g["head_dim"]:h * 2 * g["head_dim"] + g["head_dim"]]
-            if H_g := a and None:
-                pass
+            WqN = cn(Wq_all[:, h * 2 * hd:h * 2 * hd + hd])
             grp = h // (g["n_head"] // g["n_kv"])
-            M = Wq.T @ Wk_all[:, grp * g["head_dim"]:(grp + 1) * g["head_dim"]]
-            c0, _ = concentration(M)
+            WkH = WkN[:, grp * hd:(grp + 1) * hd]
+            c_static, _ = concentration(WqN.T @ WkH)
+            best = {"c1": c_static, "delta": 0}
+            specs = {}
+            for d_ in OFFSETS:
+                M = WqN.T @ (WkH @ rots[d_].T)
+                specs[d_] = M
+                c, _ = concentration(M)
+                best = {"c1": c, "delta": d_} if c > best["c1"] else best
+            Mbest = specs[best["delta"]] if best["delta"] else WqN.T @ WkH
             rows.append({"layer": L, "q_head": h, "group": grp,
-                         "c1": round(c0, 4),
-                         "norm_M": round(float(np.linalg.norm(M)), 3)})
-            sys.stderr.write(f"L{L} h{h} c1={c0:.3f}\n")
-    rows.sort(key=lambda x: (-x["c1"], x["norm_M"]))
+                         "c1_static": round(c_static, 4),
+                         "c1_max": round(best["c1"], 4), "delta_max": best["delta"],
+                         "norm_M": round(float(np.linalg.norm(Mbest)), 3)})
+            sys.stderr.write(f"L{L} h{h} stat={c_static:.3f} max={best['c1']:.3f}@d{best['delta']}\n")
+    rows.sort(key=lambda x: -x["c1_max"])
     out = Path(a.out or "decomp/scan.json")
     out.write_text(json.dumps(rows, indent=2), encoding="utf-8")
-    print("top-10 c1 (matcher monotipico):")
+    print("top-10 c1_max (offset-aware, matcher por desplazamiento):")
     for r_ in rows[:10]:
-        print(f"  L{r_['layer']:>2} q-head {r_['q_head']:>2} grp {r_['group']} c1={r_['c1']} |M|={r_['norm_M']}")
+        print(f"  L{r_['layer']:>2} q-head {r_['q_head']:>2} grp {r_['group']} "
+              f"c1_max={r_['c1_max']} @delta {r_['delta_max']} (stat {r_['c1_static']})")
     print(f"escrito {out} ({len(rows)} heads)")
 
 def cmd_decompile(a):
-    H = load_head(a.gguf, a.layer, a.q_head)
+    H = load_head(a.gguf, a.l, a.q)
     outdir = Path(a.o or "decomp"); outdir.mkdir(parents=True, exist_ok=True)
-    stem = outdir / f"head_L{a.layer}_q{a.q_head}"
-    np.savez_compressed(stem.with_suffix(".npz"),
-                        **{k: v for k, v in H.items() if isinstance(v, np.ndarray)},
-                        gq=(H["gq"] if H["gq"] is not None else np.zeros(0)),
-                        gk=(H["gk"] if H["gk"] is not None else np.zeros(0)))
+    stem = outdir / f"head_L{a.l}_q{a.q}"
+    payload = {k: v for k, v in H.items() if isinstance(v, np.ndarray) and k not in ("gq", "gk")}
+    payload["gq"] = H["gq"] if H["gq"] is not None else np.zeros(0)
+    payload["gk"] = H["gk"] if H["gk"] is not None else np.zeros(0)
+    np.savez_compressed(stem.with_suffix(".npz"), **payload)
     (stem.with_suffix(".c")).write_text(render(H), encoding="utf-8")
     mf = manifest(H, stem.with_suffix(".npz"), a.gguf)
     (stem.with_suffix(".manifest.json")).write_text(json.dumps(mf, indent=2), encoding="utf-8")
     print(f"decompilado -> {stem}.npz / .c / .manifest.json")
-    print(render(H))
 
 def cmd_judge(a):
-    H = load_head(a.gguf, a.layer, a.q_head)
+    H = load_head(a.gguf, a.l, a.q)
     g = attn_geometry(a.gguf)
     rng = np.random.default_rng(42)
     res = {}
@@ -295,12 +321,14 @@ def cmd_judge(a):
     max_abs = float(np.abs(r_ref - r_run).max())
     res["T2_ir_eq_ref"] = {"cos": round(float(cos), 9), "max_abs": round(max_abs, 9)}
     res["T2_pass"] = bool(cos > 0.9999)
-    H2 = dict(H); H2["Wq"] = H["Wq"].copy(); H2["Wq"][0, 0] *= -1.0
+    # T3: null-test al nivel de una edicion real (QUANT-RUIDO: ediciones >= 0.5% magnitud):
+    # escala una columna completa de Wq (un dim q del head) por 0.9 = -10% local
+    H2 = dict(H); H2["Wq"] = H["Wq"].copy(); H2["Wq"][:, 0] *= 0.9
     r2 = ref_attn(H2, X)
     d2 = float(np.abs(r2 - r_ref).max())
     res["T3_nulltest"] = {"max_abs_shift": round(d2, 9), "pass": d2 > 1e-6}
     c0, sig4 = concentration(bilinear(H))
-    res["T4_diag"] = {"c1_rank(one": None, "c1_rankone": round(c0, 4),
+    res["T4_diag"] = {"c1_rankone": round(c0, 4),
                       "sigma_top4": [round(s, 4) for s in sig4],
                       "gate_ratio": round(float(np.linalg.norm(H["Wgate"]) / (np.linalg.norm(H["Wq"]) + 1e-30)), 4)}
     verdict = "PASS" if (res["T1_shapes"] and res["T2_pass"] and res["T3_nulltest"]["pass"]) else "FAIL"

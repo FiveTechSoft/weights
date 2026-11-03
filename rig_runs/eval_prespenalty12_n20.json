@@ -1,0 +1,250 @@
+{
+  "meta": {
+    "alias": "eval_prespenalty12_n20",
+    "endpoint": "http://127.0.0.1:8081/v1/chat/completions",
+    "n": 20,
+    "offset": 0,
+    "sampling_params": {
+      "temperature": 0.3,
+      "top_p": 0.95,
+      "max_tokens": 800,
+      "seed": 42,
+      "repetition_penalty": 1.0,
+      "presence_penalty": 1.2,
+      "frequency_penalty": 0.0
+    },
+    "timestamp": "2026-11-04T00:43:37"
+  },
+  "results": [
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 11,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /' x4"
+      ],
+      "id": "general-0-candidate-0036-software-data-engineering",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app/vendor/robotics-toolbox-python/sr' x5"
+      ],
+      "id": "general-0-candidate-0109-science-robotics",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 9,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:echo \"HOME=$HOME\"; echo \"PWD=$(pwd)\"; ls -la ' x6"
+      ],
+      "id": "general-0-candidate-0260-security-appsec",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-0-candidate-0308-security-forensics",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-0-candidate-0390-security-appsec",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app/src/ ; echo \"=== git ===\"; cd /ap' x5"
+      ],
+      "id": "general-0-candidate-0461-ml-evaluation",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app/src/' x5"
+      ],
+      "id": "general-0-candidate-0534-ml-training",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-0-candidate-0628-media-music",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-0-candidate-0674-ml-evaluation",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 9,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app/vendor/project/ ; echo \"EXIT:$?\"' x6"
+      ],
+      "id": "general-0-candidate-0688-hardware-rtl",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2500-hardware-cad",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": true,
+      "loop_turn": 8,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:pwd; ls -la' x7"
+      ],
+      "id": "general-50-candidate-2511-security-cryptography",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app' x5"
+      ],
+      "id": "general-50-candidate-2517-software-data-engineering",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 15,
+      "loop": true,
+      "loop_turn": 11,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app/src/' x5"
+      ],
+      "id": "general-50-candidate-2535-security-cryptography",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2684-security-appsec",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 11,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app/src/; echo \"=== config ===\"; ls -' x4"
+      ],
+      "id": "general-50-candidate-2713-ml-inference",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2728-software-data-engineering",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2760-ml-inference",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2790-ml-evaluation",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2836-ml-kernels",
+      "config": "general"
+    }
+  ]
+}

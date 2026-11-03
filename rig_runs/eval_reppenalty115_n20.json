@@ -13,7 +13,7 @@
       "presence_penalty": 0.0,
       "frequency_penalty": 0.0
     },
-    "timestamp": "2026-11-04T00:35:04"
+    "timestamp": "2026-11-04T00:36:06"
   },
   "results": [
     {
@@ -231,6 +231,26 @@
       "loop_turn": null,
       "why": [],
       "id": "general-50-candidate-2760-ml-inference",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2790-ml-evaluation",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-50-candidate-2836-ml-kernels",
       "config": "general"
     }
   ]

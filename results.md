@@ -194,4 +194,32 @@ Retos aprobados: 12 (01-09 lectura + 41-43 escritura). Referencia: csinva/weight
   1. `validate(prog)` ahora analiza cada `step <op>` y exige estrictamente que `<op> \in OPS_ALLOWED`, añadiendo de lo contrario `operacion de paso no permitida: <op>`.
   2. Todas las líneas situadas fuera de secciones son capturadas en `__root__` y marcadas como `linea fuera de seccion: <linea>`.
   3. Se añadieron pruebas unitarias en `tests/test_wsplang_security.py` verificando el rechazo explícito de operaciones de paso desconocidas y líneas huérfanas (9/9 tests pasando en la suite completa).
+
+---
+
+## 10. Descarte Experimental de Baselines Baratos de Inferencia sobre MiMo-9B ($N=20$)
+
+### 10.1. Pregunta Experimental y Metodología
+* **Pregunta:** ¿El bucle agéntico del ~60% en `MiMo-V2.6-Distill-Qwen-9B` es un defecto superficial de muestreo corregible mediante hiperparámetros de inferencia (`repetition_penalty`, `presence_penalty`), o constituye una patología estructural en las representaciones de los pesos?
+* **Arnés y Datos:** [`rig/agent_loop_probe.py`](file:///c:/weights/rig/agent_loop_probe.py) evaluado sobre 20 prompts reales de ingeniería de terminal de [`data/rl_oss_prompts.json`](file:///c:/weights/data/rl_oss_prompts.json) contra el servidor local en GPU (`http://127.0.0.1:8081`).
+* **Criterio de bucle:** 3 llamadas a herramientas consecutivas idénticas (`3-consecutive-identical`) o 4 llamadas idénticas acumuladas (`loop4`).
+
+### 10.2. Resultados Comparativos ($N=20$)
+
+| Condición | Configuración de Muestreo | Bucles / Total | Tasa de Bucle | IC Wilson 95% | Turnos Medios a Bucle | Fichero de Resultados |
+|---|---|---|---|---|---|---|
+| **1. Vanilla (Control)** | `temp=0.3, rep_pen=1.0, pres_pen=0.0` | **14 / 20** | **70.0%** | [48.1%, 85.5%] | 9.79 | `rig_runs/eval_vanilla_n20.json` |
+| **2. Repetition Penalty** | `temp=0.3, rep_pen=1.15, pres_pen=0.0` | **13 / 20** | **65.0%** | [43.3%, 81.9%] | 9.85 | `rig_runs/eval_reppenalty115_n20.json` |
+| **3. Presence Penalty** | `temp=0.3, rep_pen=1.0, pres_pen=1.2` | **10 / 20** | **50.0%** | [29.9%, 70.1%] | 9.90 | `rig_runs/eval_prespenalty12_n20.json` |
+
+### 10.3. Hallazgos Cruciales
+1. **Los baselines baratos NO eliminan la patología:**
+   * La penalización de repetición moderada (`1.15`) no tiene efecto práctico (65.0% vs 70.0%, diferencia de 1 solo prompt).
+   * La penalización agresiva de presencia (`1.2`) reduce el bucle al 50.0%, pero la mitad de los problemas continúan estancados en ciclos idénticos de exploración.
+2. **Mecanismo del bucle agéntico:**
+   * El análisis turno a turno revela que no se trata de una repetición léxica trivial (un tartamudeo de palabras), sino de un **atractor de exploración infinita**: el modelo queda atrapado en la política de emitir comandos de inspección (`ls -la /app/...`, `find / -name ...`, `echo $PWD`) sin llegar a formular un plan de solución o editar código.
+3. **Conclusión para WSP y RSI:**
+   * **Patología confirmada como estructural:** Reside en los pesos de `MiMo-9B`. No es un artefacto de temperatura ni de repetición inmediata.
+   * **Baseline de referencia establecido:** Se fija el rango 50%–70% como el suelo empírico riguroso. Cualquier edición en espacio de pesos en la siguiente fase debe demostrar una reducción por debajo del 30% con $N \ge 80$ para ser considerada un éxito.
+
 

@@ -1,0 +1,13 @@
+{
+  "tool": "mimo_head.py (WSP decompile mini #11)",
+  "gguf_size": 7793710624,
+  "layer": 23,
+  "q_head": 8,
+  "kv_group": 2,
+  "head_dim": 256,
+  "d_model": 4096,
+  "scale": 0.0625,
+  "pre_rope": true,
+  "semantics": "qwen35.cpp (llama.cpp master)",
+  "npz_sha256": "2ca1c78fe9d81cef6245960acdbaf09163e8ad50d2fb001d47fd26ca4cf5a4a8"
+}
