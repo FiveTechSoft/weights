@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "alias": "smoke-test",
+    "endpoint": "http://127.0.0.1:8081/v1/chat/completions",
+    "n": 2,
+    "offset": 0,
+    "sampling_params": {
+      "temperature": 0.3,
+      "top_p": 0.95,
+      "max_tokens": 800,
+      "seed": 42,
+      "repetition_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0
+    },
+    "timestamp": "2026-11-03T21:43:51"
+  },
+  "results": [
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "general-0-candidate-0036-software-data-engineering",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": true,
+      "loop_turn": 12,
+      "why": [
+        "3-consecutive-identical"
+      ],
+      "id": "general-0-candidate-0109-science-robotics",
+      "config": "general"
+    }
+  ]
+}

@@ -134,4 +134,34 @@ Arquitectura toy_ampliada (toy_bench/mini_toy.py): atencion con Q/K/V positional
 - toy-41 parity: PASS 10.0 (programa hand del driver, acc 1.0)
 - toy-42 count3: PASS 10.0 (programa del driver en retos/toy_count3_ref.py)
 - toy-43 geq3: PASS 10.0 (retos/toy_geq3_prog.py)
-Retos aprobados: 12 (01-09 lectura + 41-43 escritura). Referencia: csinva/weight-space-programming-autoresearch (sin licencia: solo patrones, no copiar codigo).
+Retos aprobados: 12 (01-09 lectura + 41-43 escritura). Referencia: csinva/weight-space-programming-autoresearch (sin licencia: solo patrones, no copiar codigo).
+
+## 8. Hallazgos empíricos recientes y reajuste metodológico (2026-11-03)
+
+### 8.1. Auditoría metodológica y corrección de claims causales
+* **Potencia estadística:** Se constató que las evaluaciones de la serie E1–E5 ($N=10$) carecen de potencia estadística para sostener conclusiones causales (el cambio de seed en el baseline varió el resultado de 6/10 a 8/10, un margen de ruido de $\pm 20\%$).
+* **Reinterpretación de descartes:** El veredicto de E5 (14/20 loops frente a 11/20 del baseline, $p \approx 0.38$) se ratifica bajo la regla operativa de ingeniería `keep-if-better` para evitar acumulación de drift, pero sin sobreclamar degradación causal.
+* **Estándar futuro:** Cualquier afirmación de mejora o degradación requerirá $N \ge 80-100$ prompts pareados, reporte de intervalos de confianza de Wilson (95%) y contraste pareado de McNemar.
+
+### 8.2. Evaluación de razonamiento formal (MATH-500 y Logic Probe)
+* **MATH-500 Baseline R0 (`rig/math500.py`):**
+  * Evaluado sobre `MiMo-V2.6-Distill-Qwen-9B` en puerto 8081 con temperatura 0.0 (`rig_runs/r0-math-test3.json`).
+  * En problemas de Nivel 5 de álgebra competitiva: 2/3 aciertos (66.7%). En los dos problemas concluidos dentro de la cuota de contexto (#388 y #435), el modelo resolvió con 100% de exactitud analítica paso a paso (ej. $10x - 55 \ge 0 \implies x = 5.5$). El único fallo (#96) se debió a agotamiento de contexto (`finish=length`) en una expansión algebraica de gran longitud.
+  * **Conclusión:** MiMo-2.6 no exhibe una patología estructural de razonamiento en matemáticas. Sin patología localizada ni headroom claro, se cancela la edición de pesos en benchmarks matemáticos.
+* **Horn-Logic Entailment (`rig/logic_probe.py`):**
+  * 5/5 aciertos (100% de exactitud, 10.9 s) en deducción sintética de cláusulas encadenadas (`rig_runs/logic-mimo-orig.json`).
+
+### 8.3. Blindaje de runtime y seguridad en WSP-Lang / FastMCP
+* **Corrección de ranking semántico (`engine/wsplang.py`):** Se eliminó el truncamiento arbitrario de claves de diccionario `[:top_k]`. Ahora, si se pasa un tensor diana (`tensor=...`), se calcula la proyección coseno real contra los centroides; si no hay tensor, se reporta el catálogo completo ordenado transparentemente por densidad de semillas (`ranking_basis: seed_density`).
+* **Strict Validation Gate (`engine/wsp_mcp_server.py`):** El runner MCP y el CLI abortan de inmediato (`status: "aborted"`) si `validate()` detecta infracciones sintácticas o estructurales, impidiendo ejecuciones erróneas sobre pesos.
+* **Protección de tensores críticos (`FORBIDDEN_TENSORS`):** Rechazo activo en runtime de intentos de edición sobre `token_embd`, `output.weight` y normas.
+* **Herramienta MCP en memoria (`execute_wsplang_code`):** Permite ejecutar fragmentos WSP-Lang inline de forma segura y sandboxed sin persistir en disco.
+
+### 8.4. Reproducción y métrica continua de bucles agénticos (`rig/agent_loop_probe.py`)
+* **Autonomía del dataset:** `data/rl_oss_prompts.json` (40 prompts reales de ingeniería de terminal de `mimoagent/terminal_bench`) integrado localmente en el repositorio.
+* **Smoke-test en vivo (`rig_runs/smoke-test.json`):**
+  * Evaluados 2 prompts bajo muestreo vanilla (temp=0.3, rep_penalty=1.0).
+  * Prompt 1: completado con éxito (12 turnos, 13 llamadas a herramientas, sin bucle).
+  * Prompt 2 (`science-robotics`): **bucle reproducido** (`3-consecutive-identical` en turno 12, 14 llamadas).
+  * Tasa de bucle observada: 1/2 (50.0%), intervalo Wilson 95%: $[9.5\%, 90.5\%]$, ilustrando empíricamente la necesidad de $N \ge 80$ para mediciones estadísticamente concluyentes.
+* **Próxima fase:** Evaluar baselines baratos de inferencia (`repetition_penalty`, samplers de frecuencia y presencia) sobre este conjunto antes de cualquier intervención en espacio de pesos.

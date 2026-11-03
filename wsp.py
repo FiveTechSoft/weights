@@ -1247,13 +1247,16 @@ def base_ctx(c):
 
 def cmd_eval(args):
     _budget_check("fwd", 1)
-    sys.path.insert(0, r"C:\temp\opencode")
-    import mock_harness as M
-    SERVER = f"http://127.0.0.1:{args.port}"
-    M.SERVER = SERVER
-    M.OUT_DIR = DIR_RIG
-    sys.argv = ["mock_harness.py", args.alias, str(args.n), str(args.offset)]
-    M.main()
+    import subprocess
+    cmd = [
+        sys.executable,
+        str(ROOT / "rig" / "agent_loop_probe.py"),
+        "--endpoint", f"http://127.0.0.1:{args.port}/v1/chat/completions",
+        "--alias", args.alias,
+        "--n", str(args.n),
+        "--offset", str(args.offset)
+    ]
+    subprocess.run(cmd, check=True)
     journal("fwd", json.dumps({"eval": args.alias, "port": args.port, "n": args.n}, ensure_ascii=False))
 
 

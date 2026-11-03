@@ -1,0 +1,47 @@
+{
+ "meta": {
+  "model": "mimo",
+  "endpoint": "http://127.0.0.1:8081/v1/chat/completions",
+  "seed": 42,
+  "n": 3,
+  "indices": [
+   96,
+   388,
+   435
+  ],
+  "temperature": 0.0,
+  "max_tokens": 1024,
+  "tag": "test3",
+  "ts": "2026-11-03T21:39:25",
+  "counts": {
+   "ok": 2,
+   "total": 3
+  }
+ },
+ "items": [
+  {
+   "i": 96,
+   "gold": "1 \\pm \\sqrt{19}",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 388,
+   "gold": "\\frac{11}{2}",
+   "pred": "5.5",
+   "ok": true,
+   "finish": "stop",
+   "tail": ")^2 = x^2-6x+9$$\n$$(x-8)^2 = x^2-16x+64$$\n\nSubtract:\n$$(x^2-6x+9)-(x^2-16x+64) = x^2-6x+9-x^2+16x-64 = 10x-55$$\n\nSo we need $10x-55 \\ge 0$, i.e., $10x \\ge 55$, so $x \\ge \\frac{55}{10} = \\frac{11}{2} = 5.5$.\n\nThe domain is $[5.5, \\infty)$. The smallest real number in the domain is $5.5$.\n\n\\boxed{5.5}"
+  },
+  {
+   "i": 435,
+   "gold": "(-\\infty, 2) \\cup (3, \\infty)",
+   "pred": "(-\\infty, 2) \\cup (3, \\infty)",
+   "ok": true,
+   "finish": "stop",
+   "tail": "x-2)(x-3) = 0$ are $x=2$ and $x=3$.\n\nSince the quadratic opens upward (coefficient of $x^2$ is positive), the expression is positive outside the interval between the roots:\n$x < 2$ or $x > 3$\n\nIn interval notation, the domain is:\n$(-\\infty, 2) \\cup (3, \\infty)$\n\n\\boxed{(-\\infty, 2) \\cup (3, \\infty)}"
+  }
+ ]
+}
