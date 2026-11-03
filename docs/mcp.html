@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WSP FastMCP Server — Agent Observability Lab</title>
+  <meta name="description" content="Model Context Protocol (MCP) server for WSP-Lang and neural weight space programming with AI agents.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <style>
+    :root {
+      --bg: #090D16;
+      --card-bg: #0F172A;
+      --card-border: #1E293B;
+      --accent-cyan: #38BDF8;
+      --accent-purple: #A855F7;
+      --accent-emerald: #10B981;
+      --accent-rose: #F43F5E;
+      --accent-amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --code-bg: #0B1120;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+    }
+    a { color: var(--accent-cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-brand { font-weight: 800; font-size: 1.25rem; color: var(--text-main); }
+    .nav-links { display: flex; gap: 1.5rem; font-size: 0.95rem; }
+    .nav-links a { color: var(--text-muted); }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent-cyan); text-decoration: none; }
+    header {
+      background: radial-gradient(circle at 50% 0%, #0369a1 0%, var(--bg) 75%);
+      padding: 4rem 1.5rem 3rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: #7DD3FC;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto 2rem auto;
+    }
+    main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem; }
+    section { margin-bottom: 3.5rem; }
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: var(--accent-cyan);
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.5rem;
+    }
+    h3 { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.75rem 0; color: #E2E8F0; }
+    p, ul { margin-bottom: 1.25rem; color: #CBD5E1; }
+    ul { padding-left: 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: #E2E8F0;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: rgba(255,255,255,0.08);
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-size: 0.85em;
+      color: var(--accent-cyan);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+    th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--card-border); }
+    th { background: #131D31; color: var(--accent-cyan); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    .callout {
+      border-left: 4px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1.5rem;
+    }
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand">🧠 FiveTechSoft / weights</div>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="wsplang.html">WSP-Lang Spec</a>
+      <a href="mcp.html" class="active">MCP Server</a>
+      <a href="behavioral_steering_and_dreaming.html">Behavioral Steering</a>
+      <a href="https://github.com/FiveTechSoft/weights" target="_blank">GitHub</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="badge-pill">FASTMCP PROTOCOL 2024-11-05</div>
+    <h1>WSP FastMCP Server</h1>
+    <p class="subtitle">Standard Model Context Protocol gateway enabling AI agents (Claude Desktop, Cursor, OpenCode, Antigravity) to decompile, inspect, and benchmark quantized neural weights safely.</p>
+  </header>
+
+  <main>
+
+    <section id="architecture">
+      <h2>1. Architecture: The Agent Observability Lab</h2>
+      <p>The WSP MCP Server (<code>engine/wsp_mcp_server.py</code>) exposes 13 typed tools over standard I/O (<code>stdio</code>). It decouples autonomous agent reasoning from low-level tensor storage, enforcing process-level safety barriers:</p>
+      
+      <div class="callout">
+        <strong>Hard Physical Guardrails:</strong> The MCP server enforces a <strong>Strict Validation Gate</strong> (malformed WSP-Lang code halts instantly before disk access) and a <strong>Protected Tensor Policy</strong> (writes to <code>token_embd.weight</code>, <code>output.weight</code>, or <code>norm</code> layers are rejected with <code>security_rejection</code>).
+      </div>
+    </section>
+
+    <section id="config">
+      <h2>2. Client Configuration Snippets</h2>
+      <p>Connect your preferred AI agent environment to the WSP MCP server in seconds:</p>
+
+      <div class="card">
+        <h3>Claude Desktop (Windows / macOS / Linux)</h3>
+        <p>Add to your <code>claude_desktop_config.json</code>:</p>
+        <pre><code>{
+  "mcpServers": {
+    "weights-wsp": {
+      "command": "python",
+      "args": ["C:/weights/engine/wsp_mcp_server.py"],
+      "cwd": "C:/weights"
+    }
+  }
+}</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>OpenCode (<code>opencode.json</code>)</h3>
+        <p>Already bundled in the repository root:</p>
+        <pre><code>{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "wsp-challenge": {
+      "type": "local",
+      "command": ["python", "engine/wsp_mcp_server.py"],
+      "enabled": true
+    }
+  }
+}</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>Cursor IDE</h3>
+        <p>Settings &rarr; <strong>Features</strong> &rarr; <strong>MCP Servers</strong> &rarr; <strong>Add New MCP Server</strong>:</p>
+        <ul>
+          <li><strong>Name:</strong> <code>weights-wsp</code></li>
+          <li><strong>Type:</strong> <code>stdio</code></li>
+          <li><strong>Command:</strong> <code>python engine/wsp_mcp_server.py</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="tools">
+      <h2>3. Complete Tool Catalog (13 Tools)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tool Name</th>
+            <th>Description</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>execute_wsplang_code</code></td>
+            <td>Executes an in-memory block of WSP-Lang code with pre-execution validation gate.</td>
+            <td>Execution</td>
+          </tr>
+          <tr>
+            <td><code>run_wsplang</code></td>
+            <td>Runs a declarative <code>.wspl</code> program file from disk.</td>
+            <td>Execution</td>
+          </tr>
+          <tr>
+            <td><code>peek_weight</code></td>
+            <td>Read-only anatomical decompilation of individual weights, rows, or columns.</td>
+            <td>Read-Only</td>
+          </tr>
+          <tr>
+            <td><code>poke_weight</code></td>
+            <td>Surgical in-place scalar modification with Q6_K block requantization (guarded).</td>
+            <td>Surgical Edit</td>
+          </tr>
+          <tr>
+            <td><code>get_semantic_areas</code></td>
+            <td>Returns 10 differential semantic centroids or functional tensor projections.</td>
+            <td>Semantics</td>
+          </tr>
+          <tr>
+            <td><code>run_agent_loop_probe</code></td>
+            <td>Evaluates tool-call loops, continuous turn metrics, and Wilson 95% CI on terminal tasks.</td>
+            <td>Benchmarking</td>
+          </tr>
+          <tr>
+            <td><code>run_logic_probe</code></td>
+            <td>Evaluates deterministic synthetic Horn-logic forward chaining entailment.</td>
+            <td>Benchmarking</td>
+          </tr>
+          <tr>
+            <td><code>run_challenge</code></td>
+            <td>Progressive curricular challenges from the WSP-40 benchmark.</td>
+            <td>Challenge</td>
+          </tr>
+          <tr>
+            <td><code>inspect_feedback</code></td>
+            <td>Retrieves aggregated run metrics without revealing sealed gold holdout answers.</td>
+            <td>Evaluation</td>
+          </tr>
+          <tr>
+            <td><code>experiment_history</code></td>
+            <td>Cumulative memory of experiments, verdicts, and approved challenges.</td>
+            <td>Memory</td>
+          </tr>
+          <tr>
+            <td><code>sell_holdout</code></td>
+            <td>Irreversibly seals and locks a holdout benchmark dataset.</td>
+            <td>Holdout</td>
+          </tr>
+          <tr>
+            <td><code>record_verdict</code></td>
+            <td>Records binding <code>keep</code> or <code>discard</code> experimental decisions.</td>
+            <td>Decision</td>
+          </tr>
+          <tr>
+            <td><code>engine_status</code></td>
+            <td>Reports overall curriculum state and approved challenges.</td>
+            <td>Status</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="demo">
+      <h2>4. Live JSON-RPC Example</h2>
+      <p>Agents interact via standard JSON-RPC 2.0 messages over <code>stdin/stdout</code>:</p>
+      <pre><code>// Client Request:
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "peek_weight",
+    "arguments": {
+      "gguf": "C:/Users/Anto/llamacpp/mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+      "tensor": "blk.19.attn_output.weight",
+      "row": "100",
+      "col": "200",
+      "top": 3
+    }
+  }
+}
+
+// MCP Server Response:
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tensor": "blk.19.attn_output.weight",
+    "value": 0.021484,
+    "role": "Attention Layer 19: head #0 (dim 200) -> escribe en residual dim 100",
+    "semantic_areas": {
+      "dominant": {"area": "math_logic", "label": "Math & Logic", "score": 0.0275},
+      "top_areas": [
+        {"area": "math_logic", "score": 0.0275},
+        {"area": "time_sequence", "score": 0.0149},
+        {"area": "social_power", "score": 0.0098}
+      ]
+    }
+  }
+}</code></pre>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>FiveTechSoft / weights &bull; Weight-Space Programming for Quantized Large Language Models &bull; MIT License</p>
+  </footer>
+
+</body>
+</html>
