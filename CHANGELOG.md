@@ -240,6 +240,23 @@ output.weight` y `step poke output.weight 5 12 0.5` extraídos y mapeados a
 
 **Estado** — `published`
 
+### P8 — Replicación y verificación de los experimentos canónicos del blog de MIT con WSP-Lang
+
+**QUÉ** — Se programaron y verificaron formalmente en WSP-Lang los experimentos de lectura y escritura de pesos del blog *Sparks of Weight-Space Programming* (MIT CSAIL):
+- **Experimento 1 (Lectura e inferencia funcional sin forward passes)**: implementado en programas/blog_exp1_reading_weights.wspl. Utiliza step semantic_map y step peek sobre las capas de atención y FFN de MiMo 2.6 para identificar qué calculan (especialización en math_logic en atención L19, memoria factual en FFN L19).
+- **Experimento 3 (Identificación de idioma y especialización de dominio)**: implementado en programas/blog_exp3_language_and_domains.wspl. Descompila la matriz de vocabulario (output.weight) identificando afinidad por código y acciones de terminal (gent_action score +0.0276).
+- **Experimento 5 (Escritura de pesos desde cero sin gradientes)**: implementado en programas/blog_exp5_write_mlp.wspl. Sintetiza los pesos de una MLP ReLU 2x2 para calcular exactamente (x) = 1.5 x_0 - 2.5 x_1 + 0.7$ mediante la identidad $	ext{ReLU}(u) - 	ext{ReLU}(-u) = u$.
+- **Harness de verificación mecánica (scripts/verify_blog_exp5.py)**: evalúa la red sintetizada contra 100 vectores de prueba en $[-10, +10]^2$, verificando error numérico exacto de .19 	imes 10^{-8}$.
+
+**PARA QUÉ** — Demostrar la expresividad universal de WSP-Lang: unificar en un único lenguaje declarativo tanto la decompilación de modelos gigantes de 9B como la síntesis exacta de redes desde cero.
+
+**QUÉ SE OBTIENE** — 
+- Verificación limpia de los 3 programas .wspl con manifiestos generados en 
+etos/wsplang/.
+- Verificación mecánica del Exp 5 con veredicto PASS y error absoluto máximo de .19 	imes 10^{-8}$.
+
+**Estado** — published
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).

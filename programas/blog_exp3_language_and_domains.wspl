@@ -1,0 +1,26 @@
+experiment blog_exp3_language_and_domains:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    objective:
+        replicate_mit_blog_exp3_identify_domain_and_language_from_weights
+
+    semantic_areas:
+        mode = comprehensive
+        target = code_software
+        secondary = math_logic
+
+    steps:
+        # 1. Map all 10 semantic centroids across the entire vocabulary
+        step semantic_map top=5
+
+        # 2. Decompile the Language Modeling Head (token unembedding) to verify lexical specialization
+        #    Token 1500 represents 'Ġline' in coding and scripting syntax
+        step peek output.weight row=1500 col=0 top=3
+
+        # 3. Decompile Attention Layer 19 to isolate symbolic & logical reasoning heads
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # 4. Decompile FFN Layer 19 to inspect grounded entity memory
+        step peek blk.19.ffn_down.weight row=100 col=500 top=3

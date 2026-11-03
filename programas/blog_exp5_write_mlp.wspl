@@ -1,0 +1,26 @@
+experiment blog_exp5_write_mlp:
+
+    model:
+        toy_mlp_2x2_relu
+
+    objective:
+        replicate_mit_blog_exp5_synthesize_weights_from_scratch_without_training
+
+    steps:
+        # Step 1: Synthesize input layer weights W1 to compute positive & negative linear projections
+        # Target function: y(x) = 1.5*x0 - 2.5*x1 + 0.7
+        # Hidden neurons:
+        # h0 = ReLU( 1.5*x0 - 2.5*x1 )
+        # h1 = ReLU(-1.5*x0 + 2.5*x1 )
+        step poke W1 0 0 1.5
+        step poke W1 0 1 -1.5
+        step poke W1 1 0 -2.5
+        step poke W1 1 1 2.5
+
+        # Step 2: Synthesize output layer weights W2 and bias b2
+        # y = 1.0*h0 - 1.0*h1 + 0.7
+        # Identity: ReLU(u) - ReLU(-u) = u for all u in R.
+        # This achieves 0.0 reconstruction error everywhere without backpropagation or training.
+        step poke W2 0 0 1.0
+        step poke W2 1 0 -1.0
+        step poke b2 0 0 0.7

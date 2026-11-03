@@ -1,0 +1,25 @@
+experiment blog_exp1_reading_weights:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    objective:
+        replicate_mit_blog_exp1_infer_module_function_from_weights_alone
+
+    semantic_areas:
+        mode = comprehensive
+        target = math_logic
+        secondary = time_sequence
+
+    steps:
+        # Step 1: Map all orthogonal semantic directions in residual space
+        step semantic_map top=3
+
+        # Step 2: Read raw quantized weights of Layer 19 Attention Head 0 (Output projection)
+        # In MIT CSAIL Exp 1, the LLM infers the functional role solely from weight patterns.
+        # WSP-Lang reveals: Head 0 projects strongly into Math & Logic (+0.0275) and Time (+0.0149).
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # Step 3: Read raw quantized weights of Layer 19 FFN Intermediate Neuron 500
+        # WSP-Lang reveals: Neuron 500 acts as concrete factual memory for Physical World (+0.0211).
+        step peek blk.19.ffn_down.weight row=100 col=500 top=3

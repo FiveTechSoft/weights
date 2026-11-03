@@ -1,6 +1,6 @@
 {
  "programa": "inspeccion_areas_semanticas",
- "archivo": "programas\\ejemplo_areas_semanticas.wspl",
+ "archivo": "C:\\weights\\programas\\ejemplo_areas_semanticas.wspl",
  "pasos": 7,
  "steps": [
   {
@@ -66,7 +66,7 @@
  },
  "errores": [],
  "validado": true,
- "ts": "2026-11-03T20:14:58",
+ "ts": "2026-11-03T21:01:14",
  "ejecucion": [
   {
    "op": "semantic_map",
