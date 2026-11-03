@@ -9,6 +9,8 @@ logs/
 *.log
 # venv local para weightspace (adaptador)
 .venv/
+# venv de huggingface_hub (solo herramientas de descarga)
+.venv-hf/
 # manifiestos gigantes de retos (regenerables)
 retos/sellados/*.LOCKED
 data/ffn_down_1719.npz
