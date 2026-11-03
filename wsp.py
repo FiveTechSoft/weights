@@ -1,4 +1,4 @@
-"""wsp.py â€” Weight-Space Programming toolkit (GGUF,æ ¼å¼ del blog MIT CSAIL).
+"""wsp.py — Weight-Space Programming toolkit (GGUF format, MIT CSAIL study replication).
 
 Uso por un LLM driver: leer pesos (stats/rows/delta), proponer ediciones
 (programa JSON), aplicarlas (edit: dequant->op->requant, copia en sitio),
@@ -33,10 +33,15 @@ DIR_SRV = ROOT / "served" if (ROOT / "served").exists() else ROOT / "servidos"
 for d in (DIR_DATA, DIR_EDI, DIR_RIG, DIR_LOG, DIR_JRN, DIR_SRV):
     d.mkdir(parents=True, exist_ok=True)
 
-LLAMA_BIN = Path(r"C:\Users\Anto\llamacpp\bin-b11962\llama-server.exe")
+_env_bin = os.environ.get("LLAMA_SERVER_BIN")
+LLAMA_BIN = Path(_env_bin) if _env_bin else Path(r"C:\Users\Anto\llamacpp\bin-b11962\llama-server.exe")
 if not LLAMA_BIN.exists():
-    LLAMA_BIN = Path(r"C:\Users\Anto\llamacpp\bin\llama-server.exe")
-PROME_JRNL = DIR_JRN / "journal.jsonl"
+    _which = shutil.which("llama-server") or shutil.which("llama-server.exe")
+    if _which:
+        LLAMA_BIN = Path(_which)
+    else:
+        LLAMA_BIN = Path(r"C:\Users\Anto\llamacpp\bin\llama-server.exe")
+PATH_JRNL = DIR_JRN / "journal.jsonl"
 
 JRN_KIND = {"info": "read", "tensors": "read", "stats": "read", "rows": "read",
             "delta": "read", "ops-find": "read", "diff": "read", "budget": "read",
@@ -52,14 +57,14 @@ def _p(*a):
 # ---------------- journal ----------------
 def journal(kind, detail):
     rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "kind": kind, "detail": detail}
-    with PROME_JRNL.open("a", encoding="utf-8") as f:
+    with PATH_JRNL.open("a", encoding="utf-8") as f:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
 def cmd_budget(_):
     c = {"read": 0, "write": 0, "fwd": 0}
-    if PROME_JRNL.exists():
-        for line in PROME_JRNL.read_text(encoding="utf-8").splitlines():
+    if PATH_JRNL.exists():
+        for line in PATH_JRNL.read_text(encoding="utf-8").splitlines():
             try:
                 rec = json.loads(line)
                 k = rec.get("kind")
@@ -422,8 +427,8 @@ def _fingerprint(path):
 def _budget_check(kind, need=1):
     """Barrera OBLIGATORIA de presupuesto: bloquea ANTES de ejecutar (no solo registra)."""
     n = 0
-    if PROME_JRNL.exists():
-        for line in PROME_JRNL.read_text(encoding="utf-8").splitlines():
+    if PATH_JRNL.exists():
+        for line in PATH_JRNL.read_text(encoding="utf-8").splitlines():
             try:
                 if json.loads(line).get("kind") == kind:
                     n += 1
@@ -471,7 +476,7 @@ def cmd_edit(a):
         D = row_decode(t)
         if "base" in prog:
             B = row_decode(base_t[nm])
-        elem_pb = 256 if t.tensor_type == gguf.GGMLQuantizationType.Q6_K else (32 if t.tensor_type == gguf.GGMLQuantizationType.Q8_0 else ne0)
+        elem_pb = 256 if t.tensor_type == gguf.GGMLQuantizationType.Q6_K else (32 if t.tensor_type == gguf.GGMLQuantizationType.Q8_0 else 1)
         if op["type"] == "subtract-direction":
             if op.get("u_from") == "svd-drift":
                 if not base_t:
@@ -556,16 +561,20 @@ def cmd_edit(a):
         else:
             sys.exit(f"op no reconocida: {op['type']}")
         # reescribir en el archivo
-        if base_dtype(t):
+        is_unquantized = t.tensor_type in (gguf.GGMLQuantizationType.F32, gguf.GGMLQuantizationType.F16, gguf.GGMLQuantizationType.BF16)
+        if is_unquantized:
             newbytes = np.ascontiguousarray(D, dtype=D.dtype).tobytes()
         else:
             if "_rowmap" in op:
                 rowmap = op.pop("_rowmap")
             elif op["type"] == "blend-rows-toward" or op["type"] == "scale-rows":
                 rowmap = {int(r): list(range(int(t.shape[0]) // elem_pb)) for r in np.asarray(op["rows"], dtype=int)}
-            else:  # scale-cols
+            elif "cols" in op:
                 blk_cols = sorted(set((np.asarray(op["cols"], dtype=int) // elem_pb).tolist()))
                 rowmap = {r: blk_cols for r in range(int(t.shape[1]))}
+            else:
+                # Full row coverage if no specific columns mask
+                rowmap = {r: list(range(int(t.shape[0]) // elem_pb)) for r in range(int(t.shape[1]))}
             newbytes = _requant_blocks_bytes(t, rowmap, D)
         with open(out, "r+b") as fh:
             fh.seek(t.data_offset)
@@ -663,10 +672,16 @@ def get_model_arch_info(r):
         return default
 
     recurrent = get_val("attention.recurrent_layers", [])
-    if isinstance(recurrent, list):
+    if isinstance(recurrent, list) and len(recurrent) > 0:
         recurrent_flags = [bool(x) for x in recurrent]
     else:
+        # Fallback: check actual tensor names in GGUF reader
+        n_layers = int(get_val("block_count", 32))
         recurrent_flags = []
+        tm_names = {t.name for t in r.tensors}
+        for l_idx in range(n_layers):
+            is_ssm = f"blk.{l_idx}.ssm_out.weight" in tm_names or f"blk.{l_idx}.ssm_a" in tm_names
+            recurrent_flags.append(is_ssm)
 
     return {
         "arch": arch,
@@ -702,7 +717,7 @@ def get_semantic_centroids(gguf_path, r=None):
     cache_path = DIR_DATA / f"{stem}.semantic_centroids.npz"
     if cache_path.exists():
         try:
-            data = np.load(cache_path, allow_pickle=True)
+            data = np.load(cache_path, allow_pickle=False)
             centroids = {}
             for k in data.files:
                 centroids[k] = data[k]
