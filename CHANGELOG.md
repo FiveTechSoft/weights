@@ -138,6 +138,39 @@ output.weight` y `step poke output.weight 5 12 0.5` extraídos y mapeados a
 
 **Estado** — `review`
 
+### P3 — Atribución de Áreas Semánticas y Roles Anatómicos en WSP-Lang (`peek` / `poke` / `semantic-map`)
+
+**QUÉ** — Se amplió WSP-Lang (`wsp.py`) con un sistema completo de identificación semántica y anatómica de pesos y neuronas:
+- **10 Áreas Semánticas** (`SEMANTIC_AREAS`): `math_logic`, `agent_action`, `code_software`, `abstract_ideas`, `mind_cognition`, `time_sequence`, `emotion_pos`, `emotion_neg`, `physical_world`, `social_power`.
+- **Centroides Diferenciales**: resolución automática de semillas léxicas sobre el vocabulario BPE (incluyendo prefijo byte `Ġ` y espacio), extracción selectiva de embeddings de `token_embd.weight` sin cargar los 4 GB en memoria, y cálculo de centroides diferenciales con substracción del fondo medio isotrópico ($\mathbf{C}'_a = \mathbf{C}_a - \bar{\mathbf{C}}$) para eliminar la anisotropía del espacio latente.
+- **Caché persistente**: se serializan los centroides en `data/<stem>.semantic_centroids.npz` (1.4 MB) para consultas sub-segundo en posteriores ejecuciones de `peek`.
+- **Introspección Anatómica**: `describe_tensor_role()` detecta el tipo de capa (atención completa vs recurrencia SSM GatedDeltaNet según `recurrent_layers`), cabeza de atención (`col // key_length`), dimensión interna de cabeza (`col % key_length`), neurona intermedia de FFN (`ffn_down`, `ffn_up`), puertas de contexto SSM (`ssm_beta`, `ssm_alpha`, `ssm_out`) y decodificación de tokens para la cabeza de salida `output.weight`.
+- **Proyección Semántica en `peek()`**: proyección del vector residual (vector columna para matrices de salida, vector fila para detectores de entrada) contra los centroides para reportar:
+  - Área semántica dominante y su puntuación de similitud coseno.
+  - Ranking de áreas semánticas afines.
+  - Semillas léxicas individuales más alineadas.
+- **CLI Commands**: registrados `peek` (con flag `--json`), `poke`, y `semantic-map` en el CLI parser y en el dispatch de `CMD_FN`.
+- **Memoria en `poke()`**: eliminado el buffer de 8 GB en RAM; se utiliza clonación a nivel de sistema operativo (`shutil.copyfile`) y parcheo in-place de bloques afectados con `r+b` seek y write.
+
+**PARA QUÉ** — Resolver la necesidad planteada por el usuario de saber "qué controla y para qué se usa un peso en un LLM" análogo a la computación de 8-bits: dotar a WSP-Lang de interpretabilidad semántica y mecánica directa para que los programas de edición no actúen a ciegas sobre coordenadas arbitrarias, sino sobre áreas funcionales concretas (como razonamiento lógico, bucles temporales o acciones de herramientas).
+
+**QUÉ SE OBTIENE** — Verificado en `MiMo-V2.6-Distill-Qwen-9B`:
+1. `wsp.py semantic-map`: 10 áreas semánticas calculadas y cacheadas con 100% de semillas resueltas.
+2. `wsp.py peek blk.19.attn_output.weight -r 100 -c 200`:
+   - Rol: `Attention Layer 19: head #0 (dim 200) -> escribe en residual dim 100`
+   - Área dominante: `Matemáticas y lógica (math_logic)` (score `+0.0275`).
+   - Semillas léxicas afines: `learn`, `theorem`, `kind`.
+3. `wsp.py peek blk.19.ffn_down.weight -r 100 -c 500`:
+   - Rol: `Layer 19 FFN Down: neurona intermedia #500 -> escribe en residual dim 100`.
+   - Área dominante: `Mundo físico y materia (physical_world)` (score `+0.0211`).
+4. `wsp.py peek blk.0.ssm_out.weight -r 100 -c 200`:
+   - Rol: `SSM Layer 0: canal 200 -> escribe en residual dim 100`.
+5. `wsp.py peek output.weight -r 1500 -c 100`:
+   - Rol: `LM Head: proyección al logit del token #1500 ('Ġline')`.
+   - Área dominante: `Acciones de agente y terminal (agent_action)` (score `+0.0276`).
+
+**Estado** — `published`
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).

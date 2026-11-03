@@ -14,3 +14,4 @@ logs/
 # manifiestos gigantes de retos (regenerables)
 retos/sellados/*.LOCKED
 data/ffn_down_1719.npz
+data/*.semantic_centroids.npz

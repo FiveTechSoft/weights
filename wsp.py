@@ -1,4 +1,4 @@
-﻿"""wsp.py â€” Weight-Space Programming toolkit (GGUF,æ ¼å¼ del blog MIT CSAIL).
+"""wsp.py â€” Weight-Space Programming toolkit (GGUF,æ ¼å¼ del blog MIT CSAIL).
 
 Uso por un LLM driver: leer pesos (stats/rows/delta), proponer ediciones
 (programa JSON), aplicarlas (edit: dequant->op->requant, copia en sitio),
@@ -10,6 +10,7 @@ No hay gradientes, no entrenamiento, no fit a datos.
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -39,7 +40,8 @@ PROME_JRNL = DIR_JRN / "journal.jsonl"
 
 JRN_KIND = {"info": "read", "tensors": "read", "stats": "read", "rows": "read",
             "delta": "read", "ops-find": "read", "diff": "read", "budget": "read",
-            "edit": "write", "serve": "fwd", "eval": "fwd"}
+            "peek": "read", "semantic-map": "read",
+            "poke": "write", "edit": "write", "serve": "fwd", "eval": "fwd"}
 BUDGET = {"read": 200, "write": 20, "fwd": 6}
 
 
@@ -87,6 +89,9 @@ def _make_parser():
     a = sp.add_parser("vs"); a.add_argument("runA"); a.add_argument("runB")
     a = sp.add_parser("budget")
     a = sp.add_parser("markers"); a.add_argument("gguf")
+    a = sp.add_parser("peek"); a.add_argument("gguf"); a.add_argument("tensor"); a.add_argument("-r", "--row", type=int, default=None); a.add_argument("-c", "--col", type=int, default=None); a.add_argument("-k", type=int, default=8); a.add_argument("--json", action="store_true")
+    a = sp.add_parser("poke"); a.add_argument("gguf"); a.add_argument("tensor"); a.add_argument("-r", "--row", type=int, required=True); a.add_argument("-c", "--col", type=int, required=True); a.add_argument("-v", "--val", type=float, required=True); a.add_argument("-o", "--out", default=None)
+    a = sp.add_parser("semantic-map"); a.add_argument("gguf")
     return ap
 
 
@@ -572,9 +577,342 @@ def cmd_edit(a):
 
 
 # ---------------------------------------------------------------------------
-# peek() / poke() — peso individual
-# peek  : leer un peso y reportar QUE CONTROLA (qué neuronas usa, qué fuerza)
-# poke  : fijar un peso (dequant -> set -> requant solo bloques -> write)
+# Áreas Semánticas y Representaciones Funcionales (Dreaming Technique 16 + WSP)
+# ---------------------------------------------------------------------------
+SEMANTIC_AREAS = {
+    "math_logic": {
+        "label": "Matemáticas y lógica",
+        "color": "#3498db",
+        "seeds": ["logic", "math", "proof", "solve", "equation", "theorem", "calculate", "integer", "formula", "axiom", "lemma", "derivative", "prime"],
+    },
+    "agent_action": {
+        "label": "Acciones de agente y terminal",
+        "color": "#e67e22",
+        "seeds": ["tool", "command", "run", "execute", "terminal", "check", "exit", "error", "file", "script", "bash", "status", "output"],
+    },
+    "code_software": {
+        "label": "Código y programación",
+        "color": "#16a085",
+        "seeds": ["python", "code", "function", "import", "class", "def", "return", "data", "software", "model", "variable", "string", "array"],
+    },
+    "abstract_ideas": {
+        "label": "Conceptos abstractos",
+        "color": "#2980b9",
+        "seeds": ["idea", "truth", "concept", "meaning", "reason", "justice", "theory", "knowledge", "principle", "freedom", "structure"],
+    },
+    "mind_cognition": {
+        "label": "Mente y cognición",
+        "color": "#1abc9c",
+        "seeds": ["mind", "think", "know", "memory", "dream", "learn", "brain", "conscious", "aware", "understand", "reasoning"],
+    },
+    "time_sequence": {
+        "label": "Tiempo y secuencia",
+        "color": "#f39c12",
+        "seeds": ["time", "past", "future", "moment", "now", "step", "next", "before", "after", "history", "loop", "repeat", "stop"],
+    },
+    "emotion_pos": {
+        "label": "Emoción positiva",
+        "color": "#2ecc71",
+        "seeds": ["happy", "joy", "love", "peace", "hope", "smile", "glad", "kind", "gentle", "warm"],
+    },
+    "emotion_neg": {
+        "label": "Emoción negativa",
+        "color": "#e74c3c",
+        "seeds": ["sad", "hate", "fear", "anger", "pain", "cry", "rage", "grief", "lonely", "shame"],
+    },
+    "physical_world": {
+        "label": "Mundo físico y materia",
+        "color": "#95a5a6",
+        "seeds": ["body", "rock", "water", "fire", "earth", "stone", "blood", "metal", "wood", "space"],
+    },
+    "social_power": {
+        "label": "Social y autoridad",
+        "color": "#8e44ad",
+        "seeds": ["power", "war", "nation", "people", "law", "money", "work", "leader", "rule", "state"],
+    },
+}
+
+_CENTROID_CACHE = {}
+
+
+def get_model_arch_info(r):
+    """Extrae metadatos arquitectónicos de GGUF (head counts, recurrent SSM flags, etc.)."""
+    arch = "qwen35"
+    if "general.architecture" in r.fields:
+        raw_arch = r.fields["general.architecture"].contents()
+        if isinstance(raw_arch, list) and raw_arch:
+            raw_arch = raw_arch[0]
+        if isinstance(raw_arch, bytes):
+            arch = raw_arch.decode("utf-8", "replace")
+        elif isinstance(raw_arch, str):
+            arch = raw_arch
+
+    def get_val(suffix, default=None):
+        for key in [f"{arch}.{suffix}", suffix]:
+            if key in r.fields:
+                val = r.fields[key].contents()
+                if isinstance(val, list) and len(val) == 1:
+                    val = val[0]
+                return val
+        return default
+
+    recurrent = get_val("attention.recurrent_layers", [])
+    if isinstance(recurrent, list):
+        recurrent_flags = [bool(x) for x in recurrent]
+    else:
+        recurrent_flags = []
+
+    return {
+        "arch": arch,
+        "embedding_length": int(get_val("embedding_length", 4096)),
+        "block_count": int(get_val("block_count", 32)),
+        "head_count": int(get_val("attention.head_count", 16)),
+        "head_count_kv": int(get_val("attention.head_count_kv", 4)),
+        "key_length": int(get_val("attention.key_length", 256)),
+        "value_length": int(get_val("attention.value_length", 256)),
+        "feed_forward_length": int(get_val("feed_forward_length", 12288)),
+        "recurrent_layers": recurrent_flags,
+    }
+
+
+def _resolve_token(vocab_map, word):
+    """Resuelve un término a su token ID considerando BPE de Qwen/Llama."""
+    prefixes = [chr(0x0120) + word, word, " " + word, chr(0x2581) + word,
+                chr(0x0120) + word.lower(), word.lower(), " " + word.lower(),
+                chr(0x0120) + word.capitalize(), word.capitalize()]
+    for p in prefixes:
+        if p in vocab_map:
+            return vocab_map[p], p
+    return None, None
+
+
+def get_semantic_centroids(gguf_path, r=None):
+    """Calcula o carga del caché los centroides diferenciales de las áreas semánticas."""
+    path_str = str(gguf_path)
+    if path_str in _CENTROID_CACHE:
+        return _CENTROID_CACHE[path_str]
+
+    stem = Path(path_str).stem
+    cache_path = DIR_DATA / f"{stem}.semantic_centroids.npz"
+    if cache_path.exists():
+        try:
+            data = np.load(cache_path, allow_pickle=True)
+            centroids = {}
+            for k in data.files:
+                centroids[k] = data[k]
+            _CENTROID_CACHE[path_str] = centroids
+            return centroids
+        except Exception:
+            pass
+
+    if r is None:
+        r = reader_of(path_str)
+
+    tok_field = r.fields.get("tokenizer.ggml.tokens")
+    if not tok_field:
+        return {}
+
+    vocab_list = tok_field.contents()
+    vocab_map = {tok: idx for idx, tok in enumerate(vocab_list)}
+    t_embd = tensor_map(r).get("token_embd.weight")
+    if t_embd is None:
+        return {}
+
+    raw_centroids = {}
+    seed_vectors = {}
+    for area, meta in SEMANTIC_AREAS.items():
+        vecs = []
+        for s in meta["seeds"]:
+            idx, tok_str = _resolve_token(vocab_map, s)
+            if idx is not None:
+                raw = t_embd.data[idx:idx + 1]
+                v = gguf.dequantize(raw, t_embd.tensor_type).flatten().astype(np.float32)
+                v /= (np.linalg.norm(v) + 1e-12)
+                vecs.append(v)
+                seed_vectors[f"seed_{s}"] = v
+        if vecs:
+            c = np.mean(vecs, axis=0)
+            c /= (np.linalg.norm(c) + 1e-12)
+            raw_centroids[area] = c
+
+    if not raw_centroids:
+        return {}
+
+    mean_bg = np.mean(list(raw_centroids.values()), axis=0)
+    diff_centroids = {}
+    for area, c in raw_centroids.items():
+        dc = c - mean_bg
+        dc /= (np.linalg.norm(dc) + 1e-12)
+        diff_centroids[area] = dc
+
+    save_dict = dict(diff_centroids)
+    save_dict.update(seed_vectors)
+    try:
+        np.savez_compressed(cache_path, **save_dict)
+    except Exception:
+        pass
+
+    _CENTROID_CACHE[path_str] = save_dict
+    return save_dict
+
+
+def attribute_semantic_area(vec, centroids_dict, top_k=3):
+    """Calcula la proyección semántica de un vector residual frente a las áreas semánticas."""
+    if not centroids_dict:
+        return None
+    v = vec.flatten().astype(np.float32)
+    v_norm = np.linalg.norm(v)
+    if v_norm < 1e-12:
+        return None
+    v = v / v_norm
+
+    area_scores = []
+    seed_scores = []
+    for k, c in centroids_dict.items():
+        if k.startswith("seed_"):
+            seed_name = k[5:]
+            score = float(np.dot(v, c))
+            seed_scores.append((seed_name, score))
+        elif k in SEMANTIC_AREAS:
+            label = SEMANTIC_AREAS[k]["label"]
+            score = float(np.dot(v, c))
+            area_scores.append((k, label, score))
+
+    area_scores.sort(key=lambda x: -x[2])
+    seed_scores.sort(key=lambda x: -x[1])
+
+    dominant = area_scores[0] if area_scores else None
+    return {
+        "dominant": {"area": dominant[0], "label": dominant[1], "score": round(dominant[2], 4)} if dominant else None,
+        "ranked": [{"area": a, "label": l, "score": round(s, 4)} for a, l, s in area_scores[:top_k]],
+        "top_seeds": [{"seed": s, "score": round(sc, 4)} for s, sc in seed_scores[:5]],
+    }
+
+
+def describe_tensor_role(tensor_name, row=None, col=None, arch_info=None, vocab=None):
+    """Devuelve descripción anatómica y arquitectónica de qué controla el tensor y sus coordenadas."""
+    arch_info = arch_info or {}
+    key_len = arch_info.get("key_length", 256)
+    val_len = arch_info.get("value_length", 256)
+    recurrent_flags = arch_info.get("recurrent_layers", [])
+
+    m = re.match(r"blk\.(\d+)\.(.*)", tensor_name)
+    layer = int(m.group(1)) if m else None
+    sub = m.group(2) if m else tensor_name
+    is_recurrent = (layer is not None and layer < len(recurrent_flags) and recurrent_flags[layer])
+    layer_type = "ssm_recurrent" if is_recurrent else ("full_attention" if layer is not None else "embedding/head")
+
+    meta = {
+        "layer": layer,
+        "layer_type": layer_type,
+        "component": sub,
+        "role": "",
+        "head": None,
+        "head_dim": None,
+        "neuron": None,
+        "residual_dim": None,
+    }
+
+    if sub in ("attn_output.weight", "ssm_out.weight"):
+        meta["component"] = "ssm_output_proj" if is_recurrent else "attention_output_proj"
+        if col is not None:
+            meta["head"] = col // key_len if not is_recurrent else None
+            meta["head_dim"] = col % key_len if not is_recurrent else col
+        if row is not None:
+            meta["residual_dim"] = row
+        if row is not None and col is not None:
+            if is_recurrent:
+                meta["role"] = f"SSM Layer {layer}: canal {col} -> escribe en residual dim {row}"
+            else:
+                meta["role"] = f"Attention Layer {layer}: head #{meta['head']} (dim {meta['head_dim']}) -> escribe en residual dim {row}"
+        else:
+            meta["role"] = f"Proyección de salida hacia el residual stream ({layer_type})"
+
+    elif sub in ("attn_q.weight", "attn_k.weight", "attn_v.weight"):
+        k_or_v = "KV" if "k" in sub or "v" in sub else "Q"
+        l_dim = val_len if "v" in sub else key_len
+        meta["component"] = f"attention_{k_or_v.lower()}_proj"
+        if row is not None:
+            meta["head"] = row // l_dim
+            meta["head_dim"] = row % l_dim
+        if col is not None:
+            meta["residual_dim"] = col
+        if row is not None and col is not None:
+            meta["role"] = f"Layer {layer}: lee residual dim {col} -> {k_or_v}-head #{meta['head']} (dim {meta['head_dim']})"
+        else:
+            meta["role"] = f"Detector/lector de atención ({k_or_v}) desde el residual stream"
+
+    elif sub == "ffn_down.weight":
+        meta["component"] = "ffn_down_proj"
+        if col is not None:
+            meta["neuron"] = col
+        if row is not None:
+            meta["residual_dim"] = row
+        if row is not None and col is not None:
+            meta["role"] = f"Layer {layer} FFN Down: neurona intermedia #{col} -> escribe en residual dim {row}"
+        else:
+            meta["role"] = f"FFN síntesis hacia el residual stream"
+
+    elif sub in ("ffn_up.weight", "ffn_gate.weight"):
+        meta["component"] = sub.replace(".weight", "")
+        if row is not None:
+            meta["neuron"] = row
+        if col is not None:
+            meta["residual_dim"] = col
+        if row is not None and col is not None:
+            meta["role"] = f"Layer {layer} FFN Detector: lee residual dim {col} -> activa neurona intermedia #{row}"
+        else:
+            meta["role"] = f"FFN detector desde el residual stream"
+
+    elif sub == "ssm_beta.weight":
+        meta["component"] = "ssm_beta_gate"
+        if row is not None: meta["residual_dim"] = row
+        if col is not None: meta["head"] = col
+        if row is not None and col is not None:
+            meta["role"] = f"SSM Layer {layer} Beta Gate (retención/olvido de contexto): lee residual dim {row} -> modula grupo SSM #{col}"
+        else:
+            meta["role"] = f"SSM Beta Gate de retención/olvido"
+
+    elif sub == "ssm_alpha.weight":
+        meta["component"] = "ssm_alpha_gate"
+        if row is not None: meta["residual_dim"] = row
+        if col is not None: meta["head"] = col
+        if row is not None and col is not None:
+            meta["role"] = f"SSM Layer {layer} Alpha Gate (incorporación de contexto): lee residual dim {row} -> modula grupo SSM #{col}"
+        else:
+            meta["role"] = f"SSM Alpha Gate de entrada"
+
+    elif sub == "attn_qkv.weight":
+        meta["component"] = "ssm_qkv_proj"
+        if row is not None: meta["head"] = row // key_len
+        if col is not None: meta["residual_dim"] = col
+        if row is not None and col is not None:
+            meta["role"] = f"SSM Layer {layer} QKV: lee residual dim {col} -> feature #{row}"
+        else:
+            meta["role"] = f"SSM proyección de entrada QKV"
+
+    elif tensor_name == "output.weight":
+        meta["component"] = "lm_head_unembedding"
+        if row is not None:
+            tok_str = vocab[row] if vocab and row < len(vocab) else f"token_{row}"
+            meta["role"] = f"LM Head: proyección al logit del token #{row} ('{tok_str}')"
+        if col is not None:
+            meta["residual_dim"] = col
+
+    elif tensor_name == "token_embd.weight":
+        meta["component"] = "token_embedding"
+        if row is not None:
+            tok_str = vocab[row] if vocab and row < len(vocab) else f"token_{row}"
+            meta["role"] = f"Embedding de entrada para token #{row} ('{tok_str}')"
+
+    else:
+        meta["role"] = f"Tensor {tensor_name}"
+
+    return meta
+
+
+# ---------------------------------------------------------------------------
+# peek() / poke() — lectura y edición individual de pesos
 # ---------------------------------------------------------------------------
 def _row_norm(D, r):
     return float(np.linalg.norm(D[r]))
@@ -584,91 +922,211 @@ def _col_norm(D, c):
     return float(np.linalg.norm(D[:, c]))
 
 
-def _rank_by_norm(D, idx, order):
-    """rank (1 = más fuerte) de idx dentro de la lista `order`, por norma de fila."""
-    vals = np.array([np.linalg.norm(D[i]) for i in order], dtype=np.float64)
+def _rank_by_norm(D, idx, axis=0):
+    """rank (0 = más fuerte) de idx a lo largo de axis (0=filas, 1=columnas)."""
+    vals = np.linalg.norm(D, axis=1 if axis == 0 else 0)
     pos = np.argsort(-vals, kind="stable")
-    j = int(np.flatnonzero(order == idx)[0])
-    return int(np.flatnonzero(pos == j)[0])
+    return int(np.flatnonzero(pos == idx)[0])
 
 
-def peek(gguf_path, tensor_name, row=None, col=None, k=10):
-    """peek: qué controla un peso.
+def peek(gguf_path, tensor_name, row=None, col=None, k=8, compute_semantic=True):
+    """peek: qué controla un peso o tensor.
 
-    sin row/col -> anatomía del tensor (qué neuronas dominan, qué fuerza).
-    con row/col -> el peso concreto: valor, qué fila/columna usa, su fuerza.
+    sin row/col -> anatomía del tensor, normas y áreas semánticas dominantes.
+    con row/col -> el peso concreto: valor, rol arquitectónico, neurona y área semántica.
     """
     r = reader_of(gguf_path)
     t = tensor_map(r)[tensor_name]
     D = row_decode(t)
     n_out, n_in = D.shape
-    out = {"tensor": tensor_name, "shape": [n_out, n_in], "dtype": base_dtype(t),
-           "value": None, "row": None, "col": None}
+    arch_info = get_model_arch_info(r)
+
+    tok_field = r.fields.get("tokenizer.ggml.tokens")
+    vocab = tok_field.contents() if tok_field else None
+
+    arch_meta = describe_tensor_role(tensor_name, row, col, arch_info, vocab)
+    centroids = get_semantic_centroids(gguf_path, r) if compute_semantic else {}
+
+    out = {
+        "tensor": tensor_name,
+        "shape": [n_out, n_in],
+        "dtype": base_dtype(t),
+        "architecture": arch_meta,
+        "value": None, "row": None, "col": None,
+    }
 
     if row is not None and col is not None:
+        row, col = int(row), int(col)
         v = float(D[row, col])
         rnorm = _row_norm(D, row)
         cnorm = _col_norm(D, col)
         out.update({
-            "value": v, "sign": 1 if v >= 0 else -1,
+            "value": v,
+            "sign": 1 if v >= 0 else -1,
+            "abs": abs(v),
             "row": row, "col": col,
             "row_norm": rnorm, "col_norm": cnorm,
-            "row_rank": _rank_by_norm(D, row, np.arange(n_out)),
-            "col_rank": _rank_by_norm(D, col, np.arange(n_in)),
-            "frac_row": abs(v) / (rnorm + 1e-30),   # qué parte de la fila controla
+            "row_rank": _rank_by_norm(D, row, axis=0),
+            "col_rank": _rank_by_norm(D, col, axis=1),
+            "frac_row": abs(v) / (rnorm + 1e-30),
             "frac_col": abs(v) / (cnorm + 1e-30),
-            "abs": abs(v),
         })
+
+        primary_vec = None
+        if tensor_name.endswith("attn_output.weight") or tensor_name.endswith("ffn_down.weight") or tensor_name.endswith("ssm_out.weight"):
+            if n_out == arch_info["embedding_length"]:
+                primary_vec = D[:, col]
+        elif tensor_name.endswith("attn_q.weight") or tensor_name.endswith("attn_k.weight") or tensor_name.endswith("attn_v.weight") or tensor_name.endswith("ffn_up.weight") or tensor_name.endswith("ffn_gate.weight"):
+            if n_in == arch_info["embedding_length"]:
+                primary_vec = D[row, :]
+        elif tensor_name == "output.weight":
+            primary_vec = D[row, :]
+        elif n_out == arch_info["embedding_length"]:
+            primary_vec = D[:, col]
+        elif n_in == arch_info["embedding_length"]:
+            primary_vec = D[row, :]
+
+        if primary_vec is not None and centroids:
+            out["semantic_areas"] = attribute_semantic_area(primary_vec, centroids)
     else:
         row_norms = np.linalg.norm(D, axis=1)
         col_norms = np.linalg.norm(D, axis=0)
         top_r = [int(i) for i in np.argsort(-row_norms, kind="stable")[:k]]
         top_c = [int(j) for j in np.argsort(-col_norms, kind="stable")[:k]]
         nnz = int(np.count_nonzero(np.abs(D) > 1e-6))
+
+        top_rows_meta = []
+        for i in top_r:
+            item = {"row": i, "norm": float(row_norms[i])}
+            if centroids and n_in == arch_info["embedding_length"]:
+                sem = attribute_semantic_area(D[i, :], centroids, top_k=1)
+                if sem and sem["dominant"]:
+                    item["dominant_area"] = sem["dominant"]
+            top_rows_meta.append(item)
+
+        top_cols_meta = []
+        for j in top_c:
+            item = {"col": j, "norm": float(col_norms[j])}
+            if centroids and n_out == arch_info["embedding_length"]:
+                sem = attribute_semantic_area(D[:, j], centroids, top_k=1)
+                if sem and sem["dominant"]:
+                    item["dominant_area"] = sem["dominant"]
+            top_cols_meta.append(item)
+
         out.update({
+            "nonzero": nnz,
             "row_norms": {"min": float(row_norms.min()), "median": float(np.median(row_norms)),
                           "max": float(row_norms.max()), "top": top_r},
             "col_norms": {"min": float(col_norms.min()), "median": float(np.median(col_norms)),
                           "max": float(col_norms.max()), "top": top_c},
-            "nonzero": nnz,
-            "top_rows": [{"row": i, "norm": float(row_norms[i])} for i in top_r],
-            "top_cols": [{"col": j, "norm": float(col_norms[j])} for j in top_c],
+            "top_rows": top_rows_meta,
+            "top_cols": top_cols_meta,
         })
     return out
 
 
-def _set_element(t, D, row, col, value):
-    D[row, col] = value
-
-
-def _poke_requant(t, row, D):
-    """requantiza SOLO el bloque que contiene la fila `row` (poke de un solo peso)."""
-    b = row // 256  # bloques de 256 pesos (Q6_K)
-    return _requant_blocks_bytes(t, {row: [b]}, D)
-
-
 def poke(gguf_path, tensor_name, row, col, value, out=None):
-    """poke: fijar un peso.
+    """poke: fijar un peso individual en el modelo.
 
-    dequantiza el tensor, escribe el elemento, requantiza SOLO los bloques que
-    contienen (row, col) y escribe de vuelta.
+    dequantiza el tensor, modifica el elemento en (row, col),
+    requantiza SOLO el bloque que contiene la columna (cero ruido colateral),
+    y escribe de vuelta en el archivo sin cargar los 8 GB en RAM.
     """
-    out = out or f"{Path(str(gguf_path)).stem}.poke-{tensor_name}-{row}-{col}.gguf"
     src = str(gguf_path)
     r = reader_of(src)
-    t = tensor_map(r)[tensor_name]
+    tm = tensor_map(r)
+    if tensor_name not in tm:
+        raise KeyError(f"Tensor {tensor_name} no encontrado en {src}")
+    t = tm[tensor_name]
+
+    ne0 = int(t.shape[0])
+    ne1 = int(t.shape[1])
+    row, col = int(row), int(col)
+    if not (0 <= row < ne1 and 0 <= col < ne0):
+        raise ValueError(f"Coordenadas fuera de rango: ({row}, {col}) para matriz {ne1}x{ne0}")
+
+    elem_pb = 256 if t.tensor_type == gguf.GGMLQuantizationType.Q6_K else 32
+    blk_idx = col // elem_pb
+
     D = row_decode(t)
-    _set_element(t, D, row, col, value)
-    newbytes = _poke_requant(t, row, D)
-    with open(out, "wb") as fh:
-        fh.write(newbytes)  # bytes del tensor (data_size)
-    with open(src, "rb") as fh:
-        full = bytearray(fh.read())
-    full[t.data_offset:t.data_offset + len(newbytes)] = newbytes
-    with open(out, "wb") as fh:
-        fh.write(full)
-    _p(f"  escrito {out}: {len(full)} bytes (solo {len(newbytes)} de tensor parcheados)")
-    return out
+    old_val = float(D[row, col])
+    D[row, col] = float(value)
+
+    newbytes = _requant_blocks_bytes(t, {row: [blk_idx]}, D)
+
+    out_path = out or f"{Path(src).stem}.poke-{tensor_name}-{row}-{col}.gguf"
+    out_path = str(out_path)
+    if out_path != src:
+        _p(f"  clonando modelo a {out_path}...")
+        shutil.copyfile(src, out_path)
+
+    with open(out_path, "r+b") as fh:
+        fh.seek(t.data_offset)
+        fh.write(newbytes)
+
+    journal("poke", json.dumps({
+        "tensor": tensor_name, "row": row, "col": col,
+        "old_val": old_val, "new_val": float(value), "out": out_path
+    }, ensure_ascii=False))
+
+    _p(f"POKE completado en {out_path}:")
+    _p(f"  {tensor_name}[{row}, {col}]: {old_val:+.6f} -> {float(value):+.6f} (bloque {blk_idx})")
+    return {
+        "out": out_path, "tensor": tensor_name, "row": row, "col": col,
+        "old_val": old_val, "new_val": float(value), "block": blk_idx
+    }
+
+
+def cmd_peek(a):
+    res = peek(a.gguf, a.tensor, row=a.row, col=a.col, k=a.k)
+    if getattr(a, "json", False):
+        _p(json.dumps(res, indent=2, ensure_ascii=False))
+        return
+
+    arch = res["architecture"]
+    _p(f"=== WSP PEEK: {res['tensor']} ===")
+    _p(f"  Forma: {res['shape']}  Tipo: {res['dtype']}")
+    _p(f"  Rol: {arch.get('role', '')}")
+    if arch.get("head") is not None:
+        _p(f"  Head: #{arch['head']} (dim {arch.get('head_dim')})  Capa: {arch.get('layer')} ({arch.get('layer_type')})")
+
+    if res.get("value") is not None:
+        _p(f"\n  Coordenadas: fila={res['row']} col={res['col']}")
+        _p(f"  Valor: {res['value']:+.6f} (|v|={res['abs']:.6f})")
+        _p(f"  Norma fila: {res['row_norm']:.4f} (rank #{res['row_rank']}, {res['frac_row']:.2%})")
+        _p(f"  Norma col:  {res['col_norm']:.4f} (rank #{res['col_rank']}, {res['frac_col']:.2%})")
+
+        sem = res.get("semantic_areas")
+        if sem and sem.get("dominant"):
+            dom = sem["dominant"]
+            _p(f"\n  ÁREA SEMÁNTICA DOMINANTE: {dom['label']} ({dom['area']})  score={dom['score']:+.4f}")
+            _p("  Ranking de áreas semánticas:")
+            for item in sem.get("ranked", []):
+                _p(f"    - {item['label']:<30} score={item['score']:+.4f}")
+            _p("  Semillas léxicas más afines:")
+            for s in sem.get("top_seeds", []):
+                _p(f"    - {s['seed']:<15} score={s['score']:+.4f}")
+    else:
+        _p(f"  Elementos no nulos: {res.get('nonzero'):,}")
+        _p(f"  Top filas: {res.get('top_rows')}")
+        _p(f"  Top cols:  {res.get('top_cols')}")
+
+
+def cmd_poke(a):
+    poke(a.gguf, a.tensor, row=a.row, col=a.col, value=a.val, out=a.out)
+
+
+def cmd_semantic_map(a):
+    _p("=== MAPA DE ÁREAS SEMÁNTICAS (WSP-Lang) ===")
+    centroids = get_semantic_centroids(a.gguf)
+    _p(f"Modelo: {a.gguf}")
+    _p(f"Áreas semánticas activas: {len(SEMANTIC_AREAS)}")
+    for k, meta in SEMANTIC_AREAS.items():
+        _p(f"\n  [{k}] {meta['label']} (color: {meta['color']})")
+        _p(f"    Semillas ({len(meta['seeds'])}): {', '.join(meta['seeds'])}")
+        if k in centroids:
+            c = centroids[k]
+            _p(f"    Centroide diferencial calculado (dim {len(c)}, norma={np.linalg.norm(c):.4f})")
 
 
 def cmd_diff(a):
@@ -706,6 +1164,7 @@ CMD_FN = {
     "info": cmd_info, "tensors": cmd_tensors, "stats": cmd_stats, "rows": cmd_rows,
     "delta": cmd_delta, "markers": cmd_markers, "edit": cmd_edit, "diff": cmd_diff,
     "vs": cmd_vs, "budget": cmd_budget,
+    "peek": cmd_peek, "poke": cmd_poke, "semantic-map": cmd_semantic_map,
 }
 
 
