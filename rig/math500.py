@@ -443,11 +443,14 @@ def cmd_run(args):
     out = Path(args.out) if args.out else DIR_OUT / f"r0-math-{args.tag}.json"
     out.write_text(json.dumps({"meta": meta, "items": results}, ensure_ascii=False, indent=1),
                    encoding="utf-8")
-    _p(f"[fin] {dur}s — resumen de fallos (i, gold, pred):")   # golds solo al terminar
-    fails = [r for r in results if not r["ok"]]
+    _p(f"[fin] {dur}s — resumen de respuestas incorrectas (i, gold, pred):")
+    fails = [r for r in results if not r["ok"] and not r.get("error")]
     for r in fails:
         _p(f"  i={r['i']} gold={r['gold']!r} pred={r['pred']!r}")
-    _p(f"[fin] sin fallos" if not fails else f"[fin] fallos: {len(fails)}/{len(results)}")
+    errs = [r for r in results if r.get("error")]
+    for r in errs:
+        _p(f"  ERROR i={r['i']} {r['error']}")
+    _p(f"[fin] respuestas incorrectas: {len(fails)}; errores de inferencia: {len(errs)}")
     scored = len(results) - errors
     _p(f"[fin] ok={nok}/{scored} ({100.0 * nok / max(scored, 1):.1f}%) "
        f"errors={errors} total={len(results)} -> {out}")
