@@ -17,3 +17,7 @@
 {"ts": "2026-11-03T19:36:44", "kind": "read", "detail": "peek"}
 {"ts": "2026-11-03T19:38:27", "kind": "read", "detail": "peek"}
 {"ts": "2026-11-03T19:39:23", "kind": "read", "detail": "peek"}
+{"ts": "2026-11-03T21:20:50", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\served\\\\mimo-evil.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-03T21:21:16", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\served\\\\mimo-evil.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-03T21:21:17", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-03T21:22:20", "kind": "read", "detail": "diff"}
