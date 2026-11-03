@@ -2,3 +2,6 @@
 {"ts": "2026-11-03T11:22:55", "kind": "run", "detail": {"mode": "fix", "llm": "replay:demo_transcript.jsonl", "changed": 128, "steps": 2, "out": {"dir": "/tmp/opencode/run1"}}}
 {"ts": "2026-11-03T11:23:03", "kind": "write", "detail": {"file": "/tmp/opencode/original.npz", "out": "/tmp/opencode/restored.npz", "patch": "/tmp/opencode/run1/patch.npz", "changed": 128}}
 {"ts": "2026-11-03T11:23:10", "kind": "write", "detail": {"file": "/tmp/opencode/original.npz", "out": "/tmp/opencode/edited.npz", "changed": 256}}
+{"ts": "2026-11-03T13:10:37", "kind": "info", "detail": {"file": "/tmp/opencode/ws_demo.npz", "n": 2}}
+{"ts": "2026-11-03T13:10:41", "kind": "write", "detail": {"file": "/tmp/opencode/ws_demo.npz", "out": "/tmp/opencode/out.npz", "changed": 0}}
+{"ts": "2026-11-03T13:10:45", "kind": "run", "detail": {"mode": "fix", "llm": "replay:rep.jsonl", "changed": 0, "steps": 4, "out": {}}}

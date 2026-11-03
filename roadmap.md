@@ -38,11 +38,12 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 - Batería de páginas (MCP? no: run_battery.py P1/P5):
   - P1 (leer pesos → inferir qué calcula): **PASS** (el driver 9B razona la función sin fwd).
   - P5 (escribir pesos inline formato edits): **FAIL** técnico (el modelo no produce el bloque ```edits```: pendiente mejora prompt/parser de runtime batería).
+- Serie causal E2–E5 (residuos reales + placebo) + P4: **CERRADA DISCARD** (ver results.md 2bis/2quinquies): placebo descartó el ruido de requant; la edición por activaciones solo "mejoró" en dev y EMPEORÓ en frescos (70% vs 55% loops).
 
 ### 2.3 Challenge Engine v0.2 (WSP-40)
 - Catálogo formal: `retos\wsp40.json` (8 familias, 40 retos; etapa A=Qwen3.5-0.8B 01-22, B/C/D=MiMo).
 - Jueces mecánicos implementados (computados SOLO al juzgar, nunca visibles antes): dims, emb_vocab, mlp_map, heads (metadata GQA), norms, outliers (Jaccard), delta_magnitud, similarity, emb_neighbors, estructura, markers, shared_rows, lang_rows + sellado de holdouts (LOCK tras 1 ejecución), historial y veredictos keep/discard.
-- Retos aprobados actuales: 01, 02, 03, 08.
+- Retos aprobados actuales: **01–09** (9/40; 10–17 jueces implementados sin submit).
 - MCP: `engine\wsp_mcp_server.py` (FastMCP stdio) + `C:\weights\opencode.json` con `mcpServers` — **requiere reinicio de opencode para activarse**; en formato CLI ya funciona.
 
 ### 2.4 Infra y datos
@@ -62,20 +63,33 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 7. **Expedientes acumulativos**: retos con jueces externos y memoria de hipótesis/tensores/intervenciones/resultado: capacidad para la gen-2+ del agente investigador (Knowledge Transfer Between Experiments, ref. hip 5 del marco).
 
 ## 4. Pendiente (priorizado)
+
+### 4.0 Cierre de fase E2–E5 (2026-11-03, sesión linux)
+- **P4 CONFIRMACIÓN ejecutada (commit 5c372a0) y NEGATIVA**: en 20 prompts frescos (10 general + 10 code) E5 da **14/20 loops vs 11/20 del original** (subset code: 8/10 vs 5/10) → E5 DISCARDED por keep-if-better. Detalle en results.md §2quinquies.
+- Consecuencia: **la serie E1–E5 de edición agéntica queda CERRADA sin keep**. Lecciones: (1) targeting por activaciones ayuda en dev pero no generaliza; (2) evaluar frescos ANTES de declarar señal; (3) placebo (E4) queda como estándar obligatorio del PROTOCOL.md.
+- **NUEVO OBJETIVO (dirección del driver): aumentar la puntuación MATH de MiMo** (R0 había dado 8/8 GSM8K diag; el margen está en MATH-500/harder). Se reactiva PROTOCOL.md con el rigor E4 (placebo) y frescos.
+
+### 4.1 Infra linux (nueva sesión 2026-11-03-b)
 | # | Tarea | Depende de |
-|---|---|
-| 1 | Terminar descarga HF MiMo → `blog_prompts\capture_residual.py` (torch CPU, 9B bf16) → dir `u` de repetición desde pares productivo/repetitivo propias (budget ≤4 fwd) | descarga HF |
-| 2 | **E2**: subtract-direction con `u` residuos reales → eval agentic diag → sellar math500+code+if una vez → keep/discard | #1 |
-| 3 | Fix P5 batería blog (prompt más directo + parser tolerante del bloque edits) | nada |
-| 4 | WSP-40: jueces pendientes (04-07, 09-10, 11-17; 18-22 flujo con tools) + bajar HumanEval/MBPP/IFEval + runners | nada |
-| 5 | Etapa A (Qwen3.5-0.8B): download HF (~1.6GB) + parque de pruebas retos 01-22 en modelo PEQUEÑO usando `engine\ws_runner.py` (runner ya disponible) | #4 parcial |
-| 6 | Reinicio opencode → verificación definitivo MCP tools (`engine_status`) | reinicio |
-| 7 | Experimento principal del PROTOCOL.md (math) con placebo y triple holdout (solo si la E2/vía CHALLENGE lo ronda) | #2/#4 |
-| 8 | Extractores de "principio" (knowledge transfer) desde expedientes → generación-2 WSP-Researcher | #2/#4 |
-| 9 | AgentBrain: registrar tema completo + memoria de E1 discard (abajo) | hoy |
+|---|---|---|
+| 1 | Inferencia MiMo en linux: copiar GGUF Q6_K de la máquina windows O eval HF (transformers/torch bf16) — GPUs A5000 ocupadas por vLLM: pedir liberación o CPU lenta | nada |
+| 2 | Download MiMo HF 18GB reanudado (`.venv-hf`, `data/download_mimo_hf.py` linux) | nada |
+| 3 | R0 math500-subset baseline (sample fija sellada) obtener 100% GSM8K diag ya registrado | #1 |
+| 4 | weightspace 0.3.0 upgrade (+openai extra) + ws_runner paridad de stop_reason | nada |
+
+| # | Tarea (histórico, pendiente) | Depende de |
+|---|---|---|
+| 5 | Fix P5 batería blog (prompt más directo + parser tolerante del bloque edits) | nada |
+| 6 | WSP-40: jueces 10-17 + bajar HumanEval/MBPP/IFEval + runners | nada |
+| 7 | Etapa A (Qwen3.5-0.8B): download HF (~1.6GB) + parque de retos 01-22 con `ws_runner` | #6 parcial |
+| 8 | Experimento principal PROTOCOL.md (math) con placebo, triple holdout y seed multiset | #3 + #4.0 |
+| 9 | Extractores de "principio" (knowledge transfer) desde expedientes → gen-2 WSP-Researcher | #8/#6 |
+| 10 | Editar opencode MCP para la máquina linux (config + reinicio) | reinicio |
 
 ## 5. Riesgos / trampas activos
-- Un solo server a la vez en 12GB (stop antes de arrancar otro).
+- **linux**: 4× A5000 OCUPADAS por vllm Qwen3.8-27b (22.4/24.5GB c/u) — no lanzar MiMo en GPU sin revisar memoria.
+- Git: si el remoto se adelanta (la otra máquina también empuja), `git pull --rebase` con stash antes de push.
+- millones de GB: un solo server a la vez en 12GB (stop antes de arrancar otro) [regla de la máquina windows].
 - antml formato del agentic harness |tool-call投机: si cambia el modelo, revisar parser.
 - no borramos gold-holdouts hasta la primera evaluación sellada final (protocolo).
 - Q6_K requant detail: siempre regenerar play党和国家前 a concluyentes.
