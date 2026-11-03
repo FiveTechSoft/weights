@@ -1,0 +1,22 @@
+{
+ "conf-fresca-orig": {
+  "modelo": "mimo-orig",
+  "loops": 11,
+  "n": 20
+ },
+ "conf-fresca-e5": {
+  "modelo": "mimo-e5",
+  "loops": 14,
+  "n": 20
+ },
+ "conf-dev-orig": {
+  "modelo": "mimo-orig",
+  "loops": 8,
+  "n": 10
+ },
+ "conf-dev-e5": {
+  "modelo": "mimo-e5",
+  "loops": 7,
+  "n": 10
+ }
+}

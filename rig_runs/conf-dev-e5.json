@@ -237,5 +237,172 @@
   ],
   "id": "general-0-candidate-0461-ml-evaluation",
   "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:ls -la /app/ && cat /app/run_regression.py",
+   "bash:ls -la /app/vendor/scikit-learn/ 2>/dev/null | head -50",
+   "bash:ls -la /app/src /app/config; cat /app/README.md",
+   "bash:find / -name \"run_regression.py\" 2>/dev/null; find / -type d -name \"scikit-learn\" 2>/dev/null | head",
+   "bash:ls -la /app/src /app/src/* /app/config/* 2>/dev/null",
+   "bash:pwd",
+   "bash:ls -la / ; echo ---; ls -la /app/vendor 2>/dev/null; echo ---; ls -la /app/vendor/src 2>/dev/null",
+   "bash:ls /",
+   "bash:ls -la / ; echo \"=== /app ===\"; ls -la /app",
+   "bash:ls -la /",
+   "bash:ls -la / ; echo \"=== /app ===\"; ls -la /app",
+   "bash:ls -la / ; echo \"=== /app ===\"; ls -la /app",
+   "bash:ls -la / ; echo \"=== /app ===\"; ls -la /app",
+   "bash:ls -la /"
+  ],
+  "diversity": 0.71,
+  "loop": true,
+  "why": [
+   "'bash:ls -la / ; echo \"=== /app ===\"; ls -la /app' x4"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0534-ml-training",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 15,
+  "calls": [
+   "bash:ls /app && cat /app/run_boundary_workflow.py",
+   "bash:ls /app/vendor/partitura && git -C /app/vendor/partitura status 2>&1 | head -20",
+   "bash:cat /app/run_boundary_workflow.py 2>&1; echo \"---\"; ls -la /app",
+   "bash:ls -la /app/vendor/partitura; git -C /app/vendor/partitura log --oneline | head",
+   "read:/app/run_boundary_workflow.py",
+   "bash:ls /app/src; echo ---; ls /app/vendor/partitura",
+   "bash:pwd && ls",
+   "bash:ls /app; echo \"EXIT:$?\"",
+   "bash:ls -la /app/",
+   "bash:find / -maxdepth 3 -name \"run_boundary_workflow.py\" 2>/dev/null",
+   "bash:ls -la /; echo ---; ls -la /app 2>&1; echo ---; ls -la /app/src 2>&1",
+   "bash:ls -la /app/src",
+   "bash:ls -la /app/src/",
+   "bash:ls -la /app/src/ 2>&1 | cat",
+   "bash:ls -la /app/src/ | cat"
+  ],
+  "diversity": 1.0,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0628-media-music",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:find /app -type f -name \"*.py\" | head -50; echo \"---\"; ls -la /app",
+   "bash:ls -la /app/vendor/torchmetrics 2>/dev/null || echo \"not found\"",
+   "bash:ls -la /app/; echo \"---\"; ls -la /app/vendor/ 2>/dev/null; echo \"---\"; ls -la /app/tools/ 2>/dev/null",
+   "bash:pwd; ls -la",
+   "bash:echo $HOME; whoami; ls / 2>&1 | head -30",
+   "bash:ls -la /app/vendor/torchmetrics 2>&1; echo \"EXIT: $?\"",
+   "bash:echo \"test\"; ls -la /app/vendor/torchmetrics 2>&1 | head -5",
+   "bash:echo \"test\"; ls -la /app/vendor/torchmetrics 2>&1 | head -5",
+   "bash:echo \"test\"; ls -la /app/vendor/torchmetrics 2>&1 | head -5",
+   "bash:echo \"test\"; ls -la /app/vendor/torchmetrics 2>&1 | head -5",
+   "bash:echo \"test\"; ls -la /app/vendor/torchmetrics 2>&1 | head -5",
+   "bash:echo \"test\"; ls -la /app/vendor/torchmetrics 2>&1 | head -5",
+   "bash:echo \"test\"; ls -la /app/vendor/torchmetrics 2>&1 | head -5"
+  ],
+  "diversity": 0.54,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:echo \"test\"; ls -la /app/vendor/torchmetrics ' x7"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0674-ml-evaluation",
+  "config": "general"
+ },
+ {
+  "turns": 12,
+  "final": false,
+  "n_calls": 13,
+  "calls": [
+   "bash:find /app/vendor/project -type f | head -100; echo ---; ls -la /app",
+   "bash:cat /app/vendor/project/output_contract.json 2>/dev/null",
+   "bash:ls -la /app/vendor/project/; echo ---; find /app/vendor/project -type f | wc -l; find /app/vendor/project -type f | head -50",
+   "bash:ls -la /app/vendor/project/ && echo \"=== files ===\" && find /app/vendor/project -type f",
+   "bash:ls -la /app/vendor/project/",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200",
+   "bash:ls -laR /app/vendor/project/ 2>&1 | head -200"
+  ],
+  "diversity": 0.46,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:ls -laR /app/vendor/project/ 2>&1 | head -200' x8"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0688-hardware-rtl",
+  "config": "general"
  }
 ]
