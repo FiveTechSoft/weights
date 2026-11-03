@@ -125,25 +125,28 @@ def run_task(server, prompt, seed, sys_guard=False, presence_penalty=0.0, repeat
 
 
 def parse_args():
-    # Detectar si se llama con sintaxis legacy: python harness2.py <alias> [n] [offset] [port]
-    if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
-        alias = sys.argv[1]
-        n = int(sys.argv[2]) if len(sys.argv) > 2 else 10
-        offset = int(sys.argv[3]) if len(sys.argv) > 3 else 0
-        port = sys.argv[4] if len(sys.argv) > 4 else "8081"
-        return argparse.Namespace(alias=alias, n=n, offset=offset, port=port,
-                                  sys_guard=False, presence_penalty=0.0, repeat_penalty=1.0,
-                                  realistic_feedback=False)
-
     ap = argparse.ArgumentParser(description="harness2 — rig agentic multi-turno")
-    ap.add_argument("alias", nargs="?", default="eval_run")
+    ap.add_argument("alias", nargs="?", default="eval_run", help="Nombre del alias/experimento")
     ap.add_argument("-n", type=int, default=10, help="Numero de prompts")
     ap.add_argument("-o", "--offset", type=int, default=0, help="Offset en dataset")
-    ap.add_argument("-p", "--port", type=str, default="8081", help="Puerto del server llama.cpp")
+    ap.add_argument("-p", "--port", type=str, default="8950", help="Puerto del server llama.cpp")
     ap.add_argument("--sys-guard", action="store_true", help="Inyecta regla anti-bucle en system prompt")
     ap.add_argument("--presence-penalty", type=float, default=0.0, help="Presencia penalty (0.0-2.0)")
     ap.add_argument("--repeat-penalty", type=float, default=1.0, help="Repeat penalty (1.0 = deshabilitado)")
     ap.add_argument("--realistic-feedback", action="store_true", help="Feedback con errores realistas en mock")
+
+    # Si se pasan argumentos estilo legacy: <alias> <n> <offset> <port> (todos posicionales sin flags)
+    raw = [a for a in sys.argv[1:] if not a.startswith("-")]
+    flags = [a for a in sys.argv[1:] if a.startswith("-")]
+    if len(raw) >= 2 and len(flags) == 0:
+        alias = raw[0]
+        n = int(raw[1])
+        offset = int(raw[2]) if len(raw) > 2 else 0
+        port = raw[3] if len(raw) > 3 else "8950"
+        return argparse.Namespace(alias=alias, n=n, offset=offset, port=port,
+                                  sys_guard=False, presence_penalty=0.0, repeat_penalty=1.0,
+                                  realistic_feedback=False)
+
     return ap.parse_args()
 
 

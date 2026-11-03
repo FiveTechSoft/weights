@@ -1,0 +1,42 @@
+[
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:find /app -maxdepth 2 -type f | head -50",
+   "bash:ls /app/vendor/snakemake/",
+   "bash:cd /app/vendor/snakemake && git log --oneline | head -5 && git status",
+   "bash:cd /app/vendor/snakemake && wc -l src/snakemake/rules.py src/snakemake/jobs.py",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5; git status --short | head",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | cat",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | tee /tmp/gitlog.txt; cat /tmp/gitlog.txt",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | cat -A | head -20",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | od -c | head -20",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | head -c 2000; echo \"EXIT=$?\"",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | wc -c",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | cat -v",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | xxd | head -30",
+   "bash:cd /app/vendor/snakemake && git log --oneline -5 2>&1 | grep -a -o '.\\{0,200\\}' | head -10"
+  ],
+  "diversity": 1.0,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0036-software-data-engineering",
+  "config": "general"
+ }
+]
