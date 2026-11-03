@@ -1,150 +1,149 @@
-—#— —R—o—a—d—m—a—p— —W—S—P— ——— —W—e—i—g—h—t—-—S—p—a—c—e— —P—r—o—g—r—a—m—m—i—n—g— —s—o—b—r—e— —M—i—M—o—-—V—2—.—6—-—D—i—s—t—i—l—l—-—Q—w—e—n—-—9—B——
-——
-—F—e—c—h—a—:— —2—0—2—6—-—1—1—-—0—3—.— —E—s—t—u—d—i—o— —d—e—r—i—v—a—d—o— —d—e—l— —p—a—p—e—r— —"—S—p—a—r—k—s— —o—f— —W—e—i—g—h—t—-—S—p—a—c—e— —P—r—o—g—r—a—m—m—i—n—g—"— —(—M—I—T— —C—S—A—I—L—,— —r—i—k—i—y—a—t—.—g—i—t—h—u—b—.—i—o—/—b—l—o—g—/—w—e—i—g—h—t—-—s—p—a—c—e—-—p—r—o—g—r—a—m—m—i—n—g—)— ——— —l—o—g— —A—n—a—l—y—s—i—s—:— —l—o—g—s— —c—o—m—p—l—e—t—o—s— —d—e— —l—o—s— —8— —e—x—p—e—r—i—m—e—n—t—o—s— —e—n— —g—i—t—h—u—b—.—c—o—m—/—R—i—k—i—y—a—T—/—l—m—_—u—n—d—e—r—s—t—a—n—d—-—l—o—g—s—;— —l—o—s— —e—d—i—t—a—d—o—s— —e—n— —H—F— —s—o—n— —d—e— —Q—w—e—n—3—.—5—-—0—.—8—B— —(—e—x—p— —8—:— —b—u—c—l—e— —d—e— —r—a—z—o—n—a—m—i—e—n—t—o—)—.——
-——
-—#—#— —1—.— —M—a—r—c—o——
-——
-—E—l— —a—j—u—s—t—e— —a—l—c—a—n—z—a—d—o— —c—o—r—r—e—s—p—o—n—d—e— —a—:— —*—*—s—u—f—i—c—i—e—n—t—e— —f—u—n—c—i—o—n—a—l—i—d—a—d— —d—e— —e—d—i—c—i—ó—n—*—*— —+— —*—*—c—a—p—a—c—i—d—a—d— —d—e— —m—e—j—o—r—a— —r—e—a—l— —d—e—l— —p—r—o—c—e—s—o—*—*— ——— —o—b—j—e—t—i—v—o— —s—e—p—a—r—a—d—o— —p—a—r—a— —c—o—m—p—r—o—b—a—r—l—o—s— —c—o—n— —d—a—t—o—s—:——
-—-— —S—u—f—i—c—i—e—n—t—e— —f—u—n—c—i—o—n—a—l—i—d—a—d— —t—é—c—n—i—c—a— —(—e—d—i—c—i—ó—n— —c—o—s—t—o— —H—I—P—E—R—)—:— —d—e—m—o—s—t—r—a—d—o— —c—o—n— —4— —p—a—s—e—s—.——
-—-— —M—e—j—o—r—a— —d—e— —r—a—z—o—n—a—m—i—e—n—t—o—/—c—a—j—e—t—a— —(—p—r—o—j—e—c—t— —t—é—c—n—i—c—o— —f—i—n—a—l—)—:— —p—a—r—�—�—:— —d—e—p—e—n—d—e— —d—e—l— —d—e—s—t—i—n—o—.——
-——
-—R—e—g—l—a— —c—l—a—v—e— —d—e—l— —p—a—p—e—r— —(—e—x—p— —8—)—:— —W—S—P— —s—o—l—o— —a—y—u—d—a— —s—i— —e—x—i—s—t—e— —u—n—a— —p—a—t—o—l—o—g—í—a— —e—s—t—r—u—c—t—u—r—a—l—;— —s—u— —c—o—n—t—r—o—l— —G—e—m—m—a—-—2—7—0—M— —(—s—i—n— —b—u—c—l—e—s—)— —N—O— —o—b—t—u—v—o— —m—e—j—o—r—a— —m—a—t—e—m—á—t—i—c—a—.——
-——
-—#—#— —2—.— —I—n—s—t—a—n—c—i—a—d—o—,— —v—e—r—i—f—i—c—a—d—o——
-——
-—#—#—#— —2—.—1— —w—s—p—.—p—y— ——— —t—o—o—l—k—i—t— —d—e— —e—d—i—c—i—ó—n— —(—s—k—i—l—l— —w—e—i—g—h—t—-—s—p—a—c—e—-—p—r—o—g—r—a—m—m—i—n—g—)——
-—|— —C—o—m—p—o—n—e—n—t—e— —|— —E—s—t—a—d—o— —|——
-—|—-—-—-—|—-—-—-—|——
-—|— —i—n—f—o— —/— —t—e—n—s—o—r—s— —/— —s—t—a—t—s— —/— —r—o—w—s— —/— —d—e—l—t—a— —/— —m—a—r—k—e—r—s— —|— —O—K— —v—e—r—i—f—i—c—a—d—o— —|——
-—|— —e—d—i—t— —i—n— —Q—6—_—K— —(—s—u—b—t—r—a—c—t—-—d—i—r—e—c—t—i—o—n—,— —s—c—a—l—e— —r—o—w—s—/—c—o—l—s—,— —b—l—e—n—d—-—r—o—w—s—)— —|— —O—K— —(—c—o—p—i—a—s— —e—n— —s—i—t—i—o— —+— —r—e—q—u—a—n—t— —p—o—r— —b—l—o—q—u—e—s— —t—o—c—a—d—o—s—)— —|——
-—|— —r—e—q—u—a—n—t— —Q—6—_—K— —c—a—n—ó—n—i—c—o— —(—p—o—r—t— —d—e— —`—q—u—a—n—t—i—z—e—_—r—o—w—_—q—6—_—K—_—r—e—f—`—)— —|— —O—K—:— —8—7—%— —b—y—t—e—-—i—d—e—n—t—i—d—a—d— —s—o—b—r—e— —b—l—o—q—u—e—s— —r—e—a—l—e—s— —n—o—-—e—d—i—t—a—d—o—s—;— —e—r—r— —d—e—c—o—d—i—f—i—c—a—d—o— —6—e—-—6— —|——
-—|— —d—i—f—f— —(—-—f—r—a—c— —r—e—l—a—t—i—v—a—)— —|— —O—K— —v—e—r—i—f—i—c—a—d—o— —e—n— —s—m—o—k—e— —+— —E—1— —|——
-—|— —s—e—r—v—e— —(—l—l—a—m—a—.—c—p—p— —b—1—1—9—6—2—,— —`—-—n—g—l— —9—9—9— —-—c— —1—6—3—8—4— —-—-—j—i—n—j—a—`—)— —|— —O—K—:— —3— —c—a—r—g—a—s— —g—e—s—t—i—o—n—a—d—a—s— —(—c—h—e—c—i—n— —o—r—i—g—i—n—a—l—/—E—1—)— —|——
-—|— —e—v—a—l—-—h—a—r—n—e—s—s— —a—g—e—n—t—i—c— —(—p—o—r—t— —d—e— —m—o—c—k—_—h—a—r—n—e—s—s—,— —f—o—r—m—a—t— —a—n—t—m—l—)— —|— —O—K—:— —b—a—s—e—l—i—n—e— —6—/—1—0— —l—o—o—p—s— —|——
-—|— —b—u—d—g—e—t—/—j—o—u—r—n—a—l— —(—r—e—a—d—≤—2—0—0—,— —w—r—i—t—e—≤—2—0—,— —f—w—d—≤—6—)— —|— —O—K— —|——
-—|— —m—a—n—i—f—i—e—s—t—o—+—f—i—n—g—e—r—p—r—i—n—t— —e—n— —c—a—d—a— —e—d—i—t— —|— —O—K— —(—i—d—e—a— —d—e—l— —s—t—a—r—t—e—r— —M—C—P—)— —|——
-——
-—M—a—i—n—t—e—n—a—n—c—e—:— —`—C—:—\—w—e—i—g—h—t—s—\—{—w—s—p—.—p—y—,— —e—d—i—c—i—o—n—e—s—\—,— —s—e—r—v—i—d—o—s—\—,— —r—i—g—_—r—u—n—s—\—,— —r—e—t—o—s—\—,— —d—a—t—a—\—,— —l—o—g—s—\—,— —j—o—u—r—n—a—l—\—}—`— —+— —s—k—i—l—l— —g—l—o—b—a—l— —`—~—/—.—c—o—n—f—i—g—/—o—p—e—n—c—o—d—e—/—s—k—i—l—l—s—/—w—e—i—g—h—t—-—s—p—a—c—e—-—p—r—o—g—r—a—m—m—i—n—g—/—S—K—I—L—L—.—m—d—`—.——
-——
-—#—#—#— —2—.—2— —D—i—a—g—n—ó—s—t—i—c—o— —d—e—l— —m—o—d—e—l—o— —(—d—a—t—o—s— —d—e— —e—s—t—e— —e—s—t—u—d—i—o—)——
-—-— —H—F— —a—r—c—h— —=— —`—q—w—e—n—3—_—5—`— —m—u—l—t—i—m—o—d—a—l—:— —3—2— —c—a—p—a—s— —t—e—x—t—o—;— —*—*—a—t—e—n—c—i—ó—n— —e—n— —c—a—p—a—s— —≡—3— —(—m—o—d— —4—)—*—*—,— —r—e—s—t—o— —G—a—t—e—d—D—e—l—t—a—N—e—t— —(—`—s—s—m—_—*—`—)—:— —e—s—t—a—d—o—s— —c—l—a—v—e— —p—a—r—a— —e—l— —d—i—s—e—ñ—o— —d—e— —i—n—t—e—r—v—e—n—c—i—o—n—e—s—.——
-—-— —F—o—o—t—p—r—i—n—t— —d—e— —l—a— —d—e—s—t—i—l—a—c—i—ó—n— —(—b—a—s—e—→—d—i—s—t—i—l—l—)—:— —9—9—.—9—9—9—%— —d—e— —p—a—r—á—m—e—t—r—o—s— —m—e—d—i—a—n—a—m—e—n—t—e— —c—a—m—b—i—a—r—;— —m—e—d—i—a—n—a— —r—e—l— —~—6—.—7—%—;— —*—*—d—r—i—f—t— —m—á—x—:— —s—s—m—_—b—e—t—a— —p—r—o—f—u—n—d—a— —(—b—l—k—.—2—2— —1—9—%—,— —b—l—k—.—2—8— —1—7—.—1—%—)—,— —f—f—n—_—g—a—t—e— —m—e—d—i—o— —(—b—l—k—.—1—7—/—1—9— —≈—1—7—%—)—*—*—;— —*—*—m—a—r—c—a—d—o—r—e—s— —e—s—t—r—u—c—t—u—r—a—l—e—s— —(—7—2— —t—o—k—e—n—s—:— —`—m—a—r—k—e—r—s—.—j—s—o—n—`—)—:— —p—9—5— —2—3—.—3—%— —e—n— —o—u—t—p—u—t—.—w—e—i—g—h—t—*—*—.——
-—-— —B—a—s—e—l—i—n—e— —r—i—g— —a—g—e—n—t—i—c— —(—1—0— —p—r—o—m—p—t—s— —r—l—_—o—s—s—,— —s—e—e—d— —4—2—,— —t—e—m—p— —0—.—3—)—:— —*—*—l—o—o—p— —6—/—1—0— —(—6—0—%—)—*—*— —c—o—n— —p—a—t—r—ó—n— —r—e—p—r—o—d—u—c—i—b—l—e—:— —r—e—-—l—l—a—m—a—d—a— —i—d—é—n—t—i—c—a— —d—e— —c—o—m—a—n—d—o—s— —`—l—s— —/—a—p—p—/—.—.—.—`—.——
-—-— —R—0— —G—S—M—8—K— —d—i—a—g— —(—8— —p—r—o—m—p—t—s—)—:— —*—*—8—/—8— —(—1—0—0—%—)—,— —0— —c—a—p—s—*—*— ——— —n—.—a—s—s—e—r—t—:— —n—u—e—s—t—r—o— —m—o—d—e—l—o— —n—o— —H—E—R—E—D—A— —l—a— —p—a—t—o—l—o—g—í—a— —m—a—t—e—m—á—t—i—c—a— —d—e— —Q—w—e—n—3—.—5—-—0—.—8—B— —(—b—l—o—g—:— —1—3—.—8—%— —G—S—M—8—K—,— —9—3—%— —c—a—p—s—)—.— —E—l— —c—u—e—l—l—o— —d—e— —n—u—e—s—t—r—o— —m—o—d—e—l—o— —e—s— —e—l— —*—*—c—o—m—p—o—r—t—a—m—i—e—n—t—o— —a—g—é—n—t—i—c—o—*—*—,— —n—o— —m—a—t—h—.——
-—-— —E—1— —(—s—u—b—t—r—a—c—t—-—d—i—r—e—c—t—i—o—n— —S—V—D—-—d—r—i—f—t—,— —c—a—p—a—s— —1—7—/—1—9— —f—f—n—_—d—o—w—n—,— —t—a—r—g—e—t—_—f—r—a—c— —2—%—,— —m—a—s—k— —t—o—p—-—6—4—)—:——
-— — —-— —P—a—t—r—ó—n— —o—b—s—e—r—v—a—d—o—:— —f—i—l—a—s— —c—o—n— —m—á—x—i—m—o— —d—r—i—f—t— —r—e—p—e—t—i—d—a—s— —e—n—t—r—e— —c—a—p—a—s— —1—7— —y— —1—9— —(—8—4—3—,— —1—0—4—7—,— —2—4—7—9—,— —2—6—1—0—,— —3—3—2—1—)—.——
-— — —-— —R—e—s—u—l—t—a—d—o—:— —*—*—8—/—1—0— —l—o—o—p—s— —(—p—e—o—r— —q—u—e— —b—a—s—e—l—i—n—e— —6—/—1—0—)— —→— —D—I—S—C—A—R—D—E—D—*—*— —(—s—e—m—i—l—l—a—/—i—d—é—n—t—i—c—o—s— —p—r—o—m—p—t—s—)—.——
-— — —-— —C—o—n—c—l—u—s—i—ó—n— —e—x—p—e—r—i—m—e—n—t—a—l—:— —l—a— —d—i—r—e—c—c—i—ó—n— —d—e—l— —*—*—d—r—i—f—t— —d—e— —p—e—s—o—s—*—*— —≠— —d—i—r—e—c—c—i—ó—n— —d—e—l— —*—*—c—o—m—p—o—r—t—a—m—i—e—n—t—o— —r—e—p—e—t—i—t—i—v—o—*—*—.— —b—l—o—g—:— —s—u— —`—u—`— —p—r—o—v—i—e—n—e— —d—e— —r—e—s—i—d—u—o—s— —o—b—s—e—r—v—a—d—o—s— —(—f—w—d—4—,— —s—a—l—i—d—a—s— —1—6—/—2—0—)—,— —N—O— —d—e—l— —d—i—f—.——
-—-— —B—a—t—e—r—í—a— —d—e— —p—á—g—i—n—a—s— —(—M—C—P—?— —n—o—:— —r—u—n—_—b—a—t—t—e—r—y—.—p—y— —P—1—/—P—5—)—:——
-— — —-— —P—1— —(—l—e—e—r— —p—e—s—o—s— —→— —i—n—f—e—r—i—r— —q—u—é— —c—a—l—c—u—l—a—)—:— —*—*—P—A—S—S—*—*— —(—e—l— —d—r—i—v—e—r— —9—B— —r—a—z—o—n—a— —l—a— —f—u—n—c—i—ó—n— —s—i—n— —f—w—d—)—.——
-— — —-— —P—5— —(—e—s—c—r—i—b—i—r— —p—e—s—o—s— —i—n—l—i—n—e— —f—o—r—m—a—t—o— —e—d—i—t—s—)—:— —*—*—F—A—I—L—*—*— —t—é—c—n—i—c—o— —(—e—l— —m—o—d—e—l—o— —n—o— —p—r—o—d—u—c—e— —e—l— —b—l—o—q—u—e— —`—`—`—e—d—i—t—s—`—`—`—:— —p—e—n—d—i—e—n—t—e— —m—e—j—o—r—a— —p—r—o—m—p—t—/—p—a—r—s—e—r— —d—e— —r—u—n—t—i—m—e— —b—a—t—e—r—í—a—)—.——
-—-— —S—e—r—i—e— —c—a—u—s—a—l— —E—2—–—E—5— —(—r—e—s—i—d—u—o—s— —r—e—a—l—e—s— —+— —p—l—a—c—e—b—o—)— —+— —P—4—:— —*—*—C—E—R—R—A—D—A— —D—I—S—C—A—R—D—*—*— —(—v—e—r— —r—e—s—u—l—t—s—.—m—d— —2—b—i—s—/—2—q—u—i—n—q—u—i—e—s—)—:— —p—l—a—c—e—b—o— —d—e—s—c—a—r—t—ó— —e—l— —r—u—i—d—o— —d—e— —r—e—q—u—a—n—t—;— —l—a— —e—d—i—c—i—ó—n— —p—o—r— —a—c—t—i—v—a—c—i—o—n—e—s— —s—o—l—o— —"—m—e—j—o—r—ó—"— —e—n— —d—e—v— —y— —E—M—P—E—O—R—Ó— —e—n— —f—r—e—s—c—o—s— —(—7—0—%— —v—s— —5—5—%— —l—o—o—p—s—)—.——
-——
-—#—#—#— —2—.—3— —C—h—a—l—l—e—n—g—e— —E—n—g—i—n—e— —v—0—.—2— —(—W—S—P—-—4—0—)——
-—-— —C—a—t—á—l—o—g—o— —f—o—r—m—a—l—:— —`—r—e—t—o—s—\—w—s—p—4—0—.—j—s—o—n—`— —(—8— —f—a—m—i—l—i—a—s—,— —4—0— —r—e—t—o—s—;— —e—t—a—p—a— —A—=—Q—w—e—n—3—.—5—-—0—.—8—B— —0—1—-—2—2—,— —B—/—C—/—D—=—M—i—M—o—)—.——
-—-— —J—u—e—c—e—s— —m—e—c—á—n—i—c—o—s— —i—m—p—l—e—m—e—n—t—a—d—o—s— —(—c—o—m—p—u—t—a—d—o—s— —S—O—L—O— —a—l— —j—u—z—g—a—r—,— —n—u—n—c—a— —v—i—s—i—b—l—e—s— —a—n—t—e—s—)—:— —d—i—m—s—,— —e—m—b—_—v—o—c—a—b—,— —m—l—p—_—m—a—p—,— —h—e—a—d—s— —(—m—e—t—a—d—a—t—a— —G—Q—A—)—,— —n—o—r—m—s—,— —o—u—t—l—i—e—r—s— —(—J—a—c—c—a—r—d—)—,— —d—e—l—t—a—_—m—a—g—n—i—t—u—d—,— —s—i—m—i—l—a—r—i—t—y—,— —e—m—b—_—n—e—i—g—h—b—o—r—s—,— —e—s—t—r—u—c—t—u—r—a—,— —m—a—r—k—e—r—s—,— —s—h—a—r—e—d—_—r—o—w—s—,— —l—a—n—g—_—r—o—w—s— —+— —s—e—l—l—a—d—o— —d—e— —h—o—l—d—o—u—t—s— —(—L—O—C—K— —t—r—a—s— —1— —e—j—e—c—u—c—i—ó—n—)—,— —h—i—s—t—o—r—i—a—l— —y— —v—e—r—e—d—i—c—t—o—s— —k—e—e—p—/—d—i—s—c—a—r—d—.——
-—-— —R—e—t—o—s— —a—p—r—o—b—a—d—o—s— —a—c—t—u—a—l—e—s—:— —*—*—0—1—–—0—9—*—*— —(—9—/—4—0—;— —1—0—–—1—7— —j—u—e—c—e—s— —i—m—p—l—e—m—e—n—t—a—d—o—s— —s—i—n— —s—u—b—m—i—t—)—.——
-—-— —M—C—P—:— —`—e—n—g—i—n—e—\—w—s—p—_—m—c—p—_—s—e—r—v—e—r—.—p—y—`— —(—F—a—s—t—M—C—P— —s—t—d—i—o—)— —+— —`—C—:—\—w—e—i—g—h—t—s—\—o—p—e—n—c—o—d—e—.—j—s—o—n—`— —c—o—n— —`—m—c—p—S—e—r—v—e—r—s—`— ——— —*—*—r—e—q—u—i—e—r—e— —r—e—i—n—i—c—i—o— —d—e— —o—p—e—n—c—o—d—e— —p—a—r—a— —a—c—t—i—v—a—r—s—e—*—*—;— —e—n— —f—o—r—m—a—t—o— —C—L—I— —y—a— —f—u—n—c—i—o—n—a—.——
-——
-—#—#—#— —2—.—4— —I—n—f—r—a— —y— —d—a—t—o—s——
-—-— —d—a—t—a—s—e—t—s—:— —`—d—a—t—a—\—g—s—m—8—k—_—t—r—a—i—n—.—j—s—o—n—l—`— —(—7—4—7—3—)—,— —`—d—a—t—a—\—m—a—t—h—5—0—0—_—t—e—s—t—.—j—s—o—n—l—`— —(—5—0—0—)—.— —P—e—n—d—i—e—n—t—e— —H—u—m—a—n—E—v—a—l—/—M—B—P—P—/—I—F—E—v—a—l—.——
-—-— —*—*—A—d—a—p—t—a—d—o—r— —w—e—i—g—h—t—s—p—a—c—e— —i—n—s—t—a—l—a—d—o—*—*—:— —`—e—n—g—i—n—e—\—w—s—_—r—u—n—n—e—r—.—p—y—`— —+— —`—.—v—e—n—v—`— —(—p—i—p— —`—w—e—i—g—h—t—s—p—a—c—e—`—+—`—s—a—f—e—t—e—n—s—o—r—s—`—,— —s—i—n— —t—o—r—c—h—)—.— —H—a—r—n—e—s—s— —e—t—a—p—a— —A— —s—o—b—r—e— —F—3—2—/—n—p—z—/—s—a—f—e—t—e—n—s—o—r—s—:— —p—a—r—c—h—e—s— —s—p—a—r—s—e— —(—r—u—n—/—t—r—a—n—s—c—r—i—p—t—/—p—a—t—c—h—.—n—p—z—)— —+— —r—e—p—l—a—y— —d—e— —t—r—a—n—s—c—r—i—p—c—i—o—n—e—s— —s—i—n— —t—o—k—e—n—s—.— —A—P—I— —o—b—s—e—r—v—a—d—a— —d—e— —l—e—o—f—m—a—r—c—i—a—n—o—/—w—e—i—g—h—t—s—p—a—c—e— —v—0—.—2—.—0— —(—R—e—s—u—l—t— —s—i—n— —s—t—o—p—_—r—e—a—s—o—n—)—.— —E—l— —p—i—p—e—l—i—n—e— —G—G—U—F—/—r—e—q—u—a—n—t— —Q—6—_—K— —s—i—g—u—e— —e—n— —w—s—p—.—p—y—.——
-—-— —H—F— —c—h—e—c—k—p—o—i—n—t— —M—i—M—o— —(—1—8—G—B—)—:— —d—e—s—c—a—r—g—a— —e—n— —b—a—c—k—g—r—o—u—n—d— —a— —`—h—f—_—c—a—c—h—e—\—m—i—m—o—-—d—i—s—t—i—l—l—-—h—f—`— —(—n—e—c—e—s—a—r—i—o— —p—a—r—a— —c—a—p—t—u—r—a— —d—e— —r—e—s—i—d—u—o—s—)—.——
-—-— —G—P—U— —1—2—G—B—:— —u—n— —l—l—a—m—a—-—s—e—r—v—e—r— —Q—6— —a— —l—a— —v—e—z— —(—m—e—m—o—r—i—a— —8—.—7—G—B— —+— —K—V—)—.——
-—-— —L—i—m—p—i—e—z—a— —C—:—:— —l—i—b—e—r—a—d—o—s— —+—1—2—1— —G—B— —(—4— —m—a—e—s—t—r—o—s— —F—3—2— —d—e— —s—i—n—t—e—t—i—z—a—c—i—o—n—e—s— —d—e—s—c—a—r—t—a—d—a—s—)—.——
-——
-—#—#— —3—.— —C—o—n—c—l—u—s—i—o—n—e—s— —y— —a—p—r—e—n—d—i—z—a—j—e—s— —d—e— —e—s—t—e— —e—s—t—u—d—i—o——
-—1—.— —*—*—M—e—t—o—d—o—l—o—g—í—a— —a—l—i—n—e—a—d—a— —a—l— —p—a—p—e—r—*—*—:— —l—e—e—r— —(—s—a—n—d—b—o—x— —e—s—t—a—d—í—s—t—i—c—o—)—,— —e—d—i—t—a—r— —(—o—p—s— —q—u—i—r—ú—r—g—i—c—a—s—)—,— —e—v—a—l—u—a—r— —(—b—u—d—g—e—t— —A—/—B— —k—e—e—p—-—i—f—-—b—e—t—t—e—r—)—.— —Y— —a—l—i—n—e—a—d—o— —e—n— —r—e—s—t—r—i—c—c—i—o—n—e—s— —(—s—i—n— —g—r—a—d—i—e—n—t—e—/—e—n—t—r—e—n—a—m—i—e—n—t—o—/—f—w—d—-—t—o—o—l—-—o—n—l—y—;— —p—r—o—h—i—b—i—d—o— —t—o—c—a—r— —h—e—a—d—/—l—m—_—h—e—a—d—)—.——
-—2—.— —*—*—W—S—P— —≠— —f—ó—r—m—u—l—a— —m—á—g—i—c—a—*—*—:— —s—i—n— —p—a—t—o—l—o—g—í—a— —e—s—t—r—u—c—t—u—r—a—l— —c—h—a—r—o—f—i—z—a—d—a—,— —n—o— —h—a—y— —m—e—j—o—r—a— —(—e—v—i—d—e—n—c—i—a—:— —b—l—o—g— —G—e—m—m—a—-—2—7—0—M— —+— —n—u—e—s—t—r—a— —E—1—)—.——
-—3—.— —*—*—M—e—d—i—r— —e—l— —c—o—m—p—o—r—t—a—m—i—e—n—t—o— —p—r—i—m—e—r—o—*—*—:— —n—u—e—s—t—r—o— —t—a—r—g—e—t— —r—e—a—l— —n—o— —e—s— —m—a—t—h— —(—1—0—0—%— —b—a—s—e—l—i—n—e—)—,— —e—s— —e—l— —b—u—c—l—e— —a—g—é—n—t—i—c—o—.— —R—e—o—r—d—e—n—a—r— —l—a—s— —h—i—p—ó—t—e—s—i—s— —s—e—g—ú—n— —p—a—t—o—l—o—g—í—a—s— —r—e—a—l—e—s— —d—e—l— —m—o—d—e—l—o— —l—o—c—a—l—.——
-—4—.— —*—*—L—a— —d—i—r—e—c—c—i—ó—n— —d—e— —e—d—i—c—i—ó—n— —d—e—b—e— —d—e—r—i—v—e—r— —d—e—l— —c—o—m—p—o—r—t—a—m—i—e—n—t—o—*—*— —(—r—e—s—i—d—u—o—s—/—a—c—t—i—v—a—c—i—o—n—e—s—)—,— —n—o— —d—i—r—e—c—t—a—m—e—n—t—e— —d—e—l— —d—r—i—f—t— —d—e— —p—e—s—o—s—.——
-—5—.— —*—*—R—u—i—d—o— —d—e— —c—u—a—n—t—i—z—a—c—i—ó—n—*—*—:— —±—2—%— —p—o—r— —b—l—o—q—u—e— —t—o—c—a—d—o—;— —e—d—i—c—i—o—n—e—s— —<— —0—.—5—%— —d—e— —m—a—g—n—i—t—u—d— —s—o—n— —i—n—d—i—s—t—i—n—g—u—i—b—l—e—s— —d—e—l— —r—u—i—d—o—:— —t—a—r—g—e—t—_—f—r—a—c— —m—í—n—i—m—o— —0—.—0—1— —+— —e—x—i—g—i—r— —b—a—s—e—l—i—n—e—/—p—l—a—c—e—b—o—.——
-—6—.— —*—*—P—l—a—c—e—b—o— —+— —n—o—-—d—e—g—r—a—d—a—c—i—ó—n—*—*— —(—c—o—n—t—r—o—l— —d—e—l— —c—o—n—f—u—n—d—a—n—t—e— —c—u—a—n—t—)—:— —n—e—c—e—s—a—r—i—o—s— —p—o—r— —p—r—o—t—o—c—o—l—o—;— —i—m—p—l—e—m—e—n—t—a—d—o—s— —c—o—m—o— —s—e—l—l—a—d—o— —y— —`—d—i—f—f—`—.——
-—7—.— —*—*—E—x—p—e—d—i—e—n—t—e—s— —a—c—u—m—u—l—a—t—i—v—o—s—*—*—:— —r—e—t—o—s— —c—o—n— —j—u—e—c—e—s— —e—x—t—e—r—n—o—s— —y— —m—e—m—o—r—i—a— —d—e— —h—i—p—ó—t—e—s—i—s—/—t—e—n—s—o—r—e—s—/—i—n—t—e—r—v—e—n—c—i—o—n—e—s—/—r—e—s—u—l—t—a—d—o—:— —c—a—p—a—c—i—d—a—d— —p—a—r—a— —l—a— —g—e—n—-—2—+— —d—e—l— —a—g—e—n—t—e— —i—n—v—e—s—t—i—g—a—d—o—r— —(—K—n—o—w—l—e—d—g—e— —T—r—a—n—s—f—e—r— —B—e—t—w—e—e—n— —E—x—p—e—r—i—m—e—n—t—s—,— —r—e—f—.— —h—i—p— —5— —d—e—l— —m—a—r—c—o—)—.——
-——
-—#—#— —4—.— —P—e—n—d—i—e—n—t—e— —(—p—r—i—o—r—i—z—a—d—o—)——
-——
-—#—#—#— —4—.—0— —C—i—e—r—r—e— —d—e— —f—a—s—e— —E—2—–—E—5— —(—2—0—2—6—-—1—1—-—0—3—,— —s—e—s—i—ó—n— —l—i—n—u—x—)——
-—-— —*—*—P—4— —C—O—N—F—I—R—M—A—C—I—Ó—N— —e—j—e—c—u—t—a—d—a— —(—c—o—m—m—i—t— —5—c—3—7—2—a—0—)— —y— —N—E—G—A—T—I—V—A—*—*—:— —e—n— —2—0— —p—r—o—m—p—t—s— —f—r—e—s—c—o—s— —(—1—0— —g—e—n—e—r—a—l— —+— —1—0— —c—o—d—e—)— —E—5— —d—a— —*—*—1—4—/—2—0— —l—o—o—p—s— —v—s— —1—1—/—2—0— —d—e—l— —o—r—i—g—i—n—a—l—*—*— —(—s—u—b—s—e—t— —c—o—d—e—:— —8—/—1—0— —v—s— —5—/—1—0—)— —→— —E—5— —D—I—S—C—A—R—D—E—D— —p—o—r— —k—e—e—p—-—i—f—-—b—e—t—t—e—r—.— —D—e—t—a—l—l—e— —e—n— —r—e—s—u—l—t—s—.—m—d— —§—2—q—u—i—n—q—u—i—e—s—.——
-—-— —C—o—n—s—e—c—u—e—n—c—i—a—:— —*—*—l—a— —s—e—r—i—e— —E—1—–—E—5— —d—e— —e—d—i—c—i—ó—n— —a—g—é—n—t—i—c—a— —q—u—e—d—a— —C—E—R—R—A—D—A— —s—i—n— —k—e—e—p—*—*—.— —L—e—c—c—i—o—n—e—s—:— —(—1—)— —t—a—r—g—e—t—i—n—g— —p—o—r— —a—c—t—i—v—a—c—i—o—n—e—s— —a—y—u—d—a— —e—n— —d—e—v— —p—e—r—o— —n—o— —g—e—n—e—r—a—l—i—z—a—;— —(—2—)— —e—v—a—l—u—a—r— —f—r—e—s—c—o—s— —A—N—T—E—S— —d—e— —d—e—c—l—a—r—a—r— —s—e—ñ—a—l—;— —(—3—)— —p—l—a—c—e—b—o— —(—E—4—)— —q—u—e—d—a— —c—o—m—o— —e—s—t—á—n—d—a—r— —o—b—l—i—g—a—t—o—r—i—o— —d—e—l— —P—R—O—T—O—C—O—L—.—m—d—.——
-—-— —*—*—N—U—E—V—O— —O—B—J—E—T—I—V—O— —(—d—i—r—e—c—c—i—ó—n— —d—e—l— —d—r—i—v—e—r—)—:— —a—u—m—e—n—t—a—r— —l—a— —p—u—n—t—u—a—c—i—ó—n— —M—A—T—H— —d—e— —M—i—M—o—*—*— —(—R—0— —h—a—b—í—a— —d—a—d—o— —8—/—8— —G—S—M—8—K— —d—i—a—g—;— —e—l— —m—a—r—g—e—n— —e—s—t—á— —e—n— —M—A—T—H—-—5—0—0—/—h—a—r—d—e—r—)—.— —S—e— —r—e—a—c—t—i—v—a— —P—R—O—T—O—C—O—L—.—m—d— —c—o—n— —e—l— —r—i—g—o—r— —E—4— —(—p—l—a—c—e—b—o—)— —y— —f—r—e—s—c—o—s—.——
-——
-—#—#—#— —4—.—1— —I—n—f—r—a— —l—i—n—u—x— —(—n—u—e—v—a— —s—e—s—i—ó—n— —2—0—2—6—-—1—1—-—0—3—-—b—)——
-—|— —#— —|— —T—a—r—e—a— —|— —E—s—t—a—d—o— —(—2—0—2—6—-—1—1—-—0—3—-—d—,— —l—i—n—u—x—)— —|——
-—|—-—-—-—|—-—-—-—|—-—-—-—|——
-—|— —1— —|— —I—n—f—e—r—e—n—c—i—a— —M—i—M—o— —e—n— —l—i—n—u—x—:— —G—G—U—F— —Q—6—_—K— —+— —l—l—a—m—a—-—s—e—r—v—e—r— —|— —*—*—H—E—C—H—O—*—*—:— —G—G—U—F— —Q—6—_—K— —b—a—r—t—o—w—s—k—i— —d—e—s—c—a—r—g—a—d—o— —a— —`—h—f—_—c—a—c—h—e—/—m—i—m—o—-—g—g—u—f—/—`— —(—7—.—8—G—B—)—;— —`—/—u—s—r—/—l—o—c—a—l—/—l—i—b—/—o—l—l—a—m—a—/—l—l—a—m—a—-—s—e—r—v—e—r—`— —(—s—i—n— —G—P—U—:— —b—i—n—a—r—i—o— —s—i—n— —C—U—D—A—)— —s—i—r—v—i—e—n—d—o— —e—n— —`—:—8—0—9—0—`— —C—P—U— —(—`—-—n—g—l— —0— —-—c— —8—1—9—2— —-—-—j—i—n—j—a—`—)—;— —s—m—o—k—e— —"—S—a—y— —O—K—"— —O—K— —(—~—0—.—3—3— —t—o—k—/—s— ——— —C—P—U— —c—o—m—p—a—r—t—i—d—a— —c—o—n— —s—g—l—a—n—g— —2—7—B—:— —b—a—s—e—l—i—n—e— —v—i—a—b—l—e— —e—n— —b—a—t—c—h—e—s— —n—o—c—t—u—r—n—o—s—,— —n—o— —e—n— —c—a—l—i—e—n—t—e—)— —|——
-—|— —2— —|— —D—o—w—n—l—o—a—d— —M—i—M—o— —H—F— —1—8—G—B— —|— —*—*—B—L—O—Q—U—E—A—D—O—/—I—N—N—E—C—E—S—A—R—I—O—*—*—:— —e—l— —G—G—U—F— —c—u—b—r—e— —l—a— —i—n—f—e—r—e—n—c—i—a—;— —H—F— —s—o—l—o— —s—i— —s—e— —n—e—c—e—s—i—t—a— —c—a—p—t—u—r—a— —d—e— —r—e—s—i—d—u—o—s— —c—o—n— —t—o—r—c—h— —|——
-—|— —3— —|— —R—0— —m—a—t—h—5—0—0—-—s—u—b—s—e—t— —b—a—s—e—l—i—n—e— —(—s—a—m—p—l—e— —f—i—j—a— —s—e—l—l—a—d—a—)— —|— —*—*—E—N— —M—A—R—C—H—A—*—*— —(—n—o—h—u—p—)—:— —`—r—i—g—/—m—a—t—h—5—0—0—.—p—y— —-—-—s—e—e—d— —4—2— —-—-—n— —5—0— —-—-—s—e—l—l— —-—-—t—a—g— —o—r—i—g—-—l—i—n—u—x—`— —→— —`—r—i—g—_—r—u—n—s—/—r—0—-—o—r—i—g—-—m—a—t—h—-—l—i—n—u—x—.—j—s—o—n—`—;— —s—e—l—l—a—d—o— —r—e—u—t—i—l—i—z—a—d—o— —`—r—i—g—/—s—e—l—l—a—d—o—s—/—s—e—l—l—a—d—o—_—4—2—_—5—0—.—j—s—o—n—`— —|——
-—|— —3—b— —|— —B—a—s—e—l—i—n—e— —l—o—g—i—c—_—p—r—o—b—e— —1—2—0— —H—o—r—n— —|— —*—*—E—N— —M—A—R—C—H—A—*—*— —(—n—o—h—u—p—)—:— —`—r—i—g—/—l—o—g—i—c—_—p—r—o—b—e—.—p—y— —-—-—n— —1—2—0— —-—-—t—e—m—p—e—r—a—t—u—r—e— —0—`— —→— —`—r—i—g—_—r—u—n—s—/—l—o—g—i—c—-—b—a—s—e—l—i—n—e—-—o—r—i—g—.—j—s—o—n—`— —|——
-—|— —4— —|— —w—e—i—g—h—t—s—p—a—c—e— —0—.—3—.—0— —u—p—g—r—a—d—e— —(—+—o—p—e—n—a—i— —e—x—t—r—a—)— —+— —w—s—_—r—u—n—n—e—r— —p—a—r—i—d—a—d— —d—e— —s—t—o—p—_—r—e—a—s—o—n— —|— —p—e—n—d—i—e—n—t—e— —(—n—o— —c—r—í—t—i—c—o—:— —s—o—l—o— —e—t—a—p—a— —A— —0—.—8—B—)— —|——
-—|— —5— —|— —M—C—P— —w—s—p—-—c—h—a—l—l—e—n—g—e— —e—n— —l—i—n—u—x— —|— —*—*—H—E—C—H—O—*—*—:— —r—u—t—a—s— —p—o—r—t—a—b—l—e—s— —(—`—_—_—f—i—l—e—_—_—`—)—,— —`—c—r—e—a—t—i—o—n—f—l—a—g—s—`— —c—o—n—d—i—c—i—o—n—a—l—,— —a—u—t—o—-—d—e—t—e—c—c—i—ó—n— —d—e— —G—G—U—F— —(—`—_—b—u—s—c—a—r—_—g—g—u—f—`—:— —h—f—_—c—a—c—h—e—→—s—e—r—v—i—d—o—s—→—e—n—v—→—d—e—f—a—u—l—t—)—;— —`—m—c—p—<—2—`—+—`—g—g—u—f—`— —v—í—a— —`—p—i—p— —-—-—u—s—e—r—`—;— —s—m—o—k—e— —s—t—d—i—o— —O—K— —(—1—0— —t—o—o—l—s—;— —e—n—g—i—n—e—_—s—t—a—t—u—s— —1—2—/—4—3—)—;— —`—o—p—e—n—c—o—d—e—.—j—s—o—n—`— —p—o—r—t—a—b—l—e— —(—`—p—y—t—h—o—n—3—`— —+— —r—u—t—a— —r—e—l—a—t—i—v—a—)— ——— —r—e—q—u—i—e—r—e— —r—e—i—n—i—c—i—o— —d—e— —o—p—e—n—c—o—d—e— —|——
-——
-—#—#— —4—.—1—b—i—s— —C—H—E—C—K—P—O—I—N—T— —s—e—s—i—ó—n— —2—0—2—6—-—1—1—-—0—3—-—c— —(—l—i—n—u—x—,— —o—p—e—n—c—o—d—e— —p—o—r— —S—S—H— ——— —R—E—S—U—M—I—R— —A—Q—U—Í— —s—i— —s—e— —c—o—r—t—a—)——
-——
-—E—s—t—a—d—o— —a—l— —c—u—t—o—f—f—:——
-—1—.— —*—*—A—u—t—h— —o—p—e—n—c—o—d—e—→—v—L—L—M— —R—E—S—U—E—L—T—O—*—*—:— —e—l— —4—0—1— —e—r—a— —p—o—r—q—u—e— —v—L—L—M— —(—:—8—0—0—1—,— —d—e— —c—h—a—r—l—e—s—)— —e—x—i—g—e— —`—-—-—a—p—i—-—k—e—y—`— —y— —`—{—e—n—v—:—V—L—L—M—_—A—P—I—_—K—E—Y—}—`— —d—e— —o—p—e—n—c—o—d—e— —s—o—l—o— —s—e— —r—e—s—u—e—l—v—e— —e—n— —s—h—e—l—l— —i—n—t—e—r—a—c—t—i—v—o—.— —F—i—x—:— —k—e—y— —p—u—e—s—t—a— —l—i—t—e—r—a—l— —e—n— —`—~—/—.—c—o—n—f—i—g—/—o—p—e—n—c—o—d—e—/—o—p—e—n—c—o—d—e—.—j—s—o—n—`— —(—p—r—o—v—i—d—e—r— —v—l—l—m—,— —c—h—m—o—d— —6—0—0—)—.— —V—e—r—i—f—i—c—a—d—o— —e—n—d—-—t—o—-—e—n—d— —c—o—n— —`—o—p—e—n—c—o—d—e— —r—u—n— —-—-—m—o—d—e—l— —v—l—l—m—/—q—w—e—n—3—.—8—-—2—7—b—`—.——
-—2—.— —*—*—R—u—n—n—e—r— —m—a—t—h—5—0—0— —L—I—S—T—O—*—*—:— —`—r—i—g—/—m—a—t—h—5—0—0—.—p—y—`— —(—s—t—d—l—i—b—-—o—n—l—y—)—.— —C—L—I—:— —`—-—-—e—n—d—p—o—i—n—t— —:—8—0—9—0—/—v—1—/—c—h—a—t—/—c—o—m—p—l—e—t—i—o—n—s— —-—-—m—o—d—e—l— —m—i—m—o— —-—-—n— —-—-—s—e—e—d— —4—2— —-—-—s—e—l—l— —-—-—t—e—m—p—e—r—a—t—u—r—e— —0—.—3— —-—-—m—a—x—-—t—o—k—e—n—s— —8—1—9—2— —-—-—t—a—g— —-—-—o—u—t—`—.— —S—e—l—f—t—e—s—t— —4—4— —a—s—s—e—r—t—s— —O—K— —(—b—o—x—e—d— —b—a—l—a—n—c—e—a—d—o— —c—o—n— —`—\—{—`—,— —`—\—f—r—a—c—`— —s—i—n— —l—l—a—v—e—s— —t—i—p—o— —`—\—f—r—a—c—4—3—`—,— —m—i—l—e—s— —`—1—0—,—\—!—0—8—0—`—,— —s—u—b—s—c—r—i—p—t—s—,— —`—^—\—c—i—r—c—`—,— —`—\—t—e—x—t—`—,— —e—q—u—i—v—a—l—e—n—c—i—a— —n—u—m—é—r—i—c—a— —F—r—a—c—t—i—o—n—s—,— —r—e—d—u—c—c—i—ó—n— —g—c—d—)—.— —S—e—l—l—a—d—o— —e—n— —`—r—i—g—/—s—e—l—l—a—d—o—s—/—`— —(—l—o—c—k— —g—l—o—b—a—l—-—e—s—t—r—i—c—t—o—:— —m—i—s—m—o— —s—e—e—d—+—n— —r—e—u—s—a— —í—n—d—i—c—e—s— —y— —v—e—r—i—f—i—c—a— —h—a—s—h— —d—e—l— —d—a—t—a—s—e—t—;— —o—t—r—o— —s—e—e—d—/—n— —→— —e—r—r—o—r—,— —n—u—n—c—a— —s—o—b—r—e—s—c—r—i—b—e—)—.— —D—e—t—e—r—m—i—n—i—s—m—o— —v—i—a— —s—h—a—2—5—6— —p—r—o—p—i—o— —e—s—t—a—b—l—e—.——
-—3—.— —*—*—D—e—s—c—a—r—g—a—s— —e—n— —c—u—r—s—o—*—*— —(—b—a—c—k—g—r—o—u—n—d—,— —r—e—a—n—u—d—a—b—l—e—s—)—:— —G—G—U—F— —Q—6—_—K— —b—a—r—t—o—w—s—k—i— —e—n— —`—h—f—_—c—a—c—h—e—/—m—i—m—o—-—g—g—u—f—`— —(—~—7—.—3—G—B—,— —p—a—r—e—c—e— —e—s—t—a—n—c—a—d—o— —/— —v—e—r—i—f—y— —a—l— —r—e—t—o—m—a—r—:— —`—d—u— —-—s—h— —h—f—_—c—a—c—h—e—/—m—i—m—o—-—g—g—u—f—`— —y— —`—p—g—r—e—p— —-—a—f— —'—h—f— —d—o—w—n—l—o—a—d—'—`—)—;— —H—F— —d—i—s—t—i—l—l— —e—n— —`—h—f—_—c—a—c—h—e—/—m—i—m—o—-—d—i—s—t—i—l—l—-—h—f—`— —(—~—4—.—7—G—B— —d—e— —1—8—G—B—)—.——
-—4—.— —*—*—S—e—r—v—i—r— —M—i—M—o—*—*—:— —p—l—a—n— —A— —=— —`—/—o—p—t—/—l—o—c—a—l—/—l—i—b—/—o—l—l—a—m—a—/—l—l—a—m—a—-—s—e—r—v—e—r— —-—m— —<—g—g—u—f—>—`— —(—v—e—r—i—f—i—c—a—r— —s—o—p—o—r—t—e— —a—r—c—h— —`—q—w—e—n—3—_—5—`— —m—u—l—t—i—m—o—d—a—l—,— —W—i—n—d—o—w—s— —u—s—ó— —l—l—a—m—a—.—c—p—p— —b—1—1—9—6—2—)—;— —p—l—a—n— —B— —=— —c—o—m—p—i—l—a—r— —l—l—a—m—a—.—c—p—p— —a—c—t—u—a—l— —(—1—0—–—1—5— —m—i—n—)—.— —P—o—r—t— —s—u—g—e—r—i—d—o— —:—8—0—9—0—.——
-—5—.— —*—*—D—e—c—i—s—i—ó—n— —G—P—U— —t—o—m—a—d—a— —(—o—p—u—s—.—2— —d—e—l— —r—o—a—d—m—a—p— —§—5—)—*—*—:— —p—e—d—i—r— —l—i—b—e—r—a—c—i—ó—n— —d—e— —1— —A—5—0—0—0— —→— —G—G—U—F— —Q—6— —e—n— —l—l—a—m—a—.—c—p—p— —f—u—l—l—-—G—P—U— —(—~—3—0— —m—i—n— —p—a—r—a— —5—0— —p—r—o—m—p—t—s—,— —~—5—–—6— —h— —m—a—t—h—5—0—0— —c—o—m—p—l—e—t—o—)— —o— —H—F— —b—f—1—6— —v—L—L—M— —b—a—t—c—h—e—d— —(—~—1— —h— —e—l— —5—0—0—)—.— —F—a—l—l—b—a—c—k— —s—i— —n—i—e—g—a—n—:— —s—u—b—s—e—t—-—5—0— —e—n— —C—P—U— —(—~—4—–—5— —h—,— —n—o—c—h—e—)—.——
-—6—.— —*—*—P—r—ó—x—i—m—o—s— —p—a—s—o—s— —i—n—m—e—d—i—a—t—o—s—*—*—:— —(—a—)— —a—l— —t—e—r—m—i—n—a—r— —d—o—w—n—l—o—a—d— —G—G—U—F— —→— —s—m—o—k—e— —s—e—r—v—e— —+— —r—i—g— —`—-—-—s—e—l—f—t—e—s—t—`— —+— —r—i—g— —s—m—o—k—e— —`—-—-—n— —3—`— —(—s—i—n— —s—e—l—l—)— —s—o—b—r—e— —M—i—M—o—;— —(—b—)— —a—s—i—g—n—a—r— —G—P—U— —d—e—d—i—c—a—d—a— —p—a—r—a— —e—v—a—l—u—a—c—i—ó—n—;— —(—c—)— —R—0—:— —`—r—i—g—/—m—a—t—h—5—0—0—.—p—y— —-—-—s—e—e—d— —4—2— —-—-—n— —5—0— —-—-—s—e—l—l— —-—-—t—a—g— —o—r—i—g—`— —(—b—a—s—e—l—i—n—e— —s—e—l—l—a—d—o—)—;— —(—d—)— —e—x—p—e—r—i—m—e—n—t—o— —p—r—i—n—c—i—p—a—l— —P—R—O—T—O—C—O—L—.—m—d— —c—o—n— —p—l—a—c—e—b—o— —E—4— —+— —f—r—e—s—c—o—s—.——
-——
-—#—#— —4—.—1—t—e—r— —R—e—f—e—r—e—n—c—i—a— —e—x—t—e—r—n—a—:— —g—i—t—h—u—b—.—c—o—m—/—c—s—i—n—v—a—/—w—e—i—g—h—t—-—s—p—a—c—e—-—p—r—o—g—r—a—m—m—i—n—g—-—a—u—t—o—r—e—s—e—a—r—c—h— —(—r—e—v—i—e—w— —2—0—2—6—-—1—1—-—0—3—)——
-——
-—R—e—p—o— —a—u—t—ó—n—o—m—o— —d—e— —e—s—c—r—i—t—u—r—a— —d—e— —p—e—s—o—s— —e—n— —t—r—a—n—s—f—o—r—m—e—r—s— —p—e—q—u—e—ñ—o—s— —(—t—a—r—e—a—s— —a—r—i—t—m—é—t—i—c—a—/—N—L—P—)—;— —m—o—d—e—l—o— —N—U—N—C—A— —e—n—t—r—e—n—a—d—o—,— —p—e—s—o—s— —e—s—c—r—i—t—o—s— —e—n— —f—o—r—m—a— —c—e—r—r—a—d—a—.— —N—O— —e—s— —e—d—i—c—i—ó—n— —d—e— —L—L—M— —r—e—a—l—e—s— —(—e—s— —s—t—a—g—e—-—A— —p—u—r—o—)—,— —p—e—r—o— —i—d—e—a—s— —ú—t—i—l—e—s— —a— —i—m—p—o—r—t—a—r— —p—a—r—a— —l—a— —g—e—n—-—2— —(—W—S—P—-—R—e—s—e—a—r—c—h—e—r—)—:——
-—-— —`—e—v—o—l—v—e—/—p—r—o—g—r—a—m—.—m—d—`—:— —i—n—s—t—r—u—c—c—i—ó—n— —"—L—O—O—P— —F—O—R—E—V—E—R—,— —n—o— —p—a—u—s—a—r— —a— —h—u—m—a—n—o—,— —≥—2—0— —i—t—e—r—a—c—i—o—n—e—s— —a—u—n—q—u—e— —d—é— —1—0—0—%—"— —+— —i—d—e—a—s— —g—u—i—a—d—a—s— —p—o—r— —p—a—p—e—r—s— —d—e— —m—e—c—h—-—i—n—t—e—r—p—.— —I—m—p—o—r—t—a—b—l—e— —c—o—m—o— —s—e—c—c—i—ó—n— —d—e—l— —s—k—i—l—l—.——
-—-— —L—e—d—g—e—r— —p—l—a—n—o— —`—r—e—s—u—l—t—s—/—o—v—e—r—a—l—l—_—r—e—s—u—l—t—s—.—c—s—v—`— —(—t—a—s—k—,—a—c—c—u—r—a—c—y—,—s—t—a—t—u—s—,—n—_—p—a—r—a—m—s—,—d—e—s—c—r—i—p—t—i—o—n—)— —t—r—a—s— —C—A—D—A— —i—n—t—e—n—t—o—:— —m—e—j—o—r— —m—e—m—o—r—i—a— —c—r—o—s—s—-—r—u—n— —q—u—e— —n—u—e—s—t—r—o— —j—o—u—r—n—a—l— —J—S—O—N— —(—a—ñ—a—d—i—r— —e—x—p—o—r—t— —C—S—V— —a—l— —j—o—u—r—n—a—l—)—.——
-—-— —S—n—a—p—s—h—o—t— —l—i—b— —(—`—i—n—t—e—r—p—r—e—t—a—b—l—e—_—t—r—a—n—s—f—o—r—m—e—r—s—_—l—i—b—/—<—n—o—m—b—r—e—>—.—p—y—`— —p—o—r— —i—n—t—e—n—t—o—)—:— —e—q—u—i—v—a—l—e—n—t—e— —a— —n—u—e—s—t—r—o— —`—e—d—i—c—i—o—n—e—s—/—`— ——— —y—a— —l—o— —c—u—m—p—l—i—m—o—s—.——
-—-— —R—u—n—-—f—o—l—d—e—r— —a—i—s—l—a—d—o— —c—o—n— —s—r—c—/— —d—e— —s—o—l—o—-—l—e—c—t—u—r—a— —(—s—y—m—l—i—n—k—s—)—:— —p—a—t—t—e—r—n— —p—a—r—a— —r—i—g— —y— —r—e—t—o—s— —(—e—v—i—t—a— —s—e—l—f—-—g—r—a—d—i—n—g—)—.——
-——
-—|— —#— —|— —T—a—r—e—a— —(—h—i—s—t—ó—r—i—c—o—,— —p—e—n—d—i—e—n—t—e—)— —|— —D—e—p—e—n—d—e— —d—e— —|——
-—|—-—-—-—|—-—-—-—|—-—-—-—|——
-—|— —5— —|— —F—i—x— —P—5— —b—a—t—e—r—í—a— —b—l—o—g— —(—p—r—o—m—p—t— —m—á—s— —d—i—r—e—c—t—o— —+— —p—a—r—s—e—r— —t—o—l—e—r—a—n—t—e— —d—e—l— —b—l—o—q—u—e— —e—d—i—t—s—)— —|— —n—a—d—a— —|——
-—|— —6— —|— —W—S—P—-—4—0—:— —j—u—e—c—e—s— —1—0—-—1—7— —+— —b—a—j—a—r— —H—u—m—a—n—E—v—a—l—/—M—B—P—P—/—I—F—E—v—a—l— —+— —r—u—n—n—e—r—s— —|— —n—a—d—a— —|——
-—|— —7— —|— —E—t—a—p—a— —A— —(—Q—w—e—n—3—.—5—-—0—.—8—B—)—:— —d—o—w—n—l—o—a—d— —H—F— —(—~—1—.—6—G—B—)— —+— —p—a—r—q—u—e— —d—e— —r—e—t—o—s— —0—1—-—2—2— —c—o—n— —`—w—s—_—r—u—n—n—e—r—`— —|— —#—6— —p—a—r—c—i—a—l— —|——
-—|— —8— —|— —E—x—p—e—r—i—m—e—n—t—o— —p—r—i—n—c—i—p—a—l— —P—R—O—T—O—C—O—L—.—m—d— —(—m—a—t—h—)— —c—o—n— —p—l—a—c—e—b—o—,— —t—r—i—p—l—e— —h—o—l—d—o—u—t— —y— —s—e—e—d— —m—u—l—t—i—s—e—t— —|— —#—3— —+— —#—4—.—0— —|——
-—|— —9— —|— —E—x—t—r—a—c—t—o—r—e—s— —d—e— —"—p—r—i—n—c—i—p—i—o—"— —(—k—n—o—w—l—e—d—g—e— —t—r—a—n—s—f—e—r—)— —d—e—s—d—e— —e—x—p—e—d—i—e—n—t—e—s— —→— —g—e—n—-—2— —W—S—P—-—R—e—s—e—a—r—c—h—e—r— —|— —#—8—/—#—6— —|——
-—|— —1—0— —|— —E—d—i—t—a—r— —o—p—e—n—c—o—d—e— —M—C—P— —p—a—r—a— —l—a— —m—á—q—u—i—n—a— —l—i—n—u—x— —(—c—o—n—f—i—g— —+— —r—e—i—n—i—c—i—o—)— —|— —r—e—i—n—i—c—i—o— —|——
-—|— —1—1— —|— —*—*—w—s—p— —d—e—c—o—m—p—i—l—e—*—*— —→— —t—r—a—d—u—c—t—o—r— —s—e—m—á—n—t—i—c—o— —d—e— —p—i—e—z—a—s— —d—e— —M—i—M—o— —a— —C—/—p—s—e—u—d—o—-—C—.— —I—d—e—a— —(—d—e—r—i—v—a—c—i—ó—n— —2—0—2—6—-—1—1—-—0—3—)—:— —n—e—u—r—o—n—a— —R—e—L—U— —→— —c—l—á—u—s—u—l—a— —d—e— —m—a—t—c—h—i—n—g— —(—`—i—f— —x—>—θ—:— —W—·—x—`—)—,— —h—e—a—d— —d—e— —a—t—e—n—c—i—ó—n— —→— —m—a—t—c—h—e—r— —e—s—t—i—l—o— —c—o—p—y—i—n—g— —(—`—m—a—t—c—h— —p—r—e—v—-—t—o—k—e—n—;— —c—o—p—y— —C—[—t—-—1—]—`—)—,— —M—L—P— —e—n—t—e—r—a— —→— —l—o—o—k—u—p— —d—e— —1—2—2—8—8— —e—n—t—r—a—d—a—s—;— —j—u—e—z— —t—i—p—o— —P—1—:— —t—e—s—t—s— —a—u—t—o—m—á—t—i—c—o—s— —c—o—n—t—r—a— —e—l— —f—r—a—g—m—e—n—t—o— —t—r—a—d—u—c—i—d—o—.— —U—s—o—s—:— —(—a—)— —r—e—t—o—s— —W—S—P—-—4—0— —n—u—e—v—o—s— —d—e— —"—t—r—a—d—u—c—e— —y— —v—e—r—i—f—i—c—a—"—;— —(—b—)— —h—a—c—e—r— —l—e—g—i—b—l—e—s— —l—o—s— —e—f—e—c—t—o—s— —d—e— —u—n—a— —e—d—i—c—i—ó—n— —(—q—u—é— —c—i—r—c—u—i—t—o—/—c—a—m—b—i—o— —d—e— —p—r—o—g—r—a—m—a— —p—r—o—v—o—c—a— —e—l— —`—s—u—b—t—`—)—;— —(—c—)— —v—í—a— —d—e— —i—n—t—e—r—p—r—e—t—a—b—i—l—i—t—y— —p—a—r—a— —l—a— —g—e—n—-—2—.— —L—í—m—i—t—e— —c—o—n—o—c—i—d—o— —(—e—x—p— —1—–—3— —d—e—l— —p—a—p—e—r—)—:— —v—i—a—b—l—e— —p—o—r— —P—I—E—Z—A—S— —(—1—7—k—–—1—.—5—M— —p—e—s—o—s—)—,— —n—o— —p—a—r—a— —l—a— —r—e—d— —d—e— —9—B— —e—n—t—e—r—a— ——— —l—o—s— —p—e—s—o—s— —s—o—n— —m—i—l—l—o—n—e—s— —d—e— —p—r—o—g—r—a—m—a—s— —s—u—p—e—r—p—u—e—s—t—o—s—,— —s—i—n— —m—ó—d—u—l—o—s— —s—e—p—a—r—a—b—l—e—s— —|— —n—a—d—a— —(—p—a—r—a—l—e—l—o—;— —ú—t—i—l— —p—a—r—a— —g—e—n—-—2—)— —|——
-—|— —1—2— —|— —*—*—W—S—P—-—L—a—n—g— —0—.—1—:— —p—a—r—s—e—r— —+— —e—j—e—c—u—t—o—r— —m—í—n—i—m—o— —e—n— —e—l— —M—C—P—*—*—.— —S—p—e—c— —c—o—m—p—l—e—t—a— —e—n— —`—W—S—P—-—L—A—N—G—.—m—d—`— —(—2—0—2—6—-—1—1—-—0—3—)—:— —l—e—n—g—u—a—j—e— —d—e—c—l—a—r—a—t—i—v—o— —d—e— —e—x—p—e—r—i—m—e—n—t—o—s— —s—o—b—r—e— —p—e—s—o—s— —(—m—o—d—e—l—o— —M—=—(—A—,—W—,—τ—)—,— —1—0— —t—i—p—o—s—,— —8— —p—r—i—m—i—t—i—v—a—s— —i—n—s—p—e—c—t—/—o—b—s—e—r—v—e—/—c—o—m—p—a—r—e—/—h—y—p—o—t—h—e—s—i—z—e—/—l—o—c—a—l—i—z—e—/—i—n—t—e—r—v—e—n—e—/—e—v—a—l—u—a—t—e—/—r—o—l—l—b—a—c—k—,— —o—p—s— —m—a—t—e—m—á—t—i—c—a—s— —p—r—o—y—e—c—c—i—ó—n—/—e—s—c—a—l—a—d—o—/—a—c—t—i—v—a—c—i—o—n—e—s—/—c—o—m—p—o—s—i—c—i—ó—n—-—o—r—d—e—n—a—d—a—,— —v—a—l—i—d—a—c—i—ó—n— —d—e— —s—e—g—u—r—i—d—a—d— —e—n— —r—u—n—t—i—m—e—,— —c—r—i—t—e—r—i—o— —d—e— —a—c—e—p—t—a—c—i—ó—n— —Δ—B—>—0— —+— —s—i—n— —r—e—g—r—e—s—i—o—n—e—s— —+— —b—u—d—g—e—t— —+— —s—e—t— —f—r—e—s—c—o—,— —E—x—p—e—r—i—m—e—n—t—R—e—c—o—r—d— —S—U—P—P—O—R—T—E—D—/—R—E—J—E—C—T—E—D—/—I—N—C—O—N—C—L—U—S—I—V—E— —c—o—n— —a—p—r—e—n—d—i—z—a—j—e— —d—e— —f—a—l—l—o—s—)—.— —M—a—p—e—o— —a—c—t—u—a—l—:— —i—n—s—p—e—c—t—/—o—b—s—e—r—v—e—/—c—o—m—p—a—r—e—/—i—n—t—e—r—v—e—n—e—/—e—v—a—l—u—a—t—e— —O—K— —e—n— —w—s—p—.—p—y—/—r—i—g—;— —h—y—p—o—t—h—e—s—i—z—e—/—l—o—c—a—l—i—z—e— —f—o—r—m—a—l—i—z—a—c—i—ó—n—;— —r—o—l—l—b—a—c—k—/—c—o—m—p—o—s—e— —o—p—s— —n—u—e—v—a—s—.— —0—.—2— —p—r—e—v—i—s—t—o—:— —d—e—s—c—u—b—r—i—m—i—e—n—t—o— —d—e— —p—r—i—m—i—t—i—v—a—s—,— —c—o—m—p—o—s—i—c—i—ó—n— —a—u—t—o—m—á—t—i—c—a—,— —m—e—t—a—-—p—r—o—g—r—a—m—a—c—i—ó—n— —(—R—S—I— —c—o—n— —m—e—j—o—r—a— —v—a—l—i—d—a—d—a— —e—x—t—e—r—n—a—m—e—n—t—e—,— —n—o— —s—e—l—f—-—r—e—p—o—r—t—a—d—a—)— —|— —r—e—t—o—s— —(—j—u—e—c—e—s—)—,— —r—i—g— —y— —P—R—O—T—O—C—O—L—.—m—d— —|——
-—|— —1—2—b—i—s— —|— —*—*—E—x—p—e—r—i—m—e—n—t—R—e—c—o—r—d— —v—1— —(—J—S—O—N—-—s—c—h—e—m—a— —v—a—l—i—d—a—d—o—)—*—*— ——— —d—e—c—i—s—i—ó—n— —2—0—2—6—-—1—1—-—0—3—:— —A—D—E—L—A—N—T—E— —a—h—o—r—a—;— —p—a—r—s—e—r— —W—S—P—-—L—a—n—g— —c—o—m—p—l—e—t—o— —D—I—F—E—R—I—D—O— —p—o—s—t—-—P—R—O—T—O—C—O—L—.— —R—a—t—i—o—n—a—l—e—:— —(—a—)— —e—l— —d—r—i—v—e—r— —n—o— —n—e—c—e—s—i—t—a— —D—S—L— —p—a—r—a— —o—p—e—r—a—r— —(—w—s—p—.—p—y—+—C—L—I— —c—o—n— —b—u—d—g—e—t—-—b—a—r—r—e—r—a— —y—a— —f—u—n—c—i—o—n—a—)—;— —(—b—)— —e—l— —v—a—l—o—r— —r—e—a—l— —d—e—l— —l—e—n—g—u—a—j—e— —e—s— —c—o—n—t—r—o—l—/—r—e—p—r—o—d—u—c—i—b—i—l—i—d—a—d—,— —n—o— —c—a—p—a—c—i—d—a—d— ——— —e—l— —E—x—p—e—r—i—m—e—n—t—R—e—c—o—r—d— —v—a—l—i—d—a—d—o— —c—a—p—t—u—r—a— —e—l— —8—0—%— —(—m—e—m—o—r—i—a— —e—j—e—c—u—t—a—b—l—e— —p—a—r—a— —g—e—n—-—2— —#—9—)— —c—o—n— —e—l— —5—%— —d—e—l— —c—o—s—t—o—;— —(—c—)— —e—l— —p—a—r—s—e—r— —s—e— —d—i—s—e—ñ—a— —d—a—t—a—-—d—r—i—v—e—n— —c—o—n—t—r—a— —l—o—s— —f—o—r—m—a—t—s— —r—e—a—l—e—s— —q—u—e— —P—R—O—T—O—C—O—L—.—m—d— —g—e—n—e—r—e— —(—l—e—c—c—i—ó—n— —P—5—:— —n—o— —c—o—n—s—t—r—u—i—r— —i—n—f—r—a— —c—o—n—t—r—a— —f—o—r—m—a—t—o—s— —h—i—p—o—t—é—t—i—c—o—s—)—.— —A—l—c—a—n—c—e— —v—1—:— —s—c—h—e—m—a— —d—e— —`—{—h—y—p—o—t—h—e—s—i—s—,— —e—v—i—d—e—n—c—e—,— —t—a—r—g—e—t—,— —i—n—t—e—r—v—e—n—t—i—o—n—,— —m—o—d—e—l—_—h—a—s—h—,— —b—e—n—c—h—m—a—r—k—_—v—e—r—s—i—o—n—,— —b—a—s—e—l—i—n—e—,— —c—a—n—d—i—d—a—t—e—,— —p—l—a—c—e—b—o—,— —h—o—l—d—o—u—t—,— —c—o—n—c—l—u—s—i—o—n—∈—{—S—U—P—P—O—R—T—E—D—,—R—E—J—E—C—T—E—D—,—I—N—C—O—N—C—L—U—S—I—V—E—}—}—`— —+— —v—a—l—i—d—a—d—o—r— —e—n— —`—e—n—g—i—n—e—/—r—e—c—o—r—d—.—p—y—`— —+— —m—i—g—r—a—c—i—ó—n— —d—e— —j—o—u—r—n—a—l—/— —e—x—i—s—t—e—n—t—e— —+— —e—n—t—r—a—d—a— —a—u—t—o—m—á—t—i—c—a— —a—l— —f—i—n—a—l— —d—e— —c—a—d—a— —r—i—g— —|— —s—c—h—e—m—a— —c—o—n—f—i—g—u—r—a—d—o— —y— —P—R—O—T—O—C—O—L—.—m—d— —e—n— —e—j—e—c—u—c—i—ó—n— —|——
-——
-—#—#— —4—.—1—q—u—a—t—e—r— —W—S—P—-—L—a—n—g— —a— —m—o—d—o— —d—e— —c—a—p—a— —d—e— —p—r—o—g—r—a—m—a—c—i—ó—n— —(—n—o—t—a— —d—e— —d—i—s—e—ñ—o—)——
-——
-—D—E—C—I—S—I—Ó—N— —(—2—0—2—6—-—1—1—-—0—3—,— —v—e—r— —#—1—2—b—i—s—)—:— —W—S—P—-—L—a—n—g— —q—u—e—d—a— —c—o—m—o— —*—*—s—p—e—c— —d—e— —r—e—f—e—r—e—n—c—i—a—*—*— —(—`—W—S—P—-—L—A—N—G—.—m—d—`—)— —+— —i—m—p—l—e—m—e—n—t—a—c—i—ó—n— —p—a—r—c—i—a—l—:— —E—x—p—e—r—i—m—e—n—t—R—e—c—o—r—d— —v—1— —v—a—l—i—d—a—d—o— —A—H—O—R—A—,— —p—a—r—s—e—r— —d—e— —p—r—o—g—r—a—m—a—s— —d—i—f— —E—R—I—D—O— —h—a—s—t—a— —p—o—s—t—-—P—R—O—T—O—C—O—L—.— —E—l— —c—o—n—c—e—p—t—o— —q—u—e—d—a—:— —e—l— —a—g—e—n—t—e— —p—r—o—p—o—n—e— —i—n—t—e—n—c—i—ó—n— —e—x—p—e—r—i—m—e—n—t—a—l—;— —e—l— —r—u—n—t—i—m—e— —v—a—l—i—d—a— —y— —e—j—e—c—u—t—a— —(—e—l— —a—g—e—n—t—e— —n—u—n—c—a— —o—p—e—r—a— —p—e—s—o—s— —d—i—r—e—c—t—a—m—e—n—t—e— —n—i— —s—e— —a—u—t—o—-—e—v—a—l—ú—a—)—.— —L—a—s— —s—a—l—v—a—g—u—a—r—d—a—s— —e—n— —p—r—o—d—u—c—c—i—ó—n— —(—F—O—R—B—I—D—D—E—N—_—T—E—N—S—O—R—S—,— —b—u—d—g—e—t— —c—o—m—o— —b—a—r—r—e—r—a—,— —s—e—l—l—a—d—o— —d—e— —h—o—l—d—o—u—t—s—)— —s—o—n— —h—o—y— —e—l— —"—s—i—s—t—e—m—a— —d—e— —t—i—p—o—s—"— —d—e— —f—a—c—t—o—;— —e—l— —p—a—r—s—e—r— —f—o—r—m—a—l— —l—o—s— —u—n—i—f—i—c—a—r—i—a— —c—u—a—n—d—o— —h—a—y—a— —e—v—i—d—e—n—c—i—a— —e—m—p—í—r—i—c—a— —d—e— —q—u—é— —f—o—r—m—a—t—o—s— —d—e— —p—r—o—g—r—a—m—a— —h—a—c—e—n— —f—a—l—t—a—.——
-——
-—#—#— —5—.— —R—i—e—s—g—o—s— —/— —t—r—a—m—p—a—s— —a—c—t—i—v—o—s——
-—-— —*—*—l—i—n—u—x—*—*—:— —4—×— —A—5—0—0—0— —O—C—U—P—A—D—A—S— —p—o—r— —v—l—l—m— —Q—w—e—n—3—.—8—-—2—7—b— —(—2—2—.—4—/—2—4—.—5—G—B— —c—/—u—)— ——— —n—o— —l—a—n—z—a—r— —M—i—M—o— —e—n— —G—P—U— —s—i—n— —r—e—v—i—s—a—r— —m—e—m—o—r—i—a—.——
-—-— —G—i—t—:— —s—i— —e—l— —r—e—m—o—t—o— —s—e— —a—d—e—l—a—n—t—a— —(—l—a— —o—t—r—a— —m—á—q—u—i—n—a— —t—a—m—b—i—é—n— —e—m—p—u—j—a—)—,— —`—g—i—t— —p—u—l—l— —-—-—r—e—b—a—s—e—`— —c—o—n— —s—t—a—s—h— —a—n—t—e—s— —d—e— —p—u—s—h—.——
-—-— —m—i—l—l—o—n—e—s— —d—e— —G—B—:— —u—n— —s—o—l—o— —s—e—r—v—e—r— —a— —l—a— —v—e—z— —e—n— —1—2—G—B— —(—s—t—o—p— —a—n—t—e—s— —d—e— —a—r—r—a—n—c—a—r— —o—t—r—o—)— —[—r—e—g—l—a— —d—e— —l—a— —m—á—q—u—i—n—a— —w—i—n—d—o—w—s—]—.——
-—-— —a—n—t—m—l— —f—o—r—m—a—t—o— —d—e—l— —a—g—e—n—t—i—c— —h—a—r—n—e—s—s— —|—t—o—o—l—-—c—a—l—l—:— —s—i— —c—a—m—b—i—a— —e—l— —m—o—d—e—l—o—,— —r—e—v—i—s—a—r— —p—a—r—s—e—r—.——
-—-— —n—o— —b—o—r—r—a—m—o—s— —g—o—l—d—-—h—o—l—d—o—u—t—s— —h—a—s—t—a— —l—a— —p—r—i—m—e—r—a— —e—v—a—l—u—a—c—i—ó—n— —s—e—l—l—a—d—a— —f—i—n—a—l— —(—p—r—o—t—o—c—o—l—o—)—.——
-—-— —Q—6—_—K— —r—e—q—u—a—n—t— —d—e—t—a—i—l—:— —s—i—e—m—p—r—e— —r—e—g—e—n—e—r—a—r— —p—l—a—c—e—b—o—s— —a—n—t—e—s— —d—e— —e—v—a—l—u—a—c—i—o—n—e—s— —c—o—n—c—l—u—y—e—n—t—e—s—.——
-—-— —o—p—e—n—c—o—d—e— —M—C—P— —e—x—i—g—e— —r—e—i—n—i—c—i—o— —d—e—s—p—u—é—s— —d—e— —e—d—i—t—a—r— —l—a— —c—o—n—f—i—g—u—r—a—c—i—ó—n— —M—C—P—.——
-——
-—#—#— —6—.— —R—e—f—e—r—e—n—c—i—a—s— —d—e— —a—r—c—h—i—v—o—s— —d—e—l— —e—s—t—u—d—i—o——
-—-— —P—a—p—e—r— —+— —l—o—g—s— —W—S—P— —m—é—t—o—d—o— —(—p—a—p—e—r— —b—a—s—e—l—i—n—e—)—:— —r—i—k—i—y—a—t—.—g—i—t—h—u—b—.—i—o—/—b—l—o—g—/—w—e—i—g—h—t—-—s—p—a—c—e—-—p—r—o—g—r—a—m—m—i—n—g—/—;— —g—i—t—h—u—b—.—c—o—m—/—R—i—k—i—y—a—T—/—l—m—_—u—n—d—e—r—s—t—a—n—d—-—l—o—g—s— —(—e—x—p—8—_—m—a—t—h—/—c—o—d—e—/—a—p—p—l—y—_—e—d—i—t—.—p—y— —+— —m—a—n—i—f—e—s—t—)—.——
-—-— —P—r—o—t—o—c—o—l—o— —d—e—l— —1—e—r— —e—x—p—e—r—i—m—e—n—t—o— —m—a—t—e—m—á—t—i—c—o—:— —`—P—R—O—T—O—C—O—L—.—m—d—`—.——
-—-— —P—e—n—s—i—o—n—:— —`—e—d—i—c—i—o—n—e—s—\—e—1—.—j—s—o—n—`— —(—d—e—s—c—a—r—t—a—d—o—)— —+— —`—e—d—i—c—i—o—n—e—s—\—e—1—-—s—m—o—k—e—.—j—s—o—n—`—;— —m—a—n—i—f—i—e—s—t—o—s— —e—n— —`—s—e—r—v—i—d—o—s—\—*—.—m—a—n—i—f—e—s—t—.—j—s—o—n—`—.——
-—-— —T—o—o—l—k—i—t— —(—m—o—t—o—r— —W—S—P—)—:— —`—w—s—p—.—p—y—`—;— —e—n—g—i—n—e— —r—e—t—o—s—:— —`—e—n—g—i—n—e—\—c—h—a—l—l—e—n—g—e—.—p—y—`— —+— —`—e—n—g—i—n—e—\—w—s—p—_—m—c—p—_—s—e—r—v—e—r—.—p—y—`— —+— —`—r—e—t—o—s—\—w—s—p—4—0—.—j—s—o—n—`—.——
-—-— —S—k—i—l—l—:— —`—~—/—.—c—o—n—f—i—g—/—o—p—e—n—c—o—d—e—/—s—k—i—l—l—s—/—w—e—i—g—h—t—-—s—p—a—c—e—-—p—r—o—g—r—a—m—m—i—n—g—/—S—K—I—L—L—.—m—d—`—.——
-——
-—#— —W—S—P—-—L—a—n—g— —0—.—1— —�— —l—e—n—g—u—a—j—e— —e—x—p—e—r—i—m—e—n—t—a—l— —p—a—r—a— —p—r—o—g—r—a—m—a—r— —e—l— —e—s—p—a—c—i—o— —d—e— —p—e—s—o—s— —(—p—r—o—p—u—e—s—t—a— —A—n—t—o—n—i—o—,— —2—0—2—6—-—1—1—-—0—3—)——
-——
-—H—i—p—�—t—e—s—i—s— —c—e—n—t—r—a—l—:— —u—n— —L—L—M— —c—o—n—t—i—e—n—e— —u—n— —p—r—o—g—r—a—m—a— —c—o—m—p—u—t—a—c—i—o—n—a—l— —i—m—p—l—�—c—i—t—o— —e—n— —s—u—s— —p—e—s—o—s—;— —d—e—s—c—u—b—r—i—m—o—s— —p—r—i—m—i—t—i—v—a—s— —y— —l—a—s— —c—o—m—b—i—n—a—m—o—s— —p—a—r—a— —p—r—o—d—u—c—i—r— —c—a—m—b—i—o—s— —v—e—r—i—f—i—c—a—b—l—e—s—.— —E—s—p—e—c—i—f—i—c—a—c—i—�—n— —c—o—m—p—l—e—t—a— —e—n— —W—S—P—-—L—a—n—g— —0—.—1— —(—t—e—x—t—o— —d—e— —A—n—t—o—n—i—o—;— —r—e—s—u—m—e—n— —o—p—e—r—a—t—i—v—o— —e—n— —`—r—e—t—o—s—/—g—r—a—m—a—t—i—c—a—_—w—s—p—.—j—s—o—n—`—)—.——
-——
-—M—o—d—e—l—o—:— —M—=—(—A—,—W—,—t—)—;— —p—r—o—g—r—a—m—a— —P—=—(—o—1—.—.—o—n—)—;— —W—'—=—P—(—W—)—.— —8— —p—r—i—m—i—t—i—v—a—s— —y—a— —I—M—P—L—E—M—E—N—T—A—D—A—S— —e—n— —e—l— —r—u—n—t—i—m—e—:——
-—i—n—s—p—e—c—t— —(—w—s—p— —i—n—f—o—/—s—t—a—t—s—)—,— —o—b—s—e—r—v—e— —(—c—a—p—t—u—r—e—_—r—e—s—i—d—u—a—l—/—h—e—a—d—s—/—a—c—t—i—v—a—c—i—o—n—e—s—)—,— —c—o—m—p—a—r—e— —(—d—e—l—t—a— —v—s— —r—i—g—)—,— —h—y—p—o—t—h—e—s—i—z—e— —(—e—x—p—e—d—i—e—n—t—e—s—,— —a—g—e—n—t—e—)—,— —l—o—c—a—l—i—z—e— —(—d—e—l—t—a—/—m—a—r—k—e—r—s—/—a—c—t—i—v—a—t—i—o—n— —s—c—o—r—e—)—,— —i—n—t—e—r—v—e—n—e— —(—s—u—b—t—r—a—c—t—-—d—i—r—e—c—t—i—o—n—/—s—c—a—l—e—/—c—o—l—s—_—m—a—s—k—:— —*—*—p—r—o—j—e—c—t—*—*— —d—e— —l—a— —g—r—a—m—�—t—i—c—a—)—,— —e—v—a—l—u—a—t—e— —(—r—i—g—+—e—v—a—l—_—m—a—t—h—+—s—e—l—l—a—r—:— —*—*—t—e—s—t—*—*—)—,— —r—o—l—l—b—a—c—k— —(—s—e—r—v—i—d—o—s—)—}——
-——
-—S—i—s—t—e—m—a—s— —d—e— —t—i—p—o—s—:— —M—o—d—e—l—/—T—e—n—s—o—r—/—A—c—t—i—v—a—t—i—o—n—/—D—i—r—e—c—t—i—o—n—/—B—e—h—a—v—i—o—r—/—H—y—p—o—t—h—e—s—i—s—/—I—n—t—e—r—v—e—n—t—i—o—n—/—B—e—n—c—h—m—a—r—k—/—E—x—p—e—r—i—m—e—n—t—/—R—e—s—u—l—t—.——
-—M—a—t—e—m—�—t—i—c—a—:— —e—s—c—a—l—a— —W—'— —=— —W—+—a—d—;— —p—r—o—y—e—c—c—i—�—n— —W—'— —=— —W— —-— —a—�—W—�—d—d—T— —(—n—o—r—m—a—l—i—z—a—d—a—)—;— —i—n—t—e—r—v—e—n—c—i—�—n— —d—e— —A—C—T—I—V—A—C—I—O—N—E—S— —h—'— —=— —h— —-— —a—�—d—d—T—�—h— —(—c—o—m—p—r—o—b—a—r— —h—i—p—�—t—e—s—i—s— —s—i—n— —e—d—i—t—a—r—)—;— —c—o—m—p—o—s—i—c—i—�—n— —P—2—�—P—1— —N—O— —c—o—n—m—u—t—a—t—i—v—a— —(—r—e—g—i—s—t—r—a—r— —o—r—d—e—n—)—.——
-—S—e—g—u—r—i—d—a—d— —(—r—u—n—t—i—m—e—,— —n—o— —p—r—o—m—p—t—)—:— —i—d—e—n—t—i—d—a—d— —i—n—m—u—t—a—b—l—e— —(—s—h—a—2—5—6—)—,— —t—a—r—g—e—t— —w—h—i—t—e—l—i—s—t—,— —d—i—m—e—n—s—i—o—n—e—s—/—t—i—p—o—s—/—l—i—m—i—t—e—s— —d—e— —m—a—g—n—i—t—u—d—,— —b—u—d—g—e—t—,— —r—e—v—e—r—s—i—b—i—l—i—d—a—d—,— —c—o—n—f—i—r—m—a—c—i—�—n— —c—i—e—g—a— —(—P—4—)—.——
-—C—r—i—t—e—r—i—o— —d—e— —a—c—e—p—t—a—c—i—�—n—:— —?—B—>—0— —Y— —?—R—_—i— —=— —-—e—_—i— —p—a—r—a— —c—a—d—a— —r—e—g—r—e—s—i—�—n— —i— —Y— —m—o—d—i—f—i—e—d—_—p—a—r—a—m—e—t—e—r—s— —=— —B—_—m—a—x— —Y— —e—v—a—l—u—a—c—i—�—n— —i—n—d—e—p—e—n—d—i—e—n—t—e— —s—e—p—a—r—a—d—a— —(—d—i—a—g—n—�—s—t—i—c—o— —v—a—l—i—d—a—,— —c—o—n—f—i—r—m—a—c—i—�—n— —s—e—l—l—a—)—.——
-——
-—R—e—g—i—s—t—r—o— —d—e— —e—x—p—e—r—i—m—e—n—t—o—s—:— —E—x—p—e—r—i—m—e—n—t—R—e—c—o—r—d—{—h—y—p—o—t—h—e—s—i—s—,— —e—v—i—d—e—n—c—e—,— —t—a—r—g—e—t—,— —i—n—t—e—r—v—e—n—t—i—o—n—,— —m—o—d—e—l—_—h—a—s—h—,— —b—e—n—c—h—m—a—r—k—_—v—e—r—s—i—o—n—,— —b—a—s—e—l—i—n—e—_—r—e—s—u—l—t—,— —c—a—n—d—i—d—a—t—e—_—r—e—s—u—l—t—,— —p—l—a—c—e—b—o—_—r—e—s—u—l—t—,— —h—o—l—d—o—u—t—_—r—e—s—u—l—t—,— —c—o—n—c—l—u—s—i—o—n—?—{—S—U—P—P—O—R—T—E—D—,— —R—E—J—E—C—T—E—D—,— —I—N—C—O—N—C—L—U—S—I—V—E—}—}— —�— —u—n— —e—x—p—e—r—i—m—e—n—t—o— —f—a—l—l—i—d—o— —E—S— —c—o—n—o—c—i—m—i—e—n—t—o— —(—y—a— —5— —R—E—J—E—C—T—E—D— —c—o—n— —l—e—c—c—i—o—n—e—s—)—.——
-——
-—W—S—P—-—L—a—n—g— —0—.—2— —(—f—u—t—u—r—a—)—:— —d—e—s—c—u—b—r—i—m—i—e—n—t—o— —d—e— —p—r—i—m—i—t—i—v—a—s— —p—o—r— —e—l— —a—g—e—n—t—e—,— —c—o—m—p—o—s—i—c—i—�—n— —a—u—t—o—m—�—t—i—c—a— —d—e— —o—p—s— —c—o—m—p—a—t—i—b—l—e—s—,— —m—e—t—a—-—p—r—o—g—r—a—m—a—c—i—�—n— —d—e—l— —p—r—o—c—e—s—o— —i—n—v—e—s—t—i—g—a—d—o—r— —(—R—S—I—-—s—h—a—p—e—d—)—.——
-——
-—S—I—G—U—I—E—N—T—E— —P—I—E—Z—A— —A— —C—O—N—S—T—R—U—I—R—:— —p—a—r—s—e—r— —+— —e—j—e—c—u—t—o—r— —m—�—n—i—m—o— —d—e— —W—S—P—-—L—a—n—g— —e—n— —e—l— —M—C—P—:— —i—n—t—e—r—p—r—e—t—e— —p—e—q—u—e—�—o— —d—e— —p—r—o—g—r—a—m—a—s— —t—i—p—o— —E—2— —q—u—e— —v—a—l—i—d—a—n— —c—a—d—a— —o—p—,— —g—e—n—e—r—a—n— —m—a—n—i—f—i—e—s—t—o— —y— —r—e—s—u—l—t—a—d—o—s— —a—u—t—o—m—�—t—i—c—a—m—e—n—t—e—.——
-——
-—
+# Roadmap WSP — Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B
+
+Fecha: 2026-11-03. Estudio derivado del paper "Sparks of Weight-Space Programming" (MIT CSAIL, rikiyat.github.io/blog/weight-space-programming) — log Analysis: logs completos de los 8 experimentos en github.com/RikiyaT/lm_understand-logs; los editados en HF son de Qwen3.5-0.8B (exp 8: bucle de razonamiento).
+
+## 1. Marco
+
+El ajuste alcanzado corresponde a: **suficiente funcionalidad de edición** + **capacidad de mejora real del proceso** — objetivo separado para comprobarlos con datos:
+- Suficiente funcionalidad técnica (edición costo HIPER): demostrado con 4 pases.
+- Mejora de razonamiento/cajeta (project técnico final): par��: depende del destino.
+
+Regla clave del paper (exp 8): WSP solo ayuda si existe una patología estructural; su control Gemma-270M (sin bucles) NO obtuvo mejora matemática.
+
+## 2. Instanciado, verificado
+
+### 2.1 wsp.py — toolkit de edición (skill weight-space-programming)
+| Componente | Estado |
+|---|---|
+| info / tensors / stats / rows / delta / markers | OK verificado |
+| edit in Q6_K (subtract-direction, scale rows/cols, blend-rows) | OK (copias en sitio + requant por bloques tocados) |
+| requant Q6_K canónico (port de `quantize_row_q6_K_ref`) | OK: 87% byte-identidad sobre bloques reales no-editados; err decodificado 6e-6 |
+| diff (-frac relativa) | OK verificado en smoke + E1 |
+| serve (llama.cpp b11962, `-ngl 999 -c 16384 --jinja`) | OK: 3 cargas gestionadas (checin original/E1) |
+| eval-harness agentic (port de mock_harness, format antml) | OK: baseline 6/10 loops |
+| budget/journal (read≤200, write≤20, fwd≤6) | OK |
+| manifiesto+fingerprint en cada edit | OK (idea del starter MCP) |
+
+Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data\, logs\, journal\}` + skill global `~/.config/opencode/skills/weight-space-programming/SKILL.md`.
+
+### 2.2 Diagnóstico del modelo (datos de este estudio)
+- HF arch = `qwen3_5` multimodal: 32 capas texto; **atención en capas ≡3 (mod 4)**, resto GatedDeltaNet (`ssm_*`): estados clave para el diseño de intervenciones.
+- Footprint de la destilación (base→distill): 99.999% de parámetros medianamente cambiar; mediana rel ~6.7%; **drift máx: ssm_beta profunda (blk.22 19%, blk.28 17.1%), ffn_gate medio (blk.17/19 ≈17%)**; **marcadores estructurales (72 tokens: `markers.json`): p95 23.3% en output.weight**.
+- Baseline rig agentic (10 prompts rl_oss, seed 42, temp 0.3): **loop 6/10 (60%)** con patrón reproducible: re-llamada idéntica de comandos `ls /app/...`.
+- R0 GSM8K diag (8 prompts): **8/8 (100%), 0 caps** — n.assert: nuestro modelo no HEREDA la patología matemática de Qwen3.5-0.8B (blog: 13.8% GSM8K, 93% caps). El cuello de nuestro modelo es el **comportamiento agéntico**, no math.
+- E1 (subtract-direction SVD-drift, capas 17/19 ffn_down, target_frac 2%, mask top-64):
+  - Patrón observado: filas con máximo drift repetidas entre capas 17 y 19 (843, 1047, 2479, 2610, 3321).
+  - Resultado: **8/10 loops (peor que baseline 6/10) → DISCARDED** (semilla/idénticos prompts).
+  - Conclusión experimental: la dirección del **drift de pesos** ≠ dirección del **comportamiento repetitivo**. blog: su `u` proviene de residuos observados (fwd4, salidas 16/20), NO del dif.
+- Batería de páginas (MCP? no: run_battery.py P1/P5):
+  - P1 (leer pesos → inferir qué calcula): **PASS** (el driver 9B razona la función sin fwd).
+  - P5 (escribir pesos inline formato edits): **FAIL** técnico (el modelo no produce el bloque ```edits```: pendiente mejora prompt/parser de runtime batería).
+- Serie causal E2–E5 (residuos reales + placebo) + P4: **CERRADA DISCARD** (ver results.md 2bis/2quinquies): placebo descartó el ruido de requant; la edición por activaciones solo "mejoró" en dev y EMPEORÓ en frescos (70% vs 55% loops).
+
+### 2.3 Challenge Engine v0.2 (WSP-40)
+- Catálogo formal: `retos\wsp40.json` (8 familias, 40 retos; etapa A=Qwen3.5-0.8B 01-22, B/C/D=MiMo).
+- Jueces mecánicos implementados (computados SOLO al juzgar, nunca visibles antes): dims, emb_vocab, mlp_map, heads (metadata GQA), norms, outliers (Jaccard), delta_magnitud, similarity, emb_neighbors, estructura, markers, shared_rows, lang_rows + sellado de holdouts (LOCK tras 1 ejecución), historial y veredictos keep/discard.
+- Retos aprobados actuales: **01–09** (9/40; 10–17 jueces implementados sin submit).
+- MCP: `engine\wsp_mcp_server.py` (FastMCP stdio) + `C:\weights\opencode.json` con `mcpServers` — **requiere reinicio de opencode para activarse**; en formato CLI ya funciona.
+
+### 2.4 Infra y datos
+- datasets: `data\gsm8k_train.jsonl` (7473), `data\math500_test.jsonl` (500). Pendiente HumanEval/MBPP/IFEval.
+- **Adaptador weightspace instalado**: `engine\ws_runner.py` + `.venv` (pip `weightspace`+`safetensors`, sin torch). Harness etapa A sobre F32/npz/safetensors: parches sparse (run/transcript/patch.npz) + replay de transcripciones sin tokens. API observada de leofmarciano/weightspace v0.2.0 (Result sin stop_reason). El pipeline GGUF/requant Q6_K sigue en wsp.py.
+- HF checkpoint MiMo (18GB): descarga en background a `hf_cache\mimo-distill-hf` (necesario para captura de residuos).
+- GPU 12GB: un llama-server Q6 a la vez (memoria 8.7GB + KV).
+- Limpieza C:: liberados +121 GB (4 maestros F32 de sintetizaciones descartadas).
+
+## 3. Conclusiones y aprendizajes de este estudio
+1. **Metodología alineada al paper**: leer (sandbox estadístico), editar (ops quirúrgicas), evaluar (budget A/B keep-if-better). Y alineado en restricciones (sin gradiente/entrenamiento/fwd-tool-only; prohibido tocar head/lm_head).
+2. **WSP ≠ fórmula mágica**: sin patología estructural charofizada, no hay mejora (evidencia: blog Gemma-270M + nuestra E1).
+3. **Medir el comportamiento primero**: nuestro target real no es math (100% baseline), es el bucle agéntico. Reordenar las hipótesis según patologías reales del modelo local.
+4. **La dirección de edición debe deriver del comportamiento** (residuos/activaciones), no directamente del drift de pesos.
+5. **Ruido de cuantización**: ±2% por bloque tocado; ediciones < 0.5% de magnitud son indistinguibles del ruido: target_frac mínimo 0.01 + exigir baseline/placebo.
+6. **Placebo + no-degradación** (control del confundante cuant): necesarios por protocolo; implementados como sellado y `diff`.
+7. **Expedientes acumulativos**: retos con jueces externos y memoria de hipótesis/tensores/intervenciones/resultado: capacidad para la gen-2+ del agente investigador (Knowledge Transfer Between Experiments, ref. hip 5 del marco).
+
+## 4. Pendiente (priorizado)
+
+### 4.0 Cierre de fase E2–E5 (2026-11-03, sesión linux)
+- **P4 CONFIRMACIÓN ejecutada (commit 5c372a0) y NEGATIVA**: en 20 prompts frescos (10 general + 10 code) E5 da **14/20 loops vs 11/20 del original** (subset code: 8/10 vs 5/10) → E5 DISCARDED por keep-if-better. Detalle en results.md §2quinquies.
+- Consecuencia: **la serie E1–E5 de edición agéntica queda CERRADA sin keep**. Lecciones: (1) targeting por activaciones ayuda en dev pero no generaliza; (2) evaluar frescos ANTES de declarar señal; (3) placebo (E4) queda como estándar obligatorio del PROTOCOL.md.
+- **NUEVO OBJETIVO (dirección del driver): aumentar la puntuación MATH de MiMo** (R0 había dado 8/8 GSM8K diag; el margen está en MATH-500/harder). Se reactiva PROTOCOL.md con el rigor E4 (placebo) y frescos.
+
+### 4.1 Infra linux (nueva sesión 2026-11-03-b)
+| # | Tarea | Estado (2026-11-03-d, linux) |
+|---|---|---|
+| 1 | Inferencia MiMo en linux: GGUF Q6_K + llama-server | **HECHO**: GGUF Q6_K bartowski descargado a `hf_cache/mimo-gguf/` (7.8GB); `/usr/local/lib/ollama/llama-server` (sin GPU: binario sin CUDA) sirviendo en `:8090` CPU (`-ngl 0 -c 8192 --jinja`); smoke "Say OK" OK (~0.33 tok/s — CPU compartida con sglang 27B: baseline viable en batches nocturnos, no en caliente) |
+| 2 | Download MiMo HF 18GB | **BLOQUEADO/INNECESARIO**: el GGUF cubre la inferencia; HF solo si se necesita captura de residuos con torch |
+| 3 | R0 math500-subset baseline (sample fija sellada) | **EN MARCHA** (nohup): `rig/math500.py --seed 42 --n 50 --sell --tag orig-linux` → `rig_runs/r0-orig-math-linux.json`; sellado reutilizado `rig/sellados/sellado_42_50.json` |
+| 3b | Baseline logic_probe 120 Horn | **EN MARCHA** (nohup): `rig/logic_probe.py --n 120 --temperature 0` → `rig_runs/logic-baseline-orig.json` |
+| 4 | weightspace 0.3.0 upgrade (+openai extra) + ws_runner paridad de stop_reason | pendiente (no crítico: solo etapa A 0.8B) |
+| 5 | MCP wsp-challenge en linux | **HECHO**: rutas portables (`__file__`), `creationflags` condicional, auto-detección de GGUF (`_buscar_gguf`: hf_cache→servidos→env→default); `mcp<2`+`gguf` vía `pip --user`; smoke stdio OK (10 tools; engine_status 12/43); `opencode.json` portable (`python3` + ruta relativa) — requiere reinicio de opencode |
+
+## 4.1bis CHECKPOINT sesión 2026-11-03-c (linux, opencode por SSH — RESUMIR AQUÍ si se corta)
+
+Estado al cutoff:
+1. **Auth opencode→vLLM RESUELTO**: el 401 era porque vLLM (:8001, de charles) exige `--api-key` y `{env:VLLM_API_KEY}` de opencode solo se resuelve en shell interactivo. Fix: key puesta literal en `~/.config/opencode/opencode.json` (provider vllm, chmod 600). Verificado end-to-end con `opencode run --model vllm/qwen3.8-27b`.
+2. **Runner math500 LISTO**: `rig/math500.py` (stdlib-only). CLI: `--endpoint :8090/v1/chat/completions --model mimo --n --seed 42 --sell --temperature 0.3 --max-tokens 8192 --tag --out`. Selftest 44 asserts OK (boxed balanceado con `\{`, `\frac` sin llaves tipo `\frac43`, miles `10,\!080`, subscripts, `^\circ`, `\text`, equivalencia numérica Fractions, reducción gcd). Sellado en `rig/sellados/` (lock global-estricto: mismo seed+n reusa índices y verifica hash del dataset; otro seed/n → error, nunca sobrescribe). Determinismo via sha256 propio estable.
+3. **Descargas en curso** (background, reanudables): GGUF Q6_K bartowski en `hf_cache/mimo-gguf` (~7.3GB, parece estancado / verify al retomar: `du -sh hf_cache/mimo-gguf` y `pgrep -af 'hf download'`); HF distill en `hf_cache/mimo-distill-hf` (~4.7GB de 18GB).
+4. **Servir MiMo**: plan A = `/opt/local/lib/ollama/llama-server -m <gguf>` (verificar soporte arch `qwen3_5` multimodal, Windows usó llama.cpp b11962); plan B = compilar llama.cpp actual (10–15 min). Port sugerido :8090.
+5. **Decisión GPU tomada (opus.2 del roadmap §5)**: pedir liberación de 1 A5000 → GGUF Q6 en llama.cpp full-GPU (~30 min para 50 prompts, ~5–6 h math500 completo) o HF bf16 vLLM batched (~1 h el 500). Fallback si niegan: subset-50 en CPU (~4–5 h, noche).
+6. **Próximos pasos inmediatos**: (a) al terminar download GGUF → smoke serve + rig `--selftest` + rig smoke `--n 3` (sin sell) sobre MiMo; (b) asignar GPU dedicada; (c) R0: `rig/math500.py --seed 42 --n 50 --sell --tag orig` (baseline sellado); (d) experimento principal PROTOCOL.md con placebo E4 + frescos.
+
+## 4.1ter Referencia externa: github.com/csinva/weight-space-programming-autoresearch (review 2026-11-03)
+
+Repo autónomo de escritura de pesos en transformers pequeños (tareas aritmética/NLP); modelo NUNCA entrenado, pesos escritos en forma cerrada. NO es edición de LLM reales (es stage-A puro), pero ideas útiles a importar para la gen-2 (WSP-Researcher):
+- `evolve/program.md`: instrucción "LOOP FOREVER, no pausar a humano, ≥20 iteraciones aunque dé 100%" + ideas guiadas por papers de mech-interp. Importable como sección del skill.
+- Ledger plano `results/overall_results.csv` (task,accuracy,status,n_params,description) tras CADA intento: mejor memoria cross-run que nuestro journal JSON (añadir export CSV al journal).
+- Snapshot lib (`interpretable_transformers_lib/<nombre>.py` por intento): equivalente a nuestro `ediciones/` — ya lo cumplimos.
+- Run-folder aislado con src/ de solo-lectura (symlinks): pattern para rig y retos (evita self-grading).
+
+| # | Tarea (histórico, pendiente) | Depende de |
+|---|---|---|
+| 5 | Fix P5 batería blog (prompt más directo + parser tolerante del bloque edits) | nada |
+| 6 | WSP-40: jueces 10-17 + bajar HumanEval/MBPP/IFEval + runners | nada |
+| 7 | Etapa A (Qwen3.5-0.8B): download HF (~1.6GB) + parque de retos 01-22 con `ws_runner` | #6 parcial |
+| 8 | Experimento principal PROTOCOL.md (math) con placebo, triple holdout y seed multiset | #3 + #4.0 |
+| 9 | Extractores de "principio" (knowledge transfer) desde expedientes → gen-2 WSP-Researcher | #8/#6 |
+| 10 | Editar opencode MCP para la máquina linux (config + reinicio) | reinicio |
+| 11 | **wsp decompile** → traductor semántico de piezas de MiMo a C/pseudo-C. Idea (derivación 2026-11-03): neurona ReLU → cláusula de matching (`if x>θ: W·x`), head de atención → matcher estilo copying (`match prev-token; copy C[t-1]`), MLP entera → lookup de 12288 entradas; juez tipo P1: tests automáticos contra el fragmento traducido. Usos: (a) retos WSP-40 nuevos de "traduce y verifica"; (b) hacer legibles los efectos de una edición (qué circuito/cambio de programa provoca el `subt`); (c) vía de interpretability para la gen-2. Límite conocido (exp 1–3 del paper): viable por PIEZAS (17k–1.5M pesos), no para la red de 9B entera — los pesos son millones de programas superpuestos, sin módulos separables | nada (paralelo; útil para gen-2) |
+| 12 | **WSP-Lang 0.1: parser + ejecutor mínimo en el MCP**. Spec completa en `WSP-LANG.md` (2026-11-03): lenguaje declarativo de experimentos sobre pesos (modelo M=(A,W,τ), 10 tipos, 8 primitivas inspect/observe/compare/hypothesize/localize/intervene/evaluate/rollback, ops matemáticas proyección/escalado/activaciones/composición-ordenada, validación de seguridad en runtime, criterio de aceptación ΔB>0 + sin regresiones + budget + set fresco, ExperimentRecord SUPPORTED/REJECTED/INCONCLUSIVE con aprendizaje de fallos). Mapeo actual: inspect/observe/compare/intervene/evaluate OK en wsp.py/rig; hypothesize/localize formalización; rollback/compose ops nuevas. 0.2 previsto: descubrimiento de primitivas, composición automática, meta-programación (RSI con mejora validada externamente, no self-reportada) | retos (jueces), rig y PROTOCOL.md |
+| 12bis | **ExperimentRecord v1 (JSON-schema validado)** — decisión 2026-11-03: ADELANTE ahora; parser WSP-Lang completo DIFERIDO post-PROTOCOL. Rationale: (a) el driver no necesita DSL para operar (wsp.py+CLI con budget-barrera ya funciona); (b) el valor real del lenguaje es control/reproducibilidad, no capacidad — el ExperimentRecord validado captura el 80% (memoria ejecutable para gen-2 #9) con el 5% del costo; (c) el parser se diseña data-driven contra los formats reales que PROTOCOL.md genere (lección P5: no construir infra contra formatos hipotéticos). Alcance v1: schema de `{hypothesis, evidence, target, intervention, model_hash, benchmark_version, baseline, candidate, placebo, holdout, conclusion∈{SUPPORTED,REJECTED,INCONCLUSIVE}}` + validador en `engine/record.py` + migración de journal/ existente + entrada automática al final de cada rig | schema configurado y PROTOCOL.md en ejecución |
+
+## 4.1quater WSP-Lang a modo de capa de programación (nota de diseño)
+
+DECISIÓN (2026-11-03, ver #12bis): WSP-Lang queda como **spec de referencia** (`WSP-LANG.md`) + implementación parcial: ExperimentRecord v1 validado AHORA, parser de programas dif ERIDO hasta post-PROTOCOL. El concepto queda: el agente propone intención experimental; el runtime valida y ejecuta (el agente nunca opera pesos directamente ni se auto-evalúa). Las salvaguardas en producción (FORBIDDEN_TENSORS, budget como barrera, sellado de holdouts) son hoy el "sistema de tipos" de facto; el parser formal los unificaria cuando haya evidencia empírica de qué formatos de programa hacen falta.
+
+## 5. Riesgos / trampas activos
+- **linux**: 4× A5000 OCUPADAS por vllm Qwen3.8-27b (22.4/24.5GB c/u) — no lanzar MiMo en GPU sin revisar memoria.
+- Git: si el remoto se adelanta (la otra máquina también empuja), `git pull --rebase` con stash antes de push.
+- millones de GB: un solo server a la vez en 12GB (stop antes de arrancar otro) [regla de la máquina windows].
+- antml formato del agentic harness |tool-call: si cambia el modelo, revisar parser.
+- no borramos gold-holdouts hasta la primera evaluación sellada final (protocolo).
+- Q6_K requant detail: siempre regenerar play a concluyentes.
+- opencode MCP exige reinicio después de editar configuración MCP.
+
+## 6. Referencias de archivos del estudio
+- Paper + logs WSP método (paper baseline): rikiyat.github.io/blog/weight-space-programming/; github.com/RikiyaT/lm_understand-logs (exp8_math/code/apply_edit.py + manifest).
+- Protocolo del 1er experimento matemático: `PROTOCOL.md`.
+- Pension: `ediciones\e1.json` (descartado) + `ediciones\e1-smoke.json`; manifiestos en `servidos\*.manifest.json`.
+- Toolkit (motor WSP): `wsp.py`; engine retos: `engine\challenge.py` + `engine\wsp_mcp_server.py` + `retos\wsp40.json`.
+- Skill: `~/.config/opencode/skills/weight-space-programming/SKILL.md`.
+
+# WSP-Lang 0.1 � lenguaje experimental para programar el espacio de pesos (propuesta Antonio, 2026-11-03)
+
+Hip�tesis central: un LLM contiene un programa computacional impl�cito en sus pesos; descubrimos primitivas y las combinamos para producir cambios verificables. Especificaci�n completa en WSP-Lang 0.1 (texto de Antonio; resumen operativo en `retos/gramatica_wsp.json`).
+
+Modelo: M=(A,W,t); programa P=(o1..on); W'=P(W). 8 primitivas ya IMPLEMENTADAS en el runtime:
+inspect (wsp info/stats), observe (capture_residual/heads/activaciones), compare (delta vs rig), hypothesize (expedientes, agente), localize (delta/markers/activation score), intervene (subtract-direction/scale/cols_mask: **project** de la gram�tica), evaluate (rig+eval_math+sellar: **test**), rollback (servidos)}
+
+Sistemas de tipos: Model/Tensor/Activation/Direction/Behavior/Hypothesis/Intervention/Benchmark/Experiment/Result.
+Matem�tica: escala W' = W+ad; proyecci�n W' = W - a�W�ddT (normalizada); intervenci�n de ACTIVACIONES h' = h - a�ddT�h (comprobar hip�tesis sin editar); composici�n P2�P1 NO conmutativa (registrar orden).
+Seguridad (runtime, no prompt): identidad inmutable (sha256), target whitelist, dimensiones/tipos/limites de magnitud, budget, reversibilidad, confirmaci�n ciega (P4).
+Criterio de aceptaci�n: ?B>0 Y ?R_i = -e_i para cada regresi�n i Y modified_parameters = B_max Y evaluaci�n independiente separada (diagn�stico valida, confirmaci�n sella).
+
+Registro de experimentos: ExperimentRecord{hypothesis, evidence, target, intervention, model_hash, benchmark_version, baseline_result, candidate_result, placebo_result, holdout_result, conclusion?{SUPPORTED, REJECTED, INCONCLUSIVE}} � un experimento fallido ES conocimiento (ya 5 REJECTED con lecciones).
+
+WSP-Lang 0.2 (futura): descubrimiento de primitivas por el agente, composici�n autom�tica de ops compatibles, meta-programaci�n del proceso investigador (RSI-shaped).
+
+SIGUIENTE PIEZA A CONSTRUIR: parser + ejecutor m�nimo de WSP-Lang en el MCP: interprete peque�o de programas tipo E2 que validan cada op, generan manifiesto y resultados autom�ticamente.
+
