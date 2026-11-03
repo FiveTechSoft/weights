@@ -89,9 +89,17 @@ def make_cases(n=120, seed=271828):
     return cases
 
 def extract_answer(text):
-    # Strict final-token extraction; explanations are allowed but answer must end in YES/NO.
-    hits = re.findall(r"\b(YES|NO)\b", (text or "").upper())
-    return hits[-1] if hits else ""
+    # Strict final-token extraction: explanations are allowed but the answer must
+    # END in YES/NO (the last word) and must not be self-contradictory (both YES
+    # and NO present => ambiguous => rejected).
+    t = (text or "").strip()
+    hits = re.findall(r"\b(YES|NO)\b", t.upper())
+    if not hits:
+        return ""
+    if "YES" in hits and "NO" in hits:
+        return ""
+    last_word = t.split()[-1].strip(".,;:!?").upper()
+    return hits[-1] if last_word == hits[-1] else ""
 
 def ask(endpoint, model, case, temperature, seed, retries):
     payload = json.dumps({
