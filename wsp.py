@@ -375,6 +375,12 @@ def cmd_edit(a):
                 u = u[:, 0].astype(np.float64)
                 u = u / (np.linalg.norm(u) + 1e-30)
                 _p(f"  {nm}: sv1={sv[0]:.4g} niveles={sv[:4]}")
+            elif isinstance(op.get("u_from"), str) and op["u_from"].startswith("npz:"):
+                spec_u = op["u_from"][4:]
+                zpath, key = spec_u.split("#", 1)
+                u = np.load(zpath, allow_pickle=True)[key].astype(np.float64)
+                u = u / (np.linalg.norm(u) + 1e-30)
+                _p(f"  {nm}: u desde npz {zpath}#{key} len={u.size} norm={np.linalg.norm(u):.6f}")
             elif op.get("u") is not None:
                 u = np.asarray(op["u"], dtype=np.float64)
             axis = op.get("axis", "rows")
