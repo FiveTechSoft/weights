@@ -8,6 +8,7 @@ Weight-Space Programming (método del paper MIT CSAIL *Sparks of WSP* — rikiya
 |---|---|
 | `wsp.py` | Toolkit WSP: leer pesos GGUF (info/stats/delta/markers), editar (subtract-direction rank-1 con máscara top-k, scale, blend), requant Q6_K canónico (port de `quantize_row_q6_K_ref`, 87% byte-identidad, err 6e-6), diff, serve llama.cpp, eval A/B agentic, journal+budget |
 | `engine/` | WSP Challenge Engine (wsp40.json: 8 niveles/40 retos + jueces mecánicos sin self-grading + expedientes acumulativos) + servidor MCP FastMCP (`wsp_mcp_server.py`) |
+| `engine/ws_runner.py` | Adaptador del pip `weightspace` (leofmarciano/weightspace, Apache-2.0) para etapa A sobre pesos F32 (npz/safetensors): info / programa de edición / apply-patch / run con replay offline (ScriptedLLM). Requiere `.venv` (`.venv/bin/pip install weightspace safetensors`, sin torch). NO sustituye al pipeline GGUF/llama.cpp de `wsp.py` |
 | `blog_prompts/` | Batería de prompts del blog (P1 lector PASS / P5 escritor) + `eval_math.py` (GSM8K/MATH-500, sampling tipo blog) |
 | `ediciones/` | Programas de edición JSON (e1 descartado documentado) |
 | `retos/` | Catálogo WSP-40 + expedientes por reto |

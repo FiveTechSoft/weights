@@ -7,5 +7,7 @@ hf_cache/
 servidos/
 logs/
 *.log
+# venv local para weightspace (adaptador)
+.venv/
 # manifiestos gigantes de retos (regenerables)
 retos/sellados/*.LOCKED

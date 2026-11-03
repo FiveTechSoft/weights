@@ -47,6 +47,7 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 ### 2.4 Infra y datos
 - datasets: `data\gsm8k_train.jsonl` (7473), `data\math500_test.jsonl` (500). Pendiente HumanEval/MBPP/IFEval.
+- **Adaptador weightspace instalado**: `engine\ws_runner.py` + `.venv` (pip `weightspace`+`safetensors`, sin torch). Harness etapa A sobre F32/npz/safetensors: parches sparse (run/transcript/patch.npz) + replay de transcripciones sin tokens. API observada de leofmarciano/weightspace v0.2.0 (Result sin stop_reason). El pipeline GGUF/requant Q6_K sigue en wsp.py.
 - HF checkpoint MiMo (18GB): descarga en background a `hf_cache\mimo-distill-hf` (necesario para captura de residuos).
 - GPU 12GB: un llama-server Q6 a la vez (memoria 8.7GB + KV).
 - Limpieza C:: liberados +121 GB (4 maestros F32 de sintetizaciones descartadas).
@@ -67,7 +68,7 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 | 2 | **E2**: subtract-direction con `u` residuos reales → eval agentic diag → sellar math500+code+if una vez → keep/discard | #1 |
 | 3 | Fix P5 batería blog (prompt más directo + parser tolerante del bloque edits) | nada |
 | 4 | WSP-40: jueces pendientes (04-07, 09-10, 11-17; 18-22 flujo con tools) + bajar HumanEval/MBPP/IFEval + runners | nada |
-| 5 | Etapa A (Qwen3.5-0.8B): download HF (~1.6GB) + parque de pruebas retos 01-22 en modelo PEQUEÑO (depurar la infra barata) | #4 parcial |
+| 5 | Etapa A (Qwen3.5-0.8B): download HF (~1.6GB) + parque de pruebas retos 01-22 en modelo PEQUEÑO usando `engine\ws_runner.py` (runner ya disponible) | #4 parcial |
 | 6 | Reinicio opencode → verificación definitivo MCP tools (`engine_status`) | reinicio |
 | 7 | Experimento principal del PROTOCOL.md (math) con placebo y triple holdout (solo si la E2/vía CHALLENGE lo ronda) | #2/#4 |
 | 8 | Extractores de "principio" (knowledge transfer) desde expedientes → generación-2 WSP-Researcher | #2/#4 |
