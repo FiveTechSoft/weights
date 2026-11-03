@@ -1,0 +1,32 @@
+[
+ {
+  "input": "1",
+  "gold": "1",
+  "pred": "1",
+  "ok": true
+ },
+ {
+  "input": "0010100",
+  "gold": "0",
+  "pred": "0",
+  "ok": true
+ },
+ {
+  "input": "111111",
+  "gold": "0",
+  "pred": "0",
+  "ok": true
+ },
+ {
+  "input": "10",
+  "gold": "1",
+  "pred": "1",
+  "ok": true
+ },
+ {
+  "input": "001110",
+  "gold": "1",
+  "pred": "1",
+  "ok": true
+ }
+]
