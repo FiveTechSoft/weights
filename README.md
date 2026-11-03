@@ -22,3 +22,12 @@ Weight-Space Programming (método del paper MIT CSAIL *Sparks of WSP* — rikiya
 - Presupuestos journalados: read≤200 / write≤20 / fwd-eval≤6 por sesión.
 - Los holdouts (MATH-500, code, IF) NO alimentan el diseño: sellado 1-ejecución por candidato (`retos/sellados/`).
 - El peso de este repo NO incluye binarios de modelos (GGUF/HF) ni caches: solo código, programas, expedientes y resultados.
+
+## Referencias (paper y URLs que el blog referencia)
+
+- Blog del paper: https://rikiyat.github.io/blog/weight-space-programming/
+- Logs completos de los 8 experimentos (prompts, código de Astra, diffs de pesos, evaluaciones): https://github.com/RikiyaT/lm_understand-logs
+  - código exacto del exp 8 (apply_edit.py + manifest): https://github.com/RikiyaT/lm_understand-logs/tree/main/exp8_math/code
+  - dataset QA del exp 7 (sycophancy): https://github.com/RikiyaT/lm_understand-logs/tree/main/exp7_sycophancy/dataset
+- Modelo editado por Astra (harness núcleo): https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming
+- Demo live (zerogpu): https://huggingface.co/spaces/akhaliq/weight-space-programming-demo
