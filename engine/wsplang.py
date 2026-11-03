@@ -181,32 +181,54 @@ def execute_plan(plan, gguf_path=None):
         try:
             if op in ("semantic_map", "semantic-map"):
                 centroids = wsp.get_semantic_centroids(target_gguf)
+                top_k = None
+                for tok in tokens:
+                    if "=" in tok and tok.split("=", 1)[0] in ("top", "top_k", "k"):
+                        top_k = int(tok.split("=", 1)[1])
+
                 areas_info = {}
                 for k, meta in wsp.SEMANTIC_AREAS.items():
                     areas_info[k] = {
                         "label": meta["label"],
+                        "color": meta["color"],
                         "seeds_count": len(meta["seeds"]),
+                        "seeds": meta["seeds"],
                         "has_centroid": k in centroids
                     }
-                res["result"] = {"total_areas": len(areas_info), "areas": areas_info}
+
+                top_areas = None
+                if top_k:
+                    top_keys = list(areas_info.keys())[:top_k]
+                    top_areas = {k: areas_info[k] for k in top_keys}
+
+                res["result"] = {
+                    "total_areas": len(areas_info),
+                    "all_areas": areas_info,
+                    "top_areas": top_areas,
+                }
 
             elif op in ("peek", "semantic_areas", "semantic-areas"):
                 tensor = tokens[0] if tokens else "blk.19.attn_output.weight"
                 row = None
                 col = None
                 k = 8
+                top_k = 3
                 for tok in tokens[1:]:
                     if "=" in tok:
                         k_name, val = tok.split("=", 1)
                         if k_name in ("row", "r"): row = int(val)
                         elif k_name in ("col", "c"): col = int(val)
                         elif k_name == "k": k = int(val)
+                        elif k_name in ("top", "top_k"): top_k = int(val)
                     elif row is None and (tok.isdigit() or (tok.startswith("-") and tok[1:].isdigit())):
                         row = int(tok)
                     elif col is None and (tok.isdigit() or (tok.startswith("-") and tok[1:].isdigit())):
                         col = int(tok)
 
                 peek_res = wsp.peek(target_gguf, tensor, row=row, col=col, k=k)
+                if "semantic_areas" in peek_res and peek_res["semantic_areas"]:
+                    all_a = peek_res["semantic_areas"].get("all_areas", [])
+                    peek_res["semantic_areas"]["top_areas"] = all_a[:top_k]
                 res["result"] = peek_res
 
             elif op in ("poke", "poke-weight"):
@@ -277,17 +299,43 @@ def main():
             if "semantic_areas" in res and res["semantic_areas"]:
                 sem = res["semantic_areas"]
                 dom = sem.get("dominant", {})
-                print(f"  ÁREA SEMÁNTICA: {dom.get('label')} ({dom.get('area')}) [score={dom.get('score'):+.4f}]")
-                ranked = sem.get("ranked", [])
-                if ranked:
-                    print("  Ranking áreas:")
-                    for rk in ranked:
-                        print(f"    - {rk['label']:<30} score={rk['score']:+.4f}")
+                print(f"  ÁREA SEMÁNTICA DOMINANTE: {dom.get('label')} ({dom.get('area')}) [score={dom.get('score'):+.4f}]")
+                top_list = sem.get("top_areas") or sem.get("ranked", [])
+                if top_list:
+                    print(f"  ÁREAS MÁS IMPORTANTES (TOP {len(top_list)}):")
+                    for rk in top_list:
+                        print(f"    * {rk['label']:<28} ({rk['area']:<15}) score={rk['score']:+.4f}")
+                all_list = sem.get("all_areas", [])
+                if all_list:
+                    print(f"  TODAS LAS ÁREAS SEMÁNTICAS ({len(all_list)}):")
+                    for rk in all_list:
+                        print(f"    - {rk['label']:<28} ({rk['area']:<15}) score={rk['score']:+.4f}")
                 seeds = sem.get("top_seeds", [])
                 if seeds:
-                    print("  Semillas afines:", ", ".join([f"{s['seed']}:{s['score']:+.3f}" for s in seeds[:4]]))
+                    print("  Semillas afines:", ", ".join([f"{s['seed']}:{s['score']:+.3f}" for s in seeds[:5]]))
+            elif "semantic_profile" in res:
+                prof = res["semantic_profile"]
+                print("  PERFIL SEMÁNTICO DEL TENSOR:")
+                top_p = prof.get("top_areas", [])
+                if top_p:
+                    print("  Áreas más importantes:")
+                    for it in top_p:
+                        print(f"    * {it['label']:<28} ({it['area']:<15}) peso={it['fraction']:.1%}")
+                all_p = prof.get("all_areas", [])
+                if all_p:
+                    print("  Todas las áreas:")
+                    for it in all_p:
+                        print(f"    - {it['label']:<28} ({it['area']:<15}) peso={it['fraction']:.1%}")
             elif "total_areas" in res:
-                print(f"  Áreas semánticas cargadas: {res['total_areas']} áreas activas.")
+                all_map = res.get("all_areas", {})
+                print(f"  TODAS LAS ÁREAS SEMÁNTICAS DEL MODELO ({res['total_areas']} áreas activas):")
+                for k, info in all_map.items():
+                    print(f"    - {info['label']:<28} ({k:<15}) [semillas: {info['seeds_count']}]")
+                top_map = res.get("top_areas")
+                if top_map:
+                    print(f"\n  ÁREAS MÁS IMPORTANTES SELECCIONADAS (TOP {len(top_map)}):")
+                    for k, info in top_map.items():
+                        print(f"    * {info['label']:<28} ({k:<15})")
             elif "error" in step:
                 print(f"  Error: {step['error']}")
     else:

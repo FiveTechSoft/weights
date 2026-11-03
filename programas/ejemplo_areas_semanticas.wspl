@@ -1,0 +1,26 @@
+experiment inspeccion_areas_semanticas:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    objective:
+        obtener_todas_las_areas_semanticas_y_filtrar_las_mas_importantes
+
+    semantic_areas:
+        mode = comprehensive
+        target = math_logic
+        secondary = agent_action
+
+    steps:
+        # 1. Obtener TODAS las áreas semánticas del modelo (y opcionalmente destacar las top 3)
+        step semantic_map top=3
+
+        # 2. Obtener TODAS las áreas semánticas para una neurona de atención lógica (capa 19)
+        #    Devuelve las 10 áreas semánticas completas y resalta las más importantes (top=3)
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # 3. Obtener las áreas semánticas de una neurona intermedia FFN (capa 19)
+        step peek blk.19.ffn_down.weight row=100 col=500 top=3
+
+        # 4. Obtener las áreas semánticas de un canal de memoria recurrente SSM (capa 0)
+        step peek blk.0.ssm_out.weight row=100 col=200 top=3

@@ -1,0 +1,77 @@
+{
+ "programa": "inspeccion_areas_semanticas",
+ "archivo": "programas\\ejemplo_areas_semanticas.wspl",
+ "pasos": 7,
+ "steps": [
+  {
+   "sec": "semantic_areas",
+   "expr": "mode = comprehensive"
+  },
+  {
+   "sec": "semantic_areas",
+   "expr": "target = math_logic"
+  },
+  {
+   "sec": "semantic_areas",
+   "expr": "secondary = agent_action"
+  },
+  {
+   "sec": "steps",
+   "expr": "step semantic_map top=3"
+  },
+  {
+   "sec": "steps",
+   "expr": "step peek blk.19.attn_output.weight row=100 col=200 top=3"
+  },
+  {
+   "sec": "steps",
+   "expr": "step peek blk.19.ffn_down.weight row=100 col=500 top=3"
+  },
+  {
+   "sec": "steps",
+   "expr": "step peek blk.0.ssm_out.weight row=100 col=200 top=3"
+  }
+ ],
+ "plan": {
+  "secciones": {
+   "semantic_areas": 3,
+   "steps": 4
+  },
+  "pasos": [
+   {
+    "op": "semantic_map",
+    "args": "top=3"
+   },
+   {
+    "op": "peek",
+    "args": "blk.19.attn_output.weight row=100 col=200 top=3"
+   },
+   {
+    "op": "peek",
+    "args": "blk.19.ffn_down.weight row=100 col=500 top=3"
+   },
+   {
+    "op": "peek",
+    "args": "blk.0.ssm_out.weight row=100 col=200 top=3"
+   }
+  ],
+  "pasos_mapeo": {
+   "semantic_map": "wsp semantic-map <gguf> (10 areas semanticas y centroides diferenciales)",
+   "peek": "wsp peek <tensor> [row=] [col=] [k=] (anatomia del tensor + areas semanticas dominantes y afinidades)"
+  },
+  "ops": [],
+  "mapeo": {
+   "semantic_areas": "wsp peek <tensor> -r <row> -c <col> (devuelve areas semanticas y afinidad lexica)"
+  }
+ },
+ "errores": [],
+ "validado": true,
+ "ts": "2026-11-03T19:55:47",
+ "ejecucion": [
+  {
+   "op": "init",
+   "status": "error",
+   "error": "Modelo GGUF no encontrado en C:\\weights\\smoke_f32.gguf"
+  }
+ ]
+}

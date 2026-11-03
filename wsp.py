@@ -96,8 +96,14 @@ def _make_parser():
 
 
 # ---------------- gguf helpers ----------------
+_READER_CACHE = {}
+
+
 def reader_of(path):
-    return gguf.GGUFReader(str(path))
+    p = str(path)
+    if p not in _READER_CACHE:
+        _READER_CACHE[p] = gguf.GGUFReader(p)
+    return _READER_CACHE[p]
 
 
 def tensor_map(r):
@@ -784,6 +790,8 @@ def attribute_semantic_area(vec, centroids_dict, top_k=3):
     dominant = area_scores[0] if area_scores else None
     return {
         "dominant": {"area": dominant[0], "label": dominant[1], "score": round(dominant[2], 4)} if dominant else None,
+        "all_areas": [{"area": a, "label": l, "score": round(s, 4)} for a, l, s in area_scores],
+        "top_areas": [{"area": a, "label": l, "score": round(s, 4)} for a, l, s in area_scores[:top_k]],
         "ranked": [{"area": a, "label": l, "score": round(s, 4)} for a, l, s in area_scores[:top_k]],
         "top_seeds": [{"seed": s, "score": round(sc, 4)} for s, sc in seed_scores[:5]],
     }
@@ -1013,6 +1021,16 @@ def peek(gguf_path, tensor_name, row=None, col=None, k=8, compute_semantic=True)
                     item["dominant_area"] = sem["dominant"]
             top_cols_meta.append(item)
 
+        # Perfil semántico acumulado del tensor
+        dominant_counts = {}
+        all_doms = [m.get("dominant_area", {}).get("area") for m in (top_rows_meta if n_in == arch_info["embedding_length"] else top_cols_meta) if m.get("dominant_area")]
+        for a in all_doms:
+            dominant_counts[a] = dominant_counts.get(a, 0) + 1
+        total_dom = sum(dominant_counts.values()) or 1
+        profile = {
+            "all_areas": [{"area": a, "label": SEMANTIC_AREAS[a]["label"], "fraction": round(c / total_dom, 3)} for a, c in sorted(dominant_counts.items(), key=lambda kv: -kv[1])],
+            "top_areas": [{"area": a, "label": SEMANTIC_AREAS[a]["label"], "fraction": round(c / total_dom, 3)} for a, c in sorted(dominant_counts.items(), key=lambda kv: -kv[1])[:3]]
+        }
         out.update({
             "nonzero": nnz,
             "row_norms": {"min": float(row_norms.min()), "median": float(np.median(row_norms)),
@@ -1021,6 +1039,7 @@ def peek(gguf_path, tensor_name, row=None, col=None, k=8, compute_semantic=True)
                           "max": float(col_norms.max()), "top": top_c},
             "top_rows": top_rows_meta,
             "top_cols": top_cols_meta,
+            "semantic_profile": profile,
         })
     return out
 
@@ -1100,10 +1119,16 @@ def cmd_peek(a):
         if sem and sem.get("dominant"):
             dom = sem["dominant"]
             _p(f"\n  ÁREA SEMÁNTICA DOMINANTE: {dom['label']} ({dom['area']})  score={dom['score']:+.4f}")
-            _p("  Ranking de áreas semánticas:")
-            for item in sem.get("ranked", []):
-                _p(f"    - {item['label']:<30} score={item['score']:+.4f}")
-            _p("  Semillas léxicas más afines:")
+            top_list = sem.get("top_areas") or sem.get("ranked", [])
+            _p(f"\n  ÁREAS MÁS IMPORTANTES (TOP {len(top_list)}):")
+            for item in top_list:
+                _p(f"    * {item['label']:<30} ({item['area']:<15}) score={item['score']:+.4f}")
+            all_list = sem.get("all_areas", [])
+            if all_list:
+                _p(f"\n  TODAS LAS ÁREAS SEMÁNTICAS ({len(all_list)} áreas):")
+                for item in all_list:
+                    _p(f"    - {item['label']:<30} ({item['area']:<15}) score={item['score']:+.4f}")
+            _p("\n  Semillas léxicas más afines:")
             for s in sem.get("top_seeds", []):
                 _p(f"    - {s['seed']:<15} score={s['score']:+.4f}")
     else:

@@ -189,6 +189,26 @@ output.weight` y `step poke output.weight 5 12 0.5` extraídos y mapeados a
 
 **Estado** — `published`
 
+### P5 — Ejemplo declarativo de áreas semánticas (todas vs más importantes) en WSP-Lang
+
+**QUÉ** — Se amplió el runtime y compilador de WSP-Lang para soportar filtrado y reporte flexible de áreas semánticas:
+- **`attribute_semantic_area`**: devuelve concurrentemente `all_areas` (las 10 áreas con sus puntuaciones de similitud coseno) y `top_areas` (las $k$ más importantes).
+- **`semantic_profile` a nivel de tensor**: en inspecciones globales sin coordenadas, calcula la distribución porcentual de áreas que dominan las neuronas/cabezas principales.
+- **Soporte de argumentos `top=N`**: tanto `step semantic_map top=3` como `step peek <tensor> ... top=3` permiten seleccionar y destacar las áreas semánticas más importantes conservando la lista completa.
+- **Caché en memoria `_READER_CACHE`**: reutilización de la instancia de `GGUFReader` entre pasos sucesivos en `wsp.py`, reduciendo el tiempo de ejecución multi-paso.
+- **Programa de ejemplo**: creado `programas/ejemplo_areas_semanticas.wspl` que mapea el modelo completo y analiza atención lógica (L19), FFN down (L19) y memoria recurrente SSM (L0).
+
+**PARA QUÉ** — Cumplir la petición del usuario de contar con un programa WSP-Lang que obtenga **todas** las áreas semánticas y opcionalmente filtre/resalte **las más importantes**, proporcionando tanto visión panorámica como foco analítico para experimentos de lógica y bucles de herramientas.
+
+**QUÉ SE OBTIENE** — Ejecución exitosa con `python engine/wsplang.py programas/ejemplo_areas_semanticas.wspl --run`:
+1. `semantic_map top=3`: devuelve las 10 áreas activas del modelo y destaca las top 3 prioritarias (`math_logic`, `agent_action`, `code_software`).
+2. `peek blk.19.attn_output.weight top=3`: reporta área dominante (`math_logic`, score `+0.0275`), el top 3 más importante (`math_logic`, `time_sequence`, `social_power`), y las 10 áreas ordenadas con sus semillas afines.
+3. `peek blk.19.ffn_down.weight top=3`: reporta área dominante (`physical_world`, score `+0.0211`), top 3 (`physical_world`, `emotion_pos`, `code_software`), y desglose completo de 10 áreas.
+4. `peek blk.0.ssm_out.weight top=3`: reporta área dominante (`emotion_neg`, score `+0.0190`), top 3 (`emotion_neg`, `emotion_pos`, `math_logic`), y desglose completo de 10 áreas.
+5. Manifiesto estructurado generado en `retos/wsplang/inspeccion_areas_semanticas.manifest.json`.
+
+**Estado** — `published`
+
 ## Reglas
 
 1. Cada cambio = una entrada única con ID estable (`E1`, `E2`, ...).
