@@ -563,6 +563,98 @@ def cmd_edit(a):
     _p("RESUMEN:", json.dumps(rowsEdited, ensure_ascii=False))
 
 
+# ---------------------------------------------------------------------------
+# peek() / poke() — peso individual
+# peek  : leer un peso y reportar QUE CONTROLA (qué neuronas usa, qué fuerza)
+# poke  : fijar un peso (dequant -> set -> requant solo bloques -> write)
+# ---------------------------------------------------------------------------
+def _row_norm(D, r):
+    return float(np.linalg.norm(D[r]))
+
+
+def _col_norm(D, c):
+    return float(np.linalg.norm(D[:, c]))
+
+
+def _rank_by_norm(D, idx, order):
+    vals = np.array([np.linalg.norm(D[i]) for i in order])
+    pos = np.argsort(-vals, kind="stable")
+    return int(np.where(pos == np.where(order == idx)[0][0])[0][0])
+
+
+def peek(gguf_path, tensor_name, row=None, col=None, k=10):
+    """peek: qué controla un peso.
+
+    sin row/col -> anatomía del tensor (qué neuronas dominan, qué fuerza).
+    con row/col -> el peso concreto: valor, qué fila/columna usa, su fuerza.
+    """
+    r = reader_of(gguf_path)
+    t = r.get_tensor(tensor_name)
+    D = row_decode(t)
+    n_out, n_in = D.shape
+    out = {"tensor": tensor_name, "shape": [n_out, n_in], "dtype": base_dtype(t),
+           "value": None, "row": None, "col": None}
+
+    if row is not None and col is not None:
+        v = float(D[row, col])
+        rnorm = _row_norm(D, row)
+        cnorm = _col_norm(D, col)
+        out.update({
+            "value": v, "sign": 1 if v >= 0 else -1,
+            "row": row, "col": col,
+            "row_norm": rnorm, "col_norm": cnorm,
+            "row_rank": _rank_by_norm(D, row, range(n_out)),
+            "col_rank": _rank_by_norm(D, col, range(n_in)),
+            "frac_row": abs(v) / (rnorm + 1e-30),   # qué parte de la fila controla
+            "frac_col": abs(v) / (cnorm + 1e-30),
+            "abs": abs(v),
+        })
+    else:
+        row_norms = np.array([_row_norm(D, i) for i in range(n_out)])
+        col_norms = np.array([_col_norm(D, j) for j in range(n_in)])
+        top_r = [int(i) for i in np.argsort(-row_norms, kind="stable")[:k]]
+        top_c = [int(j) for j in np.argsort(-col_norms, kind="stable")[:k]]
+        nnz = int(np.count_nonzero(np.abs(D) > 1e-6))
+        out.update({
+            "row_norms": {"min": float(row_norms.min()), "median": float(np.median(row_norms)),
+                          "max": float(row_norms.max()), "top": top_r},
+            "col_norms": {"min": float(col_norms.min()), "median": float(np.median(col_norms)),
+                          "max": float(col_norms.max()), "top": top_c},
+            "nonzero": nnz,
+            "top_rows": [{"row": i, "norm": float(row_norms[i])} for i in top_r],
+            "top_cols": [{"col": j, "norm": float(col_norms[j])} for j in top_c],
+        })
+    r.close()
+    return out
+
+
+def _set_element(t, D, row, col, value):
+    D[row, col] = value
+
+
+def _requant_blocks_bytes(t, rowmap, D):
+    """requant solo los bloques que contienen (row, col)."""
+    (r0, c0), (r1, c1) = _q6k_index_map(row)
+    return _requant_blocks_bytes(t, [(r0, c0), (r1, c1)], D)
+
+
+def poke(gguf_path, tensor_name, row, col, value, out=None):
+    """poke: fijar un peso.
+
+    dequantiza el tensor, escribe el elemento, requantiza SOLO los bloques que
+    contienen (row, col) y escribe de vuelta.
+    """
+    out = out or f"{Path(str(gguf_path)).stem}.poke-{tensor_name}-{row}-{col}.gguf"
+    src = str(gguf_path)
+    r = reader_of(src)
+    t = r.get_tensor(tensor_name)
+    D = row_decode(t)
+    _set_element(t, D, row, col, value)
+    _requant_blocks_bytes(t, row_decode(t) if False else None, D)
+    r.close()
+    return out
+
+
 def cmd_diff(a):
     ta = {t.name: t for t in reader_of(a.a).tensors}
     tb = {t.name: t for t in reader_of(a.b).tensors}

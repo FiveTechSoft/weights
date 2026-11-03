@@ -1,0 +1,131 @@
+[
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 15,
+  "calls": [
+   "bash:find /app -maxdepth 2 -type f | head -50",
+   "bash:ls /app/vendor/snakemake/",
+   "bash:cd /app/vendor/snakemake && git log --oneline | head -20 && git status",
+   "bash:cd /app/vendor/snakemake && grep -n \"wildcard\" src/snakemake/rules.py | head -50",
+   "bash:cd /app/vendor/snakemake && wc -l src/snakemake/rules.py src/snakemake/jobs.py && grep -n \"def \\|class \" src/snakemake/rules.py | head -60",
+   "bash:cd /app/vendor/snakemake && grep -n \"def \\|class \" src/snakemake/jobs.py | head -80",
+   "bash:cd /app/vendor/snakemake && ls -la src/snakemake/ && ls -la /app/",
+   "bash:ls /app/vendor/snakemake/src/snakemake/",
+   "bash:cat /app/vendor/snakemake/src/snakemake/rules.py | head -100",
+   "bash:python3 -c \" import sys sys.path.insert(0,'/app/vendor/snakemake/src') import snakemake.rules as r print(r.__file__) print([x for x in dir(r) if not x.startswith('_')]) \"",
+   "bash:find / -name \"workflow_probe.py\" 2>/dev/null; ls -la /app/",
+   "bash:ls -la /app/; echo ---; ls -la /app/vendor/; echo ---; ls -la /app/vendor/snakemake/",
+   "bash:find /app -type f 2>/dev/null | head -100",
+   "bash:ls -la /app/vendor/snakemake/src/",
+   "bash:ls -la /app/vendor/snakemake/src/snakemake/ 2>&1; echo \"===\"; ls -la /app/vendor/snakemake/src/ 2>&1"
+  ],
+  "diversity": 1.0,
+  "loop": false,
+  "why": [],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0036-software-data-engineering",
+  "config": "general"
+ },
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 16,
+  "calls": [
+   "bash:ls /app/vendor/robotics-toolbox-python/",
+   "bash:ls /app/tools/ 2>/dev/null; ls /app/",
+   "bash:ls -la /app/; echo \"---\"; find /app -maxdepth 3 -name \"run_validation.py\" 2>/dev/null",
+   "bash:ls /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:ls -la /app/tools 2>&1; echo \"===\"; ls -la /app/output.json 2>&1",
+   "bash:ls /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/IK.py /app/vendor/robotics-toolbox-python/src/roboticstoolbox/ets/cpp-extensions/ik.cpp 2>&1",
+   "bash:find / -name \"run_validation.py\" -not -path \"*/proc/*\" 2>/dev/null | head -20",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/IK.py /app/vendor/robotics-toolbox-python/src/roboticstoolbox/ets/cpp-extensions/ik.cpp",
+   "bash:ls -la /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/IK.py /app/vendor/robotics-toolbox-python/src/roboticstoolbox/ets/cpp-extensions/ik.cpp 2>&1; echo \"===\"; ls /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/ | head -40",
+   "bash:ls /app/vendor/robotics-toolbox-python/src/roboticstoolbox/robot/",
+   "bash:find /app/vendor/robotics-toolbox-python -maxdepth 4 | head -60",
+   "bash:find /app/vendor/robotics-toolbox-python -maxdepth 4 2>&1 | head -80",
+   "bash:find /app/vendor/robotics-toolbox-python -maxdepth 4 2>&1 | head -80; echo \"EXIT=$?\"",
+   "bash:find /app/vendor/robotics-toolbox-python -maxdepth 4 2>&1 | head -80; echo \"EXIT=$?\"",
+   "bash:find /app/vendor/robotics-toolbox-python -maxdepth 4 2>&1 | head -80; echo \"EXIT=$?\"",
+   "bash:find /app/vendor/robotics-toolbox-python -maxdepth 4 2>&1 | head -80; echo \"EXIT=$?\""
+  ],
+  "diversity": 0.75,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:find /app/vendor/robotics-toolbox-python -max' x4"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0109-science-robotics",
+  "config": "general"
+ },
+ {
+  "turns": 13,
+  "final": false,
+  "n_calls": 14,
+  "calls": [
+   "bash:find /app -type f | head -200",
+   "bash:ls -la /app",
+   "bash:ls -la /app /app/vendor /app/workload /app/output 2>&1",
+   "bash:cat /app/CONTRACT.md 2>&1; echo \"---\"; cat /app/run_scan.py 2>&1",
+   "bash:ls -la /app",
+   "bash:ls -la /app/",
+   "bash:echo hello",
+   "bash:pwd",
+   "bash:pwd",
+   "bash:pwd",
+   "bash:pwd",
+   "bash:pwd",
+   "bash:pwd",
+   "bash:pwd"
+  ],
+  "diversity": 0.5,
+  "loop": true,
+  "why": [
+   "3-seguidas-iguales",
+   "'bash:pwd' x7"
+  ],
+  "finishes": [
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "id": "general-0-candidate-0260-security-appsec",
+  "config": "general"
+ }
+]
