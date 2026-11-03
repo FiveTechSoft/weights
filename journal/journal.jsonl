@@ -21,3 +21,4 @@
 {"ts": "2026-11-03T21:21:16", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\served\\\\mimo-evil.gguf\", \"ops_count\": 2}"}
 {"ts": "2026-11-03T21:21:17", "kind": "write", "detail": "edit"}
 {"ts": "2026-11-03T21:22:20", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-04T00:27:39", "kind": "read", "detail": "tensors"}
