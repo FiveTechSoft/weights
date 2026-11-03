@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WSP-Lang 0.1 Specification — Weight-Space Programming</title>
+  <meta name="description" content="Formal specification, grammar, instruction set, and MCP runtime for WSP-Lang: direct neural weight programming with zero forward passes.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>">
+  <style>
+    :root {
+      --bg: #090D16;
+      --card-bg: #0F172A;
+      --card-border: #1E293B;
+      --accent-cyan: #38BDF8;
+      --accent-purple: #A855F7;
+      --accent-emerald: #10B981;
+      --accent-rose: #F43F5E;
+      --accent-amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --code-bg: #0B1120;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+    }
+    a { color: var(--accent-cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-brand { font-weight: 800; font-size: 1.25rem; color: var(--text-main); }
+    .nav-links { display: flex; gap: 1.5rem; font-size: 0.95rem; }
+    .nav-links a { color: var(--text-muted); }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent-cyan); text-decoration: none; }
+    header {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 75%);
+      padding: 4rem 1.5rem 3rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid var(--accent-purple);
+      color: #D8B4FE;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #FFFFFF 0%, #E9D5FF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto 2rem auto;
+    }
+    main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem; }
+    section { margin-bottom: 3.5rem; }
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: var(--accent-cyan);
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.5rem;
+    }
+    h3 { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.75rem 0; color: #E2E8F0; }
+    p, ul { margin-bottom: 1.25rem; color: #CBD5E1; }
+    ul { padding-left: 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: #E2E8F0;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: rgba(255,255,255,0.08);
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-size: 0.85em;
+      color: var(--accent-cyan);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+    th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--card-border); }
+    th { background: #131D31; color: var(--accent-cyan); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    .callout {
+      border-left: 4px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1.5rem;
+    }
+    .callout-warning {
+      border-left-color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.08);
+    }
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand">🧠 FiveTechSoft / weights</div>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="wsplang.html" class="active">WSP-Lang Spec</a>
+      <a href="behavioral_steering_and_dreaming.html">Behavioral Steering</a>
+      <a href="https://github.com/FiveTechSoft/weights" target="_blank">GitHub</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="badge-pill">SPECIFICATION VERSION 0.1.0</div>
+    <h1>WSP-Lang Specification</h1>
+    <p class="subtitle">A declarative domain-specific language for weight-space programming, surgical neural decompilation, and behavioral steering on quantized large language models.</p>
+  </header>
+
+  <main>
+
+    <section id="philosophy">
+      <h2>1. Philosophy & Core Axioms</h2>
+      <p>Traditional deep learning treats neural network weights as an opaque artifact produced exclusively by stochastic gradient descent. In contrast, <strong>Weight-Space Programming (WSP)</strong> posits that a trained model's weight matrices encode an interpretable, decomposable computer program.</p>
+      <div class="callout">
+        <strong>The WSP-Lang Hypothesis:</strong> Any behavior, capability, or reasoning pathology in an autoregressive model corresponds to identifiable linear sub-spaces in its projection tensors (FFN down-projections and attention output matrices). By addressing weights directly with declarative primitives, we can inspect, steer, or synthesize capabilities with <em>zero forward passes</em>.
+      </div>
+      <p>WSP-Lang enforces three foundational design principles:</p>
+      <ul>
+        <li><strong>Falsifiable Experiments:</strong> Every program declares its target model, objective, safety budget, and holdout threshold.</li>
+        <li><strong>Physical Guardrails:</strong> The runtime blocks mutations to critical grounding layers (embeddings, unembedding, RMSNorm scales).</li>
+        <li><strong>Strict Validation Gate:</strong> If an AST violates syntax or security constraints, execution is halted immediately before any weights or disk blocks are touched.</li>
+      </ul>
+    </section>
+
+    <section id="grammar">
+      <h2>2. Formal EBNF Grammar</h2>
+      <p>WSP-Lang uses a clean, Pythonic indentation syntax:</p>
+      <pre><code>Program          ::= ExperimentHeader Block*
+ExperimentHeader ::= "experiment" Identifier ":"
+Block            ::= MetadataBlock | BudgetBlock | SemanticBlock | StepsBlock | HoldoutBlock
+
+MetadataBlock    ::= "model:" String
+                   | "objective:" String
+                   | "hypothesis:" String
+
+BudgetBlock      ::= "budgets:" Newline (Indent Key "=" Value)+
+
+SemanticBlock    ::= "semantic_areas:" Newline (Indent Key "=" Value)+
+
+StepsBlock       ::= "steps:" Newline (Indent StepStatement)+
+StepStatement    ::= "step" Operation Arguments*
+
+HoldoutBlock     ::= "holdout:" Newline (Indent Key "=" Value)+</code></pre>
+    </section>
+
+    <section id="primitives">
+      <h2>3. Instruction Set Architecture (Primitives)</h2>
+      <p>WSP-Lang 0.1 implements five atomic operations:</p>
+
+      <div class="card">
+        <h3><code>step semantic_map [tensor=...] [top=k]</code></h3>
+        <p>Calculates the functional projection of a tensor against the 10 differential semantic centroids or lists the model-wide taxonomy.</p>
+        <pre><code># Rank Layer 14 FFN down-projection against semantic areas
+step semantic_map tensor=blk.14.ffn_down.weight top=3</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>step peek &lt;tensor&gt; [row=r] [col=c] [top=k]</code></h3>
+        <p>Decompiles a single weight, row, or column into its anatomical role and semantic affinities without modifying weights.</p>
+        <pre><code># Inspect Attention Layer 19 (Row 100, Col 200) -> Head #0
+step peek blk.19.attn_output.weight row=100 col=200 top=3</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>step poke &lt;tensor&gt; &lt;row&gt; &lt;col&gt; &lt;value&gt; [out=...]</code></h3>
+        <p>Surgically modifies a single scalar weight in-place. Automatically re-quantizes only its 256-element Q6_K super-block using canonical <code>quantize_row_q6_k_ref</code> (reconstruction error &lt; 6.2e-6).</p>
+        <pre><code># Perturb individual weight cleanly
+step poke blk.14.ffn_down.weight 100 4258 0.150</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>step scale &lt;tensor&gt; col=&lt;neuron_idx&gt; factor=&lt;alpha&gt;</code></h3>
+        <p>Scales an entire column vector uniformly to amplify or suppress specific behavioral features (Behavioral Steering).</p>
+        <pre><code># Scale hostility neuron 4258 in Layer 14 by 2.5x
+step scale blk.14.ffn_down.weight col=4258 factor=2.5</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>step steer &lt;tensor&gt; vector=&lt;u.npz&gt; dose=&lt;alpha&gt;</code></h3>
+        <p>Applies Covariance-Aligned Steering (Dreaming Technique 16) by adding or subtracting an empirical residual direction vector.</p>
+        <pre><code># Subtract repetitive loop direction vector from Layer 17
+step steer blk.17.ffn_down.weight vector=data/e6_u_resid.npz dose=-0.85</code></pre>
+      </div>
+    </section>
+
+    <section id="safety">
+      <h2>4. Security Policy & Guardrails</h2>
+      <div class="callout callout-warning">
+        <strong>Hardened Defense-in-Depth:</strong> WSP-Lang prevents unauthorized model corruption through physical process-level barriers.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Policy Rule</th>
+            <th>Enforcement Point</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>token_embd.weight</code></td>
+            <td><strong>FORBIDDEN</strong> (Embedding matrix protection)</td>
+            <td>Kernel level in <code>wsp.py</code> and MCP server</td>
+          </tr>
+          <tr>
+            <td><code>output.weight</code></td>
+            <td><strong>FORBIDDEN</strong> (LM Unembedding head protection)</td>
+            <td>Blocked before disk write</td>
+          </tr>
+          <tr>
+            <td><code>*.norm.weight</code></td>
+            <td><strong>FORBIDDEN</strong> (RMSNorm scale protection)</td>
+            <td>Pre-execution AST filter</td>
+          </tr>
+          <tr>
+            <td>Syntax / Type Errors</td>
+            <td><strong>Strict Validation Gate</strong> (Instant execution abort)</td>
+            <td><code>validate(prog)</code> halts plan</td>
+          </tr>
+          <tr>
+            <td>Budget Limits</td>
+            <td>Max norm delta &le; 0.05, Max modified &le; 16384</td>
+            <td>Checked prior to quantization write</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="mcp">
+      <h2>5. FastMCP Integration (AI Agents)</h2>
+      <p>WSP-Lang is natively exposed over standard I/O via FastMCP (<code>engine/wsp_mcp_server.py</code>). Autonomous agents can send code blocks in memory and receive structured JSON responses:</p>
+      <pre><code>// Example: Calling execute_wsplang_code from an AI Agent
+{
+  "name": "execute_wsplang_code",
+  "arguments": {
+    "code": "experiment inspect_logic:\n    model: MiMo-2.6\n    steps:\n        step peek blk.19.attn_output.weight row=100 col=200 top=3"
+  }
+}</code></pre>
+    </section>
+
+    <section id="examples">
+      <h2>6. Concrete Code Walkthrough</h2>
+      <p>Below is a production WSP-Lang program (<code>programs/example_semantic_areas.wspl</code>) mapping semantic areas and decompiling attention, FFN, and SSM recurrent layers:</p>
+      <pre><code>experiment inspect_semantic_areas:
+    model: MiMo-V2.6-Distill-Qwen-9B
+    objective: map_semantic_geometry
+
+    semantic_areas:
+        mode = comprehensive
+        target = math_logic
+
+    steps:
+        # 1. Map top semantic areas
+        step semantic_map top=3
+
+        # 2. Inspect Attention Layer 19 (Row 100, Col 200)
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
+
+        # 3. Inspect FFN Layer 19 (Row 100, Col 500)
+        step peek blk.19.ffn_down.weight row=100 col=500 top=3
+
+        # 4. Inspect Recurrent SSM Layer 0
+        step peek blk.0.ssm_out.weight row=100 col=200 top=3</code></pre>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>FiveTechSoft / weights &bull; Weight-Space Programming for Quantized Large Language Models &bull; MIT License</p>
+  </footer>
+
+</body>
+</html>
