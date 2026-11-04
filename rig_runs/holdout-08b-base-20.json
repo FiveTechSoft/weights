@@ -1,0 +1,200 @@
+{
+ "meta": {
+  "model": "08b",
+  "endpoint": "http://127.0.0.1:8083/v1/chat/completions",
+  "seed": 1337,
+  "n": 20,
+  "indices": [
+   22,
+   28,
+   51,
+   87,
+   95,
+   97,
+   104,
+   151,
+   210,
+   222,
+   252,
+   277,
+   297,
+   300,
+   317,
+   326,
+   328,
+   403,
+   430,
+   449
+  ],
+  "temperature": 0.3,
+  "max_tokens": 2048,
+  "tag": "holdout-08b-base",
+  "ts": "2026-11-04T16:24:56",
+  "counts": {
+   "ok": 1,
+   "total": 20
+  }
+ },
+ "items": [
+  {
+   "i": 22,
+   "gold": "5",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 28,
+   "gold": "-2 + 7i",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 51,
+   "gold": "x^5 - x^4 + x^3 - x^2 + x - 1",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 87,
+   "gold": "1",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 95,
+   "gold": "-4",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 97,
+   "gold": "\\text{east}",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 104,
+   "gold": "40",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 151,
+   "gold": "144",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 210,
+   "gold": "10",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 222,
+   "gold": "54",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 252,
+   "gold": "81",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 277,
+   "gold": "\\sqrt{53}",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 297,
+   "gold": "103",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 300,
+   "gold": "12",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 317,
+   "gold": "0",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 326,
+   "gold": "\\frac{9}{100}",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 328,
+   "gold": "3",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 403,
+   "gold": "3",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 430,
+   "gold": "4.5",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 449,
+   "gold": "47",
+   "pred": "47",
+   "ok": true,
+   "finish": "stop",
+   "tail": "términos positivos: $45 + 2 = 47$\n4.  Restamos el término negativo: $47 - 5 = 42$\n5.  Finalmente, sumamos el término positivo: $42 + 5 = 47$\n\nAlternativamente, podemos ordenar las operaciones para simplificar:\n$$45 + 2 - 5 + 5$$\n$$47 - 5 + 5$$\n$$42 + 5$$\n$$47$$\n\nLa respuesta final es 47.\n\n\\boxed{47}"
+  }
+ ]
+}

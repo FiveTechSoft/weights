@@ -504,3 +504,20 @@ experiment fix_mimo_tool_loops:
         step semantic_map top=3
 ```
 Execution via WSP-Lang runtime modifies exactly **2.5253% of Layer 14 weights (1,271,011 parameters)** along the negative loop manifold, damping the recursive repetitive tool-calling attractor.
+
+## Replica exp8 (Control positivo) sobre Qwen3.5-0.8B GGUF Q6_K — 2026-11-04 (sesión windows, opencode)
+
+Reproducción completa del edit final del exp8 del blog (runs/p50c): `down_proj` de capas 15 y 19, 64 newsletters-columnas/neuronas con vectores únicos (131,072 técnicas), recuperados desde `edit.npz` del repo de logs sin torch (`data/exp8_edit_recovered.npz`); Δrel por tensor 0.106/0.0809 — **coincide con el manifiesto del paper** (0.1064/0.0811). Op nueva `add-cols-vectors` en wsp.py (requant por bloques tocados: 79-86%).
+
+Eval `rig/math500.py` (MATH-500, `--n 20`, temp 0.3, ctx 8192, max-tokens 2048, 4 slots CPU 0.8B ~2-3 tok/s, juez boxed):
+
+| Modelo | dev seed42 n20 | holdout seed1337 n20 |
+|---|---|---|
+| base | **0/20** (20/20 finish=length) | **1/20 (5%)** |
+| edit exp8-replica (`servidos\qwen35-08b__exp8-replica.gguf`) | **10/20 (50%)** (11 stop) | **14/20 (70%)** |
+| placebo norm-matched (`exp8-placebo.gguf`, mismas normas por columna, dirección aleatoria) | **0/20** (20/20 length) | — |
+
+- Source del edit benigno + juez PASS: `ediciones\exp8-replica.json` + `ediciones\exp8-placebo.json` con manifiestos en `servidos\`.
+- La patología (bucle `think` infinito del 0.8B, seat-shaped, fin=length 100%) se reproduce localmente; el edit la rescata (holdout +65 pts paired), el placeholder no mueve nada → señal causal, no ruido de requant.
+- Coincide con el paper (holdout practice: 10.6%→60.4%) aún sobre Q6_K (el paper evaluó bf16): la edición sobrevive la requantización del bloque.
+- Pendiente: no-regresión (finish en resume across antes/normal), run más grande (n=50 sellado) y registro en retos/journal gen-2 machine.
