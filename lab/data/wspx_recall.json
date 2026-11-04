@@ -1,0 +1,1615 @@
+{
+ "name": "RECALL",
+ "version": "1",
+ "n_universe": 200,
+ "n_train": 144,
+ "n_holdout": 56,
+ "train": [
+  {
+   "prompt": "KB: CD =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: BR =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: VC =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: SJ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: GL =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: DQ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: RC =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: MJ =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: TF =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: KQ =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: ZM =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: GK =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: NE =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: LA =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: CU =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: FH =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: PR =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: MN =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: WN =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: QM =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: AA =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: EE =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: RK =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: ZZ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: SM =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: GV =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: NC =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: DE =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: GC =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: HC =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: NF =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: JL =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: YO =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: LG =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: WT =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: VQ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: UW =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: FP =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: CA =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: JH =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: VP =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: ZO =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: XY =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: JK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: YT =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: HL =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: AH =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: EW =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: LZ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: WJ =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: VY =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: KJ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: UO =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: IA =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: EK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: TK =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: FX =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: BX =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: UV =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: HX =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: IJ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: DR =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: UI =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: AU =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: JZ =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: JA =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: UN =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: EC =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: QB =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: HV =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: ZG =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: UU =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: WP =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: YZ =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: MG =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: AI =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: QN =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: CZ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: YD =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: KS =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: IC =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: DD =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: WM =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: BH =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: LE =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: SS =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: ME =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: OX =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: JG =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: GY =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: MI =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WX =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: FU =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: NK =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: LI =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: KU =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: JC =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: OU =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: KR =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: BE =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: BW =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: DL =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WE =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: PF =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: DP =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: QQ =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: AE =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: OK =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: JI =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: HR =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: CT =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: JS =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: SI =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: KL =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: SA =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: RI =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: HY =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: XI =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: AD =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: PI =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: NZ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: CE =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: ZN =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: JR =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: HS =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: OY =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: DG =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: FO =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: IF =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: FZ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: WK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: RT =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: TO =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: OQ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: TM =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: ZY =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: IR =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: GP =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: GZ =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: NI =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: XO =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: BD =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: FQ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: PK =",
+   "target": "a"
+  }
+ ],
+ "holdout": [
+  {
+   "prompt": "KB: BJ =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: NS =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WU =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: ET =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: VZ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: HF =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: EL =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: NG =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: CF =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: AK =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: EY =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: KT =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: TH =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: AC =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: JD =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: XU =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: EM =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: ZR =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: FK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: EI =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: JE =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: MA =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: CV =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: KP =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: BZ =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: SD =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: LP =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: IE =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: YW =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: DA =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: UZ =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: LK =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: ZW =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: VX =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: DI =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: MK =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: LH =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: LJ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: WA =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WI =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: FV =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: YA =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: RB =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: JJ =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: RE =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: BS =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: ID =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: VS =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: ON =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: BF =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: CS =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: DK =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: LL =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: SR =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: GM =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: IP =",
+   "target": "j"
+  }
+ ],
+ "universe": [
+  {
+   "prompt": "KB: BJ =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: CD =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: BR =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: VC =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: SJ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: GL =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: DQ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: RC =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: MJ =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: NS =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WU =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: TF =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: KQ =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: ZM =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: GK =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: NE =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: LA =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: ET =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: CU =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: FH =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: VZ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: HF =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: PR =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: MN =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: EL =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: WN =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: QM =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: NG =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: AA =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: EE =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: RK =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: ZZ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: SM =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: GV =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: NC =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: CF =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: DE =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: GC =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: HC =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: NF =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: AK =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: EY =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: JL =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: KT =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: YO =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: LG =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: TH =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WT =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: VQ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: UW =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: FP =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: CA =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: JH =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: AC =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: JD =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: VP =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: ZO =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: XY =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: JK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: YT =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: HL =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: AH =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: XU =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: EW =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: LZ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: WJ =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: VY =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: KJ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: EM =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: UO =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: IA =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: EK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: TK =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: FX =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: BX =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: ZR =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: FK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: EI =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: JE =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: UV =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: HX =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: IJ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: DR =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: UI =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: MA =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: AU =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: JZ =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: CV =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: KP =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: JA =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: UN =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: EC =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: QB =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: HV =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: BZ =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: ZG =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: UU =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: WP =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: YZ =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: MG =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: AI =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: SD =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: LP =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: QN =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: IE =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: CZ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: YW =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: YD =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: DA =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: KS =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: UZ =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: LK =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: IC =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: DD =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: ZW =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: VX =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WM =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: DI =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: MK =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: LH =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: BH =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: LE =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: LJ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: SS =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: ME =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: WA =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: OX =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: JG =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: GY =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WI =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: MI =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: WX =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: FV =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: FU =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: NK =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: LI =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: KU =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: JC =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: OU =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: KR =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: BE =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: BW =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: DL =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: YA =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: WE =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: PF =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: DP =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: QQ =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: AE =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: RB =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: OK =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: JJ =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: JI =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: RE =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: HR =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: CT =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: BS =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: JS =",
+   "target": "c"
+  },
+  {
+   "prompt": "KB: SI =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: KL =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: SA =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: RI =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: HY =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: XI =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: AD =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: PI =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: NZ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: CE =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: ZN =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: JR =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: HS =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: OY =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: ID =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: DG =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: FO =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: VS =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: ON =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: IF =",
+   "target": "a"
+  },
+  {
+   "prompt": "KB: FZ =",
+   "target": "f"
+  },
+  {
+   "prompt": "KB: WK =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: BF =",
+   "target": "g"
+  },
+  {
+   "prompt": "KB: CS =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: RT =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: DK =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: TO =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: OQ =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: TM =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: ZY =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: IR =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: GP =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: LL =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: GZ =",
+   "target": "b"
+  },
+  {
+   "prompt": "KB: NI =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: XO =",
+   "target": "e"
+  },
+  {
+   "prompt": "KB: BD =",
+   "target": "d"
+  },
+  {
+   "prompt": "KB: SR =",
+   "target": "h"
+  },
+  {
+   "prompt": "KB: GM =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: FQ =",
+   "target": "i"
+  },
+  {
+   "prompt": "KB: IP =",
+   "target": "j"
+  },
+  {
+   "prompt": "KB: PK =",
+   "target": "a"
+  }
+ ],
+ "oracle_note": "closed-form",
+ "sha256": "6085b9dc526bead96165d1039fe8e61a90347f4e41f45879ab4ce6b571c3b0a5"
+}

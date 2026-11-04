@@ -1,0 +1,4015 @@
+{
+ "name": "NOECHO",
+ "version": "1",
+ "n_universe": 500,
+ "n_train": 336,
+ "n_holdout": 164,
+ "train": [
+  {
+   "prompt": "NE: k6s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: g68sx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nsnlj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1msoy =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7iy3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qwlvs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x29 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ybt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b0tq7t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tx4m =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vfomah =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rzygt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 36mnx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 23f76i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: unjes =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qxjk7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dbio4s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: iac =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aup04 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xxkyb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rsh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bi2k =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9s4y =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7srh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xnd6wx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0o6jdp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lo8udn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1bedii =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2d8xe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: by8vj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1dw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1x0gj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tlb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vbv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nw6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e4bb1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: g7fh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: avpj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oy7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vq0ax9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 64ctyd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c4t5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8gm6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pbp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2izue =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: opzzcx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vczc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fbr7r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 82v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fm8ya =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8k2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dy0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: w9o9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: llqnif =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xi05 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ftq96n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: icddh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: invko =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sh3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 20h406 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wg0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zaxtcz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e6ge5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8ubmx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8kw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cxok =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mm0u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5kew0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bmqs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zu7d =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9vlvwk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kks =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xozx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fap =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q61mu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8ofzj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5hrls =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nyt0el =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xgt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 46hru =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sjk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ja7obt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q9k2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yfcs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mcabsv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1vvn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qlmy3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7lqq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nq8u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f6qd5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b3e94u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hgcvq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nq6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ojsy6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jyd4w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yx9kpe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vmx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wwb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jwzow =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cfz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gxs79c =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6v1px =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ox35b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: edol =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d1i6u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pm5fh1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bjnom =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: onug =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ps3o =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6e77 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dhmk2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7k0g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sal =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 89quhq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d547 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: coy1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: blgyrg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6pf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1ce =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8n35g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wzhc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b0ol =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nw9u4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8eov =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y0cvl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2g6v41 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ho79d4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tj9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hfiwxp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wt6cw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q9go =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wapeq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ona7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jyf2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jbu5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: glrih =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: idjz6v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cnlg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: k3i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xquqs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qo9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: n9iw5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: my4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a5d3v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ji2z =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bcuct =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fouyx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ab5tv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cd1c3b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7ad4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sd3pak =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lltr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 71j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: r1ze =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dx5q3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sju1o2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ycqcm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b5yg8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e11 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8d5apk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y56 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: l9pujd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6mv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: freo =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yj4yfo =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pitvx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: isu188 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7fuuu2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oaotd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: peims =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vwhob =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c2n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ao6j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 268pz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oyk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6riw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5liraz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7ym3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wz5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dvx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6rh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f1k4s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uh0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mdoi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hg4fl1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lgnbl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gu68i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e5fqg2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: woghk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zp3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: iggx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: engfd7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1tzt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lvimdd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5nzg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: i9i76q =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: le2xz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rk62r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m7108g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pxq92t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f4sn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: j86vi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9h67e4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lzxl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kcu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0by =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1pmuh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rzoe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: r8x75 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kzuht6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4132l =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nxz61 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d04jsd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ro6g5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tgi6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lz7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: l81 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: shyl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: h3n4pa =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: h9rch =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nizb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: egg6ba =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vo5x4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uplrq3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gsj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dg9r6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rehdmn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 31t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 38b84i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 66p =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xaxq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vd1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sjb0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9ze =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 13v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6jxf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zthm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: eyf7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qqhbm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: baxbxu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: t87h73 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aif =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: v5g503 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sja =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xnezn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bmhddf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: j4kpg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vwgto5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: puw3oq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rtctk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f9pjqb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: brl5q =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: j2si8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: w1ale8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x3moe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: szvqq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6aq2f =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jusaj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rpzqnd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: r8dotk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bcza =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d61 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 63r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0w0ri =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: w4i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3osjc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lhudq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: phgqee =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5ci =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: krxti5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d0nq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yj8yx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: el0n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: avghb9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4m0w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gadp4l =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8hkzp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 16j80 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aewp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e6t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xcak =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kjyiiw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dg7qs8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0t5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f5ea8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rldb7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: z962 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qyy =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: o27 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6ijs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 42vdvr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1akmr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lli1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rw8c =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5u5iv1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bqw7n1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ro7pf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m65 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gzud =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a13gbc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8wswzs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: z5mak1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 72ni =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4vw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d92 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 266 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ybg63e =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3j0lo =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ay6a =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: viws2w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4p5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xsjp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gbk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y3ji8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tlpjvt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jkqp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fljm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tbgm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: skr8o =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kx6f5g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rz6hys =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3t42ex =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1mwc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lm7i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m7fq0g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ti4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a4vmj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 69mjr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a67s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qaoepq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m8900j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mcx2g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b6a6m8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ilk9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8c2v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ito =",
+   "target": "x"
+  }
+ ],
+ "holdout": [
+  {
+   "prompt": "NE: yrr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hqp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 86gt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nah =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: an0g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mgux =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 30w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jzksr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6zt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8snum =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: esgq9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4tqoa6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ahsh6j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 82n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: u6iy =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9fg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0h34 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ylqw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3c6j9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cwob =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: feq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 895he =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6pt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: duz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: udaif =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 91r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 62i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kfh3f =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 764kb9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uzbm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ddw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dolnu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hgi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2bxiyr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pojo0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ach4mk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3nh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x49cb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cdjztg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oaz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: i1glae =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tbg3r7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: iwcks =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qvd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nkmoa =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5697 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ob6wn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cont =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: p35q3t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x3u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rm1k0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 28424q =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zxajm9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oscg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lhu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qtvej =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mnng =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: o8sgl6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ku7s46 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5sa0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4fa06b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yhc2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0wxvf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vtc7hd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rec8jw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 52vwk5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ps39 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b3769 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2sz3cp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ompj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e12py =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 13nbnd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: k5zr45 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: se0aw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c9b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qlml =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: av63 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2kghk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ker =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ipnyqu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jutb1z =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 151hvi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aqmslm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pdpkrf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ci8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jbt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5x36w0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: n6r8mg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8cbr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qjpwfb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: i877 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q7le =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vb31d =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ujat =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6cuku9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ek2vc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ocinx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2xnl9a =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: p97 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 88z =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lyjay8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d85t1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y8hr2b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3prcrw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pp0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nzv8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qqib5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vbz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: eu8jz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mph =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x7vnbp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e1qwc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q95mj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yprk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 58hr22 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sy5c7x =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dg7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qx6qus =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0hsug3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ldzi8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: l4h =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cfqpi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ce9a7a =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tlexb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: adr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8sl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rldkex =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ydhc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rfqd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rd59i2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gsyn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1na9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nr9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pjdwl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: djk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: s5l =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 757p =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c8lbvp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x5t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uej =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f948 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f1ww =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jxrbm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 93qgr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kwu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vybnf3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pvf6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ma4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1qq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2m1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jsth =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fejos =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xfpjf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: imgq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nuat30 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: o9t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ky7fil =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: k1sob0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2hqoma =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: s3mdwu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x9tkul =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4rd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kv5u3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aje =",
+   "target": "x"
+  }
+ ],
+ "universe": [
+  {
+   "prompt": "NE: k6s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yrr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: g68sx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nsnlj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1msoy =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hqp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7iy3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qwlvs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x29 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ybt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b0tq7t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tx4m =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vfomah =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rzygt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 36mnx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 23f76i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 86gt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: unjes =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nah =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qxjk7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: an0g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mgux =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dbio4s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: iac =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 30w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jzksr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aup04 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xxkyb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rsh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bi2k =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9s4y =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7srh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xnd6wx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6zt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0o6jdp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8snum =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: esgq9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lo8udn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4tqoa6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1bedii =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2d8xe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: by8vj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ahsh6j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1dw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 82n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: u6iy =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1x0gj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tlb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vbv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nw6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e4bb1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: g7fh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: avpj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oy7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vq0ax9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 64ctyd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9fg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0h34 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c4t5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8gm6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pbp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ylqw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2izue =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: opzzcx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3c6j9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vczc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cwob =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fbr7r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 82v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: feq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fm8ya =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 895he =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6pt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: duz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: udaif =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 91r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8k2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dy0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 62i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: w9o9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: llqnif =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xi05 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ftq96n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: icddh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kfh3f =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 764kb9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: invko =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sh3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 20h406 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wg0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zaxtcz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e6ge5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8ubmx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uzbm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8kw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ddw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cxok =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mm0u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5kew0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dolnu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hgi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2bxiyr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bmqs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zu7d =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9vlvwk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kks =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xozx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fap =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q61mu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8ofzj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5hrls =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nyt0el =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xgt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 46hru =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sjk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ja7obt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pojo0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q9k2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yfcs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mcabsv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1vvn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qlmy3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ach4mk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7lqq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nq8u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f6qd5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b3e94u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hgcvq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nq6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ojsy6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jyd4w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yx9kpe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vmx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wwb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jwzow =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cfz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gxs79c =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3nh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6v1px =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ox35b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x49cb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: edol =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d1i6u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cdjztg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oaz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pm5fh1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bjnom =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: onug =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ps3o =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6e77 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: i1glae =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tbg3r7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dhmk2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7k0g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sal =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 89quhq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: iwcks =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qvd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d547 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nkmoa =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: coy1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: blgyrg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5697 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6pf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1ce =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ob6wn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cont =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: p35q3t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x3u =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8n35g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rm1k0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 28424q =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wzhc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b0ol =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zxajm9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nw9u4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oscg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8eov =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y0cvl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2g6v41 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ho79d4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lhu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tj9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hfiwxp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wt6cw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qtvej =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q9go =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wapeq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ona7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jyf2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mnng =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jbu5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: glrih =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: o8sgl6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: idjz6v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ku7s46 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cnlg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5sa0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: k3i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4fa06b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xquqs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qo9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: n9iw5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yhc2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: my4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a5d3v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ji2z =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bcuct =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fouyx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ab5tv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cd1c3b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7ad4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sd3pak =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lltr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 71j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: r1ze =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0wxvf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vtc7hd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rec8jw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dx5q3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sju1o2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 52vwk5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ycqcm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b5yg8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e11 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8d5apk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y56 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: l9pujd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ps39 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6mv =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: freo =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yj4yfo =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b3769 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pitvx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: isu188 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2sz3cp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7fuuu2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oaotd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: peims =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vwhob =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c2n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ao6j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 268pz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: oyk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ompj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6riw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5liraz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e12py =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 7ym3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 13nbnd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: wz5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dvx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6rh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f1k4s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uh0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mdoi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: k5zr45 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: hg4fl1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: se0aw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lgnbl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c9b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gu68i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e5fqg2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: woghk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zp3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: iggx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: engfd7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qlml =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: av63 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1tzt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lvimdd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2kghk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ker =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5nzg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: i9i76q =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: le2xz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rk62r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m7108g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ipnyqu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pxq92t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f4sn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: j86vi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9h67e4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lzxl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kcu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0by =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jutb1z =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1pmuh =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rzoe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: r8x75 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kzuht6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4132l =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nxz61 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d04jsd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 151hvi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ro6g5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aqmslm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pdpkrf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tgi6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lz7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: l81 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ci8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jbt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: shyl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5x36w0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: h3n4pa =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: n6r8mg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8cbr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qjpwfb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: h9rch =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nizb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: egg6ba =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vo5x4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uplrq3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: i877 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gsj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dg9r6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q7le =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rehdmn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 31t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 38b84i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 66p =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vb31d =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ujat =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xaxq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vd1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6cuku9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ek2vc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sjb0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ocinx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 9ze =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 13v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6jxf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: zthm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: eyf7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2xnl9a =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qqhbm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: p97 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 88z =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: baxbxu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: t87h73 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lyjay8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d85t1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y8hr2b =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aif =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3prcrw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pp0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: v5g503 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sja =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nzv8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xnezn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qqib5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vbz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bmhddf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: j4kpg =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: eu8jz =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vwgto5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: puw3oq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rtctk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f9pjqb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: brl5q =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: j2si8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mph =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x7vnbp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: w1ale8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x3moe =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: szvqq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e1qwc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: q95mj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6aq2f =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yprk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jusaj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 58hr22 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rpzqnd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: r8dotk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: sy5c7x =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dg7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qx6qus =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bcza =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0hsug3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d61 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 63r =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ldzi8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0w0ri =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: w4i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3osjc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: l4h =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: cfqpi =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lhudq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: phgqee =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5ci =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: krxti5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ce9a7a =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tlexb =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: adr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8sl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rldkex =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d0nq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: yj8yx =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: el0n =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: avghb9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4m0w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ydhc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rfqd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rd59i2 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gsyn =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gadp4l =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8hkzp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 16j80 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aewp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1na9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: e6t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nr9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pjdwl =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xcak =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: djk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kjyiiw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: dg7qs8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 0t5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: s5l =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f5ea8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 757p =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: c8lbvp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x5t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rldb7 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: uej =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: z962 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qyy =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: o27 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 6ijs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f948 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 42vdvr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1akmr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: f1ww =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lli1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rw8c =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 5u5iv1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: bqw7n1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ro7pf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m65 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gzud =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jxrbm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a13gbc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 93qgr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kwu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8wswzs =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: z5mak1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: vybnf3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 72ni =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4vw =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: pvf6 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ma4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: d92 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 266 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1qq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ybg63e =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2m1 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3j0lo =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ay6a =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: viws2w =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4p5 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jsth =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xsjp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: gbk =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: y3ji8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fejos =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tlpjvt =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: xfpjf =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: imgq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: nuat30 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: o9t =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: jkqp =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: fljm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: tbgm =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: skr8o =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kx6f5g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ky7fil =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: k1sob0 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: rz6hys =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 3t42ex =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 1mwc =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 2hqoma =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: lm7i =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: s3mdwu =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: x9tkul =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 4rd =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m7fq0g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ti4 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a4vmj =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 69mjr =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: a67s =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: qaoepq =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: kv5u3 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: aje =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: m8900j =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: mcx2g =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: b6a6m8 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ilk9 =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: 8c2v =",
+   "target": "x"
+  },
+  {
+   "prompt": "NE: ito =",
+   "target": "x"
+  }
+ ],
+ "oracle_note": "closed-form",
+ "sha256": "887bd07f2e2e5b539c806d42d9bf2406d3741b4bb0eec941da90095b42431b59"
+}

@@ -1,0 +1,511 @@
+{
+ "name": "FSM4",
+ "version": "1",
+ "n_universe": 62,
+ "n_train": 44,
+ "n_holdout": 18,
+ "train": [
+  {
+   "prompt": "FSM: a =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aaaa =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: aaaaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aaaab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aaab =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: aaaba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aaabb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aaba =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: aabaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aabb =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: aabbb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: ab =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: abaa =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: abab =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: ababb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: abbaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: abbab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abbba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abbbb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: b =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: ba =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: baa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: baaa =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: baaab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: baab =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: baaba =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: baba =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: babab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: babba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bba =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbaa =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: bbaaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbaab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbab =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: bbaba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbba =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: bbbaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbbab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbbb =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: bbbba =",
+   "target": "1"
+  }
+ ],
+ "holdout": [
+  {
+   "prompt": "FSM: aa =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: aaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aabab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aabba =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abaaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abaab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: ababa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: abba =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: abbb =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: baaaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: baabb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: babaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: babb =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: babbb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bb =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: bbabb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbbbb =",
+   "target": "2"
+  }
+ ],
+ "universe": [
+  {
+   "prompt": "FSM: a =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aa =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: aaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aaaa =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: aaaaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aaaab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aaab =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: aaaba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aaabb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aaba =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: aabaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: aabab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aabb =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: aabba =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: aabbb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: ab =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: aba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abaa =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: abaaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abaab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: abab =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: ababa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: ababb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: abba =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: abbaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: abbab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abbb =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: abbba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: abbbb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: b =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: ba =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: baa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: baaa =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: baaaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: baaab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: baab =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: baaba =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: baabb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: baba =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: babaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: babab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: babb =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: babba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: babbb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bb =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: bba =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbaa =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: bbaaa =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbaab =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbab =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: bbaba =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbabb =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbb =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbba =",
+   "target": "3"
+  },
+  {
+   "prompt": "FSM: bbbaa =",
+   "target": "2"
+  },
+  {
+   "prompt": "FSM: bbbab =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbbb =",
+   "target": "0"
+  },
+  {
+   "prompt": "FSM: bbbba =",
+   "target": "1"
+  },
+  {
+   "prompt": "FSM: bbbbb =",
+   "target": "2"
+  }
+ ],
+ "oracle_note": "closed-form",
+ "sha256": "e7d11e30f5d3985592285c5695e3c01141e0cd40705611fdcbddde40b45441fa"
+}
