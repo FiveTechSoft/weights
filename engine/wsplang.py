@@ -35,7 +35,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -59,9 +59,9 @@ OPS_ALLOWED = {
     # WSP-Lang 0.4 (Matrix Perturbation Theory & Leverage Scores)
     "spectral_audit", "assert_weyl", "assert_davis_kahan",
     # WSP-Lang 0.5 (Micro-LLM Architecture Synthesis & Weight Programming)
-    "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp",
+    "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project", "rosetta_align", "cross_project", "rosetta_align", "cross_project",
     # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
-    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp"
+    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project"
 }
 
 TYPES = {
@@ -74,9 +74,9 @@ TYPES = {
 INT_OPS = {
     "project_out", "project_in", "delta_unlearn", "fwp_overlay", "spectral_decay",
     "activation_projection", "poke-weight", "scale", "ablate", "scale-rows",
-    "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp",
+    "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
     # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
-    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp"
+    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project"
 }
 
 METADATA = {
@@ -418,6 +418,24 @@ def generate_orthogonal_probe(vec: Any, seed: int = 1337) -> Any:
     return (u_ortho / norm_ortho).astype(np.float32)
 
 
+
+
+def compute_procrustes_alignment(E_source: Any, E_target: Any) -> Tuple[Any, float, float]:
+    """Computes semi-orthogonal Procrustes matrix T in R^{d_target x d_source}
+    such that E_target ~ E_source @ T^T
+    """
+    import torch
+    E_s = E_source - E_source.mean(dim=0, keepdim=True)
+    E_t = E_target - E_target.mean(dim=0, keepdim=True)
+    E_s = E_s / torch.norm(E_s, dim=1, keepdim=True)
+    E_t = E_t / torch.norm(E_t, dim=1, keepdim=True)
+    M = torch.matmul(E_t.t(), E_s)
+    U, S, Vh = torch.linalg.svd(M, full_matrices=False)
+    T = torch.matmul(U, Vh)
+    E_proj = torch.matmul(E_s, T.t())
+    cos_sim = torch.cosine_similarity(E_t, E_proj, dim=1)
+    ortho_err = float(torch.norm(torch.matmul(T, T.t()) - torch.eye(E_target.shape[1])).item())
+    return T, float(torch.mean(cos_sim).item()), ortho_err
 
 def compute_leace_projection(u: Any, sigma: Optional[Any] = None) -> Any:
     """LEACE: Closed-form Least-Squares Concept Erasure (Belrose et al., NeurIPS 2023).
@@ -786,8 +804,113 @@ def execute_plan_v4(
                     "action": "synthesize_transient_overlay" if triggered else "maintain_quiescent_memory"
                 }
 
+            # ------------------------------------------------------------------
+            # OP: rosetta_align (WSP-Lang 0.6: Cross-Model Procrustes Alignment)
+            # ------------------------------------------------------------------
+            elif op == "rosetta_align":
+                import torch
+                source_file = named.get("source", positional[0] if positional else None)
+                target_file = named.get("target", positional[1] if len(positional) > 1 else None)
+                out_file = named.get("out", "data/rosetta_matrix.npz")
+                out_p = Path(out_file)
+                if not out_p.is_absolute():
+                    out_p = ROOT / out_p
+
+                src_p = Path(source_file) if source_file else None
+                if src_p and not src_p.is_absolute():
+                    src_p = ROOT / src_p
+                tgt_p = Path(target_file) if target_file else None
+                if tgt_p and not tgt_p.is_absolute():
+                    tgt_p = ROOT / tgt_p
+
+                # Load embeddings (npz or safetensors)
+                if src_p.suffix == ".npz" and tgt_p.suffix == ".npz":
+                    data_src = np.load(src_p)
+                    data_tgt = np.load(tgt_p)
+                    k_s = list(data_src.keys())[0]
+                    k_t = list(data_tgt.keys())[0]
+                    E_s = torch.from_numpy(data_src[k_s]).float()
+                    E_t = torch.from_numpy(data_tgt[k_t]).float()
+                else:
+                    raise ValueError("rosetta_align currently requires anchor embedding .npz files or pre-extracted matrices")
+
+                T, mean_cos, ortho_err = compute_procrustes_alignment(E_s, E_t)
+
+                if allow_write:
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    np.savez_compressed(
+                        out_p,
+                        T=T.numpy(),
+                        mean_cos=mean_cos,
+                        ortho_err=ortho_err,
+                        d_source=E_s.shape[1],
+                        d_target=E_t.shape[1]
+                    )
+
+                res["execution_state"] = "executed" if allow_write else "simulated"
+                res["result"] = {
+                    "source": str(src_p),
+                    "target": str(tgt_p),
+                    "d_source": E_s.shape[1],
+                    "d_target": E_t.shape[1],
+                    "mean_anchor_cosine": round(mean_cos, 4),
+                    "semi_orthogonality_error": round(ortho_err, 6),
+                    "rosetta_matrix_out": str(out_p.relative_to(ROOT)) if (allow_write and out_p.is_relative_to(ROOT)) else str(out_p)
+                }
+
+            # ------------------------------------------------------------------
+            # OP: cross_project (WSP-Lang 0.6: Cross-Model Vector Translation)
+            # ------------------------------------------------------------------
+            elif op == "cross_project":
+                import torch
+                vec_file = named.get("vector", positional[0] if positional else None)
+                rosetta_file = named.get("rosetta", positional[1] if len(positional) > 1 else None)
+                out_file = named.get("out", "data/translated_vector.npz")
+                out_p = Path(out_file)
+                if not out_p.is_absolute():
+                    out_p = ROOT / out_p
+
+                vec_p = Path(vec_file) if vec_file else None
+                if vec_p and not vec_p.is_absolute():
+                    vec_p = ROOT / vec_p
+                ros_p = Path(rosetta_file) if rosetta_file else None
+                if ros_p and not ros_p.is_absolute():
+                    ros_p = ROOT / ros_p
+
+                u_raw = load_vector_numpy(vec_p)
+                u_s = torch.from_numpy(u_raw).float()
+                u_s = u_s / max(float(torch.norm(u_s).item()), 1e-12)
+
+                ros_data = np.load(ros_p)
+                T = torch.from_numpy(ros_data["T"]).float()  # [d_target, d_source]
+
+                u_target = torch.matmul(T, u_s)
+                proj_norm = float(torch.norm(u_target).item())
+                u_target = u_target / max(proj_norm, 1e-12)
+
+                if allow_write:
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    np.savez(out_p, u=u_target.numpy())
+
+                res["execution_state"] = "executed" if allow_write else "simulated"
+                res["result"] = {
+                    "source_vector": str(vec_p),
+                    "source_dim": u_s.shape[0],
+                    "target_dim": u_target.shape[0],
+                    "projected_norm": round(proj_norm, 4),
+                    "translated_vector_out": str(out_p.relative_to(ROOT)) if (allow_write and out_p.is_relative_to(ROOT)) else str(out_p)
+                }
+
             # OP: init_architecture (WSP-Lang 0.5: Synthesize Micro-LLM from Scratch)
             # ------------------------------------------------------------------
+            elif op == "rosetta_align":
+                if status == "ok":
+                    print(f"  Rosetta Procrustes: {res.get('d_source')} dims -> {res.get('d_target')} dims (Alignment: {res.get('mean_anchor_cosine')})")
+                    print(f"  Output Mapping:     {res.get('rosetta_matrix_out')}")
+            elif op == "cross_project":
+                if status == "ok":
+                    print(f"  Cross-Projection:   {res.get('source_dim')} dims -> {res.get('target_dim')} dims (Norm: {res.get('projected_norm')})")
+                    print(f"  Translated Vector:  {res.get('translated_vector_out')}")
             elif op == "init_architecture":
                 arch_name = positional[0] if positional else named.get("model", "NanoWSP")
                 layers = int(named.get("layers", 2))
@@ -1944,6 +2067,14 @@ def main():
                 if status == "ok":
                     print(f"  Titans Surprisal:  Repetition Score = {res.get('repetition_score')}, Triggered = {res.get('memory_update_triggered')}")
                     print(f"  Action:            {res.get('action')}")
+            elif op == "rosetta_align":
+                if status == "ok":
+                    print(f"  Rosetta Procrustes: {res.get('d_source')} dims -> {res.get('d_target')} dims (Alignment: {res.get('mean_anchor_cosine')})")
+                    print(f"  Output Mapping:     {res.get('rosetta_matrix_out')}")
+            elif op == "cross_project":
+                if status == "ok":
+                    print(f"  Cross-Projection:   {res.get('source_dim')} dims -> {res.get('target_dim')} dims (Norm: {res.get('projected_norm')})")
+                    print(f"  Translated Vector:  {res.get('translated_vector_out')}")
             elif op == "init_architecture":
                 if status == "ok":
                     print(f"  Architecture:   {res.get('architecture')} ({res.get('layers')} layers, d={res.get('d_model')}, heads={res.get('heads')})")

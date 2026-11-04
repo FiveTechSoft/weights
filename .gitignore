@@ -24,3 +24,4 @@ data/ffn_down_1719.npz
 data/*.semantic_centroids.npz
 decomp/*.npz
 rig/test_responsive_harness.py
+data/rosetta_*.npz

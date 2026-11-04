@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-11-04 15:26:33",
+  "source_model": "MiMo-V2.6-Distill-Qwen-9B",
+  "target_model": "TinyLlama-1.1B-Chat-v1.0",
+  "source_dim": 4096,
+  "target_dim": 2048,
+  "anchor_words_count": 2000,
+  "mean_anchor_cosine_alignment": 0.8246,
+  "max_anchor_cosine_alignment": 0.8532,
+  "semi_orthogonality_error": 0.00018436,
+  "procrustes_compute_time_ms": 2566.97,
+  "translated_vector": "data\\u_loop_tinyllama_L10.npz",
+  "rosetta_matrix": "data\\rosetta_mimo_to_tinyllama.npz",
+  "leace_downstream_eval": {
+    "tensor": "model.layers.10.mlp.down_proj.weight",
+    "shape": [
+      2048,
+      5632
+    ],
+    "initial_energy": 1.298843,
+    "remaining_energy": 4.427e-07,
+    "erasure_pct": 100.0,
+    "frobenius_distortion": 1.297873,
+    "max_abs_delta": 0.005539
+  }
+}

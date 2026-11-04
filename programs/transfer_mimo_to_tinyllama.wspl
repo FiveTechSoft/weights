@@ -1,0 +1,18 @@
+# ==============================================================================
+# WSP-Lang 0.6: Cross-Model Representation Transfer (MiMo-9B -> TinyLlama-1.1B)
+# Objective: Translate Layer 14 concept vector from MiMo (4096 dims) to TinyLlama (2048 dims)
+# ==============================================================================
+
+experiment transfer_mimo_to_tinyllama:
+    model: TinyLlama-1.1B-Chat-v1.0
+    objective: cross_model_vector_translation_via_orthogonal_procrustes
+
+    budgets:
+        max_modified_weights = 10000
+        target_parameter_fraction = 0.05
+        max_delta_norm = 5.0
+        allow_write = true
+
+    steps:
+        # Step 1: Project concept direction across latent spaces (4096 -> 2048) via Rosetta matrix
+        step cross_project vector=data/u_loop_L14.npz rosetta=data/rosetta_mimo_to_tinyllama.npz out=data/u_loop_tinyllama_L10.npz

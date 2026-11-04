@@ -1,0 +1,74 @@
+{
+  "wsplang_version": "0.6.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "transfer_mimo_to_tinyllama",
+  "archivo": "programs\\transfer_mimo_to_tinyllama.wspl",
+  "steps_count": 5,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 10000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 0.05"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 5.0"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step cross_project vector=data/u_loop_L14.npz rosetta=data/rosetta_mimo_to_tinyllama.npz out=data/u_loop_tinyllama_L10.npz",
+      "op": "cross_project",
+      "args": "vector=data/u_loop_L14.npz rosetta=data/rosetta_mimo_to_tinyllama.npz out=data/u_loop_tinyllama_L10.npz"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.6.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 4,
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "cross_project",
+        "args": "vector=data/u_loop_L14.npz rosetta=data/rosetta_mimo_to_tinyllama.npz out=data/u_loop_tinyllama_L10.npz"
+      }
+    ],
+    "pasos_mapeo": {
+      "cross_project": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": 10000,
+      "target_parameter_fraction": 0.05,
+      "max_delta_norm": 5.0,
+      "allow_write": true,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T15:30:30",
+  "ejecucion": [
+    {
+      "op": "cross_project",
+      "args": "vector=data/u_loop_L14.npz rosetta=data/rosetta_mimo_to_tinyllama.npz out=data/u_loop_tinyllama_L10.npz",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "source_vector": "C:\\weights\\data\\u_loop_L14.npz",
+        "source_dim": 4096,
+        "target_dim": 2048,
+        "projected_norm": 0.6927,
+        "translated_vector_out": "data\\u_loop_tinyllama_L10.npz"
+      }
+    }
+  ]
+}
