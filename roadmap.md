@@ -64,6 +64,27 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 ## 4. Pendiente (priorizado)
 
+### 4.0ter ESTADO CONSOLIDADO 2026-11-04 (sesión windows, opencode) — lo que cambió hoy
+
+**Resultados soportados (commits bf42ecd, 32bc917, 5712402...):**
+1. **exp8-replica (0.8B, Q6_K)**: control positivo replicado: dev 0/20→10/20, paired holdout 5%→70%, placebo norm-matched null. El edit del paper (down_proj δ = 64 vectores-per-neurona únicos, full-rank, 131,072 pesos) sobrevive la requant Q6_K. Op nueva `add-cols-vectors` en wsp.py.
+2. **loop-fix del 9B (A/B con GPU RTX 3060)**: base vanilla 70% loops (14/20) → editado L01/L02 (**u honesto, p≤0.01**) 35% → placebo 65%. Señal causal; `keep` pendiente de holdout fresco + no-regresión.
+3. **Auditoría anti-alucinación**: 5 claims sin soporte corregidos (L14 nulo → señal real L01/L02; u_critic_L16 es embedding-proxy sin activaciones; §15.3 sin run-artifact). WSPLang corregido: feasibility gate (ops no-implementadas RECHAZO antes "skipped" silencioso; backend GGUF guard para escritura; closure de artefactos; STUB_OPS marcados) + suite v8 (7 tests).
+4. **Anatomía destilación v2**: la destilación retoca **GATES** (ssm_beta TODAS las GDN 14-19% + ffn_gate medios 15-17%; normas intactas 0.14%) y el drift es **ortogonal a los ejes semánticos** (share=baseline aleatoria en 12 tensores): la razón de ser no es direccional-estática sino comportamental — la ruta causal A/B es la válida (refuta E1).
+5. **LAB M-0 (Training Trace → Surgery Compiler)**: cirugía ridge closed-form ≈ entrenamiento Adam (82% vs 86% holdout) con 1/8 de la norma de delta; placebo falla. Primer dato: tratamiento de capacidades lineales-changeable y compila sin gradiente.
+
+**Objetivo del periodo (nuevo marco): "Training Trace → Weight Surgery Compiler"** — entrenar el paciente (NanoWSP-3 real re-iniciado, char-level TinyStories ~30-90min CPU), grabar traces (snapshots + exp_avg + loss), y compilar cirugías que reproduzcan el comportamiento sin gradientes (lab M-0→M-3). El pretraining es `pretrain_infra` (fuera de los experimentos, guard v7). Meta falsable de la semana: M-2 (mini-transformer + MEMIT: el hueco honesto entrenamiento-vs-cirugía).
+
+**Pendiente inmediato (reordenado):**
+| # | Tarea | Estado |
+|---|---|---|
+| A | holdout fresco (seed 1337) del loopfix-9B + no-regresión gsm8k-n20 | PENDIENTE (para keep formal) |
+| B | `lab/train_nanowsp.py` (pretrain_infra char-level, trace completo) | EN PREPARACIÓN (hoy) |
+| C | M-1 lab: 2-capas aprendibles + cirugía por influencia top-k, protocolo 3-brazos | HOY |
+| D | WSPLang 0.7: op `compile_from_trace`, incorporar `add-cols-vectors`, provenance obligatorio, spec al 0.6/0.7 | después de C |
+| E | M-2: mini-transformer + SENTIDO MEMIT-imprint → hueco entrenamiento-vs-cirugía | tras B |
+| F | Retos WSP-40 10-17 + P5 fix + ExperimentRecord v1 | congelados hasta D/M-2 salvo demanda |
+
 ### 4.0 Cierre de fase E2–E5 (2026-11-03, sesión linux)
 - **P4 CONFIRMACIÓN ejecutada (commit 5c372a0) y NEGATIVA**: en 20 prompts frescos (10 general + 10 code) E5 da **14/20 loops vs 11/20 del original** (subset code: 8/10 vs 5/10) → E5 DISCARDED por keep-if-better. Detalle en results.md §2quinquies.
 - Consecuencia: **la serie E1–E5 de edición agéntica queda CERRADA sin keep**. Lecciones: (1) targeting por activaciones ayuda en dev pero no generaliza; (2) evaluar frescos ANTES de declarar señal; (3) placebo (E4) queda como estándar obligatorio del PROTOCOL.md.
