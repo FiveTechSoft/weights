@@ -61,7 +61,7 @@ OPS_ALLOWED = {
     # WSP-Lang 0.5 (Micro-LLM Architecture Synthesis & Weight Programming)
     "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project", "rosetta_align", "cross_project", "rosetta_align", "cross_project",
     # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
-    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project"
+    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
     # WSP-Lang 0.7 (Contract-Driven Causal Verification & Multi-Layer Envelopes)
     "layer_envelope", "multi_layer_envelope", "distributed_memit"
 }
@@ -79,7 +79,7 @@ INT_OPS = {
     "activation_projection", "poke-weight", "scale", "ablate", "scale-rows",
     "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
     # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
-    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project"
+    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
     # WSP-Lang 0.7 (Multi-Layer Envelopes)
     "layer_envelope", "multi_layer_envelope", "distributed_memit"
 }

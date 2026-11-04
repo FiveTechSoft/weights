@@ -91,7 +91,7 @@ def main():
             experiment_id=f"E-{alias}-loop",
             model_id="mimo-v2.6-distill-qwen-9b-Q6_K",
             objective="loop_rate",
-            hypothesis=f"{primary}={meta.get('sampling_params',{}).get(primary, base[primary])} "
+            hypothesis=f"{primary}={meta.get('sampling_params',{}).get(primary, base_rate)} "
                        f"reduce the loop rate in the general task (baseline {base_rate:.2f})",
             notas=(f"rig_runs/{fname}; n={len(results)}; loop_rate {rate:.2f} vs baseline {base_rate:.2f} "
                    f"(delta {delta:+.2f}); sampling-only experiment ({primary}), not a "

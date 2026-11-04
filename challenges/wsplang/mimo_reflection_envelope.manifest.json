@@ -1,0 +1,96 @@
+{
+  "wsplang_version": "0.6.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "mimo_reflection_envelope",
+  "archivo": "programs\\mimo_multilayer_reflection_envelope.wspl",
+  "steps_count": 5,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 654311424"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 0.072"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 0.05"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step layer_envelope 10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32",
+      "op": "layer_envelope",
+      "args": "10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.6.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 4,
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "layer_envelope",
+        "args": "10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32"
+      }
+    ],
+    "pasos_mapeo": {
+      "layer_envelope": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": 654311424,
+      "target_parameter_fraction": 0.072,
+      "max_delta_norm": 0.05,
+      "allow_write": true,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T17:50:30",
+  "ejecucion": [
+    {
+      "op": "layer_envelope",
+      "args": "10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32",
+      "status": "ok",
+      "execution_state": "envelope_computed",
+      "result": {
+        "operation": "multi_layer_envelope",
+        "layers_span": "10..22",
+        "peak_layer": 16,
+        "bandwidth": 2.5,
+        "envelope_type": "gaussian",
+        "active_layers_count": 13,
+        "weights_distribution": {
+          "10": 0.05613,
+          "11": 0.13534,
+          "12": 0.27804,
+          "13": 0.48675,
+          "14": 0.72615,
+          "15": 0.92312,
+          "16": 1.0,
+          "17": 0.92312,
+          "18": 0.72615,
+          "19": 0.48675,
+          "20": 0.27804,
+          "21": 0.13534,
+          "22": 0.05613
+        },
+        "alpha_scale": 0.04,
+        "mode": "boost",
+        "vector_source": "C:\\weights\\data\\u_critic_L16.npz",
+        "vector_dimension": 4096,
+        "gguf_exported": true,
+        "gguf_path": "C:\\weights\\data\\u_critic_control_vector.gguf"
+      }
+    }
+  ]
+}

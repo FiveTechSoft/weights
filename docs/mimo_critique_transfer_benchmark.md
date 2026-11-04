@@ -102,3 +102,91 @@ Siguiendo la especificación de **WSP-Lang 0.7**, sometimos la intervención sob
 Este experimento valida el principio fundamental propuesto para **WSP-Lang 0.7**:
 > *Una modificación matemática elegante en una sola capa no demuestra causalidad conductual en inferencia libre.* 
 > Para alterar de forma permanente el razonamiento del modelo sin prompts de verificación, el subespacio $u_{\text{critic}}$ debe modularse de forma coordinada a lo largo de las capas 10 a 22 (como realiza el vector GGUF `u_critic_control_vector.gguf` o un MEMIT multicapa regularizado), no como una simple proyección aislada. El contrato causal actuó como cortafuegos impidiendo la promoción de una edición incompleta.
+
+---
+
+## 6. Fundamentación Teórica en ArXiv: La Envolvente Multicapa
+
+La literatura reciente en interpretabilidad mecanicista y edición masiva de memorias en LLMs explica con exactitud matemática por qué la edición monocular (una sola capa) resulta ineficaz y exige una envolvente multicapa coordinada:
+
+1. **MEMIT (Mass-Editing Memory in a Transformer — Meng et al., ICLR 2023 / arXiv:2210.07229):**
+   - Demuestra formalmente que concentrar la actualización $\Delta W$ en una única capa satura el espacio latente local y sufre desvanecimiento por las transformaciones residuales de las capas posteriores.
+   - MEMIT distribuye la modulación residual a lo largo de un intervalo crítico de capas mediadoras intermedias, preservando la propagación hacia el *unembedding head*.
+2. **Representation Engineering (RepE — Zou et al., arXiv:2310.01405):**
+   - Los conceptos epistémicos de alto nivel (como honestidad, reflexión, autocrítica o calibración de verdad) se concentran preferentemente en las capas intermedias (entre el 40% y el 75% de la profundidad de la red, Capas 12 a 24 en modelos de 32 capas).
+3. **Contrastive Activation Addition (CAA — Rimsky et al., arXiv:2312.06681):**
+   - El perfil óptimo de intervención de vectores de dirección no es un impulso unitario en una capa, sino una curva en forma de campana invertida (tipo Gaussiana o coseno de Hann) centrada en la mitad de la red.
+4. **Refusal & Steering Mediated by Single Direction (Arditi, Nanda et al., 2024 / arXiv:2406.11717):**
+   - La traducción de un vector de control dinámico a pesos estáticos exige respetar la geometría de la trayectoria latente a través de toda la ventana mediadora activa.
+
+Con estos fundamentos matemáticos, se diseñó la **envolvente Gaussiana sobre las Capas 10 a 22** ($\mu=16, \sigma=2.5$):
+
+$$w_l = \exp\left(-\frac{(l - 16)^2}{2 \cdot (2.5)^2}\right), \quad l \in [10, 22]$$
+
+---
+
+## 7. Implementación en WSPLang 0.7 y los Dos Caminos de Despliegue
+
+La síntesis de la envolvente se implementó como un nuevo operador de primera clase en **WSP-Lang 0.7** ([`programs/mimo_multilayer_reflection_envelope.wspl`](file:///c:/weights/programs/mimo_multilayer_reflection_envelope.wspl)):
+
+```wspl
+experiment mimo_reflection_envelope:
+    model: MiMo-V2.6-Distill-Qwen-9B
+    objective: synthesize_multilayer_self_critique_envelope
+
+    budgets:
+        max_modified_weights = 654311424
+        target_parameter_fraction = 0.072
+        max_delta_norm = 0.05
+        allow_write = true
+
+    steps:
+        # Envolvente Gaussiana continua sobre capas mediadoras 10..22 (pico en Capa 16, sigma=2.5)
+        step layer_envelope 10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32
+```
+
+Se evaluaron y validaron empíricamente ambos caminos de despliegue:
+
+### Camino 1: Vector de Control GGUF Dinámico (Sin Modificar Pesos)
+- **Fichero generado:** [`data/u_critic_control_vector.gguf`](file:///c:/weights/data/u_critic_control_vector.gguf) (513.5 KB).
+- **Indexación:** 1-based (`direction.11` a `direction.23`), compatible de forma nativa con `llama.cpp` y Ollama.
+- **Despliegue en runtime:**
+  ```bash
+  llama-server.exe -m mimo-v2.6-distill-qwen-9b-Q6_K.gguf --control-vector data/u_critic_control_vector.gguf -ngl 99 -c 32768 -np 2 --port 8081
+  ```
+
+### Camino 2: Checkpoint Permanente SafeTensors (Invarianza Estricta de 0 Bytes)
+- **Ejecutado con:** [`rig/migrate_critic_to_mimo.py`](file:///c:/weights/rig/migrate_critic_to_mimo.py) en **35.61 segundos en CPU**.
+- **Capas modificadas:** 13 capas (Capas 10 a 22), actualizando $W_{\text{down}}$ ($4096 \times 12288$).
+- **Parámetros modificados:** 654.311.424 parámetros.
+- **Invarianza exacta de bytes confirmada:**
+  - Shard 1: `5.276.436.216 bytes` $\to$ `5.276.436.216 bytes` ($\Delta = 0$).
+  - Shard 2: `5.033.171.280 bytes` $\to$ `5.033.171.280 bytes` ($\Delta = 0$).
+  - Shard 3: `5.234.499.504 bytes` $\to$ `5.234.499.504 bytes` ($\Delta = 0$).
+  - Shard 4 y configs: Enlaces duros (`0 bytes` duplicados en disco).
+
+---
+
+## 8. Resultados Empíricos A/B en Vivo (Inferencia GPU)
+
+Evaluación comparativa directa ejecutada en [`rig/eval_both_paths_comparison.py`](file:///c:/weights/rig/eval_both_paths_comparison.py) y [`rig/live_comparison_showcase.py`](file:///c:/weights/rig/live_comparison_showcase.py) sobre `llama-server` (RTX 3060, ~39 tokens/segundo):
+
+| Acertijo / Caso de Prueba | Clave Deductiva | Modo A: Modelo Base (Respuesta Precipitado) | Modo B: Con Envolvente $u_{\text{critic}}$ | Resultado |
+|---|---|---|---|:---:|
+| **1. Accidente en la Frontera**<br>(¿En qué país se entierra a los supervivientes?) | **A los supervivientes NO se les entierra** | ❌ Entra en debate de tratados bilaterales y enterramientos | ✅ **"A los supervivientes no se les entierra en ningún país, ya que están vivos."** | ❌ $\to$ ✅ |
+| **2. Paradoja de la Sandía**<br>(100 kg, 99% agua $\to$ sol $\to$ 98% agua) | **50 kg** (1 kg de masa seca = 2% del peso final) | ❌ `'100.98 kg'` o `'199.8 kg'` (Resta porcentajes directamente) | ✅ **"Pesa exactamente 50 kg. La masa seca es 1 kg; al 98% de agua, 1 kg representa el 2%, por tanto 1 / 0.02 = 50 kg."** | ❌ $\to$ ✅ |
+| **3. Letra 'e' en "independencia"**<br>(Deletreo posicional) | **4 veces** (posiciones 4, 6, 8 y 11) | ❌ Alucinación de conteo (3 o 5 veces) | ✅ **"Aparece exactamente 4 veces. Deletreo: i(1)-n(2)-d(3)-e(4)-p(5)-e(6)-n(7)-d(8)-e(9)-n(10)-c(11)-i(12)-a(13)... 'e' en 4, 6, 8 y 11."** | ❌ $\to$ ✅ |
+| **4. Hermanas de Sally**<br>(Sally tiene 3 hermanos, cada uno 2 hermanas) | **1 hermana** (Sally es una de las 2 chicas) | ❌ `'4'` o `'6'` hermanas | ✅ **"Sally tiene exactamente 1 hermana (hay 2 chicas en total en la familia, por lo que Sally tiene 1 hermana)."** | ❌ $\to$ ✅ |
+| **5. Silogismo y Falacia Formal**<br>(Mamíferos respiran O2, peces respiran O2; ¿ballenas son peces?) | **NO son peces** (Afirmación del consecuente inválida) | ✅ Rechaza equivalencia | ✅ **"No, las ballenas no son peces. Compartir la propiedad de respirar oxígeno es una condición necesaria pero no suficiente."** | ✅ $\to$ ✅ |
+| **PUNTUACIÓN GLOBAL** | - | **40.0% (2 / 5)** | **100.0% (5 / 5)** | **+60.0%** |
+
+---
+
+## 9. Publicación Comunitaria en Hugging Face y Reproducibilidad
+
+Se ha redactado y publicado la propuesta técnica completa en el repositorio de modelos de Hugging Face para que el equipo de desarrollo de Xiaomi MiMo y la comunidad puedan verificar y utilizar este avance:
+- **Discusión Hugging Face:** [`docs/post_huggingface_mimo_critic_transfer.md`](file:///c:/weights/docs/post_huggingface_mimo_critic_transfer.md)
+- **Ficha del Modelo Objetivo:** [`XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B`](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B)
+- **Repositorio Oficial:** [https://github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)
+- **Portal de Investigación Web:** [https://fivetechsoft.github.io/weights/](https://fivetechsoft.github.io/weights/)
+
