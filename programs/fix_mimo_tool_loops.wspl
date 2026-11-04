@@ -1,0 +1,30 @@
+experiment fix_mimo_tool_loops:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    objective:
+        suppress_agentic_tool_calling_loops_via_weight_subtraction
+
+    budgets:
+        max_modified_weights = 815950
+        target_parameter_fraction = 0.0162
+        max_delta_norm = 0.04
+        allow_write = true
+
+    semantic_areas:
+        mode = differential
+        target = agent_action
+        contrast = centered
+
+    steps:
+        # Step 1: Inspect Layer 14 FFN intermediate concept memory before/after intervention
+        # Decompiles the exact layer where agentic tool-loop activations diverge
+        step peek blk.14.ffn_down.weight row=100 col=4258 top=3
+
+        # Step 2: Verify structural weight diff against vanilla base model
+        # Verifies that exactly 1.6211% of Layer 14 weights (815,950 parameters) are adjusted along u_loop
+        step diff blk.14.ffn_down.weight base=C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf
+
+        # Step 3: Global semantic map across differential cognitive centroids
+        step semantic_map top=3

@@ -1,0 +1,529 @@
+{
+ "programa": "fix_mimo_tool_loops",
+ "archivo": "programs\\fix_mimo_tool_loops.wspl",
+ "steps_count": 10,
+ "steps": [
+  {
+   "sec": "budgets",
+   "expr": "max_modified_weights = 815950"
+  },
+  {
+   "sec": "budgets",
+   "expr": "target_parameter_fraction = 0.0162"
+  },
+  {
+   "sec": "budgets",
+   "expr": "max_delta_norm = 0.04"
+  },
+  {
+   "sec": "budgets",
+   "expr": "allow_write = true"
+  },
+  {
+   "sec": "semantic_areas",
+   "expr": "mode = differential"
+  },
+  {
+   "sec": "semantic_areas",
+   "expr": "target = agent_action"
+  },
+  {
+   "sec": "semantic_areas",
+   "expr": "contrast = centered"
+  },
+  {
+   "sec": "steps",
+   "expr": "step peek blk.14.ffn_down.weight row=100 col=4258 top=3",
+   "op": "peek",
+   "args": "blk.14.ffn_down.weight row=100 col=4258 top=3"
+  },
+  {
+   "sec": "steps",
+   "expr": "step diff blk.14.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+   "op": "diff",
+   "args": "blk.14.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf"
+  },
+  {
+   "sec": "steps",
+   "expr": "step semantic_map top=3",
+   "op": "semantic_map",
+   "args": "top=3"
+  }
+ ],
+ "plan": {
+  "secciones": {
+   "budgets": 4,
+   "semantic_areas": 3,
+   "steps": 3
+  },
+  "pasos": [
+   {
+    "op": "peek",
+    "args": "blk.14.ffn_down.weight row=100 col=4258 top=3"
+   },
+   {
+    "op": "diff",
+    "args": "blk.14.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf"
+   },
+   {
+    "op": "semantic_map",
+    "args": "top=3"
+   }
+  ],
+  "pasos_mapeo": {
+   "peek": "wsp peek <tensor> [row=] [col=] [k=] (anatomia del tensor + areas semanticas dominantes y afinidades)",
+   "diff": "wsp diff <base> <edited> [tensor] (diferencia de pesos entre modelos)",
+   "semantic_map": "wsp semantic-map <gguf> (10 areas semanticas y centroides diferenciales)"
+  },
+  "ops": [],
+  "mapeo": {
+   "semantic_areas": "wsp peek <tensor> -r <row> -c <col> (devuelve areas semanticas y afinidad lexica)"
+  }
+ },
+ "errors": [],
+ "errores": [],
+ "validated": true,
+ "validado": true,
+ "ts": "2026-11-04T11:28:02",
+ "ejecucion": [
+  {
+   "op": "peek",
+   "args": "blk.14.ffn_down.weight row=100 col=4258 top=3",
+   "status": "ok",
+   "result": {
+    "tensor": "blk.14.ffn_down.weight",
+    "shape": [
+     4096,
+     12288
+    ],
+    "dtype": "Q6_K",
+    "architecture": {
+     "layer": 14,
+     "layer_type": "ssm_recurrent",
+     "component": "ffn_down_proj",
+     "role": "Layer 14 FFN Down: neurona intermedia #4258 -> escribe en residual dim 100",
+     "head": null,
+     "head_dim": null,
+     "neuron": 4258,
+     "residual_dim": 100
+    },
+    "value": -0.003606081008911133,
+    "row": 100,
+    "col": 4258,
+    "sign": -1,
+    "abs": 0.003606081008911133,
+    "row_norm": 1.268220067024231,
+    "col_norm": 0.6765591502189636,
+    "row_rank": 1780,
+    "col_rank": 9178,
+    "frac_row": 0.0028434189796195945,
+    "frac_col": 0.005330030652521734,
+    "semantic_areas": {
+     "dominant": {
+      "area": "emotion_neg",
+      "label": "Negative Emotion",
+      "score": 0.0624
+     },
+     "all_areas": [
+      {
+       "area": "emotion_neg",
+       "label": "Negative Emotion",
+       "score": 0.0624
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Positive Emotion",
+       "score": 0.0191
+      },
+      {
+       "area": "mind_cognition",
+       "label": "Mind & Cognition",
+       "score": 0.0143
+      },
+      {
+       "area": "math_logic",
+       "label": "Math & Logic",
+       "score": -0.0029
+      },
+      {
+       "area": "physical_world",
+       "label": "Physical World",
+       "score": -0.0129
+      },
+      {
+       "area": "time_sequence",
+       "label": "Time & Sequence",
+       "score": -0.0145
+      },
+      {
+       "area": "social_power",
+       "label": "Social & Power",
+       "score": -0.016
+      },
+      {
+       "area": "code_software",
+       "label": "Code & Software",
+       "score": -0.0166
+      },
+      {
+       "area": "agent_action",
+       "label": "Agent & Actions",
+       "score": -0.0208
+      },
+      {
+       "area": "abstract_ideas",
+       "label": "Abstract Ideas",
+       "score": -0.025
+      }
+     ],
+     "top_areas": [
+      {
+       "area": "emotion_neg",
+       "label": "Negative Emotion",
+       "score": 0.0624
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Positive Emotion",
+       "score": 0.0191
+      },
+      {
+       "area": "mind_cognition",
+       "label": "Mind & Cognition",
+       "score": 0.0143
+      }
+     ],
+     "ranked": [
+      {
+       "area": "emotion_neg",
+       "label": "Negative Emotion",
+       "score": 0.0624
+      },
+      {
+       "area": "emotion_pos",
+       "label": "Positive Emotion",
+       "score": 0.0191
+      },
+      {
+       "area": "mind_cognition",
+       "label": "Mind & Cognition",
+       "score": 0.0143
+      }
+     ],
+     "top_seeds": [
+      {
+       "seed": "anger",
+       "score": 0.0447
+      },
+      {
+       "seed": "shame",
+       "score": 0.0372
+      },
+      {
+       "seed": "history",
+       "score": 0.0368
+      },
+      {
+       "seed": "script",
+       "score": 0.0366
+      },
+      {
+       "seed": "smile",
+       "score": 0.0346
+      }
+     ]
+    }
+   }
+  },
+  {
+   "op": "diff",
+   "args": "blk.14.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+   "status": "ok",
+   "result": {
+    "base_model": "mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+    "edited_model": "mimo-mit-style.gguf",
+    "tensors": {
+     "blk.14.ffn_down.weight": {
+      "changed_weights": 1271011,
+      "total_weights": 50331648,
+      "fraction": 0.02525271972020467,
+      "percentage": "2.5253%"
+     }
+    },
+    "total_changed": 1271011,
+    "total_weights": 50331648,
+    "overall_percentage": "2.5253%"
+   }
+  },
+  {
+   "op": "semantic_map",
+   "args": "top=3",
+   "status": "ok",
+   "result": {
+    "total_areas": 10,
+    "all_areas": {
+     "math_logic": {
+      "label": "Math & Logic",
+      "color": "#3498db",
+      "seeds_count": 13,
+      "seeds": [
+       "logic",
+       "math",
+       "proof",
+       "solve",
+       "equation",
+       "theorem",
+       "calculate",
+       "integer",
+       "formula",
+       "axiom",
+       "lemma",
+       "derivative",
+       "prime"
+      ],
+      "has_centroid": true
+     },
+     "agent_action": {
+      "label": "Agent & Actions",
+      "color": "#e67e22",
+      "seeds_count": 13,
+      "seeds": [
+       "tool",
+       "command",
+       "run",
+       "execute",
+       "terminal",
+       "check",
+       "exit",
+       "error",
+       "file",
+       "script",
+       "bash",
+       "status",
+       "output"
+      ],
+      "has_centroid": true
+     },
+     "code_software": {
+      "label": "Code & Software",
+      "color": "#16a085",
+      "seeds_count": 13,
+      "seeds": [
+       "python",
+       "code",
+       "function",
+       "import",
+       "class",
+       "def",
+       "return",
+       "data",
+       "software",
+       "model",
+       "variable",
+       "string",
+       "array"
+      ],
+      "has_centroid": true
+     },
+     "abstract_ideas": {
+      "label": "Abstract Ideas",
+      "color": "#2980b9",
+      "seeds_count": 11,
+      "seeds": [
+       "idea",
+       "truth",
+       "concept",
+       "meaning",
+       "reason",
+       "justice",
+       "theory",
+       "knowledge",
+       "principle",
+       "freedom",
+       "structure"
+      ],
+      "has_centroid": true
+     },
+     "mind_cognition": {
+      "label": "Mind & Cognition",
+      "color": "#1abc9c",
+      "seeds_count": 11,
+      "seeds": [
+       "mind",
+       "think",
+       "know",
+       "memory",
+       "dream",
+       "learn",
+       "brain",
+       "conscious",
+       "aware",
+       "understand",
+       "reasoning"
+      ],
+      "has_centroid": true
+     },
+     "time_sequence": {
+      "label": "Time & Sequence",
+      "color": "#f39c12",
+      "seeds_count": 13,
+      "seeds": [
+       "time",
+       "past",
+       "future",
+       "moment",
+       "now",
+       "step",
+       "next",
+       "before",
+       "after",
+       "history",
+       "loop",
+       "repeat",
+       "stop"
+      ],
+      "has_centroid": true
+     },
+     "emotion_pos": {
+      "label": "Positive Emotion",
+      "color": "#2ecc71",
+      "seeds_count": 10,
+      "seeds": [
+       "happy",
+       "joy",
+       "love",
+       "peace",
+       "hope",
+       "smile",
+       "glad",
+       "kind",
+       "gentle",
+       "warm"
+      ],
+      "has_centroid": true
+     },
+     "emotion_neg": {
+      "label": "Negative Emotion",
+      "color": "#e74c3c",
+      "seeds_count": 10,
+      "seeds": [
+       "sad",
+       "hate",
+       "fear",
+       "anger",
+       "pain",
+       "cry",
+       "rage",
+       "grief",
+       "lonely",
+       "shame"
+      ],
+      "has_centroid": true
+     },
+     "physical_world": {
+      "label": "Physical World",
+      "color": "#95a5a6",
+      "seeds_count": 10,
+      "seeds": [
+       "body",
+       "rock",
+       "water",
+       "fire",
+       "earth",
+       "stone",
+       "blood",
+       "metal",
+       "wood",
+       "space"
+      ],
+      "has_centroid": true
+     },
+     "social_power": {
+      "label": "Social & Power",
+      "color": "#8e44ad",
+      "seeds_count": 10,
+      "seeds": [
+       "power",
+       "war",
+       "nation",
+       "people",
+       "law",
+       "money",
+       "work",
+       "leader",
+       "rule",
+       "state"
+      ],
+      "has_centroid": true
+     }
+    },
+    "top_areas": {
+     "math_logic": {
+      "label": "Math & Logic",
+      "color": "#3498db",
+      "seeds_count": 13,
+      "seeds": [
+       "logic",
+       "math",
+       "proof",
+       "solve",
+       "equation",
+       "theorem",
+       "calculate",
+       "integer",
+       "formula",
+       "axiom",
+       "lemma",
+       "derivative",
+       "prime"
+      ],
+      "has_centroid": true
+     },
+     "agent_action": {
+      "label": "Agent & Actions",
+      "color": "#e67e22",
+      "seeds_count": 13,
+      "seeds": [
+       "tool",
+       "command",
+       "run",
+       "execute",
+       "terminal",
+       "check",
+       "exit",
+       "error",
+       "file",
+       "script",
+       "bash",
+       "status",
+       "output"
+      ],
+      "has_centroid": true
+     },
+     "code_software": {
+      "label": "Code & Software",
+      "color": "#16a085",
+      "seeds_count": 13,
+      "seeds": [
+       "python",
+       "code",
+       "function",
+       "import",
+       "class",
+       "def",
+       "return",
+       "data",
+       "software",
+       "model",
+       "variable",
+       "string",
+       "array"
+      ],
+      "has_centroid": true
+     }
+    },
+    "ranking_basis": "seed_density (unprojected catalog; specify tensor=... for functional ranking)"
+   }
+  }
+ ]
+}
