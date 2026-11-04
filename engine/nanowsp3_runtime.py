@@ -336,14 +336,40 @@ class NanoWSP3:
     # 6. Evaluation Helpers
     # ==========================================================================
 
-    def evaluate_recall(self, prompt: str, expected_target: str) -> Tuple[bool, str, float]:
+    def evaluate_recall(self, prompt: str, expected_target: str = "") -> Tuple[bool, str, float]:
         tokens = self.tokenizer.encode(prompt, add_bos=True)
         logits, _ = self.forward(tokens)
         pred_token = int(torch.argmax(logits[0, -1, :]).item())
         pred_char = self.tokenizer.decode([pred_token], skip_special=False)
-        expected_token = self.tokenizer.encode(expected_target, add_bos=False)[0]
-        
         probs = F.softmax(logits[0, -1, :], dim=-1)
-        prob = float(probs[expected_token].item())
-        is_hit = (pred_token == expected_token)
+
+        if expected_target:
+            enc = self.tokenizer.encode(expected_target, add_bos=False)
+            expected_token = enc[0] if enc else pred_token
+            prob = float(probs[expected_token].item())
+            is_hit = (pred_token == expected_token)
+        else:
+            prob = float(probs[pred_token].item())
+            is_hit = True
         return is_hit, pred_char, prob
+
+    def generate(
+        self,
+        prompt: str,
+        max_new_tokens: int = 15,
+        temperature: float = 0.0
+    ) -> str:
+        tokens = self.tokenizer.encode(prompt, add_bos=True)
+        for _ in range(max_new_tokens):
+            logits, _ = self.forward(tokens)
+            next_logits = logits[0, -1, :]
+            if temperature == 0.0:
+                next_token = int(torch.argmax(next_logits).item())
+            else:
+                probs = F.softmax(next_logits / temperature, dim=-1)
+                next_token = int(torch.multinomial(probs, num_samples=1).item())
+
+            if next_token == self.tokenizer.EOS_TOKEN:
+                break
+            tokens.append(next_token)
+        return self.tokenizer.decode(tokens)

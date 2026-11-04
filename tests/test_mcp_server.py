@@ -1,4 +1,4 @@
-"""Unit tests for wsp_mcp_server: validates all registered MCP tools, security gates, and inline code execution."""
+"""Unit tests for wsp_mcp_server: validates all registered MCP tools, security gates, inline code execution, and WSP-Lang 0.6/0.7 NanoWSP tools."""
 import unittest
 import sys
 from pathlib import Path
@@ -13,13 +13,16 @@ import wsp_mcp_server as server
 class TestWspMcpServer(unittest.TestCase):
 
     def test_registered_tools_count(self):
-        """Verify that all core MCP tools are exposed."""
+        """Verify that all core MCP tools including WSP-Lang 0.6/0.7 additions are exposed."""
         tools = [
             "run_challenge", "inspect_feedback", "experiment_history",
             "sell_holdout", "record_verdict", "engine_status",
             "peek_weight", "poke_weight", "get_semantic_areas",
             "run_wsplang", "execute_wsplang_code", "run_agent_loop_probe",
-            "run_logic_probe"
+            "run_logic_probe",
+            # WSP-Lang 0.6/0.7 & NanoWSP Additions:
+            "run_nanowsp_benchmark", "query_nanowsp3",
+            "run_cross_model_procrustes", "run_causal_contract"
         ]
         for t in tools:
             self.assertTrue(hasattr(server, t), f"MCP tool function '{t}' should exist in server")
@@ -42,9 +45,15 @@ class TestWspMcpServer(unittest.TestCase):
         res = server.execute_wsplang_code(invalid_wspl)
         self.assertFalse(res.get("valid"))
         self.assertTrue(len(res.get("errors", [])) > 0)
-        # Execution must be aborted
         exec_step = res.get("ejecucion", [{}])[0]
         self.assertEqual(exec_step.get("status"), "aborted")
+
+    def test_query_nanowsp3_tool(self):
+        """query_nanowsp3 must return accurate next token prediction."""
+        res = server.query_nanowsp3("SCI: Z79=")
+        self.assertIn("next_token_pred", res)
+        self.assertEqual(res["next_token_pred"], "A")
+        self.assertGreater(res["confidence_pct"], 90.0)
 
 
 if __name__ == "__main__":

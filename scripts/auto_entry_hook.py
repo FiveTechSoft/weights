@@ -98,9 +98,6 @@ def main():
                    f"weight-space edit."),
             target="loop_rate",
             intervention=cand,
-            notas=(f"rig_runs/{fname}; n={len(results)}; loop_rate {rate:.2f} vs baseline {base_rate:.2f} "
-                   f"(delta {delta:+.2f}); sampling-only experiment ({primary}), not a "
-                   f"weight-space edit."),
             model_hash="",
             benchmark_version="loop_rate_n20",
             candidate=cand,

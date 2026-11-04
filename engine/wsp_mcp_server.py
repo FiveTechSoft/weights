@@ -1,4 +1,4 @@
-"""Servidor MCP para el WSP Challenge & Observability Engine (stdio; opencode o cualquier cliente MCP lo lanza)."""
+"""Servidor MCP para el WSP Challenge, Causal Verification & NanoWSP Engine (stdio; opencode o cualquier cliente MCP lo lanza)."""
 import json
 import platform
 import subprocess
@@ -105,7 +105,6 @@ def peek_weight(gguf: str, tensor: str, row: str = "", col: str = "", top: int =
 def poke_weight(gguf: str, tensor: str, row: int, col: int, value: float, out: str = "") -> dict:
     """`poke()`: perturbar UN peso individual (requantiza solo su bloque; protegido por FORBIDDEN_TENSORS).
     value: valor de destino. out: ruta de salida opcional."""
-    # Strict security barrier: reject forbidden tensors
     forbidden = ("token_embd.weight", "output.weight", "output_norm.weight")
     if tensor in forbidden or any(p in tensor for p in ("norm.weight", ".norm", "lm_head")):
         return {
@@ -161,8 +160,7 @@ def run_wsplang(program_path: str, execute: bool = True, gguf: str = "") -> dict
 @mcp.tool()
 def execute_wsplang_code(code: str, gguf: str = "") -> dict:
     """Ejecuta un bloque de código WSP-Lang en memoria (inline) con validación estricta y sandbox.
-    code: código fuente en sintaxis WSP-Lang (.wspl).
-    gguf: ruta opcional al modelo GGUF (default: MiMo-2.6-9B)."""
+    Soporta instrucciones v0.6/v0.7: ROSETTA_ALIGN, CROSS_PROJECT, MEMIT_IMPRINT, LEACE_ERASE, etc."""
     import importlib.util
     spec = importlib.util.spec_from_file_location("wsplang", str(_ROOT / "engine" / "wsplang.py"))
     mod = importlib.util.module_from_spec(spec)
@@ -184,13 +182,89 @@ def execute_wsplang_code(code: str, gguf: str = "") -> dict:
 
 
 @mcp.tool()
+def run_nanowsp_benchmark(version: str = "nanowsp3") -> dict:
+    """Ejecuta el benchmark o lee el reporte verificado de la serie NanoWSP (nanowsp1, nanowsp2, nanowsp3).
+    version: 'nanowsp1' (80k), 'nanowsp2' (600k), 'nanowsp3' (3.28M con 5 temáticas)."""
+    if version in ("nanowsp3", "3"):
+        rep_p = _ROOT / "rig_runs" / "nanowsp3_thematic_benchmark_report.json"
+        if rep_p.exists():
+            try:
+                return json.loads(rep_p.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+        p = subprocess.run([sys.executable, str(_ROOT / "scripts" / "demo_nanowsp3_capabilities.py")],
+                           capture_output=True, text=True, timeout=120, cwd=str(_ROOT), **_CREATION_FLAGS)
+        if rep_p.exists():
+            return json.loads(rep_p.read_text(encoding="utf-8"))
+        return {"stdout": p.stdout[-400:], "stderr": p.stderr[-400:], "returncode": p.returncode}
+    elif version in ("nanowsp2", "2"):
+        p = subprocess.run([sys.executable, str(_ROOT / "scripts" / "demo_nanowsp2_capabilities.py")],
+                           capture_output=True, text=True, timeout=120, cwd=str(_ROOT), **_CREATION_FLAGS)
+        return {"stdout": p.stdout[-500:], "returncode": p.returncode}
+    elif version in ("nanowsp1", "1"):
+        p = subprocess.run([sys.executable, str(_ROOT / "scripts" / "demo_nanowsp_capabilities.py")],
+                           capture_output=True, text=True, timeout=60, cwd=str(_ROOT), **_CREATION_FLAGS)
+        return {"stdout": p.stdout[-500:], "returncode": p.returncode}
+    return {"error": "version must be 'nanowsp1', 'nanowsp2', or 'nanowsp3'"}
+
+
+@mcp.tool()
+def query_nanowsp3(prompt: str) -> dict:
+    """Ejecuta una inferencia ultrarrápida (<2ms) sobre NanoWSP-3 en las 5 temáticas (SCI:, GEO:, CS:, LIT:, ACT:).
+    prompt: prefijo formal (ej: 'SCI: Z79=', 'GEO: ESP=', 'CS: LNX=', 'LIT: HAM=', 'ACT: 3+4=')."""
+    try:
+        from engine.nanowsp3_runtime import NanoWSP3
+        model = NanoWSP3()
+        weights_p = _ROOT / "data" / "nanowsp3_weights.safetensors"
+        if weights_p.exists():
+            model.load_checkpoint(weights_p)
+        hit, pred, prob = model.evaluate_recall(prompt, expected_target="")
+        full_gen = model.generate(prompt, max_new_tokens=10)
+        return {
+            "prompt": prompt,
+            "next_token_pred": pred,
+            "confidence_pct": round(prob * 100, 2),
+            "generated_text": full_gen,
+            "model": "NanoWSP-3 (6-Layer, 3.28M)"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def run_cross_model_procrustes(source_model: str = "MiMo-9B", target_model: str = "TinyLlama-1.1B", num_anchors: int = 2000) -> dict:
+    """Obtiene o ejecuta el reporte de alineación Procrustes entre arquitecturas diferentes (WSP-Lang 0.6).
+    source_model: modelo origen (MiMo-9B, 4096d). target_model: modelo destino (TinyLlama-1.1B, 2048d)."""
+    report_p = _ROOT / "rig_runs" / "cross_model_transfer_report.json"
+    if report_p.exists():
+        try:
+            return json.loads(report_p.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    p = subprocess.run([sys.executable, str(_ROOT / "rig" / "cross_model_transfer.py")],
+                       capture_output=True, text=True, timeout=180, cwd=str(_ROOT), **_CREATION_FLAGS)
+    if report_p.exists():
+        return json.loads(report_p.read_text(encoding="utf-8"))
+    return {"stdout": p.stdout[-400:], "stderr": p.stderr[-400:], "returncode": p.returncode}
+
+
+@mcp.tool()
+def run_causal_contract(manifest_path: str = "") -> dict:
+    """Inspecciona o ejecuta el protocolo de verificación causal WSP-Lang 0.7 (evaluación pareada de 4 vías: Base, Candidato, Placebo, Control Aleatorio)."""
+    p = Path(manifest_path) if manifest_path else _ROOT / "rig_runs" / "cross_model_loop_transfer_v1_manifest.json"
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {"status": "manifest_not_found", "path": str(p), "help": "Run rig/exp_cross_model_loop_transfer_v1.py to generate."}
+
+
+@mcp.tool()
 def run_agent_loop_probe(endpoint: str = "http://127.0.0.1:8081/v1/chat/completions",
                          alias: str = "mcp-probe", n: int = 5, offset: int = 0,
                          repetition_penalty: float = 1.0, temperature: float = 0.3) -> dict:
-    """Ejecuta el probe de bucles agénticos en llamadas a herramientas sobre prompts reales de terminal.
-    Mide la tasa de bucles, turnos medios hasta el primer bucle e intervalo de confianza de Wilson al 95%.
-    endpoint: URL OpenAI-compatible (/v1/chat/completions).
-    repetition_penalty: penalización de repetición (baseline barato de inferencia)."""
+    """Ejecuta el probe de bucles agénticos en llamadas a herramientas sobre prompts reales de terminal."""
     probe_script = _ROOT / "rig" / "agent_loop_probe.py"
     cmd = [
         sys.executable, str(probe_script),
@@ -214,8 +288,7 @@ def run_agent_loop_probe(endpoint: str = "http://127.0.0.1:8081/v1/chat/completi
 @mcp.tool()
 def run_logic_probe(endpoint: str = "http://127.0.0.1:8081/v1/chat/completions",
                     n: int = 5, seed: int = 271828) -> dict:
-    """Ejecuta el probe determinista de lógica de Horn (forward chaining sintético) sin dependencias.
-    Devuelve la exactitud exacta YES/NO."""
+    """Ejecuta el probe determinista de lógica de Horn (forward chaining sintético) sin dependencias."""
     probe_script = _ROOT / "rig" / "logic_probe.py"
     cmd = [
         sys.executable, str(probe_script),

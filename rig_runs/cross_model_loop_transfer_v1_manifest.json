@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-11-04 16:17:15",
+  "contract": {
+    "target_model": "TinyLlama-1.1B-Chat-v1.0",
+    "target_tensor": "model.layers.10.mlp.down_proj.weight",
+    "hypothesis": "MiMo-9B u_loop_L14 projected into TinyLlama Layer 10 suppresses runaway loops without breaking factual holdout capabilities",
+    "expected_behavior": "Distinct-2 ratio increases on fresh holdout loop prompts while regression suite retains >= 90% accuracy",
+    "allowed_weight_fraction": 0.08,
+    "max_regression_tolerance_pct": 10.0,
+    "min_holdout_improvement_pct": 10.0
+  },
+  "weight_physics": {
+    "frobenius_orig": 58.6629,
+    "frobenius_delta": 1.2979,
+    "perturbation_pct": 2.2124
+  },
+  "four_way_results": {
+    "1_baseline": {
+      "dev": 0.0,
+      "holdout": 10.0,
+      "regression_suite": 100.0
+    },
+    "2_candidate": {
+      "dev": 0.0,
+      "holdout": 10.0,
+      "regression_suite": 100.0
+    },
+    "3_placebo": {
+      "holdout": 10.0
+    },
+    "4_random_control": {
+      "holdout": 10.0,
+      "regression_suite": 100.0
+    }
+  },
+  "causal_comparison": {
+    "holdout_gain_vs_base": 0.0,
+    "holdout_gain_vs_random": 0.0,
+    "regression_loss_pct": 0.0,
+    "is_statistically_superior": false,
+    "is_safe_without_regression": true
+  },
+  "final_state": "rolled_back",
+  "rollback_executed": true
+}
