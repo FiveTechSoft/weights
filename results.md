@@ -567,3 +567,8 @@ Prototipo: lab/train_lab_toy_m0.py. MLP minimal (features frozen tanh, readout l
 -小白 el training gasta 8x norma que la cirugia equivalente: la optimizacion sobre-parametriza el delta; la cirugia bien-localizada es mas gobernada. Hipotesis a test en M-1/M-2 (top-k neuronas / transformer + MEMIT).
 - Lab rules: prohibido gradiente/W*/optimizer state en el compilador; placebo = misma norma, direccion aleatoria.
 - Roadmap: M-1 (2-capas aprendibles + cirugia por influencia top-k), M-2 (mini-transformer + imprint MEMIT, gap esperado grande = dato honesto), M-3 (compilador entrenado por trazados -> cirugias para tareas nuevas).
+
+## 18. LAB cirriculum exacto — M-1 (paridad-8) y pretraining NanoWSP-3 — 2026-11-04
+1. **pretrain_infra**: NanoWSP-3 entrenado real (lab/train_nanowsp.py, char-level Alice 126k chars, 1500 pasos, 300s CPU): PPL holdout 1193.6 -> 14.3; trace (5 snapshots + exp_avg/exp_avg_sq final) en lab/runs/nanowsp3_trace.npz; checkpoint safetensors compatible con engine/nanowsp3_runtime.
+2. **Datasets exactos** (lab/wspx_datasets.py + lab/certify.py): FSM4 (62), RECALL (200), MOD13 (338), PARITY8 (256), NOECHO (500) con universo finito, particion hash 60/40, oracle cerrado y juez certify (EXACT/APPROX/FAILED). 10 tests OK.
+3. **M-1 (lab/train_lab_toy_m1.py)**: paciente MLP 8->32->1 trained Adam W1+W2 en PARITY8 (100% seen, 83.6% holdout). Cirugia ridge-closed-form over top-16 frozen features de W0: 50.4% ~= azar (~ placebo 49.6%). Conclusion: la clase de efectos reproducibles por cirugia closed-form termina donde empieza el feature-learning. Next op: compose_circuit (M-1b): para PARITY la cirugia EXACTA se puede CONTRUIR con el oracle cerrado (Fourier/XOR-tree) — test: superar el training en generalizacion.

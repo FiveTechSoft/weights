@@ -1,0 +1,9 @@
+{
+  "task": "parity8",
+  "n_universe": 256,
+  "acc_train_seen": 1.0,
+  "acc_holdout_training": 0.835616409778595,
+  "acc_holdout_surgery_topk16": 0.50390625,
+  "acc_holdout_placebo": 0.49609375,
+  "notes": "cirugia = ridge closed-form sobre top-16 features frozen de W0 (sin gradiente/W*/optimizer)"
+}

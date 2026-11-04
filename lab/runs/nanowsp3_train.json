@@ -1,0 +1,14 @@
+{
+  "corpus": "C:\\weights\\lab\\data\\corpus.txt",
+  "n_chars": 126448,
+  "steps": 1500,
+  "seq": 128,
+  "batch": 16,
+  "lr": 0.0008,
+  "ppl_start": 1193.5522769660001,
+  "ppl_final": 14.313428932516903,
+  "loss_start": 7.247179985046387,
+  "loss_final": 0.282479852437973,
+  "seconds": 313.7,
+  "n_snapshots": 5
+}
