@@ -9,14 +9,15 @@
 
 ### Executive Summary
 
-We have identified the mechanistic root cause of recursive **agentic tool-calling loops** in `MiMo-V2.6-Distill-Qwen-9B` and developed an exact, zero-retraining surgical weight fix using both:
-1. **Vanilla PyTorch / SafeTensors** (a lightweight 30-line script, no specialized frameworks required).
-2. **Weights Space Programming (WSP-Lang)** (declarative weight surgery with formal safety budgets and contract verification).
+We have identified the mechanistic root cause of recursive **agentic tool-calling loops** in `MiMo-V2.6-Distill-Qwen-9B` and developed an exact, zero-retraining surgical fix deployable across three distinct environments:
+1. **Vanilla PyTorch / SafeTensors:** Standalone 30-line script, no specialized frameworks required.
+2. **Weights Space Programming (WSP-Lang):** Declarative weight engineering with formal safety budgets and contract verification.
+3. **Dynamic Inference Control Vector:** Runtime steering in `llama.cpp` with zero permanent file modifications.
 
 By applying a localized rank-1 projection subtraction to Layer 14's MLP down-projection tensor (`model.language_model.layers.14.mlp.down_proj.weight`), we suppress the recursive loop attractor state:
 - **Modified Parameters:** Only **120,545 weights** (0.24% of Layer 14 down-proj, and only **0.0013%** of the total 9B parameters).
 - **Max Weight Delta:** $\|\Delta W\|_\infty \approx 2.44 \times 10^{-4}$ (completely imperceptible to standard reasoning and general perplexity).
-- **Format:** Native **BF16 SafeTensors** (exact floating-point surgery, zero quantization noise).
+- **Format:** Native **BF16 SafeTensors** (exact floating-point surgery, zero quantization noise) and GGUF runtime steering.
 - **Status:** 100% open-source and reproducible on [FiveTechSoft/weights](https://github.com/FiveTechSoft/weights).
 
 ---
@@ -54,19 +55,19 @@ Where:
 
 ---
 
-### 3. How to Apply the Fix
+### 3. Three Practical Deployment Options
 
-We provide two alternative ways to apply the fix:
+Depending on your serving infrastructure, hardware, and workflow, you can deploy this fix in three different ways:
 
-#### Option A: Vanilla Python & PyTorch (Without WSPLang)
-If you want to apply the fix using standard PyTorch and Hugging Face tools without installing any extra languages:
+#### Option 1: Vanilla Python & PyTorch (Without WSPLang — Permanent SafeTensors Surgery)
+Ideal for cloud deployments (vLLM, SGLang, Hugging Face transformers) that require a permanent, pristine BF16 checkpoint without installing any specialized languages or engines:
 
 ```bash
-# Clone the repository to get the pre-calculated direction vector
+# 1. Clone the repository to get the calibrated direction vector
 git clone https://github.com/FiveTechSoft/weights.git
 cd weights
 
-# Run the standalone PyTorch script (uses hard-links to save disk space)
+# 2. Run the standalone PyTorch script (uses hard-links to save disk space)
 python scripts/fix_mimo_vanilla_pytorch.py \
   --model-dir /path/to/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B \
   --out-dir /path/to/MiMo-V2.6-Distill-Qwen-9B-repaired \
@@ -74,7 +75,7 @@ python scripts/fix_mimo_vanilla_pytorch.py \
   --alpha 0.05
 ```
 
-**Minimal Code Snippet (Pure PyTorch):**
+**Minimal Standalone Python Snippet (Pure PyTorch):**
 ```python
 import torch, numpy as np
 from safetensors.torch import load_file, save_file
@@ -98,8 +99,10 @@ shard["model.language_model.layers.14.mlp.down_proj.weight"] = W.to(torch.bfloat
 save_file(shard, "repaired_model/model-00004-of-00005.safetensors")
 ```
 
-#### Option B: Declarative Weights Space Programming (WSPLang)
-For automated verification, formal parameter budgets, and declarative execution, use the WSP-Lang specification in our repo:
+---
+
+#### Option 2: Declarative Weights Space Programming (WSPLang)
+If you require formal verification, auditable parameter change budgets, and declarative execution contracts:
 
 ```wspl
 experiment fix_mimo_tool_loops:
@@ -116,10 +119,30 @@ experiment fix_mimo_tool_loops:
         step semantic_map top=3
 ```
 
-Execute via the WSP runtime:
+Execute via the open-source WSP runtime:
 ```bash
 python engine/wsplang.py programs/fix_mimo_tool_loops.wspl --run
 ```
+
+---
+
+#### Option 3: Dynamic Inference Control Vector (llama.cpp / Ollama — Zero Disk Changes)
+For users running quantized GGUF models locally (e.g. on consumer GPUs like RTX 3060/4090) who do not wish to modify any model files on disk:
+
+You can supply the pre-computed control vector directly at server launch. The engine steers the residual stream at Layer 14 dynamically during forward passes:
+
+```bash
+# Launch llama-server with negative loop direction scaling:
+llama-server \
+  -m mimo-v2.6-distill-qwen-9b-Q6_K.gguf \
+  --control-vector-scaled data/loop_control_vector.gguf -0.5 \
+  --port 8081
+```
+
+- **Advantages:** 100% non-destructive, zero disk space needed, completely reversible, and avoids block re-quantization noise.
+- The control vector GGUF is available in [`data/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/rig_runs/loop_control_vector.gguf).
+
+*(Note: To generate a permanently repaired GGUF file without re-quantization noise, apply Option 1 to the BF16 SafeTensors first, then run standard `convert_hf_to_gguf.py` and quantize to Q6_K/Q4_K).*
 
 ---
 
@@ -129,13 +152,16 @@ python engine/wsplang.py programs/fix_mimo_tool_loops.wspl --run
 - **Reasoning Retention:** Zero degradation on standard chain-of-thought math (GSM8K 90% accuracy retained).
 - **Tool Recovery:** The model breaks out of repetitive call loops when encountering repetitive/empty tool responses instead of exhausting the context window.
 
+---
+
 ### 5. Repository & Artifacts
 
 All vectors, unit tests, scripts, and logs are MIT-licensed on GitHub:
 - **GitHub Repository:** [https://github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)
 - **Standalone PyTorch Script:** [`scripts/fix_mimo_vanilla_pytorch.py`](https://github.com/FiveTechSoft/weights/blob/main/scripts/fix_mimo_vanilla_pytorch.py)
-- **WSP SafeTensors Tool:** [`scripts/apply_wsp_to_safetensors.py`](https://github.com/FiveTechSoft/weights/blob/main/scripts/apply_wsp_to_safetensors.py)
+- **SafeTensors Surgery Tool:** [`scripts/apply_wsp_to_safetensors.py`](https://github.com/FiveTechSoft/weights/blob/main/scripts/apply_wsp_to_safetensors.py)
 - **Declarative Program:** [`programs/fix_mimo_tool_loops.wspl`](https://github.com/FiveTechSoft/weights/blob/main/programs/fix_mimo_tool_loops.wspl)
+- **Control Vector Binary:** [`rig_runs/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/rig_runs/loop_control_vector.gguf)
 - **Detailed Empirical Report:** [`results.md` (Section 15)](https://github.com/FiveTechSoft/weights/blob/main/results.md)
 
 We welcome questions, feedback, and independent evaluations from the Xiaomi MiMo team and the open-source community!
