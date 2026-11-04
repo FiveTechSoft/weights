@@ -1,0 +1,29 @@
+experiment blog_exp7_unlearn_sycophancy:
+
+    theoretical_foundation:
+        Fast Weight Programmers & Delta-Rule Unlearning (Irie, Schlag, Schmidhuber 2021)
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    format:
+        safetensors
+
+    objective:
+        replicate_mit_blog_exp7_unlearn_sycophancy_in_attention_projections
+
+    budgets:
+        max_modified_weights = 65536
+        target_parameter_fraction = 0.001
+        max_delta_norm = 0.0005
+        allow_write = false
+
+    steps:
+        # Step 1: Audit Layer 27 Full Self-Attention Output (where high-level conversational agreement concentrates)
+        step audit model.language_model.layers.27.self_attn.o_proj.weight
+
+        # Step 2: Contract verification for orthogonal capability preservation
+        step assert_orthogonal_preservation key=data/u_loop_L14.npz
+
+        # Step 3: Delta-Rule unlearning of sycophantic agreement direction with zero orthogonal cross-talk
+        step delta_unlearn model.language_model.layers.27.self_attn.o_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.10 top_rows=32

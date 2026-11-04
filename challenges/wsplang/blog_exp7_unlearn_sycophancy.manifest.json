@@ -1,0 +1,128 @@
+{
+  "wsplang_version": "0.3.0",
+  "theoretical_framework": "Fast Weight Programmers (FWP) & Associative Memory Unlearning",
+  "programa": "blog_exp7_unlearn_sycophancy",
+  "archivo": "programs\\blog_exp7_unlearn_sycophancy.wspl",
+  "steps_count": 7,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 65536"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 0.001"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 0.0005"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step audit model.language_model.layers.27.self_attn.o_proj.weight",
+      "op": "audit",
+      "args": "model.language_model.layers.27.self_attn.o_proj.weight"
+    },
+    {
+      "sec": "steps",
+      "expr": "step assert_orthogonal_preservation key=data/u_loop_L14.npz",
+      "op": "assert_orthogonal_preservation",
+      "args": "key=data/u_loop_L14.npz"
+    },
+    {
+      "sec": "steps",
+      "expr": "step delta_unlearn model.language_model.layers.27.self_attn.o_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.10 top_rows=32",
+      "op": "delta_unlearn",
+      "args": "model.language_model.layers.27.self_attn.o_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.10 top_rows=32"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.3.0",
+    "theoretical_framework": "Fast Weight Programmers (FWP) & Associative Memory Unlearning",
+    "secciones": {
+      "budgets": 4,
+      "steps": 3
+    },
+    "pasos": [
+      {
+        "op": "audit",
+        "args": "model.language_model.layers.27.self_attn.o_proj.weight"
+      },
+      {
+        "op": "assert_orthogonal_preservation",
+        "args": "key=data/u_loop_L14.npz"
+      },
+      {
+        "op": "delta_unlearn",
+        "args": "model.language_model.layers.27.self_attn.o_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.10 top_rows=32"
+      }
+    ],
+    "pasos_mapeo": {
+      "audit": "audit tensor energy, norm delta, and semantic alignment",
+      "assert_orthogonal_preservation": "verify zero distortion on orthogonal concept manifold",
+      "delta_unlearn": "Delta-Rule associative memory unlearning W <- W - eta*(u(u^T W) - v*)"
+    },
+    "budgets": {
+      "max_modified_weights": 65536,
+      "target_parameter_fraction": 0.001,
+      "max_delta_norm": 0.0005,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T13:04:13",
+  "ejecucion": [
+    {
+      "op": "audit",
+      "args": "model.language_model.layers.27.self_attn.o_proj.weight",
+      "status": "ok",
+      "result": {
+        "tensor": "model.language_model.layers.27.self_attn.o_proj.weight",
+        "shape": [
+          4096,
+          4096
+        ],
+        "total_elements": 16777216,
+        "frobenius_norm": 85.64232635498047,
+        "max_magnitude": 0.859375
+      }
+    },
+    {
+      "op": "assert_orthogonal_preservation",
+      "args": "key=data/u_loop_L14.npz",
+      "status": "ok",
+      "result": {
+        "probe_dimension": 4096,
+        "inner_product_with_key": 0.0,
+        "orthogonal_preservation_verified": true,
+        "crosstalk_distortion": 0.0
+      }
+    },
+    {
+      "op": "delta_unlearn",
+      "args": "model.language_model.layers.27.self_attn.o_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.10 top_rows=32",
+      "status": "ok",
+      "result": {
+        "rule": "Delta-Rule (Widrow-Hoff)",
+        "tensor": "model.language_model.layers.27.self_attn.o_proj.weight",
+        "shard": "model-00004-of-00004.safetensors",
+        "unlearning_rate_eta": 0.05,
+        "modified_parameters": 13088,
+        "fraction_modified": "0.0780%",
+        "max_delta_norm": 0.0003623944357968867,
+        "energy_before": 1.32118558883667,
+        "energy_after": 1.3188749551773071,
+        "energy_reduction_pct": "0.17%",
+        "orthogonal_crosstalk_risk": 0.0,
+        "written_to_disk": false
+      }
+    }
+  ]
+}
