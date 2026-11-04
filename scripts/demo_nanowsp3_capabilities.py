@@ -1,6 +1,6 @@
 """demo_nanowsp3_capabilities.py — Systematic Thematic Verification of NanoWSP-3.
 
-Demonstrates Modular Multi-Thematic Knowledge Imprinting from MiMo-9B:
+Demonstrates Synthetic Modular Multi-Thematic Associative Memory Imprinting:
 - Theme 1: QUÍMICA & FÍSICA (Physical Science & Elements)
 - Theme 2: GEOGRAFÍA GLOBAL (Capitals & Landmarks)
 - Theme 3: CIENCIA DE LA COMPUTACIÓN (Pioneers & Languages)
@@ -84,7 +84,7 @@ THEMATIC_DOMAINS = [
 
 def run_thematic_benchmark():
     print("=" * 80)
-    print("PROJECT NANOWSP-3: MODULAR THEMATIC KNOWLEDGE IMPRINTING FROM MIMO-9B")
+    print("PROJECT NANOWSP-3: MODULAR THEMATIC ASSOCIATIVE MEMORY TESTBED")
     print("Zero-Backpropagation 6-Layer Weight-Space Architecture")
     print("=" * 80)
 

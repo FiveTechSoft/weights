@@ -1,4 +1,4 @@
-"""nanowsp3_runtime.py — NanoWSP-3: 6-Layer Modular Thematic Micro-LLM Synthesized in Weight Space.
+"""nanowsp3_runtime.py — NanoWSP-3: 6-Layer Modular Linear Associative Memory Testbed in Weight Space.
 
 Architecture Specifications:
 - 6 Layers, d_model=256, 8 Attention Heads (d_head=32), d_ff=512, Vocab=256.
@@ -124,7 +124,7 @@ def rms_norm(x: torch.Tensor, weight: torch.Tensor, eps: float = 1e-5) -> torch.
 # ==============================================================================
 
 class NanoWSP3:
-    """6-Layer Modular Thematic Micro-LLM Synthesized in Weight Space."""
+    """6-Layer Modular Linear Associative Memory Architecture in Weight Space."""
 
     def __init__(self, config: Optional[NanoWSP3Config] = None):
         self.config = config or NanoWSP3Config()

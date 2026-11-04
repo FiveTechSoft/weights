@@ -1,8 +1,11 @@
-# NanoWSP-3: Tabla Exhaustiva de Preguntas y Respuestas Verificadas
+# NanoWSP-3: Tabla de Asociaciones Clave-Valor Verificadas (Memoria Asociativa Lineal)
 
-NanoWSP-3 es un micro-LLM autorregresivo de **6 capas y 3.280.128 parámetros** (12,51 MB SafeTensors) sintetizado completamente en el espacio de pesos mediante **WSP-Lang**.
+NanoWSP-3 es una arquitectura experimental de **6 capas y 3.280.128 parámetros** (12,51 MB SafeTensors) con pesos base ortogonales sintéticos, diseñada como banco de pruebas de memoria asociativa lineal mediante la fórmula de inversión de Gram / mínimos cuadrados regularizados.
 
-A continuación se detalla la batería completa de los **23 hechos volcados desde MiMo-9B**, organizados en 5 dominios temáticos, evaluados al 100% de acierto con una confianza media del **98,4%** en **154 ms** de síntesis en CPU.
+> [!NOTE]
+> **Aclaración y Límites Científicos:** NanoWSP-3 no es un modelo de lenguaje generalizado (LLM) ni extrajo pesos o activaciones de MiMo-9B. Los 23 pares asociativos fueron definidos sintéticamente para validar que la inversión cerrada $(K^T K + \lambda I)^{-1} K^T$ en una capa MLP puede almacenar 23 asociaciones con 100% de recuperación sin interferencia destructiva. No generaliza a preguntas fuera de la muestra ni modela sintaxis de lenguaje natural.
+
+A continuación se detalla la batería de los **23 pares sintéticos programados**, organizados en 5 dominios temáticos, evaluados al 100% de acierto exacto con una confianza media del **98,4%** en **154 ms** de resolución algebraica en CPU.
 
 ---
 
