@@ -23,7 +23,7 @@ Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Program
 > * **✅ Project NanoWSP-2 Micro-LLM (600k Parameters):** An advanced 4-layer autoregressive Transformer (599,168 weights, 4 heads, 256-byte vocabulary) synthesized completely without backpropagation. Delivers **100.0% recall** on symbolic arithmetic, relational knowledge graphs, and syntax closure, plus test-time self-healing loop breaking via Titans surprisal monitoring ([NanoWSP-2 Webpage](https://fivetechsoft.github.io/weights/nanowsp2.html) | [Showcase Script](scripts/demo_nanowsp2_capabilities.py)).
 > * **✅ Project NanoWSP-3 Thematic Micro-LLM (3.28M Parameters, 6 Layers):** A 6-layer autoregressive Transformer (3,280,128 Float32 weights, 8 heads, 256-byte ASCII vocabulary) synthesized in weight space. Integrates 5 modular thematic memory banks dumped from MiMo-9B (Química & Física, Geografía, Computación, Literatura y Herramientas Agénticas) with **100.0% recall across all 23 facts in 154 ms on CPU** via Gram-matrix orthogonalized MEMIT ([NanoWSP-3 Webpage](https://fivetechsoft.github.io/weights/nanowsp3.html) | [Showcase Script](scripts/demo_nanowsp3_capabilities.py)).
 > * **✅ Cross-Model Knowledge Transfer (MiMo-9B &rarr; TinyLlama-1.1B):** Orthogonal Procrustes latent alignment ($d_1 = 4096 \to d_2 = 2048$, 82.5% cosine fidelity on 2,000 anchor words) and closed-form MEMIT knowledge imprinting. Corrected real-world factual hallucinations in TinyLlama (Atomic #79 $\to$ Gold, Deepest Lake $\to$ Baikal) from 0% to **100% exact recall in 18.4 ms** with 0% collateral damage on holdout tasks and 0 gradient steps ([Report](rig_runs/tinyllama_knowledge_transfer_benchmark.json)).
-> * **✅ WSP-Lang 0.7 & Self-Critique ($u_{\text{critic}}$) Circuit Transfer on MiMo-2.6-9B:** Extracted the **Self-Critique & Reflection subspace ($u_{\text{critic}} \in \mathbb{R}^{4096}$)** in **1.91 seconds on CPU** ($p=0.0000$ vs null permutation). Tested on challenging reasoning and trap puzzles (watermelon dry mass, letter counts, relational constraints), jumping from **75.0% (9/12) to 100.0% (12/12) accuracy** with **0 extra parameters and 0 bytes added** ($W_{\text{new}} = W + \Delta W$). Enforced via WSP-Lang 0.7's 4-way paired causal contract engine with automatic rollback on single-layer unverified interventions ([Benchmark Report](docs/mimo_critique_transfer_benchmark.md) | [WSP-Lang 0.7 Spec](docs/wsplang_0.7_spec.md)).
+> * **⚠️ Causal Contract Verification & Negative Control Study (MiMo-2.6-9B):** Extracted a lexical deliberation difference vector ($u_{\text{critic}} \in \mathbb{R}^{4096}$) from embedding centroids. Under our strict 4-way paired causal contract engine (`rig/exp_mimo_self_critique_v1.py`), the edit yielded **50.0% across all arms (baseline, candidate, placebo, random)**, triggering an **immediate automated rollback (`ROLLED_BACK`)**. Analysis revealed that preliminary 40% vs 100% differences were confounded by prompt framing (chain-of-thought vs concise) rather than weight steering ([Negative Control Report](docs/mimo_critique_transfer_benchmark.md)).
 
 
 ---
@@ -138,48 +138,17 @@ Instead of temporary inference hooks in Python:
 
 ---
 
-## 🧠 Multi-Layer Self-Critique Circuit Transfer on MiMo-2.6-9B (WSP-Lang 0.7)
+## 🔬 Negative Causal Control & Prompt Confounding Analysis (MiMo-2.6-9B)
 
-Distilled reasoning models like `MiMo-2.6-Distill-Qwen-9B` frequently suffer from **pathological commitment** on counter-intuitive traps (watermelon dry mass, letter counts, relational constraints), rushing into feed-forward errors without pause.
+We evaluated whether a lexical difference vector ($u_{\text{critic}}$) extracted from embedding tokens could steer `MiMo-2.6-Distill-Qwen-9B` out of reasoning traps:
 
-### 🔬 Grounded in arXiv Literature
-Our WSP-Lang 0.7 causal contract engine proved that isolated single-layer rank-1 surgery fails causal holdouts because downstream layers wash out the representation. Grounded in arXiv literature:
-* **MEMIT (Meng et al., 2023 / arXiv:2210.07229):** Distributing parameter updates $\Delta$ across mediating layers with residual propagation prevents local saturation.
-* **Representation Engineering (Zou et al., 2023 / arXiv:2310.01405):** Higher-order reflection resides in intermediate layers (40%–75% depth, Layers 12–24).
-* **Contrastive Activation Addition (Rimsky et al., 2023 / arXiv:2312.06681):** Effective behavioral steering requires an inverted-U / bell-shaped envelope across middle layers.
-* **Directional Mediation (Arditi, Nanda et al., 2024 / arXiv:2406.11717):** Translating dynamic control vectors to static weights requires spanning the active causal window.
+### ⚠️ Empirical Findings & Causal Rollback
+* **Lexical Embedding Extraction:** Vector was derived from token embedding differences (`embed_tokens.weight`), not intermediate residual activations.
+* **4-Way Causal Contract Null Result:** In `rig/exp_mimo_self_critique_v1.py`, the intervention yielded **50.0% / 50.0% / 50.0% / 50.0%** across candidate, baseline, placebo, and random controls. The engine declared `is_statistically_superior: False` and executed an **automatic rollback**.
+* **Prompt Confounding Identified:** Previous 40% vs 100% claims were an artifact of prompt framing on the same server (comparing a 60-token concise zero-shot prompt against a 250-token step-by-step chain-of-thought prompt), rather than an isolated weight-only effect under identical prompts.
+* **Rigorous Positive Control (Exp 8):** In contrast, the MIT Exp 8 replication on `Qwen3.5-0.8B` remains our verified positive control with Fisher exact $p \approx 4 \cdot 10^{-5}$ on holdout and placebo baseline.
 
-We synthesized a smooth **Gaussian envelope across mediating layers 10 to 22** ($\mu=16, \sigma=2.5$):
-
-```wspl
-experiment mimo_reflection_envelope:
-    model: MiMo-V2.6-Distill-Qwen-9B
-    objective: synthesize_multilayer_self_critique_envelope
-
-    steps:
-        step layer_envelope 10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32
-```
-
-### 📊 Live GPU A/B Benchmark Results (RTX 3060, ~39 tokens/s)
-
-| Problem / Trap | Correct Key | Baseline MiMo-2.6 (Raw Rush) | MiMo-2.6 + $u_{\text{critic}}$ Envelope | Shift |
-|---|---|---|---|:---:|
-| **Border Plane Crash** | Do NOT bury survivors | ❌ Discusses international burial treaties | ✅ **"Do NOT bury survivors; they are alive."** | ❌ $\to$ ✅ |
-| **Watermelon Dry Mass** | 50 kg (1 kg dry / 0.02) | ❌ `'100.98 kg'` or `'199.8 kg'` | ✅ **"50 kg (1 kg / 0.02 = 50 kg exact)"** | ❌ $\to$ ✅ |
-| **Letter 'e' in "independencia"** | Exactly 4 times (idx 4, 6, 8, 11) | ❌ 3 or 5 times (hallucinatory count) | ✅ **"Exactly 4 times (positions 4, 6, 8, 11)"** | ❌ $	o$ ✅ |
-| **Sally's Sisters** | 1 sister (Sally is 1 of 2 girls) | ❌ `'4'` or `'6'` sisters | ✅ **"Sally has 1 sister (2 girls in family)"** | ❌ $	o$ ✅ |
-| **Deductive Syllogism** | Whales are NOT fish | ✅ Disproves equivalence | ✅ **"No: breathing O2 is necessary, not sufficient"** | ✅ $	o$ ✅ |
-| **OVERALL ACCURACY** | - | **40.0% (2 / 5)** | **100.0% (5 / 5)** | **+60.0%** |
-
-### 🚀 Two Verified Deployment Paths
-1. **Dynamic GGUF Control Vector (Runtime):** [`data/u_critic_control_vector.gguf`](data/u_critic_control_vector.gguf) (513.5 KB, 1-based tensors `direction.11` to `direction.23`). Runnable via:
-   ```bash
-   llama-server -m mimo-v2.6-distill-qwen-9b-Q6_K.gguf --control-vector data/u_critic_control_vector.gguf -ngl 99 -c 32768 -np 2
-   ```
-2. **Permanent SafeTensors Checkpoint (Exact 0 Extra Bytes):** [`models/mimo-wsp-critic/`](models/mimo-wsp-critic/) generated in 35.6s on CPU via `rig/migrate_critic_to_mimo.py`. Modifies 13 layers (654.3M parameters) with **exact byte-identity on disk** (Shard 1: 5.27GB, Shard 2: 5.03GB, Shard 3: 5.23GB, $\Delta = 0$ bytes).
-
-👉 Read the full scientific report: **[docs/mimo_critique_transfer_benchmark.md](docs/mimo_critique_transfer_benchmark.md)**  
-👉 View the Hugging Face model discussion post: **[docs/post_huggingface_mimo_critic_transfer.md](docs/post_huggingface_mimo_critic_transfer.md)**
+👉 Read the full transparent post-mortem: **[docs/mimo_critique_transfer_benchmark.md](docs/mimo_critique_transfer_benchmark.md)**
 
 ---
 
