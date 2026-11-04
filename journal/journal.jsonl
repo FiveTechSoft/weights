@@ -22,3 +22,8 @@
 {"ts": "2026-11-03T21:21:17", "kind": "write", "detail": "edit"}
 {"ts": "2026-11-03T21:22:20", "kind": "read", "detail": "diff"}
 {"ts": "2026-11-04T00:27:39", "kind": "read", "detail": "tensors"}
+{"ts": "2026-11-04T01:06:55", "kind": "read", "detail": "peek"}
+{"ts": "2026-11-04T01:07:27", "kind": "read", "detail": "peek"}
+{"ts": "2026-11-04T01:09:05", "kind": "read", "detail": "peek"}
+{"ts": "2026-11-04T01:09:45", "kind": "read", "detail": "peek"}
+{"ts": "2026-11-04T01:10:23", "kind": "read", "detail": "peek"}

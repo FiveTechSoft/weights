@@ -1,0 +1,415 @@
+{
+  "summary": {
+    "n": 50,
+    "correct": 45,
+    "acc": 0.9,
+    "wilson_95": [
+      0.7864,
+      0.9565
+    ],
+    "total_seconds": 569.1,
+    "seconds_per_problem": 11.38
+  },
+  "results": [
+    {
+      "id": 1,
+      "gold": 18,
+      "pred": 18,
+      "correct": true,
+      "time": 4.04,
+      "tail": "breakfast\n- 4 eggs for muffins\n\nTotal used: $3 + 4 = 7$ eggs.\n\nEggs remaining to sell: $16 - 7 = 9$ eggs.\n\nShe sells them for $2 each, so her daily earnings are: $9 \\times 2 = 18$ dollars.\n\n\\boxed{18}"
+    },
+    {
+      "id": 2,
+      "gold": 3,
+      "pred": 3,
+      "correct": true,
+      "time": 3.13,
+      "tail": "A robe takes 2 bolts of blue fiber. Half that much white fiber is 2 / 2 = 1 bolt.\n\nTotal bolts = 2 + 1 = 3.\n\n\\boxed{3}"
+    },
+    {
+      "id": 3,
+      "gold": 70000,
+      "pred": 70000,
+      "correct": true,
+      "time": 16.41,
+      "tail": "se:**\n$80,000 + $120,000 = $200,000$\n\n**5. Calculate total cost:**\n$80,000 + $50,000 = $130,000$\n\n**6. Calculate profit:**\n$200,000 - $130,000 = $70,000$\n\nJosh made a profit of $70,000.\n\n\\boxed{70000}"
+    },
+    {
+      "id": 4,
+      "gold": 540,
+      "pred": 180,
+      "correct": false,
+      "time": 5.42,
+      "tail": "ce, multiply the number of sprints by the distance of each sprint:\n\n$$3 \\text{ sprints} \\times 60 \\text{ meters/sprint} = 180 \\text{ meters}$$\n\nJames runs a total of 180 meters in a week.\n\n\\boxed{180}"
+    },
+    {
+      "id": 5,
+      "gold": 20,
+      "pred": 20,
+      "correct": true,
+      "time": 9.92,
+      "tail": "e gives 15 cups in the morning and 25 cups in the afternoon, totaling:\n\n\\[\n15 + 25 = 40 \\text{ cups}\n\\]\n\nThe final meal is the remainder of the day's feed:\n\n\\[\n60 - 40 = 20 \\text{ cups}\n\\]\n\n\\boxed{20}"
+    },
+    {
+      "id": 6,
+      "gold": 64,
+      "pred": 64,
+      "correct": true,
+      "time": 15.12,
+      "tail": "at $5, one at $3) costs $8.\n\nWith 16 glasses, there are 16/2 = 8 pairs.\n\nTotal cost = 8 × $8 = $64\n\nAlternatively:\n- 8 glasses at $5 = $40\n- 8 glasses at $3 = $24\n- Total = $40 + $24 = $64\n\n\\boxed{64}"
+    },
+    {
+      "id": 7,
+      "gold": 260,
+      "pred": 260,
+      "correct": true,
+      "time": 8.41,
+      "tail": "louse.\nToulouse has twice as many sheep as Charleston:\n$2 \\times 80 = 160$ sheep.\n\n**Step 4:** Find the total number of sheep.\n$160 + 80 + 20 = 260$ sheep.\n\nTogether, they have 260 sheep.\n\n\\boxed{260}"
+    },
+    {
+      "id": 8,
+      "gold": 160,
+      "pred": 160,
+      "correct": true,
+      "time": 12.08,
+      "tail": "text{ min/hr} = 2 \\text{ hours } 40 \\text{ minutes}$\n\nThe question asks \"How long does it take to download the file?\" The answer is 160 minutes, or 2 hours and 40 minutes.\n\n\\boxed{160 \\text{ minutes}}"
+    },
+    {
+      "id": 9,
+      "gold": 45,
+      "pred": 45,
+      "correct": true,
+      "time": 12.38,
+      "tail": "hours in standstill traffic: 0 miles\n- 0.5 hours at 30 mph: 15 miles\n- 1.5 hours at 80 mph: 120 miles\n\nTotal distance back: 15 + 120 = 135 miles.\n\nDistance from home: 180 - 135 = 45 miles.\n\n\\boxed{45}"
+    },
+    {
+      "id": 10,
+      "gold": 460,
+      "pred": 460,
+      "correct": true,
+      "time": 7.55,
+      "tail": "rs} \\times \\$12/\\text{hour} = \\$60$$\n\n**Step 4: Calculate total earnings.**\nAdd the regular pay and the overtime pay:\n$$\\$400 + \\$60 = \\$460$$\n\nEliza's earnings for this week are $\\$460$.\n\n\\boxed{460}"
+    },
+    {
+      "id": 11,
+      "gold": 366,
+      "pred": 366,
+      "correct": true,
+      "time": 7.61,
+      "tail": "First month: 60 downloads.\n\nSecond month: 3 × 60 = 180 downloads.\n\nThird month: reduced by 30% of 180 = 54, so 180 − 54 = 126 downloads.\n\nTotal: 60 + 180 + 126 = 366.\n\n\\boxed{366}"
+    },
+    {
+      "id": 12,
+      "gold": 694,
+      "pred": 694,
+      "correct": true,
+      "time": 5.37,
+      "tail": "Donuts: 3 dozen × $68 = $204\nMini cupcakes: 2 dozen × $80 = $160\nMini cheesecakes: 6 dozen × $55 = $330\n\nTotal: $204 + $160 + $330 = $694\n\n\\boxed{694}"
+    },
+    {
+      "id": 13,
+      "gold": 13,
+      "pred": 13,
+      "correct": true,
+      "time": 22.07,
+      "tail": "tly $90, which covers his initial cost (break-even). During the 13th year, he begins to actually make a profit.\n\nSo, it takes **13 years** before he starts earning money on the lemon tree.\n\n\\boxed{13}"
+    },
+    {
+      "id": 14,
+      "gold": 18,
+      "pred": 2,
+      "correct": false,
+      "time": 45.75,
+      "tail": " $\\frac{1}{2}\\left(\\frac{2x}{3} - 2\\right)$.\n\nWe know she has 5 left, so:\n$$\\frac{1}{2}\\left(\\frac{2x}{3} - 2\\right) = 5$$\n\nMultiply both sides by 2:\n$$\\frac{2x}{3} - 2 = 10$$\n\nAdd 2 to both sides:\n$$"
+    },
+    {
+      "id": 15,
+      "gold": 60,
+      "pred": 60,
+      "correct": true,
+      "time": 8.61,
+      "tail": ":\n\\[\n0.25 \\times 16 = 4 \\text{ students}\n\\]\nThe rest enrolled in hip-hop dance:\n\\[\n16 - 4 = 12 \\text{ students}\n\\]\nPercentage of the entire class:\n\\[\n\\frac{12}{20} \\times 100\\% = 60\\%\n\\]\n\n\\boxed{60\\%}"
+    },
+    {
+      "id": 16,
+      "gold": 125,
+      "pred": 125,
+      "correct": true,
+      "time": 8.14,
+      "tail": "mparing the two profits:\n- Jewelry: $125\n- Electronics: $96\n\nThe jewelry option yields the higher profit. To maximize profit, the merchant should choose jewelry, earning a profit of $125.\n\n\\boxed{125}"
+    },
+    {
+      "id": 17,
+      "gold": 230,
+      "pred": 230,
+      "correct": true,
+      "time": 2.12,
+      "tail": "The two trains travel 80 miles westward on day one and 150 miles northward on day two.\n\nDistance covered by each train = 80 + 150 = 230 miles.\n\n\\boxed{230}"
+    },
+    {
+      "id": 18,
+      "gold": 57500,
+      "pred": 57500,
+      "correct": true,
+      "time": 5.5,
+      "tail": "r hour × 15 hours per week = $450 per week\n- $450 per week × 50 weeks per year = $22,500 per year\n\n**Total annual salary:**\n$35,000 + $22,500 = $57,500\n\nJill's annual salary is $57,500.\n\n\\boxed{57500}"
+    },
+    {
+      "id": 19,
+      "gold": 7,
+      "pred": 7,
+      "correct": true,
+      "time": 7.85,
+      "tail": "Claire eats 3 eggs each morning. In 4 weeks (28 days), she eats:\n\n3 eggs/day × 28 days = 84 eggs\n\nSince a dozen = 12 eggs:\n\n84 ÷ 12 = 7 dozens\n\n\\boxed{7}"
+    },
+    {
+      "id": 20,
+      "gold": 6,
+      "pred": 6,
+      "correct": true,
+      "time": 45.42,
+      "tail": "\n- Next 2 miles at 2 mph: 1 hour\n- Remaining 6 miles at 6 mph: 1 hour\n- Total: 12 miles in 3 hours\n- Average speed: 12/3 = 4 mph ✓\n\nThe answer is 6 mph.\n\nLet me also consider if there's any trick here"
+    },
+    {
+      "id": 21,
+      "gold": 15,
+      "pred": 15,
+      "correct": true,
+      "time": 20.87,
+      "tail": "s)\n\n**Step 5: Calculate the water in the remaining 24 liters**\n- Water from pineapple = 9 liters\n- Water from orange = $\\frac{2}{3} \\times 9 = 6$ liters\n- Total water = $9 + 6 = 15$ liters\n\n\\boxed{15}"
+    },
+    {
+      "id": 22,
+      "gold": 14,
+      "pred": null,
+      "correct": false,
+      "time": 29.58,
+      "tail": ""
+    },
+    {
+      "id": 23,
+      "gold": 7,
+      "pred": 7,
+      "correct": true,
+      "time": 5.75,
+      "tail": "First 3 customers: 3 × 1 = 3 DVDs\nNext 2 customers: 2 × 2 = 4 DVDs\nLast 3 customers: 3 × 0 = 0 DVDs\n\nTotal: 3 + 4 + 0 = 7 DVDs\n\n\\boxed{7}"
+    },
+    {
+      "id": 24,
+      "gold": 8,
+      "pred": 8,
+      "correct": true,
+      "time": 3.47,
+      "tail": "The candle burns from 1:00 PM to 5:00 PM, which is 4 hours. At a rate of 2 cm per hour, the candle will be 4 × 2 = 8 cm shorter.\n\n\\boxed{8}"
+    },
+    {
+      "id": 25,
+      "gold": 26,
+      "pred": 26,
+      "correct": true,
+      "time": 8.67,
+      "tail": "19.50$$\n\nTo find $P$, divide both sides by $0.75$:\n\n$$P = \\frac{19.50}{0.75} = 26$$\n\nCheck: $25\\%$ of $26 = 6.50$, and $26 - 6.50 = 19.50$. ✓\n\nThe original price of the book was $\\$26.00$.\n\n\\boxed{26}"
+    },
+    {
+      "id": 26,
+      "gold": 2,
+      "pred": 2,
+      "correct": true,
+      "time": 7.96,
+      "tail": "Marie paid a total of $50, so the amount spent on pizza is:\n$50 - $33 = $17\n\nEach box of pizza costs $8.50, so the number of pizza boxes is:\n$17 ÷ $8.50 = 2\n\nMarie ordered 2 boxes of pizza.\n\n\\boxed{2}"
+    },
+    {
+      "id": 27,
+      "gold": 243,
+      "pred": 243,
+      "correct": true,
+      "time": 10.11,
+      "tail": "nts: $3 \\times 22.50 = 67.50$\n- Shoes: $3 \\times 42 = 126$\n\nTotal: $49.50 + 67.50 + 126 = 243$\n\nAlternatively, $3 \\times (16.50 + 22.50 + 42) = 3 \\times 81 = 243$.\n\nMishka spent $\\boxed{243}$ dollars."
+    },
+    {
+      "id": 28,
+      "gold": 16,
+      "pred": 16,
+      "correct": true,
+      "time": 9.8,
+      "tail": " so the number of cartons needed is:\n\n\\[\n60 \\div 15 = 4 \\text{ cartons}\n\\]\n\nEach carton costs $4.00, so the total cost is:\n\n\\[\n4 \\times 4.00 = 16.00\n\\]\n\nShe will spend $16.00 on ice cream.\n\n\\boxed{16}"
+    },
+    {
+      "id": 29,
+      "gold": 25,
+      "pred": 25,
+      "correct": true,
+      "time": 4.88,
+      "tail": "Henry's trip was 60 miles total.\n\n- First stop: after 20 miles.\n- Second stop: 15 miles before the end, so at $60 - 15 = 45$ miles.\n\nDistance between the stops: $45 - 20 = 25$ miles.\n\n\\boxed{25}"
+    },
+    {
+      "id": 30,
+      "gold": 104,
+      "pred": 104,
+      "correct": true,
+      "time": 3.64,
+      "tail": "The two pairs of heels cost $33 and $33 \\times 2 = $66, so together they cost $33 + $66 = $99. The boots cost $99 + $5 = $104.\n\n\\boxed{104}"
+    },
+    {
+      "id": 31,
+      "gold": 109,
+      "pred": 109,
+      "correct": true,
+      "time": 7.63,
+      "tail": "Darrell's age is $7x$ and Allen's age is $11x$.\n\n$7x + 11x = 162$\n$18x = 162$\n$x = 9$\n\nAllen's age now: $11 \\times 9 = 99$\nAllen's age 10 years from now: $99 + 10 = 109$\n\n\\boxed{109}"
+    },
+    {
+      "id": 32,
+      "gold": 80,
+      "pred": 80,
+      "correct": true,
+      "time": 9.1,
+      "tail": "\n\nSecond guess: 20 more than half of 80. Half of 80 is 40, so 40 + 20 = 60.\n\nThird guess: 25% more than 80. 25% of 80 is 20, so 80 + 20 = 100.\n\nAverage: (80 + 60 + 100) / 3 = 240 / 3 = 80.\n\n\\boxed{80}"
+    },
+    {
+      "id": 33,
+      "gold": 35,
+      "pred": 35,
+      "correct": true,
+      "time": 3.08,
+      "tail": "10 dogs × 0.5 hours/day = 5 hours/day. Over 7 days: 5 × 7 = 35 hours/week.\n\n\\boxed{35}"
+    },
+    {
+      "id": 34,
+      "gold": 70,
+      "pred": 70,
+      "correct": true,
+      "time": 20.04,
+      "tail": "to equation 1:\n$(s + 30) + s = 110$\n$2s + 30 = 110$\n$2s = 80$\n$s = 40$\n\nSo Gretchen has 40 silver coins. Gold coins:\n$g = 40 + 30 = 70$\n\nCheck: $70 + 40 = 110$ ✓\n\nGretchen has $\\boxed{70}$ gold coins."
+    },
+    {
+      "id": 35,
+      "gold": 23,
+      "pred": 23,
+      "correct": true,
+      "time": 9.22,
+      "tail": "d's jewels: $40 \\div 2 = 20$\n   * Aaron's jewels: $20 + 5 = 25$\n3. **Siobhan's jewels:** Siobhan has 2 fewer jewels than Aaron.\n   * Siobhan's jewels: $25 - 2 = 23$\n\nSiobhan has 23 jewels.\n\n\\boxed{23}"
+    },
+    {
+      "id": 36,
+      "gold": 9,
+      "pred": 9,
+      "correct": true,
+      "time": 2.58,
+      "tail": "Mike scores 4 points in the first 20 minutes.\n\nIn the second 20 minutes, he scores 25% more points:\n$4 + 0.25 \\times 4 = 4 + 1 = 5$ points.\n\nTotal points:\n$4 + 5 = 9$\n\n\\boxed{9}"
+    },
+    {
+      "id": 37,
+      "gold": 75,
+      "pred": 75,
+      "correct": true,
+      "time": 10.66,
+      "tail": " = 60 yogurts\n\nThey are sold at 4 yogurts for $5.00. So, 60 yogurts is:\n60 ÷ 4 = 15 packages\n\nEach package costs $5.00, so:\n15 × $5.00 = $75.00\n\nTerry spends $75.00 on yogurt over 30 days.\n\n\\boxed{75}"
+    },
+    {
+      "id": 38,
+      "gold": 2,
+      "pred": 0,
+      "correct": false,
+      "time": 21.38,
+      "tail": "ls **all** of them, so he has none left.\n\nThe money details ($15 × 13 = $195 earned, $20 × 8 = $160 spent, $5 left) don't change the number of lego sets he owns — he sold every one of them.\n\n\\boxed{0}"
+    },
+    {
+      "id": 39,
+      "gold": 10,
+      "pred": 10,
+      "correct": true,
+      "time": 3.83,
+      "tail": " 3 hours.\n- Other two days: half as much = 3 / 2 = 1.5 hours each.\n- Total running time = 3 + 1.5 + 1.5 = 6 hours.\n- Total distance = 60 miles.\n- Speed = distance / time = 60 / 6 = 10 mph.\n\n\\boxed{10}"
+    },
+    {
+      "id": 40,
+      "gold": 18,
+      "pred": 18,
+      "correct": true,
+      "time": 12.13,
+      "tail": " Run: 2 × 3 = 6 mph\n- Walk: 6 ÷ 4 = 1.5 mph\n\nIn 6 hours, she spends 2 hours running and 4 hours walking:\n- Running: 6 × 2 = 12 miles\n- Walking: 1.5 × 4 = 6 miles\n\nTotal: 12 + 6 = 18 miles.\n\n\\boxed{18}"
+    },
+    {
+      "id": 41,
+      "gold": 8,
+      "pred": 8,
+      "correct": true,
+      "time": 9.29,
+      "tail": "s, so Ben's iPhone is $2 \\times 1 = 2$ years old.\n3. **Brandon's iPhone** is four times as old as Ben's, so Brandon's iPhone is $4 \\times 2 = 8$ years old.\n\nBrandon's iPhone is 8 years old.\n\n\\boxed{8}"
+    },
+    {
+      "id": 42,
+      "gold": 200,
+      "pred": 200,
+      "correct": true,
+      "time": 10.94,
+      "tail": "st she can stand while still hitting the dragon is 1200 feet.\n\n1200 − 1000 = 200 feet\n\nSo, holding the gemstone, Polly could stand up to 200 feet outside the reach of the dragon's flames.\n\n\\boxed{200}"
+    },
+    {
+      "id": 43,
+      "gold": 26,
+      "pred": 26,
+      "correct": true,
+      "time": 3.68,
+      "tail": "Grandma Jones baked 5 pies, each cut into 8 pieces:\n\n5 × 8 = 40 pieces total\n\nThere were 14 pieces remaining, so the number taken is:\n\n40 − 14 = 26\n\n\\boxed{26}"
+    },
+    {
+      "id": 44,
+      "gold": 48,
+      "pred": 48,
+      "correct": true,
+      "time": 9.2,
+      "tail": " calories.\n\nEach serving is 250 calories, so 200 calories = 0.8 servings.\n\nThe bag has 5 servings in 300g, so each serving is 300/5 = 60g.\n\n0.8 servings × 60g = 48g.\n\nYou can eat 48 grams.\n\n\\boxed{48}"
+    },
+    {
+      "id": 45,
+      "gold": 20,
+      "pred": 20,
+      "correct": true,
+      "time": 7.62,
+      "tail": "alculate net profit.**\n- Net profit = Revenue − Cost = $40.00 − $20.00 = $20.00.\n\nAlternatively, profit per candle = $2.00 − $1.00 = $1.00. For 20 candles: 20 × $1.00 = $20.00.\n\n**Answer:**\n\\boxed{20}"
+    },
+    {
+      "id": 46,
+      "gold": 104,
+      "pred": 104,
+      "correct": true,
+      "time": 15.11,
+      "tail": "ednesday:** Twice Tuesday's count:\n$2 \\times 7 = 14$ articles\n\n**4. Total articles:** $5 + 7 + 14 = 26$ articles\n\n**5. Total hours:** Each article takes 4 hours:\n$26 \\times 4 = 104$ hours\n\n\\boxed{104}"
+    },
+    {
+      "id": 47,
+      "gold": 163,
+      "pred": null,
+      "correct": false,
+      "time": 30.89,
+      "tail": ""
+    },
+    {
+      "id": 48,
+      "gold": 800,
+      "pred": 800,
+      "correct": true,
+      "time": 10.13,
+      "tail": ". He bought twice as many red ties, so 10 red ties. Red ties cost 50% more than blue ties, so $40 × 1.5 = $60 each. He spent 10 × $60 = $600 on red ties. Total spent = $200 + $600 = $800.\n\n\\boxed{800}"
+    },
+    {
+      "id": 49,
+      "gold": 8,
+      "pred": 8,
+      "correct": true,
+      "time": 4.23,
+      "tail": " 4 feet = $4 \\times 12 = 48$ inches.\n\n2.  **Divide the total length by the length of each piece.**\n    Each piece is 6 inches long.\n    $48 \\div 6 = 8$\n\nSo, Tracy obtained 8 pieces of wire.\n\n\\boxed{8}"
+    },
+    {
+      "id": 50,
+      "gold": 30,
+      "pred": 30,
+      "correct": true,
+      "time": 10.69,
+      "tail": "The building has 15 floors × 8 units = 120 units total. Since 3/4 is occupied, 1/4 is unoccupied: 120 × 1/4 = 30.\n\n\\boxed{30}"
+    }
+  ]
+}

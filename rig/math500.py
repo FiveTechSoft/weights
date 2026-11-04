@@ -41,7 +41,7 @@ DIR_OUT = ROOT / "rig_runs"
 DIR_LOCK = ROOT / "rig" / "sellados"
 DIR_OUT.mkdir(parents=True, exist_ok=True)
 
-REQ_TIMEOUT = 600  # segundos por petición al server
+REQ_TIMEOUT = 1800  # segundos por petición (CPU-server: 2.3 tok/s medidos 2026-11-04)
 
 
 def _p(*a):

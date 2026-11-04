@@ -112,7 +112,7 @@ def ask(endpoint, model, case, temperature, seed, retries):
         try:
             req = urllib.request.Request(endpoint, data=payload,
                 headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=180) as resp:
+            with urllib.request.urlopen(req, timeout=900) as resp:
                 data = json.loads(resp.read().decode("utf-8", errors="replace"))
             choice = (data.get("choices") or [{}])[0]
             raw = (choice.get("message") or {}).get("content") or ""

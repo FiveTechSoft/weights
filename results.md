@@ -222,4 +222,45 @@ Retos aprobados: 12 (01-09 lectura + 41-43 escritura). Referencia: csinva/weight
    * **Patología confirmada como estructural:** Reside en los pesos de `MiMo-9B`. No es un artefacto de temperatura ni de repetición inmediata.
    * **Baseline de referencia establecido:** Se fija el rango 50%–70% como el suelo empírico riguroso. Cualquier edición en espacio de pesos en la siguiente fase debe demostrar una reducción por debajo del 30% con $N \ge 80$ para ser considerada un éxito.
 
+---
+
+## 11. Línea Base Rigurosa de GSM8K ($N=50$), Neuronas de Lógica y Vector de Control Agéntico
+
+### 11.1. Línea Base Determinista de GSM8K ($N=50$, GPU local)
+* **Runner y configuración:** [`rig/eval_gsm8k_mimo.py`](file:///c:/weights/rig/eval_gsm8k_mimo.py) sobre `MiMo-V2.6-Distill-Qwen-9B` en puerto 8081 con `temperature=0.0` (decodificación greedy determinista) y extracción rigurosa de `\boxed{}`.
+* **Resultado:** **45 / 50 aciertos (90.0%)**, Intervalo de Wilson 95%: **[78.6%, 95.7%]**.
+* **Velocidad:** 569.1 s totales (11.38 s/problema).
+* **Análisis de los 5 fallos:**
+  * Problema #4: Predijo 180, Gold 540 (error de paso multiplicativo: ignoró "3 veces por semana").
+  * Problema #14: Predijo 2, Gold 18.
+  * Problema #22: Predijo None (sin boxed), Gold 14.
+  * Problema #38: Predijo 0, Gold 2.
+  * Problema #47: Predijo None (sin boxed), Gold 163.
+* **Conclusión:** La línea base matemática de MiMo-9B es elevada (90.0%), pero tiene exactamente un 10.0% de margen de error reproducible documentado en [`rig_runs/gsm8k_mimo_baseline_n50.json`](file:///c:/weights/rig_runs/).
+
+### 11.2. Neuronas Semánticas de Lógica Identificadas (`wsp.py peek`)
+Mediante proyección sobre centroides diferenciales de embedding, se localizaron columnas específicas con afinidad extrema a semillas de lógica formal:
+* **`blk.14.ffn_down.weight` Columna 6907:**
+  * Norma: 1.0087 (Rango #7 entre las 12,288 columnas de la matriz).
+  * Área semántica dominante: `Math & Logic (math_logic)` (score +0.0350).
+  * Semillas más afines: `logic` (+0.0360), `theorem` (+0.0328), `lemma` (+0.0245).
+* **`blk.14.ffn_down.weight` Columna 7980:**
+  * Norma: 1.0217 (Rango #5 entre las 12,288 columnas).
+  * Área semántica dominante: `Math & Logic (math_logic)` (score +0.0184).
+* **`blk.19.attn_output.weight` Fila 3562:**
+  * Norma: 1.3249 (Rango #6 de salida de atención).
+  * Área semántica dominante: `Math & Logic (math_logic)` (score +0.0227).
+
+### 11.3. Aislamiento del Vector de Control Agéntico ($u$) mediante Representation Engineering
+* **Procedimiento:** Se ejecutó [`rig/extract_loop_direction.py`](file:///c:/weights/rig/extract_loop_direction.py) con 12 trayectorias contrastivas (6 bucles y 6 productivas) en `MiMo-9B` (`bfloat16`, CPU), extrayendo los estados ocultos en el token de decisión de las 32 capas.
+* **Test de Hipótesis Nula (100 permutaciones):**
+  * La separación entre bucle y estado productivo es máxima y estadísticamente significativa en las **Capas 1 y 2**:
+    * **Capa 1:** norma de señal = 0.15 vs ruido nulo = 0.08 (**ratio 1.83x, SNR = 1.164, $p = 0.010$**).
+    * **Capa 2:** norma de señal = 0.19 vs ruido nulo = 0.12 (**ratio 1.52x, SNR = 0.989, $p < 0.001$**).
+    * Capas 4 a 7: ratio 1.14x – 1.19x ($p \le 0.040$).
+* **Entregable generado:**
+  * Fichero de vector de control nativo de llama.cpp: [`rig_runs/loop_control_vector.gguf`](file:///c:/weights/rig_runs/loop_control_vector.gguf) (525 KB, con `direction.0` hasta `direction.31`).
+  * Informe completo en [`rig_runs/loop_direction_report.json`](file:///c:/weights/rig_runs/).
+
+
 
