@@ -19,7 +19,7 @@ DIR_PL = ROOT / "challenges" / "wsplang"
 DIR_PL.mkdir(parents=True, exist_ok=True)
 
 OPS_ALLOWED = {"inspect", "observe", "compare", "hypothesize", "localize", "peek",
-               "intervene", "evaluate", "confirm", "poke", "poke-weight", "rollback",
+               "intervene", "evaluate", "confirm", "poke", "poke-weight", "diff", "rollback",
                "record", "select_candidate", "semantic_map", "semantic-map", "semantic_areas", "semantic-areas"}
 TYPES = {"Model", "Tensor", "Activation", "Direction", "Behavior", "Hypothesis",
          "Intervention", "Benchmark", "Experiment", "Result", "SemanticArea", "SemanticCentroid"}
@@ -68,7 +68,7 @@ def parse_args_lines(text):
     return prog
 
 
-METADATA = {"model", "objective", "constraints", "types", "declared", "sources",
+METADATA = {"model", "objective", "constraints", "budgets", "types", "declared", "sources",
             "baseline", "discover", "accept_if", "evaluate", "record", "hypothesis",
             "note", "semantic_areas", "semantic_target"}
 
@@ -131,6 +131,7 @@ def plan_run(prog, steps):
         "peek": "wsp peek <tensor> [row=] [col=] [k=] (anatomia del tensor + areas semanticas dominantes y afinidades)",
         "poke": "wsp poke <tensor> <row> <col> <valor> [out=] (poke de un solo peso, requant solo bloque)",
         "poke-weight": "wsp poke <tensor> <row> <col> <valor> (poke de peso individual; requantiza solo el bloque)",
+        "diff": "wsp diff <base> <edited> [tensor] (diferencia de pesos entre modelos)",
         "cov-steer": "wsp edit (steering alineado con covarianza diagonal por bloques)",
         "intervene": "wsp edit ediciones/<id>.json (POLICY enforced)",
         "evaluate": "wsp eval <alias> -n 20 (bg) + wsp vs",
@@ -275,6 +276,97 @@ def execute_plan(plan, gguf_path=None):
                 poke_res = wsp.poke(target_gguf, tensor, row, col, val, out=out_file)
                 res["result"] = poke_res
 
+            elif op in ("compare", "evaluate"):
+                target_file = None
+                for tok in tokens:
+                    if tok.endswith(".json"):
+                        target_file = tok
+                        break
+                if not target_file and tokens:
+                    target_file = tokens[0]
+                if target_file:
+                    target_path = Path(target_file)
+                    if not target_path.is_absolute():
+                        target_path = ROOT / target_path
+                    if target_path.exists():
+                        data = json.loads(target_path.read_text(encoding="utf-8"))
+                        if "base" in data and "edited" in data:
+                            base_acc = data["base"]["summary"]["acc"]
+                            edit_acc = data["edited"]["summary"]["acc"]
+                            base_cut = data["base"]["summary"]["cut_share"]
+                            edit_cut = data["edited"]["summary"]["cut_share"]
+                            base_res = {r["id"]: r for r in data["base"]["results"]}
+                            edit_res = {r["id"]: r for r in data["edited"]["results"]}
+                            repairs = []
+                            regressions = []
+                            for qid, er in edit_res.items():
+                                br = base_res.get(qid, {})
+                                if er.get("correct") and not br.get("correct"):
+                                    repairs.append({"id": qid, "gold": er.get("gold"), "pred": er.get("pred")})
+                                elif not er.get("correct") and br.get("correct"):
+                                    regressions.append({"id": qid, "gold": er.get("gold"), "pred": er.get("pred")})
+                            res["result"] = {
+                                "evaluation_file": str(target_path.name),
+                                "base_accuracy": f"{base_acc:.1%}",
+                                "edited_accuracy": f"{edit_acc:.1%}",
+                                "accuracy_delta": f"{(edit_acc - base_acc):+.1%}",
+                                "base_cut_share": f"{base_cut:.1%}",
+                                "edited_cut_share": f"{edit_cut:.1%}",
+                                "repairs_count": len(repairs),
+                                "repairs": repairs,
+                                "regressions_count": len(regressions),
+                                "regressions": regressions,
+                                "verdict": "POSITIVE_IMPROVEMENT" if edit_acc > base_acc else ("REGRESSION" if edit_acc < base_acc else "NEUTRAL")
+                            }
+                        else:
+                            res["result"] = data
+                    else:
+                        res["status"] = "error"
+                        res["error"] = f"Evaluation file not found: {target_path}"
+                else:
+                    res["status"] = "error"
+                    res["error"] = "No evaluation file specified in compare/evaluate step"
+
+            elif op in ("diff",):
+                tensor = tokens[0] if tokens else "blk.14.ffn_down.weight"
+                import fnmatch
+                import numpy as np
+                base_gguf = default_gguf
+                for tok in tokens[1:]:
+                    if tok.startswith("base="):
+                        base_gguf = Path(tok.split("=", 1)[1])
+                if not base_gguf.exists():
+                    res["status"] = "error"
+                    res["error"] = f"Base GGUF not found: {base_gguf}"
+                else:
+                    ta = {t.name: t for t in wsp.reader_of(base_gguf).tensors}
+                    tb = {t.name: t for t in wsp.reader_of(target_gguf).tensors}
+                    diffs = {}
+                    tot_n = 0
+                    tot_chg = 0
+                    for nm in sorted(tb):
+                        if not fnmatch.fnmatch(nm, tensor) or nm not in ta:
+                            continue
+                        D1 = wsp.row_decode(ta[nm])
+                        D2 = wsp.row_decode(tb[nm])
+                        chg = int((np.abs(D1 - D2) > 1e-4 * (np.abs(D1) + 1e-30)).sum())
+                        tot_n += D2.size
+                        tot_chg += chg
+                        diffs[nm] = {
+                            "changed_weights": chg,
+                            "total_weights": int(D2.size),
+                            "fraction": float(chg / max(D2.size, 1)),
+                            "percentage": f"{(chg / max(D2.size, 1)):.4%}"
+                        }
+                    res["result"] = {
+                        "base_model": str(base_gguf.name),
+                        "edited_model": str(target_gguf.name),
+                        "tensors": diffs,
+                        "total_changed": tot_chg,
+                        "total_weights": tot_n,
+                        "overall_percentage": f"{(tot_chg / max(tot_n, 1)):.4%}" if tot_n else "0.0%"
+                    }
+
             else:
                 res["status"] = "skipped (no-interactive)"
         except Exception as e:
@@ -340,8 +432,19 @@ def main():
         print(f"=== WSP-Lang EXECUTION RESULTS: {experiment} ===")
         for step in execution_results:
             op = step["op"]
-            print(f"\n> Step: {op} {step['args']} [status: {step['status']}]")
+            print(f"\n> Step: {op} {step.get('args', '')} [status: {step['status']}]")
             res = step.get("result", {})
+            if op in ("compare", "evaluate") and "base_accuracy" in res:
+                print(f"  Base Accuracy:   {res['base_accuracy']}")
+                print(f"  Edited Accuracy: {res['edited_accuracy']} (Delta: {res['accuracy_delta']})")
+                print(f"  Verdict:         {res['verdict']}")
+                print(f"  Repairs:         {res['repairs_count']} solved, Regressions: {res['regressions_count']}")
+                for rep in res.get("repairs", []):
+                    print(f"    * Problem #{rep['id']}: gold={rep['gold']}, pred={rep['pred']} [REPAIRED]")
+            elif op == "diff" and "overall_percentage" in res:
+                print(f"  Base:   {res['base_model']}")
+                print(f"  Edited: {res['edited_model']}")
+                print(f"  Total Weights Changed: {res['total_changed']:,} / {res['total_weights']:,} ({res['overall_percentage']})")
             if "semantic_areas" in res and res["semantic_areas"]:
                 sem = res["semantic_areas"]
                 dom = sem.get("dominant", {})

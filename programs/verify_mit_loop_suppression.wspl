@@ -1,0 +1,23 @@
+experiment verify_mit_loop_suppression:
+
+    model:
+        Qwen3.5-0.8B-Instruct
+
+    objective:
+        replicate_mit_csail_loop_suppression_and_verify_benchmarks
+
+    budgets:
+        max_modified_weights = 131072
+        target_parameter_fraction = 0.00016
+        allow_training = false
+
+    steps:
+        # Step 1: Compare benchmark evaluations between Base (looping) and Edited (surgical WSP)
+        # Verifies the exact loop suppression demonstrated by MIT, Jarrod Watts (@jarrodwatts), and Jacob Lauritzen (@jacsebl)
+        step compare exp8_control/results_eval_n5.json
+
+        # Step 2: Anatomical peek into 9B Layer 14 intermediate reasoning projection
+        step peek blk.14.ffn_down.weight row=100 col=4258 top=3
+
+        # Step 3: Global semantic map across differential cognitive centroids
+        step semantic_map top=3

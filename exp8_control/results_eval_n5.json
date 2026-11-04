@@ -1,0 +1,157 @@
+{
+  "base": {
+    "summary": {
+      "model": "exp8_control/base",
+      "n_samples": 5,
+      "acc": 0.0,
+      "correct": 0,
+      "cut_share": 1.0,
+      "cut_count": 5,
+      "mean_tokens": 512.0,
+      "total_seconds": 356.7,
+      "tok_per_s": 7.2
+    },
+    "results": [
+      {
+        "id": 1,
+        "gen_tokens": 512,
+        "seconds": 72.06,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": true,
+        "pred": "",
+        "gold": 18,
+        "correct": false,
+        "generation_tail": "    *   Interpretation B: It implies a subtraction from the total egg count.\n            *   Total eggs laid = 16.\n            *   Eggs eaten = 3.\n            *   Eggs used for muffins = 4.\n            *   Remaining eggs = 16 - 3 - 4 = 9.\n            *   Selling price = $2/egg.\n            *   Revenue = 9 * $2 = $18.\n    *   Let's check if there's any other interpretation. Maybe \"with four\" refers"
+      },
+      {
+        "id": 2,
+        "gen_tokens": 512,
+        "seconds": 73.41,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": true,
+        "pred": "",
+        "gold": 3,
+        "correct": false,
+        "generation_tail": "r is it a constraint on the ratio?\n    *   Let's assume the standard interpretation of such word problems unless specified otherwise.\n    *   Constraint: \"takes 2 bolts of blue fiber\". This implies Blue = 2.\n    *   Constraint: \"and half that much white fiber\". This usually implies White = (Blue / 2) or something similar? Or does it mean White = (Total / 2)?\n    *   Let's parse \"half that much\" as"
+      },
+      {
+        "id": 3,
+        "gen_tokens": 512,
+        "seconds": 74.07,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 80000,
+        "gold": 70000,
+        "correct": false,
+        "generation_tail": "          *   Increase = 150%. So $V_{new} = V_{old} \\times 2.5$ (since 150% means $100\\% + 50\\%$, which is 150%). Or does it mean $100\\% + 50\\% = 250\\%$?\n            *   Standard interpretation of \"increased by X%\" usually means $X\\%$ of the original amount.\n            *   Let's calculate based on standard financial logic first.\n            *   Original Cost ($C$) = $80,000$.\n            *   Rep"
+      },
+      {
+        "id": 4,
+        "gen_tokens": 512,
+        "seconds": 68.94,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 3,
+        "gold": 540,
+        "correct": false,
+        "generation_tail": "   Let's assume the standard reading: He runs 3 sprints. Each sprint takes 3 seconds? No, \"runs 60 meters each sprint\".\n        *   Let's look at the structure: \"runs 3 sprints 3 times a week\". It might be a typo for \"runs 3 sprints 3 times a week\" (meaning 3 sprints, done 3 times).\n        *   Actually, let's look at the numbers. 3 sprints $\\times$ 60m = 180m.\n        *   Maybe the phrase \"runs 3"
+      },
+      {
+        "id": 5,
+        "gen_tokens": 512,
+        "seconds": 68.1,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 25,
+        "gold": 20,
+        "correct": false,
+        "generation_tail": "ucture again.\n    *   Morning: 15 cups.\n    *   Afternoon: 25 cups.\n    *   Is this a single day? Or is there a pattern?\n    *   Let's assume the question asks for the sum of the morning and afternoon feeds plus the final meal, OR just the final meal.\n    *   If the problem implies a daily cycle where the feed is given in specific times, and we need the amount for the \"final meal\", we need to know"
+      }
+    ]
+  },
+  "edited": {
+    "summary": {
+      "model": "exp8_control/edited",
+      "n_samples": 5,
+      "acc": 0.2,
+      "correct": 1,
+      "cut_share": 1.0,
+      "cut_count": 5,
+      "mean_tokens": 512.0,
+      "total_seconds": 401.6,
+      "tok_per_s": 6.4
+    },
+    "results": [
+      {
+        "id": 1,
+        "gen_tokens": 512,
+        "seconds": 71.04,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 1,
+        "gold": 18,
+        "correct": false,
+        "generation_tail": "Wait, I can't see \"bounces\" as a verb here. It must be \"bakes\".)\n                    *   Wait, looking at the provided text in the prompt: \"She eats three for breakfast every morning and bakes muffins for her friends every day with four.\"\n                    *   Let's assume standard English grammar.\n                    *   Scenario 1: She eats X amount. She makes Y amount.\n                       "
+      },
+      {
+        "id": 2,
+        "gen_tokens": 512,
+        "seconds": 73.79,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 3,
+        "gold": 3,
+        "correct": true,
+        "generation_tail": " the problem might be interpreted differently. Is it asking how many bolts of each color are needed?\n            *   Blue = 2.\n            *   White = \"half that much\".\n            *   Does \"that\" refer to the number of bolts of blue? Yes. So White = 0.5 * 2 = 1.\n            *   Total = 3.\n    *   *Self-Correction/Alternative Interpretation:* Sometimes \"halves\" in word problems are tricky.\n       "
+      },
+      {
+        "id": 3,
+        "gen_tokens": 512,
+        "seconds": 79.51,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 50000,
+        "gold": 70000,
+        "correct": false,
+        "generation_tail": "profit *after* all expenses are deducted from the sale price? No, that's not how it works here.\n    *   Let's assume the simplest interpretation first:\n        *   Initial Cost (Purchased): $80,000.\n        *   Additional Repair Investment: $50,000.\n        *   New Value (Selling Price?): Not explicitly stated as the selling price, but implied to be the \"value of the house\".\n        *   The phrase"
+      },
+      {
+        "id": 4,
+        "gen_tokens": 512,
+        "seconds": 89.14,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": true,
+        "pred": "",
+        "gold": 540,
+        "correct": false,
+        "generation_tail": "Construct Final Response:**\n    *   Step 1: Identify the distance per run ($60\\text{ m}$).\n    *   Step 2: Identify the number of runs per week ($3$).\n    *   Step 3: Multiply them ($60 \\times 3 = 180$).\n    *   Result: 180 meters.\n\n    *Self-Correction/Double Check:* Did I miss any detail?\n    - \"runs 3 times\" -> 3 times. Correct.\n    - \"runs 60 meters\" -> 60 meters. Correct.\n    - \"total meters\""
+      },
+      {
+        "id": 5,
+        "gen_tokens": 512,
+        "seconds": 88.07,
+        "is_cut": true,
+        "has_think_end": false,
+        "has_boxed": false,
+        "pred": 3,
+        "gold": 20,
+        "correct": false,
+        "generation_tail": "arate meals\").\n    *   Let's check the math again. If I have 15 + 25 = 40 cups.\n    *   Is it possible that the question implies the \"final meal\" refers to the one after the morning and afternoon?\n    *   Let's assume the standard interpretation for this type of puzzle:\n        *   Meal 1: Morning (15 cups).\n        *   Meal 2: Afternoon (25 cups).\n        *   Meal 3: Final Meal.\n    *   Wait, the"
+      }
+    ]
+  },
+  "delta": {
+    "acc_delta": 0.2,
+    "cut_share_delta": 0.0,
+    "mean_tokens_delta": 0.0
+  }
+}

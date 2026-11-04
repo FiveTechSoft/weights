@@ -1,0 +1,16 @@
+{
+  "base": "C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+  "ops": [
+    {
+      "type": "subtract-direction",
+      "tensor": "blk.14.ffn_down.weight",
+      "u_from": "npz:C:\\weights\\data\\u_rand_L14.npz#u_rand",
+      "axis": "rows",
+      "mask": "top-k",
+      "k": 64,
+      "target_frac": 0.04,
+      "touch_tol": 0.001
+    }
+  ],
+  "out": "C:\\weights\\served\\mimo-mit-placebo.gguf"
+}

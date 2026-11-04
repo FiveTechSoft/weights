@@ -75,7 +75,7 @@ experiment inspect_semantic_areas:
 Run it locally with zero GPU setup:
 `python engine/wsplang.py programs/example_semantic_areas.wspl --run`
 
-WSP-Lang is open source (Apache 2.0) and includes an interactive CLI, Model Context Protocol (MCP) server for AI agents, and validation harnesses.
+WSP-Lang is open source (MIT License) and includes an interactive CLI, Model Context Protocol (MCP) server for AI agents, and validation harnesses.
 
 Code & specs on GitHub: https://github.com/FiveTechSoft/weights
 ```

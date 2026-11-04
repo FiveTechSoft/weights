@@ -282,7 +282,7 @@ def create_graphic():
     # -------------------------------------------------------------
     # FOOTER BAR (y: 0.12 to 0.35)
     # -------------------------------------------------------------
-    ax_canvas.text(0.6, 0.18, "FiveTechSoft / weights · High-Precision Sub-Weight Introspection (WSP) · Apache-2.0",
+    ax_canvas.text(0.6, 0.18, "FiveTechSoft / weights · High-Precision Sub-Weight Introspection (WSP) · MIT License",
                    color="#475569", fontfamily=font_main, fontsize=8.5, va="center")
     ax_canvas.text(15.4, 0.18, "Run: python engine/wsplang.py programs/example_semantic_areas.wspl --run",
                    color="#38BDF8", fontfamily=font_mono, fontsize=8.2, ha="right", va="center")
