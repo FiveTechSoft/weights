@@ -1,0 +1,39 @@
+# ==============================================================================
+# WSP-Lang 0.5: NanoWSP-2 Architecture Synthesis & Weight Programming
+# Model: NanoWSP-2 (4 Layers, d=128, 4 Heads, d_ff=256, Vocab=256, 599,168 params)
+# Objective: Declarative compilation of 4-layer micro-LLM without backpropagation
+# ==============================================================================
+
+experiment create_nanowsp2_from_scratch:
+    model: NanoWSP-2
+    objective: synthesize_and_program_4layer_micro_transformer_without_backprop
+
+    budgets:
+        max_modified_weights = 600000
+        target_parameter_fraction = 1.0
+        max_delta_norm = 100.0
+        allow_write = true
+
+    steps:
+        # Step 1: Synthesize and initialize the 4-layer micro-Transformer architecture
+        step init_architecture model=NanoWSP2 layers=4 d_model=128 heads=4 d_ff=256 vocab=256 out=models/nanowsp2/model.safetensors
+
+        # Step 2: Symbolic Arithmetic Reasoning in Layer 2 MLP
+        step imprint_association prompt="CALC:3+4=" target="7" layer=2 eta=5.0
+        step imprint_association prompt="CALC:9-5=" target="4" layer=2 eta=5.0
+        step imprint_association prompt="CALC:8/2=" target="4" layer=2 eta=5.0
+        step imprint_association prompt="CALC:9-7=" target="2" layer=2 eta=5.0
+        step imprint_association prompt="CALC:6+2=" target="8" layer=2 eta=5.0
+
+        # Step 3: Relational Knowledge Graph Transitions (Capitals)
+        step imprint_association prompt="REL:ESP:CAP=" target="MAD" layer=2 eta=5.0
+        step imprint_association prompt="REL:FRA:CAP=" target="PAR" layer=2 eta=5.0
+        step imprint_association prompt="REL:JPN:CAP=" target="TOK" layer=2 eta=5.0
+
+        # Step 4: Hierarchical Bracket Balancing & Syntax Closure
+        step imprint_association prompt="CODE:[{" target="}]" layer=2 eta=5.0
+        step imprint_association prompt="CODE:(<" target=">)" layer=2 eta=5.0
+        step imprint_association prompt="CODE:{[" target="]}" layer=2 eta=5.0
+
+        # Step 5: Spectral audit of synthesized Layer 2 representation space
+        step spectral_audit layers.2.mlp_out.weight q=16

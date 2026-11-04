@@ -789,8 +789,6 @@ def execute_plan_v4(
             # OP: init_architecture (WSP-Lang 0.5: Synthesize Micro-LLM from Scratch)
             # ------------------------------------------------------------------
             elif op == "init_architecture":
-                from engine.nanowsp_runtime import NanoWSP, NanoWSPConfig
-
                 arch_name = positional[0] if positional else named.get("model", "NanoWSP")
                 layers = int(named.get("layers", 2))
                 d_model = int(named.get("d_model", 64))
@@ -802,15 +800,28 @@ def execute_plan_v4(
                 if not out_p.is_absolute():
                     out_p = ROOT / out_p
 
-                cfg = NanoWSPConfig(
-                    vocab_size=vocab,
-                    d_model=d_model,
-                    n_layers=layers,
-                    n_heads=heads,
-                    d_head=d_model // heads,
-                    d_ff=d_ff
-                )
-                nanowsp = NanoWSP(config=cfg, seed=int(named.get("seed", 42)))
+                if "2" in arch_name or layers > 2 or d_model >= 128:
+                    from engine.nanowsp2_runtime import NanoWSP2, NanoWSP2Config
+                    cfg = NanoWSP2Config(
+                        vocab_size=vocab,
+                        d_model=d_model,
+                        n_layers=layers,
+                        n_heads=heads,
+                        d_head=d_model // heads,
+                        d_ff=d_ff
+                    )
+                    nanowsp = NanoWSP2(config=cfg, seed=int(named.get("seed", 1337)))
+                else:
+                    from engine.nanowsp_runtime import NanoWSP, NanoWSPConfig
+                    cfg = NanoWSPConfig(
+                        vocab_size=vocab,
+                        d_model=d_model,
+                        n_layers=layers,
+                        n_heads=heads,
+                        d_head=d_model // heads,
+                        d_ff=d_ff
+                    )
+                    nanowsp = NanoWSP(config=cfg, seed=int(named.get("seed", 42)))
 
                 saved = False
                 if allow_write:
@@ -850,9 +861,19 @@ def execute_plan_v4(
                     if fallback.exists():
                         ckpt_path = fallback
 
-                nanowsp = NanoWSP()
                 if ckpt_path.exists():
+                    from safetensors.torch import load_file
+                    tensors = load_file(str(ckpt_path))
+                    if 'layers.3.attn_q.weight' in tensors or tensors['token_embd.weight'].shape[0] == 256:
+                        from engine.nanowsp2_runtime import NanoWSP2
+                        nanowsp = NanoWSP2()
+                    else:
+                        from engine.nanowsp_runtime import NanoWSP
+                        nanowsp = NanoWSP()
                     nanowsp.load_checkpoint(ckpt_path)
+                else:
+                    from engine.nanowsp_runtime import NanoWSP
+                    nanowsp = NanoWSP()
 
                 if len(target) <= 1:
                     imprint_res = nanowsp.imprint_associative_rule(prompt, target, layer_idx=layer_idx, eta=eta)
@@ -913,9 +934,19 @@ def execute_plan_v4(
                     if fallback.exists():
                         ckpt_path = fallback
 
-                nanowsp = NanoWSP()
                 if ckpt_path.exists():
+                    from safetensors.torch import load_file
+                    tensors = load_file(str(ckpt_path))
+                    if 'layers.3.attn_q.weight' in tensors or tensors['token_embd.weight'].shape[0] == 256:
+                        from engine.nanowsp2_runtime import NanoWSP2
+                        nanowsp = NanoWSP2()
+                    else:
+                        from engine.nanowsp_runtime import NanoWSP
+                        nanowsp = NanoWSP()
                     nanowsp.load_checkpoint(ckpt_path)
+                else:
+                    from engine.nanowsp_runtime import NanoWSP
+                    nanowsp = NanoWSP()
 
                 batch_res = nanowsp.imprint_associative_batch(pairs, layer_idx=layer_idx, eta=eta)
 

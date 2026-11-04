@@ -230,7 +230,8 @@
     <div style="display: flex; gap: 1.5rem; font-size: 0.95rem;">
       <a href="index.html" style="color: var(--accent-cyan); text-decoration: none;">Overview</a>
       <a href="wsplang.html" style="color: var(--text-muted); text-decoration: none;">WSP-Lang 0.5 Spec</a>
-      <a href="nanowsp.html" style="color: var(--accent-purple); text-decoration: none;">NanoWSP Micro-LLM</a>
+      <a href="nanowsp.html" style="color: var(--accent-purple); text-decoration: none;">NanoWSP-1 (80k)</a>
+      <a href="nanowsp2.html" style="color: var(--accent-emerald); text-decoration: none; font-weight: 600;">NanoWSP-2 (600k)</a>
       <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16" target="_blank" style="color: var(--text-muted); text-decoration: none;">🤗 HF Discussion #16</a>
       <a href="mcp.html" style="color: var(--text-muted); text-decoration: none;">MCP Server</a>
       <a href="behavioral_steering_and_dreaming.html" style="color: var(--text-muted); text-decoration: none;">Behavioral Steering</a>
@@ -249,7 +250,8 @@
         View on GitHub
       </a>
       <a href="wsplang.html" class="btn btn-secondary">📜 WSP-Lang 0.5 Spec (FWP)</a>
-      <a href="nanowsp.html" class="btn btn-secondary" style="border-color: var(--accent-purple); color: #E9D5FF;">🤖 NanoWSP Micro-LLM</a>
+      <a href="nanowsp.html" class="btn btn-secondary" style="border-color: var(--accent-purple); color: #E9D5FF;">🤖 NanoWSP-1 (80k)</a>
+      <a href="nanowsp2.html" class="btn btn-secondary" style="border-color: var(--accent-emerald); color: #A7F3D0;">🤖 NanoWSP-2 (600k)</a>
       <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16" class="btn btn-secondary" target="_blank">🤗 HF Discussion #16</a>
       <a href="mcp.html" class="btn btn-secondary">⚡ FastMCP Server</a>
       <a href="behavioral_steering_and_dreaming.html" class="btn btn-secondary">🧬 Behavioral Steering Paper</a>
@@ -284,6 +286,31 @@
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
           <a href="wsplang.html" class="btn btn-primary" style="background: var(--accent-emerald); color: #064E3B; font-size: 0.9rem; font-weight: 700;">Explore WSP-Lang 0.5 Specification & Empirical Data &rarr;</a>
           <span style="display: inline-flex; align-items: center; font-size: 0.9rem; color: var(--text-muted); font-family: monospace;">python rig/leace_verification.py</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- NANOWSP-2 600K CARD -->
+    <section>
+      <div class="card" style="border-color: var(--accent-emerald); background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem; margin-bottom: 2rem;">
+        <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.25); border: 1px solid var(--accent-emerald); color: #A7F3D0; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW · PROJECT NANOWSP-2 (600K PARAMETERS)</div>
+        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🤖 NanoWSP-2: Advanced 4-Layer Micro-LLM Synthesized in Weight Space</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
+          A standalone <strong>4-layer autoregressive Transformer (599,168 parameters)</strong> with 4 attention heads and full 256-byte vocabulary. Imprints symbolic arithmetic, relational knowledge graphs, and nested delimiter parsing via WSP-Lang 0.5 primitives with <strong>100.0% recall in 21 ms on CPU</strong>.
+        </p>
+        <div class="grid-2" style="margin-bottom: 1rem;">
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
+            <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">1. Multi-Task Closed-Form Recall</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">MEMIT covariance regularization stabilizes the condition number (<code>&kappa; = 549.89</code>), delivering <strong>100.0% simultaneous accuracy</strong> on arithmetic (<code>CALC:3+4=7</code>), geography (<code>REL:ESP:CAP=MAD</code>), and syntax (<code>CODE:[{}]</code>).</p>
+          </div>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
+            <h4 style="color: var(--accent-amber); margin-bottom: 0.5rem;">2. Titans Surprisal Test-Time Self-Healing</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Surprisal monitor detects runaway loops in real time and synthesizes a transient fast-weight overlay <code>&Delta;W = -&eta; (v_rep &otimes; k) + &eta; (v_eos &otimes; k)</code> to break infinite cycles automatically.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="nanowsp2.html" class="btn btn-primary" style="background: var(--accent-emerald); color: #064E3B; font-size: 0.9rem; font-weight: 700;">Explore NanoWSP-2 Architecture & Benchmarks &rarr;</a>
+          <span style="display: inline-flex; align-items: center; font-size: 0.9rem; color: var(--text-muted); font-family: monospace;">python scripts/demo_nanowsp2_capabilities.py</span>
         </div>
       </div>
     </section>

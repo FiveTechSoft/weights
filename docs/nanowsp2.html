@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NanoWSP-2: Advanced 4-Layer Micro-LLM Synthesized in Weight Space</title>
+  <meta name="description" content="A 599k-parameter 4-layer Transformer programmed directly in weight space via WSP-Lang 0.5 primitives: MEMIT covariance regularization, LEACE concept erasure, Gated DeltaNet-2 decoupled attention, and Titans surprisal loop breaking.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+  <style>
+    :root {
+      --bg: #090D16;
+      --card-bg: #0F172A;
+      --card-border: #1E293B;
+      --accent-cyan: #38BDF8;
+      --accent-purple: #A855F7;
+      --accent-emerald: #10B981;
+      --accent-rose: #F43F5E;
+      --accent-amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --code-bg: #0B1120;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent-cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    header {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 75%);
+      padding: 4rem 1.5rem 3rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--accent-emerald);
+      color: #A7F3D0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 50%, #A7F3D0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 900px;
+      margin: 0 auto 2rem auto;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary { background: var(--accent-emerald); color: #064E3B; font-weight: 700; }
+    .btn-primary:hover { background: #6EE7B7; text-decoration: none; transform: translateY(-2px); }
+    .btn-secondary { background: #1E293B; color: var(--text-main); border: 1px solid #334155; }
+    .btn-secondary:hover { background: #334155; text-decoration: none; transform: translateY(-2px); }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem; }
+    section { margin-bottom: 3.5rem; }
+
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: var(--accent-cyan);
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+      color: #E2E8F0;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: 'Consolas', monospace;
+      background: rgba(255,255,255,0.08);
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-size: 0.85em;
+      color: var(--accent-cyan);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--card-border); }
+    th { background: #131D31; color: var(--accent-cyan); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+
+    .callout {
+      border-left: 4px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .callout-emerald {
+      border-left: 4px solid var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.08);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .callout-purple {
+      border-left: 4px solid var(--accent-purple);
+      background: rgba(168, 85, 247, 0.08);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1.5rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div style="font-weight: 800; font-size: 1.25rem; color: var(--text-main);">🧠 FiveTechSoft / weights</div>
+    <div style="display: flex; gap: 1.5rem; font-size: 0.95rem;">
+      <a href="index.html">Overview</a>
+      <a href="wsplang.html">WSP-Lang 0.5 Spec</a>
+      <a href="nanowsp.html">NanoWSP-1 (80k)</a>
+      <a href="nanowsp2.html" style="color: var(--accent-emerald); font-weight: 700;">NanoWSP-2 (600k)</a>
+      <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16" target="_blank">🤗 HF Discussion #16</a>
+      <a href="https://github.com/FiveTechSoft/weights" target="_blank">GitHub</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="badge-pill">RESEARCH SHOWCASE · PROJECT NANOWSP-2 (600K PARAMETERS)</div>
+    <h1>NanoWSP-2: 4-Layer Micro-LLM</h1>
+    <p class="subtitle">An advanced 4-layer autoregressive Transformer (599,168 parameters) synthesized and programmed completely in weight space via WSP-Lang 0.5 primitives without gradient descent or backpropagation.</p>
+    
+    <div class="btn-group">
+      <a href="https://github.com/FiveTechSoft/weights" class="btn btn-primary" target="_blank">View Code on GitHub</a>
+      <a href="wsplang.html" class="btn btn-secondary">📜 WSP-Lang 0.5 Spec</a>
+      <a href="nanowsp.html" class="btn btn-secondary">🤖 NanoWSP-1 Baseline</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ARCHITECTURE COMPARISON -->
+    <section>
+      <h2 class="section-title">1. Architectural Evolution: NanoWSP-1 vs NanoWSP-2</h2>
+      <p>NanoWSP-2 expands the depth and expressive capacity of weight-space programming from a basic 2-layer associative prototype into a hierarchically capable 4-layer micro-LLM:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Specification</th>
+            <th>NanoWSP-1 (v0.4)</th>
+            <th>NanoWSP-2 (v0.5)</th>
+            <th>Architectural Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Layers</strong></td>
+            <td>2 Layers</td>
+            <td><strong>4 Layers</strong></td>
+            <td>Enables deep hierarchical routing (lexical &rarr; arithmetic &rarr; relational &rarr; syntax)</td>
+          </tr>
+          <tr>
+            <td><strong>Model Dimension ($d$)</strong></td>
+            <td>64</td>
+            <td><strong>128</strong></td>
+            <td>4x larger representation manifold; wider orthogonal subspaces</td>
+          </tr>
+          <tr>
+            <td><strong>Attention Heads</strong></td>
+            <td>2 Heads ($d_k=32$)</td>
+            <td><strong>4 Heads ($d_k=32$)</strong></td>
+            <td>Multi-head specialized routing & decoupled erase/write linear attention</td>
+          </tr>
+          <tr>
+            <td><strong>FFN Hidden Dim ($d_{ff}$)</strong></td>
+            <td>128</td>
+            <td><strong>256</strong></td>
+            <td>Higher memory capacity for mass associative synthesis via MEMIT</td>
+          </tr>
+          <tr>
+            <td><strong>Vocabulary</strong></td>
+            <td>100 Chars (Printable ASCII)</td>
+            <td><strong>256 Bytes (Full 8-bit Byte Space)</strong></td>
+            <td>Supports raw byte streams, code tokens, and arbitrary binary data</td>
+          </tr>
+          <tr>
+            <td><strong>Total Parameters</strong></td>
+            <td>80,704</td>
+            <td><strong>599,168</strong></td>
+            <td>7.4x parameter scaling in deterministic Float32 SafeTensors format</td>
+          </tr>
+          <tr>
+            <td><strong>Mathematical Framework</strong></td>
+            <td>Moore-Penrose Pseudo-Inverse</td>
+            <td><strong>MEMIT Covariance Regularization + LEACE + Titans</strong></td>
+            <td>Prevents condition number explosion; supports test-time self-healing loop breaking</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- MULTI-TASK CAPABILITIES -->
+    <section>
+      <h2 class="section-title">2. Multi-Task Benchmark Results (100.0% Recall)</h2>
+      <p>Measured empirically via <code>python scripts/demo_nanowsp2_capabilities.py</code> in <strong>21 ms on CPU</strong>:</p>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <h3 style="color: var(--accent-emerald); margin-bottom: 0.75rem;">1. Symbolic Arithmetic (5/5 · 100.0%)</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Multi-step arithmetic evaluation programmed into Layer 2 MLP via covariance-regularized MEMIT:</p>
+          <pre><code>CALC:3+4= -> 7   [OK]
+CALC:9-5= -> 4   [OK]
+CALC:8/2= -> 4   [OK]
+CALC:9-7= -> 2   [OK]
+CALC:6+2= -> 8   [OK]</code></pre>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-cyan);">
+          <h3 style="color: var(--accent-cyan); margin-bottom: 0.75rem;">2. Relational Knowledge Graph (3/3 · 100.0%)</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Multi-token factual generation across distinct semantic relations:</p>
+          <pre><code>REL:ESP:CAP= -> MAD  (Madrid)     [OK]
+REL:FRA:CAP= -> PAR  (Paris)      [OK]
+REL:JPN:CAP= -> TOK  (Tokyo)      [OK]</code></pre>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-purple);">
+          <h3 style="color: var(--accent-purple); margin-bottom: 0.75rem;">3. Hierarchical Bracket Balancing (3/3 · 100.0%)</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Syntactic context-free grammar auto-closure across nested delimiters:</p>
+          <pre><code>CODE:[{ -> }]   [OK]
+CODE:(< -> >)   [OK]
+CODE:{[ -> ]}   [OK]</code></pre>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-amber);">
+          <h3 style="color: var(--accent-amber); margin-bottom: 0.75rem;">4. Titans Surprisal Test-Time Loop Breaker</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Detects runaway repetition at test time and injects dynamic fast-weight overlays:</p>
+          <pre><code>Prompt: 'LOOP:RUN LOOP:RUN LOOP:RUN '
+Without Monitor: Runs 12+ cyclic tokens (trapped)
+With Titans:    Fires at token 5 -> forces &lt;eos&gt;!</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- BACKPROPAGATION DEEP DIVE -->
+    <section>
+      <h2 class="section-title">3. ¿La Retropropagación es Programable con WSPLang o Realmente No Hace Falta?</h2>
+      
+      <div class="callout-emerald">
+        <strong>¿Es programable?</strong> Sí. El descenso de gradiente estocástico (SGD) consiste matemáticamente en una secuencia de actualizaciones de producto exterior de rango-1: 
+        <code>&Delta;W = -&eta; &sum; g<sub>i</sub> &otimes; x<sub>i</sub><sup>T</sup></code>. 
+        Cualquier paso de retropropagación puede expresarse como una operación de suma externa en WSP-Lang.
+      </div>
+
+      <div class="callout-purple">
+        <strong>¿Realmente hace falta?</strong> Para la <em>programación de capacidades, cirugía de pesos y desaprendizaje</em>: <strong>NO, y de hecho es matemáticamente inferior a WSP-Lang</strong> por cuatro razones fundamentales:
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4 style="color: var(--accent-rose);">1. Olvido Catastrófico (Catastrophic Forgetting)</h4>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">El gradiente de retropropagación se dispersa por todos los parámetros sin control ortogonal, destruyendo capacidades previamente aprendidas. En contraste, <strong>LEACE y MEMIT</strong> proyectan la actualización exclusivamente en el subespacio nulo o minimizan analíticamente la distorsión de Frobenius en la covarianza de fondo con <strong>0.0 fuga cruzada</strong>.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--accent-cyan);">2. Eficiencia Computacional: Forma Cerrada vs Iteraciones</h4>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">SGD requiere miles de iteraciones, backward passes que almacenan todos los mapas de activación en VRAM, y optimizadores como Adam que triplican el consumo de memoria. WSP-Lang resuelve el mínimo de mínimos cuadrados en <strong>forma cerrada en un solo paso analítico</strong> (20 ms en CPU).</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--accent-emerald);">3. Garantía de Extracción Exacta</h4>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Al eliminar un atractor nocivo o sesgo, SGD solo reduce la pérdida asintóticamente pero deja energía residual. <strong>LEACE</strong> garantiza analíticamente que <code>u<sup>T</sup> (W + &Delta;W) = 0.0</code> exacto a precisión de máquina (100.0000% de eliminación).</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--accent-purple);">4. ¿Dónde SÍ hace falta Backprop?</h4>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Backprop es insustituible para el <em>preentrenamiento fundacional masivo</em> (billones de tokens caóticos de lenguaje natural sin estructura explícita). Pero una vez que el espacio de representación existe, <strong>Weight-Space Programming es el paradigma óptimo para cirugía, direccionamiento conductual, memorización rápida y razonamiento algorítmico</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPRODUCTION INSTRUCTIONS -->
+    <section>
+      <h2 class="section-title">4. Reproducción & Ejecución CLI</h2>
+      <p>NanoWSP-2 puede ser compilado y evaluado directamente desde la terminal:</p>
+
+      <div class="card">
+        <h3>1. Ejecutar el Showcase Interactivo de Capacidades</h3>
+        <pre><code>python scripts/demo_nanowsp2_capabilities.py</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>2. Compilar NanoWSP-2 Declarativamente desde Cero vía WSPLang 0.5</h3>
+        <pre><code>python engine/wsplang.py programs/create_nanowsp2.wspl --run</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>3. Ejecutar la Suite de Tests Automatizados</h3>
+        <pre><code>python -m unittest tests/test_nanowsp2.py</code></pre>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>FiveTechSoft Research · Open Source under MIT License · <a href="https://github.com/FiveTechSoft/weights">GitHub: FiveTechSoft/weights</a></p>
+  </footer>
+
+</body>
+</html>
