@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "alias": "test_baseline_loops",
+    "endpoint": "http://127.0.0.1:8081/v1/chat/completions",
+    "n": 5,
+    "offset": 0,
+    "sampling_params": {
+      "temperature": 0.3,
+      "top_p": 0.95,
+      "max_tokens": 800,
+      "seed": 42,
+      "repetition_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0
+    },
+    "timestamp": "2026-11-04T11:33:14"
+  },
+  "results": [
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 8,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:echo \"hello\"' x7"
+      ],
+      "id": "general-0-candidate-0036-software-data-engineering",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:find / -name \"IK.py\" 2>/dev/null | head; echo' x5"
+      ],
+      "id": "general-0-candidate-0109-science-robotics",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 15,
+      "loop": true,
+      "loop_turn": 12,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /app/src/' x4"
+      ],
+      "id": "general-0-candidate-0260-security-appsec",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 11,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:cd /tmp && ls -la /app/src/ 2>&1; echo \"EXIT:' x4"
+      ],
+      "id": "general-0-candidate-0308-security-forensics",
+      "config": "general"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:echo $PWD; ls -la /app 2>&1 | cat' x5"
+      ],
+      "id": "general-0-candidate-0390-security-appsec",
+      "config": "general"
+    }
+  ]
+}
