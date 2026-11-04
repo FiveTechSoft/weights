@@ -1,0 +1,42 @@
+{
+  "dataset": "wspx_RECALL",
+  "patient": "nanowsp3-pretrained-PPL14",
+  "adam_steps": 600,
+  "trace": [
+    {
+      "step": 1,
+      "loss": 4.6685
+    },
+    {
+      "step": 101,
+      "loss": 0.4193
+    },
+    {
+      "step": 201,
+      "loss": 0.1508
+    },
+    {
+      "step": 301,
+      "loss": 0.0797
+    },
+    {
+      "step": 401,
+      "loss": 0.0504
+    },
+    {
+      "step": 501,
+      "loss": 0.0353
+    },
+    {
+      "step": 600,
+      "loss": 0.0264
+    }
+  ],
+  "acc": {
+    "w0_base": 0.015,
+    "adam_finetune": 0.74,
+    "closed_form_readout": 0.74,
+    "placebo_norm_matched": 0.025
+  },
+  "seconds": 39.5
+}

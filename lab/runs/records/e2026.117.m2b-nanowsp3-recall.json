@@ -1,0 +1,43 @@
+{
+  "experiment_id": "e2026.117.m2b-nanowsp3-recall",
+  "model_id": "NanoWSP-3 (6 layers, d_model=256, 3.28M params, pretrained PPL 14.3)",
+  "objective": "reproducir finetuning AdamW 600 pasos en NanoWSP-3 mediante cirugia cerrada readout margin-coded en 1 paso",
+  "baseline": {
+    "nombre": "NanoWSP-3 Pretrained",
+    "modelo": "W0 (PPL 14.3)"
+  },
+  "edicion": {
+    "program": "closed-form-ridge-readout",
+    "operaciones": [
+      "Hf_tr = fwd(Xtr, W0p)[-1]",
+      "Wout_surg = solve(Hf_tr.T @ Hf_tr + lam * I, Hf_tr.T @ Targets)"
+    ],
+    "tensor": "out.weight",
+    "ruta": "lab/train_lab_m2b.py"
+  },
+  "ejecucion": {
+    "estado": "ok",
+    "modelo_editado": "nanowsp3_readout_surgery"
+  },
+  "resultados": {
+    "w0_base": 0.015,
+    "trained_adam_finetune": 0.74,
+    "candidate_closed_form": 0.74,
+    "placebo": 0.025,
+    "adam_steps": 600,
+    "seconds_adam": 39.5
+  },
+  "hypothesis": "closed-form linear readout surgery on pretrained activations matches Adam finetuning",
+  "evidence": {
+    "train_acc": 0.74,
+    "placebo_acc": 0.025
+  },
+  "target": "out.weight",
+  "intervention": "regularized_dual_ridge_readout",
+  "model_hash": "nanowsp3_pretrain_ppl14",
+  "benchmark_version": "wspx_recall_v1",
+  "candidate": "P_surg_biased",
+  "placebo": "P_plac",
+  "holdout": "wspx_recall_universe",
+  "conclusion": "SUPPORTED"
+}
