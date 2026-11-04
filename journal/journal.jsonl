@@ -5,3 +5,6 @@
 {"ts": "2026-11-04T19:21:15", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-L01L02.gguf\", \"ops\": 2}"}
 {"ts": "2026-11-04T19:22:17", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-L01L02.gguf\", \"ops_count\": 2}"}
 {"ts": "2026-11-04T19:22:17", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-04T19:23:03", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-placebo.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-04T19:24:06", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-placebo.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-04T19:24:06", "kind": "write", "detail": "edit"}
