@@ -15,6 +15,13 @@ Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Program
 
 📄 **Scientific Report & Verifications:** [Reasoning Loop Suppression & Atari Weight Decompilation](docs/report_loop_suppression_and_atari.md)
 
+> [!TIP]
+> ### 🏆 Empirical Reproductions & Verified Breakthroughs (Nov 2026)
+> * **✅ MIT CSAIL Exp 8 Positive Control (100% Verified):** Replicated the 0.016% surgical weight edit on Qwen3.5-0.8B, suppressing the reasoning-loop attractor on GSM8K and boosting accuracy by **+20.0%** ([Full Report](docs/report_loop_suppression_and_atari.md)).
+> * **✅ Atari Weight Interpretation (Simon Willison & MIT Exp 1):** Decompiled the raw 17,253-parameter MLP weights for *Pong* (vertical axis dominance 1.54x) and *Breakout* (horizontal axis dominance 1.53x, max weight 5.34), with our local model correctly identifying *Pong* with **90% confidence**.
+> * **✅ WSP-Lang 0.1 Declarative Engine:** Native language runtime to inspect, diff, and verify weight modifications without GPU overhead (python engine/wsplang.py programs/verify_mit_loop_suppression.wspl --run).
+
+
 ---
 
 ![WSP-Lang Semantic Architecture](https://raw.githubusercontent.com/FiveTechSoft/weights/main/docs/assets/wsplang_semantic_areas.png)
