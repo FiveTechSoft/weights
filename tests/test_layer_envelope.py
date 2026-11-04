@@ -3,6 +3,7 @@
 import unittest
 from pathlib import Path
 import tempfile
+import gc
 import numpy as np
 import gguf
 
@@ -23,7 +24,11 @@ class TestLayerEnvelope(unittest.TestCase):
         np.savez(self.vec_file, u=dummy_vec)
 
     def tearDown(self):
-        self.tmpdir.cleanup()
+        gc.collect()
+        try:
+            self.tmpdir.cleanup()
+        except Exception:
+            pass
 
     def test_layer_envelope_gaussian_execution(self):
         out_gguf = self.tmppath / "envelope_test.gguf"
@@ -50,15 +55,18 @@ class TestLayerEnvelope(unittest.TestCase):
         self.assertGreater(weights[15], weights[14])
         self.assertAlmostEqual(weights[15], weights[17], places=4)
 
-        # Verify GGUF output
+        # Verify GGUF output (1-based tensor indexing for llama.cpp: direction.1..direction.32)
         self.assertTrue(out_gguf.exists())
         reader = gguf.GGUFReader(str(out_gguf))
         self.assertEqual(len(reader.tensors), 32)
-        # direction.16 should have max norm, direction.0 should be zero
-        t_16 = [t for t in reader.tensors if t.name == "direction.16"][0]
-        t_0 = [t for t in reader.tensors if t.name == "direction.0"][0]
-        self.assertGreater(np.linalg.norm(t_16.data), 0.9)
-        self.assertEqual(np.linalg.norm(t_0.data), 0.0)
+        # direction.17 corresponds to layer_idx=16 (peak)
+        t_peak = [t for t in reader.tensors if t.name == "direction.17"][0]
+        # direction.1 corresponds to layer_idx=0 (zero scale)
+        t_base = [t for t in reader.tensors if t.name == "direction.1"][0]
+        self.assertGreater(np.linalg.norm(t_peak.data), 0.9)
+        self.assertEqual(np.linalg.norm(t_base.data), 0.0)
+        del reader
+        gc.collect()
 
     def test_layer_envelope_cosine_execution(self):
         plan = {
