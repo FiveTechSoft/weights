@@ -13,6 +13,8 @@ Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Program
 
 🌐 **Live Research Portal & Interactive Documentation:** [https://fivetechsoft.github.io/weights/](https://fivetechsoft.github.io/weights/)
 
+📄 **Scientific Report & Verifications:** [Reasoning Loop Suppression & Atari Weight Decompilation](docs/report_loop_suppression_and_atari.md)
+
 ---
 
 ![WSP-Lang Semantic Architecture](https://raw.githubusercontent.com/FiveTechSoft/weights/main/docs/assets/wsplang_semantic_areas.png)
