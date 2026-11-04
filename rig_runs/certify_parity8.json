@@ -1,0 +1,12 @@
+{
+ "dataset": "PARITY8",
+ "dataset_sha256": "c36847c80fe055a0c17f399f6b9d21fb42147cccdef1dc002695b516521c4187",
+ "n_universe": 256,
+ "n_ok": 256,
+ "n_fail": 0,
+ "exact_on_universe": 1.0,
+ "failures_head": [],
+ "verdict": "EXACT",
+ "ts": "2026-11-04T23:22:38",
+ "oracle_selftest": "OK"
+}

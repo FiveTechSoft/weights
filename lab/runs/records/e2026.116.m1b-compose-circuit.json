@@ -1,0 +1,40 @@
+{
+  "experiment_id": "e2026.116.m1b-compose-circuit",
+  "model_id": "MLP-8-32-1",
+  "objective": "cirugia EXACTA de PARITY-8 por construccion cerrada (compose_circuit)",
+  "baseline": {
+    "nombre": null,
+    "modelo": null
+  },
+  "edicion": {
+    "program": "compose-circuit: 8 unidades umbral alternantes + 1 constante + 23 muertas",
+    "operaciones": [
+      "W1[:,0:8]=k, b1=-k(t_m+0.5)",
+      "W2[m]=eps*(-1)^m",
+      "const-unit shift -eps/2"
+    ],
+    "tensor": "W1,b1,W2",
+    "ruta": "lab/train_lab_toy_m1b.py"
+  },
+  "ejecucion": {
+    "estado": "ok",
+    "modelo_editado": "surgery"
+  },
+  "resultados": {
+    "trained_adam_holdout": 0.836,
+    "candidate_universe": 1.0,
+    "placebo": 0.488,
+    "min_margin": 0.025,
+    "cert": null
+  },
+  "hypothesis": "",
+  "evidence": {},
+  "target": "",
+  "intervention": "",
+  "model_hash": "",
+  "benchmark_version": "",
+  "candidate": "",
+  "placebo": "",
+  "holdout": "",
+  "conclusion": "INCONCLUSIVE"
+}

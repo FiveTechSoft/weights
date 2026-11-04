@@ -1,0 +1,14 @@
+{
+  "task": "parity8-compose-circuit",
+  "acc_universe_exact": 1.0,
+  "min_margin": 0.024990923702716827,
+  "acc_placebo": 0.48828125,
+  "acc_training_from_m1": 0.835616409778595,
+  "acc_surgery_m1_readout": 0.50390625,
+  "construction": {
+    "k": 10.0,
+    "eps": 0.05,
+    "hidden_used": 9,
+    "hidden_total": 32
+  }
+}

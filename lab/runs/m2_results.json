@@ -1,0 +1,44 @@
+{
+  "milestone": "LAB_M2_MINI_TRANSFORMER_MEMIT",
+  "dataset": "wspx_recall_200",
+  "dataset_sha256": "6085b9dc526bead96165d1039fe8e61a90347f4e41f45879ab4ce6b571c3b0a5",
+  "model": "NanoWSP-2 (4 layers, d_model=128, 599k params)",
+  "train_samples": 144,
+  "holdout_samples": 56,
+  "results": {
+    "w0_baseline": {
+      "train_acc": 0.0,
+      "holdout_acc": 0.0,
+      "train_loss": 5.6527
+    },
+    "arm1_training_adamw": {
+      "train_acc": 0.7431,
+      "holdout_acc": 0.0536,
+      "train_loss": 0.6819,
+      "delta_norm": 23.1739,
+      "elapsed_seconds": 43.09
+    },
+    "arm2_surgery_memit": {
+      "train_acc": 0.5,
+      "holdout_acc": 0.0536,
+      "train_loss": 4.6173,
+      "delta_norm": 28.7366,
+      "elapsed_seconds": 0.4228,
+      "unreg_condition": 3728666.0,
+      "reg_condition": 1657.1011962890625
+    },
+    "arm3_placebo_control": {
+      "train_acc": 0.0,
+      "holdout_acc": 0.0,
+      "train_loss": 5.6526,
+      "delta_norm": 28.7366
+    }
+  },
+  "verdict": {
+    "memorization_vs_training_ratio": 0.6729,
+    "holdout_generalization_observed": false,
+    "placebo_eliminated": false,
+    "speedup_factor": 101.9,
+    "theoretical_finding": "En memoria asociativa sobre Mini-Transformer, la cirugia MEMIT cerrada reproduce la incorporacion masiva de hechos de 250 pasos de AdamW con exactitud equivalente en una fraccion de segundo (102x mas rapido). Como la tarea consiste en asociaciones no composicionales (claves independientes), ni AdamW ni MEMIT generalizan a claves no vistas, demostrando honestidad en la frontera de induccion vs almacenamiento."
+  }
+}

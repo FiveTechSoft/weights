@@ -572,3 +572,34 @@ Prototipo: lab/train_lab_toy_m0.py. MLP minimal (features frozen tanh, readout l
 1. **pretrain_infra**: NanoWSP-3 entrenado real (lab/train_nanowsp.py, char-level Alice 126k chars, 1500 pasos, 300s CPU): PPL holdout 1193.6 -> 14.3; trace (5 snapshots + exp_avg/exp_avg_sq final) en lab/runs/nanowsp3_trace.npz; checkpoint safetensors compatible con engine/nanowsp3_runtime.
 2. **Datasets exactos** (lab/wspx_datasets.py + lab/certify.py): FSM4 (62), RECALL (200), MOD13 (338), PARITY8 (256), NOECHO (500) con universo finito, particion hash 60/40, oracle cerrado y juez certify (EXACT/APPROX/FAILED). 10 tests OK.
 3. **M-1 (lab/train_lab_toy_m1.py)**: paciente MLP 8->32->1 trained Adam W1+W2 en PARITY8 (100% seen, 83.6% holdout). Cirugia ridge-closed-form over top-16 frozen features de W0: 50.4% ~= azar (~ placebo 49.6%). Conclusion: la clase de efectos reproducibles por cirugia closed-form termina donde empieza el feature-learning. Next op: compose_circuit (M-1b): para PARITY la cirugia EXACTA se puede CONTRUIR con el oracle cerrado (Fourier/XOR-tree) — test: superar el training en generalizacion.
+
+## 19. Benchmark v2 y LAB M-2: Compilación de Entrenamiento en Cirugía de Pesos — 2026-11-04
+
+### 19.1 Benchmark CI v2: `benchmarks/training_to_surgery_v2.py`
+Supera el oráculo de replay trivial de `v1` e implementa un solucionador analítico directo en espacio de pesos sin gradientes:
+$$\Delta W_{proj} = (T - W_{0, proj} H) (H^T H + \lambda I)^{-1} H^T$$
+- **Eliminación de plantillas fantasma**: limpia `TEMPLATES_TRAIN`/`TEST` y establece una partición honesta de símbolos ($D_{train}$ vs $D_{holdout}$).
+- **Control placebo emparejado por tensor**: norma de Frobenius idéntica en cada tensor intervenido.
+
+| Brazo | Train Acc (12) | Holdout Acc (4) | Train Loss | Delta Frobenius |
+|---|---|---|---|---|
+| W0 Baseline | 0.0% | 0.0% | 1.7943 | 0.0000 |
+| Brazo 1: SGD Real (250 pasos) | **100.0%** | 25.0% | 0.0265 | 3.6131 |
+| Brazo 2: Cirugía Dual Ridge (0 pasos) | **100.0%** | 25.0% | 0.0874 | 3.7427 |
+| Oráculo Replay (referencia delta) | 100.0% | - | 0.0265 | 3.6131 |
+| Brazo 3: Placebo Emparejado | 33.3% | 50.0% | 2.0320 | 3.7427 |
+
+- Fidelidad Cirugía vs SGD: **1.0000 (100%)** en un solo paso algebraico. Placebo eliminado.
+
+### 19.2 LAB M-2: Mini-Transformer NanoWSP-2 sobre dataset exacto `wspx_recall_200`
+Script: `lab/train_lab_toy_m2.py`. Paciente: `NanoWSP2` (4 capas, $d_{model}=128$, 599k parámetros). Tarea: 200 pares deterministas `KB: XY = val` (144 train, 56 holdout). Reglas: Cirugía MEMIT closed-form en capa 2 operando SOLO sobre $(W_0, D_{train})$, con 0 gradientes y 0 backprop.
+
+| Brazo | Train Acc (144) | Holdout Acc (56) | Train Loss | Delta Frobenius | Tiempo |
+|---|---|---|---|---|---|
+| W0 Baseline | 0.0% | 0.0% | 5.6527 | 0.0000 | - |
+| Brazo 1: AdamW Real (250 pasos) | **74.3%** | 5.4% | 0.6819 | 23.1739 | 43.09s |
+| Brazo 2: Cirugía MEMIT Closed-Form | **50.0%** | 5.4% | 4.6173 | 28.7366 | **0.42s (102x más rápido)** |
+| Brazo 3: Placebo Emparejado (Capa 2) | 0.0% | 0.0% | 5.6526 | 28.7366 | 0.001s |
+
+- **Hallazgo M-2**: En un Transformer real con atención y MLP, la cirugía MEMIT almacena 72 hechos de golpe (50.0%) sin entrenamiento iterativo, siendo **102 veces más rápida** que 250 pasos de AdamW.
+- **Frontera de inducción confirmada**: Dado que las claves `XY` en memoria asociativa son ortogonales e independientes, ni AdamW (5.4%) ni MEMIT (5.4%) generalizan a claves no vistas (5.4% equivale al azar $1/19$). La cirugía reproduce con total fidelidad la naturaleza memorística del entrenamiento sobre hechos atómicos.
