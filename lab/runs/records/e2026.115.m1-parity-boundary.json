@@ -1,0 +1,35 @@
+{
+  "experiment_id": "e2026.115.m1-parity-boundary",
+  "model_id": "MLP-8-32-1",
+  "objective": "reproducir feature-learning de Adam (parity8) con ridge frozen-features",
+  "baseline": {
+    "nombre": null
+  },
+  "edicion": {
+    "program": "ridge-readout-top16",
+    "operaciones": [
+      "ridge-k16-readout-only"
+    ],
+    "tensor": "W2",
+    "ruta": "lab/train_lab_toy_m1.py"
+  },
+  "ejecucion": {
+    "estado": "ok"
+  },
+  "resultados": {
+    "trained": 0.836,
+    "candidate": 0.504,
+    "placebo": 0.496,
+    "chance": 0.5
+  },
+  "hypothesis": "",
+  "evidence": {},
+  "target": "",
+  "intervention": "",
+  "model_hash": "",
+  "benchmark_version": "",
+  "candidate": "",
+  "placebo": "",
+  "holdout": "",
+  "conclusion": "INCONCLUSIVE"
+}

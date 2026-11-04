@@ -1,0 +1,38 @@
+{
+  "experiment_id": "e2026.114.t2s-exact",
+  "model_id": "TinyAssociator(16,4,h24)",
+  "objective": "sustituir training SGD 250 pasos por cirugia closed-form exacta en lookup",
+  "baseline": {
+    "nombre": null,
+    "modelo": null
+  },
+  "edicion": {
+    "program": "closed-form-onehot-rows",
+    "operaciones": [
+      "embedding.row:=onehot(label)*3",
+      "proj:=fija"
+    ],
+    "tensor": "embedding.weight",
+    "ruta": "benchmarks/training_to_surgery_v1.py"
+  },
+  "ejecucion": {
+    "estado": "ok",
+    "modelo_editado": "closed arm"
+  },
+  "resultados": {
+    "trained": 1.0,
+    "candidate": 1.0,
+    "placebo": 0.083,
+    "unseen_ambos": 0.25
+  },
+  "hypothesis": "",
+  "evidence": {},
+  "target": "",
+  "intervention": "",
+  "model_hash": "",
+  "benchmark_version": "",
+  "candidate": "",
+  "placebo": "",
+  "holdout": "",
+  "conclusion": "INCONCLUSIVE"
+}

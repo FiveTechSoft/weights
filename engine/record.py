@@ -52,6 +52,13 @@ SCHEMA = {
         "conclusion": {"type": "string", "enum": ["SUPPORTED", "REJECTED", "INCONCLUSIVE"]},
         "veredicto": {"type": "string", "enum": ["keep", "discard", "sin_verificar",
                                                 "keep_sampling", "hypothesis_only"]},
+        # --- AUDIT 2026-11-04 (training_to_surgery_v1): niveles de cirugia ---
+        "surgery_tier": {"type": "string",
+                          "enum": ["EXACT", "APPROX", "UNREACHABLE"]},
+        "claim_class": {"type": "string",
+                          "enum": ["pipeline_check", "behavior_fix", "causal_learn"]},
+        "placebo_required": {"type": "boolean"},
+        "tier_inferred": {"type": "boolean"},
     },
     # campos de objeto libre que pueden aparecer dentro de 'evidence'
     "EVIDENCE_KEYS": ["metric", "valor", "baseline_valor", "candidato_valor",
@@ -71,6 +78,37 @@ EVIDENCE_KEYS = ["metric", "valor", "baseline_valor", "candidato_valor",
                  "separacion", "p_valor"]
 # campos del objeto 'resultados' con valor numerico
 NUMERIC_RESULT_KEYS = ["capacidad_edicion", "capacidad_mejro"]
+
+# AUDIT 2026-11-04: niveles de cirugia (surgery_tier) y clases de claim
+SURGERY_TIERS = ["EXACT", "APPROX", "UNREACHABLE"]
+CLAIM_CLASSES = ["pipeline_check", "behavior_fix", "causal_learn"]
+CLAIMS_CAUSALES = {"behavior_fix", "causal_learn"}
+
+def infer_tier(scores, chance=0.0, eps=1e-6, margin=0.15):
+    """Infiere surgery_tier desde los scores de un benchmark 3-brazos.
+    scores: dict con 'trained', 'candidate' (>=1 de direct_delta_replay|surgery|... ) y 'placebo'.
+    Reglas deterministas (nada declarado a mano):
+      EXACT       : candidate >= trained - eps  (empata o supera) y placebo < candidate - margin
+      UNREACHABLE : candidate <= chance + 0.1   o  candidate < placebo + margin
+      APPROX      : el resto (senal real, no bit-exacta)
+    """
+    trained = float(scores.get("trained", 0.0))
+    candidate = float(scores.get("candidate", 0.0))
+    placebo = float(scores.get("placebo", 0.0))
+    if candidate >= trained - eps and placebo < candidate - margin:
+        return "EXACT"
+    if candidate <= chance + 0.10 or candidate < placebo + margin:
+        return "UNREACHABLE"
+    return "APPROX"
+
+def validate_tier_rules(data):
+    """Reglas cruzadas del audit: claims causales exigen placebo_required=True."""
+    err = []
+    cc = data.get("claim_class")
+    pr = data.get("placebo_required")
+    if cc in CLAIMS_CAUSALES and pr is not True:
+        err.append("claim causal exige placebo_required=true (protocolo 3-brazos)")
+    return err
 
 
 def _num(x):
@@ -160,6 +198,7 @@ def validate(data):
                     errores.append(f"'{key}' no esta en el enum {CONCLUSION_VALUES}")
             if key == "objective" and not isinstance(data[key], str):
                 errores.append(f"'{key}' debe ser una cadena")
+    errores.extend(validate_tier_rules(data))
     return errores
 
 
