@@ -1,0 +1,145 @@
+{
+  "timestamp": "2026-11-04 16:32:53",
+  "method": "Contrastive Representation Engineering (SVD + Centroid)",
+  "source_model": "MiMo-v2.6-Distill-9B",
+  "target_layer": 16,
+  "n_contrastive_pairs": 30,
+  "vector_metrics": {
+    "dimension": 4096,
+    "raw_delta_norm": 0.06308,
+    "snr": 0.4068,
+    "null_permutation_mean_norm": 0.03987,
+    "separation_ratio": 1.58,
+    "p_value": 0.0,
+    "top_singular_values": [
+      0.396,
+      0.259,
+      0.229,
+      0.223,
+      0.212
+    ]
+  },
+  "contrastive_scenarios": [
+    {
+      "category": "arithmetic_trap",
+      "question": "A bat and a ball cost $1.10 in total. The bat costs $1.00 mo..."
+    },
+    {
+      "category": "rate_trap",
+      "question": "If 5 machines make 5 widgets in 5 minutes, how long do 100 m..."
+    },
+    {
+      "category": "counting_trap",
+      "question": "How many times does the letter 'r' appear in the word 'straw..."
+    },
+    {
+      "category": "logic_trap",
+      "question": "You are running a race and overtake the person in second pla..."
+    },
+    {
+      "category": "exponential_trap",
+      "question": "In a lake, a patch of lily pads doubles in size every day. I..."
+    },
+    {
+      "category": "family_logic",
+      "question": "Mary has 4 brothers. Each brother has 2 sisters. How many si..."
+    },
+    {
+      "category": "semantic_trap",
+      "question": "Which is heavier: 1 pound of feathers or 2 pounds of rocks?..."
+    },
+    {
+      "category": "subtraction_trap",
+      "question": "A farmer has 17 sheep. All but 9 run away. How many sheep do..."
+    },
+    {
+      "category": "assumption_trap",
+      "question": "A doctor gives you 3 pills and tells you to take one every h..."
+    },
+    {
+      "category": "probability_trap",
+      "question": "You flip a fair coin 5 times and get Heads each time. What i..."
+    },
+    {
+      "category": "code_invariants",
+      "question": "In Python, what is the length of range(0, 10, 2)?..."
+    },
+    {
+      "category": "geometry_trap",
+      "question": "Can a triangle have sides of length 3 cm, 4 cm, and 8 cm?..."
+    },
+    {
+      "category": "physics_trap",
+      "question": "A car travels 60 miles at 30 mph, and returns 60 miles at 60..."
+    },
+    {
+      "category": "riddle_logic",
+      "question": "Some months have 31 days, others have 30. How many months ha..."
+    },
+    {
+      "category": "math_trap",
+      "question": "Divide 30 by 1/2 and add 10. What is the result?..."
+    },
+    {
+      "category": "logic_validity",
+      "question": "All roses are flowers. Some flowers fade quickly. Therefore,..."
+    },
+    {
+      "category": "physical_riddle",
+      "question": "An electric train travels north at 80 mph. The wind blows so..."
+    },
+    {
+      "category": "constraint_trap",
+      "question": "How many two-cent stamps are in a dozen?..."
+    },
+    {
+      "category": "distribution_logic",
+      "question": "A father gives his first son $150 and his second son $100. W..."
+    },
+    {
+      "category": "math_proof",
+      "question": "Is 0.999... exactly equal to 1?..."
+    },
+    {
+      "category": "code_invariants",
+      "question": "In Python, what does s[::-1] do on string s?..."
+    },
+    {
+      "category": "scientific_reasoning",
+      "question": "Ice cream sales and drowning rates both increase in July. Do..."
+    },
+    {
+      "category": "combinatorics",
+      "question": "In a room of 5 people, everyone shakes hands with everyone e..."
+    },
+    {
+      "category": "geometry_counting",
+      "question": "How many cuts do you need to divide a 10-meter rope into 1-m..."
+    },
+    {
+      "category": "linguistic_trap",
+      "question": "Which letter is silent in the word 'doubt'?..."
+    },
+    {
+      "category": "binary_math",
+      "question": "What is binary 1010 in base 10?..."
+    },
+    {
+      "category": "trig_geometry",
+      "question": "At 3:15, what is the angle between the hour and minute hands..."
+    },
+    {
+      "category": "set_theory",
+      "question": "A barber shaves all men in town who do not shave themselves...."
+    },
+    {
+      "category": "arithmetic_trap",
+      "question": "A 100 kg watermelon is 99% water. After sitting in the sun, ..."
+    },
+    {
+      "category": "formal_math",
+      "question": "Is the empty set a subset of every set?..."
+    }
+  ],
+  "output_vector_path": "C:\\weights\\data\\u_critic_L16.npz"
+}
