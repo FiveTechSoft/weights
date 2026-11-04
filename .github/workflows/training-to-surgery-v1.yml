@@ -1,0 +1,55 @@
+name: Training-to-Surgery v1
+
+on:
+  pull_request:
+    paths:
+      - 'benchmarks/training_to_surgery_v1.py'
+      - 'benchmarks/TRAINING_TO_SURGERY_V1.md'
+      - '.github/workflows/training-to-surgery-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark-smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install PyTorch CPU
+        run: python -m pip install --upgrade pip torch
+      - name: Run benchmark
+        run: >-
+          python benchmarks/training_to_surgery_v1.py
+          --device cpu
+          --seed 7
+          --steps 100
+          --out runs/ci_training_to_surgery_v1
+      - name: Assert generated report
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('runs/ci_training_to_surgery_v1/report.json').read_text())
+          scores = report['scores']
+          assert report['steps'] == 100, report
+          assert report['delta_l2'] > 0, report
+          assert abs(scores['trained_model'] - scores['direct_delta_replay']) < 1e-7, scores
+          assert 'norm_matched_random_placebo' in scores, scores
+          print('CI checks passed:', scores)
+          PY
+      - name: Upload benchmark artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-to-surgery-v1-report
+          path: runs/ci_training_to_surgery_v1/
+          if-no-files-found: warn
+          retention-days: 14
