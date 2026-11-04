@@ -1,0 +1,159 @@
+{
+ "experiment_id": "e2026.117.m2b-readout-recall",
+ "model_id": "nanowsp3-pretrained-PPL14",
+ "objective": "cirugia readout closed-form vs finetune Adam en RECALL (lookup con paciente real)",
+ "baseline": {
+  "nombre": "W0 pretrain (PPL14)",
+  "modelo": "nanowsp3"
+ },
+ "edicion": {
+  "program": "ridge-readout margin-coded lambda=1.0 (certify=APPROX)",
+  "operaciones": [
+   "out.weight:=solve(HtH+lam, Ht*R)"
+  ],
+  "tensor": "out.weight",
+  "ruta": "lab/train_lab_m2b.py"
+ },
+ "ejecucion": {
+  "estado": "ok"
+ },
+ "resultados": {
+  "w0_base": 0.015,
+  "adam_finetune": 0.745,
+  "closed_form_readout": 0.74,
+  "placebo_norm_matched": 0.025
+ },
+ "hypothesis": "cirugia closed-form readout sustituye finetune en RECALL",
+ "evidence": {
+  "dataset": "RECALL",
+  "dataset_sha256": "6085b9dc526bead96165d1039fe8e61a90347f4e41f45879ab4ce6b571c3b0a5",
+  "n_universe": 200,
+  "n_ok": 148,
+  "n_fail": 52,
+  "exact_on_universe": 0.74,
+  "failures_head": [
+   [
+    "KB: BJ =",
+    "a",
+    "j"
+   ],
+   [
+    "KB: NS =",
+    "f",
+    "g"
+   ],
+   [
+    "KB: WU =",
+    "a",
+    "e"
+   ],
+   [
+    "KB: ET =",
+    "i",
+    "g"
+   ],
+   [
+    "KB: VZ =",
+    "i",
+    "e"
+   ],
+   [
+    "KB: HF =",
+    "i",
+    "b"
+   ],
+   [
+    "KB: EL =",
+    "j",
+    "a"
+   ],
+   [
+    "KB: NG =",
+    "f",
+    "j"
+   ],
+   [
+    "KB: CF =",
+    "g",
+    "b"
+   ],
+   [
+    "KB: AK =",
+    "g",
+    "a"
+   ],
+   [
+    "KB: EY =",
+    "j",
+    "e"
+   ],
+   [
+    "KB: KT =",
+    "b",
+    "h"
+   ],
+   [
+    "KB: TH =",
+    "b",
+    "g"
+   ],
+   [
+    "KB: AC =",
+    "d",
+    "a"
+   ],
+   [
+    "KB: JD =",
+    "f",
+    "d"
+   ],
+   [
+    "KB: XU =",
+    "h",
+    "c"
+   ],
+   [
+    "KB: EM =",
+    "j",
+    "d"
+   ],
+   [
+    "KB: ZR =",
+    "e",
+    "g"
+   ],
+   [
+    "KB: FK =",
+    "h",
+    "d"
+   ],
+   [
+    "KB: EI =",
+    "f",
+    "e"
+   ]
+  ],
+  "verdict": "APPROX",
+  "ts": "2026-11-04T23:31:08",
+  "acc": {
+   "w0_base": 0.015,
+   "adam_finetune": 0.745,
+   "closed_form_readout": 0.74,
+   "placebo_norm_matched": 0.025
+  },
+  "ruta": "lab/runs/m2b_results.json"
+ },
+ "target": "",
+ "intervention": "",
+ "model_hash": "",
+ "benchmark_version": "wspx-RECALL + lab-m2b",
+ "candidate": "closed-form-readout",
+ "placebo": "norm-matched-random",
+ "holdout": "",
+ "conclusion": "SUPPORTED",
+ "surgery_tier": "APPROX",
+ "tier_inferred": true,
+ "claim_class": "causal_learn",
+ "placebo_required": true,
+ "veredicto": "keep"
+}

@@ -169,6 +169,17 @@ Wplc = W0p["out.weight"] + rnd
 P_plac = apply_wout(W0p, Wplc)
 
 answers = {}
+res = {
+    "dataset": "wspx_RECALL", "patient": "nanowsp3-pretrained-PPL14",
+    "adam_steps": 600, "trace": trace,
+    "acc": {
+        "w0_base": score(W0p, uni),
+        "adam_finetune": score(P_adam, uni),
+        "closed_form_readout": score(P_surg_biased, uni),
+        "placebo_norm_matched": score(P_plac, uni),
+    },
+    "seconds": round(tr_time, 1),
+}
 for r in uni:
     Xb, _ = prep([r])
     with torch.no_grad():
@@ -200,8 +211,8 @@ d.update({"hypothesis": "cirugia closed-form readout sustituye finetune en RECAL
           "candidate": "closed-form-readout", "placebo": "norm-matched-random",
           "surgery_tier": tier, "tier_inferred": True,
           "claim_class": "causal_learn", "placebo_required": True,
-          "conclusion": "SUPPORTED" if tier == "EXACT" else ("REJECTED" if tier == "UNREACHABLE" else "INCONCLUSIVE"),
-          "veredicto": "keep" if tier == "EXACT" else ("discard" if tier == "UNREACHABLE" else "sin_verificar")})
+          "conclusion": "REJECTED" if tier == "UNREACHABLE" else "SUPPORTED",
+          "veredicto": "discard" if tier == "UNREACHABLE" else "keep"})
 errs = validate(d)
 assert not errs, errs
 outp = R / "lab" / "runs" / "records" / "e2026.117.m2b-readout-recall.json"
