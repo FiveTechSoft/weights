@@ -3,6 +3,7 @@
 > **Repository & Implementation:** [FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
 > **Interactive Research Portal:** [https://fivetechsoft.github.io/weights/](https://fivetechsoft.github.io/weights/)  
 > **Target Model:** [`XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B`](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B)  
+> **Published WSP Model:** [`fivetech/MiMo-V2.6-Distill-Qwen-9B-WSP-Critic`](https://huggingface.co/fivetech/MiMo-V2.6-Distill-Qwen-9B-WSP-Critic)  
 > **License:** MIT (Fully reproducible and open-source)
 
 ---
