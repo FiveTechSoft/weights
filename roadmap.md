@@ -157,3 +157,30 @@ WSP-Lang 0.2 (futura): descubrimiento de primitivas por el agente, composici�n
 
 SIGUIENTE PIEZA A CONSTRUIR: parser + ejecutor m�nimo de WSP-Lang en el MCP: interprete peque�o de programas tipo E2 que validan cada op, generan manifiesto y resultados autom�ticamente.
 
+
+
+---
+
+## 7. Proyecto NanoWSP: Pequeño LLM Sintetizado y Programado desde Cero vía WSPLang
+
+**Fecha de inicio:** 2026-11-04  
+**Motivación:** En lugar de limitarnos a la cirugía sobre checkpoints preexistentes entrenados con SGD masivo (MiMo-9B, Qwen3.5-0.8B), ¿es posible construir, compilar e imprimir un modelo autoregresivo pequeño (=64$, =2$, =96$) **directamente en el espacio de pesos** usando primitivas de WSPLang y Fast Weight Programming (Schmidhuber & Irie, ICML 2021) sin backpropagation?
+
+### 7.1 Preguntas Fundamentales
+1. **Expresividad Gramatical:** ¿Permite la gramática declarativa de WSPLang especificar no solo intervenciones post-hoc, sino arquitecturas completas, contratos de inicialización espectral y presupuestos tensoriales?
+2. **Capacidad Asociativa en Espacio de Pesos:** ¿Cuántas reglas factuales o transiciones de n-gramas pueden imprimirse en matrices MLP mediante productos exteriores de rango 1 ($\\Delta W = \\eta \\cdot v \\otimes k^T$) antes de que el ruido de interferencia (cross-talk de Hopfield  \\approx 0.14 d$) destruya las memorias previas?
+3. **Desacoplo de la Atención Bilineal:** En capas de atención (Q K^T / \\sqrt{d}) V$, la interacción es bilineal. Modificar $ sin coordinar $ dispersa la atención. ¿Qué operadores de orden superior necesita WSPLang para manipular circuitos de atención?
+4. **Propagación Jerárquica sin Gradiente:** Cuando se modifica la Capa 0, la distribución de entrada a la Capa 1 cambia ('representation drift'). ¿Cómo compensa WSPLang esta distorsión sin retropropagación?
+
+### 7.2 Arquitectura y Componentes
+- **Configuración de NanoWSP:**
+  -  = 96$ (tokens ASCII imprimibles,  \\dots 126$, <unk>, <pad>, \\n).
+  - {model} = 64$, {max} = 32$.
+  -  = 2$ capas Transformer (RMSNorm + Multi-Head Attention =2, d_k=32$ + MLP GELU {ff}=128$).
+  - LM Head  \\times 64$ desenrollado.
+  - Parámetros totales: $\\approx 77.000$ floats ($\\approx 300$ KB en SafeTensors).
+- **Entregables:**
+  - programs/nanowsp_architecture.wspl: Declaración de arquitectura y programa de programación de pesos.
+  - engine/nanowsp_runtime.py: Runtime puro en Python/NumPy/PyTorch para inferencia, introspección e impresión asociativa.
+  - 	ests/test_nanowsp.py: Suite de verificación de inicialización, inferencia determinista, impresión de memoria y desaprendizaje ortogonal.
+  - docs/nanowsp_findings.md: Informe científico formal de limitaciones y propuestas para WSPLang 0.5.

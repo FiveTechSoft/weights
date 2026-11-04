@@ -376,6 +376,25 @@ def compute_spectral_decomposition(W: Any, q: int = 16, niter: int = 6) -> Dict[
     }
 
 
+
+
+def generate_orthogonal_probe(vec: Any, seed: int = 1337) -> Any:
+    """Generate a unit probe vector strictly orthogonal to vec."""
+    import numpy as np
+    v = np.asarray(vec, dtype=np.float32).ravel()
+    v_norm = v / max(np.linalg.norm(v), 1e-12)
+    rng = np.random.RandomState(seed)
+    rand_probe = rng.randn(len(v)).astype(np.float32)
+    u_ortho = rand_probe - np.dot(rand_probe, v_norm) * v_norm
+    norm_ortho = np.linalg.norm(u_ortho)
+    if norm_ortho < 1e-4:
+        axis = int(np.argmin(np.abs(v_norm)))
+        rand_probe = np.zeros_like(v_norm)
+        rand_probe[axis] = 1.0
+        u_ortho = rand_probe - np.dot(rand_probe, v_norm) * v_norm
+        norm_ortho = np.linalg.norm(u_ortho)
+    return (u_ortho / norm_ortho).astype(np.float32)
+
 def execute_plan_v4(
     plan: Dict[str, Any],
     prog: Dict[str, Any],
@@ -509,6 +528,15 @@ def execute_plan_v4(
                     if max_delta_norm is not None and actual_delta_norm > max_delta_norm:
                         raise ValueError(f"BUDGET EXCEEDED: Max delta norm {actual_delta_norm:.6f} > budget {max_delta_norm:.6f}")
 
+                    # Measure empirical orthogonal cross-talk directly on W
+                    is_pure_rank1 = (top_rows_limit == 0 or top_rows_limit >= W.shape[0])
+                    if is_pure_rank1:
+                        empirical_crosstalk = 0.0
+                    else:
+                        u_ortho_np = generate_orthogonal_probe(k_vec, seed=1337)
+                        u_ortho_t = torch.from_numpy(u_ortho_np).float().to(W.device)
+                        empirical_crosstalk = float(torch.norm(torch.matmul(u_ortho_t, delta)).item())
+
                     # Apply Delta Rule update: W <- W - delta
                     W[:, top_cols_idx] -= delta
                     after_y_proj = torch.matmul(k_t, W)
@@ -524,8 +552,11 @@ def execute_plan_v4(
                         save_file(tensors, str(out_shard))
                         saved_path = str(out_shard)
 
+                    exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
+                    res["execution_state"] = exec_state
                     res["result"] = {
                         "rule": "Delta-Rule (Widrow-Hoff)",
+                        "execution_state": exec_state,
                         "tensor": tensor_name,
                         "shard": shard_to_edit.name,
                         "unlearning_rate_eta": eta,
@@ -538,11 +569,18 @@ def execute_plan_v4(
                         "energy_before": before_energy,
                         "energy_after": after_energy,
                         "energy_reduction_pct": f"{((before_energy - after_energy) / max(before_energy, 1e-12)):.2%}",
-                        "orthogonal_crosstalk_risk": 0.0,
+                        "rank_1_purity": is_pure_rank1,
+                        "orthogonal_crosstalk_risk": round(empirical_crosstalk, 8),
+                        "empirical_orthogonal_crosstalk": round(empirical_crosstalk, 8),
+                        "crosstalk_warning": None if is_pure_rank1 else "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
                         "written_to_disk": allow_write and saved_path is not None
                     }
                 else:
-                    res["result"] = {"status": "Delta unlearn verified in GGUF block projection space"}
+                    res["execution_state"] = "unsupported_backend"
+                    res["result"] = {
+                        "status": "unsupported_backend",
+                        "message": "In-place block requantization for GGUF delta_unlearn is not yet implemented; use SafeTensors backend for exact FP16/BF16 surgery or export GGUF control vector via export_control_vector."
+                    }
 
             # ------------------------------------------------------------------
             # OP: fwp_overlay (Fast Weight Overlay for Dynamic Inference)
@@ -571,13 +609,17 @@ def execute_plan_v4(
                     created_at=time.strftime("%Y-%m-%dT%H:%M:%S")
                 )
 
+                res["execution_state"] = "artifact_exported"
                 res["result"] = {
                     "overlay_type": "Transient Fast Weight Memory State",
+                    "execution_state": "artifact_exported",
+                    "is_active_inference_hook": False,
                     "target_tensor": tensor_name,
                     "key_vector_dims": len(u_vec),
                     "alpha_scale": alpha,
                     "overlay_file": str(out_p),
-                    "file_size": out_p.stat().st_size
+                    "file_size": out_p.stat().st_size,
+                    "note": "Transient Fast Weight overlay artifact exported for runtime engine; not patched into live generation loop."
                 }
 
             # ------------------------------------------------------------------
@@ -589,18 +631,48 @@ def execute_plan_v4(
                 if decay_factor <= 0.0 or decay_factor > 1.0:
                     raise ValueError(f"Decay factor must be in (0, 1], got {decay_factor}")
 
-                res["result"] = {
-                    "tensor": tensor_name,
-                    "decay_factor_lambda": decay_factor,
-                    "dissipation_pct": f"{(1.0 - decay_factor):.2%}",
-                    "effect": "runaway_attractor_suppression"
-                }
+                if is_safetensors:
+                    import torch
+                    from safetensors.torch import save_file
+                    W, shard_to_edit, tensors = load_safetensors_tensor(target_path, tensor_name)
+                    norm_before = float(torch.norm(W).item())
+                    W *= decay_factor
+                    norm_after = float(torch.norm(W).item())
+
+                    saved_path = None
+                    if allow_write and out_dir:
+                        out_p = Path(out_dir)
+                        out_p.mkdir(parents=True, exist_ok=True)
+                        orig_dtype = tensors[tensor_name].dtype
+                        tensors[tensor_name] = W.to(orig_dtype)
+                        out_shard = out_p / shard_to_edit.name
+                        save_file(tensors, str(out_shard))
+                        saved_path = str(out_shard)
+
+                    exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
+                    res["execution_state"] = exec_state
+                    res["result"] = {
+                        "tensor": tensor_name,
+                        "execution_state": exec_state,
+                        "decay_factor_lambda": decay_factor,
+                        "frobenius_norm_before": round(norm_before, 4),
+                        "frobenius_norm_after": round(norm_after, 4),
+                        "dissipation_pct": f"{(1.0 - decay_factor):.2%}",
+                        "effect": "runaway_attractor_suppression",
+                        "written_to_disk": allow_write and saved_path is not None
+                    }
+                else:
+                    res["execution_state"] = "unsupported_backend"
+                    res["result"] = {
+                        "status": "unsupported_backend",
+                        "message": "spectral_decay in-place quantization not implemented for GGUF; use SafeTensors backend."
+                    }
 
             # ------------------------------------------------------------------
             # OP: assert_orthogonal_preservation
             # ------------------------------------------------------------------
             elif op == "assert_orthogonal_preservation":
-                vec_file = positional[0] if positional else named.get("key")
+                vec_file = named.get("key", named.get("vector")) or (positional[0] if positional else None)
                 vec_p = Path(vec_file) if vec_file else None
                 if vec_p and not vec_p.is_absolute():
                     vec_p = ROOT / vec_p
@@ -614,11 +686,12 @@ def execute_plan_v4(
                 u_ortho = (u_ortho / np.linalg.norm(u_ortho)).astype(np.float32)
 
                 dot_check = float(np.abs(np.dot(u_vec, u_ortho)))
+                res["execution_state"] = "contract_verified"
                 res["result"] = {
                     "probe_dimension": len(u_vec),
                     "inner_product_with_key": dot_check,
                     "orthogonal_preservation_verified": dot_check < 1e-5,
-                    "crosstalk_distortion": 0.0
+                    "crosstalk_distortion": dot_check
                 }
 
             # ------------------------------------------------------------------
@@ -710,6 +783,15 @@ def execute_plan_v4(
                     actual_delta_norm = float(torch.max(torch.abs(delta)).item())
                     before_energy = float(torch.norm(u_proj).item())
 
+                    # Measure empirical orthogonal cross-talk directly on W
+                    is_pure_rank1 = (top_rows_limit == 0 or top_rows_limit >= W.shape[0])
+                    if is_pure_rank1:
+                        empirical_crosstalk = 0.0
+                    else:
+                        u_ortho_np = generate_orthogonal_probe(u_vec, seed=1337)
+                        u_ortho_t = torch.from_numpy(u_ortho_np).float().to(W.device)
+                        empirical_crosstalk = float(torch.norm(torch.matmul(u_ortho_t, delta)).item())
+
                     if max_modified_weights is not None and n_modified > max_modified_weights:
                         raise ValueError(f"BUDGET EXCEEDED: Modified weights {n_modified:,} > budget {max_modified_weights:,}")
                     if max_delta_norm is not None and actual_delta_norm > max_delta_norm:
@@ -729,8 +811,11 @@ def execute_plan_v4(
                         save_file(tensors, str(out_shard))
                         saved_path = str(out_shard)
 
+                    exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
+                    res["execution_state"] = exec_state
                     res["result"] = {
                         "tensor": tensor_name,
+                        "execution_state": exec_state,
                         "shard": shard_to_edit.name,
                         "column_selection_strategy": "efficiency_leverage" if use_leverage else "magnitude",
                         "mean_leverage_selected": mean_lev_selected,
@@ -742,11 +827,20 @@ def execute_plan_v4(
                         "directional_energy_before": before_energy,
                         "directional_energy_after": after_energy,
                         "energy_reduction_pct": f"{((before_energy - after_energy) / max(before_energy, 1e-12)):.2%}",
+                        "rank_1_purity": is_pure_rank1,
+                        "empirical_orthogonal_crosstalk": round(empirical_crosstalk, 8),
+                        "crosstalk_warning": None if is_pure_rank1 else "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
                         "written_to_disk": allow_write and saved_path is not None,
                         "target_shard_path": saved_path
                     }
                 else:
-                    res["result"] = {"tensor": tensor_name, "target_format": "GGUF", "status": "GGUF verified"}
+                    res["execution_state"] = "unsupported_backend"
+                    res["result"] = {
+                        "tensor": tensor_name,
+                        "target_format": "GGUF",
+                        "status": "unsupported_backend",
+                        "message": "In-place block requantization for GGUF project_out is not yet implemented; use SafeTensors backend or export GGUF control vector via export_control_vector."
+                    }
 
             # ------------------------------------------------------------------
             # OP: audit (Tensor Health & Energy)
@@ -819,8 +913,10 @@ def execute_plan_v4(
                 writer.write_tensors_to_file()
                 writer.close()
 
+                res["execution_state"] = "artifact_exported"
                 res["result"] = {
                     "source_vector": str(vec_p),
+                    "execution_state": "artifact_exported",
                     "output_gguf": str(out_p),
                     "layers_configured": 32,
                     "vector_dimension": len(u_vec),

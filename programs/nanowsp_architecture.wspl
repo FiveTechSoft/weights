@@ -1,0 +1,33 @@
+# ==============================================================================
+# NanoWSP Architecture & Surgical Weight-Space Programming Program
+# Model: NanoWSP-80k (2-layer micro-transformer, d=64, heads=2, d_ff=128)
+# Foundation: Fast Weight Programmers (Schlag, Irie, Schmidhuber 2021) &
+#             Spectral Perturbation Bounds (Davis-Kahan & Weyl)
+# ==============================================================================
+
+experiment nanowsp_surgical_surgery:
+    model: NanoWSP-80k
+    objective: verify_weight_space_programming_on_micro_llm_without_backpropagation
+
+    budgets:
+        max_modified_weights = 8192
+        target_parameter_fraction = 0.50
+        max_delta_norm = 1.0
+        allow_write = true
+        allow_training = false
+
+    steps:
+        # Step 1: Spectral Audit & Column Leverage Distribution on MLP Out (Layer 1)
+        step spectral_audit layers.1.mlp_out.weight q=8
+
+        # Step 2: Formal Weyl Perturbation Norm Invariant Bound
+        step assert_weyl layers.1.mlp_out.weight vector=data/nanowsp_key.npz alpha=0.05 top_cols=0.25 q=4
+
+        # Step 3: Davis-Kahan Invariant Subspace Rotation Stability Bound
+        step assert_davis_kahan layers.1.mlp_out.weight vector=data/nanowsp_key.npz alpha=0.05 top_cols=0.25 max_angle_deg=5.0
+
+        # Step 4: Orthogonal Concept Manifold Verification (Zero Cross-Talk Contract)
+        step assert_orthogonal_preservation layers.1.mlp_out.weight key=data/nanowsp_key.npz
+
+        # Step 5: Delta-Rule Attractor Unlearning
+        step delta_unlearn layers.1.mlp_out.weight key=data/nanowsp_key.npz eta=1.0 target=0.0

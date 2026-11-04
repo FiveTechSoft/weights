@@ -16,6 +16,7 @@ Se escribe a C:\weights\journal\migrado.jsonl (un registro por linea).
 import json
 import re
 import sys
+import uuid
 
 sys.path.insert(0, r"C:\weights\engine")
 from record import ExperimentRecord, validate  # noqa: E402
@@ -87,7 +88,12 @@ def migrate_entry(entry):
         tensor = re.search(r'(?:blk\.|attn\.|blk)[A-Za-z0-9_.]*[A-Za-z_]+', detail)
         target = tensor.group(1) if tensor else ""
 
+    # El journal no tiene experimentos: cada entrada se registra como un
+    # experimento unico, de modo que experiment_id sea un UUID4 valido.
+    experiment_id = str(uuid.uuid4())
+
     return {
+        "experiment_id": experiment_id,  # se serializa como str() en main()
         "ts": ts,
         "kind": kind,
         "hypothesis": hypothesis,
