@@ -144,7 +144,8 @@ def base_dtype(t):
 def cmd_info(a):
     r = reader_of(a.gguf)
     hf = r.fields.get("general.architecture")
-    arch = hf.contents()[0].decode() if hf else "?"
+    raw_arch = hf.contents()[0] if hf else "?"
+    arch = raw_arch.decode() if isinstance(raw_arch, bytes) else str(raw_arch)
     n = len(r.tensors)
     qs = {}
     for t in r.tensors:

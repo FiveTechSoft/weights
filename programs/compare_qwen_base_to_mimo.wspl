@@ -1,0 +1,21 @@
+experiment compare_qwen_base_to_mimo:
+    model: MiMo-9B
+    objective: "Analyze transformation from Qwen3.5 9B Base to MiMo 2.6 Distill across component families, recurrent dynamics, and spectral/semantic manifolds."
+
+    budgets:
+        allow_write = false
+
+    steps:
+        # 1. Macro architectural drift across all 427 tensors, grouped by family and block depth
+        step architectural_drift base=C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf top=10
+
+        # 2. Recurrent dynamics comparison on Layer 1 (SSM): state transition (A, dt) vs input/output (beta, C)
+        step ssm_dynamics_diff layer=1 base=C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf
+
+        # 3. Spectral SVD decomposition: FFN diffuse update vs SSM structured update
+        step spectral_delta blk.1.ffn_down.weight base=C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf k=5
+        step spectral_delta blk.1.ssm_alpha.weight base=C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf k=5
+
+        # 4. Semantic affordance projection: concept shifts in Layer 1
+        step semantic_delta blk.1.ssm_alpha.weight base=C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf top=5
+        step semantic_delta blk.1.ffn_down.weight base=C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf top=5

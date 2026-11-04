@@ -45,6 +45,13 @@ if str(ROOT / "engine") not in sys.path:
 DIR_PL = ROOT / "challenges" / "wsplang"
 DIR_PL.mkdir(parents=True, exist_ok=True)
 
+from engine.comparative_drift import (
+    compute_architectural_drift,
+    compute_spectral_delta,
+    compute_semantic_delta,
+    compute_ssm_dynamics_diff,
+)
+
 # Allowed operations in steps
 OPS_ALLOWED = {
     # Core verified inspection and projection operations
@@ -53,6 +60,8 @@ OPS_ALLOWED = {
     "record", "select_candidate", "semantic_map", "semantic-map",
     "semantic_areas", "semantic-areas",
     "project_out", "project_in", "export_control_vector", "audit", "assert_budget",
+    # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
+    "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
     "delta_unlearn", "fwp_overlay", "spectral_decay", "assert_orthogonal_preservation",
     "spectral_audit", "assert_weyl", "assert_davis_kahan",
@@ -107,6 +116,7 @@ FORBIDDEN_PATTERNS = ["embed", "lm_head", "norm.weight", "output_norm"]
 READ_ONLY_OPS = {
     "peek", "semantic_areas", "semantic-areas", "semantic_map", "semantic-map",
     "diff", "compare", "evaluate",
+    "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -2122,6 +2132,64 @@ def execute_plan_v4(
                 data = json.loads(target_p.read_text(encoding="utf-8"))
                 res["result"] = data
 
+            # ------------------------------------------------------------------
+            # OP: architectural_drift (WSP-Lang 0.7: Whole-Model Component Drift)
+            # ------------------------------------------------------------------
+            elif op in ("architectural_drift", "drift_profile"):
+                base_arg = named.get("base", positional[0] if positional else None)
+                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                if not base_p.is_absolute():
+                    base_p = ROOT / base_p
+                fam_filter = named.get("family", named.get("filter"))
+                top_k = int(named.get("top", 10))
+                drift_res = compute_architectural_drift(target_path, base_p, family_filter=fam_filter, top_k=top_k)
+                res["result"] = drift_res
+
+            # ------------------------------------------------------------------
+            # OP: spectral_delta (WSP-Lang 0.7: Low-Rank vs Diffuse Delta SVD)
+            # ------------------------------------------------------------------
+            elif op == "spectral_delta":
+                tensor_name = positional[0] if positional else named.get("tensor")
+                if not tensor_name:
+                    raise ValueError("Tensor name required in spectral_delta")
+                base_arg = named.get("base")
+                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                if not base_p.is_absolute():
+                    base_p = ROOT / base_p
+                k_rank = int(named.get("k", 5))
+                out_vec = named.get("out", named.get("save_vector"))
+                out_p = (ROOT / out_vec) if out_vec and not Path(out_vec).is_absolute() else (Path(out_vec) if out_vec else None)
+                spec_res = compute_spectral_delta(target_path, base_p, tensor_name, k=k_rank, out_vector=out_p)
+                res["result"] = spec_res
+
+            # ------------------------------------------------------------------
+            # OP: semantic_delta (WSP-Lang 0.7: Semantic Concept Affordance Shift)
+            # ------------------------------------------------------------------
+            elif op == "semantic_delta":
+                tensor_name = positional[0] if positional else named.get("tensor")
+                if not tensor_name:
+                    raise ValueError("Tensor name required in semantic_delta")
+                base_arg = named.get("base")
+                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                if not base_p.is_absolute():
+                    base_p = ROOT / base_p
+                top_k = int(named.get("top", 5))
+                sem_res = compute_semantic_delta(target_path, base_p, tensor_name, top_k=top_k)
+                res["result"] = sem_res
+
+            # ------------------------------------------------------------------
+            # OP: ssm_dynamics_diff (WSP-Lang 0.7: Recurrent Transition Triad Diagnosis)
+            # ------------------------------------------------------------------
+            elif op == "ssm_dynamics_diff":
+                layer_arg = named.get("layer", positional[0] if positional and positional[0].isdigit() else "1")
+                layer_idx = int(layer_arg)
+                base_arg = named.get("base")
+                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                if not base_p.is_absolute():
+                    base_p = ROOT / base_p
+                ssm_res = compute_ssm_dynamics_diff(target_path, base_p, layer_idx=layer_idx)
+                res["result"] = ssm_res
+
             else:
                 res["status"] = "skipped (non-interactive op)"
 
@@ -2354,6 +2422,38 @@ def main():
                 if status == "ok":
                     print(f"  Tensor:         {res.get('tensor')} {res.get('shape')}")
                     print(f"  Frobenius Norm: {res.get('frobenius_norm'):.4f}")
+            elif op in ("architectural_drift", "drift_profile"):
+                if status == "ok":
+                    print(f"  Base -> Target: {res.get('base_model')} -> {res.get('target_model')}")
+                    print(f"  Total Tensors:  {res.get('total_tensors_analyzed')}")
+                    if "family_summary" in res:
+                        print("  Architectural Family Drift Breakdown:")
+                        for fam, stats in res["family_summary"].items():
+                            print(f"    - {fam:<30}: Rel Drift {stats.get('mean_rel_delta', 0):>6.2f}% | Cosine {stats.get('mean_cos_sim', 0):.4f}")
+                    if "top_divergent_tensors" in res:
+                        print("  Top Divergent Weights:")
+                        for t in res["top_divergent_tensors"][:5]:
+                            print(f"    * {t.get('tensor'):<35} Rel Drift {t.get('rel_delta', 0)*100:>6.2f}% | Cosine {t.get('cos_sim', 0):.4f}")
+            elif op == "spectral_delta":
+                if status == "ok":
+                    print(f"  Tensor:               {res.get('tensor')} {res.get('shape')}")
+                    print(f"  Frobenius Delta:      {res.get('frobenius_norm_delta'):.4f} (Rel: {res.get('relative_drift', 0)*100:.2f}%)")
+                    print(f"  Top Singular Values:  {res.get('top_singular_values')}")
+                    print(f"  Spectral Gap (s1/s2): {res.get('spectral_gap_s1_s2')} | Top-1 Variance: {res.get('top1_variance_share', 0)*100:.2f}%")
+                    print(f"  Geometry Diagnosis:   {res.get('update_geometry')}")
+            elif op == "semantic_delta":
+                if status == "ok":
+                    print(f"  Tensor:               {res.get('tensor')}")
+                    print(f"  Dominant Concept:     {res.get('dominant_semantic_concept')}")
+                    print("  Top Concept Shifts:")
+                    for c in res.get("top_amplified_concepts", [])[:4]:
+                        print(f"    - {c.get('concept'):<20} Alignment: {c.get('alignment_magnitude'):.4f}")
+            elif op == "ssm_dynamics_diff":
+                if status == "ok":
+                    print(f"  SSM Layer {res.get('layer')} Recurrent Transition Analysis:")
+                    for comp, sdata in res.get("dynamics_components", {}).items():
+                        print(f"    - {comp:<15}: Rel Drift {sdata.get('relative_drift', 0)*100:>6.2f}% | {sdata.get('status')}")
+                    print(f"  Diagnosis: {res.get('structural_diagnosis')}")
             elif op == "diff" and "overall_percentage" in res:
                 print(f"  Total Weights Changed: {res['total_changed']:,} / {res['total_weights']:,} ({res['overall_percentage']})")
             elif "error" in step:

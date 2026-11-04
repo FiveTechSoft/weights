@@ -1,0 +1,911 @@
+{
+  "wsplang_version": "0.6.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "compare_qwen_base_to_mimo",
+  "archivo": "programs\\compare_qwen_base_to_mimo.wspl",
+  "steps_count": 7,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "allow_write = false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step architectural_drift base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=10",
+      "op": "architectural_drift",
+      "args": "base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=10"
+    },
+    {
+      "sec": "steps",
+      "expr": "step ssm_dynamics_diff layer=1 base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf",
+      "op": "ssm_dynamics_diff",
+      "args": "layer=1 base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf"
+    },
+    {
+      "sec": "steps",
+      "expr": "step spectral_delta blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5",
+      "op": "spectral_delta",
+      "args": "blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5"
+    },
+    {
+      "sec": "steps",
+      "expr": "step spectral_delta blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5",
+      "op": "spectral_delta",
+      "args": "blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5"
+    },
+    {
+      "sec": "steps",
+      "expr": "step semantic_delta blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5",
+      "op": "semantic_delta",
+      "args": "blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5"
+    },
+    {
+      "sec": "steps",
+      "expr": "step semantic_delta blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5",
+      "op": "semantic_delta",
+      "args": "blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.6.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 1,
+      "steps": 6
+    },
+    "pasos": [
+      {
+        "op": "architectural_drift",
+        "args": "base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=10"
+      },
+      {
+        "op": "ssm_dynamics_diff",
+        "args": "layer=1 base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf"
+      },
+      {
+        "op": "spectral_delta",
+        "args": "blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5"
+      },
+      {
+        "op": "spectral_delta",
+        "args": "blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5"
+      },
+      {
+        "op": "semantic_delta",
+        "args": "blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5"
+      },
+      {
+        "op": "semantic_delta",
+        "args": "blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5"
+      }
+    ],
+    "pasos_mapeo": {
+      "architectural_drift": "custom operation",
+      "ssm_dynamics_diff": "custom operation",
+      "spectral_delta": "custom operation",
+      "semantic_delta": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": null,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T22:52:58",
+  "ejecucion": [
+    {
+      "op": "architectural_drift",
+      "args": "base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=10",
+      "status": "ok",
+      "result": {
+        "base_model": "Qwen3.5_9B_Base.Q6_K.gguf",
+        "target_model": "mimo-distill-hf",
+        "total_tensors_analyzed": 427,
+        "family_summary": {
+          "recurrent_attention_interface": {
+            "tensor_count": 48,
+            "total_params": 1207959552,
+            "mean_norm_base": 83.2832,
+            "mean_norm_delta": 8.1766,
+            "mean_rel_delta": 10.03,
+            "mean_cos_sim": 0.994859
+          },
+          "norm": {
+            "tensor_count": 105,
+            "total_params": 273408,
+            "mean_norm_base": 49.5493,
+            "mean_norm_delta": 0.0803,
+            "mean_rel_delta": 0.2,
+            "mean_cos_sim": 0.999999
+          },
+          "mlp_feedforward": {
+            "tensor_count": 96,
+            "total_params": 4831838208,
+            "mean_norm_base": 82.8667,
+            "mean_norm_delta": 10.8528,
+            "mean_rel_delta": 13.12,
+            "mean_cos_sim": 0.99127
+          },
+          "ssm_dynamics": {
+            "tensor_count": 144,
+            "total_params": 409732608,
+            "mean_norm_base": 22.3024,
+            "mean_norm_delta": 1.1762,
+            "mean_rel_delta": 5.68,
+            "mean_cos_sim": 0.996864
+          },
+          "full_attention": {
+            "tensor_count": 32,
+            "total_params": 469762048,
+            "mean_norm_base": 57.6246,
+            "mean_norm_delta": 5.0389,
+            "mean_rel_delta": 8.62,
+            "mean_cos_sim": 0.995967
+          },
+          "embeddings_head": {
+            "tensor_count": 2,
+            "total_params": 2034237440,
+            "mean_norm_base": 464.4675,
+            "mean_norm_delta": 38.9061,
+            "mean_rel_delta": 8.34,
+            "mean_cos_sim": 0.996515
+          }
+        },
+        "layer_summary": {
+          "0": {
+            "block": 0,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 5.99,
+            "mean_cos_sim": 0.996774
+          },
+          "1": {
+            "block": 1,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 5.23,
+            "mean_cos_sim": 0.997609
+          },
+          "2": {
+            "block": 2,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 5.41,
+            "mean_cos_sim": 0.997448
+          },
+          "3": {
+            "block": 3,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 6.07,
+            "mean_cos_sim": 0.996982
+          },
+          "4": {
+            "block": 4,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 5.68,
+            "mean_cos_sim": 0.997196
+          },
+          "5": {
+            "block": 5,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 5.98,
+            "mean_cos_sim": 0.996946
+          },
+          "6": {
+            "block": 6,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.18,
+            "mean_cos_sim": 0.996727
+          },
+          "7": {
+            "block": 7,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 6.61,
+            "mean_cos_sim": 0.996472
+          },
+          "8": {
+            "block": 8,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.64,
+            "mean_cos_sim": 0.996234
+          },
+          "9": {
+            "block": 9,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.77,
+            "mean_cos_sim": 0.996059
+          },
+          "10": {
+            "block": 10,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.82,
+            "mean_cos_sim": 0.996045
+          },
+          "11": {
+            "block": 11,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 7.04,
+            "mean_cos_sim": 0.995931
+          },
+          "12": {
+            "block": 12,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.98,
+            "mean_cos_sim": 0.995785
+          },
+          "13": {
+            "block": 13,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.19,
+            "mean_cos_sim": 0.995565
+          },
+          "14": {
+            "block": 14,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.98,
+            "mean_cos_sim": 0.995791
+          },
+          "15": {
+            "block": 15,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 7.17,
+            "mean_cos_sim": 0.995724
+          },
+          "16": {
+            "block": 16,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.29,
+            "mean_cos_sim": 0.995388
+          },
+          "17": {
+            "block": 17,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.53,
+            "mean_cos_sim": 0.995063
+          },
+          "18": {
+            "block": 18,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.4,
+            "mean_cos_sim": 0.995233
+          },
+          "19": {
+            "block": 19,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 7.34,
+            "mean_cos_sim": 0.995478
+          },
+          "20": {
+            "block": 20,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.37,
+            "mean_cos_sim": 0.995266
+          },
+          "21": {
+            "block": 21,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.35,
+            "mean_cos_sim": 0.99528
+          },
+          "22": {
+            "block": 22,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.59,
+            "mean_cos_sim": 0.994949
+          },
+          "23": {
+            "block": 23,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 7.41,
+            "mean_cos_sim": 0.995598
+          },
+          "24": {
+            "block": 24,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.16,
+            "mean_cos_sim": 0.995518
+          },
+          "25": {
+            "block": 25,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 7.17,
+            "mean_cos_sim": 0.995521
+          },
+          "26": {
+            "block": 26,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.96,
+            "mean_cos_sim": 0.995793
+          },
+          "27": {
+            "block": 27,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 6.97,
+            "mean_cos_sim": 0.995987
+          },
+          "28": {
+            "block": 28,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.92,
+            "mean_cos_sim": 0.995813
+          },
+          "29": {
+            "block": 29,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.48,
+            "mean_cos_sim": 0.996373
+          },
+          "30": {
+            "block": 30,
+            "architecture_type": "ssm_recurrent",
+            "tensor_count": 14,
+            "total_params": 218407104,
+            "mean_rel_delta": 6.43,
+            "mean_cos_sim": 0.996399
+          },
+          "31": {
+            "block": 31,
+            "architecture_type": "full_attention",
+            "tensor_count": 11,
+            "total_params": 209723904,
+            "mean_rel_delta": 5.39,
+            "mean_cos_sim": 0.9976
+          }
+        },
+        "top_divergent_tensors": [
+          {
+            "tensor": "blk.22.ssm_beta.weight",
+            "shape": [
+              32,
+              4096
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "Q6_K",
+            "mimo_type": "F32",
+            "norm_base": 3.3177,
+            "norm_delta": 0.6302,
+            "rel_delta": 0.189954,
+            "cos_sim": 0.982062,
+            "max_abs_delta": 0.008485
+          },
+          {
+            "tensor": "blk.28.ssm_beta.weight",
+            "shape": [
+              32,
+              4096
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "Q6_K",
+            "mimo_type": "F32",
+            "norm_base": 3.5501,
+            "norm_delta": 0.6085,
+            "rel_delta": 0.171406,
+            "cos_sim": 0.98531,
+            "max_abs_delta": 0.00966
+          },
+          {
+            "tensor": "blk.17.ffn_gate.weight",
+            "shape": [
+              12288,
+              4096
+            ],
+            "family": "mlp_feedforward",
+            "base_type": "Q6_K",
+            "mimo_type": "Q6_K",
+            "norm_base": 74.7834,
+            "norm_delta": 12.7555,
+            "rel_delta": 0.170566,
+            "cos_sim": 0.985429,
+            "max_abs_delta": 0.011492
+          },
+          {
+            "tensor": "blk.19.ffn_gate.weight",
+            "shape": [
+              12288,
+              4096
+            ],
+            "family": "mlp_feedforward",
+            "base_type": "Q6_K",
+            "mimo_type": "Q6_K",
+            "norm_base": 77.4988,
+            "norm_delta": 13.1822,
+            "rel_delta": 0.170095,
+            "cos_sim": 0.985511,
+            "max_abs_delta": 0.011217
+          },
+          {
+            "tensor": "blk.25.ssm_beta.weight",
+            "shape": [
+              32,
+              4096
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "Q6_K",
+            "mimo_type": "F32",
+            "norm_base": 3.9518,
+            "norm_delta": 0.6684,
+            "rel_delta": 0.169141,
+            "cos_sim": 0.985703,
+            "max_abs_delta": 0.00938
+          },
+          {
+            "tensor": "blk.24.ssm_beta.weight",
+            "shape": [
+              32,
+              4096
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "Q6_K",
+            "mimo_type": "F32",
+            "norm_base": 3.7477,
+            "norm_delta": 0.6321,
+            "rel_delta": 0.168674,
+            "cos_sim": 0.985865,
+            "max_abs_delta": 0.009109
+          },
+          {
+            "tensor": "blk.18.ffn_gate.weight",
+            "shape": [
+              12288,
+              4096
+            ],
+            "family": "mlp_feedforward",
+            "base_type": "Q6_K",
+            "mimo_type": "Q6_K",
+            "norm_base": 76.4336,
+            "norm_delta": 12.6856,
+            "rel_delta": 0.165969,
+            "cos_sim": 0.986202,
+            "max_abs_delta": 0.012548
+          },
+          {
+            "tensor": "blk.16.ffn_gate.weight",
+            "shape": [
+              12288,
+              4096
+            ],
+            "family": "mlp_feedforward",
+            "base_type": "Q6_K",
+            "mimo_type": "Q6_K",
+            "norm_base": 75.553,
+            "norm_delta": 12.4783,
+            "rel_delta": 0.165159,
+            "cos_sim": 0.986338,
+            "max_abs_delta": 0.011635
+          },
+          {
+            "tensor": "blk.21.ssm_beta.weight",
+            "shape": [
+              32,
+              4096
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "Q6_K",
+            "mimo_type": "F32",
+            "norm_base": 3.7507,
+            "norm_delta": 0.6152,
+            "rel_delta": 0.164025,
+            "cos_sim": 0.986594,
+            "max_abs_delta": 0.009516
+          },
+          {
+            "tensor": "blk.0.ssm_beta.weight",
+            "shape": [
+              32,
+              4096
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "Q6_K",
+            "mimo_type": "F32",
+            "norm_base": 2.9741,
+            "norm_delta": 0.4873,
+            "rel_delta": 0.163859,
+            "cos_sim": 0.986609,
+            "max_abs_delta": 0.006259
+          }
+        ],
+        "top_preserved_tensors": [
+          {
+            "tensor": "blk.0.ssm_a",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 0.336,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.0.ssm_dt.bias",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 44.739,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.1.ssm_dt.bias",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 22.8241,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.12.ssm_dt.bias",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 24.3934,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.13.ssm_dt.bias",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 22.5409,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.14.ssm_dt.bias",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 23.438,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.16.ssm_a",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 8.3209,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.17.ssm_a",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 28.7631,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.17.ssm_dt.bias",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 23.5681,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          },
+          {
+            "tensor": "blk.18.ssm_dt.bias",
+            "shape": [
+              32
+            ],
+            "family": "ssm_dynamics",
+            "base_type": "F32",
+            "mimo_type": "F32",
+            "norm_base": 22.8728,
+            "norm_delta": 0.0,
+            "rel_delta": 0.0,
+            "cos_sim": 1.0,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "data_source": "cached_full_scan"
+      }
+    },
+    {
+      "op": "ssm_dynamics_diff",
+      "args": "layer=1 base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf",
+      "status": "ok",
+      "result": {
+        "layer": 1,
+        "architecture": "ssm_recurrent_block",
+        "dynamics_components": {
+          "ssm_a": {
+            "shape": [
+              32
+            ],
+            "base_type": "F32",
+            "target_type": "F32",
+            "relative_drift": 9e-06,
+            "cosine_similarity": 1.0,
+            "status": "FROZEN_MANIFOLD"
+          },
+          "ssm_dt.bias": {
+            "shape": [
+              32
+            ],
+            "base_type": "F32",
+            "target_type": "F32",
+            "relative_drift": 0.0,
+            "cosine_similarity": 1.0,
+            "status": "FROZEN_MANIFOLD"
+          },
+          "ssm_alpha.weight": {
+            "shape": [
+              32,
+              4096
+            ],
+            "base_type": "Q6_K",
+            "target_type": "F32",
+            "relative_drift": 0.051524,
+            "cosine_similarity": 0.998677,
+            "status": "MODERATELY_ADAPTED"
+          },
+          "ssm_beta.weight": {
+            "shape": [
+              32,
+              4096
+            ],
+            "base_type": "Q6_K",
+            "target_type": "F32",
+            "relative_drift": 0.05468,
+            "cosine_similarity": 0.998509,
+            "status": "MODERATELY_ADAPTED"
+          },
+          "ssm_conv1d.weight": {
+            "shape": [
+              8192,
+              4
+            ],
+            "base_type": "F32",
+            "target_type": "F32",
+            "relative_drift": 0.029385,
+            "cosine_similarity": 0.999571,
+            "status": "MODERATELY_ADAPTED"
+          },
+          "ssm_out.weight": {
+            "shape": [
+              4096,
+              4096
+            ],
+            "base_type": "Q6_K",
+            "target_type": "Q8_0",
+            "relative_drift": 0.078409,
+            "cosine_similarity": 0.996982,
+            "status": "MODERATELY_ADAPTED"
+          }
+        },
+        "structural_diagnosis": "Preserved Dynamical Substrate: Continuous-time state transition (ssm_a) and step-size (ssm_dt) remain mathematically frozen, preserving long-term temporal stability, while input projection (ssm_beta, drift=5.47%) and output projections were reconfigured for agentic distillation."
+      }
+    },
+    {
+      "op": "spectral_delta",
+      "args": "blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5",
+      "status": "ok",
+      "result": {
+        "tensor": "blk.1.ffn_down.weight",
+        "shape": [
+          4096,
+          12288
+        ],
+        "frobenius_norm_base": 77.9564,
+        "frobenius_norm_delta": 9.3195,
+        "relative_drift": 0.119548,
+        "cosine_similarity": 0.993224,
+        "top_singular_values": [
+          0.5642,
+          0.5277,
+          0.4859,
+          0.4428,
+          0.4052
+        ],
+        "spectral_gap_s1_s2": 1.0693,
+        "top1_variance_share": 0.003665,
+        "topk_variance_share": 0.013738,
+        "update_geometry": "diffuse_full_rank_adaptation",
+        "saved_dominant_vector": null
+      }
+    },
+    {
+      "op": "spectral_delta",
+      "args": "blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf k=5",
+      "status": "ok",
+      "result": {
+        "tensor": "blk.1.ssm_alpha.weight",
+        "shape": [
+          32,
+          4096
+        ],
+        "frobenius_norm_base": 11.2048,
+        "frobenius_norm_delta": 0.5773,
+        "relative_drift": 0.051524,
+        "cosine_similarity": 0.998677,
+        "top_singular_values": [
+          0.2445,
+          0.1797,
+          0.12,
+          0.1149,
+          0.101
+        ],
+        "spectral_gap_s1_s2": 1.3604,
+        "top1_variance_share": 0.179308,
+        "topk_variance_share": 0.389637,
+        "update_geometry": "low_rank_steering_manifold",
+        "saved_dominant_vector": null
+      }
+    },
+    {
+      "op": "semantic_delta",
+      "args": "blk.1.ssm_alpha.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5",
+      "status": "ok",
+      "result": {
+        "tensor": "blk.1.ssm_alpha.weight",
+        "delta_frobenius": 0.5773,
+        "top_amplified_concepts": [
+          {
+            "concept": "agent_action",
+            "alignment_magnitude": 0.0467
+          },
+          {
+            "concept": "seed_file",
+            "alignment_magnitude": 0.0451
+          },
+          {
+            "concept": "seed_bash",
+            "alignment_magnitude": 0.0374
+          },
+          {
+            "concept": "seed_terminal",
+            "alignment_magnitude": 0.0362
+          },
+          {
+            "concept": "code_software",
+            "alignment_magnitude": 0.0332
+          }
+        ],
+        "dominant_semantic_concept": "agent_action"
+      }
+    },
+    {
+      "op": "semantic_delta",
+      "args": "blk.1.ffn_down.weight base=C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf top=5",
+      "status": "ok",
+      "result": {
+        "tensor": "blk.1.ffn_down.weight",
+        "delta_frobenius": 9.3195,
+        "top_amplified_concepts": [
+          {
+            "concept": "seed_file",
+            "alignment_magnitude": 0.0429
+          },
+          {
+            "concept": "seed_variable",
+            "alignment_magnitude": 0.0412
+          },
+          {
+            "concept": "seed_structure",
+            "alignment_magnitude": 0.0334
+          },
+          {
+            "concept": "seed_status",
+            "alignment_magnitude": 0.0322
+          },
+          {
+            "concept": "seed_meaning",
+            "alignment_magnitude": 0.0317
+          }
+        ],
+        "dominant_semantic_concept": "seed_file"
+      }
+    }
+  ]
+}
