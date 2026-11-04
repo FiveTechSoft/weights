@@ -47,41 +47,39 @@ DIR_PL.mkdir(parents=True, exist_ok=True)
 
 # Allowed operations in steps
 OPS_ALLOWED = {
-    # WSP-Lang 0.1 legacy
+    # Core verified inspection and projection operations
     "inspect", "observe", "compare", "hypothesize", "localize", "peek",
     "intervene", "evaluate", "confirm", "poke", "poke-weight", "diff", "rollback",
     "record", "select_candidate", "semantic_map", "semantic-map",
     "semantic_areas", "semantic-areas",
-    # WSP-Lang 0.2
     "project_out", "project_in", "export_control_vector", "audit", "assert_budget",
-    # WSP-Lang 0.3 (Fast Weight Programming & Delta Rule)
+    # Synthesis, perturbation bounds, and envelope operators
     "delta_unlearn", "fwp_overlay", "spectral_decay", "assert_orthogonal_preservation",
-    # WSP-Lang 0.4 (Matrix Perturbation Theory & Leverage Scores)
     "spectral_audit", "assert_weyl", "assert_davis_kahan",
-    # WSP-Lang 0.5 (Micro-LLM Architecture Synthesis & Weight Programming)
-    "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project", "rosetta_align", "cross_project", "rosetta_align", "cross_project",
-    # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
-    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
-    # WSP-Lang 0.7 (Contract-Driven Causal Verification & Multi-Layer Envelopes)
-    "layer_envelope", "multi_layer_envelope", "distributed_memit"
+    "init_architecture", "imprint_association", "imprint_batch",
+    "cov_imprint", "memit_imprint", "decoupled_delta",
+    "rosetta_align", "cross_project",
+    "layer_envelope", "multi_layer_envelope", "distributed_memit",
+    # Experimental / stubs (marked until activation covariances and true neural surprisal are integrated)
+    "leace_erase",   # STUB: uses weight-Gram proxy Sigma = W W^T / d, not activation covariances
+    "surprise_fwp",  # STUB: word-frequency repetition heuristic, not neural Titans surprisal
 }
 
 TYPES = {
     "Model", "Tensor", "Activation", "Direction", "Behavior", "Hypothesis",
     "Intervention", "Benchmark", "Experiment", "Result", "SemanticArea",
     "SemanticCentroid", "ControlVector", "Budget", "FastWeightOverlay",
-    "SpectralBound", "LeverageDistribution"
-, "LayerEnvelope", "MultiLayerCircuit"
+    "SpectralBound", "LeverageDistribution", "LayerEnvelope", "MultiLayerCircuit"
 }
 
 INT_OPS = {
     "project_out", "project_in", "delta_unlearn", "fwp_overlay", "spectral_decay",
     "activation_projection", "poke-weight", "scale", "ablate", "scale-rows",
-    "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
-    # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
-    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
-    # WSP-Lang 0.7 (Multi-Layer Envelopes)
-    "layer_envelope", "multi_layer_envelope", "distributed_memit"
+    "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association",
+    "imprint_batch", "cov_imprint", "memit_imprint", "decoupled_delta",
+    "rosetta_align", "cross_project",
+    "layer_envelope", "multi_layer_envelope", "distributed_memit",
+    "leace_erase", "surprise_fwp"
 }
 
 METADATA = {

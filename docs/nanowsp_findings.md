@@ -3,9 +3,9 @@
 **Fecha:** 4 de Noviembre de 2026  
 **Investigador:** FiveTechSoft Research  
 **Modelo:** `NanoWSP-80k` ($d=64$, $L=2$, $h=2$, $d_{ff}=128$, $V=100$, 80.704 parámetros)  
-**Código y Runtime:** [`engine/nanowsp_runtime.py`](file:///c:/weights/engine/nanowsp_runtime.py)  
-**Programa Declarativo:** [`programs/nanowsp_architecture.wspl`](file:///c:/weights/programs/nanowsp_architecture.wspl)  
-**Tests de Verificación:** [`tests/test_nanowsp.py`](file:///c:/weights/tests/test_nanowsp.py)  
+**Código y Runtime:** [`engine/nanowsp_runtime.py`](../engine/nanowsp_runtime.py)  
+**Programa Declarativo:** [`programs/nanowsp_architecture.wspl`](../programs/nanowsp_architecture.wspl)  
+**Tests de Verificación:** [`tests/test_nanowsp.py`](../tests/test_nanowsp.py)  
 
 ---
 

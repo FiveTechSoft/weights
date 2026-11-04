@@ -485,7 +485,7 @@ While MiMo-2.6-Distill-Qwen-9B has resolved the mathematical reasoning loop of s
 
 ### 15.2. Mechanistic Localization & Contrastive Vector Extraction
 Using contrastive residual streaming across looping vs productive agent turns, the loop attractor was isolated to **Layer 14 intermediate concept projections** (`blk.14.ffn_down.weight`). The contrastive direction vector was extracted and saved to:
-`data/u_loop_L14.npz` (unit norm $\|u\|=1.0$, SNR separation ratio 1.83x).
+data/u_loop_L14.npz (unit norm $\|u\|=1.0$; **ERRATA / ACLARACIÓN**: el ratio de separación de señal 1.83x fue medido empíricamente en la Capa 1 `blk.1.attn_norm` con $p=0.01$; en la Capa 14 `blk.14.ffn_down` el ratio fue de ~1.12x, consistente con ruido estocástico, catalogado como hipótesis E1 sin confirmación causal en el journal).
 
 ### 15.3. Declarative Surgical Fix via WSP-Lang 0.1
 The repair is defined declaratively in [`programs/fix_mimo_tool_loops.wspl`](programs/fix_mimo_tool_loops.wspl):

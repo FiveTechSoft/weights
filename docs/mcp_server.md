@@ -163,7 +163,7 @@ Modifies an individual scalar weight in-place. Automatically re-quantizes only i
 ### Group 3: Autonomous Diagnostic & Evaluation Probes
 
 #### 6. `run_agent_loop_probe`
-Executes multi-turn agentic task evaluations on real terminal prompts ([`data/rl_oss_prompts.json`](file:///c:/weights/data/rl_oss_prompts.json)) to measure tool-call loops under different inference samplers.
+Executes multi-turn agentic task evaluations on real terminal prompts ([`data/rl_oss_prompts.json`](../data/rl_oss_prompts.json)) to measure tool-call loops under different inference samplers.
 * **Arguments:**
   * `endpoint` *(string, default: "http://127.0.0.1:8081/v1/chat/completions")*: Model endpoint.
   * `alias` *(string, default: "mcp-probe")*: Benchmark run identifier.
@@ -207,7 +207,7 @@ Reports current curriculum status and approved challenge count.
 
 ## 4. Verification & Testing
 
-The FastMCP server has an automated unit test suite in [`tests/test_mcp_server.py`](file:///c:/weights/tests/test_mcp_server.py):
+The FastMCP server has an automated unit test suite in [`tests/test_mcp_server.py`](../tests/test_mcp_server.py):
 
 ```bash
 # Run unit tests

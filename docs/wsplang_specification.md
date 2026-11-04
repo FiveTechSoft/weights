@@ -256,7 +256,7 @@ sequenceDiagram
 
 ## 8. Canonical Program Examples
 
-### Example 1: Multi-Layer Semantic Inspection ([`example_semantic_areas.wspl`](file:///c:/weights/programs/example_semantic_areas.wspl))
+### Example 1: Multi-Layer Semantic Inspection ([`example_semantic_areas.wspl`](../programs/example_semantic_areas.wspl))
 ```wspl
 experiment inspect_semantic_areas:
     model: MiMo-V2.6-Distill-Qwen-9B
@@ -282,7 +282,7 @@ experiment inspect_semantic_areas:
 
 ---
 
-### Example 2: Weight Synthesis from Scratch ([`blog_exp5_write_mlp.wspl`](file:///c:/weights/programs/blog_exp5_write_mlp.wspl))
+### Example 2: Weight Synthesis from Scratch ([`blog_exp5_write_mlp.wspl`](../programs/blog_exp5_write_mlp.wspl))
 Replicates MIT Blog Experiment 5, synthesizing an exact identity function $f(u) = u$ using twin ReLU activations without training:
 
 $$\text{ReLU}(u) - \text{ReLU}(-u) \equiv u, \quad \forall u \in \mathbb{R}$$
@@ -311,7 +311,7 @@ experiment write_linear_mlp_from_scratch:
 
 ---
 
-### Example 3: Covariance-Aligned Behavioral Steering ([`dreaming_covariance_steering.wspl`](file:///c:/weights/programs/dreaming_covariance_steering.wspl))
+### Example 3: Covariance-Aligned Behavioral Steering ([`dreaming_covariance_steering.wspl`](../programs/dreaming_covariance_steering.wspl))
 Implements Dreaming Technique 16, amplifying host-defensive or villany neurons in Layer 14 while dampening empathetic compliance:
 
 ```wspl

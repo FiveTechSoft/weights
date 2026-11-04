@@ -2,8 +2,8 @@
 
 **Status:** Stable Release  
 **Version:** `0.5.0`  
-**Reference Implementation:** [`engine/wsplang.py`](file:///c:/weights/engine/wsplang.py)  
-**Verification Test Suite:** [`tests/test_wsplang_v5.py`](file:///c:/weights/tests/test_wsplang_v5.py) (34/34 passing)  
+**Reference Implementation:** [`engine/wsplang.py`](../engine/wsplang.py)  
+**Verification Test Suite:** [`tests/test_wsplang_v5.py`](../tests/test_wsplang_v5.py) (34/34 passing)  
 
 ---
 
@@ -92,7 +92,7 @@ experiment advanced_fwp_and_leace_surgery:
 
 ## 4. Verification & Unit Tests
 
-Validated in [`tests/test_wsplang_v5.py`](file:///c:/weights/tests/test_wsplang_v5.py):
+Validated in [`tests/test_wsplang_v5.py`](../tests/test_wsplang_v5.py):
 * `test_leace_concept_erasure_closed_form`: Proves $100.0000\%$ erasure efficiency with $u^T W_{\text{repaired}} < 10^{-5}$.
 * `test_memit_covariance_regularization`: Proves condition number stabilization ($\|\Delta W\|_F < 50.0$) on degenerate key matrices with raw condition number $> 1000$.
 * `test_decoupled_delta_gated_deltanet2`: Proves decoupled erasure of $u_{\text{erase}}$ without re-contamination by $v_{\text{write}}$.

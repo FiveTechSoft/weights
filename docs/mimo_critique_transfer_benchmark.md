@@ -19,7 +19,7 @@ Ese estado de activación define un subespacio direccional $u_{\text{critic}} \i
 
 ## 2. Extracción de $u_{\text{critic}}$ (Ingeniería de Representaciones)
 
-Ejecutado con [`rig/extract_critic_vector.py`](file:///c:/weights/rig/extract_critic_vector.py):
+Ejecutado con [`rig/extract_critic_vector.py`](../rig/extract_critic_vector.py):
 - **Dataset Contrastivo:** 30 pares de trayectorias (Reflexión/Verificación Activa vs Impulso Acrítico/Trampa) en aritmética, conteo de caracteres, física, lógica y código.
 - **Acceso SafeTensors:** Lectura memory-mapped de `embed_tokens.weight` (`[248320, 4096]`) y capas intermedias sin sobrecarga de VRAM.
 - **Descomposición SVD:** Vector singular principal $u_{\text{critic}}$ normalizado ($\|u\|_2 = 1.0$).
@@ -30,9 +30,9 @@ Ejecutado con [`rig/extract_critic_vector.py`](file:///c:/weights/rig/extract_cr
   - P-valor empírico: **$p = 0.0000$** ($< 0.001$, separación estadísticamente significativa).
 - **Tiempo de extracción:** **1.91 segundos** en CPU.
 - **Artefactos generados:**
-  - [`data/u_critic_L16.npz`](file:///c:/weights/data/u_critic_L16.npz)
-  - [`data/u_critic_control_vector.gguf`](file:///c:/weights/data/u_critic_control_vector.gguf) (513.5 KB, envolvente gaussiana sobre capas 10–22, pico en L16)
-  - [`rig_runs/u_critic_extraction_report.json`](file:///c:/weights/rig_runs/u_critic_extraction_report.json)
+  - [`data/u_critic_L16.npz`](../data/u_critic_L16.npz)
+  - [`data/u_critic_control_vector.gguf`](../data/u_critic_control_vector.gguf) (513.5 KB, envolvente gaussiana sobre capas 10–22, pico en L16)
+  - [`rig_runs/u_critic_extraction_report.json`](../rig_runs/u_critic_extraction_report.json)
 
 ---
 
@@ -55,7 +55,7 @@ Ejecutado con [`rig/extract_critic_vector.py`](file:///c:/weights/rig/extract_cr
 
 ## 4. Medición Empírica de MiMo-2.6: Antes vs Después
 
-Ejecutado con [`rig/eval_reasoning_suite.py`](file:///c:/weights/rig/eval_reasoning_suite.py) y [`rig/test_reflection_prompt.py`](file:///c:/weights/rig/test_reflection_prompt.py) en `llama-server.exe` sobre `mimo-v2.6-distill-qwen-9b-Q6_K.gguf`:
+Ejecutado con [`rig/eval_reasoning_suite.py`](../rig/eval_reasoning_suite.py) y [`rig/test_reflection_prompt.py`](../rig/test_reflection_prompt.py) en `llama-server.exe` sobre `mimo-v2.6-distill-qwen-9b-Q6_K.gguf`:
 
 ### Tabla Comparativa de Resultados
 
@@ -84,7 +84,7 @@ Ejecutado con [`rig/eval_reasoning_suite.py`](file:///c:/weights/rig/eval_reason
 
 ## 5. Verificación Causal de WSP-Lang 0.7: Por qué la Protección de Contratos Evitó un Falso Positivo
 
-Siguiendo la especificación de **WSP-Lang 0.7**, sometimos la intervención sobre la Capa 16 (`down_proj.weight`, $4096 \times 12288$) al protocolo pareado de 4 vías ([`rig/exp_mimo_self_critique_v1.py`](file:///c:/weights/rig/exp_mimo_self_critique_v1.py)):
+Siguiendo la especificación de **WSP-Lang 0.7**, sometimos la intervención sobre la Capa 16 (`down_proj.weight`, $4096 \times 12288$) al protocolo pareado de 4 vías ([`rig/exp_mimo_self_critique_v1.py`](../rig/exp_mimo_self_critique_v1.py)):
 
 1. **Línea Base (Original):** Dev 60.0%, Holdout 50.0%, Regresión 100.0%.
 2. **Candidato WSP (Imprint Rank-1 estático en Capa 16):** Dev 60.0%, Holdout 50.0%, Regresión 100.0%.
@@ -127,7 +127,7 @@ $$w_l = \exp\left(-\frac{(l - 16)^2}{2 \cdot (2.5)^2}\right), \quad l \in [10, 2
 
 ## 7. Implementación en WSPLang 0.7 y los Dos Caminos de Despliegue
 
-La síntesis de la envolvente se implementó como un nuevo operador de primera clase en **WSP-Lang 0.7** ([`programs/mimo_multilayer_reflection_envelope.wspl`](file:///c:/weights/programs/mimo_multilayer_reflection_envelope.wspl)):
+La síntesis de la envolvente se implementó como un nuevo operador de primera clase en **WSP-Lang 0.7** ([`programs/mimo_multilayer_reflection_envelope.wspl`](../programs/mimo_multilayer_reflection_envelope.wspl)):
 
 ```wspl
 experiment mimo_reflection_envelope:
@@ -148,7 +148,7 @@ experiment mimo_reflection_envelope:
 Se evaluaron y validaron empíricamente ambos caminos de despliegue:
 
 ### Camino 1: Vector de Control GGUF Dinámico (Sin Modificar Pesos)
-- **Fichero generado:** [`data/u_critic_control_vector.gguf`](file:///c:/weights/data/u_critic_control_vector.gguf) (513.5 KB).
+- **Fichero generado:** [`data/u_critic_control_vector.gguf`](../data/u_critic_control_vector.gguf) (513.5 KB).
 - **Indexación:** 1-based (`direction.11` a `direction.23`), compatible de forma nativa con `llama.cpp` y Ollama.
 - **Despliegue en runtime:**
   ```bash
@@ -156,7 +156,7 @@ Se evaluaron y validaron empíricamente ambos caminos de despliegue:
   ```
 
 ### Camino 2: Checkpoint Permanente SafeTensors (Invarianza Estricta de 0 Bytes)
-- **Ejecutado con:** [`rig/migrate_critic_to_mimo.py`](file:///c:/weights/rig/migrate_critic_to_mimo.py) en **35.61 segundos en CPU**.
+- **Ejecutado con:** [`rig/migrate_critic_to_mimo.py`](../rig/migrate_critic_to_mimo.py) en **35.61 segundos en CPU**.
 - **Capas modificadas:** 13 capas (Capas 10 a 22), actualizando $W_{\text{down}}$ ($4096 \times 12288$).
 - **Parámetros modificados:** 654.311.424 parámetros.
 - **Invarianza exacta de bytes confirmada:**
@@ -169,7 +169,7 @@ Se evaluaron y validaron empíricamente ambos caminos de despliegue:
 
 ## 8. Resultados Empíricos A/B en Vivo (Inferencia GPU)
 
-Evaluación comparativa directa ejecutada en [`rig/eval_both_paths_comparison.py`](file:///c:/weights/rig/eval_both_paths_comparison.py) y [`rig/live_comparison_showcase.py`](file:///c:/weights/rig/live_comparison_showcase.py) sobre `llama-server` (RTX 3060, ~39 tokens/segundo):
+Evaluación comparativa directa ejecutada en [`rig/eval_both_paths_comparison.py`](../rig/eval_both_paths_comparison.py) y [`rig/live_comparison_showcase.py`](../rig/live_comparison_showcase.py) sobre `llama-server` (RTX 3060, ~39 tokens/segundo):
 
 | Acertijo / Caso de Prueba | Clave Deductiva | Modo A: Modelo Base (Respuesta Precipitado) | Modo B: Con Envolvente $u_{\text{critic}}$ | Resultado |
 |---|---|---|---|:---:|
@@ -185,7 +185,7 @@ Evaluación comparativa directa ejecutada en [`rig/eval_both_paths_comparison.py
 ## 9. Publicación Comunitaria en Hugging Face y Reproducibilidad
 
 Se ha redactado y publicado la propuesta técnica completa en el repositorio de modelos de Hugging Face para que el equipo de desarrollo de Xiaomi MiMo y la comunidad puedan verificar y utilizar este avance:
-- **Discusión Hugging Face:** [`docs/post_huggingface_mimo_critic_transfer.md`](file:///c:/weights/docs/post_huggingface_mimo_critic_transfer.md)
+- **Discusión Hugging Face:** [`docs/post_huggingface_mimo_critic_transfer.md`](post_huggingface_mimo_critic_transfer.md)
 - **Ficha del Modelo Objetivo:** [`XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B`](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B)
 - **Repositorio Oficial:** [https://github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)
 - **Portal de Investigación Web:** [https://fivetechsoft.github.io/weights/](https://fivetechsoft.github.io/weights/)

@@ -10,7 +10,7 @@
 
 ## 1. El Problema Científico: Saturación Monocapa vs Disipación Residual
 
-En la experimentación de WSP-Lang 0.7 ([`rig/exp_mimo_self_critique_v1.py`](file:///c:/weights/rig/exp_mimo_self_critique_v1.py)), comprobamos empíricamente que aplicar una intervención de rango-1 sobre una **única capa** (por ejemplo, Capa 16 en $W_{down}$) activa el mecanismo de seguridad y genera un **Rollback Automático** (`status: ROLLED_BACK`):
+En la experimentación de WSP-Lang 0.7 ([`rig/exp_mimo_self_critique_v1.py`](../rig/exp_mimo_self_critique_v1.py)), comprobamos empíricamente que aplicar una intervención de rango-1 sobre una **única capa** (por ejemplo, Capa 16 en $W_{down}$) activa el mecanismo de seguridad y genera un **Rollback Automático** (`status: ROLLED_BACK`):
 - Aunque la norma de Frobenius local fue microscópica ($0.0631\%$) y no hubo daños colaterales ($0\%$ regresión), el cambio sobre el conjunto *holdout* no superó al control aleatorio en inferencia no guiada.
 - **Causa física en Transformers profundos:** En un modelo de 32 capas (como MiMo-9B o Llama-3-8B), inyectar toda la energía de una dirección cognitiva compleja en una sola matriz genera un *desajuste de impedancia residual*. Las 16 capas subsiguientes atenúan y dispersan la proyección antes de que la cabeza LM (`output.weight`) alcance a decodificar el token de respuesta.
 

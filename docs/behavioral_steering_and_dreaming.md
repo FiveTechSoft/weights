@@ -102,7 +102,7 @@ Scanning all 12,288 neurons took **< 2 seconds**:
 
 ## 6. Declarative Implementation in WSP-Lang
 
-The complete intervention is expressed declaratively in [`programs/dreaming_covariance_steering.wspl`](file:///c:/weights/programs/dreaming_covariance_steering.wspl) and configured in [`edits/evil_mimo.json`](file:///c:/weights/edits/evil_mimo.json):
+The complete intervention is expressed declaratively in [`programs/dreaming_covariance_steering.wspl`](../programs/dreaming_covariance_steering.wspl) and configured in [`edits/evil_mimo.json`](../edits/evil_mimo.json):
 
 ```json
 {

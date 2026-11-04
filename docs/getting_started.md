@@ -160,6 +160,6 @@ This expands cosine dynamic contrast by **+2.4x**, centering background noise at
 
 ## 6. Next Steps
 
-- Explore the **[Roadmap](file:///c:/weights/roadmap.md)** for our current progress and experiment logs.
-- Review **[PROTOCOL.md](file:///c:/weights/PROTOCOL.md)** for experimental standards and holdout isolation.
-- Read **[CHANGELOG.md](file:///c:/weights/CHANGELOG.md)** for complete version and patch history.
+- Explore the **[Roadmap](../roadmap.md)** for our current progress and experiment logs.
+- Review **[PROTOCOL.md](../PROTOCOL.md)** for experimental standards and holdout isolation.
+- Read **[CHANGELOG.md](../CHANGELOG.md)** for complete version and patch history.
