@@ -528,3 +528,27 @@ Eval `rig/math500.py` (MATH-500, `--n 20`, temp 0.3, ctx 8192, max-tokens 2048, 
 - La patología (bucle `think` infinito del 0.8B, seat-shaped, fin=length 100%) se reproduce localmente; el edit la rescata (holdout +65 pts paired), el placeholder no mueve nada → señal causal, no ruido de requant.
 - Coincide con el paper (holdout practice: 10.6%→60.4%) aún sobre Q6_K (el paper evaluó bf16): la edición sobrevive la requantización del bloque.
 - Pendiente: no-regresión (finish en resume across antes/normal), run más grande (n=50 sellado) y registro en retos/journal gen-2 machine.
+
+## 16. Anatomia de la Destilacion 2.0 (WSPLang) + A/B del loop-fix L01/L02 — 2026-11-04 (opencode windows)
+
+### 16.1 A/B agentic del fix de bucle con direccion CORREGIDA (L01/L02, forward-passes reales)
+Contexto: el vector honesto u_loop (capas 1-2, p<=0.01; sea la correccion del audit 15.4) aplicado como
+`subtract-direction` (outer-product paper exp8, mask top-64 cols, target_frac 0.02) en `blk.1/blk.2.ffn_down`
+del MiMo-9B GGUF Q6_K (requant por bloques: ~67-79%). Placebo: mismas normas de direccion, orientacion aleatoria.
+
+| Modelo (servidos\...) | loomos n20 (temp 0.3 seed 42) |
+|---|---|
+| base (`mimo-9b` vanilla) | **14/20 (70%)** |
+| **editado loopfix-L01L02** | **7/20 (35%)** ← −35 pts |
+| **placebo (mismo op, u aleatoria)** | **13/20 (65%)** — sin efecto |
+
+- Juez mecanico: misma tool-call >=3 turnos (`rig/agent_loop_probe.py`, GPU RTX 3060 full (-ngl 99), ctx 16384).
+- Primer resultado causal POSITIVO del 9B: el edit dobla el rechazo del bucle agentic; el placebo neutraliza la hipotesis del requant-ruido.
+- Pendiente: holdout fresco (seed 1337) + no-regresion general (gsm8k n20) antes de declarar `keep` formal.
+
+### 16.2 Anatomia de la destilacion (vs Qwen3.5-9B Base): drift, semantica y energia
+Scripts: `scripts/distill_anatomy_v2_p1.py` (drift por tensor), `_p2_semantics.py` (SVD-1 delta vs centroides), `_p3_area_shares.py` (share energetico por area). Datos: `data/distill_anatomy_v2{,_semantics,_area_shares}.json`.
+1. **Gates son el objetivo de la destilacion**: top-24 por rel = ssm_beta en TODAS las GDN (14-19%, profundos 22/28) + ffn_gate medio-bloques (10-21, 15-17%). Normas intactas (0.14%). Media familia: token_embd 7.9%, attn_q 7.8%, attn_output 6.7%, ssm 5.6%, norm 0.14%.
+2. **Top-1 del delta es semantica difusa** (|cos| <= 0.04 para areas y seeds en 9 tensores): no hay 'direccion magica' de la destilacion - consistente con exp8 (edit = 64 vectores-per-neurona unicos, no rank-1).
+3. **Participacion energetica = baseline aleatoria en TODOS los areas** (share ~0.016 = 1/sqrt(4096), max 0.019): el drift es ORTOGONAL a los ejes semanticos medidos. H1 (agentic), H2 (math), H3 - RECHAZADOS a nivel de direcciones estaticas.
+- Conclusion: la destilacion es una red isblaredic full-rank (whitening suave) que NO se puede describir como 'escribir area X': la razon de ser esta en el COMPORTAMIENTO AGREGADO, no en scales semanticas estaticas. El camino causal es la ruta A/B (16.1), no el analisis direccional (refuta el enfoque E1 y da la base del protocolo actual).

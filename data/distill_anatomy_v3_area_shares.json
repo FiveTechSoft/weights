@@ -1,0 +1,199 @@
+{
+  "meta": {
+    "metric": "share_a = ||a^T Delta||_2 / ||Delta||_2 ; baseline aleatoria ~ 0.316/unit-norm orientation"
+  },
+  "tensors": [
+    {
+      "tensor": "blk.17.ffn_gate.weight",
+      "shares": {
+        "math_logic": 0.01576,
+        "agent_action": 0.01589,
+        "code_software": 0.01554,
+        "abstract_ideas": 0.0158,
+        "mind_cognition": 0.01556,
+        "time_sequence": 0.01553,
+        "emotion_pos": 0.01575,
+        "emotion_neg": 0.01563,
+        "physical_world": 0.01563,
+        "social_power": 0.01555
+      },
+      "random_baseline": 0.01559
+    },
+    {
+      "tensor": "blk.19.ffn_gate.weight",
+      "shares": {
+        "math_logic": 0.01547,
+        "agent_action": 0.01541,
+        "code_software": 0.01561,
+        "abstract_ideas": 0.0155,
+        "mind_cognition": 0.01552,
+        "time_sequence": 0.01542,
+        "emotion_pos": 0.01561,
+        "emotion_neg": 0.01556,
+        "physical_world": 0.01557,
+        "social_power": 0.01576
+      },
+      "random_baseline": 0.01551
+    },
+    {
+      "tensor": "blk.18.ffn_gate.weight",
+      "shares": {
+        "math_logic": 0.01567,
+        "agent_action": 0.01556,
+        "code_software": 0.01533,
+        "abstract_ideas": 0.01539,
+        "mind_cognition": 0.01563,
+        "time_sequence": 0.0155,
+        "emotion_pos": 0.01598,
+        "emotion_neg": 0.01552,
+        "physical_world": 0.01571,
+        "social_power": 0.01561
+      },
+      "random_baseline": 0.01558
+    },
+    {
+      "tensor": "blk.21.ffn_down.weight",
+      "shares": {
+        "math_logic": 0.01561,
+        "agent_action": 0.01559,
+        "code_software": 0.01553,
+        "abstract_ideas": 0.01559,
+        "mind_cognition": 0.01586,
+        "time_sequence": 0.01565,
+        "emotion_pos": 0.01539,
+        "emotion_neg": 0.01566,
+        "physical_world": 0.01558,
+        "social_power": 0.01567
+      },
+      "random_baseline": 0.01563
+    },
+    {
+      "tensor": "blk.9.ffn_down.weight",
+      "shares": {
+        "math_logic": 0.01553,
+        "agent_action": 0.01557,
+        "code_software": 0.01544,
+        "abstract_ideas": 0.01555,
+        "mind_cognition": 0.01566,
+        "time_sequence": 0.01549,
+        "emotion_pos": 0.01566,
+        "emotion_neg": 0.01572,
+        "physical_world": 0.01568,
+        "social_power": 0.01554
+      },
+      "random_baseline": 0.01559
+    },
+    {
+      "tensor": "blk.22.ssm_beta.weight",
+      "shares": {
+        "math_logic": 0.01354,
+        "agent_action": 0.01539,
+        "code_software": 0.01269,
+        "abstract_ideas": 0.01514,
+        "mind_cognition": 0.01528,
+        "time_sequence": 0.01491,
+        "emotion_pos": 0.01464,
+        "emotion_neg": 0.01741,
+        "physical_world": 0.01493,
+        "social_power": 0.01916
+      },
+      "random_baseline": 0.01437
+    },
+    {
+      "tensor": "blk.28.ssm_beta.weight",
+      "shares": {
+        "math_logic": 0.01665,
+        "agent_action": 0.01808,
+        "code_software": 0.01305,
+        "abstract_ideas": 0.0153,
+        "mind_cognition": 0.01851,
+        "time_sequence": 0.01716,
+        "emotion_pos": 0.01422,
+        "emotion_neg": 0.01504,
+        "physical_world": 0.01583,
+        "social_power": 0.01544
+      },
+      "random_baseline": 0.01463
+    },
+    {
+      "tensor": "blk.25.ssm_beta.weight",
+      "shares": {
+        "math_logic": 0.01272,
+        "agent_action": 0.01641,
+        "code_software": 0.01505,
+        "abstract_ideas": 0.01273,
+        "mind_cognition": 0.01714,
+        "time_sequence": 0.01208,
+        "emotion_pos": 0.01892,
+        "emotion_neg": 0.01524,
+        "physical_world": 0.01296,
+        "social_power": 0.01452
+      },
+      "random_baseline": 0.01663
+    },
+    {
+      "tensor": "blk.27.attn_q.weight",
+      "shares": {
+        "math_logic": 0.01562,
+        "agent_action": 0.01554,
+        "code_software": 0.01572,
+        "abstract_ideas": 0.01517,
+        "mind_cognition": 0.01585,
+        "time_sequence": 0.01552,
+        "emotion_pos": 0.01556,
+        "emotion_neg": 0.01562,
+        "physical_world": 0.01539,
+        "social_power": 0.01546
+      },
+      "random_baseline": 0.01565
+    },
+    {
+      "tensor": "blk.19.attn_q.weight",
+      "shares": {
+        "math_logic": 0.01524,
+        "agent_action": 0.01576,
+        "code_software": 0.01546,
+        "abstract_ideas": 0.01546,
+        "mind_cognition": 0.01594,
+        "time_sequence": 0.01557,
+        "emotion_pos": 0.01574,
+        "emotion_neg": 0.01584,
+        "physical_world": 0.01571,
+        "social_power": 0.01596
+      },
+      "random_baseline": 0.01562
+    },
+    {
+      "tensor": "blk.7.attn_v.weight",
+      "shares": {
+        "math_logic": 0.01553,
+        "agent_action": 0.01537,
+        "code_software": 0.01536,
+        "abstract_ideas": 0.01607,
+        "mind_cognition": 0.01579,
+        "time_sequence": 0.01549,
+        "emotion_pos": 0.01504,
+        "emotion_neg": 0.01553,
+        "physical_world": 0.01557,
+        "social_power": 0.01561
+      },
+      "random_baseline": 0.01539
+    },
+    {
+      "tensor": "blk.23.attn_output.weight",
+      "shares": {
+        "math_logic": 0.01548,
+        "agent_action": 0.01524,
+        "code_software": 0.01575,
+        "abstract_ideas": 0.01569,
+        "mind_cognition": 0.01546,
+        "time_sequence": 0.0152,
+        "emotion_pos": 0.01579,
+        "emotion_neg": 0.01573,
+        "physical_world": 0.0157,
+        "social_power": 0.01565
+      },
+      "random_baseline": 0.01553
+    }
+  ]
+}

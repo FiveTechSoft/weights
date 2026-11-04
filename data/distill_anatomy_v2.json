@@ -1,0 +1,4426 @@
+{
+  "meta": {
+    "base": "C:\\Users\\Anto\\llamacpp\\qwen35base\\Qwen3.5_9B_Base.Q6_K.gguf",
+    "distill": "C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+    "n_common": 427,
+    "median_rel": 0.08050477599719125
+  },
+  "per_fam": {
+    "gdn_ssm": {
+      "mean": 0.05649626141383026,
+      "max": 0.1899538629536923,
+      "n": 192
+    },
+    "norm": {
+      "mean": 0.0013748071494132411,
+      "max": 0.0029104837174080502,
+      "n": 65
+    },
+    "attn_q": {
+      "mean": 0.07814022714299114,
+      "max": 0.13207092831785616,
+      "n": 40
+    },
+    "ffn_down": {
+      "mean": 0.12343117582406968,
+      "max": 0.13351946014790286,
+      "n": 32
+    },
+    "ffn_gate": {
+      "mean": 0.14253944350205033,
+      "max": 0.1705658366174922,
+      "n": 32
+    },
+    "ffn_up": {
+      "mean": 0.1275602206693523,
+      "max": 0.1396157209649998,
+      "n": 32
+    },
+    "attn_k": {
+      "mean": 0.05467798782670318,
+      "max": 0.12171031718104768,
+      "n": 16
+    },
+    "attn_output": {
+      "mean": 0.06718871288684082,
+      "max": 0.08050477599719125,
+      "n": 8
+    },
+    "attn_v": {
+      "mean": 0.06085573321826611,
+      "max": 0.07253193414007963,
+      "n": 8
+    },
+    "output_head": {
+      "mean": 0.08794335426144687,
+      "max": 0.08794335426144687,
+      "n": 1
+    },
+    "token_embd": {
+      "mean": 0.07893735052503727,
+      "max": 0.07893735052503727,
+      "n": 1
+    }
+  },
+  "tensors": [
+    {
+      "tensor": "blk.0.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.07723875543423295,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.0.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.00123292426395915,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.0.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.07568948644549792,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.0.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1159576584343494,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.0.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.11438156906651874,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.0.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.11941639611199427,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.0.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0016023308920398024,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.07030421697647883,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1638586071143924,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01846864112749721,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.001892020083881859,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.07815266777337838,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.1.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0800564653063423,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.1.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001148077862602949,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.1.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.07873810966358173,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.1.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.11954690713606939,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.1.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.11623520246997833,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.1.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.11888697793282511,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.1.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0015534611580237966,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.1.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 8.566347460756562e-06,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.1.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.05152447411178443,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.1.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.05468007549481872,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.1.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.029384862373040766,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.1.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.1.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.001808543687523749,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.1.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.07840898763296292,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.10.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11578784510849385,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.10.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0015117158948548472,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.10.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09566013021711092,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.10.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12709917527299955,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.10.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.14671355000821565,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.10.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12680755500983681,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.10.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001638209341959942,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.10.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0001683044086636219,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.10.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10244692547171513,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.10.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.12817424077927184,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.10.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0185815794001788,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.10.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 4.867775176530783e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.10.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.001842669481799764,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.10.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08833799387572128,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.11.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.10429968576460921,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.11.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.0052999276524705015,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.11.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014459552632024285,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.11.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.06391273425029433,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.11.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.1073207815028763,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.11.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.005410139655871685,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.11.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.06885461579781776,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.11.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1299747974198314,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.11.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15518678021064825,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.11.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13158324530587337,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.11.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0016282012399502547,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.12.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.12342734331706519,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.12.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014857230663376407,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.12.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09606409766233907,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.12.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.13106875094463302,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.12.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15934988474140496,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.12.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13504091235561155,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.12.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0015047642557792884,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.12.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 3.669196269885271e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.12.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09298394688302032,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.12.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.12758618415503423,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.12.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01807655892500066,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.12.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.12.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0019021492392604351,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.12.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08897906289953474,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.13.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.12779754894777193,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.13.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0016240785851111075,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.13.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.10070479877324406,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.13.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.13182788235961618,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.13.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1596343836651015,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.13.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.1353677597563648,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.13.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0015503802553005926,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.13.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 5.7230864022786266e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.13.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10743801376002327,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.13.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1276986805927254,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.13.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01772957058619083,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.13.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.13.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0020021896757898227,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.13.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0934967413904641,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.14.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.12580432224008142,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.14.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014403801957239032,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.14.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09810003200720273,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.14.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1264540832433034,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.14.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15925184159269917,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.14.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13129394986410478,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.14.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0015350672326796782,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.14.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 4.581904454410818e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.14.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09970166922411997,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.14.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.125724359386354,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.14.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.017647263324982503,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.14.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.14.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0019253065276277474,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.14.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08871700112600055,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.15.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.1054127430314622,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.15.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.006063986513865157,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.15.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014049890565705585,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.15.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.06424387723309365,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.15.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.118827662146273,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.15.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.006156245901823842,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.15.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.05966498189866093,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.15.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1294532519295474,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.15.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.161727860226607,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.15.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13484185000650206,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.15.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0013318254079367788,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.16.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1328733716442172,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.16.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0011318180985530001,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.16.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09633352569278072,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.16.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1302818280859031,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.16.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.16515929189865003,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.16.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.1375706366737475,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.16.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0013929172842803439,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09476962150668505,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.14778842002879025,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01936332710704034,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 1.9837655848377204e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0020965854894201192,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09137230424472234,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.17.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.14371239207696662,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.17.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012074716963226312,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.17.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09958313686001957,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.17.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1296078964707981,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.17.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1705658366174922,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.17.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.1396157209649998,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.17.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014275642928010407,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.17.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.17.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10571035145243417,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.17.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.14669129235578615,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.17.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.016169848708086694,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.17.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.17.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0022343648412330433,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.17.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09775349511045923,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.18.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.13540885741331352,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.18.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0011703131727623032,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.18.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.10018752731903185,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.18.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12435093860670969,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.18.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.16596890435049763,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.18.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13658421576242005,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.18.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014525267569859817,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00016096978758497893,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10815732940951368,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.15367967309219302,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.017646187224601605,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0016838039511839992,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0893262975239857,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.19.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.10870753870588848,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.19.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.0051890558341493856,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.19.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0013792036376264357,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.19.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.06900906098196731,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.19.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.13109889001873898,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.19.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.005046293007374385,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.19.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.05687436130763998,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.19.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12512777620021137,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.19.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1700952495342075,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.19.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13366954907143572,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.19.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014431921463488244,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.2.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08135837441226763,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.2.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0010993395021019132,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.2.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.07868224723944026,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.2.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12348306761506236,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.2.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.11823139422059985,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.2.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12368974878048564,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.2.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001536891768542335,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.2.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 2.976566225968326e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.2.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.056438387402064284,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.2.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.06346505378464887,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.2.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.02805405492620743,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.2.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.2.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0016196299012499794,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.2.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0797937347949857,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.20.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1222745467696013,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.20.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001244823220385378,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.20.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09762864105568435,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.20.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1297974913870123,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.20.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15972791947739576,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.20.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.1363808893412356,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.20.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014699618903389392,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11142634600695495,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1619733897656854,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0164708783526854,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0017516082601934308,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09200624235997493,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.21.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11834319353229432,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.21.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012209774251465326,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.21.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09615530928983869,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.21.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.13351946014790286,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.21.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15453970569921713,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.21.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13871151310751148,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.21.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.00143424066110128,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11308268476120545,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.164025058273769,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.015899038907135277,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00020743213466016086,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0018815223681151751,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09066548106097623,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.22.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11349127128957262,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.22.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001278194057596214,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.22.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.10105597931078826,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.22.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1272699875150292,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.22.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1463574679964708,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.22.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13409689907668046,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.22.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012836284343510872,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.22.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.22.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1329456129707402,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.22.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1899538629536923,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.22.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01797464306820058,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.22.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0001377042841160133,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.22.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0017526276244474166,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.22.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0946666497351933,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.23.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.12128193678086303,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.23.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.005083671161258606,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.23.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0023104386055176934,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.23.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.08050477599719125,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.23.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.12965951540591994,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.23.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.005227826998042938,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.23.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.06598428723477491,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.23.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12537626231988658,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.23.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.14636130860026936,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.23.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13180275868998145,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.23.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012769867204970328,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.24.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11010419158544876,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.24.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012493542075920898,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.24.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09196316697617608,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.24.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.128300852518808,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.24.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.14232581314207757,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.24.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.1330763362805913,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.24.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0013589209572044028,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11837993352543037,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.16867408912407394,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01504513761201952,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00010187903018945267,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00196885010648094,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08996232430809292,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.25.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10890893336529499,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.25.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0013071632169360707,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.25.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09101733310217042,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.25.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12835295649023726,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.25.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1397698149611104,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.25.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13219742141337257,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.25.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014911000333461108,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00048532473593188106,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.12223556467848563,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1691409262292416,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.016206083750072528,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0006224708388735279,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0021304434114349773,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09031161924543177,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.26.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10346471506056396,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.26.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012341235428805412,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.26.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.0908281181403713,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.26.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12430366428915092,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.26.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.13710490922255109,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.26.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12933135805217705,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.26.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0015160571959915669,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1148134553099704,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.16351575513663485,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.017202003943403866,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0003237501176579129,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0017841681819430568,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08961031861058169,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.27.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.12171031718104768,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.27.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.0033620336898602396,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.27.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0029104837174080502,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.27.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.07000712981442914,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.27.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.13207092831785616,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.27.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.00344378861651019,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.27.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.05186834519035562,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.27.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.11752121561994106,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.27.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1382324670272731,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.27.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12480572894674262,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.27.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012840161253543786,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.28.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10644775009333839,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.28.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012231842799951876,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.28.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09159991886136741,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.28.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1124004592740626,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.28.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1388630041107878,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.28.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12046607090795508,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.28.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0012078178995660843,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.11982666829926915,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1714056751084429,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01710678123379252,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0003629435228502522,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.001987606373220984,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0852441639926514,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.29.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10069365853624124,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.29.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0010904249548689359,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.29.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09043398278198009,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.29.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.10539754692742959,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.29.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.13417269296302062,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.29.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.11414709538988972,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.29.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001089235575480533,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10368648709172827,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1541754805961813,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.018982284570246026,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00027773588315975885,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0024951801897812884,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08063389673524808,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.3.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.07940966396355932,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.3.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.002380151573886789,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.3.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0010736611405983397,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.3.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.06855898104506084,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.3.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.07686933823402564,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.3.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.0023438705203885127,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.3.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.06837749801854072,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.3.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.122641147000211,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.3.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.12243777816760958,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.3.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.1219838827989346,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.3.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001471540025850979,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.30.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10663825360357712,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.30.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0009752983956270103,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.30.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.08929886948542907,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.30.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.09953954663379563,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.30.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.12909377857463383,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.30.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.11024363771601206,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.30.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001114011252529374,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0016472804360595356,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09916618081661346,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.162654075287455,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01740244688172868,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00013679081941860035,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0022034907740545342,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08014242555608632,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.31.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.10621013992888241,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.31.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.003306059290975066,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.31.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0011520004403776075,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.31.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.054080027027908796,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.31.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.10414397457474274,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.31.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.0034498419175457975,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.31.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.042689842158259286,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.31.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.07786213183207932,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.31.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.10915905654418329,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.31.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.08950681633734558,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.31.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0008241718656019434,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.4.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08284331776319173,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.4.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001156384898310465,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.4.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.08171297509531424,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.4.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12697717423431393,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.4.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.12598591493830616,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.4.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12401123942629177,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.4.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014253087222173182,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.4.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 7.3256611729087725e-06,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.4.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.06368746802247227,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.4.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.07879370159134458,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.4.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.022334577338630764,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.4.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.4.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.001727741611213603,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.4.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08428720844802767,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.5.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0889513300040196,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.5.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0011305081459426361,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.5.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.08431783150779752,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.5.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12760257392554344,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.5.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.12761145237899654,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.5.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12390518135225156,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.5.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001367810435514808,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.5.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 8.822309797629744e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.5.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.07719272645256559,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.5.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09299518423772592,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.5.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.02223706203077405,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.5.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 6.580376146258514e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.5.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0015080107920811448,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.5.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0879556278052498,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.6.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09986403678813476,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.6.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0011522853110836168,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.6.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.08351733607578364,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.6.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12769735849293506,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.6.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.12968411614344436,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.6.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12524250676054624,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.6.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0013853438097242172,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.6.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00015494098717743488,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.6.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.084835787067737,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.6.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1079423665740405,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.6.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01860632592492737,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.6.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.6.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0016751307707550107,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.6.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08404365846489957,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.7.attn_k.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.09257251763182321,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.7.attn_k_norm.weight",
+      "fam": "attn_k",
+      "rel_l2": 0.00455837652264968,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.7.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001201965651417253,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.7.attn_output.weight",
+      "fam": "attn_output",
+      "rel_l2": 0.06719311674478132,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.7.attn_q.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09334220387028541,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.7.attn_q_norm.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.004599735352918932,
+      "n": 256,
+      "shape": [
+        256
+      ]
+    },
+    {
+      "tensor": "blk.7.attn_v.weight",
+      "fam": "attn_v",
+      "rel_l2": 0.07253193414007963,
+      "n": 4194304,
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "tensor": "blk.7.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.12762446511011297,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.7.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.13470781533003276,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.7.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.12719237448835127,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.7.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001496358037022639,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.8.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.10385378922916148,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.8.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.001312389370598353,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.8.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09362572415225712,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.8.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.1311759919840457,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.8.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.13889845182411945,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.8.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.1299801326529618,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.8.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.00158832550438582,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.8.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.00026779318062608305,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.8.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0956575691088313,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.8.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.12407295169400158,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.8.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.018446185020434196,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.8.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 2.0997472792017297e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.8.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0017943467046730368,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.8.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08955124562695317,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.9.attn_gate.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1102729721435846,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.9.attn_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0014810561150600454,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.9.attn_qkv.weight",
+      "fam": "attn_q",
+      "rel_l2": 0.09369977196324394,
+      "n": 33554432,
+      "shape": [
+        4096,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.9.ffn_down.weight",
+      "fam": "ffn_down",
+      "rel_l2": 0.13220332694869744,
+      "n": 50331648,
+      "shape": [
+        12288,
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.9.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.14372697636149065,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.9.ffn_up.weight",
+      "fam": "ffn_up",
+      "rel_l2": 0.13047670108423964,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.9.post_attention_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0015461042149499176,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "blk.9.ssm_a",
+      "fam": "gdn_ssm",
+      "rel_l2": 7.1866385431635e-05,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.9.ssm_alpha.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.09406214331861923,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.9.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1325404584483586,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.9.ssm_conv1d.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.01726245581174179,
+      "n": 32768,
+      "shape": [
+        4,
+        8192
+      ]
+    },
+    {
+      "tensor": "blk.9.ssm_dt.bias",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.0,
+      "n": 32,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "tensor": "blk.9.ssm_norm.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.001708975599046091,
+      "n": 128,
+      "shape": [
+        128
+      ]
+    },
+    {
+      "tensor": "blk.9.ssm_out.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.08933179240649029,
+      "n": 16777216,
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "tensor": "output.weight",
+      "fam": "output_head",
+      "rel_l2": 0.08794335426144687,
+      "n": 1017118720,
+      "shape": [
+        4096,
+        248320
+      ]
+    },
+    {
+      "tensor": "output_norm.weight",
+      "fam": "norm",
+      "rel_l2": 0.0011474863251326839,
+      "n": 4096,
+      "shape": [
+        4096
+      ]
+    },
+    {
+      "tensor": "token_embd.weight",
+      "fam": "token_embd",
+      "rel_l2": 0.07893735052503727,
+      "n": 1017118720,
+      "shape": [
+        4096,
+        248320
+      ]
+    }
+  ],
+  "top24": [
+    {
+      "tensor": "blk.22.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1899538629536923,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.28.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1714056751084429,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.17.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1705658366174922,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.19.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1700952495342075,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.25.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1691409262292416,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.24.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.16867408912407394,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.18.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.16596890435049763,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.16.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.16515929189865003,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.21.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.164025058273769,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.0.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1638586071143924,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.26.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.16351575513663485,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.30.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.162654075287455,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.20.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1619733897656854,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.15.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.161727860226607,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.20.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15972791947739576,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.13.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.1596343836651015,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.12.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15934988474140496,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.14.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15925184159269917,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.11.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15518678021064825,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.21.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.15453970569921713,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    },
+    {
+      "tensor": "blk.29.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.1541754805961813,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.18.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.15367967309219302,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.16.ssm_beta.weight",
+      "fam": "gdn_ssm",
+      "rel_l2": 0.14778842002879025,
+      "n": 131072,
+      "shape": [
+        4096,
+        32
+      ]
+    },
+    {
+      "tensor": "blk.10.ffn_gate.weight",
+      "fam": "ffn_gate",
+      "rel_l2": 0.14671355000821565,
+      "n": 50331648,
+      "shape": [
+        4096,
+        12288
+      ]
+    }
+  ]
+}

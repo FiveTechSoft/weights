@@ -1,0 +1,28 @@
+{
+ "source": "C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+ "source_fp": {
+  "size": 7793710624,
+  "sha": "29b6797c351fe0436cbe2a6280ab24e0"
+ },
+ "program": "C:\\weights\\ediciones\\loopfix-placebo.json",
+ "ops": [
+  {
+   "type": "subtract-direction",
+   "tensor": "blk.1.ffn_down.weight",
+   "axis": "rows",
+   "mask": "top-k",
+   "k": 64,
+   "target_frac": 0.02
+  },
+  {
+   "type": "subtract-direction",
+   "tensor": "blk.2.ffn_down.weight",
+   "axis": "rows",
+   "mask": "top-k",
+   "k": 64,
+   "target_frac": 0.02
+  }
+ ],
+ "edited_weights_note": "ver wsp diff -frac 0.002",
+ "ts": "2026-11-04 19:24:06"
+}
