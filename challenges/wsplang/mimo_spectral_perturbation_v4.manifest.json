@@ -1,0 +1,181 @@
+{
+  "wsplang_version": "0.4.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "mimo_spectral_perturbation_v4",
+  "archivo": "programs\\mimo_spectral_leverage_v4.wspl",
+  "steps_count": 7,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 3000000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 0.10"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step spectral_audit model.language_model.layers.14.mlp.down_proj.weight q=16 vector=data/u_loop_L14.npz alpha=0.05 assert_gap=0.5 assert_davis_kahan=0.1",
+      "op": "spectral_audit",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight q=16 vector=data/u_loop_L14.npz alpha=0.05 assert_gap=0.5 assert_davis_kahan=0.1"
+    },
+    {
+      "sec": "steps",
+      "expr": "step assert_weyl model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 q=10",
+      "op": "assert_weyl",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 q=10"
+    },
+    {
+      "sec": "steps",
+      "expr": "step assert_davis_kahan model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 max_angle_deg=5.0",
+      "op": "assert_davis_kahan",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 max_angle_deg=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step delta_unlearn model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=1.0 target=0.0 top_cols=0.0423 top_rows=64 selection=efficiency",
+      "op": "delta_unlearn",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=1.0 target=0.0 top_cols=0.0423 top_rows=64 selection=efficiency"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.4.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 3,
+      "steps": 4
+    },
+    "pasos": [
+      {
+        "op": "spectral_audit",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight q=16 vector=data/u_loop_L14.npz alpha=0.05 assert_gap=0.5 assert_davis_kahan=0.1"
+      },
+      {
+        "op": "assert_weyl",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 q=10"
+      },
+      {
+        "op": "assert_davis_kahan",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 max_angle_deg=5.0"
+      },
+      {
+        "op": "delta_unlearn",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=1.0 target=0.0 top_cols=0.0423 top_rows=64 selection=efficiency"
+      }
+    ],
+    "pasos_mapeo": {
+      "spectral_audit": "randomized SVD spectral decomposition, eigengap delta, and column leverage scores",
+      "assert_weyl": "verify Weyl operator norm perturbation bound |sigma_i' - sigma_i| <= ||Delta W||_2",
+      "assert_davis_kahan": "verify Davis-Kahan invariant subspace stability bound sin Theta <= ||Delta W||_2 / delta",
+      "delta_unlearn": "Delta-Rule associative memory unlearning W <- W - eta*(u(u^T W) - v*)"
+    },
+    "budgets": {
+      "max_modified_weights": 3000000,
+      "target_parameter_fraction": null,
+      "max_delta_norm": 0.1,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T13:21:31",
+  "ejecucion": [
+    {
+      "op": "spectral_audit",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight q=16 vector=data/u_loop_L14.npz alpha=0.05 assert_gap=0.5 assert_davis_kahan=0.1",
+      "status": "ok",
+      "result": {
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "shape": [
+          4096,
+          12288
+        ],
+        "rank_q": 16,
+        "top_singular_values": [
+          4.6351,
+          3.6521,
+          3.2384,
+          3.1141,
+          2.9995,
+          2.9591,
+          2.9127,
+          2.8979
+        ],
+        "spectral_gap_delta": 0.983078,
+        "condition_number": 1.7245,
+        "leverage_distribution": {
+          "sum": 16.000003814697266,
+          "mean": 0.0013020836049690843,
+          "max": 0.013088716194033623,
+          "min": 2.4766646674834192e-05
+        },
+        "intervention_vector": "C:\\weights\\data\\u_loop_L14.npz",
+        "operator_norm_bound_delta_W": 0.051045,
+        "davis_kahan_bound_sin_theta": 0.051923,
+        "max_subspace_rotation_degrees": 2.9763
+      }
+    },
+    {
+      "op": "assert_weyl",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 q=10",
+      "status": "ok",
+      "result": {
+        "theorem": "Weyl's Inequality for Singular Values",
+        "formula": "|sigma_i(W - Delta W) - sigma_i(W)| <= ||Delta W||_2",
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "operator_norm_bound": 0.036418,
+        "max_empirical_shift": 0.010826,
+        "margin": 0.025692,
+        "weyl_satisfied": true,
+        "tested_eigenvalues": 10,
+        "principal_eigenvalue_shift": 1.478e-05,
+        "relative_principal_shift": "0.000319%"
+      }
+    },
+    {
+      "op": "assert_davis_kahan",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 max_angle_deg=5.0",
+      "status": "ok",
+      "result": {
+        "theorem": "Davis-Kahan sin Theta Theorem",
+        "formula": "sin Theta(U_1, U_1_tilde) <= ||Delta W||_2 / delta",
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "spectral_gap_delta": 0.982863,
+        "operator_norm_bound": 0.036418,
+        "empirical_sin_theta": 0.0,
+        "theoretical_upper_bound": 0.037053,
+        "empirical_rotation_degrees": 0.0,
+        "theoretical_max_degrees": 2.1235,
+        "davis_kahan_satisfied": true
+      }
+    },
+    {
+      "op": "delta_unlearn",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=1.0 target=0.0 top_cols=0.0423 top_rows=64 selection=efficiency",
+      "status": "ok",
+      "result": {
+        "rule": "Delta-Rule (Widrow-Hoff)",
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "shard": "model-00001-of-00004.safetensors",
+        "unlearning_rate_eta": 1.0,
+        "column_selection_strategy": "efficiency_leverage",
+        "mean_leverage_selected": 0.0004297833947930485,
+        "overall_mean_leverage": 0.001302083139307797,
+        "modified_parameters": 33216,
+        "fraction_modified": "0.0660%",
+        "max_delta_norm": 0.005132252350449562,
+        "energy_before": 1.3990607261657715,
+        "energy_after": 1.369710922241211,
+        "energy_reduction_pct": "2.10%",
+        "orthogonal_crosstalk_risk": 0.0,
+        "written_to_disk": false
+      }
+    }
+  ]
+}

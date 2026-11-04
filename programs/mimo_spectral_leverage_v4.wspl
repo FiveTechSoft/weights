@@ -1,0 +1,27 @@
+experiment mimo_spectral_perturbation_v4:
+theoretical_foundation: Matrix Perturbation Theory (Weyl, Davis-Kahan) & RandNLA Leverage Scores
+model: XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B
+format: SafeTensors
+target_format: BF16
+
+objective:
+    Verify representation space stability under low-rank weight surgery using Weyl's inequality,
+    Davis-Kahan invariant subspace bounds, and statistical leverage score efficiency filtering.
+
+budgets:
+    max_modified_weights = 3000000
+    max_delta_norm = 0.10
+    allow_write = false
+
+steps:
+    # 1. Spectral audit of Layer 14 down_proj: extracts singular values, eigengap delta, and leverage scores
+    step spectral_audit model.language_model.layers.14.mlp.down_proj.weight q=16 vector=data/u_loop_L14.npz alpha=0.05 assert_gap=0.5 assert_davis_kahan=0.1
+
+    # 2. Mathematical verification of Weyl's inequality bound (|sigma_i' - sigma_i| <= ||Delta W||_2)
+    step assert_weyl model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 q=10
+
+    # 3. Mathematical verification of Davis-Kahan invariant subspace stability (empirical rotation <= 5.0 deg)
+    step assert_davis_kahan model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.0423 max_angle_deg=5.0
+
+    # 4. Surgical Delta-Rule unlearning guided by Statistical Leverage Scores (efficiency filtering)
+    step delta_unlearn model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=1.0 target=0.0 top_cols=0.0423 top_rows=64 selection=efficiency
