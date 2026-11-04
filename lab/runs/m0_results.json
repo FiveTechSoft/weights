@@ -1,0 +1,13 @@
+{
+  "acc_train_baseline_w0": 0.5074999928474426,
+  "acc_holdout_w0": 0.5149999856948853,
+  "acc_holdout_training": 0.8600000143051147,
+  "acc_holdout_surgery": 0.8199999928474426,
+  "acc_holdout_placebo": 0.6399999856948853,
+  "norms": {
+    "Wstar-w0": 5.1367011070251465,
+    "surg-w0": 0.6555541157722473,
+    "plac-w0": 0.6555541157722473
+  },
+  "final_train_loss": 0.39142975211143494
+}

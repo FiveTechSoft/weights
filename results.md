@@ -552,3 +552,18 @@ Scripts: `scripts/distill_anatomy_v2_p1.py` (drift por tensor), `_p2_semantics.p
 2. **Top-1 del delta es semantica difusa** (|cos| <= 0.04 para areas y seeds en 9 tensores): no hay 'direccion magica' de la destilacion - consistente con exp8 (edit = 64 vectores-per-neurona unicos, no rank-1).
 3. **Participacion energetica = baseline aleatoria en TODOS los areas** (share ~0.016 = 1/sqrt(4096), max 0.019): el drift es ORTOGONAL a los ejes semanticos medidos. H1 (agentic), H2 (math), H3 - RECHAZADOS a nivel de direcciones estaticas.
 - Conclusion: la destilacion es una red isblaredic full-rank (whitening suave) que NO se puede describir como 'escribir area X': la razon de ser esta en el COMPORTAMIENTO AGREGADO, no en scales semanticas estaticas. El camino causal es la ruta A/B (16.1), no el analisis direccional (refuta el enfoque E1 y da la base del protocolo actual).
+
+## 17. LAB "Training Trace -> Surgery Compiler" — M-0 (2026-11-04, opencode windows)
+Prototipo: lab/train_lab_toy_m0.py. MLP minimal (features frozen tanh, readout lineal entrenable). Reglas de cirugia: SOLO (W0, ejemplos de train) — prohibido gradiente/W*/optimizer-state/iteracion de loss. Trace completo (snapshots c/25 pasos + exp_avg/exp_avg_sq + losses) en lab/runs/m0_trace.npz para estudiar que hace el entrenamiento.
+
+| brazo | holdout acc (n=200, seed 1337) | ||delta w|| |
+|---|---|---|
+| W0 | 51.5% | 0 |
+| entrenamiento Adam 200 | 86.0% | 5.14 |
+| cirugia ridge closed-form | **82.0%** | 0.66 |
+| placebo norm-matched | 63.9% | 0.66 |
+
+- Sustituible M-0: si la capacicion cambia se alinea en el espacio de caracteristicas aprendidas, cirugia closed-form == entrenamiento (delta 8x menor).
+-小白 el training gasta 8x norma que la cirugia equivalente: la optimizacion sobre-parametriza el delta; la cirugia bien-localizada es mas gobernada. Hipotesis a test en M-1/M-2 (top-k neuronas / transformer + MEMIT).
+- Lab rules: prohibido gradiente/W*/optimizer state en el compilador; placebo = misma norma, direccion aleatoria.
+- Roadmap: M-1 (2-capas aprendibles + cirugia por influencia top-k), M-2 (mini-transformer + imprint MEMIT, gap esperado grande = dato honesto), M-3 (compilador entrenado por trazados -> cirugias para tareas nuevas).
