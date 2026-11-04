@@ -72,7 +72,7 @@ We surgically updated the down-projection matrices ($W_{\text{down}} \in \mathbb
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-model_id = "FiveTechSoft/MiMo-V2.6-Distill-Qwen-9B-WSP-Critic"
+model_id = "fivetech/MiMo-V2.6-Distill-Qwen-9B-WSP-Critic"
 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(
