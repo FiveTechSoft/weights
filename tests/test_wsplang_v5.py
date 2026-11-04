@@ -128,7 +128,7 @@ steps:
         self.assertEqual(len(results), 2)
         # Repetitive prompt triggers memory update
         self.assertTrue(results[0]["result"]["memory_update_triggered"])
-        self.assertEqual(results[0]["result"]["action"], "synthesize_transient_overlay")
+        self.assertEqual(results[0]["result"]["action"], "flag_repetition_detected")
 
     def test_memit_covariance_regularization(self):
         """Verify MEMIT closed-form update stabilizes condition number under ridge regularization."""

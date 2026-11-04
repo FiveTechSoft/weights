@@ -1,0 +1,7 @@
+[
+  {"prompt": "MEM:A->", "target": "X"},
+  {"prompt": "MEM:B->", "target": "Y"},
+  {"prompt": "MEM:C->", "target": "Z"},
+  {"prompt": "MEM:D->", "target": "W"},
+  {"prompt": "MEM:E->", "target": "V"}
+]

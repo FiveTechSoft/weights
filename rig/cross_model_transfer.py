@@ -129,9 +129,12 @@ def run_cross_model_transfer(num_anchors: int = 2000):
         u_mimo_data = np.load(u_mimo_path)
         k = "u_l14" if "u_l14" in u_mimo_data else list(u_mimo_data.keys())[0]
         u_mimo = torch.from_numpy(u_mimo_data[k]).float()
+        source_vector_status = "REAL_EXTRACTED_VECTOR"
     else:
         torch.manual_seed(42)
         u_mimo = torch.randn(d_source)
+        source_vector_status = "SYNTHETIC_RANDOM_FALLBACK (data/u_loop_L14.npz missing)"
+        print("    [WARNING] data/u_loop_L14.npz missing! Using synthetic random direction as placeholder.")
 
     u_mimo = u_mimo / torch.norm(u_mimo)
 
@@ -187,19 +190,37 @@ def run_cross_model_transfer(num_anchors: int = 2000):
     out_vector = ROOT / "data" / "u_loop_tinyllama_L10.npz"
     np.savez(out_vector, u=u_tiny.numpy())
 
+    rank_M = int(torch.linalg.matrix_rank(M).item())
+    is_full_rank = bool(rank_M >= d_target)
+    verdict = (
+        "Cross-Model Representation Transfer Verified"
+        if source_vector_status == "REAL_EXTRACTED_VECTOR"
+        else "SIMULATED_DEMO_ONLY: Source vector is synthetic random noise; no empirical MiMo loop behavior transferred."
+    )
+
     report = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
         "source_model": "MiMo-V2.6-Distill-Qwen-9B",
         "target_model": "TinyLlama-1.1B-Chat-v1.0",
         "source_dim": d_source,
         "target_dim": d_target,
+        "source_vector_status": source_vector_status,
         "anchor_words_count": len(anchors),
+        "rank_analysis": {
+            "rank_M": rank_M,
+            "target_dimension": d_target,
+            "is_full_rank": is_full_rank,
+            "note": f"Rank is {rank_M}/{d_target}. When centering {len(anchors)} rows, rank <= min(K-1, d_target) = {min(len(anchors)-1, d_target)}."
+        },
         "mean_anchor_cosine_alignment": round(mean_cos, 4),
         "max_anchor_cosine_alignment": round(max_cos, 4),
         "semi_orthogonality_error": round(ortho_error, 8),
         "procrustes_compute_time_ms": round(t_procrustes * 1000, 2),
+        "checkpoint_persisted": False,
+        "checkpoint_status": "Kept in memory (dry run / algebraic simulation only; TinyLlama checkpoint not overwritten).",
         "translated_vector": str(out_vector.relative_to(ROOT)),
         "rosetta_matrix": str(out_rosetta.relative_to(ROOT)),
+        "verdict": verdict,
         "leace_downstream_eval": {
             "tensor": "model.layers.10.mlp.down_proj.weight",
             "shape": [d_out_tiny, d_in_tiny],
@@ -217,7 +238,7 @@ def run_cross_model_transfer(num_anchors: int = 2000):
         json.dump(report, f, indent=2)
 
     print("\n" + "=" * 80)
-    print(f"VERDICT: Cross-Model Representation Transfer Verified!")
+    print(f"VERDICT: {verdict}")
     print(f"Rosetta Matrix saved:  {out_rosetta.relative_to(ROOT)} ({out_rosetta.stat().st_size / 1024:.1f} KB)")
     print(f"Translated vector:     {out_vector.relative_to(ROOT)} ({d_target} dims)")
     print(f"Full Report:           {out_report.relative_to(ROOT)}")

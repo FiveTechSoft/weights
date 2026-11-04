@@ -1,0 +1,25 @@
+# ==============================================================================
+# WSP-Lang MEMIT Covariance-Regularized Memory Synthesis Experiment
+# Model: NanoWSP (2 Layers, d=64, d_ff=128, Vocab=64)
+# Objective: Verify closed-form MEMIT weight editing on Layer 1 MLP
+# ==============================================================================
+
+experiment test_memit_imprint:
+    model: NanoWSP
+    objective: verify_memit_covariance_regularized_memory_synthesis
+
+    budgets:
+        max_modified_weights = 10000
+        target_parameter_fraction = 1.0
+        max_delta_norm = 50.0
+        allow_write = true
+
+    steps:
+        # Step 1: Peek weights of target tensor before editing
+        step peek layers.1.mlp_out.weight row=10 col=10 top=3
+
+        # Step 2: Imprint 5 associative pairs simultaneously via MEMIT with Tikhonov regularization
+        step memit_imprint layers.1.mlp_out.weight file=data/test_memit_batch.json lambda=0.01
+
+        # Step 3: Verify weight difference compared to pristine baseline
+        step diff layers.1.mlp_out.weight base=models/nanowsp/model_baseline.safetensors

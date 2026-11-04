@@ -549,15 +549,37 @@ def execute_plan_v4(
     default_safetensors = ROOT / "hf_cache" / "mimo-distill-hf"
 
     model_name = ""
-    for sec, val in prog.get("__root__", []):
-        if sec == "model":
-            model_name = val.strip()
+    if "model" in prog and prog["model"]:
+        model_name = prog["model"][0][1].strip()
+    if not model_name:
+        for item in prog.get("__root__", []):
+            if isinstance(item, tuple) and len(item) == 2:
+                sec, val = item
+                if sec == "model":
+                    model_name = str(val).strip()
+                elif isinstance(val, str) and val.startswith("model:"):
+                    model_name = val.split(":", 1)[1].strip()
 
     nanowsp_default = ROOT / "models" / "nanowsp" / "model.safetensors"
-    if "nanowsp" in model_name.lower() or (model_path and "nanowsp" in str(model_path).lower()):
-        target_path = Path(model_path) if model_path else (nanowsp_default if nanowsp_default.exists() else nanowsp_default.parent)
+    nanowsp2_default = ROOT / "models" / "nanowsp2" / "model.safetensors"
+    nanowsp3_default = ROOT / "data" / "nanowsp3_weights.safetensors"
+    tiny_default = Path(r"C:\Users\Anto\.cache\huggingface\hub\models--TinyLlama--TinyLlama-1.1B-Chat-v1.0\snapshots\fe8a4ea1ffedaf415f4da2f062534de366a451e6\model.safetensors")
+    qwen08_default = ROOT / "hf_cache" / "qwen35-08b-hf" / "model.safetensors-00001-of-00001.safetensors"
+
+    if model_path:
+        target_path = Path(model_path)
+    elif "nanowsp3" in model_name.lower():
+        target_path = nanowsp3_default if nanowsp3_default.exists() else nanowsp_default
+    elif "nanowsp2" in model_name.lower():
+        target_path = nanowsp2_default if nanowsp2_default.exists() else nanowsp_default
+    elif "nanowsp" in model_name.lower():
+        target_path = nanowsp_default if nanowsp_default.exists() else nanowsp_default.parent
+    elif "tinyllama" in model_name.lower():
+        target_path = tiny_default if tiny_default.exists() else default_safetensors
+    elif "0.8b" in model_name.lower() or "qwen" in model_name.lower():
+        target_path = qwen08_default if qwen08_default.exists() else (default_safetensors if default_safetensors.exists() else default_gguf)
     else:
-        target_path = Path(model_path) if model_path else (default_safetensors if default_safetensors.exists() else default_gguf)
+        target_path = default_safetensors if default_safetensors.exists() else default_gguf
     is_safetensors = (target_path.is_dir() or target_path.suffix == ".safetensors") if isinstance(target_path, Path) else True
 
     for step in step_list:
@@ -789,22 +811,24 @@ def execute_plan_v4(
                 metric = named.get("metric", "perplexity_surprise")
                 prompt = named.get("prompt", "test prompt")
 
-                # Compute surprisal / repetition score
-                # If prompt exhibits severe repetition (e.g. repeated tokens), surprise triggers
+                # Lexical repetition heuristic stub (STUB)
                 tokens = prompt.split()
                 unique_ratio = len(set(tokens)) / max(len(tokens), 1)
                 repetition_score = 1.0 - unique_ratio
+                rep_threshold = threshold if threshold < 1.0 else 0.5
+                triggered = repetition_score > rep_threshold and len(tokens) >= 4
 
-                triggered = repetition_score > 0.5 or len(tokens) > 10
-
-                res["execution_state"] = "contract_verified"
+                res["execution_state"] = "heuristic_trigger_only"
                 res["result"] = {
-                    "rule": "Titans Test-Time Memory Surprisal Monitor (Behrouz et al. 2025)",
+                    "rule": "Titans Surprisal Monitor [STUB: Lexical Repetition Heuristic]",
+                    "status": "heuristic_trigger_only",
+                    "note": "Lexical word-ratio trigger stub; does not compute neural perplexity or synthesize live runtime overlay.",
                     "metric": metric,
-                    "surprisal_threshold": threshold,
                     "repetition_score": round(repetition_score, 4),
+                    "unique_ratio": round(unique_ratio, 4),
+                    "threshold": rep_threshold,
                     "memory_update_triggered": triggered,
-                    "action": "synthesize_transient_overlay" if triggered else "maintain_quiescent_memory"
+                    "action": "flag_repetition_detected" if triggered else "maintain_quiescent_memory"
                 }
 
             # ------------------------------------------------------------------
@@ -1902,47 +1926,93 @@ def execute_plan_v4(
                 }
 
             elif op in ("peek", "semantic_areas", "semantic-areas"):
-                import wsp
                 tensor = positional[0] if positional else named.get("tensor", "blk.19.attn_output.weight")
                 row = int(named["row"]) if "row" in named else None
                 col = int(named["col"]) if "col" in named else None
                 k = int(named.get("k", 8))
                 top_k = int(named.get("top", 3))
-                peek_res = wsp.peek(target_path if not is_safetensors else default_gguf, tensor, row=row, col=col, k=k)
-                if "semantic_areas" in peek_res and peek_res["semantic_areas"]:
-                    all_a = peek_res["semantic_areas"].get("all_areas", [])
-                    peek_res["semantic_areas"]["top_areas"] = all_a[:top_k]
+
+                if is_safetensors:
+                    import torch
+                    from safetensors.torch import load_file
+                    ckpt_p = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
+                    if not ckpt_p.exists():
+                        ckpt_p = list(target_path.glob("*.safetensors"))[0]
+                    tensors = load_file(str(ckpt_p))
+                    if tensor not in tensors:
+                        raise KeyError(f"Tensor '{tensor}' not found in {ckpt_p.name}. Available: {list(tensors.keys())[:5]}...")
+                    t = tensors[tensor].float()
+                    peek_res = {
+                        "tensor": tensor,
+                        "shape": list(t.shape),
+                        "norm": float(torch.norm(t).item()),
+                        "min": float(torch.min(t).item()),
+                        "max": float(torch.max(t).item()),
+                        "mean": float(torch.mean(t).item())
+                    }
+                    if row is not None and col is not None:
+                        peek_res["element"] = float(t[row, col].item()) if t.dim() >= 2 else float(t[row].item())
+                else:
+                    import wsp
+                    peek_res = wsp.peek(target_path, tensor, row=row, col=col, k=k)
+                    if "semantic_areas" in peek_res and peek_res["semantic_areas"]:
+                        all_a = peek_res["semantic_areas"].get("all_areas", [])
+                        peek_res["semantic_areas"]["top_areas"] = all_a[:top_k]
                 res["result"] = peek_res
 
             elif op in ("diff",):
                 import fnmatch
-                import wsp
                 tensor = positional[0] if positional else named.get("tensor", "blk.14.ffn_down.weight")
-                base_gguf = Path(named.get("base", default_gguf))
-                if not base_gguf.exists():
-                    raise FileNotFoundError(f"Base GGUF not found: {base_gguf}")
+                base_path_arg = Path(named.get("base", default_gguf))
+                if not base_path_arg.exists():
+                    raise FileNotFoundError(f"Base model not found: {base_path_arg}")
 
-                ta = {t.name: t for t in wsp.reader_of(base_gguf).tensors}
-                tb = {t.name: t for t in wsp.reader_of(target_path if not is_safetensors else default_gguf).tensors}
                 diffs = {}
                 tot_n = 0
                 tot_chg = 0
-                for nm in sorted(tb):
-                    if not fnmatch.fnmatch(nm, tensor) or nm not in ta:
-                        continue
-                    D1 = wsp.row_decode(ta[nm])
-                    D2 = wsp.row_decode(tb[nm])
-                    chg = int((np.abs(D1 - D2) > 1e-4 * (np.abs(D1) + 1e-30)).sum())
-                    tot_n += D2.size
-                    tot_chg += chg
-                    diffs[nm] = {
-                        "changed_weights": chg,
-                        "total_weights": int(D2.size),
-                        "fraction": float(chg / max(D2.size, 1)),
-                        "percentage": f"{(chg / max(D2.size, 1)):.4%}"
-                    }
+
+                if base_path_arg.suffix == ".safetensors" or is_safetensors:
+                    import torch
+                    from safetensors.torch import load_file
+                    base_p = base_path_arg if base_path_arg.is_file() else list(base_path_arg.glob("*.safetensors"))[0]
+                    tgt_p = target_path if target_path.is_file() else list(target_path.glob("*.safetensors"))[0]
+                    ta = load_file(str(base_p))
+                    tb = load_file(str(tgt_p))
+                    for nm in sorted(tb):
+                        if not fnmatch.fnmatch(nm, tensor) or nm not in ta:
+                            continue
+                        D1 = ta[nm].float().numpy()
+                        D2 = tb[nm].float().numpy()
+                        chg = int((np.abs(D1 - D2) > 1e-4 * (np.abs(D1) + 1e-30)).sum())
+                        tot_n += D2.size
+                        tot_chg += chg
+                        diffs[nm] = {
+                            "changed_weights": chg,
+                            "total_weights": int(D2.size),
+                            "fraction": float(chg / max(D2.size, 1)),
+                            "percentage": f"{(chg / max(D2.size, 1)):.4%}",
+                            "frobenius_delta": float(np.linalg.norm(D2 - D1))
+                        }
+                else:
+                    import wsp
+                    ta = {t.name: t for t in wsp.reader_of(base_path_arg).tensors}
+                    tb = {t.name: t for t in wsp.reader_of(target_path).tensors}
+                    for nm in sorted(tb):
+                        if not fnmatch.fnmatch(nm, tensor) or nm not in ta:
+                            continue
+                        D1 = wsp.row_decode(ta[nm])
+                        D2 = wsp.row_decode(tb[nm])
+                        chg = int((np.abs(D1 - D2) > 1e-4 * (np.abs(D1) + 1e-30)).sum())
+                        tot_n += D2.size
+                        tot_chg += chg
+                        diffs[nm] = {
+                            "changed_weights": chg,
+                            "total_weights": int(D2.size),
+                            "fraction": float(chg / max(D2.size, 1)),
+                            "percentage": f"{(chg / max(D2.size, 1)):.4%}"
+                        }
                 res["result"] = {
-                    "base_model": str(base_gguf.name),
+                    "base_model": str(base_path_arg.name),
                     "edited_model": str(target_path.name),
                     "tensors": diffs,
                     "total_changed": tot_chg,
