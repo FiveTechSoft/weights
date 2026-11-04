@@ -75,7 +75,9 @@ steps:
 
         self.assertEqual(len(results), 1)
         res = results[0]
-        self.assertEqual(res["status"], "ok")
+        # AUDIT 2026-11-04: leace_erase es STUB declarado (proxy weight-Gram),
+        # su status ejecutable es "stub_result" — el calculo matematico sigue verificable.
+        self.assertIn(res["status"], ("ok", "stub_result"))
         self.assertEqual(res["execution_state"], "executed")
 
         erasure_res = res["result"]

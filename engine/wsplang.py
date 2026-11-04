@@ -95,6 +95,30 @@ FORBIDDEN_TENSORS = {
 }
 FORBIDDEN_PATTERNS = ["embed", "lm_head", "norm.weight", "output_norm"]
 
+# ==============================================================================
+# AUDIT 2026-11-04: politicas de ejecucion real (falsable, no decorativa)
+# 1) Solo estas ops tienen implementacion en execute_plan_v4. Cualquier otra declarada
+#    en el programa SE RECHAZA en --check/--dry-run/--run (antes silenciaba como
+#    "skipped (non-interactive op)" = programa que aparenta correr y no hace nada).
+# 2) WRITE_OPS requieren backend safetensors+torch; sobre GGUF se rechazan en el
+#    plan (el backend GGUF real vive en wsp.py, vease ROADMAP audit section).
+# 3) STUB_OPS devuelven "stub_result" (no verifiable causal claim).
+# ==============================================================================
+READ_ONLY_OPS = {
+    "peek", "semantic_areas", "semantic-areas", "semantic_map", "semantic-map",
+    "diff", "compare", "evaluate",
+}
+IMPLEMENTED_OPS = READ_ONLY_OPS | {
+    "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
+    "rosetta_align", "cross_project", "init_architecture", "imprint_association",
+    "imprint_batch", "delta_unlearn", "fwp_overlay", "layer_envelope",
+    "multi_layer_envelope", "distributed_memit", "spectral_decay",
+    "assert_orthogonal_preservation", "project_out", "project_in", "audit",
+    "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
+}
+STUB_OPS = {"leace_erase", "surprise_fwp"}
+WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
+
 
 # ==============================================================================
 # 1. PARSER & AST BUILDER
@@ -217,6 +241,74 @@ def validate(prog: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], List[str]]:
                 errors.append(f"linea ignorada {sec}: {s[:50]}")
 
     return steps, errors
+
+
+def check_feasibility(prog, steps, model_arg=None):
+    """AUDIT 2026-11-04: factibilidad real de ejecucion.
+
+    - Rechaza ops declaradas pero NO implementadas (antes: silent 'skipped').
+    - Rechaza ops de escritura entre model con backend GGUF (requieren safetensors+torch).
+    - Verifica existencia de artefactos referenciados (results/npz/gguf).
+    - Marca ops STUB con warning.
+    Devuelve (errors, warnings).
+    """
+    errors, warnings = [], []
+    model_kind = None
+    if model_arg:
+        p_model = Path(model_arg)
+        if p_model.suffix.lower() == ".gguf":
+            model_kind = "gguf"
+        elif p_model.is_dir() or p_model.suffix.lower() in (".safetensors",):
+            model_kind = "safetensors"
+        else:
+            model_kind = "unknown"
+
+    file_keys = ("file", "base", "vec_file", "vector", "results", "npz")
+    file_suffixes = (".json", ".jsonl", ".npz", ".gguf", ".csv", ".safetensors", ".wspl", ".txt", ".md")
+
+    for st in steps:
+        op = st.get("op")
+        if not op:
+            continue
+        if op not in IMPLEMENTED_OPS:
+            errors.append(
+                f"op '{op}' NO implementada en el runtime (antes se ejecutaba como 'skipped' "
+                f"silencioso y no hacia nada). Reescribe el paso con una op de {sorted(IMPLEMENTED_OPS)[:6]}... "
+                "o delega la escritura en wsp.py.")
+            continue
+        if model_kind in ("gguf", None, "unknown") and op in WRITE_BACKEND_OPS:
+            err = (f"op '{op}' requiere backend safetensors+torch; backend detectado='"
+                   f"{model_kind}'. Para GGUF usar wsp.py (subtract-direction/edit con requant).")
+            if model_kind is None:
+                err = f"op '{op}' de escritura requiere --model safetensors explicito (no GGUF)."
+            errors.append(err)
+        if op in STUB_OPS:
+            warnings.append(f"op '{op}' es STUB declarado: resultado 'stub_result', no afirmacion causal")
+
+        # artefactos referenciados deben existir (si no, falla en check, no en run)
+        args_str = st.get("args", "")
+        for mref in re.finditer(r"(?:\w+)\s*=\s*([^\s,]+)", args_str) or []:
+            pass
+        for mref in re.finditer(r"(\w+)\s*=\s*([^\s,]+)", args_str):
+            kref, vref = mref.group(1), mref.group(2)
+            if kref not in file_keys:
+                continue
+            if Path(vref).suffix.lower() not in file_suffixes:
+                continue
+            pv = Path(vref)
+            if not pv.is_absolute():
+                pv = ROOT / vref
+            if not pv.exists():
+                errors.append(f"artefacto inexistente para op '{op}': {vref} (clausura de evidencia fallida)")
+        # posicionales tipo 'compare archivo.json'
+        if op in ("compare", "evaluate") and args_str:
+            first = args_str.split()[0] if args_str.split() else ""
+            pv = Path(first)
+            if pv.suffix.lower() in file_suffixes and not pv.is_absolute():
+                pv = ROOT / first
+            if pv.suffix.lower() in file_suffixes and not pv.exists():
+                errors.append(f"artefacto inexistente para op '{op}': {first}")
+    return errors, warnings
 
 
 def plan_run(prog: Dict[str, Any], steps: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -2039,6 +2131,11 @@ def execute_plan_v4(
 
         executed_steps.append(res)
 
+    # AUDIT 2026-11-04: ops STUB nunca publican claims causales
+    for r in executed_steps:
+        if r.get("op") in STUB_OPS and r.get("status") not in ("security_rejection",):
+            r["status"] = "stub_result"
+
     return executed_steps
 
 
@@ -2076,6 +2173,9 @@ def main():
     text = src.read_text(encoding="utf-8")
     prog = parse_args_lines(text)
     steps, errors = validate(prog)
+    model_arg_early = args.model or args.gguf
+    feas_errors, feas_warnings = check_feasibility(prog, steps, model_arg_early)
+    errors = errors + feas_errors
 
     experiment = None
     for ind, s in prog.get("__root__", []):
@@ -2087,8 +2187,10 @@ def main():
     plan = plan_run(prog, steps)
 
     if args.check:
-        print(f"=== WSP-Lang {__version__} SYNTAX & BUDGET CHECK: {experiment} ===")
+        print(f"=== WSP-Lang {__version__} SYNTAX & BUDGET & FEASIBILITY CHECK: {experiment} ===")
         print(f"Theoretical Framework: {plan['theoretical_framework']}")
+        for w in feas_warnings:
+            print(f"  [STUB] {w}")
         if errors:
             print(f"[FAIL] {len(errors)} validation error(s) found:")
             for err in errors:
