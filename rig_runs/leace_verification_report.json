@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-11-04 14:58:52",
+  "target_tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+  "matrix_shape": [
+    4096,
+    12288
+  ],
+  "initial_target_energy": 1.399061,
+  "naive_rank1": {
+    "target_energy_after": 6.305e-07,
+    "erasure_pct": 100.0,
+    "frobenius_distortion": 1.392244,
+    "max_weight_delta": 0.00563,
+    "max_orthogonal_distortion": 2.96e-08,
+    "compute_time_ms": 63.24
+  },
+  "leace_closed_form": {
+    "target_energy_after": 6.315e-07,
+    "erasure_pct": 100.0,
+    "frobenius_distortion": 1.392248,
+    "max_weight_delta": 0.005616,
+    "max_orthogonal_distortion": 0.000164,
+    "mean_orthogonal_distortion": 4.8e-05,
+    "sigma1_orig": 1.7582,
+    "sigma1_shift": 0.000318,
+    "eigengap": 0.0714,
+    "davis_kahan_bound_sin_theta": 19.49626,
+    "davis_kahan_max_angle_deg": 90.0,
+    "compute_time_ms": 47.02
+  }
+}

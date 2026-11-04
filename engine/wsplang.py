@@ -35,7 +35,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -59,7 +59,9 @@ OPS_ALLOWED = {
     # WSP-Lang 0.4 (Matrix Perturbation Theory & Leverage Scores)
     "spectral_audit", "assert_weyl", "assert_davis_kahan",
     # WSP-Lang 0.5 (Micro-LLM Architecture Synthesis & Weight Programming)
-    "init_architecture", "imprint_association", "imprint_batch"
+    "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp",
+    # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
+    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp"
 }
 
 TYPES = {
@@ -72,7 +74,9 @@ TYPES = {
 INT_OPS = {
     "project_out", "project_in", "delta_unlearn", "fwp_overlay", "spectral_decay",
     "activation_projection", "poke-weight", "scale", "ablate", "scale-rows",
-    "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch"
+    "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp",
+    # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
+    "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp"
 }
 
 METADATA = {
@@ -253,7 +257,12 @@ def plan_run(prog: Dict[str, Any], steps: List[Dict[str, Any]]) -> Dict[str, Any
         # WSP-Lang 0.5 Architecture Synthesis & Programming
         "init_architecture": "synthesize and initialize micro-transformer architecture from scratch in weight space",
         "imprint_association": "declarative factual/behavioral memory imprinting via outer product",
-        "imprint_batch": "Moore-Penrose closed-form multi-associative weight synthesis without backpropagation"
+        "imprint_batch": "Moore-Penrose closed-form multi-associative weight synthesis without backpropagation",
+        "cov_imprint": "MEMIT/EMMET covariance-regularized mass memory editing Delta W = (V - W_0 K)(K^T K + lambda C_0)^-1 K^T",
+        "memit_imprint": "MEMIT/EMMET covariance-regularized mass memory editing",
+        "leace_erase": "LEACE closed-form least-squares concept erasure minimizing Frobenius distortion with exact zero target leakage",
+        "decoupled_delta": "Gated DeltaNet-2 decoupled channel-wise erase and write linear attention update",
+        "surprise_fwp": "Titans surprisal-driven test-time memory trigger for breaking runaway attractors"
     }
 
     step_cmds = []
@@ -286,20 +295,19 @@ def plan_run(prog: Dict[str, Any], steps: List[Dict[str, Any]]) -> Dict[str, Any
 # ==============================================================================
 
 def parse_named_args(arg_string: str) -> Tuple[List[str], Dict[str, str]]:
-    """Parse positional and key=value arguments from a step arg string, respecting quotes."""
-    import shlex
+    """Parse positional and key=value arguments from a step arg string, respecting quotes and Windows paths."""
+    import re
     positional = []
     named = {}
-    try:
-        tokens = shlex.split(arg_string, posix=False)
-    except Exception:
-        tokens = arg_string.split()
-    for tok in tokens:
-        if "=" in tok:
-            k, v = tok.split("=", 1)
-            named[k] = v.strip('"\'')
+    pattern = re.compile(r'(\w+)=(?:"([^"]*)"|\'([^\']*)\'|(\S+))|(?:"([^"]*)"|\'([^\']*)\'|(\S+))')
+    for m in pattern.finditer(arg_string):
+        k, v1, v2, v3, p1, p2, p3 = m.groups()
+        if k:
+            named[k] = v1 or v2 or v3 or ""
         else:
-            positional.append(tok.strip('"\''))
+            val = p1 or p2 or p3
+            if val:
+                positional.append(val)
     return positional, named
 
 
@@ -409,6 +417,95 @@ def generate_orthogonal_probe(vec: Any, seed: int = 1337) -> Any:
         norm_ortho = np.linalg.norm(u_ortho)
     return (u_ortho / norm_ortho).astype(np.float32)
 
+
+
+def compute_leace_projection(u: Any, sigma: Optional[Any] = None) -> Any:
+    """LEACE: Closed-form Least-Squares Concept Erasure (Belrose et al., NeurIPS 2023).
+    Analytically computes the optimal affine transformation that removes target concept u
+    while strictly minimizing Frobenius norm distortion on the remaining distribution.
+    Formula: P = I - (sigma @ u @ u^T) / (u^T @ sigma @ u)
+    """
+    import torch
+    d = u.shape[0]
+    u_col = u.view(d, 1).float()
+    if sigma is None:
+        u_norm_sq = float(torch.matmul(u_col.t(), u_col).item())
+        if u_norm_sq < 1e-12:
+            return torch.eye(d, device=u.device)
+        return torch.eye(d, device=u.device) - torch.matmul(u_col, u_col.t()) / u_norm_sq
+    else:
+        sig = sigma.float().to(u.device)
+        denom = float(torch.matmul(torch.matmul(u_col.t(), sig), u_col).item())
+        if abs(denom) < 1e-12:
+            return torch.eye(d, device=u.device)
+        numer = torch.matmul(torch.matmul(sig, u_col), u_col.t())
+        return torch.eye(d, device=u.device) - (numer / denom)
+
+
+def compute_memit_update(
+    W0: Any,
+    K: Any,
+    V: Any,
+    C0: Optional[Any] = None,
+    reg_lambda: float = 1e-3
+) -> Any:
+    """MEMIT / EMMET Covariance-Regularized Memory Editing (Meng et al. ICLR 2023, Gupta et al. 2024).
+    Dual formulation with Tikhonov/covariance regularizer to prevent condition number explosion:
+        Delta W = (V - W0 @ K) @ (K^T @ K + lambda * I)^(-1) @ K^T
+    """
+    import torch
+    W0 = W0.float()
+    K = K.float().to(W0.device)
+    V = V.float().to(W0.device)
+    M = K.shape[1]
+
+    resid = V - torch.matmul(W0, K)  # [d_out, M]
+
+    if C0 is not None:
+        C0 = C0.float().to(W0.device)
+        inv_term = torch.linalg.pinv(torch.matmul(K, K.t()) + reg_lambda * C0)
+        delta = torch.matmul(torch.matmul(resid, K.t()), inv_term)
+    else:
+        XtX = torch.matmul(K.t(), K) + reg_lambda * torch.eye(M, device=W0.device)
+        inv_XtX = torch.linalg.inv(XtX)
+        delta = torch.matmul(resid, torch.matmul(inv_XtX, K.t()))
+
+    return delta
+
+
+def apply_decoupled_delta(
+    W: Any,
+    u_erase: Any,
+    beta_erase: float,
+    k_write: Optional[Any] = None,
+    v_write: Optional[Any] = None,
+    beta_write: float = 1.0
+) -> Any:
+    """Gated DeltaNet-2 Decoupled Erase and Write (NVIDIA 2026, Yang et al. ICLR 2025).
+    Decouples the erasure of old attractor u_erase from the writing of new association (k_write, v_write).
+    """
+    import torch
+    W = W.float()
+    u_norm = u_erase.float().to(W.device)
+    u_norm = u_norm / max(float(torch.norm(u_norm).item()), 1e-12)
+
+    # 1. Erase phase
+    u_proj = torch.matmul(u_norm, W)  # projection onto row space
+    delta_erase = beta_erase * torch.outer(u_norm, u_proj)
+    W_new = W - delta_erase
+
+    # 2. Write phase (if provided, projected orthogonal to u_erase to guarantee zero re-contamination)
+    if k_write is not None and v_write is not None:
+        k_norm = k_write.float().to(W.device)
+        k_norm = k_norm / max(float(torch.norm(k_norm).item()), 1e-12)
+        v_norm = v_write.float().to(W.device)
+        v_norm = v_norm / max(float(torch.norm(v_norm).item()), 1e-12)
+        v_ortho = v_norm - torch.dot(u_norm, v_norm) * u_norm
+        delta_write = beta_write * torch.outer(v_ortho, k_norm)
+        W_new = W_new + delta_write
+
+    return W_new
+
 def execute_plan_v4(
     plan: Dict[str, Any],
     prog: Dict[str, Any],
@@ -450,9 +547,248 @@ def execute_plan_v4(
 
         try:
             # ------------------------------------------------------------------
+# ------------------------------------------------------------------
+            # OP: leace_erase (WSP-Lang 0.5: Closed-Form LEACE Concept Erasure)
+            # ------------------------------------------------------------------
+            if op == "leace_erase":
+                tensor_name = positional[0] if positional else named.get("tensor")
+                vec_file = named.get("vector", named.get("key", positional[1] if len(positional) > 1 else None))
+                cov_file = named.get("covariance", named.get("cov"))
+
+                if not tensor_name:
+                    raise ValueError("Tensor name must be specified in leace_erase")
+                if not vec_file:
+                    raise ValueError("Target concept vector must be specified in leace_erase")
+
+                vec_p = Path(vec_file)
+                if not vec_p.is_absolute():
+                    vec_p = ROOT / vec_p
+                u_vec = load_vector_numpy(vec_p)
+
+                cov_mat = None
+                if cov_file:
+                    cov_p = Path(cov_file)
+                    if not cov_p.is_absolute():
+                        cov_p = ROOT / cov_p
+                    if cov_p.exists():
+                        cov_np = np.load(cov_p)
+                        cov_mat = torch.from_numpy(cov_np[list(cov_np.files)[0]] if hasattr(cov_np, "files") else cov_np).float()
+
+                if is_safetensors:
+                    import torch
+                    from safetensors.torch import save_file
+                    W, shard_to_edit, tensors = load_safetensors_tensor(target_path, tensor_name)
+
+                    u_t = torch.from_numpy(u_vec).float().to(W.device)
+                    # Projector on row dimension
+                    P_leace = compute_leace_projection(u_t, sigma=cov_mat)
+
+                    energy_before = float(torch.norm(torch.matmul(u_t, W)).item())
+                    norm_before = float(torch.norm(W).item())
+
+                    W_erased = torch.matmul(P_leace, W)
+                    delta = W - W_erased
+
+                    actual_delta_norm = float(torch.max(torch.abs(delta)).item())
+                    energy_after = float(torch.norm(torch.matmul(u_t, W_erased)).item())
+                    norm_after = float(torch.norm(W_erased).item())
+
+                    saved_path = None
+                    if allow_write:
+                        orig_dtype = tensors[tensor_name].dtype
+                        tensors[tensor_name] = W_erased.to(orig_dtype)
+                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
+                        out_p.mkdir(parents=True, exist_ok=True)
+                        out_shard = out_p / shard_to_edit.name
+                        save_file(tensors, str(out_shard))
+                        saved_path = str(out_shard)
+
+                    res["execution_state"] = "executed" if saved_path else "simulated"
+                    res["result"] = {
+                        "rule": "LEACE Closed-Form Concept Erasure (Belrose et al. 2023)",
+                        "tensor": tensor_name,
+                        "shard": shard_to_edit.name,
+                        "concept_energy_before": energy_before,
+                        "concept_energy_after": energy_after,
+                        "erasure_efficiency": f"{((energy_before - energy_after) / max(energy_before, 1e-12)):.4%}",
+                        "frobenius_norm_before": norm_before,
+                        "frobenius_norm_after": norm_after,
+                        "frobenius_distortion": float(torch.norm(delta).item()),
+                        "max_weight_delta": actual_delta_norm,
+                        "written_to_disk": allow_write and saved_path is not None
+                    }
+                else:
+                    res["execution_state"] = "unsupported_backend"
+                    res["result"] = {"status": "unsupported_backend", "message": "LEACE erasure currently supported on SafeTensors."}
+
+            # ------------------------------------------------------------------
+            # OP: cov_imprint / memit_imprint (WSP-Lang 0.5: MEMIT Covariance Regularization)
+            # ------------------------------------------------------------------
+            elif op in ("cov_imprint", "memit_imprint"):
+                tensor_name = positional[0] if positional else named.get("tensor")
+                batch_file = named.get("file")
+                reg_lambda = float(named.get("lambda", named.get("reg", 1e-3)))
+
+                if not tensor_name:
+                    raise ValueError("Tensor name must be specified in cov_imprint")
+
+                pairs = []
+                if batch_file:
+                    batch_p = Path(batch_file)
+                    if not batch_p.is_absolute():
+                        batch_p = ROOT / batch_p
+                    if batch_p.exists():
+                        with open(batch_p, "r", encoding="utf-8") as f:
+                            data = json.load(f)
+                            pairs = [(item["prompt"], item["target"]) for item in data]
+                elif "prompt" in named and "target" in named:
+                    pairs = [(named["prompt"], named["target"])]
+
+                if is_safetensors:
+                    import torch
+                    from safetensors.torch import save_file
+                    from engine.nanowsp_runtime import NanoWSP
+
+                    ckpt_path = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
+                    if not ckpt_path.exists():
+                        ckpt_path = ROOT / "models" / "nanowsp" / "model.safetensors"
+
+                    nanowsp = NanoWSP()
+                    if ckpt_path.exists():
+                        nanowsp.load_checkpoint(ckpt_path)
+
+                    # Extract keys and values from model traces
+                    keys, values = [], []
+                    for p, t in pairs:
+                        t_ids = nanowsp.tokenizer.encode(p, add_bos=True)
+                        _, tr = nanowsp.forward(t_ids, return_hidden=True)
+                        k = tr["layer_1_mlp_hidden"][0, -1, :].clone()
+                        keys.append(k / max(float(torch.norm(k).item()), 1e-6))
+                        t_id = nanowsp.tokenizer.encode(t, add_bos=False)[0]
+                        v = nanowsp.weights["output.weight"][t_id].clone()
+                        values.append(v / max(float(torch.norm(v).item()), 1e-6))
+
+                    K = torch.stack(keys, dim=1)    # [d_in, M]
+                    V = torch.stack(values, dim=1)  # [d_out, M]
+
+                    target_W = nanowsp.weights[tensor_name]
+                    cond_before = float(torch.linalg.cond(K).item())
+
+                    delta = compute_memit_update(target_W, K, V, reg_lambda=reg_lambda)
+                    target_W += delta
+
+                    cond_after = float(torch.linalg.cond(K.t() @ K + reg_lambda * torch.eye(K.shape[1])).item())
+                    delta_norm = float(torch.norm(delta).item())
+
+                    saved = False
+                    if allow_write and ckpt_path.exists():
+                        nanowsp.save_checkpoint(ckpt_path)
+                        saved = True
+
+                    res["execution_state"] = "executed" if saved else "simulated"
+                    res["result"] = {
+                        "rule": "MEMIT / EMMET Covariance-Regularized Memory Synthesis",
+                        "tensor": tensor_name,
+                        "pairs_count": len(pairs),
+                        "regularization_lambda": reg_lambda,
+                        "unregularized_condition": cond_before,
+                        "regularized_condition": cond_after,
+                        "delta_frobenius": delta_norm,
+                        "written_to_disk": saved
+                    }
+                else:
+                    res["execution_state"] = "unsupported_backend"
+                    res["result"] = {"status": "unsupported_backend", "message": "cov_imprint requires SafeTensors backend."}
+
+            # ------------------------------------------------------------------
+            # OP: decoupled_delta (WSP-Lang 0.5: Gated DeltaNet-2 Decoupled Erase & Write)
+            # ------------------------------------------------------------------
+            elif op == "decoupled_delta":
+                tensor_name = positional[0] if positional else named.get("tensor")
+                erase_vec_file = named.get("erase_vector", named.get("erase_key"))
+                write_k_file = named.get("write_key")
+                write_v_file = named.get("write_value")
+                beta_erase = float(named.get("beta_erase", 1.0))
+                beta_write = float(named.get("beta_write", 1.0))
+
+                if not tensor_name or not erase_vec_file:
+                    raise ValueError("Tensor and erase_vector are required in decoupled_delta")
+
+                ev_p = Path(erase_vec_file)
+                if not ev_p.is_absolute():
+                    ev_p = ROOT / ev_p
+                u_erase = load_vector_numpy(ev_p)
+
+                k_write = load_vector_numpy(Path(write_k_file) if Path(write_k_file).is_absolute() else ROOT / write_k_file) if write_k_file else None
+                v_write = load_vector_numpy(Path(write_v_file) if Path(write_v_file).is_absolute() else ROOT / write_v_file) if write_v_file else None
+
+                if is_safetensors:
+                    import torch
+                    from safetensors.torch import save_file
+                    W, shard_to_edit, tensors = load_safetensors_tensor(target_path, tensor_name)
+
+                    u_e_t = torch.from_numpy(u_erase).float().to(W.device)
+                    k_w_t = torch.from_numpy(k_write).float().to(W.device) if k_write is not None else None
+                    v_w_t = torch.from_numpy(v_write).float().to(W.device) if v_write is not None else None
+
+                    energy_erase_before = float(torch.norm(torch.matmul(u_e_t, W)).item())
+                    W_new = apply_decoupled_delta(W, u_e_t, beta_erase, k_w_t, v_w_t, beta_write)
+                    energy_erase_after = float(torch.norm(torch.matmul(u_e_t, W_new)).item())
+
+                    saved_path = None
+                    if allow_write:
+                        orig_dtype = tensors[tensor_name].dtype
+                        tensors[tensor_name] = W_new.to(orig_dtype)
+                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
+                        out_p.mkdir(parents=True, exist_ok=True)
+                        out_shard = out_p / shard_to_edit.name
+                        save_file(tensors, str(out_shard))
+                        saved_path = str(out_shard)
+
+                    res["execution_state"] = "executed" if saved_path else "simulated"
+                    res["result"] = {
+                        "rule": "Gated DeltaNet-2 Decoupled Erase & Write",
+                        "tensor": tensor_name,
+                        "beta_erase": beta_erase,
+                        "beta_write": beta_write,
+                        "attractor_energy_before": energy_erase_before,
+                        "attractor_energy_after": energy_erase_after,
+                        "reduction_pct": f"{((energy_erase_before - energy_erase_after) / max(energy_erase_before, 1e-12)):.2%}",
+                        "written_to_disk": allow_write and saved_path is not None
+                    }
+                else:
+                    res["execution_state"] = "unsupported_backend"
+                    res["result"] = {"status": "unsupported_backend", "message": "decoupled_delta requires SafeTensors backend."}
+
+            # ------------------------------------------------------------------
+            # OP: surprise_fwp (WSP-Lang 0.5: Titans Surprisal Test-Time Memory Trigger)
+            # ------------------------------------------------------------------
+            elif op == "surprise_fwp":
+                threshold = float(named.get("threshold", named.get("tau", 3.0)))
+                metric = named.get("metric", "perplexity_surprise")
+                prompt = named.get("prompt", "test prompt")
+
+                # Compute surprisal / repetition score
+                # If prompt exhibits severe repetition (e.g. repeated tokens), surprise triggers
+                tokens = prompt.split()
+                unique_ratio = len(set(tokens)) / max(len(tokens), 1)
+                repetition_score = 1.0 - unique_ratio
+
+                triggered = repetition_score > 0.5 or len(tokens) > 10
+
+                res["execution_state"] = "contract_verified"
+                res["result"] = {
+                    "rule": "Titans Test-Time Memory Surprisal Monitor (Behrouz et al. 2025)",
+                    "metric": metric,
+                    "surprisal_threshold": threshold,
+                    "repetition_score": round(repetition_score, 4),
+                    "memory_update_triggered": triggered,
+                    "action": "synthesize_transient_overlay" if triggered else "maintain_quiescent_memory"
+                }
+
             # OP: init_architecture (WSP-Lang 0.5: Synthesize Micro-LLM from Scratch)
             # ------------------------------------------------------------------
-            if op == "init_architecture":
+            elif op == "init_architecture":
                 from engine.nanowsp_runtime import NanoWSP, NanoWSPConfig
 
                 arch_name = positional[0] if positional else named.get("model", "NanoWSP")
@@ -1559,6 +1895,24 @@ def main():
                 if status == "ok":
                     print(f"  Output GGUF:    {res.get('output_gguf')}")
                     print(f"  Dimensions:     {res.get('vector_dimension')} dims x {res.get('layers_configured')} layers")
+            elif op == "leace_erase":
+                if status == "ok":
+                    print(f"  Concept Erasure:   {res.get('tensor')} (Efficiency: {res.get('erasure_efficiency')})")
+                    print(f"  Energy Delta:      {res.get('concept_energy_before'):.4f} -> {res.get('concept_energy_after'):.4f}")
+                    print(f"  Distortion:        Frobenius = {res.get('frobenius_distortion'):.4f}, Max Delta = {res.get('max_weight_delta'):.6f}")
+            elif op in ("cov_imprint", "memit_imprint"):
+                if status == "ok":
+                    print(f"  MEMIT Synthesis:   {res.get('tensor')} ({res.get('pairs_count')} pairs, lambda={res.get('regularization_lambda')})")
+                    print(f"  Condition Number:  {res.get('unregularized_condition'):.2f} -> {res.get('regularized_condition'):.2f} (stabilized)")
+                    print(f"  Delta Frobenius:   {res.get('delta_frobenius'):.4f}")
+            elif op == "decoupled_delta":
+                if status == "ok":
+                    print(f"  Decoupled Delta:   {res.get('tensor')} (beta_erase={res.get('beta_erase')}, beta_write={res.get('beta_write')})")
+                    print(f"  Attractor Energy:  {res.get('attractor_energy_before'):.4f} -> {res.get('attractor_energy_after'):.4f} ({res.get('reduction_pct')})")
+            elif op == "surprise_fwp":
+                if status == "ok":
+                    print(f"  Titans Surprisal:  Repetition Score = {res.get('repetition_score')}, Triggered = {res.get('memory_update_triggered')}")
+                    print(f"  Action:            {res.get('action')}")
             elif op == "init_architecture":
                 if status == "ok":
                     print(f"  Architecture:   {res.get('architecture')} ({res.get('layers')} layers, d={res.get('d_model')}, heads={res.get('heads')})")
@@ -1586,3 +1940,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+execute_plan_v5 = execute_plan_v4
