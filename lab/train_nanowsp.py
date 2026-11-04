@@ -1,4 +1,4 @@
-"""LAB pretrain_infra: NanoWSP-3 REAL training (char-level, batched forward fiel a engine/nanowsp3_runtime).
+﻿"""LAB pretrain_infra: NanoWSP-3 REAL training (char-level, batched forward fiel a engine/nanowsp3_runtime).
 Trace: snapshots (W0 + cada S pasos), loss/grad_norm/PPL-holdout, Adam exp_avg/exp_avg_sq al cierre.
 Guarda checkpoint safetensors compatible con el runtime (mismo mapping de keys).
 USO: python lab/train_nanowsp.py --steps 1500   (status: pretrain_infra - no es un experimento WSPLang)
@@ -91,20 +91,20 @@ def fwd(x):  # x [B, S] int64
     B, S = x.shape
     h = F.embedding(x, m.embed.weight)
     ar = torch.arange(S)
-    fc = fc[ar]  # [S, d/2]
+    cis = fc[ar]  # [S, d/2]
     for l in range(c.n_layers):
-        hn = rms(h, m.an[l].weight)
-        q = (hn @ m.q[l].weight.T).view(B, S, c.n_heads, c.d_head)
-        k = (hn @ m.k[l].weight.T).view(B, S, c.n_heads, c.d_head)
-        v = (hn @ m.v[l].weight.T).view(B, S, c.n_heads, c.d_head)
-        q, k = apply_rope_batch(q, fc), apply_rope_batch(k, fc)
+        hn = rms(h, m.an[l])
+        q = (hn @ m.q[l].T).view(B, S, c.n_heads, c.d_head)
+        k = (hn @ m.k[l].T).view(B, S, c.n_heads, c.d_head)
+        v = (hn @ m.v[l].T).view(B, S, c.n_heads, c.d_head)
+        q, k = apply_rope_batch(q, cis), apply_rope_batch(k, cis)
         q, k, v = q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2)
         s = q @ k.transpose(-2, -1) / math.sqrt(c.d_head)
         mask = torch.triu(torch.full((S, S), float("-inf")), 1)
         attn = torch.softmax(s + mask, dim=-1)
-        h = h + (attn @ v).transpose(1, 2).contiguous().view(B, S, c.d_model) @ m.o[l].weight.T
-        hm = rms(h, m.mn[l].weight)
-        h = h + (F.gelu(hm @ m.min_[l].weight.T)) @ m.mout[l].weight.T
+        h = h + (attn @ v).transpose(1, 2).contiguous().view(B, S, c.d_model) @ m.o[l].T
+        hm = rms(h, m.mn[l])
+        h = h + (F.gelu(hm @ m.min_[l].T)) @ m.mout[l].T
     return h @ m.out.weight.T
 
 def apply_rope_batch(x, fcs):
@@ -113,7 +113,7 @@ def apply_rope_batch(x, fcs):
     fr = fcs.view(1, s, 1, d // 2)
     return torch.view_as_real(xc * fr).flatten(3)
 
-hold_in = torch.tensor([hold_ids[i:i + a.seq] for i in range(0, len(hold_ids) - a.seq - 1, a.seq)], dtype=torch.long)
+hold_in = torch.tensor(np.array([hold_ids[i:i + a.seq] for i in range(0, len(hold_ids) - a.seq - 1, a.seq)]), dtype=torch.long)
 opt = torch.optim.AdamW(m.parameters(), lr=a.lr, betas=(0.9, 0.95), weight_decay=0.01)
 sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda t_: min(1.0, (t_ + 1) / 100))
 
@@ -139,10 +139,10 @@ for t in range(a.steps):
     lg = fwd(x)
     loss = F.cross_entropy(lg[:, :-1].flatten(0, 1), x[:, 1:].flatten())
     opt.zero_grad(); loss.backward()
-    gn = float(torch.sqrt(sum(p.grad.norm() ** 2.item() if p.grad is not None else 0.0 for p in m.parameters()))) ** 0.5
+    gn = float(torch.sqrt(sum((p.grad.norm() ** 2) if p.grad is not None else torch.tensor(0.0).float() for p in m.parameters())))
     torch.nn.utils.clip_grad_norm_(m.parameters(), 1.0)
     opt.step(); sched.step()
-    losses.append(float(loss))
+    losses.append(float(loss.detach()))
     if t % 50 == 0:
         print(f"step {t}: loss {loss:.4f} ppl_hold={ppl_hold():.2f} t={time.time()-t0:.0f}s", flush=True)
     if (t + 1) % a.snapshot_every == 0 or t == a.steps - 1:
@@ -152,7 +152,7 @@ for t in range(a.steps):
         ppls.append(ppl_hold())
 
 def to_flat(sd):
-    return np.concatenate([p.flatten().numpy() for p in sd.values()])
+    return np.concatenate([p.detach().flatten().numpy() for p in sd.values()])
 
 W0_flat = to_flat({k: p for k, p in m.named_parameters() for p in [p]})
 final_sd = {k: p.detach().clone() for k, p in m.named_parameters()}
