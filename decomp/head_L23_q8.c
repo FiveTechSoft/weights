@@ -1,7 +1,7 @@
 // ============ head decompilado ============
 // layer 23, q-head #8 de 16 (kv-group 2, kv-heads 4, GDA ratio 4)
 // dims por head: Q 256d, GATE 256d sigmoid, K 256d, V 256d, writeback 256x4096
-// pre-rope model (rope real: 64 dims longitudinisin secciones multimo)
+// pre-rope model (el rope real rota 64 de 256 dims; MRoPE multimodal, freq 1e7)
 const float SCALE = 0.062500000;
 
 // --- por cada fila t del residual x[t]:

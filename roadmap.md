@@ -113,6 +113,15 @@ Repo autónomo de escritura de pesos en transformers pequeños (tareas aritméti
 
 DECISIÓN (2026-11-03, ver #12bis): WSP-Lang queda como **spec de referencia** (`WSP-LANG.md`) + implementación parcial: ExperimentRecord v1 validado AHORA, parser de programas dif ERIDO hasta post-PROTOCOL. El concepto queda: el agente propone intención experimental; el runtime valida y ejecuta (el agente nunca opera pesos directamente ni se auto-evalúa). Las salvaguardas en producción (FORBIDDEN_TENSORS, budget como barrera, sellado de holdouts) son hoy el "sistema de tipos" de facto; el parser formal los unificaria cuando haya evidencia empírica de qué formatos de programa hacen falta.
 
+## 4.2 Ejecutado: wsp decompile (mini #11) — 2026-11-04, sesión windows
+
+Header: `decomp\mimo_head.py` (dims / scan / decompile / judge). Arquitectura de head qwen35 verificada contra llama.cpp `src/models/qwen35.cpp` (master):
+- `attn_q` [4096, 8192] = 16 heads × **512d = Q(256) + GATE(256, sigmoid multiplicativo sobre la salida de atención)** → `out *= sigmoid(x@Wgate)` antes de `wo`. GQA 16→4, k/v 256d con RMS-norm per-head + RoPE (64/256 dims, MRoPE multimodal, base 1e7).
+- `gguf.dequantize` de gguf-py devuelve shape invertida (orden C): `_tens` con reshape restaurado — trampa documentada.
+- **scan offset-aware de los 128 heads (8 capas × 16)**: c1 estática máx 0.044, y con RoPE por offsets δ∈{1..32} máx **c1=0.04 (L23 q8, δ2)** → ~2.5× azar (0.0156 en N=256) pero **NINGÚN matcher rank-1 singleton**: los heads del MiMo son multi-eje. El análisis máximo-rank (paper exp 8, blog P1) NO describe la atención destilada de MiMo como "match prev-token" — consistente con la serie E1–E5 (el valor WSP de este modelo no está en estructuras de atención triviales). Datos: `decomp\scan.json`.
+- **Head decompilado L23 q8**: `decomp\head_L23_q8.{npz,c,manifest.json}` con IR ejecutable + juez **PASS** (T1 shapes, T2 IR==ref numpy cos 0.9999999, T3 null-test 1.7e-5 con edición de columna -10%, T4 diag: c1 0.0506, gate_ratio 0.996 — el gate es tan denso como el Q). Sirope a juez con column-scaled en vez de elemento único (1 flip = 1e-6, bajo el ruido).
+- Pendiente de la línea de compile: (a) interpretar gate (¿selector de canal residual? probar align de filas Wgate con regions semánticas de semantic-map), (b) capturar activaciones reales por fwd (rig) para verificación funcional del pseudo-C, (c) reto WSP-40 nuevo tipo "traduces una pieza y el juez la veriﬁca".
+
 ## 5. Riesgos / trampas activos
 - **linux**: 4× A5000 OCUPADAS por vllm Qwen3.8-27b (22.4/24.5GB c/u) — no lanzar MiMo en GPU sin revisar memoria.
 - Git: si el remoto se adelanta (la otra máquina también empuja), `git pull --rebase` con stash antes de push.
@@ -123,6 +132,7 @@ DECISIÓN (2026-11-03, ver #12bis): WSP-Lang queda como **spec de referencia** (
 - opencode MCP exige reinicio después de editar configuración MCP.
 
 ## 6. Referencias de archivos del estudio
+- Decompiler mini (#11): `decomp\mimo_head.py` + `decomp\head_L23_q8.{npz,c,manifest.json}` + `decomp\scan.json` (semántica verificada vs llama.cpp qwen35.cpp).
 - Paper + logs WSP método (paper baseline): rikiyat.github.io/blog/weight-space-programming/; github.com/RikiyaT/lm_understand-logs (exp8_math/code/apply_edit.py + manifest).
 - Protocolo del 1er experimento matemático: `PROTOCOL.md`.
 - Pension: `ediciones\e1.json` (descartado) + `ediciones\e1-smoke.json`; manifiestos en `servidos\*.manifest.json`.
