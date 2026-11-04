@@ -1,6 +1,6 @@
 # Propuesta de Publicación para X (Twitter / Thread)
 
-**Tema:** Desmitificando Weight-Space Programming (MIT Exp 8) y Corrección Declarativa de Bucles en MiMo-9B con WSP-Lang.
+**Tema:** Desmitificando Weight-Space Programming (MIT Exp 8), Corrección Declarativa de Bucles en MiMo-9B con WSP-Lang y Discusión Oficial en Hugging Face.
 
 ---
 
@@ -27,31 +27,37 @@ La cirugía de pesos fue una desobstrucción del canal de salida, no magia.
 **Tweet 3 (¿Qué pasa en MiMo 2.6 Qwen 9B?):**
 Comprobamos si este fallo existía en MiMo-9B:
 - En matemáticas: NO existe. MiMo razona de forma concisa en 130 tokens y cierra el `<think>` limpiamente.
-- En agentes (Tool-Calling): **SÍ existe**. Al usar herramientas (`<tool_call>`), MiMo entra en bucles idénticos el **70% de las veces** (invocando la misma función con los mismos argumentos una y otra vez).
+- En agentes (Tool-Calling): **SÍ existe**. Al usar herramientas (`<tool_call>`), MiMo entra en bucles idénticos el **70% de las veces** (invocando la misma función con los mismos argumentos una y otra vez ante errores).
 
 ---
 
-**Tweet 4 (La solución declarativa con WSP-Lang):**
-Aislamos el vector contrastivo en la Capa 14 (`u_loop_L14.npz`) y escribimos la corrección en **WSP-Lang 0.1**, nuestro lenguaje declarativo para cirugía de pesos:
+**Tweet 4 (La solución declarativa con WSP-Lang & Cirugía de Pesos):**
+Aislamos el atractor singular en la Capa 14 (`u_loop_L14.npz`) y aplicamos una sustracción de rango 1 en los pesos BF16 (`model.language_model.layers.14.mlp.down_proj.weight`).
 
+Modificando solo 120.545 pesos (0,24% de la capa, 0,0013% del modelo total) desarmamos el bucle sin reentrenar.
+
+Lo definimos declarativamente en **WSP-Lang 0.1**:
 ```wspl
 experiment fix_mimo_tool_loops:
     model: MiMo-V2.6-Distill-Qwen-9B
     objective: suppress_agentic_tool_loops
-    steps:
-        step peek blk.14.ffn_down.weight row=100 col=4258 top=3
-        step diff blk.14.ffn_down.weight base=mimo-v2.6-9b.gguf
-        step semantic_map top=3
+    budgets:
+        max_modified_weights = 1271011
+        max_delta_norm = 0.04
 ```
-Modificamos únicamente el 2.5% de los pesos de la Capa 14 sin retropropagación ni reentrenamiento.
 
 ---
 
-**Tweet 5 (Open Source & Reproducibilidad):**
-Todo el código, los vectores de dirección, los prompts originales de Atari de Simon Willison y el compilador WSP-Lang están abiertos bajo Licencia MIT:
+**Tweet 5 (Publicación en Hugging Face & Open Source):**
+Hemos abierto el hilo oficial en Hugging Face con el informe técnico y las 3 opciones para aplicarlo (PyTorch puro, WSPLang o Control Vector):
 
-🔗 Repo: https://github.com/FiveTechSoft/weights
-🌐 Portal en vivo: https://fivetechsoft.github.io/weights/
-📄 Informe completo: https://github.com/FiveTechSoft/weights/blob/main/docs/report_loop_suppression_and_atari.md
+🤗 Discusión en Hugging Face:
+https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16
+
+🔗 Repositorio GitHub (MIT):
+https://github.com/FiveTechSoft/weights
+
+🌐 Portal interactivo:
+https://fivetechsoft.github.io/weights/
 
 CC: @rikiyat @simonw @jarrodwatts @jacsebl @stochi0 @PawelHuryn @javierbits

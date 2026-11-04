@@ -98,15 +98,21 @@ def apply_wsp_edit(
 
     print(f"[*] Found '{actual_name}' in shard '{target_file}'")
 
-    # 2. Copy all configuration, tokenizer, and unmodified safetensors files
+    # 2. Link or copy all configuration, tokenizer, and unmodified safetensors files
     for item in os.listdir(model_path):
         src_item = model_path / item
         dst_item = out_path / item
         if item == target_file:
             continue  # Will be written modified
         if src_item.is_file():
-            print(f"    Copying {item}...")
-            shutil.copy2(src_item, dst_item)
+            if dst_item.exists():
+                dst_item.unlink()
+            try:
+                os.link(src_item, dst_item)
+                print(f"    Hard-linked {item} (instant, 0 disk bytes used)...")
+            except Exception:
+                print(f"    Copying {item}...")
+                shutil.copy2(src_item, dst_item)
 
     # 3. Load shard, apply exact continuous edit, and save
     print(f"[*] Loading shard {target_file} for surgical modification...")

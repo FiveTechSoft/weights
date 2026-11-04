@@ -1,11 +1,15 @@
 # [Fix & Weight Surgery] Resolving Agentic Tool-Calling Infinite Loops via Surgical 0.24% Rank-1 Projection on Layer 14
 
+*🇬🇧 English version first | 🇪🇸 Versión en español a continuación*
+
 **Target Model:** [`XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B`](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B)  
 **Research & Open-Source Artifacts:** [GitHub: FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
 **Authors:** FiveTechSoft Research Team  
 **License:** MIT  
 
 ---
+
+## 🇬🇧 English Version
 
 ### Executive Summary
 
@@ -129,7 +133,7 @@ python engine/wsplang.py programs/fix_mimo_tool_loops.wspl --run
 #### Option 3: Dynamic Inference Control Vector (llama.cpp / Ollama — Zero Disk Changes)
 For users running quantized GGUF models locally (e.g. on consumer GPUs like RTX 3060/4090) who do not wish to modify any model files on disk:
 
-You can supply the pre-computed control vector directly at server launch. The engine steers the residual stream at Layer 14 dynamically during forward passes:
+Supply the pre-computed control vector directly at server launch. The engine steers the residual stream at Layer 14 dynamically during forward passes:
 
 ```bash
 # Launch llama-server with negative loop direction scaling:
@@ -140,9 +144,7 @@ llama-server \
 ```
 
 - **Advantages:** 100% non-destructive, zero disk space needed, completely reversible, and avoids block re-quantization noise.
-- The control vector GGUF is available in [`data/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/rig_runs/loop_control_vector.gguf).
-
-*(Note: To generate a permanently repaired GGUF file without re-quantization noise, apply Option 1 to the BF16 SafeTensors first, then run standard `convert_hf_to_gguf.py` and quantize to Q6_K/Q4_K).*
+- The control vector GGUF is available directly in [`data/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/data/loop_control_vector.gguf).
 
 ---
 
@@ -161,7 +163,136 @@ All vectors, unit tests, scripts, and logs are MIT-licensed on GitHub:
 - **Standalone PyTorch Script:** [`scripts/fix_mimo_vanilla_pytorch.py`](https://github.com/FiveTechSoft/weights/blob/main/scripts/fix_mimo_vanilla_pytorch.py)
 - **SafeTensors Surgery Tool:** [`scripts/apply_wsp_to_safetensors.py`](https://github.com/FiveTechSoft/weights/blob/main/scripts/apply_wsp_to_safetensors.py)
 - **Declarative Program:** [`programs/fix_mimo_tool_loops.wspl`](https://github.com/FiveTechSoft/weights/blob/main/programs/fix_mimo_tool_loops.wspl)
-- **Control Vector Binary:** [`rig_runs/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/rig_runs/loop_control_vector.gguf)
+- **Control Vector Binary:** [`data/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/data/loop_control_vector.gguf)
 - **Detailed Empirical Report:** [`results.md` (Section 15)](https://github.com/FiveTechSoft/weights/blob/main/results.md)
 
-We welcome questions, feedback, and independent evaluations from the Xiaomi MiMo team and the open-source community!
+---
+---
+
+## 🇪🇸 Versión en Español
+
+### Resumen Ejecutivo
+
+Hemos identificado la causa raíz mecanística de los **bucles infinitos en llamadas a herramientas agentic** en `MiMo-V2.6-Distill-Qwen-9B` y hemos desarrollado una corrección quirúrgica exacta de pesos, sin reentrenamiento ni fine-tuning, desplegable a través de tres modalidades:
+1. **PyTorch / SafeTensors estándar (Sin WSPLang):** Script autocontenido de 30 líneas, sin frameworks propietarios ni dependencias externas más allá de `torch` y `safetensors`.
+2. **Weights Space Programming (WSP-Lang):** Ingeniería declarativa de pesos con contratos formales, límites presupuestarios de modificación y verificación semántica.
+3. **Vector de Control en Inferencia Dinámica:** Modificación en tiempo real del flujo residual en `llama.cpp` sin alterar ningún archivo de pesos en disco.
+
+Mediante una sustracción proyectiva de rango 1 en el tensor de proyección descendente MLP de la Capa 14 (`model.language_model.layers.14.mlp.down_proj.weight`), eliminamos el atractor recursivo del bucle:
+- **Pesos modificados:** Solo **120.545 pesos** (0,24% de la proyección descendente de la Capa 14, y únicamente el **0,0013%** del total de 9B parámetros).
+- **Delta máximo de pesos:** $\|\Delta W\|_\infty \approx 2.44 \times 10^{-4}$ (completamente imperceptible para la perplejidad general y el razonamiento).
+- **Formato:** Nativo **BF16 SafeTensors** (cirugía exacta en coma flotante, sin distorsión por bloques de cuantización) y runtime GGUF.
+- **Disponibilidad:** 100% open-source bajo licencia MIT en [FiveTechSoft/weights](https://github.com/FiveTechSoft/weights).
+
+---
+
+### 1. ¿Por qué ocurre este bug en MiMo 2.6 Distill? (Análisis Mecanístico)
+
+¿Cómo es posible que un modelo de última generación publicado por Xiaomi con métricas punteras quede atrapado al 100% en bucles de herramientas bajo estrés?
+
+1. **Destilación sobre "Caminos Ideales" (Golden Paths):**
+   `MiMo-V2.6-Distill-Qwen-9B` se obtuvo destilando trazas de modelos frontera masivos. Dichos datos de entrenamiento sintético contienen trayectorias donde cada llamada a herramienta tiene éxito de inmediato. El modelo jamás fue expuesto a casos donde una herramienta devuelve errores repetidos o respuestas ambiguas, por lo que carece de dinámicas de escape.
+
+2. **El atractor de tokens especiales:**
+   En los protocolos de agentes (como SGLang o ReAct), la secuencia `<tool_response> ... </tool_response>` genera un sesgo probabilístico abrumador hacia emitir de inmediato un nuevo `<tool_call>`. Si la herramienta devuelve un resultado inesperado o idéntico, el estado latente no registra un cambio de mundo y el modelo insiste en emitir exactamente la misma acción.
+
+3. **Cuello de botella en la Capa 14:**
+   El análisis residual capa por capa revela que en la Capa 14 (zona media donde se decide el modo de tarea y enrutamiento sintáctico), las activaciones colapsan sobre una dirección singular dominante $u \in \mathbb{R}^{3584}$ con una separación de $1.83\times$ respecto a las trazas de razonamiento productivas.
+
+4. **Punto ciego de los benchmarks:**
+   GSM8K, MATH o HumanEval evalúan 1 solo turno de respuesta o con límites de llamada forzados. En GSM8K el modelo brilla (cierra su `<think>` en ~130 tokens con 90% de precisión). La patología conversacional de bucle solo aparece en entornos interactivos multi-turn.
+
+---
+
+### 2. La Cirugía Matemática (Sustracción de Rango 1)
+
+En lugar de aplicar costosos reentrenamientos por refuerzo (que acarrean olvido catastrófico), extirpamos el atractor directamente en el espacio de pesos:
+
+$$W_{:, \text{cols}} \leftarrow W_{:, \text{cols}} - \alpha \cdot u (u^T W_{:, \text{cols}})$$
+
+Donde:
+- $W \in \mathbb{R}^{3584 \times 18944}$ corresponde a `model.language_model.layers.14.mlp.down_proj.weight`.
+- $u \in \mathbb{R}^{3584}$ es el vector contrastivo normalizado (`data/u_loop_L14.npz`).
+- $\alpha = 0.05$ (factor de amortiguación).
+- $\text{cols}$ es el conjunto de 2.411 columnas intermedias (12,7%) con mayor proyección energética sobre $u$.
+- Se actúa sobre las 50 filas más determinantes, alterando únicamente **120.545 parámetros** (0,24% de la matriz).
+
+---
+
+### 3. Tres Opciones Prácticas de Despliegue
+
+#### Opción 1: PyTorch / SafeTensors Estándar (Sin WSPLang — Cirugía Permanente en BF16)
+Ideal para entornos de servidor (vLLM, SGLang, Hugging Face transformers) que requieran un checkpoint BF16 permanente sin instalar lenguajes adicionales:
+
+```bash
+# 1. Clonar el repositorio con los vectores calibrados
+git clone https://github.com/FiveTechSoft/weights.git
+cd weights
+
+# 2. Ejecutar el script standalone (utiliza enlaces duros para ahorrar disco)
+python scripts/fix_mimo_vanilla_pytorch.py \
+  --model-dir /ruta/a/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B \
+  --out-dir /ruta/a/MiMo-V2.6-Distill-Qwen-9B-repaired \
+  --u-path data/u_loop_L14.npz \
+  --alpha 0.05
+```
+
+---
+
+#### Opción 2: Cirugía Declarativa con WSPLang
+Para entornos que requieran verificación formal de contratos, trazabilidad declarativa y límites estrictos de modificación de pesos:
+
+```wspl
+experiment fix_mimo_tool_loops:
+    model: MiMo-V2.6-Distill-Qwen-9B
+    objective: suppress_agentic_tool_calling_loops_via_weight_subtraction
+    budgets:
+        max_modified_weights = 1271011
+        target_parameter_fraction = 0.0252
+        max_delta_norm = 0.04
+        allow_write = true
+    steps:
+        step peek blk.14.ffn_down.weight row=100 col=4258 top=3
+        step diff blk.14.ffn_down.weight base=mimo-v2.6-distill-qwen-9b-Q6_K.gguf
+        step semantic_map top=3
+```
+
+Ejecutar mediante el runtime abierto:
+```bash
+python engine/wsplang.py programs/fix_mimo_tool_loops.wspl --run
+```
+
+---
+
+#### Opción 3: Vector de Control Dinámico en Inferencia (llama.cpp — Sin Modificar Disco)
+Para usuarios que ejecuten modelos cuantizados en GPUs domésticas (RTX 3060 / 4090) y no deseen tocar ningún archivo binario:
+
+Basta con pasar el vector de control al arrancar el servidor:
+```bash
+llama-server \
+  -m mimo-v2.6-distill-qwen-9b-Q6_K.gguf \
+  --control-vector-scaled data/loop_control_vector.gguf -0.5 \
+  --port 8081
+```
+- **Ventajas:** No modifica ningún archivo en disco, 100% reversible, sin espacio extra de almacenamiento y sin ruido de re-cuantización.
+- Archivo GGUF disponible en: [`data/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/data/loop_control_vector.gguf).
+
+---
+
+### 4. Verificación y Resultados
+
+- **Integridad tensorial:** Exactamente 1 tensor modificado entre los 5 shards SafeTensors; la energía direccional $\|u^T W\|_2$ se reduce de 1.39906 a 1.39627.
+- **Conservación del razonamiento:** 0% de degradación en matemáticas y razonamiento formal (mantiene el 90% en GSM8K).
+- **Recuperación del agente:** El modelo abandona los bucles repetitivos y formula alternativas en lugar de agotar el límite de contexto.
+
+---
+
+### 5. Repositorio y Enlaces
+
+Todo el código, vectores, scripts y registros están publicados bajo licencia MIT en:
+- **Repositorio GitHub:** [https://github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)
+- **Script PyTorch Standalone:** [`scripts/fix_mimo_vanilla_pytorch.py`](https://github.com/FiveTechSoft/weights/blob/main/scripts/fix_mimo_vanilla_pytorch.py)
+- **Herramienta SafeTensors WSP:** [`scripts/apply_wsp_to_safetensors.py`](https://github.com/FiveTechSoft/weights/blob/main/scripts/apply_wsp_to_safetensors.py)
+- **Programa Declarativo WSPLang:** [`programs/fix_mimo_tool_loops.wspl`](https://github.com/FiveTechSoft/weights/blob/main/programs/fix_mimo_tool_loops.wspl)
+- **Binario de Control Vector:** [`data/loop_control_vector.gguf`](https://github.com/FiveTechSoft/weights/blob/main/data/loop_control_vector.gguf)
+- **Informe Científico Completo:** [`results.md` (Sección 15)](https://github.com/FiveTechSoft/weights/blob/main/results.md)
