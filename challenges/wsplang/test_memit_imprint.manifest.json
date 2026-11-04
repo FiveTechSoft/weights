@@ -1,0 +1,137 @@
+{
+  "wsplang_version": "0.6.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "test_memit_imprint",
+  "archivo": "programs\\test_memit_experiment.wspl",
+  "steps_count": 7,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 10000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 1.0"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 50.0"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step peek layers.1.mlp_out.weight row=10 col=10 top=3",
+      "op": "peek",
+      "args": "layers.1.mlp_out.weight row=10 col=10 top=3"
+    },
+    {
+      "sec": "steps",
+      "expr": "step memit_imprint layers.1.mlp_out.weight file=data/test_memit_batch.json lambda=0.01",
+      "op": "memit_imprint",
+      "args": "layers.1.mlp_out.weight file=data/test_memit_batch.json lambda=0.01"
+    },
+    {
+      "sec": "steps",
+      "expr": "step diff layers.1.mlp_out.weight base=models/nanowsp/model_baseline.safetensors",
+      "op": "diff",
+      "args": "layers.1.mlp_out.weight base=models/nanowsp/model_baseline.safetensors"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.6.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 4,
+      "steps": 3
+    },
+    "pasos": [
+      {
+        "op": "peek",
+        "args": "layers.1.mlp_out.weight row=10 col=10 top=3"
+      },
+      {
+        "op": "memit_imprint",
+        "args": "layers.1.mlp_out.weight file=data/test_memit_batch.json lambda=0.01"
+      },
+      {
+        "op": "diff",
+        "args": "layers.1.mlp_out.weight base=models/nanowsp/model_baseline.safetensors"
+      }
+    ],
+    "pasos_mapeo": {
+      "peek": "wsp peek (tensor anatomy and concept projection)",
+      "memit_imprint": "MEMIT/EMMET covariance-regularized mass memory editing",
+      "diff": "wsp diff (structural weight difference check)"
+    },
+    "budgets": {
+      "max_modified_weights": 10000,
+      "target_parameter_fraction": 1.0,
+      "max_delta_norm": 50.0,
+      "allow_write": true,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T19:17:17",
+  "ejecucion": [
+    {
+      "op": "peek",
+      "args": "layers.1.mlp_out.weight row=10 col=10 top=3",
+      "status": "ok",
+      "result": {
+        "tensor": "layers.1.mlp_out.weight",
+        "shape": [
+          64,
+          128
+        ],
+        "norm": 31.895780563354492,
+        "min": -2.0024850368499756,
+        "max": 2.291995048522949,
+        "mean": 0.00223561841994524,
+        "element": -0.622024416923523
+      }
+    },
+    {
+      "op": "memit_imprint",
+      "args": "layers.1.mlp_out.weight file=data/test_memit_batch.json lambda=0.01",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "rule": "MEMIT / EMMET Covariance-Regularized Memory Synthesis",
+        "tensor": "layers.1.mlp_out.weight",
+        "pairs_count": 5,
+        "regularization_lambda": 0.01,
+        "unregularized_condition": 25.872026443481445,
+        "regularized_condition": 283.7939453125,
+        "delta_frobenius": 14.151802062988281,
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "diff",
+      "args": "layers.1.mlp_out.weight base=models/nanowsp/model_baseline.safetensors",
+      "status": "ok",
+      "result": {
+        "base_model": "model_baseline.safetensors",
+        "edited_model": "model.safetensors",
+        "tensors": {
+          "layers.1.mlp_out.weight": {
+            "changed_weights": 8190,
+            "total_weights": 8192,
+            "fraction": 0.999755859375,
+            "percentage": "99.9756%",
+            "frobenius_delta": 14.151803016662598
+          }
+        },
+        "total_changed": 8190,
+        "total_weights": 8192,
+        "overall_percentage": "99.9756%"
+      }
+    }
+  ]
+}

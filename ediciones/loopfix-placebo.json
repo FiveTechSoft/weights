@@ -1,0 +1,23 @@
+{
+  "out": "C:\\weights\\servidos\\mimo-9b__loopfix-placebo.gguf",
+  "ops": [
+    {
+      "type": "subtract-direction",
+      "tensor": "blk.1.ffn_down.weight",
+      "u_from": "npz:C:\\weights\\data\\u_loopplacebo.npz#u_placebo",
+      "axis": "rows",
+      "mask": "top-k",
+      "k": 64,
+      "target_frac": 0.02
+    },
+    {
+      "type": "subtract-direction",
+      "tensor": "blk.2.ffn_down.weight",
+      "u_from": "npz:C:\\weights\\data\\u_loopplacebo.npz#u_placebo2",
+      "axis": "rows",
+      "mask": "top-k",
+      "k": 64,
+      "target_frac": 0.02
+    }
+  ]
+}

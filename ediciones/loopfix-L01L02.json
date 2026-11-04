@@ -1,0 +1,23 @@
+{
+  "out": "C:\\weights\\servidos\\mimo-9b__loopfix-L01L02.gguf",
+  "ops": [
+    {
+      "type": "subtract-direction",
+      "tensor": "blk.1.ffn_down.weight",
+      "u_from": "npz:C:\\weights\\data\\u_loop_L01.npz#u_L01",
+      "axis": "rows",
+      "mask": "top-k",
+      "k": 64,
+      "target_frac": 0.02
+    },
+    {
+      "type": "subtract-direction",
+      "tensor": "blk.2.ffn_down.weight",
+      "u_from": "npz:C:\\weights\\data\\u_loop_L02.npz#u_L02",
+      "axis": "rows",
+      "mask": "top-k",
+      "k": 64,
+      "target_frac": 0.02
+    }
+  ]
+}

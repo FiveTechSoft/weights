@@ -1,514 +1,659 @@
 {
- "programa": "verify_mit_loop_suppression",
- "archivo": "programs\\verify_mit_loop_suppression.wspl",
- "steps_count": 6,
- "steps": [
-  {
-   "sec": "budgets",
-   "expr": "max_modified_weights = 131072"
-  },
-  {
-   "sec": "budgets",
-   "expr": "target_parameter_fraction = 0.00016"
-  },
-  {
-   "sec": "budgets",
-   "expr": "allow_training = false"
-  },
-  {
-   "sec": "steps",
-   "expr": "step compare exp8_control/results_eval_n5.json",
-   "op": "compare",
-   "args": "exp8_control/results_eval_n5.json"
-  },
-  {
-   "sec": "steps",
-   "expr": "step peek blk.14.ffn_down.weight row=100 col=4258 top=3",
-   "op": "peek",
-   "args": "blk.14.ffn_down.weight row=100 col=4258 top=3"
-  },
-  {
-   "sec": "steps",
-   "expr": "step semantic_map top=3",
-   "op": "semantic_map",
-   "args": "top=3"
-  }
- ],
- "plan": {
-  "secciones": {
-   "budgets": 3,
-   "steps": 3
-  },
-  "pasos": [
-   {
-    "op": "compare",
-    "args": "exp8_control/results_eval_n5.json"
-   },
-   {
-    "op": "peek",
-    "args": "blk.14.ffn_down.weight row=100 col=4258 top=3"
-   },
-   {
-    "op": "semantic_map",
-    "args": "top=3"
-   }
-  ],
-  "pasos_mapeo": {
-   "compare": "wsp delta / score de activacion (posiciones rep/pro)",
-   "peek": "wsp peek <tensor> [row=] [col=] [k=] (anatomia del tensor + areas semanticas dominantes y afinidades)",
-   "semantic_map": "wsp semantic-map <gguf> (10 areas semanticas y centroides diferenciales)"
-  },
-  "ops": [],
-  "mapeo": {}
- },
- "errors": [],
- "errores": [],
- "validated": true,
- "validado": true,
- "ts": "2026-11-04T08:43:10",
- "ejecucion": [
-  {
-   "op": "compare",
-   "args": "exp8_control/results_eval_n5.json",
-   "status": "ok",
-   "result": {
-    "evaluation_file": "results_eval_n5.json",
-    "base_accuracy": "0.0%",
-    "edited_accuracy": "20.0%",
-    "accuracy_delta": "+20.0%",
-    "base_cut_share": "100.0%",
-    "edited_cut_share": "100.0%",
-    "repairs_count": 1,
-    "repairs": [
-     {
-      "id": 2,
-      "gold": 3,
-      "pred": 3
-     }
-    ],
-    "regressions_count": 0,
-    "regressions": [],
-    "verdict": "POSITIVE_IMPROVEMENT"
-   }
-  },
-  {
-   "op": "peek",
-   "args": "blk.14.ffn_down.weight row=100 col=4258 top=3",
-   "status": "ok",
-   "result": {
-    "tensor": "blk.14.ffn_down.weight",
-    "shape": [
-     4096,
-     12288
-    ],
-    "dtype": "Q6_K",
-    "architecture": {
-     "layer": 14,
-     "layer_type": "ssm_recurrent",
-     "component": "ffn_down_proj",
-     "role": "Layer 14 FFN Down: neurona intermedia #4258 -> escribe en residual dim 100",
-     "head": null,
-     "head_dim": null,
-     "neuron": 4258,
-     "residual_dim": 100
+  "wsplang_version": "0.6.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "verify_mit_loop_suppression",
+  "archivo": "C:\\weights\\programs\\verify_mit_loop_suppression.wspl",
+  "steps_count": 6,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 131072"
     },
-    "value": -0.003606081008911133,
-    "row": 100,
-    "col": 4258,
-    "sign": -1,
-    "abs": 0.003606081008911133,
-    "row_norm": 1.2679485082626343,
-    "col_norm": 0.676571786403656,
-    "row_rank": 1774,
-    "col_rank": 9166,
-    "frac_row": 0.002844027959662376,
-    "frac_col": 0.005329931104693855,
-    "semantic_areas": {
-     "dominant": {
-      "area": "emotion_neg",
-      "label": "Negative Emotion",
-      "score": 0.0624
-     },
-     "all_areas": [
-      {
-       "area": "emotion_neg",
-       "label": "Negative Emotion",
-       "score": 0.0624
-      },
-      {
-       "area": "emotion_pos",
-       "label": "Positive Emotion",
-       "score": 0.0191
-      },
-      {
-       "area": "mind_cognition",
-       "label": "Mind & Cognition",
-       "score": 0.0143
-      },
-      {
-       "area": "math_logic",
-       "label": "Math & Logic",
-       "score": -0.0029
-      },
-      {
-       "area": "physical_world",
-       "label": "Physical World",
-       "score": -0.0129
-      },
-      {
-       "area": "time_sequence",
-       "label": "Time & Sequence",
-       "score": -0.0145
-      },
-      {
-       "area": "social_power",
-       "label": "Social & Power",
-       "score": -0.016
-      },
-      {
-       "area": "code_software",
-       "label": "Code & Software",
-       "score": -0.0166
-      },
-      {
-       "area": "agent_action",
-       "label": "Agent & Actions",
-       "score": -0.0208
-      },
-      {
-       "area": "abstract_ideas",
-       "label": "Abstract Ideas",
-       "score": -0.025
-      }
-     ],
-     "top_areas": [
-      {
-       "area": "emotion_neg",
-       "label": "Negative Emotion",
-       "score": 0.0624
-      },
-      {
-       "area": "emotion_pos",
-       "label": "Positive Emotion",
-       "score": 0.0191
-      },
-      {
-       "area": "mind_cognition",
-       "label": "Mind & Cognition",
-       "score": 0.0143
-      }
-     ],
-     "ranked": [
-      {
-       "area": "emotion_neg",
-       "label": "Negative Emotion",
-       "score": 0.0624
-      },
-      {
-       "area": "emotion_pos",
-       "label": "Positive Emotion",
-       "score": 0.0191
-      },
-      {
-       "area": "mind_cognition",
-       "label": "Mind & Cognition",
-       "score": 0.0143
-      }
-     ],
-     "top_seeds": [
-      {
-       "seed": "anger",
-       "score": 0.0447
-      },
-      {
-       "seed": "shame",
-       "score": 0.0373
-      },
-      {
-       "seed": "history",
-       "score": 0.0369
-      },
-      {
-       "seed": "script",
-       "score": 0.0366
-      },
-      {
-       "seed": "smile",
-       "score": 0.0346
-      }
-     ]
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 0.00016"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_training = false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step compare exp8_control/results_eval_n5.json",
+      "op": "compare",
+      "args": "exp8_control/results_eval_n5.json"
+    },
+    {
+      "sec": "steps",
+      "expr": "step peek blk.14.ffn_down.weight row=100 col=4258 top=3",
+      "op": "peek",
+      "args": "blk.14.ffn_down.weight row=100 col=4258 top=3"
+    },
+    {
+      "sec": "steps",
+      "expr": "step semantic_map top=3",
+      "op": "semantic_map",
+      "args": "top=3"
     }
-   }
+  ],
+  "plan": {
+    "wsplang_version": "0.6.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 3,
+      "steps": 3
+    },
+    "pasos": [
+      {
+        "op": "compare",
+        "args": "exp8_control/results_eval_n5.json"
+      },
+      {
+        "op": "peek",
+        "args": "blk.14.ffn_down.weight row=100 col=4258 top=3"
+      },
+      {
+        "op": "semantic_map",
+        "args": "top=3"
+      }
+    ],
+    "pasos_mapeo": {
+      "compare": "evaluation comparison (base vs edited)",
+      "peek": "wsp peek (tensor anatomy and concept projection)",
+      "semantic_map": "wsp semantic-map (differential centroids)"
+    },
+    "budgets": {
+      "max_modified_weights": 131072,
+      "target_parameter_fraction": 0.00016,
+      "max_delta_norm": null,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
   },
-  {
-   "op": "semantic_map",
-   "args": "top=3",
-   "status": "ok",
-   "result": {
-    "total_areas": 10,
-    "all_areas": {
-     "math_logic": {
-      "label": "Math & Logic",
-      "color": "#3498db",
-      "seeds_count": 13,
-      "seeds": [
-       "logic",
-       "math",
-       "proof",
-       "solve",
-       "equation",
-       "theorem",
-       "calculate",
-       "integer",
-       "formula",
-       "axiom",
-       "lemma",
-       "derivative",
-       "prime"
-      ],
-      "has_centroid": true
-     },
-     "agent_action": {
-      "label": "Agent & Actions",
-      "color": "#e67e22",
-      "seeds_count": 13,
-      "seeds": [
-       "tool",
-       "command",
-       "run",
-       "execute",
-       "terminal",
-       "check",
-       "exit",
-       "error",
-       "file",
-       "script",
-       "bash",
-       "status",
-       "output"
-      ],
-      "has_centroid": true
-     },
-     "code_software": {
-      "label": "Code & Software",
-      "color": "#16a085",
-      "seeds_count": 13,
-      "seeds": [
-       "python",
-       "code",
-       "function",
-       "import",
-       "class",
-       "def",
-       "return",
-       "data",
-       "software",
-       "model",
-       "variable",
-       "string",
-       "array"
-      ],
-      "has_centroid": true
-     },
-     "abstract_ideas": {
-      "label": "Abstract Ideas",
-      "color": "#2980b9",
-      "seeds_count": 11,
-      "seeds": [
-       "idea",
-       "truth",
-       "concept",
-       "meaning",
-       "reason",
-       "justice",
-       "theory",
-       "knowledge",
-       "principle",
-       "freedom",
-       "structure"
-      ],
-      "has_centroid": true
-     },
-     "mind_cognition": {
-      "label": "Mind & Cognition",
-      "color": "#1abc9c",
-      "seeds_count": 11,
-      "seeds": [
-       "mind",
-       "think",
-       "know",
-       "memory",
-       "dream",
-       "learn",
-       "brain",
-       "conscious",
-       "aware",
-       "understand",
-       "reasoning"
-      ],
-      "has_centroid": true
-     },
-     "time_sequence": {
-      "label": "Time & Sequence",
-      "color": "#f39c12",
-      "seeds_count": 13,
-      "seeds": [
-       "time",
-       "past",
-       "future",
-       "moment",
-       "now",
-       "step",
-       "next",
-       "before",
-       "after",
-       "history",
-       "loop",
-       "repeat",
-       "stop"
-      ],
-      "has_centroid": true
-     },
-     "emotion_pos": {
-      "label": "Positive Emotion",
-      "color": "#2ecc71",
-      "seeds_count": 10,
-      "seeds": [
-       "happy",
-       "joy",
-       "love",
-       "peace",
-       "hope",
-       "smile",
-       "glad",
-       "kind",
-       "gentle",
-       "warm"
-      ],
-      "has_centroid": true
-     },
-     "emotion_neg": {
-      "label": "Negative Emotion",
-      "color": "#e74c3c",
-      "seeds_count": 10,
-      "seeds": [
-       "sad",
-       "hate",
-       "fear",
-       "anger",
-       "pain",
-       "cry",
-       "rage",
-       "grief",
-       "lonely",
-       "shame"
-      ],
-      "has_centroid": true
-     },
-     "physical_world": {
-      "label": "Physical World",
-      "color": "#95a5a6",
-      "seeds_count": 10,
-      "seeds": [
-       "body",
-       "rock",
-       "water",
-       "fire",
-       "earth",
-       "stone",
-       "blood",
-       "metal",
-       "wood",
-       "space"
-      ],
-      "has_centroid": true
-     },
-     "social_power": {
-      "label": "Social & Power",
-      "color": "#8e44ad",
-      "seeds_count": 10,
-      "seeds": [
-       "power",
-       "war",
-       "nation",
-       "people",
-       "law",
-       "money",
-       "work",
-       "leader",
-       "rule",
-       "state"
-      ],
-      "has_centroid": true
-     }
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T18:57:08",
+  "ejecucion": [
+    {
+      "op": "compare",
+      "args": "exp8_control/results_eval_n5.json",
+      "status": "ok",
+      "result": {
+        "base": {
+          "summary": {
+            "model": "exp8_control/base",
+            "n_samples": 5,
+            "acc": 0.0,
+            "correct": 0,
+            "cut_share": 1.0,
+            "cut_count": 5,
+            "mean_tokens": 512.0,
+            "total_seconds": 356.7,
+            "tok_per_s": 7.2
+          },
+          "results": [
+            {
+              "id": 1,
+              "gen_tokens": 512,
+              "seconds": 72.06,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": true,
+              "pred": "",
+              "gold": 18,
+              "correct": false,
+              "generation_tail": "    *   Interpretation B: It implies a subtraction from the total egg count.\n            *   Total eggs laid = 16.\n            *   Eggs eaten = 3.\n            *   Eggs used for muffins = 4.\n            *   Remaining eggs = 16 - 3 - 4 = 9.\n            *   Selling price = $2/egg.\n            *   Revenue = 9 * $2 = $18.\n    *   Let's check if there's any other interpretation. Maybe \"with four\" refers"
+            },
+            {
+              "id": 2,
+              "gen_tokens": 512,
+              "seconds": 73.41,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": true,
+              "pred": "",
+              "gold": 3,
+              "correct": false,
+              "generation_tail": "r is it a constraint on the ratio?\n    *   Let's assume the standard interpretation of such word problems unless specified otherwise.\n    *   Constraint: \"takes 2 bolts of blue fiber\". This implies Blue = 2.\n    *   Constraint: \"and half that much white fiber\". This usually implies White = (Blue / 2) or something similar? Or does it mean White = (Total / 2)?\n    *   Let's parse \"half that much\" as"
+            },
+            {
+              "id": 3,
+              "gen_tokens": 512,
+              "seconds": 74.07,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": false,
+              "pred": 80000,
+              "gold": 70000,
+              "correct": false,
+              "generation_tail": "          *   Increase = 150%. So $V_{new} = V_{old} \\times 2.5$ (since 150% means $100\\% + 50\\%$, which is 150%). Or does it mean $100\\% + 50\\% = 250\\%$?\n            *   Standard interpretation of \"increased by X%\" usually means $X\\%$ of the original amount.\n            *   Let's calculate based on standard financial logic first.\n            *   Original Cost ($C$) = $80,000$.\n            *   Rep"
+            },
+            {
+              "id": 4,
+              "gen_tokens": 512,
+              "seconds": 68.94,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": false,
+              "pred": 3,
+              "gold": 540,
+              "correct": false,
+              "generation_tail": "   Let's assume the standard reading: He runs 3 sprints. Each sprint takes 3 seconds? No, \"runs 60 meters each sprint\".\n        *   Let's look at the structure: \"runs 3 sprints 3 times a week\". It might be a typo for \"runs 3 sprints 3 times a week\" (meaning 3 sprints, done 3 times).\n        *   Actually, let's look at the numbers. 3 sprints $\\times$ 60m = 180m.\n        *   Maybe the phrase \"runs 3"
+            },
+            {
+              "id": 5,
+              "gen_tokens": 512,
+              "seconds": 68.1,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": false,
+              "pred": 25,
+              "gold": 20,
+              "correct": false,
+              "generation_tail": "ucture again.\n    *   Morning: 15 cups.\n    *   Afternoon: 25 cups.\n    *   Is this a single day? Or is there a pattern?\n    *   Let's assume the question asks for the sum of the morning and afternoon feeds plus the final meal, OR just the final meal.\n    *   If the problem implies a daily cycle where the feed is given in specific times, and we need the amount for the \"final meal\", we need to know"
+            }
+          ]
+        },
+        "edited": {
+          "summary": {
+            "model": "exp8_control/edited",
+            "n_samples": 5,
+            "acc": 0.2,
+            "correct": 1,
+            "cut_share": 1.0,
+            "cut_count": 5,
+            "mean_tokens": 512.0,
+            "total_seconds": 401.6,
+            "tok_per_s": 6.4
+          },
+          "results": [
+            {
+              "id": 1,
+              "gen_tokens": 512,
+              "seconds": 71.04,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": false,
+              "pred": 1,
+              "gold": 18,
+              "correct": false,
+              "generation_tail": "Wait, I can't see \"bounces\" as a verb here. It must be \"bakes\".)\n                    *   Wait, looking at the provided text in the prompt: \"She eats three for breakfast every morning and bakes muffins for her friends every day with four.\"\n                    *   Let's assume standard English grammar.\n                    *   Scenario 1: She eats X amount. She makes Y amount.\n                       "
+            },
+            {
+              "id": 2,
+              "gen_tokens": 512,
+              "seconds": 73.79,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": false,
+              "pred": 3,
+              "gold": 3,
+              "correct": true,
+              "generation_tail": " the problem might be interpreted differently. Is it asking how many bolts of each color are needed?\n            *   Blue = 2.\n            *   White = \"half that much\".\n            *   Does \"that\" refer to the number of bolts of blue? Yes. So White = 0.5 * 2 = 1.\n            *   Total = 3.\n    *   *Self-Correction/Alternative Interpretation:* Sometimes \"halves\" in word problems are tricky.\n       "
+            },
+            {
+              "id": 3,
+              "gen_tokens": 512,
+              "seconds": 79.51,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": false,
+              "pred": 50000,
+              "gold": 70000,
+              "correct": false,
+              "generation_tail": "profit *after* all expenses are deducted from the sale price? No, that's not how it works here.\n    *   Let's assume the simplest interpretation first:\n        *   Initial Cost (Purchased): $80,000.\n        *   Additional Repair Investment: $50,000.\n        *   New Value (Selling Price?): Not explicitly stated as the selling price, but implied to be the \"value of the house\".\n        *   The phrase"
+            },
+            {
+              "id": 4,
+              "gen_tokens": 512,
+              "seconds": 89.14,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": true,
+              "pred": "",
+              "gold": 540,
+              "correct": false,
+              "generation_tail": "Construct Final Response:**\n    *   Step 1: Identify the distance per run ($60\\text{ m}$).\n    *   Step 2: Identify the number of runs per week ($3$).\n    *   Step 3: Multiply them ($60 \\times 3 = 180$).\n    *   Result: 180 meters.\n\n    *Self-Correction/Double Check:* Did I miss any detail?\n    - \"runs 3 times\" -> 3 times. Correct.\n    - \"runs 60 meters\" -> 60 meters. Correct.\n    - \"total meters\""
+            },
+            {
+              "id": 5,
+              "gen_tokens": 512,
+              "seconds": 88.07,
+              "is_cut": true,
+              "has_think_end": false,
+              "has_boxed": false,
+              "pred": 3,
+              "gold": 20,
+              "correct": false,
+              "generation_tail": "arate meals\").\n    *   Let's check the math again. If I have 15 + 25 = 40 cups.\n    *   Is it possible that the question implies the \"final meal\" refers to the one after the morning and afternoon?\n    *   Let's assume the standard interpretation for this type of puzzle:\n        *   Meal 1: Morning (15 cups).\n        *   Meal 2: Afternoon (25 cups).\n        *   Meal 3: Final Meal.\n    *   Wait, the"
+            }
+          ]
+        },
+        "delta": {
+          "acc_delta": 0.2,
+          "cut_share_delta": 0.0,
+          "mean_tokens_delta": 0.0
+        }
+      }
     },
-    "top_areas": {
-     "math_logic": {
-      "label": "Math & Logic",
-      "color": "#3498db",
-      "seeds_count": 13,
-      "seeds": [
-       "logic",
-       "math",
-       "proof",
-       "solve",
-       "equation",
-       "theorem",
-       "calculate",
-       "integer",
-       "formula",
-       "axiom",
-       "lemma",
-       "derivative",
-       "prime"
-      ],
-      "has_centroid": true
-     },
-     "agent_action": {
-      "label": "Agent & Actions",
-      "color": "#e67e22",
-      "seeds_count": 13,
-      "seeds": [
-       "tool",
-       "command",
-       "run",
-       "execute",
-       "terminal",
-       "check",
-       "exit",
-       "error",
-       "file",
-       "script",
-       "bash",
-       "status",
-       "output"
-      ],
-      "has_centroid": true
-     },
-     "code_software": {
-      "label": "Code & Software",
-      "color": "#16a085",
-      "seeds_count": 13,
-      "seeds": [
-       "python",
-       "code",
-       "function",
-       "import",
-       "class",
-       "def",
-       "return",
-       "data",
-       "software",
-       "model",
-       "variable",
-       "string",
-       "array"
-      ],
-      "has_centroid": true
-     }
+    {
+      "op": "peek",
+      "args": "blk.14.ffn_down.weight row=100 col=4258 top=3",
+      "status": "ok",
+      "result": {
+        "tensor": "blk.14.ffn_down.weight",
+        "shape": [
+          4096,
+          12288
+        ],
+        "dtype": "Q6_K",
+        "architecture": {
+          "layer": 14,
+          "layer_type": "ssm_recurrent",
+          "component": "ffn_down_proj",
+          "role": "Layer 14 FFN Down: neurona intermedia #4258 -> escribe en residual dim 100",
+          "head": null,
+          "head_dim": null,
+          "neuron": 4258,
+          "residual_dim": 100
+        },
+        "value": -0.003606081008911133,
+        "row": 100,
+        "col": 4258,
+        "sign": -1,
+        "abs": 0.003606081008911133,
+        "row_norm": 1.2679485082626343,
+        "col_norm": 0.676571786403656,
+        "row_rank": 1774,
+        "col_rank": 9166,
+        "frac_row": 0.002844027959662376,
+        "frac_col": 0.005329931104693855,
+        "semantic_areas": {
+          "dominant": {
+            "area": "emotion_neg",
+            "label": "Negative Emotion",
+            "score": 0.0624
+          },
+          "all_areas": [
+            {
+              "area": "emotion_neg",
+              "label": "Negative Emotion",
+              "score": 0.0624
+            },
+            {
+              "area": "emotion_pos",
+              "label": "Positive Emotion",
+              "score": 0.0191
+            },
+            {
+              "area": "mind_cognition",
+              "label": "Mind & Cognition",
+              "score": 0.0143
+            },
+            {
+              "area": "math_logic",
+              "label": "Math & Logic",
+              "score": -0.0029
+            },
+            {
+              "area": "physical_world",
+              "label": "Physical World",
+              "score": -0.0129
+            },
+            {
+              "area": "time_sequence",
+              "label": "Time & Sequence",
+              "score": -0.0145
+            },
+            {
+              "area": "social_power",
+              "label": "Social & Power",
+              "score": -0.016
+            },
+            {
+              "area": "code_software",
+              "label": "Code & Software",
+              "score": -0.0166
+            },
+            {
+              "area": "agent_action",
+              "label": "Agent & Actions",
+              "score": -0.0208
+            },
+            {
+              "area": "abstract_ideas",
+              "label": "Abstract Ideas",
+              "score": -0.025
+            }
+          ],
+          "top_areas": [
+            {
+              "area": "emotion_neg",
+              "label": "Negative Emotion",
+              "score": 0.0624
+            },
+            {
+              "area": "emotion_pos",
+              "label": "Positive Emotion",
+              "score": 0.0191
+            },
+            {
+              "area": "mind_cognition",
+              "label": "Mind & Cognition",
+              "score": 0.0143
+            }
+          ],
+          "ranked": [
+            {
+              "area": "emotion_neg",
+              "label": "Negative Emotion",
+              "score": 0.0624
+            },
+            {
+              "area": "emotion_pos",
+              "label": "Positive Emotion",
+              "score": 0.0191
+            },
+            {
+              "area": "mind_cognition",
+              "label": "Mind & Cognition",
+              "score": 0.0143
+            }
+          ],
+          "top_seeds": [
+            {
+              "seed": "anger",
+              "score": 0.0447
+            },
+            {
+              "seed": "shame",
+              "score": 0.0373
+            },
+            {
+              "seed": "history",
+              "score": 0.0369
+            },
+            {
+              "seed": "script",
+              "score": 0.0366
+            },
+            {
+              "seed": "smile",
+              "score": 0.0346
+            }
+          ]
+        }
+      }
     },
-    "ranking_basis": "seed_density (unprojected catalog; specify tensor=... for functional ranking)"
-   }
-  }
- ]
+    {
+      "op": "semantic_map",
+      "args": "top=3",
+      "status": "ok",
+      "result": {
+        "total_areas": 10,
+        "all_areas": {
+          "math_logic": {
+            "label": "Math & Logic",
+            "color": "#3498db",
+            "seeds_count": 13,
+            "seeds": [
+              "logic",
+              "math",
+              "proof",
+              "solve",
+              "equation",
+              "theorem",
+              "calculate",
+              "integer",
+              "formula",
+              "axiom",
+              "lemma",
+              "derivative",
+              "prime"
+            ],
+            "has_centroid": true
+          },
+          "agent_action": {
+            "label": "Agent & Actions",
+            "color": "#e67e22",
+            "seeds_count": 13,
+            "seeds": [
+              "tool",
+              "command",
+              "run",
+              "execute",
+              "terminal",
+              "check",
+              "exit",
+              "error",
+              "file",
+              "script",
+              "bash",
+              "status",
+              "output"
+            ],
+            "has_centroid": true
+          },
+          "code_software": {
+            "label": "Code & Software",
+            "color": "#16a085",
+            "seeds_count": 13,
+            "seeds": [
+              "python",
+              "code",
+              "function",
+              "import",
+              "class",
+              "def",
+              "return",
+              "data",
+              "software",
+              "model",
+              "variable",
+              "string",
+              "array"
+            ],
+            "has_centroid": true
+          },
+          "abstract_ideas": {
+            "label": "Abstract Ideas",
+            "color": "#2980b9",
+            "seeds_count": 11,
+            "seeds": [
+              "idea",
+              "truth",
+              "concept",
+              "meaning",
+              "reason",
+              "justice",
+              "theory",
+              "knowledge",
+              "principle",
+              "freedom",
+              "structure"
+            ],
+            "has_centroid": true
+          },
+          "mind_cognition": {
+            "label": "Mind & Cognition",
+            "color": "#1abc9c",
+            "seeds_count": 11,
+            "seeds": [
+              "mind",
+              "think",
+              "know",
+              "memory",
+              "dream",
+              "learn",
+              "brain",
+              "conscious",
+              "aware",
+              "understand",
+              "reasoning"
+            ],
+            "has_centroid": true
+          },
+          "time_sequence": {
+            "label": "Time & Sequence",
+            "color": "#f39c12",
+            "seeds_count": 13,
+            "seeds": [
+              "time",
+              "past",
+              "future",
+              "moment",
+              "now",
+              "step",
+              "next",
+              "before",
+              "after",
+              "history",
+              "loop",
+              "repeat",
+              "stop"
+            ],
+            "has_centroid": true
+          },
+          "emotion_pos": {
+            "label": "Positive Emotion",
+            "color": "#2ecc71",
+            "seeds_count": 10,
+            "seeds": [
+              "happy",
+              "joy",
+              "love",
+              "peace",
+              "hope",
+              "smile",
+              "glad",
+              "kind",
+              "gentle",
+              "warm"
+            ],
+            "has_centroid": true
+          },
+          "emotion_neg": {
+            "label": "Negative Emotion",
+            "color": "#e74c3c",
+            "seeds_count": 10,
+            "seeds": [
+              "sad",
+              "hate",
+              "fear",
+              "anger",
+              "pain",
+              "cry",
+              "rage",
+              "grief",
+              "lonely",
+              "shame"
+            ],
+            "has_centroid": true
+          },
+          "physical_world": {
+            "label": "Physical World",
+            "color": "#95a5a6",
+            "seeds_count": 10,
+            "seeds": [
+              "body",
+              "rock",
+              "water",
+              "fire",
+              "earth",
+              "stone",
+              "blood",
+              "metal",
+              "wood",
+              "space"
+            ],
+            "has_centroid": true
+          },
+          "social_power": {
+            "label": "Social & Power",
+            "color": "#8e44ad",
+            "seeds_count": 10,
+            "seeds": [
+              "power",
+              "war",
+              "nation",
+              "people",
+              "law",
+              "money",
+              "work",
+              "leader",
+              "rule",
+              "state"
+            ],
+            "has_centroid": true
+          }
+        },
+        "top_areas": {
+          "math_logic": {
+            "label": "Math & Logic",
+            "color": "#3498db",
+            "seeds_count": 13,
+            "seeds": [
+              "logic",
+              "math",
+              "proof",
+              "solve",
+              "equation",
+              "theorem",
+              "calculate",
+              "integer",
+              "formula",
+              "axiom",
+              "lemma",
+              "derivative",
+              "prime"
+            ],
+            "has_centroid": true
+          },
+          "agent_action": {
+            "label": "Agent & Actions",
+            "color": "#e67e22",
+            "seeds_count": 13,
+            "seeds": [
+              "tool",
+              "command",
+              "run",
+              "execute",
+              "terminal",
+              "check",
+              "exit",
+              "error",
+              "file",
+              "script",
+              "bash",
+              "status",
+              "output"
+            ],
+            "has_centroid": true
+          },
+          "code_software": {
+            "label": "Code & Software",
+            "color": "#16a085",
+            "seeds_count": 13,
+            "seeds": [
+              "python",
+              "code",
+              "function",
+              "import",
+              "class",
+              "def",
+              "return",
+              "data",
+              "software",
+              "model",
+              "variable",
+              "string",
+              "array"
+            ],
+            "has_centroid": true
+          }
+        }
+      }
+    }
+  ]
 }

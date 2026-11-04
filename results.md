@@ -503,7 +503,14 @@ experiment fix_mimo_tool_loops:
         step diff blk.14.ffn_down.weight base=mimo-v2.6-distill-qwen-9b-Q6_K.gguf
         step semantic_map top=3
 ```
-Execution via WSP-Lang runtime modifies exactly **2.5253% of Layer 14 weights (1,271,011 parameters)** along the negative loop manifold, damping the recursive repetitive tool-calling attractor.
+### 15.4 CORRECCIÓN de auditoría (2026-11-04, opencode windows): la localización real NO es L14
+
+Auditoría ejecutada contra los artefactos del propio run (extract_loop_direction.py, HF forward passes reales):
+- El reporte `rig_runs/loop_direction_report.json` (n=6/6, 100 permutaciones) dice: **separación significativa = Capas 1 y 2** (ratio 1.83×, p=0.01; 1.52×, p=0.001). **Layer 14 = ratio 1.00, p=0.44 (NULO); Layer 16 = 1.03, p=0.37 (nulo)**. El "SNR 1.83×" atribuido a L14 corresponde a la **Capa 1**.
+- `data/u_loop_L14.npz` (subido 08:07, no es salida de extract_loop_direction.py que exporta control-vector-GGUF) **no tiene base estadística**; el `u_critic_L16` (extracción contrastiva sobre **token embeddings de pares escritos a mano**, sin activaciones) tampoco es direccional de pesos de capa.
+- Confounding aceptado del run: los 6 contextos loop vs 6 productivos provienen de dominios distintos (sa: los mismos prompts); el contraste mezcla "tema" con "estado de bucle". Corrección futura: etiquetado within-subject por turnos (turno con tool-call idéntico al previo = loop; otro = productivo) sobre un mismo prompt.
+- Artefactos correctos guardados: `data/loop_directions.npz` (u por capa + snr/separation/p-value por capa, probados) y `data/u_loop_L01.npz` / `u_loop_L02.npz` (capas con señal real). Para la reparación el target debe ser **down_proj/MLP de capas 1–2 con protocolo de placebo + holdout** (no sm llama a editar capas por "nombre simbólico").
+- El claim §15.3 "modifies exactly 2.5253% (1,271,011 pesos)" queda **sin soporte** (el programa no incluye pasos de escritura; el budget interno habla de 815,950 = 1.622%); ejecutar el fix quedará pendiente con el protocolo standard de no-regresión.
 
 ## Replica exp8 (Control positivo) sobre Qwen3.5-0.8B GGUF Q6_K — 2026-11-04 (sesión windows, opencode)
 

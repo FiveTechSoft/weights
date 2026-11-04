@@ -12,6 +12,14 @@ experiment fix_mimo_tool_loops:
         max_delta_norm = 0.04
         allow_write = true
 
+    # AUDIT 2026-11-04: la localizacion por L14 era NULA (p=0.44). La senal real,
+    # artefacto-verificada (rig_runs/loop_direction_report.json), esta en las Capas 1-2.
+    # Vector correcto: data/loop_directions.npz (u por capa de forward passes HF reales).
+    # ATENCION backend: los ops de escritura pesada de este runtime solo admiten
+    # safetensors+torch; para GGUF usar wsp.py (subtract-direction u_from npz + requant).
+    preconditions:
+        audit_fixed_locale_safe = L01_L02_only
+
     semantic_areas:
         mode = differential
         target = agent_action

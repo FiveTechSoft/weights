@@ -1,3 +1,7 @@
 {"ts": "2026-11-04T08:51:31", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-placebo.gguf\", \"ops\": 2}"}
 {"ts": "2026-11-04T08:51:51", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-placebo.gguf\", \"ops_count\": 2}"}
 {"ts": "2026-11-04T08:51:51", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-04T19:19:22", "kind": "read", "detail": "budget"}
+{"ts": "2026-11-04T19:21:15", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-L01L02.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-04T19:22:17", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-L01L02.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-04T19:22:17", "kind": "write", "detail": "edit"}
