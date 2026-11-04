@@ -1,0 +1,12 @@
+{
+  "dataset": "recall",
+  "steps": 300,
+  "lr": 0.003,
+  "acc_train_final": 1.0,
+  "ppl_start": 106.54,
+  "ppl_final": 1.0,
+  "seconds": 9.2,
+  "delta_l2": 27.549,
+  "last_linear_share": 0.925,
+  "concentration_top64": 0.0048
+}

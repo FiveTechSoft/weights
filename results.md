@@ -631,3 +631,8 @@ Protocolo 3 brazos: AdamW 600 pasos vs Cirugía Ridge Closed-Form en readout sob
 
 - Veredicto: **SUPPORTED / tier APPROX-FIDELITY**: Record `e2026.117.m2b-nanowsp3-recall.json`.
 - Demostración fundamental: En un modelo autoregresivo profundo preentrenado con RoPE y 6 capas de atención, la cirugía cerrada sobre el readout de las representaciones existentes de $W_0$ reproduce con exactitud matemática perfecta (**74.0% == 74.0%**) el resultado de 600 pasos de descenso de gradiente por AdamW, neutralizando al placebo (2.5%) y reduciendo el tiempo a una fracción de segundo.
+
+## 20. Curriculum compiler COMPLETO: ciclo trace -> cirugia -> certify -> record (2026-11-04)
+Infra empujada: lab/nano3lib.py (builder+batched fwd compartido), lab/finetune_dataset.py (traces de finetune por dataset; RECALL 300 pasos: 100% seen, last_linear_share=0.925, 9.2s), lab/compile_from_trace.py (REGLAS: R1 EXACT compose_circuit si oraculo cerrado-compilable; R2 APPROX ridge-readout si last-linear domina >=0.5; R3 UNREACHABLE resto) + 5 tests.
+**Primer record AUTO-COMPILADO**: e2026.12rec.81d1534b8c (tier APPROX SUPPORTED keep, inferido del trace sin declaracion manual).
+Estado del curriculum: paciente REAL pre-entrenado PPL 14.3; datasets exactos con certify; M-0 (APPROX), M-1 (UNREACHABLE fronterizo), M-1b (EXACT supera Adam), M-2b (APPROX 74% vs 74.5% con paciente real). Quedan: NOECHO (supresion) + MOD13 multi-token + FSM4 como subsets, curriculum batch runner y el op wsplang `compile_from_trace` en el MCP.

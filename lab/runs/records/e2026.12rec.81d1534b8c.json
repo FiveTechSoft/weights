@@ -1,0 +1,33 @@
+{
+ "experiment_id": "e2026.12rec.81d1534b8c",
+ "model_id": "nanowsp3-pretrained",
+ "objective": "cirugia compilada desde trace (R2-ridge-readout) para recall",
+ "baseline": {
+  "nombre": "W0 pretrain",
+  "modelo": "nanowsp3-pretrained"
+ },
+ "edicion": {
+  "program": "{\"experiment\": \"compile_recall_APPROX\", \"trace\": \"C:\\\\weights\\\\lab\\\\runs\\\\finetune_recall.npz\", \"rule_id\": \"R2-ridge-readout\", \"ops\": {\"tensor\": \"out.weight\", \"op\": \"ridge-readout\", \"program\": [\"lambda=1.0\", \"margin=+9/-9\", \"features=h_final(W0)\"]}, \"requires\": \"wsp.py-writer (GGUF) o torch writer (lab)\"}",
+  "ruta": "C:\\weights\\lab\\runs\\finetune_recall.npz"
+ },
+ "ejecucion": {
+  "estado": "compiled"
+ },
+ "resultados": {
+  "w0_base": 0.015,
+  "adam_finetune": 0.745,
+  "closed_form_readout": 0.74,
+  "placebo_norm_matched": 0.025
+ },
+ "hypothesis": "trace compilado mediante R2-ridge-readout reproduzca/supera el finetune de recall",
+ "benchmark_version": "curriculum-recall",
+ "candidate": "R2-ridge-readout",
+ "placebo": "norm-matched-random",
+ "holdout": "certify",
+ "surgery_tier": "APPROX",
+ "tier_inferred": true,
+ "claim_class": "causal_learn",
+ "placebo_required": true,
+ "conclusion": "SUPPORTED",
+ "veredicto": "keep"
+}
