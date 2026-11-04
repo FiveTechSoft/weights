@@ -1,0 +1,26 @@
+experiment mimo_surgical_safetensors_v2:
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    format:
+        safetensors
+
+    objective:
+        suppress_multi_turn_agentic_tool_loops_via_rank1_projection
+
+    budgets:
+        max_modified_weights = 130000
+        target_parameter_fraction = 0.0025
+        max_delta_norm = 0.0005
+        allow_write = false
+
+    steps:
+        # Step 1: Audit Layer 14 down-proj energy and baseline Frobenius norm
+        step audit model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz
+
+        # Step 2: In-memory simulation of rank-1 low-rank projection edit
+        step project_out model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.127 top_rows=50
+
+        # Step 3: Export compiled llama.cpp control vector GGUF for runtime steering
+        step export_control_vector data/u_loop_L14.npz out=data/loop_control_vector.gguf scale=-0.5

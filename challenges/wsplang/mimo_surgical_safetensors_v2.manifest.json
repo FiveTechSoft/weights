@@ -1,0 +1,127 @@
+{
+  "wsplang_version": "0.2.0",
+  "programa": "mimo_surgical_safetensors_v2",
+  "archivo": "programs\\mimo_surgical_safetensors_v2.wspl",
+  "steps_count": 7,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 130000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 0.0025"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 0.0005"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step audit model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz",
+      "op": "audit",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.127 top_rows=50",
+      "op": "project_out",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.127 top_rows=50"
+    },
+    {
+      "sec": "steps",
+      "expr": "step export_control_vector data/u_loop_L14.npz out=data/loop_control_vector.gguf scale=-0.5",
+      "op": "export_control_vector",
+      "args": "data/u_loop_L14.npz out=data/loop_control_vector.gguf scale=-0.5"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.2.0",
+    "secciones": {
+      "budgets": 4,
+      "steps": 3
+    },
+    "pasos": [
+      {
+        "op": "audit",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz"
+      },
+      {
+        "op": "project_out",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.127 top_rows=50"
+      },
+      {
+        "op": "export_control_vector",
+        "args": "data/u_loop_L14.npz out=data/loop_control_vector.gguf scale=-0.5"
+      }
+    ],
+    "pasos_mapeo": {
+      "audit": "audit tensor energy, norm delta, and semantic alignment",
+      "project_out": "low-rank directional subtraction W <- W - alpha * u(u^T W)",
+      "export_control_vector": "export directional vector to llama.cpp GGUF control vector"
+    },
+    "budgets": {
+      "max_modified_weights": 130000,
+      "target_parameter_fraction": 0.0025,
+      "max_delta_norm": 0.0005,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T12:21:45",
+  "ejecucion": [
+    {
+      "op": "audit",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz",
+      "status": "ok",
+      "result": {
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "shape": [
+          4096,
+          12288
+        ],
+        "total_elements": 50331648,
+        "frobenius_norm": 77.74271392822266,
+        "max_magnitude": 0.44140625,
+        "directional_energy": 1.3990607261657715
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz alpha=0.05 top_cols=0.127 top_rows=50",
+      "status": "ok",
+      "result": {
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "shard": "model-00001-of-00004.safetensors",
+        "modified_parameters": 78000,
+        "tensor_total_parameters": 50331648,
+        "fraction_modified": "0.1550%",
+        "max_delta_norm": 0.00028148721321485937,
+        "directional_energy_before": 1.3990607261657715,
+        "directional_energy_after": 1.3950252532958984,
+        "energy_reduction_pct": "0.29%",
+        "written_to_disk": false,
+        "target_shard_path": null
+      }
+    },
+    {
+      "op": "export_control_vector",
+      "args": "data/u_loop_L14.npz out=data/loop_control_vector.gguf scale=-0.5",
+      "status": "ok",
+      "result": {
+        "source_vector": "C:\\weights\\data\\u_loop_L14.npz",
+        "output_gguf": "C:\\weights\\data\\loop_control_vector.gguf",
+        "layers_configured": 32,
+        "vector_dimension": 4096,
+        "file_size_bytes": 525792
+      }
+    }
+  ]
+}
