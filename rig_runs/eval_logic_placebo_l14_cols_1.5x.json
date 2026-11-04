@@ -1,0 +1,102 @@
+{
+  "alias": "eval_logic_placebo_l14_cols_1.5x",
+  "endpoint": "http://127.0.0.1:8090/v1/chat/completions",
+  "total_problems": 10,
+  "failures_targeted": 5,
+  "failures_repaired": 1,
+  "controls_tested": 5,
+  "controls_regressed": 0,
+  "total_seconds": 81.55,
+  "results": [
+    {
+      "id": 4,
+      "is_failure_baseline": true,
+      "gold": 540,
+      "pred": 540,
+      "correct": true,
+      "time": 37.49,
+      "tail": "a week.\n\nFirst, calculate the distance of one session:\n3 sprints × 60 meters = 180 meters per session\n\nThen, calculate the total distance for the week:\n180 meters × 3 sessions = 540 meters\n\nSo, James runs a total of 540 meters in a week.\n\n\\boxed{540}"
+    },
+    {
+      "id": 14,
+      "is_failure_baseline": true,
+      "gold": 18,
+      "pred": null,
+      "correct": false,
+      "error": "[WinError 10054] Se ha forzado la interrupción de una conexión existente por el host remoto",
+      "time": 27.82
+    },
+    {
+      "id": 22,
+      "is_failure_baseline": true,
+      "gold": 14,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.04
+    },
+    {
+      "id": 38,
+      "is_failure_baseline": true,
+      "gold": 2,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.02
+    },
+    {
+      "id": 47,
+      "is_failure_baseline": true,
+      "gold": 163,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.03
+    },
+    {
+      "id": 1,
+      "is_failure_baseline": false,
+      "gold": 18,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.02
+    },
+    {
+      "id": 2,
+      "is_failure_baseline": false,
+      "gold": 3,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.02
+    },
+    {
+      "id": 3,
+      "is_failure_baseline": false,
+      "gold": 70000,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.02
+    },
+    {
+      "id": 5,
+      "is_failure_baseline": false,
+      "gold": 20,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.03
+    },
+    {
+      "id": 6,
+      "is_failure_baseline": false,
+      "gold": 64,
+      "pred": null,
+      "correct": false,
+      "error": "<urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>",
+      "time": 2.06
+    }
+  ]
+}

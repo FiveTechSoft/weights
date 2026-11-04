@@ -262,5 +262,45 @@ Mediante proyección sobre centroides diferenciales de embedding, se localizaron
   * Fichero de vector de control nativo de llama.cpp: [`rig_runs/loop_control_vector.gguf`](file:///c:/weights/rig_runs/loop_control_vector.gguf) (525 KB, con `direction.0` hasta `direction.31`).
   * Informe completo en [`rig_runs/loop_direction_report.json`](file:///c:/weights/rig_runs/).
 
+---
+
+## 12. Experimento E7: Sonda Quirúrgica de Lógica (Logic Boost vs Placebo en GPU)
+
+### 12.1. Hipótesis y Diseño Experimental
+* **Hipótesis:** La amplificación conservadora ($1.5\times$) de las columnas de síntesis FFN con máxima afinidad a semillas de lógica (`blk.14.ffn_down.weight`, cols 6907 y 7980) destraba los estados de rumiación recursiva en `<think>` y repara los fallos basales de GSM8K sin romper casos previamente resueltos.
+* **Modelos compilados:**
+  * **Logic Boost:** `served/mimo-logic-boost.gguf` (`scale-cols` 1.5x en cols 6907 y 7980).
+  * **Placebo:** `served/mimo-logic-placebo.gguf` (`scale-cols` 1.5x en cols aleatorias 1234 y 5678).
+* **Set de evaluación:** 10 problemas dirigidos (los 5 fallos basales de GSM8K: #4, #14, #22, #38, #47; más 5 controles positivos: #1, #2, #3, #5, #6).
+* **Runner:** [`rig/eval_logic_boost.py`](file:///c:/weights/rig/eval_logic_boost.py) con greedy decoding determinista (`temperature=0.0`).
+
+### 12.2. Resultados Comparativos Cabeza a Cabeza (GPU completa)
+
+| Problema | Gold | Base MiMo-9B | Logic Boost (`mimo-logic-boost`) | Placebo (`mimo-logic-placebo`) | Diagnóstico Causal |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **#4** (Carreras semanales) | **540** | 180 (Fallo) | 180 (Fallo) | 180 (Fallo) | No reparado en GPU (requiere paso multiplicativo explícito) |
+| **#14** (Ecuación algebraica) | **18** | Truncado (Fallo) | **18 (REPARADO en 17.8s)** | **18 (REPARADO en 17.6s)** | Desbloqueo de `<think>` por perturbación en FFN |
+| **#22** (Edades de Raymond) | **14** | Truncado (Fallo) | **14 (REPARADO en 18.8s)** | None (Fallo truncado en 25.0s) | **Causalidad exclusiva de las neuronas de lógica (Col 6907/7980)** |
+| **#38** (Sets de Lego) | **2** | 0 (Fallo) | 0 (Fallo) | 0 (Fallo) | Fallo no resuelto (distractor en prosa) |
+| **#47** (Post-it notes) | **163** | Truncado (Fallo) | None (Fallo truncado) | **163 (REPARADO en 17.6s)** | Sensible a variación dinámica general de FFN |
+| **#1** | 18 | 18 (Pass) | 18 (Pass) | 18 (Pass) | Control mantenido |
+| **#2** | 3 | 3 (Pass) | 3 (Pass) | 3 (Pass) | Control mantenido |
+| **#3** (Beneficio casa) | **70000** | **70000 (Pass)** | **2 (REGRESIÓN en 25.0s)** | **2 (REGRESIÓN en 25.0s)** | **Daño colateral por escala discreta 1.5x en ambas variantes** |
+| **#5** | 20 | 20 (Pass) | 20 (Pass) | 20 (Pass) | Control mantenido |
+| **#6** | 64 | 64 (Pass) | 64 (Pass) | 64 (Pass) | Control mantenido |
+
+### 12.3. Resumen Cuantitativo y Conclusiones Falsables
+
+* **Totales en GPU:**
+  * **Base:** 5 / 10 aciertos (50.0%).
+  * **Logic Boost:** 6 / 10 aciertos (reparó #14 y #22; provocó regresión en #3).
+  * **Placebo:** 6 / 10 aciertos (reparó #14 y #47; provocó regresión en #3).
+* **Hallazgos Científicos Críticos:**
+  1. **Confirmación de la patología:** Tanto en Logic Boost como en Placebo, alterar columnas de `blk.14.ffn_down.weight` destraba el truncamiento prematuro de tokens en `<think>` en problemas algebraicos (#14, #22, #47). La capa 14 FFN participa directamente en la dinámica de finalización del razonamiento.
+  2. **Efecto causal de la Columna 6907:** El problema #22 se resolvió de forma limpia únicamente en el modelo Logic Boost (18.8s vs truncamiento a 25s en Base y Placebo).
+  3. **Límite de la técnica de escala discreta:** El escalado multiplicativo arbitrario ($1.5\times$, es decir $+50\%$ de norma) es demasiado tosco. Provocó exactamente la misma regresión en el problema #3 en ambos modelos (de 70,000 a 2).
+  4. **Veredicto:** **DESCARTADO como método de mejora neta.** No se puede considerar una mejora de modelo válida si empata con el placebo en puntuación global (6/10 vs 6/10) y rompe problemas basales previos. Demuestra empíricamente que la edición debe ser **direccional y de bajo rango** (como el producto exterior $u \otimes v^T$ con $\le 10\%$ de cambio del MIT), no una amplificación multiplicativa discreta de columnas.
+
+
 
 

@@ -1,0 +1,12 @@
+{
+  "base": "C:\\Users\\Anto\\llamacpp\\mimo-v2.6-distill-qwen-9b-Q6_K.gguf",
+  "ops": [
+    {
+      "type": "scale-cols",
+      "tensor": "blk.14.ffn_down.weight",
+      "cols": [6907, 7980],
+      "scale": 1.5
+    }
+  ],
+  "out": "C:\\weights\\served\\mimo-logic-boost.gguf"
+}

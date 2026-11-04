@@ -558,6 +558,29 @@ def cmd_edit(a):
             idx = np.asarray(op["cols"], dtype=int)
             D[:, idx] *= float(op["scale"])
             rowsEdited.append([nm, "scale-cols", int(idx.size)])
+        elif op["type"] == "add-cols-vectors":
+            # suma vectores por-checkbox-columna (neurona) desde npz: vec (nrows, n_cols) + cols opcional
+            zf = op["vec_file"]
+            z = np.load(zf, allow_pickle=False)
+            vkey, ckey = op["key"], op.get("cols_key")
+            if vkey not in z.files:
+                sys.exit(f"POLICY: clave '{vkey}' no existe en {zf}")
+            V = np.asarray(z[vkey], dtype=np.float64)
+            if ckey is not None:
+                if ckey not in z.files:
+                    sys.exit(f"POLICY: clave '{ckey}' no existe en {zf}")
+                idx = np.asarray(z[ckey], dtype=int)
+            else:
+                idx = np.asarray(op["cols"], dtype=int)
+            if V.shape != (nrows, idx.size):
+                sys.exit(f"POLICY: shape vec {V.shape} != esperado ({nrows}, {idx.size}) para {nm}")
+            sc = float(op.get("scale", 1.0))
+            D[:, idx] += V * sc
+            delta_norm = float(np.linalg.norm(V * sc))
+            op["_rowmap"] = {r: sorted(set((idx // elem_pb).tolist())) for r in range(nrows)}
+            rowsEdited.append([nm, "add-cols-vectors",
+                               round(delta_norm / (float(np.linalg.norm(D.astype(np.float64))) + 1e-30), 4)])
+            _p(f"  {nm}: add-cols-vectors n_cols={idx.size} scale={sc}")
         else:
             sys.exit(f"op no reconocida: {op['type']}")
         # reescribir en el archivo
@@ -583,7 +606,7 @@ def cmd_edit(a):
     journal("edit", json.dumps({"out": str(out), "ops_count": len(prog["ops"])}, ensure_ascii=False))
     Path(str(out) + ".manifest.json").write_text(json.dumps({
         "source": str(src), "source_fp": _fingerprint(src), "program": a.prog,
-        "ops": [{k: v for k, v in op.items() if k in ("type", "tensor", "axis", "mask", "k", "target_frac", "alpha", "mix", "scale")} for op in prog["ops"]],
+        "ops": [{k: v for k, v in op.items() if k in ("type", "tensor", "axis", "mask", "k", "target_frac", "alpha", "mix", "scale", "vec_file", "key", "cols_key")} for op in prog["ops"]],
         "edited_weights_note": "ver wsp diff -frac 0.002",
         "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
     }, ensure_ascii=False, indent=1), encoding="utf-8")

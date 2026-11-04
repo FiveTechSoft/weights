@@ -74,8 +74,8 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 |---|---|---|
 | 1 | Inferencia MiMo en linux: GGUF Q6_K + llama-server | **HECHO**: GGUF Q6_K bartowski descargado a `hf_cache/mimo-gguf/` (7.8GB); `/usr/local/lib/ollama/llama-server` (sin GPU: binario sin CUDA) sirviendo en `:8090` CPU (`-ngl 0 -c 8192 --jinja`); smoke "Say OK" OK (~0.33 tok/s — CPU compartida con sglang 27B: baseline viable en batches nocturnos, no en caliente) |
 | 2 | Download MiMo HF 18GB | **BLOQUEADO/INNECESARIO**: el GGUF cubre la inferencia; HF solo si se necesita captura de residuos con torch |
-| 3 | R0 math500-subset baseline (sample fija sellada) | **EN MARCHA** (nohup): `rig/math500.py --seed 42 --n 50 --sell --tag orig-linux` → `rig_runs/r0-orig-math-linux.json`; sellado reutilizado `rig/sellados/sellado_42_50.json` |
-| 3b | Baseline logic_probe 120 Horn | **EN MARCHA** (nohup): `rig/logic_probe.py --n 120 --temperature 0` → `rig_runs/logic-baseline-orig.json` |
+| 3 | R0 math500-subset baseline (sample fija sellada) | **RE-LANZADA 2026-11-04 (nohup, cadena)**: `rig/math500.py --seed 42 --n 50 --sell --tag orig-linux --max-tokens 4000` tras terminar logic-120. Causa del fallo del nohup previo: nunca arrancó (sin logs). Ajustes CPU: REQ_TIMEOUT 600→1800s, logic timeout 180→900s, cap 4000 tok (2.3 tok/s medidos ×2) |
+| 3b | Baseline logic_probe 120 Horn | **RUNNING 2026-11-04 (nohup pid 631009)**: `rig/logic_probe.py` (defaults 120, temp 0) → `rig_runs/nohup-logic.log` (buffered: sin output hasta flush/final; vigilar con ps y JSON final) → `rig_runs/logic-mimo-orig.json`; luego math500 (cadena). ETA total ~20-24h @ 2.3 tok/s CPU (4×A5000 ocupadas) |
 | 4 | weightspace 0.3.0 upgrade (+openai extra) + ws_runner paridad de stop_reason | pendiente (no crítico: solo etapa A 0.8B) |
 | 5 | MCP wsp-challenge en linux | **HECHO**: rutas portables (`__file__`), `creationflags` condicional, auto-detección de GGUF (`_buscar_gguf`: hf_cache→servidos→env→default); `mcp<2`+`gguf` vía `pip --user`; smoke stdio OK (10 tools; engine_status 12/43); `opencode.json` portable (`python3` + ruta relativa) — requiere reinicio de opencode |
 

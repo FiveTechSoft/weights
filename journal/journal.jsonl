@@ -27,3 +27,18 @@
 {"ts": "2026-11-04T01:09:05", "kind": "read", "detail": "peek"}
 {"ts": "2026-11-04T01:09:45", "kind": "read", "detail": "peek"}
 {"ts": "2026-11-04T01:10:23", "kind": "read", "detail": "peek"}
+{"ts": "2026-11-04T01:21:31", "kind": "read", "detail": "peek"}
+{"ts": "2026-11-04T01:27:23", "kind": "write", "detail": "reserva {\"out\": \"served\\\\mimo-logic-boost.gguf\", \"ops\": 1}"}
+{"ts": "2026-11-04T01:27:49", "kind": "edit", "detail": "{\"out\": \"served\\\\mimo-logic-boost.gguf\", \"ops_count\": 1}"}
+{"ts": "2026-11-04T01:27:49", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-04T01:28:30", "kind": "write", "detail": "reserva {\"out\": \"served\\\\mimo-logic-placebo.gguf\", \"ops\": 1}"}
+{"ts": "2026-11-04T01:28:59", "kind": "edit", "detail": "{\"out\": \"served\\\\mimo-logic-placebo.gguf\", \"ops_count\": 1}"}
+{"ts": "2026-11-04T01:28:59", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-04T01:42:34", "kind": "read", "detail": "tensors"}
+{"ts": "2026-11-04T01:43:09", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-replica.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-04T01:43:33", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-replica.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-04T01:43:33", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-04T01:44:28", "kind": "read", "detail": "diff"}
+{"ts": "2026-11-04T01:46:17", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-replica.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-04T01:46:42", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-replica.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-04T01:46:42", "kind": "write", "detail": "edit"}
