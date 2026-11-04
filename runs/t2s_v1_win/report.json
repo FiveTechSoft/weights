@@ -1,0 +1,23 @@
+{
+  "benchmark": "training_to_surgery_v1_symbol_association",
+  "seed": 7,
+  "device": "cpu",
+  "n_symbols": 16,
+  "n_labels": 4,
+  "n_train_symbols": 12,
+  "steps": 250,
+  "optimizer": "SGD",
+  "learning_rate": 0.08,
+  "delta_l2": 3.613147735595703,
+  "scores": {
+    "trained_model": 1.0,
+    "direct_delta_replay": 1.0,
+    "closed_form_exact": 1.0,
+    "norm_matched_random_placebo": 0.0833333358168602
+  },
+  "unseen_symbols": {
+    "trained_model": 0.25,
+    "closed_form_exact": 0.25
+  },
+  "interpretation": "Direct delta replay should match the trained model up to numerical precision. This validates the comparison pipeline only; it does not show that WSPLang learned a generalized surgery."
+}

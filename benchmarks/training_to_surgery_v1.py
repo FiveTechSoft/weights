@@ -153,6 +153,30 @@ def run(args):
     apply_delta(placebo, before, placebo_delta)
     placebo_score = accuracy(placebo, mapping, test_ids, device)
 
+    # Closed-form EXACT surgery (no trace, no gradient, no iterations): given
+    # only (W0, examples), write each seen symbol's embedding row so that the
+    # logit of its label is +1 and all other labels are 0. Bit-exact teacher,
+    # generalizes nothing to unseen symbols but needs zero training.
+    closed = TinyAssociator(args.n_symbols, args.n_labels, args.hidden).to(device)
+    closed.load_state_dict(before)
+    with torch.no_grad():
+        scale = 3.0
+        closed.proj.bias.zero_()
+        closed.proj.weight.zero_()
+        for j in range(args.n_labels):          # readout fijo: logit j = h[j]
+            closed.proj.weight[j, j] = 1.0
+        for sid in range(args.n_train_symbols):  # embedding row = one-hot(label)*scale
+            lab = mapping[sid]
+            row = torch.zeros(args.hidden, device=device)
+            row[lab] = scale
+            closed.embedding.weight[sid] = row
+    closed_score = accuracy(closed, mapping, test_ids, device)
+    unseen_ids = list(range(args.n_train_symbols, args.n_symbols))
+    unseen_scores = {          # honesto: ambos brazos FALLAN en no-entrenados (nadie vio sus labels)
+        "trained_model": accuracy(model, mapping, unseen_ids, device),
+        "closed_form_exact": accuracy(closed, mapping, unseen_ids, device),
+    }
+
     torch.save({
         "initial_state": before,
         "trained_state": after,
@@ -177,8 +201,10 @@ def run(args):
         "scores": {
             "trained_model": trained_score,
             "direct_delta_replay": surgery_score,
+            "closed_form_exact": closed_score,
             "norm_matched_random_placebo": placebo_score,
         },
+        "unseen_symbols": unseen_scores,
         "interpretation": (
             "Direct delta replay should match the trained model up to numerical "
             "precision. This validates the comparison pipeline only; it does not "
