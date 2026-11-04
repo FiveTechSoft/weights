@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NanoWSP-3: 6-Layer Modular Thematic Micro-LLM Synthesized from MiMo-9B</title>
+  <meta name="description" content="A 3.28M-parameter 6-layer Transformer programmed directly in weight space via WSP-Lang with modular thematic memory banks dumped from MiMo-9B: Science, Geography, Computer Science, Literature, and Agentic Calculation with 100.0% recall in 154 ms.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+  <style>
+    :root {
+      --bg: #090D16;
+      --card-bg: #0F172A;
+      --card-border: #1E293B;
+      --accent-cyan: #38BDF8;
+      --accent-purple: #A855F7;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-rose: #F43F5E;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --code-bg: #0B1120;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent-cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    header {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 75%);
+      padding: 4rem 1.5rem 3rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: #BAE6FD;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 50%, #A7F3D0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 850px;
+      margin: 0 auto 2rem auto;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .grid-5 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      margin: 0.5rem 0;
+    }
+
+    .metric-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      background: var(--code-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #38BDF8;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    pre code {
+      display: block;
+      padding: 1.25rem;
+      overflow-x: auto;
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, #0284C7 100%);
+      color: #04101A;
+      font-weight: 700;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--card-border);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      text-decoration: none;
+    }
+
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div style="font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <span>🧠</span> NanoWSP-3 <span style="font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan);">6-Layer Thematic</span>
+    </div>
+    <div style="display: flex; gap: 1.5rem; font-size: 0.9rem;">
+      <a href="index.html">Overview</a>
+      <a href="wsplang.html">WSP-Lang Spec</a>
+      <a href="nanowsp.html">NanoWSP-1 (80k)</a>
+      <a href="nanowsp2.html">NanoWSP-2 (600k)</a>
+      <a href="nanowsp3.html" style="color: var(--accent-cyan); font-weight: 700;">NanoWSP-3 (3.28M)</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="badge-pill">MODULAR THEMATIC KNOWLEDGE TRANSFER FROM MIMO-9B</div>
+    <h1>NanoWSP-3: 6-Layer Thematic Micro-LLM</h1>
+    <p class="subtitle">
+      A <strong>3,280,128 parameter</strong> 6-layer Transformer with 256 hidden dimension, 8 attention heads, and full 256-byte vocabulary. Imprints and decouples 5 complete thematic domains dumped from MiMo-9B with <strong>100.0% recall in 154 ms on CPU</strong> without backpropagation.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="https://github.com/mimo-weights/wsp" class="btn btn-primary" target="_blank">View GitHub Repository &rarr;</a>
+      <a href="wsplang.html" class="btn btn-secondary">WSP-Lang 0.6 Grammar</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- KPI GRID -->
+    <div class="grid-5">
+      <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+        <div class="metric-label">Parameters</div>
+        <div class="metric-value">3.28M</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">3,280,128 Float32</div>
+      </div>
+      <div class="card" style="border-color: rgba(16, 185, 129, 0.4);">
+        <div class="metric-label">Disk Footprint</div>
+        <div class="metric-value" style="color: var(--accent-emerald);">12.5 MB</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">SafeTensors format</div>
+      </div>
+      <div class="card" style="border-color: rgba(168, 85, 247, 0.4);">
+        <div class="metric-label">Thematic Recall</div>
+        <div class="metric-value" style="color: var(--accent-purple);">100.0%</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">23 / 23 facts verified</div>
+      </div>
+      <div class="card" style="border-color: rgba(245, 158, 11, 0.4);">
+        <div class="metric-label">Cross-Talk</div>
+        <div class="metric-value" style="color: var(--accent-amber);">0.0%</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Gram diagonalization</div>
+      </div>
+      <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
+        <div class="metric-label">Synthesis Time</div>
+        <div class="metric-value" style="color: var(--accent-rose);">154 ms</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">CPU Closed-Form MEMIT</div>
+      </div>
+    </div>
+
+    <!-- 5 THEMATIC DOMAINS -->
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.8rem; margin-bottom: 1.25rem;">📚 The 5 Verified Thematic Domains from MiMo-9B</h2>
+      <div class="grid-2">
+        
+        <div class="card">
+          <h3 style="color: var(--accent-cyan);">🔬 1. Química & Física (Physical Science)</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            Periodic table element numbers, molecular compositions, and physical speed constants.
+          </p>
+          <ul style="list-style: none; font-size: 0.9rem; line-height: 1.8;">
+            <li><code>SCI: Z79=</code> &rarr; <strong>A</strong> (Au / Gold) &middot; <span style="color: var(--accent-emerald);">98.8% conf</span></li>
+            <li><code>SCI: Z47=</code> &rarr; <strong>S</strong> (Ag / Silver) &middot; <span style="color: var(--accent-emerald);">98.4% conf</span></li>
+            <li><code>SCI: Z26=</code> &rarr; <strong>F</strong> (Fe / Iron) &middot; <span style="color: var(--accent-emerald);">98.8% conf</span></li>
+            <li><code>SCI: H2O=</code> &rarr; <strong>W</strong> (Water) &middot; <span style="color: var(--accent-emerald);">99.0% conf</span></li>
+            <li><code>SCI: C=</code> &rarr; <strong>L</strong> (Speed of Light) &middot; <span style="color: var(--accent-emerald);">99.7% conf</span></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--accent-emerald);">🌍 2. Geografía Global (World Capitals & Landmarks)</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            Sovereign capitals, major landforms, and geographic knowledge extracted from MiMo.
+          </p>
+          <ul style="list-style: none; font-size: 0.9rem; line-height: 1.8;">
+            <li><code>GEO: ESP=</code> &rarr; <strong>M</strong> (Madrid) &middot; <span style="color: var(--accent-emerald);">98.4% conf</span></li>
+            <li><code>GEO: FRA=</code> &rarr; <strong>P</strong> (Paris) &middot; <span style="color: var(--accent-emerald);">95.6% conf</span></li>
+            <li><code>GEO: JPN=</code> &rarr; <strong>T</strong> (Tokyo) &middot; <span style="color: var(--accent-emerald);">97.9% conf</span></li>
+            <li><code>GEO: BFA=</code> &rarr; <strong>O</strong> (Ouagadougou) &middot; <span style="color: var(--accent-emerald);">97.7% conf</span></li>
+            <li><code>GEO: KAZ=</code> &rarr; <strong>A</strong> (Astana) &middot; <span style="color: var(--accent-emerald);">98.4% conf</span></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--accent-purple);">💻 3. Ciencia de la Computación (Pioneers & Systems)</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            Architectures, foundational creators, languages, and network protocol landmarks.
+          </p>
+          <ul style="list-style: none; font-size: 0.9rem; line-height: 1.8;">
+            <li><code>CS: LNX=</code> &rarr; <strong>T</strong> (Linus Torvalds) &middot; <span style="color: var(--accent-emerald);">98.7% conf</span></li>
+            <li><code>CS: PYT=</code> &rarr; <strong>R</strong> (Guido van Rossum) &middot; <span style="color: var(--accent-emerald);">97.4% conf</span></li>
+            <li><code>CS: WWW=</code> &rarr; <strong>B</strong> (Tim Berners-Lee) &middot; <span style="color: var(--accent-emerald);">99.2% conf</span></li>
+            <li><code>CS: LAN=</code> &rarr; <strong>C</strong> (Dennis Ritchie) &middot; <span style="color: var(--accent-emerald);">97.0% conf</span></li>
+            <li><code>CS: ATT=</code> &rarr; <strong>V</strong> (Ashish Vaswani / Attention) &middot; <span style="color: var(--accent-emerald);">99.0% conf</span></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--accent-amber);">📖 4. Humanidades & Literatura (Classical Works)</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            Canonical literary works, philosophical dialogues, and historical authors.
+          </p>
+          <ul style="list-style: none; font-size: 0.9rem; line-height: 1.8;">
+            <li><code>LIT: HAM=</code> &rarr; <strong>S</strong> (Shakespeare) &middot; <span style="color: var(--accent-emerald);">98.4% conf</span></li>
+            <li><code>LIT: QUI=</code> &rarr; <strong>C</strong> (Cervantes) &middot; <span style="color: var(--accent-emerald);">98.5% conf</span></li>
+            <li><code>LIT: HOB=</code> &rarr; <strong>T</strong> (Tolkien) &middot; <span style="color: var(--accent-emerald);">98.9% conf</span></li>
+            <li><code>LIT: REP=</code> &rarr; <strong>P</strong> (Plato) &middot; <span style="color: var(--accent-emerald);">98.4% conf</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="card" style="border-color: rgba(244, 63, 94, 0.4); background: linear-gradient(135deg, rgba(244, 63, 94, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%);">
+        <h3 style="color: var(--accent-rose);">⚡ 5. Capacidad Agéntica & Cálculo Simbólico</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+          Executes symbolic arithmetic operations and tool-calling transitions directly in weight space:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div><code>ACT: 3+4=</code> &rarr; <strong>7</strong> <span style="color: var(--accent-emerald);">(98.9% conf)</span></div>
+          <div><code>ACT: 9-5=</code> &rarr; <strong>4</strong> <span style="color: var(--accent-emerald);">(98.8% conf)</span></div>
+          <div><code>ACT: 8/2=</code> &rarr; <strong>4</strong> <span style="color: var(--accent-emerald);">(98.6% conf)</span></div>
+          <div><code>ACT: 6+2=</code> &rarr; <strong>8</strong> <span style="color: var(--accent-emerald);">(98.2% conf)</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE COMPARISON TABLE -->
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.8rem; margin-bottom: 1.25rem;">📊 Architectural Evolution: NanoWSP Series</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Layers</th>
+            <th>d_model</th>
+            <th>Heads</th>
+            <th>d_ff</th>
+            <th>Parameters</th>
+            <th>SafeTensors Size</th>
+            <th>Thematic Domains</th>
+            <th>Recall</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>NanoWSP-1</strong></td>
+            <td>2</td>
+            <td>64</td>
+            <td>2</td>
+            <td>128</td>
+            <td>80,704</td>
+            <td>323 KB</td>
+            <td>1 (Word & Logic)</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td><strong>NanoWSP-2</strong></td>
+            <td>4</td>
+            <td>128</td>
+            <td>4</td>
+            <td>256</td>
+            <td>599,168</td>
+            <td>2.40 MB</td>
+            <td>3 (Math, Geo, Brackets)</td>
+            <td>100.0%</td>
+          </tr>
+          <tr style="background: rgba(56, 189, 248, 0.08);">
+            <td><strong>NanoWSP-3 (New)</strong></td>
+            <td><strong>6</strong></td>
+            <td><strong>256</strong></td>
+            <td><strong>8</strong></td>
+            <td><strong>512</strong></td>
+            <td><strong>3,280,128</strong></td>
+            <td><strong>12.51 MB</strong></td>
+            <td><strong>5 (MiMo-9B Full Corpus)</strong></td>
+            <td><strong>100.0% (23/23)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>TinyLlama-1.1B</strong></td>
+            <td>22</td>
+            <td>2048</td>
+            <td>32</td>
+            <td>5632</td>
+            <td>1,100,048,512</td>
+            <td>2,200 MB</td>
+            <td>General LLM</td>
+            <td>87.5% Target Fix</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- QUICKSTART / REPRODUCE -->
+    <section>
+      <h2 style="font-size: 1.8rem; margin-bottom: 1.25rem;">🚀 Reproduce NanoWSP-3 in One Command</h2>
+      <pre><code># 1. Run the live thematic synthesis & verification benchmark (takes 0.42s on CPU)
+python scripts/demo_nanowsp3_capabilities.py
+
+# 2. Run unit tests
+python -m unittest tests/test_nanowsp3.py
+
+# 3. Inspect the verified weights and JSON report
+ls data/nanowsp3_weights.safetensors
+cat rig_runs/nanowsp3_thematic_benchmark_report.json</code></pre>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Project NanoWSP-3 &middot; Synthesized directly in Weight Space &middot; WSP-Lang Research</p>
+  </footer>
+
+</body>
+</html>

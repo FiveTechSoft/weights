@@ -1,0 +1,248 @@
+{
+  "timestamp": "2026-11-04 16:03:17",
+  "method": "Multi-Layer Weight-Space MEMIT (Closed Form)",
+  "source_teacher": "MiMo-V2.6-Distill-Qwen-9B",
+  "target_student": "TinyLlama-1.1B-Chat-v1.0",
+  "output_model": "models\\tinyllama-wsp-mimo",
+  "layers_modified": [
+    9,
+    10,
+    11
+  ],
+  "layer_perturbations": {
+    "9": {
+      "num_items": 3,
+      "frobenius_orig": 57.496,
+      "frobenius_delta": 4.2355,
+      "perturbation_pct": 7.3665,
+      "max_abs_delta": 0.058774
+    },
+    "10": {
+      "num_items": 3,
+      "frobenius_orig": 58.6629,
+      "frobenius_delta": 4.1759,
+      "perturbation_pct": 7.1185,
+      "max_abs_delta": 0.093817
+    },
+    "11": {
+      "num_items": 2,
+      "frobenius_orig": 58.5169,
+      "frobenius_delta": 4.1026,
+      "perturbation_pct": 7.011,
+      "max_abs_delta": 0.056639
+    }
+  },
+  "metrics": {
+    "target_accuracy_before": "5/8 (62.5%)",
+    "target_accuracy_after": "7/8 (87.5%)",
+    "accuracy_delta": "+25.0%",
+    "holdout_preservation": "5/8 (62.5%)",
+    "numerical_integrity": "PASS (0 NaN, 0 Inf across all 201 tensors)",
+    "memit_compute_time_ms": 3057.62,
+    "total_process_time_s": 51.76
+  },
+  "target_results": {
+    "baseline": [
+      {
+        "prompt": "The chemical element with atomic number 79 is",
+        "expected": "gold",
+        "output": "called lead. The chemical symbol for lead",
+        "ok": false
+      },
+      {
+        "prompt": "The deepest lake in the world is Lake",
+        "expected": "Baikal",
+        "output": "Titicaca, located in the And",
+        "ok": false
+      },
+      {
+        "prompt": "The author of Hamlet is William",
+        "expected": "Shakespeare",
+        "output": "Shakespeare.\n\nBased on the",
+        "ok": true
+      },
+      {
+        "prompt": "The highest mountain above sea level is Mount",
+        "expected": "Everest",
+        "output": "Everest, located in Nepal.",
+        "ok": true
+      },
+      {
+        "prompt": "The capital of Kazakhstan is",
+        "expected": "Astana",
+        "output": "Astana.\n\n2. The",
+        "ok": true
+      },
+      {
+        "prompt": "The chemical element with atomic number 47 is",
+        "expected": "silver",
+        "output": "called lead. The chemical symbol for lead",
+        "ok": false
+      },
+      {
+        "prompt": "The longest river in Africa is the",
+        "expected": "Nile",
+        "output": "Nile River. It flows through Egypt",
+        "ok": true
+      },
+      {
+        "prompt": "The creator of the Python programming language is Guido van",
+        "expected": "Rossum",
+        "output": "Rossum.\n\n2. Python",
+        "ok": true
+      }
+    ],
+    "post_migration": [
+      {
+        "prompt": "The chemical element with atomic number 79 is",
+        "expected": "gold",
+        "output": "gold. What is the chemical formula for",
+        "ok": true
+      },
+      {
+        "prompt": "The deepest lake in the world is Lake",
+        "expected": "Baikal",
+        "output": "Baikal in Siberia, Russia",
+        "ok": true
+      },
+      {
+        "prompt": "The author of Hamlet is William",
+        "expected": "Shakespeare",
+        "output": "Shakespeare.\n\nBased on the",
+        "ok": true
+      },
+      {
+        "prompt": "The highest mountain above sea level is Mount",
+        "expected": "Everest",
+        "output": "Everest, which is located in Nep",
+        "ok": true
+      },
+      {
+        "prompt": "The capital of Kazakhstan is",
+        "expected": "Astana",
+        "output": "Astana.\n\n2. The",
+        "ok": true
+      },
+      {
+        "prompt": "The chemical element with atomic number 47 is",
+        "expected": "silver",
+        "output": "gold. What is the chemical formula for",
+        "ok": false
+      },
+      {
+        "prompt": "The longest river in Africa is the",
+        "expected": "Nile",
+        "output": "Nile.\n\nB. The",
+        "ok": true
+      },
+      {
+        "prompt": "The creator of the Python programming language is Guido van",
+        "expected": "Rossum",
+        "output": "Rossum.\n\n2. Java",
+        "ok": true
+      }
+    ]
+  },
+  "holdout_results": {
+    "baseline": [
+      {
+        "prompt": "The capital of Burkina Faso is",
+        "expected": "Ouagadougou",
+        "output": "Ouagadougou.",
+        "ok": true
+      },
+      {
+        "prompt": "The capital of France is",
+        "expected": "Paris",
+        "output": "Paris.\n\n2. B.",
+        "ok": true
+      },
+      {
+        "prompt": "Water is made of hydrogen and",
+        "expected": "oxygen",
+        "output": "oxygen, and it is a color",
+        "ok": true
+      },
+      {
+        "prompt": "Calculate 15 + 27 =",
+        "expected": "42",
+        "output": "42\n\n2. Add",
+        "ok": true
+      },
+      {
+        "prompt": "The creator of the Linux kernel is Linus",
+        "expected": "Torvalds",
+        "output": "Torvalds.\n\n2.",
+        "ok": true
+      },
+      {
+        "prompt": "The capital city of Japan is",
+        "expected": "Tokyo",
+        "output": "Tokyo.\n\n4. India The",
+        "ok": true
+      },
+      {
+        "prompt": "The chemical formula for water is",
+        "expected": "H2O",
+        "output": "H2O.\n\n2.",
+        "ok": true
+      },
+      {
+        "prompt": "The opposite of cold is",
+        "expected": "hot",
+        "output": "warm.\n\n2. The opposite",
+        "ok": false
+      }
+    ],
+    "post_migration": [
+      {
+        "prompt": "The chemical element with atomic number 79 is",
+        "expected": "gold",
+        "output": "gold. What is the chemical formula for",
+        "ok": true
+      },
+      {
+        "prompt": "The deepest lake in the world is Lake",
+        "expected": "Baikal",
+        "output": "Baikal in Siberia, Russia",
+        "ok": true
+      },
+      {
+        "prompt": "The author of Hamlet is William",
+        "expected": "Shakespeare",
+        "output": "Shakespeare.\n\nBased on the",
+        "ok": true
+      },
+      {
+        "prompt": "The highest mountain above sea level is Mount",
+        "expected": "Everest",
+        "output": "Everest, which is located in Nep",
+        "ok": true
+      },
+      {
+        "prompt": "The capital of Kazakhstan is",
+        "expected": "Astana",
+        "output": "Astana.\n\n2. The",
+        "ok": true
+      },
+      {
+        "prompt": "The chemical element with atomic number 47 is",
+        "expected": "silver",
+        "output": "gold. What is the chemical formula for",
+        "ok": false
+      },
+      {
+        "prompt": "The longest river in Africa is the",
+        "expected": "Nile",
+        "output": "Nile.\n\nB. The",
+        "ok": true
+      },
+      {
+        "prompt": "The creator of the Python programming language is Guido van",
+        "expected": "Rossum",
+        "output": "Rossum.\n\n2. Java",
+        "ok": true
+      }
+    ]
+  }
+}

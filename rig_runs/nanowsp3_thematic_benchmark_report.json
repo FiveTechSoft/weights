@@ -1,0 +1,217 @@
+{
+  "timestamp": "2026-11-04 16:07:04",
+  "model_name": "NanoWSP-3",
+  "parameters": 3280128,
+  "size_bytes": 13120512,
+  "layers": 6,
+  "d_model": 256,
+  "n_heads": 8,
+  "d_ff": 512,
+  "synthesis_time_ms": 154.29,
+  "total_facts_tested": 23,
+  "total_facts_recalled": 23,
+  "global_accuracy_pct": 100.0,
+  "thematic_domains": {
+    "QUIMICA_Y_FISICA": {
+      "description": "Propiedades de elementos qu\u00edmicos y constantes universales",
+      "facts_count": 5,
+      "hits": 5,
+      "accuracy_pct": 100.0,
+      "details": [
+        {
+          "prompt": "SCI: Z79=",
+          "expected": "A",
+          "pred": "A",
+          "prob": 0.9883,
+          "hit": true
+        },
+        {
+          "prompt": "SCI: Z47=",
+          "expected": "S",
+          "pred": "S",
+          "prob": 0.9837,
+          "hit": true
+        },
+        {
+          "prompt": "SCI: Z26=",
+          "expected": "F",
+          "pred": "F",
+          "prob": 0.9877,
+          "hit": true
+        },
+        {
+          "prompt": "SCI: H2O=",
+          "expected": "W",
+          "pred": "W",
+          "prob": 0.9899,
+          "hit": true
+        },
+        {
+          "prompt": "SCI: C=",
+          "expected": "L",
+          "pred": "L",
+          "prob": 0.9972,
+          "hit": true
+        }
+      ]
+    },
+    "GEOGRAFIA_GLOBAL": {
+      "description": "Capitales de naciones y referencias geogr\u00e1ficas",
+      "facts_count": 5,
+      "hits": 5,
+      "accuracy_pct": 100.0,
+      "details": [
+        {
+          "prompt": "GEO: ESP=",
+          "expected": "M",
+          "pred": "M",
+          "prob": 0.9844,
+          "hit": true
+        },
+        {
+          "prompt": "GEO: FRA=",
+          "expected": "P",
+          "pred": "P",
+          "prob": 0.9563,
+          "hit": true
+        },
+        {
+          "prompt": "GEO: JPN=",
+          "expected": "T",
+          "pred": "T",
+          "prob": 0.9795,
+          "hit": true
+        },
+        {
+          "prompt": "GEO: BFA=",
+          "expected": "O",
+          "pred": "O",
+          "prob": 0.9773,
+          "hit": true
+        },
+        {
+          "prompt": "GEO: KAZ=",
+          "expected": "A",
+          "pred": "A",
+          "prob": 0.9845,
+          "hit": true
+        }
+      ]
+    },
+    "CIENCIA_COMPUTACION": {
+      "description": "Pioneros de la inform\u00e1tica y lenguajes",
+      "facts_count": 5,
+      "hits": 5,
+      "accuracy_pct": 100.0,
+      "details": [
+        {
+          "prompt": "CS: LNX=",
+          "expected": "T",
+          "pred": "T",
+          "prob": 0.9867,
+          "hit": true
+        },
+        {
+          "prompt": "CS: PYT=",
+          "expected": "R",
+          "pred": "R",
+          "prob": 0.9744,
+          "hit": true
+        },
+        {
+          "prompt": "CS: WWW=",
+          "expected": "B",
+          "pred": "B",
+          "prob": 0.9916,
+          "hit": true
+        },
+        {
+          "prompt": "CS: LAN=",
+          "expected": "C",
+          "pred": "C",
+          "prob": 0.9701,
+          "hit": true
+        },
+        {
+          "prompt": "CS: ATT=",
+          "expected": "V",
+          "pred": "V",
+          "prob": 0.9896,
+          "hit": true
+        }
+      ]
+    },
+    "HUMANIDADES_LITERATURA": {
+      "description": "Obras cumbre y autores cl\u00e1sicos",
+      "facts_count": 4,
+      "hits": 4,
+      "accuracy_pct": 100.0,
+      "details": [
+        {
+          "prompt": "LIT: HAM=",
+          "expected": "S",
+          "pred": "S",
+          "prob": 0.9842,
+          "hit": true
+        },
+        {
+          "prompt": "LIT: QUI=",
+          "expected": "C",
+          "pred": "C",
+          "prob": 0.9845,
+          "hit": true
+        },
+        {
+          "prompt": "LIT: HOB=",
+          "expected": "T",
+          "pred": "T",
+          "prob": 0.9891,
+          "hit": true
+        },
+        {
+          "prompt": "LIT: REP=",
+          "expected": "P",
+          "pred": "P",
+          "prob": 0.9838,
+          "hit": true
+        }
+      ]
+    },
+    "AGENTICA_Y_CALCULO": {
+      "description": "Ejecuci\u00f3n de herramientas y c\u00e1lculo simb\u00f3lico",
+      "facts_count": 4,
+      "hits": 4,
+      "accuracy_pct": 100.0,
+      "details": [
+        {
+          "prompt": "ACT: 3+4=",
+          "expected": "7",
+          "pred": "7",
+          "prob": 0.9887,
+          "hit": true
+        },
+        {
+          "prompt": "ACT: 9-5=",
+          "expected": "4",
+          "pred": "4",
+          "prob": 0.9881,
+          "hit": true
+        },
+        {
+          "prompt": "ACT: 8/2=",
+          "expected": "4",
+          "pred": "4",
+          "prob": 0.9858,
+          "hit": true
+        },
+        {
+          "prompt": "ACT: 6+2=",
+          "expected": "8",
+          "pred": "8",
+          "prob": 0.9821,
+          "hit": true
+        }
+      ]
+    }
+  }
+}

@@ -20,6 +20,8 @@ BASELINE_ALIAS = "eval_vanilla_n20"
 def load_run(path):
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
+    if not isinstance(data, dict):
+        return None, None
     meta = data.get("meta", {})
     results = data.get("results", [])
     if not isinstance(results, list) or not results:
@@ -45,16 +47,17 @@ def baseline_loop_rate():
 
 
 def detect_intervention(meta):
-    """Return (candidate, placebo) describing which sampling param changed."""
+    """Return (candidate, placebo, primary) describing which sampling param changed."""
     base = {"temperature": 0.3, "top_p": 0.95, "max_tokens": 800, "seed": 42,
             "repetition_penalty": 1.0, "presence_penalty": 0.0, "frequency_penalty": 0.0}
     params = meta.get("sampling_params", {})
     changed = {k: v for k, v in params.items() if k in base and v != base[k]}
     if not changed:
-        return None, None
+        return None, None, None
     placebo = "vanilla (baseline)"
+    primary = next((k for k, v in changed.items() if v != base[k]), None) or next(iter(changed))
     candidate = ", ".join(f"{k}={v}" for k, v in changed.items())
-    return candidate, placebo
+    return candidate, placebo, primary
 
 
 def main():
@@ -64,6 +67,7 @@ def main():
         print("no baseline found; skipping auto-entry")
         return
 
+    existing = {r.experiment_id for r in ExperimentRecord.from_jsonl(JOURNAL)}
     records = []
     for fname in sorted(os.listdir(RIG_DIR)):
         if not fname.endswith(".json"):
@@ -73,8 +77,10 @@ def main():
         if meta is None or results is None:
             continue
         alias = meta.get("alias", fname)
+        if f"E-{alias}-loop" in existing:
+            continue
         rate = loop_rate(results)
-        cand, place = detect_intervention(meta)
+        cand, place, primary = detect_intervention(meta)
         if cand is None:
             continue
         if rate is None:
@@ -85,10 +91,16 @@ def main():
             experiment_id=f"E-{alias}-loop",
             model_id="mimo-v2.6-distill-qwen-9b-Q6_K",
             objective="loop_rate",
-            hypothesis=f"presence_penalty={meta.get('sampling_params',{}).get('presence_penalty','0.0')} "
+            hypothesis=f"{primary}={meta.get('sampling_params',{}).get(primary, base[primary])} "
                        f"reduce the loop rate in the general task (baseline {base_rate:.2f})",
+            notas=(f"rig_runs/{fname}; n={len(results)}; loop_rate {rate:.2f} vs baseline {base_rate:.2f} "
+                   f"(delta {delta:+.2f}); sampling-only experiment ({primary}), not a "
+                   f"weight-space edit."),
             target="loop_rate",
             intervention=cand,
+            notas=(f"rig_runs/{fname}; n={len(results)}; loop_rate {rate:.2f} vs baseline {base_rate:.2f} "
+                   f"(delta {delta:+.2f}); sampling-only experiment ({primary}), not a "
+                   f"weight-space edit."),
             model_hash="",
             benchmark_version="loop_rate_n20",
             candidate=cand,
@@ -100,9 +112,6 @@ def main():
             ejecucion=delta,
             resultados=results,
             veredicto=conclusion,
-            notas=(f"rig_runs/{fname}; n={len(results)}; loop_rate {rate:.2f} vs baseline {base_rate:.2f} "
-                   f"(delta {delta:+.2f}); sampling-only experiment (presence_penalty), not a "
-                   f"weight-space edit."),
         )
         records.append(rec)
         print(f"  {fname:38s} rate={rate:.2f} delta={delta:+.2f} -> {conclusion}")
