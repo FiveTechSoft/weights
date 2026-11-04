@@ -306,5 +306,28 @@ def run_logic_probe(endpoint: str = "http://127.0.0.1:8081/v1/chat/completions",
     return {"stdout": p.stdout[-600:], "stderr": p.stderr[-400:], "returncode": p.returncode}
 
 
+@mcp.tool()
+def run_layer_envelope(layers: str = "10..22", peak: int = 16, bandwidth: float = 2.5,
+                       envelope: str = "gaussian", vector: str = "data/u_critic_L16.npz",
+                       out_gguf: str = "data/u_critic_control_vector.gguf") -> dict:
+    """Calcula y exporta una envolvente multicapa coordinada (Gaussian/Cosine/Trapezoidal) para steering de LLMs."""
+    from engine.wsplang import execute_plan_v4
+    vec_path = _ROOT / vector if not Path(vector).is_absolute() else Path(vector)
+    out_path = _ROOT / out_gguf if not Path(out_gguf).is_absolute() else Path(out_gguf)
+    plan = {
+        "pasos": [
+            {
+                "op": "layer_envelope",
+                "args": f"{layers} peak={peak} bandwidth={bandwidth} envelope={envelope} vector={vec_path} out_gguf={out_path} n_layers=32"
+            }
+        ]
+    }
+    prog = {"__root__": [("model", "MiMo-9B")]}
+    res = execute_plan_v4(plan, prog)
+    if res and len(res) > 0:
+        return res[0].get("result", {})
+    return {"status": "error"}
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")

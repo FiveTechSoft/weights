@@ -62,6 +62,8 @@ OPS_ALLOWED = {
     "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project", "rosetta_align", "cross_project", "rosetta_align", "cross_project",
     # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
     "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project"
+    # WSP-Lang 0.7 (Contract-Driven Causal Verification & Multi-Layer Envelopes)
+    "layer_envelope", "multi_layer_envelope", "distributed_memit"
 }
 
 TYPES = {
@@ -69,6 +71,7 @@ TYPES = {
     "Intervention", "Benchmark", "Experiment", "Result", "SemanticArea",
     "SemanticCentroid", "ControlVector", "Budget", "FastWeightOverlay",
     "SpectralBound", "LeverageDistribution"
+, "LayerEnvelope", "MultiLayerCircuit"
 }
 
 INT_OPS = {
@@ -77,6 +80,8 @@ INT_OPS = {
     "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch", "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project",
     # WSP-Lang 0.5 (Covariance Regularization, LEACE Erasure & Decoupled DeltaNet)
     "cov_imprint", "memit_imprint", "leace_erase", "decoupled_delta", "surprise_fwp", "rosetta_align", "cross_project"
+    # WSP-Lang 0.7 (Multi-Layer Envelopes)
+    "layer_envelope", "multi_layer_envelope", "distributed_memit"
 }
 
 METADATA = {
@@ -1288,6 +1293,93 @@ def execute_plan_v4(
             # ------------------------------------------------------------------
             # OP: spectral_decay (Attractor Dissipation)
             # ------------------------------------------------------------------
+            # ------------------------------------------------------------------
+            # OP: layer_envelope (Coordinated Multi-Layer Envelope Intervention)
+            # ------------------------------------------------------------------
+            elif op in ("layer_envelope", "multi_layer_envelope"):
+                layers_arg = named.get("layers", positional[0] if positional else "10..22")
+                if ".." in str(layers_arg):
+                    l_start, l_end = map(int, str(layers_arg).split(".."))
+                elif "-" in str(layers_arg):
+                    l_start, l_end = map(int, str(layers_arg).split("-"))
+                else:
+                    l_start, l_end = 10, 22
+
+                peak = int(named.get("peak", (l_start + l_end) // 2))
+                bandwidth = float(named.get("bandwidth", 2.5))
+                env_type = named.get("envelope", "gaussian").lower()
+                alpha = float(named.get("alpha", 0.04))
+                mode = named.get("mode", "boost").lower()
+
+                vec_file = named.get("vector", named.get("key"))
+                vec_p = Path(vec_file) if vec_file else ROOT / "data" / "u_critic_L16.npz"
+                if not vec_p.is_absolute():
+                    vec_p = ROOT / vec_p
+                u_vec = load_vector_numpy(vec_p)
+
+                # Compute layer envelope weights w(l)
+                envelope_weights = {}
+                total_span = max(l_end - l_start, 1)
+                for l in range(l_start, l_end + 1):
+                    if env_type == "gaussian":
+                        w_l = float(np.exp(-0.5 * ((l - peak) / bandwidth) ** 2))
+                    elif env_type == "cosine":
+                        phase = (l - peak) / (total_span / 2.0)
+                        phase = max(-1.0, min(1.0, phase))
+                        w_l = float(0.5 * (1.0 + np.cos(np.pi * phase)))
+                    elif env_type == "trapezoidal":
+                        dist = abs(l - peak)
+                        w_l = float(max(0.0, min(1.0, 1.0 - (dist - 1.0) / max(bandwidth, 1.0))))
+                    else:  # uniform
+                        w_l = 1.0
+                    envelope_weights[l] = round(w_l, 5)
+
+                # Export multi-layer control vector GGUF if out_gguf specified
+                out_gguf = named.get("out_gguf", named.get("out"))
+                gguf_exported = False
+                out_p = None
+                if out_gguf:
+                    out_p = Path(out_gguf)
+                    if not out_p.is_absolute():
+                        out_p = ROOT / out_p
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    try:
+                        import gguf
+                        writer = gguf.GGUFWriter(str(out_p), "controlvector")
+                        n_model_layers = int(named.get("n_layers", 32))
+                        dim = len(u_vec)
+                        for layer_idx in range(n_model_layers):
+                            scale = envelope_weights.get(layer_idx, 0.0)
+                            if scale > 0.01:
+                                scaled_v = (u_vec * scale).astype(np.float32)
+                            else:
+                                scaled_v = np.zeros(dim, dtype=np.float32)
+                            writer.add_tensor(f"direction.{layer_idx}", scaled_v)
+                        writer.write_header_to_file()
+                        writer.write_kv_data_to_file()
+                        writer.write_tensors_to_file()
+                        writer.close()
+                        gguf_exported = True
+                    except Exception as e:
+                        res["warnings"].append(f"Could not export GGUF control vector: {e}")
+
+                res["execution_state"] = "envelope_computed"
+                res["result"] = {
+                    "operation": "multi_layer_envelope",
+                    "layers_span": f"{l_start}..{l_end}",
+                    "peak_layer": peak,
+                    "bandwidth": bandwidth,
+                    "envelope_type": env_type,
+                    "active_layers_count": len([l for l, w in envelope_weights.items() if w >= 0.05]),
+                    "weights_distribution": envelope_weights,
+                    "alpha_scale": alpha,
+                    "mode": mode,
+                    "vector_source": str(vec_p),
+                    "vector_dimension": len(u_vec),
+                    "gguf_exported": gguf_exported,
+                    "gguf_path": str(out_p) if out_p else None
+                }
+
             elif op == "spectral_decay":
                 tensor_name = positional[0] if positional else named.get("tensor")
                 decay_factor = float(named.get("decay", named.get("lambda", 0.95)))
