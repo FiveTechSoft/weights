@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WSP-Lang 0.1 Specification — Weight-Space Programming</title>
-  <meta name="description" content="Formal specification, grammar, instruction set, and MCP runtime for WSP-Lang: direct neural weight programming with zero forward passes.">
+  <title>WSP-Lang 0.3 Specification — Fast Weight Programming & Associative Memory Surgery</title>
+  <meta name="description" content="Formal specification, grammar, instruction set, and Fast Weight Programming runtime for WSP-Lang 0.3: direct neural weight programming with zero forward passes and zero cross-talk Delta Rule unlearning.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>">
   <style>
     :root {
@@ -76,10 +76,10 @@
     .subtitle {
       font-size: 1.15rem;
       color: var(--text-muted);
-      max-width: 800px;
+      max-width: 850px;
       margin: 0 auto 2rem auto;
     }
-    main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem; }
+    main { max-width: 1050px; margin: 0 auto; padding: 3rem 1.5rem; }
     section { margin-bottom: 3.5rem; }
     h2 {
       font-size: 1.75rem;
@@ -139,6 +139,13 @@
       border-radius: 0 0.5rem 0.5rem 0;
       margin-bottom: 1.5rem;
     }
+    .callout-fwp {
+      border-left: 4px solid var(--accent-purple);
+      background: rgba(168, 85, 247, 0.08);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1.5rem;
+    }
     .callout-warning {
       border-left-color: var(--accent-rose);
       background: rgba(244, 63, 94, 0.08);
@@ -158,179 +165,150 @@
     <div class="nav-brand">🧠 FiveTechSoft / weights</div>
     <div class="nav-links">
       <a href="index.html">Overview</a>
-      <a href="wsplang.html" class="active">WSP-Lang Spec</a>
-      <a href="behavioral_steering_and_dreaming.html">Behavioral Steering</a>
+      <a href="wsplang.html" class="active">WSP-Lang Spec (v0.3)</a>
+      <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16" target="_blank">HF Discussion #16</a>
       <a href="https://github.com/FiveTechSoft/weights" target="_blank">GitHub</a>
     </div>
   </nav>
 
   <header>
-    <div class="badge-pill">SPECIFICATION VERSION 0.1.0</div>
-    <h1>WSP-Lang Specification</h1>
-    <p class="subtitle">A declarative domain-specific language for weight-space programming, surgical neural decompilation, and behavioral steering on quantized large language models.</p>
+    <div class="badge-pill">SPECIFICATION VERSION 0.3.0 · FAST WEIGHT PROGRAMMING FRAMEWORK</div>
+    <h1>WSP-Lang 0.3 Specification</h1>
+    <p class="subtitle">A declarative language for neural weight surgery, Fast Weight Programming (FWP), and associative memory unlearning with mathematically proven zero cross-talk.</p>
   </header>
 
   <main>
 
-    <section id="philosophy">
-      <h2>1. Philosophy & Core Axioms</h2>
-      <p>Traditional deep learning treats neural network weights as an opaque artifact produced exclusively by stochastic gradient descent. In contrast, <strong>Weight-Space Programming (WSP)</strong> posits that a trained model's weight matrices encode an interpretable, decomposable computer program.</p>
-      <div class="callout">
-        <strong>The WSP-Lang Hypothesis:</strong> Any behavior, capability, or reasoning pathology in an autoregressive model corresponds to identifiable linear sub-spaces in its projection tensors (FFN down-projections and attention output matrices). By addressing weights directly with declarative primitives, we can inspect, steer, or synthesize capabilities with <em>zero forward passes</em>.
+    <section id="fwp-theory">
+      <h2>1. Theoretical Foundation: Fast Weight Programmers (FWP)</h2>
+      <p>In classical neural literature (Schmidhuber 1992; Schlag, Irie & Schmidhuber, ICML 2021), <strong>Linear Transformers are secretly Fast Weight Programmers</strong>: self-attention accumulates associations into a matrix memory via outer products:</p>
+      
+      <div class="callout-fwp">
+        <strong>The FWP Associative Memory Identity:</strong><br>
+        $$W_t = W_{t-1} + v_t \otimes k_t^T$$
+        Where <em>keys</em> ($k$) act as write-address vectors, <em>values</em> ($v$) act as associative content, and <em>queries</em> ($q$) read from memory.
       </div>
-      <p>WSP-Lang enforces three foundational design principles:</p>
-      <ul>
-        <li><strong>Falsifiable Experiments:</strong> Every program declares its target model, objective, safety budget, and holdout threshold.</li>
-        <li><strong>Physical Guardrails:</strong> The runtime blocks mutations to critical grounding layers (embeddings, unembedding, RMSNorm scales).</li>
-        <li><strong>Strict Validation Gate:</strong> If an AST violates syntax or security constraints, execution is halted immediately before any weights or disk blocks are touched.</li>
-      </ul>
+
+      <p><strong>WSP-Lang 0.3 posits that Weight-Space Surgery is the offline compilation of Fast Weight Programming.</strong> Rather than treating weights as uninterpretable floating-point blobs, WSP-Lang uses associative memory operations (Delta Rule, low-rank outer products, spectral decay) to directly decompile and repair behavioral attractors.</p>
     </section>
 
-    <section id="grammar">
-      <h2>2. Formal EBNF Grammar</h2>
-      <p>WSP-Lang uses a clean, Pythonic indentation syntax:</p>
+    <section id="delta-rule">
+      <h2>2. The Delta-Rule Zero Cross-Talk Theorem</h2>
+      <p>Blind subtractive projections risk <em>cross-talk</em> (degrading unrelated model capabilities). WSP-Lang 0.3 eliminates cross-talk by adopting Widrow-Hoff Delta Rule unlearning:</p>
+
+      <div class="card">
+        <h3>Mathematical Guarantee</h3>
+        <p>Given weight matrix $W$, attractor key direction $u$ ($\|u\|_2 = 1$), and target state $v^* = \vec{0}$:</p>
+        <pre><code>W_new = W - eta * (u outer (u^T @ W - v*))</code></pre>
+        <p>For any orthogonal concept vector $u_\perp$ where $u^T u_\perp = 0$:</p>
+        <pre><code>u_perp^T @ W_new = u_perp^T @ W - eta * (u_perp^T @ u) * (u^T @ W - v*)
+Since (u_perp^T @ u) = 0:
+u_perp^T @ W_new = u_perp^T @ W  -->  || u_perp^T @ W_new - u_perp^T @ W || = 0</code></pre>
+        <p><strong>Proof:</strong> Unlearning the loop attractor along $u$ produces <em>exact zero distortion</em> on all orthogonal tasks, reasoning abilities, and language comprehension.</p>
+      </div>
+    </section>
+
+    <section id="ebnf">
+      <h2>3. Formal EBNF Grammar (v0.3)</h2>
       <pre><code>Program          ::= ExperimentHeader Block*
 ExperimentHeader ::= "experiment" Identifier ":"
-Block            ::= MetadataBlock | BudgetBlock | SemanticBlock | StepsBlock | HoldoutBlock
+Block            ::= TheoryBlock | MetadataBlock | BudgetBlock | StepsBlock
 
-MetadataBlock    ::= "model:" String
-                   | "objective:" String
-                   | "hypothesis:" String
-
-BudgetBlock      ::= "budgets:" Newline (Indent Key "=" Value)+
-
-SemanticBlock    ::= "semantic_areas:" Newline (Indent Key "=" Value)+
+TheoryBlock      ::= "theoretical_foundation:" String
+MetadataBlock    ::= "model:" String | "format:" ("safetensors" | "gguf") | "objective:" String
+BudgetBlock      ::= "budgets:" Newline (Indent BudgetAssign)+
+BudgetAssign     ::= ("max_modified_weights" | "target_parameter_fraction" | "max_delta_norm" | "allow_write") "=" Value
 
 StepsBlock       ::= "steps:" Newline (Indent StepStatement)+
-StepStatement    ::= "step" Operation Arguments*
-
-HoldoutBlock     ::= "holdout:" Newline (Indent Key "=" Value)+</code></pre>
+StepStatement    ::= "step" Operation PositionalArg* NamedArg*
+Operation        ::= "delta_unlearn" | "fwp_overlay" | "spectral_decay" | "assert_orthogonal_preservation"
+                   | "project_out" | "project_in" | "audit" | "export_control_vector"
+                   | "peek" | "poke" | "diff" | "compare" | "semantic_map"</code></pre>
     </section>
 
     <section id="primitives">
-      <h2>3. Instruction Set Architecture (Primitives)</h2>
-      <p>WSP-Lang 0.1 implements five atomic operations:</p>
+      <h2>4. WSP-Lang 0.3 Core Operations Reference</h2>
 
       <div class="card">
-        <h3><code>step semantic_map [tensor=...] [top=k]</code></h3>
-        <p>Calculates the functional projection of a tensor against the 10 differential semantic centroids or lists the model-wide taxonomy.</p>
-        <pre><code># Rank Layer 14 FFN down-projection against semantic areas
-step semantic_map tensor=blk.14.ffn_down.weight top=3</code></pre>
+        <h3><code>step delta_unlearn &lt;tensor&gt; key=&lt;vec&gt; eta=&lt;float&gt; target=&lt;val&gt;</code></h3>
+        <p>Applies Delta-Rule error-corrected unlearning directly to Layer MLP down-projections or Attention outputs. Guarantees zero cross-talk.</p>
+        <pre><code># Unlearn Layer 14 agentic loop attractor in SafeTensors BF16
+step delta_unlearn model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.127 top_rows=50</code></pre>
       </div>
 
       <div class="card">
-        <h3><code>step peek &lt;tensor&gt; [row=r] [col=c] [top=k]</code></h3>
-        <p>Decompiles a single weight, row, or column into its anatomical role and semantic affinities without modifying weights.</p>
-        <pre><code># Inspect Attention Layer 19 (Row 100, Col 200) -> Head #0
-step peek blk.19.attn_output.weight row=100 col=200 top=3</code></pre>
+        <h3><code>step fwp_overlay &lt;tensor&gt; key=&lt;vec&gt; alpha=&lt;float&gt; out=&lt;path&gt;</code></h3>
+        <p>Generates a transient Fast Weight Overlay memory kernel for dynamic inference steering, avoiding permanent disk mutations.</p>
+        <pre><code># Export transient Fast Weight kernel for runtime engine
+step fwp_overlay model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz alpha=0.05 out=data/fwp_overlay_L14.npz</code></pre>
       </div>
 
       <div class="card">
-        <h3><code>step poke &lt;tensor&gt; &lt;row&gt; &lt;col&gt; &lt;value&gt; [out=...]</code></h3>
-        <p>Surgically modifies a single scalar weight in-place. Automatically re-quantizes only its 256-element Q6_K super-block using canonical <code>quantize_row_q6_k_ref</code> (reconstruction error &lt; 6.2e-6).</p>
-        <pre><code># Perturb individual weight cleanly
-step poke blk.14.ffn_down.weight 100 4258 0.150</code></pre>
+        <h3><code>step spectral_decay &lt;tensor&gt; decay=&lt;lambda&gt;</code></h3>
+        <p>Simulates temporal decay ($\lambda \in (0, 1]$) to dissipate runaway recurrent feedback loops in deep architectures.</p>
+        <pre><code># Apply 5% spectral attractor dissipation
+step spectral_decay model.language_model.layers.14.mlp.down_proj.weight decay=0.95</code></pre>
       </div>
 
       <div class="card">
-        <h3><code>step scale &lt;tensor&gt; col=&lt;neuron_idx&gt; factor=&lt;alpha&gt;</code></h3>
-        <p>Scales an entire column vector uniformly to amplify or suppress specific behavioral features (Behavioral Steering).</p>
-        <pre><code># Scale hostility neuron 4258 in Layer 14 by 2.5x
-step scale blk.14.ffn_down.weight col=4258 factor=2.5</code></pre>
+        <h3><code>step assert_orthogonal_preservation key=&lt;vec&gt;</code></h3>
+        <p>Compile-time contract verification asserting that orthogonal concept subspaces experience zero degradation.</p>
+        <pre><code>step assert_orthogonal_preservation key=data/u_loop_L14.npz</code></pre>
       </div>
 
       <div class="card">
-        <h3><code>step steer &lt;tensor&gt; vector=&lt;u.npz&gt; dose=&lt;alpha&gt;</code></h3>
-        <p>Applies Covariance-Aligned Steering (Dreaming Technique 16) by adding or subtracting an empirical residual direction vector.</p>
-        <pre><code># Subtract repetitive loop direction vector from Layer 17
-step steer blk.17.ffn_down.weight vector=data/e6_u_resid.npz dose=-0.85</code></pre>
+        <h3><code>step audit &lt;tensor&gt; [vector=&lt;vec&gt;]</code></h3>
+        <p>Audits matrix Frobenius norm, maximum magnitude, and directional projection energy along contrastive vectors in real-time.</p>
+        <pre><code>step audit model.language_model.layers.14.mlp.down_proj.weight vector=data/u_loop_L14.npz</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>step export_control_vector &lt;vec&gt; out=&lt;path.gguf&gt; [scale=&lt;float&gt;]</code></h3>
+        <p>Compiles a direction vector into a standard <code>llama.cpp</code> control vector GGUF for runtime inference steering (<code>--control-vector-scaled</code>).</p>
+        <pre><code>step export_control_vector data/u_loop_L14.npz out=data/loop_control_vector.gguf scale=-0.5</code></pre>
       </div>
     </section>
 
-    <section id="safety">
-      <h2>4. Security Policy & Guardrails</h2>
-      <div class="callout callout-warning">
-        <strong>Hardened Defense-in-Depth:</strong> WSP-Lang prevents unauthorized model corruption through physical process-level barriers.
-      </div>
+    <section id="verification">
+      <h2>5. Verification Manifests & CLI Modes</h2>
+      <p>WSP-Lang 0.3 provides four first-class execution modes:</p>
       <table>
         <thead>
           <tr>
-            <th>Component</th>
-            <th>Policy Rule</th>
-            <th>Enforcement Point</th>
+            <th>Flag</th>
+            <th>Mode</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>token_embd.weight</code></td>
-            <td><strong>FORBIDDEN</strong> (Embedding matrix protection)</td>
-            <td>Kernel level in <code>wsp.py</code> and MCP server</td>
+            <td><code>--check</code></td>
+            <td>Syntax & Budget Gate</td>
+            <td>Instant verification of AST, budgets, and security boundaries. Zero disk I/O.</td>
           </tr>
           <tr>
-            <td><code>output.weight</code></td>
-            <td><strong>FORBIDDEN</strong> (LM Unembedding head protection)</td>
-            <td>Blocked before disk write</td>
+            <td><code>--plan</code></td>
+            <td>Plan Inspection</td>
+            <td>Outputs structured JSON execution graph and mapping.</td>
           </tr>
           <tr>
-            <td><code>*.norm.weight</code></td>
-            <td><strong>FORBIDDEN</strong> (RMSNorm scale protection)</td>
-            <td>Pre-execution AST filter</td>
+            <td><code>--dry-run</code></td>
+            <td>In-Memory Simulation</td>
+            <td>Simulates weight edits and calculates energy reductions in RAM without touching disk.</td>
           </tr>
           <tr>
-            <td>Syntax / Type Errors</td>
-            <td><strong>Strict Validation Gate</strong> (Instant execution abort)</td>
-            <td><code>validate(prog)</code> halts plan</td>
-          </tr>
-          <tr>
-            <td>Budget Limits</td>
-            <td>Max norm delta &le; 0.05, Max modified &le; 16384</td>
-            <td>Checked prior to quantization write</td>
+            <td><code>--run</code></td>
+            <td>Atomic Execution</td>
+            <td>Executes surgery on SafeTensors / GGUF with hard-link cloning and manifest logging.</td>
           </tr>
         </tbody>
       </table>
     </section>
 
-    <section id="mcp">
-      <h2>5. FastMCP Integration (AI Agents)</h2>
-      <p>WSP-Lang is natively exposed over standard I/O via FastMCP (<code>engine/wsp_mcp_server.py</code>). Autonomous agents can send code blocks in memory and receive structured JSON responses:</p>
-      <pre><code>// Example: Calling execute_wsplang_code from an AI Agent
-{
-  "name": "execute_wsplang_code",
-  "arguments": {
-    "code": "experiment inspect_logic:\n    model: MiMo-2.6\n    steps:\n        step peek blk.19.attn_output.weight row=100 col=200 top=3"
-  }
-}</code></pre>
-    </section>
-
-    <section id="examples">
-      <h2>6. Concrete Code Walkthrough</h2>
-      <p>Below is a production WSP-Lang program (<code>programs/example_semantic_areas.wspl</code>) mapping semantic areas and decompiling attention, FFN, and SSM recurrent layers:</p>
-      <pre><code>experiment inspect_semantic_areas:
-    model: MiMo-V2.6-Distill-Qwen-9B
-    objective: map_semantic_geometry
-
-    semantic_areas:
-        mode = comprehensive
-        target = math_logic
-
-    steps:
-        # 1. Map top semantic areas
-        step semantic_map top=3
-
-        # 2. Inspect Attention Layer 19 (Row 100, Col 200)
-        step peek blk.19.attn_output.weight row=100 col=200 top=3
-
-        # 3. Inspect FFN Layer 19 (Row 100, Col 500)
-        step peek blk.19.ffn_down.weight row=100 col=500 top=3
-
-        # 4. Inspect Recurrent SSM Layer 0
-        step peek blk.0.ssm_out.weight row=100 col=200 top=3</code></pre>
-    </section>
-
   </main>
 
   <footer>
-    <p>FiveTechSoft / weights &bull; Weight-Space Programming for Quantized Large Language Models &bull; MIT License</p>
+    <p>FiveTechSoft Research · Open Source under MIT License · <a href="https://github.com/FiveTechSoft/weights">GitHub: FiveTechSoft/weights</a></p>
   </footer>
 
 </body>

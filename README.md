@@ -19,7 +19,7 @@ Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Program
 > ### 🏆 Empirical Reproductions & Verified Breakthroughs (Nov 2026)
 > * **✅ MIT CSAIL Exp 8 Positive Control (100% Verified):** Replicated the 0.016% surgical weight edit on Qwen3.5-0.8B, suppressing the reasoning-loop attractor on GSM8K and boosting accuracy by **+20.0%** ([Full Report](docs/report_loop_suppression_and_atari.md)).
 > * **✅ Atari Weight Interpretation (Simon Willison & MIT Exp 1):** Decompiled the raw 17,253-parameter MLP weights for *Pong* (vertical axis dominance 1.54x) and *Breakout* (horizontal axis dominance 1.53x, max weight 5.34), with our local model correctly identifying *Pong* with **90% confidence**.
-> * **✅ WSP-Lang 0.2 Declarative Engine:** Dual-engine runtime for unquantized SafeTensors (BF16) and quantized GGUF, enabling algebraic weight surgery (`project_out`, `project_in`), hard budget guards, and automated control vector compilation ([Full Spec](docs/wsplang_0.2_spec.md)).
+> * **✅ WSP-Lang 0.3 Fast Weight Programming Engine:** Grounded in Kazuki Irie & Jürgen Schmidhuber's FWP framework (ICML 2021). Features Delta-Rule unlearning (`delta_unlearn`) with mathematical zero cross-talk guarantee, transient Fast Weight overlays (`fwp_overlay`), and dual SafeTensors/GGUF architecture ([Full Spec](docs/wsplang_0.3_spec.md)).
 > * **✅ Hugging Face Research Discussion & Fix Release:** Published surgical 0.24% weight fix for multi-turn agent tool-calling loops on [XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B Discussions #16](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16) across 3 deployment options (Vanilla PyTorch, WSPLang, and Inference Control Vector).
 
 

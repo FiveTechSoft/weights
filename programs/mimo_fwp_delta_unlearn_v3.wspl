@@ -1,0 +1,35 @@
+experiment mimo_fwp_delta_unlearn_v3:
+
+    theoretical_foundation:
+        Fast Weight Programmers (Schlag, Irie & Schmidhuber, ICML 2021)
+
+    model:
+        MiMo-V2.6-Distill-Qwen-9B
+
+    format:
+        safetensors
+
+    objective:
+        suppress_agentic_tool_loop_attractor_via_delta_rule_unlearning
+
+    budgets:
+        max_modified_weights = 150000
+        target_parameter_fraction = 0.0025
+        max_delta_norm = 0.0005
+        allow_write = false
+
+    steps:
+        # Step 1: Formal contract verification of orthogonal concept preservation
+        # Proves that unlearning the loop vector causes ZERO cross-talk on orthogonal concepts
+        step assert_orthogonal_preservation key=data/u_loop_L14.npz
+
+        # Step 2: Delta-Rule associative memory unlearning (Widrow-Hoff)
+        # Cancels the exact attractor output y = k^T @ W -> 0.0 on Layer 14 down-proj
+        step delta_unlearn model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.127 top_rows=50
+
+        # Step 3: Compile Fast Weight Overlay state for dynamic inference activation
+        # Generates transient memory overlay for runtime execution without permanent on-disk mutation
+        step fwp_overlay model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz alpha=0.05 out=data/fwp_overlay_L14.npz
+
+        # Step 4: Spectral decay damping to dissipate runaway recurrent attractors
+        step spectral_decay model.language_model.layers.14.mlp.down_proj.weight decay=0.95

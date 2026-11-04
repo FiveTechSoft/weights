@@ -65,7 +65,7 @@ steps:
         steps, errors = wsplang.validate(prog)
         self.assertEqual(len(errors), 0, f"Expected 0 errors, got: {errors}")
         plan = wsplang.plan_run(prog, steps)
-        self.assertEqual(plan["wsplang_version"], "0.2.0")
+        self.assertTrue(plan["wsplang_version"] in ("0.2.0", "0.3.0"))
         self.assertEqual(plan["budgets"]["max_modified_weights"], 1000)
         self.assertTrue(plan["budgets"]["allow_write"])
 

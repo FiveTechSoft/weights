@@ -1,0 +1,148 @@
+{
+  "wsplang_version": "0.3.0",
+  "theoretical_framework": "Fast Weight Programmers (FWP) & Associative Memory Unlearning",
+  "programa": "mimo_fwp_delta_unlearn_v3",
+  "archivo": "programs\\mimo_fwp_delta_unlearn_v3.wspl",
+  "steps_count": 8,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 150000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 0.0025"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 0.0005"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step assert_orthogonal_preservation key=data/u_loop_L14.npz",
+      "op": "assert_orthogonal_preservation",
+      "args": "key=data/u_loop_L14.npz"
+    },
+    {
+      "sec": "steps",
+      "expr": "step delta_unlearn model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.127 top_rows=50",
+      "op": "delta_unlearn",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.127 top_rows=50"
+    },
+    {
+      "sec": "steps",
+      "expr": "step fwp_overlay model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz alpha=0.05 out=data/fwp_overlay_L14.npz",
+      "op": "fwp_overlay",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz alpha=0.05 out=data/fwp_overlay_L14.npz"
+    },
+    {
+      "sec": "steps",
+      "expr": "step spectral_decay model.language_model.layers.14.mlp.down_proj.weight decay=0.95",
+      "op": "spectral_decay",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight decay=0.95"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.3.0",
+    "theoretical_framework": "Fast Weight Programmers (FWP) & Associative Memory Unlearning",
+    "secciones": {
+      "budgets": 4,
+      "steps": 4
+    },
+    "pasos": [
+      {
+        "op": "assert_orthogonal_preservation",
+        "args": "key=data/u_loop_L14.npz"
+      },
+      {
+        "op": "delta_unlearn",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.127 top_rows=50"
+      },
+      {
+        "op": "fwp_overlay",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz alpha=0.05 out=data/fwp_overlay_L14.npz"
+      },
+      {
+        "op": "spectral_decay",
+        "args": "model.language_model.layers.14.mlp.down_proj.weight decay=0.95"
+      }
+    ],
+    "pasos_mapeo": {
+      "assert_orthogonal_preservation": "verify zero distortion on orthogonal concept manifold",
+      "delta_unlearn": "Delta-Rule associative memory unlearning W <- W - eta*(u(u^T W) - v*)",
+      "fwp_overlay": "generate transient in-memory Fast Weight overlay for inference",
+      "spectral_decay": "dissipate runaway recurrent attractors via continuous decay W <- lambda * W"
+    },
+    "budgets": {
+      "max_modified_weights": 150000,
+      "target_parameter_fraction": 0.0025,
+      "max_delta_norm": 0.0005,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T12:54:11",
+  "ejecucion": [
+    {
+      "op": "assert_orthogonal_preservation",
+      "args": "key=data/u_loop_L14.npz",
+      "status": "ok",
+      "result": {
+        "probe_dimension": 4096,
+        "inner_product_with_key": 0.0,
+        "orthogonal_preservation_verified": true,
+        "crosstalk_distortion": 0.0
+      }
+    },
+    {
+      "op": "delta_unlearn",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz eta=0.05 target=0.0 top_cols=0.127 top_rows=50",
+      "status": "ok",
+      "result": {
+        "rule": "Delta-Rule (Widrow-Hoff)",
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "shard": "model-00001-of-00004.safetensors",
+        "unlearning_rate_eta": 0.05,
+        "modified_parameters": 78000,
+        "fraction_modified": "0.1550%",
+        "max_delta_norm": 0.00028148721321485937,
+        "energy_before": 1.3990607261657715,
+        "energy_after": 1.3950252532958984,
+        "energy_reduction_pct": "0.29%",
+        "orthogonal_crosstalk_risk": 0.0,
+        "written_to_disk": false
+      }
+    },
+    {
+      "op": "fwp_overlay",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight key=data/u_loop_L14.npz alpha=0.05 out=data/fwp_overlay_L14.npz",
+      "status": "ok",
+      "result": {
+        "overlay_type": "Transient Fast Weight Memory State",
+        "target_tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "key_vector_dims": 4096,
+        "alpha_scale": 0.05,
+        "overlay_file": "C:\\weights\\data\\fwp_overlay_L14.npz",
+        "file_size": 15162
+      }
+    },
+    {
+      "op": "spectral_decay",
+      "args": "model.language_model.layers.14.mlp.down_proj.weight decay=0.95",
+      "status": "ok",
+      "result": {
+        "tensor": "model.language_model.layers.14.mlp.down_proj.weight",
+        "decay_factor_lambda": 0.95,
+        "dissipation_pct": "5.00%",
+        "effect": "runaway_attractor_suppression"
+      }
+    }
+  ]
+}
