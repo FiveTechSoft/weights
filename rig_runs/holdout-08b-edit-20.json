@@ -1,0 +1,200 @@
+{
+ "meta": {
+  "model": "08b",
+  "endpoint": "http://127.0.0.1:8081/v1/chat/completions",
+  "seed": 1337,
+  "n": 20,
+  "indices": [
+   22,
+   28,
+   51,
+   87,
+   95,
+   97,
+   104,
+   151,
+   210,
+   222,
+   252,
+   277,
+   297,
+   300,
+   317,
+   326,
+   328,
+   403,
+   430,
+   449
+  ],
+  "temperature": 0.3,
+  "max_tokens": 2048,
+  "tag": "holdout-08b-edit",
+  "ts": "2026-11-04T11:31:40",
+  "counts": {
+   "ok": 14,
+   "total": 20
+  }
+ },
+ "items": [
+  {
+   "i": 22,
+   "gold": "5",
+   "pred": "5",
+   "ok": true,
+   "finish": "stop",
+   "tail": "orizamos:\n\n$$4x(5 - x) = 0$$\n\nAsí, $x = 0$ o $x = 5$. Como $x \\neq 0$, tenemos $x = 5$.\n\n**Verificación:**\n- Caso 1: Denali $16 + 4(5) = 36$, Nate $12$ → proporción $36:12 = 3:1$\n- Caso 2: Denali $16 + 5 = 21$, Nate $12 - 5 = 7$ → proporción $21:7 = 3:1$\n\nAmbas proporciones coinciden.\n\n$$\\boxed{5}$$"
+  },
+  {
+   "i": 28,
+   "gold": "-2 + 7i",
+   "pred": "-2 + 7i",
+   "ok": true,
+   "finish": "stop",
+   "tail": "ven the complex number $z = 7 + 2i$, the rotation is:\n$$\nz' = i \\cdot (7 + 2i)\n$$\n\nDistribute the $i$:\n$$\nz' = 7i + 2i^2\n$$\n\nRecall that $i^2 = -1$, so:\n$$\nz' = 7i + 2(-1) = 7i - 2\n$$\n\nRewrite in standard form $a + bi$:\n$$\nz' = -2 + 7i\n$$\n\nThus, the resulting complex number is:\n$$\n\\boxed{-2 + 7i}\n$$"
+  },
+  {
+   "i": 51,
+   "gold": "x^5 - x^4 + x^3 - x^2 + x - 1",
+   "pred": "x^5 - x^4 + x^3 - x^2 + x - 1",
+   "ok": true,
+   "finish": "stop",
+   "tail": "^3 - 1 - 2 = (x^2-1)(x^4 + x^2 + 1) - 2 = (x-1)(x+1)(x^4+x^2+1) - 2$.\n\nSo $\\frac{x^6-3}{x+1} = (x-1)(x^4+x^2+1) - \\frac{2}{x+1} = x^5 - x^4 + x^3 - x^2 + x - 1 - \\frac{2}{x+1}$.\n\nThe quotient is $x^5 - x^4 + x^3 - x^2 + x - 1$ with remainder $-2$.\n\nFinal answer:\n\\boxed{x^5 - x^4 + x^3 - x^2 + x - 1}"
+  },
+  {
+   "i": 87,
+   "gold": "1",
+   "pred": "1",
+   "ok": true,
+   "finish": "stop",
+   "tail": " 2: $5x-1 = -(x+3)$\n$5x - 1 = -x - 3$\n$5x + x = -3 + 1$\n$6x = -2$\n$x = -\\frac{1}{3}$\nCheck: $x \\ge -3$ ✓. $|5(-\\frac{1}{3})-1| = |-\\frac{5}{3}-1| = |-\\frac{8}{3}| = \\frac{8}{3}$, and $-\\frac{1}{3}+3 = \\frac{8}{3}$. ✓\n\nThe two solutions are $x=1$ and $x=-\\frac{1}{3}$. The largest is $x=1$.\n\n\\boxed{1}"
+  },
+  {
+   "i": 95,
+   "gold": "-4",
+   "pred": "-4",
+   "ok": true,
+   "finish": "stop",
+   "tail": "\nAdd 3 to both sides:\n\n\\[\n-2y = 8\n\\]\n\nDivide by -2:\n\n\\[\ny = -4\n\\]\n\nLet me verify: with $y = -4$, $\\mathbf{a} = \\begin{pmatrix} 2 \\\\ -4 \\\\ -5 \\end{pmatrix}$, and $\\mathbf{a} \\cdot \\mathbf{b} = 2 + 8 - 5 = 5$. So the projection is $\\frac{5}{6} \\begin{pmatrix} 1 \\\\ -2 \\\\ 1 \\end{pmatrix}$. ✓\n\n\\boxed{-4}"
+  },
+  {
+   "i": 97,
+   "gold": "\\text{east}",
+   "pred": "east",
+   "ok": true,
+   "finish": "stop",
+   "tail": " la dejan en la misma dirección), ha girado **90° en sentido horario**.\n\n**Paso 3: Determinar la dirección final**\n\nGirando 90° en sentido horario desde el norte:\n- 0° → norte\n- 90° (sentido horario) → este\n- 180° → sur\n- 270° → oeste\n\n90° en sentido horario desde el norte es **este**.\n\n\\boxed{east}"
+  },
+  {
+   "i": 104,
+   "gold": "40",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 151,
+   "gold": "144",
+   "pred": "144",
+   "ok": true,
+   "finish": "stop",
+   "tail": "eterminant $\\begin{vmatrix} x_1 & y_1 & 1 \\\\ x_2 & y_2 & 1 \\\\ x_3 & y_3 & 1 \\end{vmatrix}$ equals twice the signed area of the triangle. The area of a right triangle with legs 3 and 4 is $\\frac{1}{2} \\cdot 3 \\cdot 4 = 6$.\n\nTherefore, the determinant is $\\pm 12$, and its square is $144$.\n\n\\boxed{144}"
+  },
+  {
+   "i": 210,
+   "gold": "10",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 222,
+   "gold": "54",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 252,
+   "gold": "81",
+   "pred": "81",
+   "ok": true,
+   "finish": "stop",
+   "tail": ")(2-x) = 2x - x^2 + 14 - 7x = -x^2 - 5x + 14\\). Then \\(f(x) = 4(-x^2 - 5x + 14) = -4x^2 - 20x + 56\\). Vertex at \\(x = -\\frac{-20}{2(-4)} = -\\frac{20}{-8} = -\\frac{5}{2}\\). \\(f\\left(-\\frac{5}{2}\\right) = -4\\left(\\frac{25}{4}\\right) + 20\\left(\\frac{5}{2}\\right) + 56 = -25 + 50 + 56 = 81\\).\n\n\\boxed{81}"
+  },
+  {
+   "i": 277,
+   "gold": "\\sqrt{53}",
+   "pred": "\\sqrt{53}",
+   "ok": true,
+   "finish": "stop",
+   "tail": "not a perfect square.\n\n2. **Check for prime factors**: 53 is a prime number. Its only factors are 1 and 53.\n\n3. **Conclusion**: Since 53 has no perfect square factors other than 1, $\\sqrt{53}$ cannot be simplified further.\n\nTherefore, the simplest radical form of $\\sqrt{53}$ is:\n\n$\\boxed{\\sqrt{53}}$"
+  },
+  {
+   "i": 297,
+   "gold": "103",
+   "pred": "103",
+   "ok": true,
+   "finish": "stop",
+   "tail": "$k > 13.57$$\n\nEl menor entero que cumple es $k = 14$. Sustituyendo:\n\n$$n = 7 \\cdot 14 + 5 = 98 + 5 = 103$$\n\n**Paso 5: Verificar**\n\n- $103 > 100$ ✓\n- Páginas = $2 \\cdot 103 = 206$\n- $206 \\div 7 = 29$ con resto $3$, es decir, $206 = 7 \\cdot 29 + 3$ ✓\n\nEl menor número posible de hojas es $\\boxed{103}$."
+  },
+  {
+   "i": 300,
+   "gold": "12",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 317,
+   "gold": "0",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 326,
+   "gold": "\\frac{9}{100}",
+   "pred": "0.09",
+   "ok": true,
+   "finish": "stop",
+   "tail": "2 = \\frac{21}{100} - \\frac{3}{25} = \\frac{21}{100} - \\frac{12}{100} = \\frac{9}{100}.\n\\]\n\nSo the value is \\(\\frac{9}{100} = 0.09\\).\n\nAlternatively, using the identity \\(\\sin(A+B)\\sin(A-B) = \\sin^2 A - \\sin^2 B\\):\n\\[\n\\sin^2 b - \\sin^2 a = 0.25 - 0.16 = 0.09.\n\\]\n\nBoth methods agree.\n\n\\[\n\\boxed{0.09}\n\\]"
+  },
+  {
+   "i": 328,
+   "gold": "3",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 403,
+   "gold": "3",
+   "pred": "3",
+   "ok": true,
+   "finish": "stop",
+   "tail": "ample says \"one digit in common\" for $121_3$ and $413_5$. Digits of $121_3$: 1, 2, 1. Digits of $413_5$: 4, 1, 3. Common: 1. Yes, one digit. So we count distinct common digits.\n\nIn our case: base 7 digits {1, 5, 6}, base 8 digits {1, 5, 6}. Common distinct digits: 1, 5, 6 → 3.\n\nAnswer: 3.\n\n\\boxed{3}"
+  },
+  {
+   "i": 430,
+   "gold": "4.5",
+   "pred": "4.5",
+   "ok": true,
+   "finish": "stop",
+   "tail": "ce $2 \\times 4 = 8$), leaving a remainder of $9 - 8 = 1$.\n- Write a decimal point and add a zero to the remainder, making it 10.\n- 2 goes into 10 five times (since $2 \\times 5 = 10$), leaving no remainder.\n\nSo, $9 \\div 2 = 4.5$.\n\nTherefore, $\\frac{9}{2}$ expressed as a decimal is:\n\n$$\n\\boxed{4.5}\n$$"
+  },
+  {
+   "i": 449,
+   "gold": "47",
+   "pred": "47",
+   "ok": true,
+   "finish": "stop",
+   "tail": "star1\\), so set \\(a = 5\\) and \\(b = 1\\):\n\n\\[\n5\\star1 = 9(5) + 2(1) - (5)(1) + 5\n\\]\n\nCompute each term:\n\n\\[\n9(5) = 45, \\quad 2(1) = 2, \\quad 5 \\cdot 1 = 5\n\\]\n\nSo:\n\n\\[\n5\\star1 = 45 + 2 - 5 + 5\n\\]\n\nSimplify:\n\n\\[\n45 + 2 = 47, \\quad 47 - 5 = 42, \\quad 42 + 5 = 47\n\\]\n\nThus,\n\n\\[\n5\\star1 = 47\n\\]\n\n\\boxed{47}"
+  }
+ ]
+}

@@ -1,0 +1,200 @@
+{
+ "meta": {
+  "model": "08b",
+  "endpoint": "http://127.0.0.1:8082/v1/chat/completions",
+  "seed": 42,
+  "n": 20,
+  "indices": [
+   7,
+   17,
+   96,
+   136,
+   156,
+   182,
+   203,
+   232,
+   263,
+   306,
+   345,
+   359,
+   371,
+   388,
+   392,
+   435,
+   467,
+   474,
+   476,
+   487
+  ],
+  "temperature": 0.3,
+  "max_tokens": 2048,
+  "tag": "screen-08b-placebo",
+  "ts": "2026-11-04T11:17:22",
+  "counts": {
+   "ok": 0,
+   "total": 20
+  }
+ },
+ "items": [
+  {
+   "i": 7,
+   "gold": "90^\\circ",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 17,
+   "gold": "\\pi",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 96,
+   "gold": "1 \\pm \\sqrt{19}",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 136,
+   "gold": "64",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 156,
+   "gold": "30^\\circ",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 182,
+   "gold": "1251",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 203,
+   "gold": "12",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 232,
+   "gold": "\\frac{1997}{2}",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 263,
+   "gold": "15",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 306,
+   "gold": "6",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 345,
+   "gold": "1",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 359,
+   "gold": "6",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 371,
+   "gold": "17",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 388,
+   "gold": "\\frac{11}{2}",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 392,
+   "gold": "\\sqrt{66}",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 435,
+   "gold": "(-\\infty, 2) \\cup (3, \\infty)",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 467,
+   "gold": "15\\mbox{ cm}^2",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 474,
+   "gold": "3",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 476,
+   "gold": "200",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  },
+  {
+   "i": 487,
+   "gold": "2",
+   "pred": "",
+   "ok": false,
+   "finish": "error:URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dich",
+   "tail": ""
+  }
+ ]
+}

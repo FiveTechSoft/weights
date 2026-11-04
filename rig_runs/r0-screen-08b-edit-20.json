@@ -1,0 +1,200 @@
+{
+ "meta": {
+  "model": "08b",
+  "endpoint": "http://127.0.0.1:8081/v1/chat/completions",
+  "seed": 42,
+  "n": 20,
+  "indices": [
+   7,
+   17,
+   96,
+   136,
+   156,
+   182,
+   203,
+   232,
+   263,
+   306,
+   345,
+   359,
+   371,
+   388,
+   392,
+   435,
+   467,
+   474,
+   476,
+   487
+  ],
+  "temperature": 0.3,
+  "max_tokens": 2048,
+  "tag": "screen-08b-edit",
+  "ts": "2026-11-04T08:47:36",
+  "counts": {
+   "ok": 10,
+   "total": 20
+  }
+ },
+ "items": [
+  {
+   "i": 7,
+   "gold": "90^\\circ",
+   "pred": "90",
+   "ok": true,
+   "finish": "stop",
+   "tail": "1}| |\\vec{v_2}|}$\n\nCompute the dot product:\n$\\vec{v_1} \\cdot \\vec{v_2} = (3)(2) + (2)(-12) + (-6)(-3) = 6 - 24 + 18 = 0$\n\nThe dot product is 0, so the vectors are perpendicular.\n\n$\\cos\\theta = 0$\n$\\theta = 90^\\circ$\n\nThe lines are perpendicular, so the angle between them is $90$ degrees.\n\n\\boxed{90}"
+  },
+  {
+   "i": 17,
+   "gold": "\\pi",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 96,
+   "gold": "1 \\pm \\sqrt{19}",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 136,
+   "gold": "64",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 156,
+   "gold": "30^\\circ",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 182,
+   "gold": "1251",
+   "pred": "1251",
+   "ok": true,
+   "finish": "stop",
+   "tail": "}{3}$, which is $\\frac{3}{2}$:\n\n$$x = 834 \\times \\frac{3}{2}$$\n\nFirst, divide 834 by 2:\n$$834 \\div 2 = 417$$\n\nThen multiply by 3:\n$$417 \\times 3 = 1251$$\n\nSo, $x = 1251$.\n\nCheck: $\\frac{2}{3} \\times 1251 = 2 \\times 417 = 834$. ✓\n\nThe total number of students at Baker Middle School is $\\boxed{1251}$."
+  },
+  {
+   "i": 203,
+   "gold": "12",
+   "pred": "12",
+   "ok": true,
+   "finish": "stop",
+   "tail": ") + 9)^{611} = (-10 + 9)^{611} = (-1)^{611} = -1$ (el exponente 611 es impar).\n2. $((-2) + 5)^{11} = 3^{11} = 177147$.\n3. $((-2) - 1)^{11} = (-3)^{11} = -177147$.\n4. $3(-2)^2 + 1 = 3(4) + 1 = 13$.\n\nSumando:\n$$P(-2) = -1 + 177147 - 177147 + 13 = -1 + 13 = 12$$\n\nPor lo tanto, el resto es $\\boxed{12}$."
+  },
+  {
+   "i": 232,
+   "gold": "\\frac{1997}{2}",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 263,
+   "gold": "15",
+   "pred": "15",
+   "ok": true,
+   "finish": "stop",
+   "tail": "ma:\n\\[ i = 6.5 \\times e \\]\n\nSustituyendo:\n\\[ 180^\\circ - e = 6.5e \\]\n\\[ 180^\\circ = 7.5e \\]\n\\[ e = \\frac{180^\\circ}{7.5} = 24^\\circ \\]\n\nAhora, usando \\( e = \\frac{360^\\circ}{n} \\):\n\\[ 24^\\circ = \\frac{360^\\circ}{n} \\]\n\\[ n = \\frac{360^\\circ}{24^\\circ} = 15 \\]\n\nEl polígono tiene 15 lados.\n\n\\boxed{15}"
+  },
+  {
+   "i": 306,
+   "gold": "6",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 345,
+   "gold": "1",
+   "pred": "1",
+   "ok": true,
+   "finish": "stop",
+   "tail": "We are given:\n\n\\[\nt(x) = 3 - g(x), \\quad g(x) = \\sqrt{x}\n\\]\n\nFirst, evaluate \\(g(16)\\):\n\n\\[\ng(16) = \\sqrt{16} = 4\n\\]\n\nNow, \\(t(g(16)) = t(4)\\). Using the definition of \\(t\\):\n\n\\[\nt(4) = 3 - g(4) = 3 - \\sqrt{4} = 3 - 2 = 1\n\\]\n\nSo,\n\n\\[\nt(g(16)) = 1\n\\]\n\nFinal answer: \\boxed{1}"
+  },
+  {
+   "i": 359,
+   "gold": "6",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 371,
+   "gold": "17",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 388,
+   "gold": "\\frac{11}{2}",
+   "pred": "\\frac{11}{2}",
+   "ok": true,
+   "finish": "stop",
+   "tail": "\\frac{11}{2}, \\infty)$ y el número real más pequeño es $\\frac{11}{2}$.\n\nVerificación: en $x = \\frac{11}{2}$, $(\\frac{11}{2}-3)^2 - (\\frac{11}{2}-8)^2 = (\\frac{5}{2})^2 - (-\\frac{5}{2})^2 = \\frac{25}{4} - \\frac{25}{4} = 0$, y $\\sqrt{0} = 0$, que es válido.\n\nLa respuesta final es:\n\\boxed{\\frac{11}{2}}"
+  },
+  {
+   "i": 392,
+   "gold": "\\sqrt{66}",
+   "pred": "",
+   "ok": false,
+   "finish": "length",
+   "tail": ""
+  },
+  {
+   "i": 435,
+   "gold": "(-\\infty, 2) \\cup (3, \\infty)",
+   "pred": "(-\\infty, 2) \\cup (3, \\infty)",
+   "ok": true,
+   "finish": "stop",
+   "tail": "= 6 > 0$ ✓\n- For $2 < x < 3$ (e.g., $x=2.5$): $(2.5-2)(2.5-3) = (0.5)(-0.5) = -0.25 < 0$ ✗\n- For $x > 3$ (e.g., $x=4$): $(4-2)(4-3) = (2)(1) = 2 > 0$ ✓\n\nSo the solution is $x < 2$ or $x > 3$.\n\nIn interval notation, the domain is $(-\\infty, 2) \\cup (3, \\infty)$.\n\n\\boxed{(-\\infty, 2) \\cup (3, \\infty)}"
+  },
+  {
+   "i": 467,
+   "gold": "15\\mbox{ cm}^2",
+   "pred": "15",
+   "ok": false,
+   "finish": "stop",
+   "tail": "his distance is \\(3\\) cm.\n\nThe area of a triangle is given by:\n\\[\n\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height}\n\\]\n\nSubstituting the values:\n\\[\n\\text{Area} = \\frac{1}{2} \\times 10 \\times 3 = 15\n\\]\n\nSo the area of the shaded triangle is \\(15\\) square centimeters.\n\n\\[\n\\boxed{15}\n\\]"
+  },
+  {
+   "i": 474,
+   "gold": "3",
+   "pred": "3",
+   "ok": true,
+   "finish": "stop",
+   "tail": " \\cdot \\log 5 \\cdot \\log 6 \\cdot \\log 7 \\cdot \\log 8}{\\log 2 \\cdot \\log 3 \\cdot \\log 4 \\cdot \\log 5 \\cdot \\log 6 \\cdot \\log 7}\n\\]\n\nCanceling common terms:\n\n\\[\n= \\frac{\\log 8}{\\log 2}\n\\]\n\nAnd $\\frac{\\log 8}{\\log 2} = \\log_2{8} = 3$.\n\nSo the value is:\n\n\\[\n\\boxed{3}\n\\]\n\nThe final answer is $\\boxed{3}$."
+  },
+  {
+   "i": 476,
+   "gold": "200",
+   "pred": "200",
+   "ok": true,
+   "finish": "stop",
+   "tail": "g the Pythagorean theorem:\ndiagonal² = 300² + 400²\ndiagonal² = 90,000 + 160,000\ndiagonal² = 250,000\ndiagonal = √250,000 = 500 feet\n\n**Step 4: Find the difference**\n\nDifference = Martha's distance - Jim's distance\nDifference = 700 - 500 = 200 feet\n\nSo Jim walks 200 feet less than Martha.\n\n\\boxed{200}"
+  },
+  {
+   "i": 487,
+   "gold": "2",
+   "pred": "2",
+   "ok": true,
+   "finish": "stop",
+   "tail": "8 by 4: \\(78 = 4 \\times 19 + 2\\), so the remainder is 2.\n\nAlternatively, group the terms:\n\\[\n(1+2+3+4) + (5+6+7+8) + (9+10+11+12) = 10 + 26 + 50.\n\\]\nModulo 4: \\(10 \\equiv 2\\), \\(26 \\equiv 2\\), \\(50 \\equiv 2\\). So the total is \\(2+2+2 = 6 \\equiv 2 \\pmod 4\\).\n\nBoth methods give remainder 2.\n\n\\boxed{2}"
+  }
+ ]
+}

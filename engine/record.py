@@ -27,21 +27,50 @@ SCHEMA = {
         "resultados",
     ],
     "properties": {
-        "experiment_id": {"type": "string", "pattern": "^[e][0-9]{4,}$"},
+        "experiment_id": {"type": "string", "pattern": "^[eE][0-9a-z._-]*$"},
         "model_id": {"type": "string"},
         "objective": {"type": "string"},
         "baseline": {"type": "object"},
         "edicion": {"type": "object"},
         "ejecucion": {"type": "object"},
         "resultados": {"type": "object"},
-        "veredicto": {"type": "string", "enum": ["keep", "discard", "sin_verificar"]},
+        # --- schema extendido (roadmap #12bis) ---
+        # campos del experimento en el espacio de pesos: hipotesis, evidencia,
+        # objetivo, intervencion, modelo, benchmark, candidato, placebo, holdout
+        # y conclusion. Se anaden al schema original: los campos de trabajo
+        # (baseline/edicion/ejecucion/resultados) se conservan tal cual para
+        # mantener compatibilidad con los registros ya guardados.
+        "hypothesis": {"type": "string"},
+        "evidence": {"type": "object"},
+        "target": {"type": "string"},
+        "intervention": {"type": "string"},
+        "model_hash": {"type": "string"},
+        "benchmark_version": {"type": "string"},
+        "candidate": {"type": "string"},
+        "placebo": {"type": "string"},
+        "holdout": {"type": "string"},
+        "conclusion": {"type": "string", "enum": ["SUPPORTED", "REJECTED", "INCONCLUSIVE"]},
+        "veredicto": {"type": "string", "enum": ["keep", "discard", "sin_verificar",
+                                                "keep_sampling", "hypothesis_only"]},
     },
+    # campos de objeto libre que pueden aparecer dentro de 'evidence'
+    "EVIDENCE_KEYS": ["metric", "valor", "baseline_valor", "candidato_valor",
+                       "delta", "n", "ruta", "fecha", "contextos",
+                       "separacion", "p_valor"],
 }
 
 BASELINE_KEYS = ["nombre", "modelo", "version", "pesos", "fecha"]
 EDICION_KEYS = ["program", "operaciones", "tensor", "fila", "columna", "valor", "ruta"]
 EJECUCION_KEYS = ["estado", "modelo_editado", "aplicada", "errores"]
 RESULTADOS_KEYS = ["capacidad_edicion", "capacidad_mejro", "objetivo", "datos", "metricas"]
+# conclusiones admitidas por el roadmap #12bis
+CONCLUSION_VALUES = ["SUPPORTED", "REJECTED", "INCONCLUSIVE"]
+# campos del objeto 'evidence' (ver SCHEMA["EVIDENCE_KEYS"])
+EVIDENCE_KEYS = ["metric", "valor", "baseline_valor", "candidato_valor",
+                 "delta", "n", "ruta", "fecha", "contextos",
+                 "separacion", "p_valor"]
+# campos del objeto 'resultados' con valor numerico
+NUMERIC_RESULT_KEYS = ["capacidad_edicion", "capacidad_mejro"]
 
 
 def _num(x):
@@ -97,14 +126,47 @@ def validate(data):
             if key == "resultados":
                 if not isinstance(data[key], dict):
                     errores.append(f"'{key}' debe ser un objeto")
-                elif not set(data[key]).issubset(RESULTADOS_KEYS):
-                    errores.append(f"'{key}' tiene campos extra")
+                # 'resultados' es de objeto libre: se permiten claves extra
+                # (capacidades medidas ad hoc) para que la evidencia real no
+                # rompa el schema (compatibilidad hacia atras con los registros
+                # ya guardados). RESULTADOS_KEYS solo documenta las claves
+                # conocidas.
+                _ = RESULTADOS_KEYS
+            if key in ("baseline", "edicion", "ejecucion", "resultados", "evidence"):
+                # campos de objeto libre: se permiten claves extra para que
+                # la evidencia real no rompa el schema (compatibilidad hacia
+                # atras con los registros ya guardados)
+                if isinstance(data[key], dict) and set(data[key]) - set(
+                        SCHEMA.get(key, {}).get("props", ())):
+                    pass
+            if key in ("hypothesis", "target", "intervention"):
+                if not isinstance(data[key], str):
+                    errores.append(f"'{key}' debe ser una cadena")
+            if key == "evidence":
+                if not isinstance(data[key], dict):
+                    errores.append(f"'{key}' debe ser un objeto")
+                # 'evidence' es de objeto libre: se permiten claves extra
+                # (separacion, p_valor, null_perm_mean_norm, contexto) para que
+                # la evidencia real no rompa el schema (compatibilidad hacia
+                # atras con los registros ya guardados). EVIDENCE_KEYS solo
+                # documenta las claves conocidas.
+                _ = EVIDENCE_KEYS
+            if key in ("model_hash", "benchmark_version", "candidate",
+                       "placebo", "holdout"):
+                if not isinstance(data[key], str):
+                    errores.append(f"'{key}' debe ser una cadena")
+            if key == "conclusion":
+                if data[key] not in CONCLUSION_VALUES:
+                    errores.append(f"'{key}' no esta en el enum {CONCLUSION_VALUES}")
             if key == "objective" and not isinstance(data[key], str):
                 errores.append(f"'{key}' debe ser una cadena")
     return errores
 
 
 def _normalizar(data):
+    # acepta str (texto plano) o dict; devuelve el valor tal cual
+    if not isinstance(data, dict):
+        return data
     out = dict(data)
     if isinstance(out.get("baseline"), dict):
         out["baseline"] = {k: _num(v) for k, v in out["baseline"].items()}
@@ -119,7 +181,10 @@ class ExperimentRecord:
     PATRON_ID = re.compile(r"^[e][0-9]{4,}$")
 
     def __init__(self, experiment_id, model_id, objective, baseline, edicion,
-                 ejecucion, resultados, veredicto="sin_verificar", notas=""):
+                 ejecucion, resultados, veredicto="sin_verificar", notas="",
+                 hypothesis="", evidence=None, target="", intervention="",
+                 model_hash="", benchmark_version="", candidate="",
+                 placebo="", holdout="", conclusion="INCONCLUSIVE"):
         self.experiment_id = experiment_id
         self.model_id = model_id
         self.objective = objective
@@ -127,6 +192,16 @@ class ExperimentRecord:
         self.edicion = _normalizar(edicion)
         self.ejecucion = _normalizar(ejecucion)
         self.resultados = _normalizar(resultados)
+        self.hypothesis = hypothesis
+        self.evidence = _normalizar(evidence) if evidence is not None else {}
+        self.target = target
+        self.intervention = intervention
+        self.model_hash = model_hash
+        self.benchmark_version = benchmark_version
+        self.candidate = candidate
+        self.placebo = placebo
+        self.holdout = holdout
+        self.conclusion = conclusion
         self.veredicto = veredicto
         self.notas = notas
 
@@ -139,6 +214,16 @@ class ExperimentRecord:
             "edicion": self.edicion,
             "ejecucion": self.ejecucion,
             "resultados": self.resultados,
+            "hypothesis": self.hypothesis,
+            "evidence": self.evidence,
+            "target": self.target,
+            "intervention": self.intervention,
+            "model_hash": self.model_hash,
+            "benchmark_version": self.benchmark_version,
+            "candidate": self.candidate,
+            "placebo": self.placebo,
+            "holdout": self.holdout,
+            "conclusion": self.conclusion,
         }
         if self.veredicto != "sin_verificar":
             d["veredicto"] = self.veredicto
@@ -170,6 +255,16 @@ class ExperimentRecord:
             edicion=datos["edicion"],
             ejecucion=datos["ejecucion"],
             resultados=datos["resultados"],
+            hypothesis=str(datos.get("hypothesis", "")),
+            evidence=datos.get("evidence", {}),
+            target=str(datos.get("target", "")),
+            intervention=str(datos.get("intervention", "")),
+            model_hash=str(datos.get("model_hash", "")),
+            benchmark_version=str(datos.get("benchmark_version", "")),
+            candidate=str(datos.get("candidate", "")),
+            placebo=str(datos.get("placebo", "")),
+            holdout=str(datos.get("holdout", "")),
+            conclusion=str(datos.get("conclusion", "INCONCLUSIVE")),
             veredicto=str(datos.get("veredicto", "sin_verificar")),
             notas=str(datos.get("notas", "")),
         )
@@ -183,28 +278,22 @@ class ExperimentRecord:
     def from_jsonl(cls, path):
         """Lee todos los registros de un historial JSONL.
 
-        Cada registro puede ocupar varias lineas (json.dump con indent),
-        asi que se acumulan las lineas hasta completar un valor JSON valido.
+        Cada registro ocupa una linea (jsonl, un objeto JSON por linea),
+        asi que se lee linea a linea.
         """
         registros = []
         if not os.path.exists(path):
             return registros
         with open(path, "r", encoding="utf-8") as fh:
-            texto = fh.read()
-        texto = texto.strip()
-        if not texto:
-            return registros
-        decoder = json.JSONDecoder()
-        idx = 0
-        while idx < len(texto):
-            try:
-                datos, fin = decoder.raw_decode(texto, idx)
-            except json.JSONDecodeError:
-                break
-            if fin == idx:
-                break
-            idx = fin
-        registros.append(cls(
+            for linea in fh:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                try:
+                    datos = json.loads(linea)
+                except json.JSONDecodeError:
+                    break
+                registros.append(cls(
                 experiment_id=str(datos["experiment_id"]),
                     model_id=str(datos.get("model_id", "")),
                     objective=str(datos.get("objective", "")),
@@ -212,6 +301,16 @@ class ExperimentRecord:
                     edicion=datos.get("edicion", {}),
                     ejecucion=datos.get("ejecucion", {}),
                     resultados=datos.get("resultados", {}),
+                    hypothesis=str(datos.get("hypothesis", "")),
+                    evidence=datos.get("evidence", {}),
+                    target=str(datos.get("target", "")),
+                    intervention=str(datos.get("intervention", "")),
+                    model_hash=str(datos.get("model_hash", "")),
+                    benchmark_version=str(datos.get("benchmark_version", "")),
+                    candidate=str(datos.get("candidate", "")),
+                    placebo=str(datos.get("placebo", "")),
+                    holdout=str(datos.get("holdout", "")),
+                    conclusion=str(datos.get("conclusion", "INCONCLUSIVE")),
                     veredicto=str(datos.get("veredicto", "sin_verificar")),
                     notas=str(datos.get("notas", "")),
                 ))

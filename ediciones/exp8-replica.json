@@ -1,0 +1,21 @@
+{
+  "out": "C:\\weights\\servidos\\qwen35-08b__exp8-replica.gguf",
+  "ops": [
+    {
+      "type": "add-cols-vectors",
+      "tensor": "blk.15.ffn_down.weight",
+      "vec_file": "C:\\weights\\data\\exp8_edit_recovered.npz",
+      "key": "vec_0",
+      "cols_key": "cols_0",
+      "scale": 1.0
+    },
+    {
+      "type": "add-cols-vectors",
+      "tensor": "blk.19.ffn_down.weight",
+      "vec_file": "C:\\weights\\data\\exp8_edit_recovered.npz",
+      "key": "vec_1",
+      "cols_key": "cols_1",
+      "scale": 1.0
+    }
+  ]
+}
