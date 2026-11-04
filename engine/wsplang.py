@@ -1354,7 +1354,7 @@ def execute_plan_v4(
                                 scaled_v = (u_vec * scale).astype(np.float32)
                             else:
                                 scaled_v = np.zeros(dim, dtype=np.float32)
-                            writer.add_tensor(f"direction.{layer_idx}", scaled_v)
+                            writer.add_tensor(f"direction.{layer_idx + 1}", scaled_v)
                         writer.write_header_to_file()
                         writer.write_kv_data_to_file()
                         writer.write_tensors_to_file()
