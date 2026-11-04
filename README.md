@@ -21,6 +21,7 @@ Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Program
 > * **✅ Atari Weight Interpretation (Simon Willison & MIT Exp 1):** Decompiled the raw 17,253-parameter MLP weights for *Pong* (vertical axis dominance 1.54x) and *Breakout* (horizontal axis dominance 1.53x, max weight 5.34), with our local model correctly identifying *Pong* with **90% confidence**.
 > * **✅ WSP-Lang 0.4 Formal Engine:** Grounded in Kazuki Irie & Jürgen Schmidhuber's Fast Weight Programming framework (ICML 2021) and Davis-Kahan / Weyl spectral perturbation bounds. Features Delta-Rule unlearning (`delta_unlearn`) with rank-1 empirical cross-talk measurement, efficiency leverage scores, transient Fast Weight overlays (`fwp_overlay`), and dual SafeTensors/GGUF architecture ([Full Spec](docs/wsplang_0.4_spec.md)).
 > * **✅ Hugging Face Research Discussion & Errata:** Published mechanistic analysis of agent tool-calling loop attractors on [XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B Discussions #16](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16), clarifying Layer 1 vs Layer 14 SNR separation, exact $4096 \times 12288$ dimensions, and pending large-scale holdout behavioral trials.
+> * **✅ Project NanoWSP Micro-LLM:** Synthesized and programmed an 80,704-parameter 2-layer autoregressive Transformer from scratch in weight space, resolving Hebbian cross-talk via Moore-Penrose pseudo-inverse $\Delta W = Y X^+$ with 100% recall on multi-token words, boolean circuits, and syntactic closure ([Full Spec & Webpage](https://fivetechsoft.github.io/weights/nanowsp.html) | [Findings](docs/nanowsp_findings.md)).
 
 
 ---
@@ -66,6 +67,13 @@ Express experimental hypotheses declaratively in `.wspl` files and execute them 
 
 ```bash
 python engine/wsplang.py programs/example_semantic_areas.wspl --run
+```
+
+### 4. Run NanoWSP: Zero-Backpropagation Micro-LLM (30 Seconds)
+Experience an 80k-parameter micro-Transformer whose factual associations and logic gates are programmed directly in weight space:
+
+```bash
+python scripts/demo_nanowsp_capabilities.py
 ```
 
 👉 **Need a full walkthrough?** Read our step-by-step **[Getting Started Guide](docs/getting_started.md)**.
@@ -134,6 +142,10 @@ Instead of temporary inference hooks in Python:
 |---|---|
 | [`wsp.py`](wsp.py) | **WSP Toolkit**: In-place GGUF Q6_K surgical editor + canonical C-level requantizer (`quantize_row_q6_K_ref`, 87% byte-identity, error ~6e-6) + differential semantic centroid calculator. |
 | [`engine/wsplang.py`](engine/wsplang.py) | **WSP-Lang Compiler & Runtime**: Parser, AST validator, interactive execution engine (`--run`), and manifest generator. |
+| [`engine/nanowsp_runtime.py`](engine/nanowsp_runtime.py) | **NanoWSP Runtime**: Self-contained 2-layer micro-Transformer ($d=64$, 80,704 params) programmed in weight space via Moore-Penrose projection algebra. |
+| [`scripts/demo_nanowsp_capabilities.py`](scripts/demo_nanowsp_capabilities.py) | **NanoWSP Interactive Showcase**: Multi-token words, boolean circuits, delimiter closure, and attractor deletion. |
+| [`programs/nanowsp_architecture.wspl`](programs/nanowsp_architecture.wspl) | **NanoWSP Declarative Program**: Architecture specification, spectral audit, Weyl bounds, and attractor unlearning contracts. |
+| [`docs/nanowsp_findings.md`](docs/nanowsp_findings.md) | **NanoWSP Research Findings**: Detailed empirical capacity bounds, conditioning analysis ($\kappa(X)$), and lessons learned. |
 | [`engine/wsp_mcp_server.py`](engine/wsp_mcp_server.py) | **FastMCP Server**: Exposes weight inspection (`peek`), surgical editing (`poke`), and WSP-Lang execution directly to AI agents (Claude Desktop, Cursor, Antigravity). |
 | [`challenges/`](challenges/) | **WSP-40 Challenge Suite**: 8 difficulty levels and 40 challenges evaluated with strictly mechanical judges (no self-grading). |
 | [`programs/`](programs/) | **WSP-Lang Programs**: Declarative `.wspl` files for semantic mapping, inspection, and weight synthesis. |

@@ -230,6 +230,7 @@
     <div style="display: flex; gap: 1.5rem; font-size: 0.95rem;">
       <a href="index.html" style="color: var(--accent-cyan); text-decoration: none;">Overview</a>
       <a href="wsplang.html" style="color: var(--text-muted); text-decoration: none;">WSP-Lang 0.4 Spec</a>
+      <a href="nanowsp.html" style="color: var(--accent-purple); text-decoration: none;">NanoWSP Micro-LLM</a>
       <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16" target="_blank" style="color: var(--text-muted); text-decoration: none;">🤗 HF Discussion #16</a>
       <a href="mcp.html" style="color: var(--text-muted); text-decoration: none;">MCP Server</a>
       <a href="behavioral_steering_and_dreaming.html" style="color: var(--text-muted); text-decoration: none;">Behavioral Steering</a>
@@ -248,6 +249,7 @@
         View on GitHub
       </a>
       <a href="wsplang.html" class="btn btn-secondary">📜 WSP-Lang 0.4 Spec (FWP)</a>
+      <a href="nanowsp.html" class="btn btn-secondary" style="border-color: var(--accent-purple); color: #E9D5FF;">🤖 NanoWSP Micro-LLM</a>
       <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B/discussions/16" class="btn btn-secondary" target="_blank">🤗 HF Discussion #16</a>
       <a href="mcp.html" class="btn btn-secondary">⚡ FastMCP Server</a>
       <a href="behavioral_steering_and_dreaming.html" class="btn btn-secondary">🧬 Behavioral Steering Paper</a>
@@ -261,6 +263,31 @@
         <img src="assets/wsplang_semantic_areas.png" alt="WSP-Lang Semantic Architecture Infographic">
       </div>
     </section>
+    <!-- NANOWSP MICRO-LLM CARD -->
+    <section>
+      <div class="card" style="border-color: var(--accent-purple); background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem; margin-bottom: 2rem;">
+        <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(168, 85, 247, 0.25); border: 1px solid var(--accent-purple); color: #E9D5FF; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW · EXPERIMENTAL ZERO-BACKPROPAGATION TRANSFORMER</div>
+        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🤖 Project NanoWSP: Small LLM Synthesized & Programmed from Scratch</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
+          A standalone <strong>2-layer autoregressive Transformer (80,704 parameters)</strong> built to test the fundamental limits of Weight-Space Programming without stochastic gradient descent. Imprints multi-token words, boolean logic gates, and delimiter matching directly in weight space.
+        </p>
+        <div class="grid-2" style="margin-bottom: 1rem;">
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
+            <h4 style="color: var(--accent-purple); margin-bottom: 0.5rem;">1. Moore-Penrose Projection vs Hebbian Cross-Talk</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Activations suffer <code>cos = 0.894</code> overlap. While naive outer products fail, the Moore-Penrose inverse Gram projection <code>&Delta;W = Y (X^T X)^-1 X^T</code> delivers <strong>100.0% recall</strong> across multi-pair factual datasets.</p>
+          </div>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
+            <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">2. Empirical Capacity & Spectral Conditioning Bound</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Empirical tests reveal pristine memory retention up to <code>M &le; 20</code> associations before condition number explosion (<code>&kappa;(X) &gt; 1000</code>). Proves WSP is optimal for localized surgery and unlearning.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="nanowsp.html" class="btn btn-primary" style="background: var(--accent-purple); color: #FFFFFF; font-size: 0.9rem;">Explore NanoWSP Showcase & Benchmarks &rarr;</a>
+          <span style="display: inline-flex; align-items: center; font-size: 0.9rem; color: var(--text-muted); font-family: monospace;">python scripts/demo_nanowsp_capabilities.py</span>
+        </div>
+      </div>
+    </section>
+
     <!-- WSP-LANG 0.4 CARD -->
     <section>
       <div class="card" style="border-color: var(--accent-cyan); background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem;">

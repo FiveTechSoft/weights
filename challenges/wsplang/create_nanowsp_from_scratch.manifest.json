@@ -1,0 +1,452 @@
+{
+  "wsplang_version": "0.4.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "create_nanowsp_from_scratch",
+  "archivo": "programs\\create_nanowsp.wspl",
+  "steps_count": 17,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 80704"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 1.0"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 10.0"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_training = false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step init_architecture model=NanoWSP layers=2 d_model=64 heads=2 d_ff=128 vocab=100 out=models/nanowsp/model.safetensors",
+      "op": "init_architecture",
+      "args": "model=NanoWSP layers=2 d_model=64 heads=2 d_ff=128 vocab=100 out=models/nanowsp/model.safetensors"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"ES:\" target=\"MAD\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"ES:\" target=\"MAD\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"FR:\" target=\"PAR\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"FR:\" target=\"PAR\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"IT:\" target=\"ROM\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"IT:\" target=\"ROM\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"1&1=\" target=\"1\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"1&1=\" target=\"1\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"1&0=\" target=\"0\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"1&0=\" target=\"0\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"0&1=\" target=\"0\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"0&1=\" target=\"0\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"0&0=\" target=\"0\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"0&0=\" target=\"0\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"(hello\" target=\")\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"(hello\" target=\")\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"[item\" target=\"]\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"[item\" target=\"]\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step imprint_association prompt=\"{block\" target=\"}\" layer=1 eta=5.0",
+      "op": "imprint_association",
+      "args": "prompt=\"{block\" target=\"}\" layer=1 eta=5.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step spectral_audit layers.1.mlp_out.weight q=8",
+      "op": "spectral_audit",
+      "args": "layers.1.mlp_out.weight q=8"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.4.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 5,
+      "steps": 12
+    },
+    "pasos": [
+      {
+        "op": "init_architecture",
+        "args": "model=NanoWSP layers=2 d_model=64 heads=2 d_ff=128 vocab=100 out=models/nanowsp/model.safetensors"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"ES:\" target=\"MAD\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"FR:\" target=\"PAR\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"IT:\" target=\"ROM\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"1&1=\" target=\"1\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"1&0=\" target=\"0\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"0&1=\" target=\"0\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"0&0=\" target=\"0\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"(hello\" target=\")\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"[item\" target=\"]\" layer=1 eta=5.0"
+      },
+      {
+        "op": "imprint_association",
+        "args": "prompt=\"{block\" target=\"}\" layer=1 eta=5.0"
+      },
+      {
+        "op": "spectral_audit",
+        "args": "layers.1.mlp_out.weight q=8"
+      }
+    ],
+    "pasos_mapeo": {
+      "init_architecture": "synthesize and initialize micro-transformer architecture from scratch in weight space",
+      "imprint_association": "declarative factual/behavioral memory imprinting via outer product",
+      "spectral_audit": "randomized SVD spectral decomposition, eigengap delta, and column leverage scores"
+    },
+    "budgets": {
+      "max_modified_weights": 80704,
+      "target_parameter_fraction": 1.0,
+      "max_delta_norm": 10.0,
+      "allow_write": true,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-04T14:36:27",
+  "ejecucion": [
+    {
+      "op": "init_architecture",
+      "args": "model=NanoWSP layers=2 d_model=64 heads=2 d_ff=128 vocab=100 out=models/nanowsp/model.safetensors",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "architecture": "NanoWSP",
+        "layers": 2,
+        "d_model": 64,
+        "heads": 2,
+        "d_ff": 128,
+        "vocab_size": 100,
+        "total_parameters": 80704,
+        "output_file": "C:\\weights\\models\\nanowsp\\model.safetensors",
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"ES:\" target=\"MAD\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "ES:",
+        "target": "MAD",
+        "layer": 1,
+        "details": {
+          "batch_status": "ok",
+          "pairs_count": 3,
+          "layer": 1,
+          "condition_number": 2.635233163833618,
+          "delta_frobenius": 11.36058521270752,
+          "weight_norm_before": 2.300027370452881,
+          "weight_norm_after": 11.565046310424805
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"FR:\" target=\"PAR\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "FR:",
+        "target": "PAR",
+        "layer": 1,
+        "details": {
+          "batch_status": "ok",
+          "pairs_count": 3,
+          "layer": 1,
+          "condition_number": 3.8389577865600586,
+          "delta_frobenius": 15.901449203491211,
+          "weight_norm_before": 11.565046310424805,
+          "weight_norm_after": 19.868663787841797
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"IT:\" target=\"ROM\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "IT:",
+        "target": "ROM",
+        "layer": 1,
+        "details": {
+          "batch_status": "ok",
+          "pairs_count": 3,
+          "layer": 1,
+          "condition_number": 5.281388282775879,
+          "delta_frobenius": 20.32118797302246,
+          "weight_norm_before": 19.868663787841797,
+          "weight_norm_after": 27.605932235717773
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"1&1=\" target=\"1\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "1&1=",
+        "target": "1",
+        "layer": 1,
+        "details": {
+          "imprint_status": "ok",
+          "prompt": "1&1=",
+          "target_char": "1",
+          "layer": 1,
+          "target_tensor": "layers.1.mlp_out.weight",
+          "delta_frobenius": 4.999999523162842,
+          "weight_norm_before": 27.605932235717773,
+          "weight_norm_after": 27.961355209350586
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"1&0=\" target=\"0\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "1&0=",
+        "target": "0",
+        "layer": 1,
+        "details": {
+          "imprint_status": "ok",
+          "prompt": "1&0=",
+          "target_char": "0",
+          "layer": 1,
+          "target_tensor": "layers.1.mlp_out.weight",
+          "delta_frobenius": 5.0,
+          "weight_norm_before": 27.961355209350586,
+          "weight_norm_after": 28.28399085998535
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"0&1=\" target=\"0\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "0&1=",
+        "target": "0",
+        "layer": 1,
+        "details": {
+          "imprint_status": "ok",
+          "prompt": "0&1=",
+          "target_char": "0",
+          "layer": 1,
+          "target_tensor": "layers.1.mlp_out.weight",
+          "delta_frobenius": 5.0,
+          "weight_norm_before": 28.28399085998535,
+          "weight_norm_after": 29.392471313476562
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"0&0=\" target=\"0\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "0&0=",
+        "target": "0",
+        "layer": 1,
+        "details": {
+          "imprint_status": "ok",
+          "prompt": "0&0=",
+          "target_char": "0",
+          "layer": 1,
+          "target_tensor": "layers.1.mlp_out.weight",
+          "delta_frobenius": 5.000000953674316,
+          "weight_norm_before": 29.392471313476562,
+          "weight_norm_after": 31.0362491607666
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"(hello\" target=\")\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "(hello",
+        "target": ")",
+        "layer": 1,
+        "details": {
+          "imprint_status": "ok",
+          "prompt": "(hello",
+          "target_char": ")",
+          "layer": 1,
+          "target_tensor": "layers.1.mlp_out.weight",
+          "delta_frobenius": 4.999999523162842,
+          "weight_norm_before": 31.0362491607666,
+          "weight_norm_after": 31.262479782104492
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"[item\" target=\"]\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "[item",
+        "target": "]",
+        "layer": 1,
+        "details": {
+          "imprint_status": "ok",
+          "prompt": "[item",
+          "target_char": "]",
+          "layer": 1,
+          "target_tensor": "layers.1.mlp_out.weight",
+          "delta_frobenius": 5.0,
+          "weight_norm_before": 31.262479782104492,
+          "weight_norm_after": 31.47580909729004
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "imprint_association",
+      "args": "prompt=\"{block\" target=\"}\" layer=1 eta=5.0",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "operation": "imprint_association",
+        "prompt": "{block",
+        "target": "}",
+        "layer": 1,
+        "details": {
+          "imprint_status": "ok",
+          "prompt": "{block",
+          "target_char": "}",
+          "layer": 1,
+          "target_tensor": "layers.1.mlp_out.weight",
+          "delta_frobenius": 4.999999046325684,
+          "weight_norm_before": 31.47580909729004,
+          "weight_norm_after": 31.895780563354492
+        },
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "spectral_audit",
+      "args": "layers.1.mlp_out.weight q=8",
+      "status": "ok",
+      "result": {
+        "tensor": "layers.1.mlp_out.weight",
+        "shape": [
+          64,
+          128
+        ],
+        "rank_q": 8,
+        "top_singular_values": [
+          17.6879,
+          14.825,
+          14.0199,
+          11.5019,
+          6.9506,
+          6.4985,
+          4.9052,
+          3.8276
+        ],
+        "spectral_gap_delta": 2.862915,
+        "condition_number": 4.6212,
+        "leverage_distribution": {
+          "sum": 8.00000286102295,
+          "mean": 0.06250002235174179,
+          "max": 0.30288591980934143,
+          "min": 0.004429809283465147
+        }
+      }
+    }
+  ]
+}

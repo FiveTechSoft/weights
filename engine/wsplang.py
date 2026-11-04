@@ -38,6 +38,10 @@ sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 __version__ = "0.4.0"
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+if str(ROOT / "engine") not in sys.path:
+    sys.path.insert(0, str(ROOT / "engine"))
 DIR_PL = ROOT / "challenges" / "wsplang"
 DIR_PL.mkdir(parents=True, exist_ok=True)
 
@@ -53,7 +57,9 @@ OPS_ALLOWED = {
     # WSP-Lang 0.3 (Fast Weight Programming & Delta Rule)
     "delta_unlearn", "fwp_overlay", "spectral_decay", "assert_orthogonal_preservation",
     # WSP-Lang 0.4 (Matrix Perturbation Theory & Leverage Scores)
-    "spectral_audit", "assert_weyl", "assert_davis_kahan"
+    "spectral_audit", "assert_weyl", "assert_davis_kahan",
+    # WSP-Lang 0.5 (Micro-LLM Architecture Synthesis & Weight Programming)
+    "init_architecture", "imprint_association", "imprint_batch"
 }
 
 TYPES = {
@@ -66,7 +72,7 @@ TYPES = {
 INT_OPS = {
     "project_out", "project_in", "delta_unlearn", "fwp_overlay", "spectral_decay",
     "activation_projection", "poke-weight", "scale", "ablate", "scale-rows",
-    "scale-cols", "blend-rows", "cov-steer"
+    "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association", "imprint_batch"
 }
 
 METADATA = {
@@ -243,7 +249,11 @@ def plan_run(prog: Dict[str, Any], steps: List[Dict[str, Any]]) -> Dict[str, Any
         # WSP-Lang 0.4 Matrix Perturbation Theory & Leverage Scores
         "spectral_audit": "randomized SVD spectral decomposition, eigengap delta, and column leverage scores",
         "assert_weyl": "verify Weyl operator norm perturbation bound |sigma_i' - sigma_i| <= ||Delta W||_2",
-        "assert_davis_kahan": "verify Davis-Kahan invariant subspace stability bound sin Theta <= ||Delta W||_2 / delta"
+        "assert_davis_kahan": "verify Davis-Kahan invariant subspace stability bound sin Theta <= ||Delta W||_2 / delta",
+        # WSP-Lang 0.5 Architecture Synthesis & Programming
+        "init_architecture": "synthesize and initialize micro-transformer architecture from scratch in weight space",
+        "imprint_association": "declarative factual/behavioral memory imprinting via outer product",
+        "imprint_batch": "Moore-Penrose closed-form multi-associative weight synthesis without backpropagation"
     }
 
     step_cmds = []
@@ -276,16 +286,20 @@ def plan_run(prog: Dict[str, Any], steps: List[Dict[str, Any]]) -> Dict[str, Any
 # ==============================================================================
 
 def parse_named_args(arg_string: str) -> Tuple[List[str], Dict[str, str]]:
-    """Parse positional and key=value arguments from a step arg string."""
+    """Parse positional and key=value arguments from a step arg string, respecting quotes."""
+    import shlex
     positional = []
     named = {}
-    tokens = arg_string.split()
+    try:
+        tokens = shlex.split(arg_string, posix=False)
+    except Exception:
+        tokens = arg_string.split()
     for tok in tokens:
         if "=" in tok:
             k, v = tok.split("=", 1)
-            named[k] = v
+            named[k] = v.strip('"\'')
         else:
-            positional.append(tok)
+            positional.append(tok.strip('"\''))
     return positional, named
 
 
@@ -416,8 +430,17 @@ def execute_plan_v4(
     default_gguf = Path(r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf")
     default_safetensors = ROOT / "hf_cache" / "mimo-distill-hf"
 
-    target_path = Path(model_path) if model_path else (default_safetensors if default_safetensors.exists() else default_gguf)
-    is_safetensors = target_path.is_dir() or target_path.suffix == ".safetensors"
+    model_name = ""
+    for sec, val in prog.get("__root__", []):
+        if sec == "model":
+            model_name = val.strip()
+
+    nanowsp_default = ROOT / "models" / "nanowsp" / "model.safetensors"
+    if "nanowsp" in model_name.lower() or (model_path and "nanowsp" in str(model_path).lower()):
+        target_path = Path(model_path) if model_path else (nanowsp_default if nanowsp_default.exists() else nanowsp_default.parent)
+    else:
+        target_path = Path(model_path) if model_path else (default_safetensors if default_safetensors.exists() else default_gguf)
+    is_safetensors = (target_path.is_dir() or target_path.suffix == ".safetensors") if isinstance(target_path, Path) else True
 
     for step in step_list:
         op = step["op"]
@@ -427,9 +450,159 @@ def execute_plan_v4(
 
         try:
             # ------------------------------------------------------------------
+            # OP: init_architecture (WSP-Lang 0.5: Synthesize Micro-LLM from Scratch)
+            # ------------------------------------------------------------------
+            if op == "init_architecture":
+                from engine.nanowsp_runtime import NanoWSP, NanoWSPConfig
+
+                arch_name = positional[0] if positional else named.get("model", "NanoWSP")
+                layers = int(named.get("layers", 2))
+                d_model = int(named.get("d_model", 64))
+                heads = int(named.get("heads", 2))
+                d_ff = int(named.get("d_ff", 128))
+                vocab = int(named.get("vocab", 100))
+                out_file = named.get("out", str(ROOT / "models" / "nanowsp" / "model.safetensors"))
+                out_p = Path(out_file)
+                if not out_p.is_absolute():
+                    out_p = ROOT / out_p
+
+                cfg = NanoWSPConfig(
+                    vocab_size=vocab,
+                    d_model=d_model,
+                    n_layers=layers,
+                    n_heads=heads,
+                    d_head=d_model // heads,
+                    d_ff=d_ff
+                )
+                nanowsp = NanoWSP(config=cfg, seed=int(named.get("seed", 42)))
+
+                saved = False
+                if allow_write:
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    nanowsp.save_checkpoint(out_p)
+                    saved = True
+                    target_path = out_p
+                    is_safetensors = True
+
+                res["execution_state"] = "executed" if saved else "simulated"
+                res["result"] = {
+                    "architecture": arch_name,
+                    "layers": layers,
+                    "d_model": d_model,
+                    "heads": heads,
+                    "d_ff": d_ff,
+                    "vocab_size": vocab,
+                    "total_parameters": nanowsp.count_parameters(),
+                    "output_file": str(out_p),
+                    "written_to_disk": saved
+                }
+
+            # ------------------------------------------------------------------
+            # OP: imprint_association (WSP-Lang 0.5: Declarative Memory Imprinting)
+            # ------------------------------------------------------------------
+            elif op == "imprint_association":
+                from engine.nanowsp_runtime import NanoWSP
+
+                prompt = named.get("prompt", positional[0] if positional else "")
+                target = named.get("target", positional[1] if len(positional) > 1 else "")
+                layer_idx = int(named.get("layer", 1))
+                eta = float(named.get("eta", 5.0))
+
+                ckpt_path = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
+                if not ckpt_path.exists():
+                    fallback = ROOT / "models" / "nanowsp" / "model.safetensors"
+                    if fallback.exists():
+                        ckpt_path = fallback
+
+                nanowsp = NanoWSP()
+                if ckpt_path.exists():
+                    nanowsp.load_checkpoint(ckpt_path)
+
+                if len(target) <= 1:
+                    imprint_res = nanowsp.imprint_associative_rule(prompt, target, layer_idx=layer_idx, eta=eta)
+                else:
+                    pairs = []
+                    curr = prompt
+                    for ch in target:
+                        pairs.append((curr, ch))
+                        curr += ch
+                    imprint_res = nanowsp.imprint_associative_batch(pairs, layer_idx=layer_idx, eta=eta)
+
+                saved = False
+                if allow_write and ckpt_path.exists():
+                    nanowsp.save_checkpoint(ckpt_path)
+                    saved = True
+                    target_path = ckpt_path
+                    is_safetensors = True
+
+                res["execution_state"] = "executed" if saved else "simulated"
+                res["result"] = {
+                    "operation": "imprint_association",
+                    "prompt": prompt,
+                    "target": target,
+                    "layer": layer_idx,
+                    "details": imprint_res,
+                    "written_to_disk": saved
+                }
+
+            # ------------------------------------------------------------------
+            # OP: imprint_batch (WSP-Lang 0.5: Moore-Penrose Multi-Memory Synthesis)
+            # ------------------------------------------------------------------
+            elif op == "imprint_batch":
+                from engine.nanowsp_runtime import NanoWSP
+
+                batch_file = named.get("file")
+                layer_idx = int(named.get("layer", 1))
+                eta = float(named.get("eta", 5.0))
+
+                batch_p = Path(batch_file) if batch_file else None
+                if batch_p and not batch_p.is_absolute():
+                    batch_p = ROOT / batch_p
+
+                pairs = []
+                if batch_p and batch_p.exists():
+                    with open(batch_p, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        pairs = [(item["prompt"], item["target"]) for item in data]
+                elif "pairs" in named:
+                    raw_p = named["pairs"].split(";")
+                    for rp in raw_p:
+                        if "->" in rp:
+                            p, t = rp.split("->", 1)
+                            pairs.append((p.strip(), t.strip()))
+
+                ckpt_path = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
+                if not ckpt_path.exists():
+                    fallback = ROOT / "models" / "nanowsp" / "model.safetensors"
+                    if fallback.exists():
+                        ckpt_path = fallback
+
+                nanowsp = NanoWSP()
+                if ckpt_path.exists():
+                    nanowsp.load_checkpoint(ckpt_path)
+
+                batch_res = nanowsp.imprint_associative_batch(pairs, layer_idx=layer_idx, eta=eta)
+
+                saved = False
+                if allow_write and ckpt_path.exists():
+                    nanowsp.save_checkpoint(ckpt_path)
+                    saved = True
+                    target_path = ckpt_path
+                    is_safetensors = True
+
+                res["execution_state"] = "executed" if saved else "simulated"
+                res["result"] = {
+                    "operation": "imprint_batch",
+                    "pairs_count": len(pairs),
+                    "condition_number": batch_res.get("condition_number"),
+                    "delta_frobenius": batch_res.get("delta_frobenius"),
+                    "written_to_disk": saved
+                }
+
+            # ------------------------------------------------------------------
             # OP: delta_unlearn (Delta-Rule Associative Memory Unlearning)
             # ------------------------------------------------------------------
-            if op == "delta_unlearn":
+            elif op == "delta_unlearn":
                 tensor_name = positional[0] if positional else named.get("tensor")
                 if not tensor_name:
                     raise ValueError("Tensor name must be specified in delta_unlearn")
@@ -1386,6 +1559,19 @@ def main():
                 if status == "ok":
                     print(f"  Output GGUF:    {res.get('output_gguf')}")
                     print(f"  Dimensions:     {res.get('vector_dimension')} dims x {res.get('layers_configured')} layers")
+            elif op == "init_architecture":
+                if status == "ok":
+                    print(f"  Architecture:   {res.get('architecture')} ({res.get('layers')} layers, d={res.get('d_model')}, heads={res.get('heads')})")
+                    print(f"  Parameters:     {res.get('total_parameters'):,} weights ({res.get('vocab_size')} vocab)")
+                    print(f"  Checkpoint:     {res.get('output_file')}")
+            elif op == "imprint_association":
+                if status == "ok":
+                    print(f"  Prompt -> Target: '{res.get('prompt')}' -> '{res.get('target')}' (Layer {res.get('layer')})")
+                    print(f"  Delta Frobenius:  {res.get('details', {}).get('delta_frobenius', 0.0):.4f}")
+            elif op == "imprint_batch":
+                if status == "ok":
+                    print(f"  Batch Imprint:    {res.get('pairs_count')} pairs synthesized via Moore-Penrose")
+                    print(f"  Condition Number: {res.get('condition_number'):.2f}")
             elif op == "audit":
                 if status == "ok":
                     print(f"  Tensor:         {res.get('tensor')} {res.get('shape')}")

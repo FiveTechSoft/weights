@@ -1,0 +1,39 @@
+# ==============================================================================
+# WSP-Lang 0.5: NanoWSP Full Model Creation & Weight Programming Program
+# Model: NanoWSP-80k (Synthesized from Scratch)
+# Objective: Build an autoregressive Transformer completely in weight space
+# ==============================================================================
+
+experiment create_nanowsp_from_scratch:
+    model: NanoWSP-80k
+    objective: synthesize_and_program_micro_transformer_without_backpropagation
+
+    budgets:
+        max_modified_weights = 80704
+        target_parameter_fraction = 1.0
+        max_delta_norm = 10.0
+        allow_write = true
+        allow_training = false
+
+    steps:
+        # Step 1: Synthesize and initialize the 2-layer micro-Transformer architecture
+        step init_architecture model=NanoWSP layers=2 d_model=64 heads=2 d_ff=128 vocab=100 out=models/nanowsp/model.safetensors
+
+        # Step 2: Program multi-token factual geography dictionary into Layer 1 MLP Out
+        step imprint_association prompt="ES:" target="MAD" layer=1 eta=5.0
+        step imprint_association prompt="FR:" target="PAR" layer=1 eta=5.0
+        step imprint_association prompt="IT:" target="ROM" layer=1 eta=5.0
+
+        # Step 3: Program boolean logic circuits (AND truth table)
+        step imprint_association prompt="1&1=" target="1" layer=1 eta=5.0
+        step imprint_association prompt="1&0=" target="0" layer=1 eta=5.0
+        step imprint_association prompt="0&1=" target="0" layer=1 eta=5.0
+        step imprint_association prompt="0&0=" target="0" layer=1 eta=5.0
+
+        # Step 4: Program syntactic delimiter auto-closure rules
+        step imprint_association prompt="(hello" target=")" layer=1 eta=5.0
+        step imprint_association prompt="[item" target="]" layer=1 eta=5.0
+        step imprint_association prompt="{block" target="}" layer=1 eta=5.0
+
+        # Step 5: Spectral decomposition audit of the synthesized weights
+        step spectral_audit layers.1.mlp_out.weight q=8
