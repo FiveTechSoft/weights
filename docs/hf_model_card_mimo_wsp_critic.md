@@ -65,6 +65,42 @@ We surgically updated the down-projection matrices ($W_{\text{down}} \in \mathbb
 
 ---
 
+## 🛠️ WSPLang Code Used to Build This Model
+
+The model was compiled directly from the declarative [**mimo_multilayer_reflection_envelope.wspl**](mimo_multilayer_reflection_envelope.wspl) program using the open-source **[WSP-Lang 0.7](https://github.com/FiveTechSoft/weights)** compiler:
+
+`wspl
+# ==============================================================================
+# WSP-Lang 0.7: Multi-Layer Reflection Envelope Synthesis (MiMo-V2.6-Distill-9B)
+# Objective: Grounded representation steering across intermediate layers 10..22
+# Theoretical Foundation: MEMIT, RepE, CAA, and Directional Mediation
+# ==============================================================================
+
+experiment mimo_reflection_envelope:
+    model: MiMo-V2.6-Distill-Qwen-9B
+    objective: synthesize_multilayer_self_critique_envelope
+
+    budgets:
+        max_modified_weights = 654311424
+        target_parameter_fraction = 0.072
+        max_delta_norm = 0.05
+        allow_write = true
+
+    steps:
+        # Synthesize smooth Gaussian envelope over mediating layers 10..22
+        # Peak at Layer 16 (sigma = 2.5), 1-based indexing for llama.cpp control vectors
+        step layer_envelope 10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32
+`
+
+### Reproduce Locally (Zero GPU / Zero Training)
+`ash
+git clone https://github.com/FiveTechSoft/weights.git
+cd weights
+python engine/wsplang.py programs/mimo_multilayer_reflection_envelope.wspl --run
+`
+
+---
+
 ## 💻 How to Use
 
 ### Using Hugging Face Transformers
