@@ -603,3 +603,16 @@ Script: `lab/train_lab_toy_m2.py`. Paciente: `NanoWSP2` (4 capas, $d_{model}=128
 
 - **Hallazgo M-2**: En un Transformer real con atención y MLP, la cirugía MEMIT almacena 72 hechos de golpe (50.0%) sin entrenamiento iterativo, siendo **102 veces más rápida** que 250 pasos de AdamW.
 - **Frontera de inducción confirmada**: Dado que las claves `XY` en memoria asociativa son ortogonales e independientes, ni AdamW (5.4%) ni MEMIT (5.4%) generalizan a claves no vistas (5.4% equivale al azar $1/19$). La cirugía reproduce con total fidelidad la naturaleza memorística del entrenamiento sobre hechos atómicos.
+
+## 19. LAB M-1b: compose_circuit - cirugia EXACTA de PARITY-8 supera al entrenamiento (2026-11-04)
+Construccion cerrada (lab/train_lab_toy_m1b.py): 8 unidades umbral alternantes (k=10, t_m=m+0.5) + 1 constante (shift -eps/2) + 23 muertas. Readout alternante z = sum eps*(-1)^m h_m - eps/2: POSITIVO si s impar.
+| brazo | universo PARITY-8 (256 casos, juez wspx certify) |
+|---|---|
+| entrenamiento Adam 4000 (W1+W2) | 100% seen / 83.6% holdout |
+| **compose_circuit (surgery)** | **100.0% EXACTO (256/256, margin 0.025, certify verdict EXACT)** |
+| placebo norm-matched | 48.8% |
+
+- Veredicto: **SUPPORTED / keep / surgery_tier EXACT** (infer_tier determinista goldado en engine/record.py): record e2026.116.m1b-compose-circuit.json.
+- Es la primera demostracion de "cirugia > entrenamiento en generalizacion" del lab: cuando el oraculo cerrado de la tarea es conocible, la cirugia construida supera el gradient descent en un universo finito.
+- Nota metodo: los answers de certify provienen SIEMPRE del modelo (no del oracle)... (answer file regenerado por el surgery run y el juez wspx certifica contra el oracle del dataset).
+- Puente al 9B: esta clase de circuitos EXACTOS (lookups/Fourier) es el tier T1; para el curriculum (memit/imprint factos con oracle cerrado) ver M-2 con el paciente NanoWSP-3 pre-entrenado (PPL 14.3).
