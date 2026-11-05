@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-11-05T09:02:43Z",
+  "model_name": "nanoGPT-Shakespeare (WSPLang Compilation)",
+  "source_program": "programs/build_karpathy_nanogpt.wspl",
+  "checkpoint": "C:\\weights\\models\\nanogpt_karpathy\\model.safetensors",
+  "total_parameters": 10770816,
+  "tests": {
+    "test1_topology": {
+      "num_tensors": 83,
+      "total_parameters": 10770816,
+      "exact_match": true
+    },
+    "test2_weight_tying": {
+      "max_abs_difference": 0.0,
+      "is_tied_identical": true
+    },
+    "test3_logits_parity": {
+      "max_abs_difference": 0.0,
+      "threshold": 1e-06,
+      "passes": true
+    },
+    "test4_causal_mask": {
+      "past_leakage": 0.0,
+      "future_sensitivity": 1.7749770879745483,
+      "passes": true
+    },
+    "test5_generation_parity": {
+      "mismatched_tokens": 0,
+      "total_tokens": 35,
+      "passes": true
+    },
+    "test6_loss_parity": {
+      "loss_ref": 4.2419047355651855,
+      "loss_wsp": 4.2419047355651855,
+      "abs_diff": 0.0,
+      "passes": true
+    }
+  },
+  "overall_verdict": {
+    "all_tests_passed": true,
+    "mathematical_identity_certified": true,
+    "max_numerical_drift": 0.0
+  }
+}

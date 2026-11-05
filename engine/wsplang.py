@@ -70,7 +70,7 @@ OPS_ALLOWED = {
     "rosetta_align", "cross_project",
     "layer_envelope", "multi_layer_envelope", "distributed_memit",
     # WSP-Lang 0.7: JEPA (LeCun) & Weight Space Learning (Damian Borth) Operators
-    "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift",
+    "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift", "tie_weights",
     # Experimental / stubs
     "leace_erase",   # Exact LEACE when covariance is supplied; falls back to weight-Gram proxy
     "surprise_fwp",  # STUB: word-frequency repetition heuristic, not neural Titans surprisal
@@ -129,7 +129,7 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "multi_layer_envelope", "distributed_memit", "spectral_decay",
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
-    "jepa_steer", "permute_align", "compile_synthetic",
+    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights",
 }
 STUB_OPS = {"leace_erase", "surprise_fwp"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
@@ -285,6 +285,8 @@ def check_feasibility(prog, steps, model_arg=None):
         op = st.get("op")
         if not op:
             continue
+        if op == "init_architecture":
+            model_kind = "safetensors" 
         if op not in IMPLEMENTED_OPS:
             errors.append(
                 f"op '{op}' NO implementada en el runtime (antes se ejecutaba como 'skipped' "
@@ -1225,16 +1227,9 @@ def execute_plan_v4(
                     "translated_vector_out": str(out_p.relative_to(ROOT)) if (allow_write and out_p.is_relative_to(ROOT)) else str(out_p)
                 }
 
+            # ------------------------------------------------------------------
             # OP: init_architecture (WSP-Lang 0.5: Synthesize Micro-LLM from Scratch)
             # ------------------------------------------------------------------
-            elif op == "rosetta_align":
-                if status == "ok":
-                    print(f"  Rosetta Procrustes: {res.get('d_source')} dims -> {res.get('d_target')} dims (Alignment: {res.get('mean_anchor_cosine')})")
-                    print(f"  Output Mapping:     {res.get('rosetta_matrix_out')}")
-            elif op == "cross_project":
-                if status == "ok":
-                    print(f"  Cross-Projection:   {res.get('source_dim')} dims -> {res.get('target_dim')} dims (Norm: {res.get('projected_norm')})")
-                    print(f"  Translated Vector:  {res.get('translated_vector_out')}")
             elif op == "init_architecture":
                 arch_name = positional[0] if positional else named.get("model", "NanoWSP")
                 layers = int(named.get("layers", 2))
@@ -1247,7 +1242,19 @@ def execute_plan_v4(
                 if not out_p.is_absolute():
                     out_p = ROOT / out_p
 
-                if "2" in arch_name or layers > 2 or d_model >= 128:
+                if arch_name.lower() in ("nanogpt", "karpathy", "gpt2") or named.get("format") == "karpathy":
+                    from engine.nanogpt_runtime import NanoGPT, GPTConfig
+                    block_size = int(named.get("max_seq", named.get("block_size", 256)))
+                    cfg = GPTConfig(
+                        vocab_size=vocab,
+                        n_embd=d_model,
+                        n_layer=layers,
+                        n_head=heads,
+                        d_ff=d_ff if d_ff > 0 else 4 * d_model,
+                        block_size=block_size
+                    )
+                    nanowsp = NanoGPT(config=cfg, seed=int(named.get("seed", 1337)))
+                elif "2" in arch_name or layers > 2 or d_model >= 128:
                     from engine.nanowsp2_runtime import NanoWSP2, NanoWSP2Config
                     cfg = NanoWSP2Config(
                         vocab_size=vocab,
@@ -1914,6 +1921,40 @@ def execute_plan_v4(
                         "target_format": "GGUF",
                         "status": "unsupported_backend",
                         "message": "In-place block requantization for GGUF project_out is not yet implemented; use SafeTensors backend or export GGUF control vector via export_control_vector."
+                    }
+
+            # ------------------------------------------------------------------
+            # OP: tie_weights (WSP-Lang: Exact Weight Tying)
+            # ------------------------------------------------------------------
+            elif op == "tie_weights":
+                src = named.get("source", positional[0] if positional else None)
+                tgt = named.get("target", positional[1] if len(positional) > 1 else None)
+                if not src or not tgt:
+                    raise ValueError("tie_weights requires source and target tensors")
+
+                target_file = target_path or Path(named.get("model", str(ROOT / "models" / "nanogpt" / "model.safetensors")))
+                if not target_file.is_absolute():
+                    target_file = ROOT / target_file
+
+                if not allow_write:
+                    res["execution_state"] = "simulated"
+                    res["result"] = {"status": "simulated", "source": src, "target": tgt}
+                else:
+                    from safetensors.torch import load_file, save_file
+                    sd = load_file(str(target_file))
+                    if src not in sd:
+                        raise ValueError(f"Source tensor {src} not found in {target_file}")
+                    sd[tgt] = sd[src].clone()
+                    save_file(sd, str(target_file))
+                    diff_norm = float((sd[src] - sd[tgt]).norm().item())
+                    res["execution_state"] = "executed"
+                    res["result"] = {
+                        "status": "ok",
+                        "source": src,
+                        "target": tgt,
+                        "shape": list(sd[src].shape),
+                        "parity_frobenius_norm": diff_norm,
+                        "tied": True
                     }
 
             # ------------------------------------------------------------------
@@ -2860,6 +2901,9 @@ def main():
                 if status == "ok":
                     print(f"  Cross-Projection:   {res.get('source_dim')} dims -> {res.get('target_dim')} dims (Norm: {res.get('projected_norm')})")
                     print(f"  Translated Vector:  {res.get('translated_vector_out')}")
+            elif op == "tie_weights":
+                if status == "ok":
+                    print(f"  Tie Weights:    {res.get('source')} <==> {res.get('target')} (Frobenius Diff: {res.get('parity_frobenius_norm', 0.0)})")
             elif op == "init_architecture":
                 if status == "ok":
                     print(f"  Architecture:   {res.get('architecture')} ({res.get('layers')} layers, d={res.get('d_model')}, heads={res.get('heads')})")

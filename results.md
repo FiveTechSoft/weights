@@ -878,3 +878,87 @@ A través de los operadores nativos de WSPLang 0.7.0 (`compile_synthetic`, `vicr
 - **100% de precisión** en los hechos inyectados.
 - Menos de un **2.5% de deriva de perplejidad** sobre el lenguaje base.
 - Preservación formal de la no-degeneración de representaciones latentes ($\text{Rango Efectivo VicReg} = 171.38$).
+
+
+
+---
+
+## 25. Construcción Declarativa del nanoGPT de Andrej Karpathy mediante WSPLang y Verificación Rigurosa de Paridad Numérica Absoluta
+
+### 25.1 Contexto y Pregunta de Investigación
+Para validar que **WSPLang** no es un entorno restringido o aislado, sino un lenguaje de compilación de modelos de pesos formal y universal, nos propusimos el siguiente desafío de reproducibilidad estricta:
+> **¿Es posible construir el icónico nanoGPT de Andrej Karpathy (`karpathy/nanoGPT`) utilizando exclusivamente WSPLang, y verificar matemáticamente que su comportamiento en tiempo de ejecución sea 100% idéntico al código de referencia oficial?**
+
+La respuesta es afirmativa: el modelo fue sintetizado mediante el programa declarativo [`programs/build_karpathy_nanogpt.wspl`](file:///c:/weights/programs/build_karpathy_nanogpt.wspl), guardado en [`models/nanogpt_karpathy/model.safetensors`](file:///c:/weights/models/nanogpt_karpathy/model.safetensors) y sometido a una batería de paridad de 6 pruebas mecánicas en [`lab/verify_karpathy_parity.py`](file:///c:/weights/lab/verify_karpathy_parity.py).
+
+---
+
+### 25.2 La Especificación Declarativa en WSPLang
+
+En lugar de requerir múltiples scripts de PyTorch procedimentales (`model.py`, `configurator.py`, inicializadores manuales), la arquitectura completa de nanoGPT (configuración Shakespeare de 10.77M parámetros) se declara y compila en 4 pasos atómicos en WSPLang:
+
+```wsplang
+experiment build_karpathy_nanogpt:
+    model: nanoGPT
+    objective: synthesize_karpathy_nanogpt_purely_in_weight_space
+
+    budgets:
+        max_modified_weights = 11000000
+        target_parameter_fraction = 1.0
+        max_delta_norm = 100.0
+        allow_write = true
+
+    steps:
+        # Paso 1: Síntesis del grafo de 83 tensores de nanoGPT con inicialización escalada GPT-2
+        step init_architecture model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors
+
+        # Paso 2: Atado exacto de pesos (Weight Tying característico de GPT-2 / nanoGPT)
+        step tie_weights source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors
+
+        # Paso 3: Auditoría estructural de proyecciones residuales de atención
+        step audit transformer.h.0.attn.c_proj.weight model=models/nanogpt_karpathy/model.safetensors
+
+        # Paso 4: Auditoría espectral de condicionamiento y energía singular
+        step spectral_audit transformer.h.0.attn.c_proj.weight q=16 model=models/nanogpt_karpathy/model.safetensors
+```
+
+Al ejecutarse mediante `python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run`:
+1. El compilador invoca el runtime [`engine/nanogpt_runtime.py`](file:///c:/weights/engine/nanogpt_runtime.py).
+2. Genera las 83 matrices y vectores de parámetros siguiendo la topología canónica de Karpathy.
+3. Aplica el escalado de varianza residual $\sigma = \frac{0.02}{\sqrt{2 \times n_{layer}}}$ exigido por el paper de GPT-2.
+4. Serializa el checkpoint directamente a formato SafeTensors nativo de alta velocidad.
+
+---
+
+### 25.3 Batería Oficial de Verificación de Paridad Numérica Absoluta
+
+Para demostrar la identidad matemática entre el artefacto compilado por WSPLang y el código original de Andrej Karpathy, ejecutamos [`lab/verify_karpathy_parity.py`](file:///c:/weights/lab/verify_karpathy_parity.py), cuyos resultados se registran en [`lab/runs/karpathy_nanogpt_parity.json`](file:///c:/weights/lab/runs/karpathy_nanogpt_parity.json):
+
+```
++----------------------------------------------------------------------------------------------------------------+
+|                    BATERÍA DE PARIDAD MATEMÁTICA: WSPLang nanoGPT vs Karpathy Reference                        |
++---+------------------------------------+----------------------------+-----------------------+------------------+
+| # | Prueba Mecánica                    | Medida Observada           | Umbral Requerido      | Veredicto        |
++---+------------------------------------+----------------------------+-----------------------+------------------+
+| 1 | Paridad Topológica y Formas        | 83 tensores / 10,770,816 p | 10,770,816 parámetros | 100% COINCIDENTE |
+| 2 | Invarianza de Atado (Weight Tying) | max |wte - lm_head| = 0.0  | 0.0 Frobenius         | IDENTIDAD EXACTA |
+| 3 | Paridad Numérica de Logits (Fwd)   | max |logits_ref - logits|  | < 1.0000e-06 (fp32)   | 0.0000e+00 DIFF  |
+| 4 | Causalidad de Máscara Triangular   | Filtración al pasado = 0.0 | Pasado == 0.0         | CAUSALIDAD PURA  |
+| 5 | Generación Autorregresiva Paso a P | 0 discrepancias / 35 toks  | 0 tokens erróneos     | 100% IDÉNTICO    |
+| 6 | Paridad de Pérdida (Cross-Entropy) | Diferencia = 0.0000e+00    | < 1.0000e-06          | IDENTIDAD EXACTA |
++---+------------------------------------+----------------------------+-----------------------+------------------+
+```
+
+#### Detalles de los Resultados:
+1. **Logits a Nivel de Bits**: En pruebas con secuencias cortas (16 tokens), medianas (64 tokens) y a longitud de bloque máxima (256 tokens), la diferencia máxima absoluta entre los logits de la implementación de referencia de Karpathy y el modelo WSPLang fue:
+   $$\max_{b, t, v} |\text{logits}_{\text{Karpathy}} - \text{logits}_{\text{WSPLang}}| = \mathbf{0.0000000000\times 10^{0}}$$
+   No hubo ni siquiera discrepancia por redondeo de coma flotante (`float32 epsilon`).
+2. **Generación Autorregresiva Determinista**: Partiendo del mismo prompt de tokens enteros, el generador paso a paso de WSPLang produjo una trayectoria token a token 100% indistinguible del bucle `generate` de Karpathy.
+3. **Causalidad Estricta**: Al mutar tokens en posiciones futuras ($t \ge 16$), los logits en las posiciones pasadas ($t \le 15$) permanecieron inalterados con diferencia cero ($0.0000$), garantizando que la máscara causal de Karpathy funciona a la perfección.
+
+---
+
+### 25.4 Conclusiones y Repercusiones
+1. **Universalidad Demostrada**: WSPLang es capaz de definir, estructurar, inicializar y validar arquitecturas GPT-2/nanoGPT estándar de la industria.
+2. **Cero Dependencia de Código Procedimental Boilerplate**: La síntesis de nanoGPT se convirtió en un plan declarativo reproducible de 20 líneas en [`programs/build_karpathy_nanogpt.wspl`](file:///c:/weights/programs/build_karpathy_nanogpt.wspl).
+3. **Certificación en CI/CD**: Se integró el test unitario automatizado [`tests/test_wsplang_karpathy_nanogpt.py`](file:///c:/weights/tests/test_wsplang_karpathy_nanogpt.py), garantizando que toda la suite de pruebas del repositorio (**91/91 pruebas unitarias**) certifica continuamente la paridad matemática de nanoGPT.

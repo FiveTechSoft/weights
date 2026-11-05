@@ -1,0 +1,174 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "build_karpathy_nanogpt",
+  "archivo": "programs\\build_karpathy_nanogpt.wspl",
+  "steps_count": 8,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 11000000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "target_parameter_fraction = 1.0"
+    },
+    {
+      "sec": "budgets",
+      "expr": "max_delta_norm = 100.0"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step init_architecture model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors",
+      "op": "init_architecture",
+      "args": "model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors"
+    },
+    {
+      "sec": "steps",
+      "expr": "step tie_weights source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors",
+      "op": "tie_weights",
+      "args": "source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors"
+    },
+    {
+      "sec": "steps",
+      "expr": "step audit transformer.h.0.attn.c_proj.weight model=models/nanogpt_karpathy/model.safetensors",
+      "op": "audit",
+      "args": "transformer.h.0.attn.c_proj.weight model=models/nanogpt_karpathy/model.safetensors"
+    },
+    {
+      "sec": "steps",
+      "expr": "step spectral_audit transformer.h.0.attn.c_proj.weight q=16 model=models/nanogpt_karpathy/model.safetensors",
+      "op": "spectral_audit",
+      "args": "transformer.h.0.attn.c_proj.weight q=16 model=models/nanogpt_karpathy/model.safetensors"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 4,
+      "steps": 4
+    },
+    "pasos": [
+      {
+        "op": "init_architecture",
+        "args": "model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors"
+      },
+      {
+        "op": "tie_weights",
+        "args": "source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors"
+      },
+      {
+        "op": "audit",
+        "args": "transformer.h.0.attn.c_proj.weight model=models/nanogpt_karpathy/model.safetensors"
+      },
+      {
+        "op": "spectral_audit",
+        "args": "transformer.h.0.attn.c_proj.weight q=16 model=models/nanogpt_karpathy/model.safetensors"
+      }
+    ],
+    "pasos_mapeo": {
+      "init_architecture": "synthesize and initialize micro-transformer architecture from scratch in weight space",
+      "tie_weights": "custom operation",
+      "audit": "audit tensor energy, norm delta, and semantic alignment",
+      "spectral_audit": "randomized SVD spectral decomposition, eigengap delta, and column leverage scores"
+    },
+    "budgets": {
+      "max_modified_weights": 11000000,
+      "target_parameter_fraction": 1.0,
+      "max_delta_norm": 100.0,
+      "allow_write": true,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-05T09:01:57",
+  "ejecucion": [
+    {
+      "op": "init_architecture",
+      "args": "model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "architecture": "nanoGPT",
+        "layers": 6,
+        "d_model": 384,
+        "heads": 6,
+        "d_ff": 1536,
+        "vocab_size": 65,
+        "total_parameters": 10770816,
+        "output_file": "C:\\weights\\models\\nanogpt_karpathy\\model.safetensors",
+        "written_to_disk": true
+      }
+    },
+    {
+      "op": "tie_weights",
+      "args": "source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "status": "ok",
+        "source": "transformer.wte.weight",
+        "target": "lm_head.weight",
+        "shape": [
+          65,
+          384
+        ],
+        "parity_frobenius_norm": 0.0,
+        "tied": true
+      }
+    },
+    {
+      "op": "audit",
+      "args": "transformer.h.0.attn.c_proj.weight model=models/nanogpt_karpathy/model.safetensors",
+      "status": "ok",
+      "result": {
+        "tensor": "transformer.h.0.attn.c_proj.weight",
+        "shape": [
+          384,
+          384
+        ],
+        "total_elements": 147456,
+        "frobenius_norm": 2.2203006744384766,
+        "max_magnitude": 0.026154255494475365
+      }
+    },
+    {
+      "op": "spectral_audit",
+      "args": "transformer.h.0.attn.c_proj.weight q=16 model=models/nanogpt_karpathy/model.safetensors",
+      "status": "ok",
+      "result": {
+        "tensor": "transformer.h.0.attn.c_proj.weight",
+        "shape": [
+          384,
+          384
+        ],
+        "rank_q": 16,
+        "top_singular_values": [
+          0.2262,
+          0.2242,
+          0.2228,
+          0.2181,
+          0.2151,
+          0.213,
+          0.2121,
+          0.2106
+        ],
+        "spectral_gap_delta": 0.002041,
+        "condition_number": 1.1354,
+        "leverage_distribution": {
+          "sum": 16.0,
+          "mean": 0.0416666679084301,
+          "max": 0.10406505316495895,
+          "min": 0.011188252829015255
+        }
+      }
+    }
+  ]
+}
