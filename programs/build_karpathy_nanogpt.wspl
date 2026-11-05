@@ -1,6 +1,6 @@
 # ==============================================================================
 # WSP-Lang 0.7: Karpathy nanoGPT W0 (Shakespeare Architecture), untrained random initialization
-# init_architecture instantiates the fixed class in engine/nanogpt_runtime.py; no weights are learned here.
+# init_architecture compiles programs/arch/nanogpt.wsparch; no weights are learned here.
 # Target Architecture: 6 Layers, d_model=384, 6 Heads, d_ff=1536, Vocab=65, BlockSize=256
 # Parameter Count: 10,770,816 parameters (Weight Tying wte <==> lm_head)
 # ==============================================================================
@@ -16,14 +16,11 @@ experiment build_karpathy_nanogpt:
         allow_write = true
 
     steps:
-        # Step 1: Synthesize Karpathy nanoGPT architecture and tensor graph
-        step init_architecture model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors
+        # Step 1: Compile architecture, including weight tying, and write W0
+        step init_architecture arch=programs/arch/nanogpt.wsparch seed=1337 out=models/nanogpt_karpathy/model.safetensors
 
-        # Step 2: Tie token embedding weights to output projection (canonical GPT-2 / nanoGPT)
-        step tie_weights source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors
-
-        # Step 3: Audit attention output projection weight health
+        # Step 2: Audit attention output projection weight health
         step audit transformer.h.0.attn.c_proj.weight model=models/nanogpt_karpathy/model.safetensors
 
-        # Step 4: Spectral audit of attention projection singular value distribution
+        # Step 3: Spectral audit of attention projection singular value distribution
         step spectral_audit transformer.h.0.attn.c_proj.weight q=16 model=models/nanogpt_karpathy/model.safetensors

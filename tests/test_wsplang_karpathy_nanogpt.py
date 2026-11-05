@@ -1,8 +1,8 @@
 """Paridad del checkpoint que produce programs/build_karpathy_nanogpt.wspl frente a nanoGPT upstream.
 
 El test ejecuta el programa de verdad contra un directorio temporal, sin depender de models/ (ignorado
-por git), y compara con model.py de karpathy/nanoGPT (commit 3adf61e). El programa solo instancia la
-clase fija de engine/nanogpt_runtime.py: esto valida W0 y runtime, no síntesis ni pesos entrenados.
+por git), y compara con model.py de karpathy/nanoGPT (commit 3adf61e). El programa compila
+programs/arch/nanogpt.wsparch: esto valida arquitectura y W0, no síntesis ni pesos entrenados.
 """
 
 import sys

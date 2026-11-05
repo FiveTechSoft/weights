@@ -12,8 +12,10 @@ on:
       - 'tests/test_wsplang_karpathy_nanogpt.py'
       - 'tests/test_nanogpt_runtime_contract.py'
       - 'tests/test_llmness_gate.py'
+      - 'tests/test_wsp_arch.py'
       - 'engine/nanogpt_runtime.py'
       - 'engine/wsplang.py'
+      - 'engine/wsp_arch.py'
       - 'lab/llmness.py'
       - 'lab/nano3lib.py'
       - 'lab/verify_llmness.py'
@@ -21,6 +23,7 @@ on:
       - 'lab/verify_karpathy_vendorized.py'
       - 'lab/reference/**'
       - 'programs/build_karpathy_nanogpt.wspl'
+      - 'programs/arch/**'
   pull_request:
     paths:
       - 'benchmarks/**'
@@ -30,8 +33,10 @@ on:
       - 'tests/test_wsplang_karpathy_nanogpt.py'
       - 'tests/test_nanogpt_runtime_contract.py'
       - 'tests/test_llmness_gate.py'
+      - 'tests/test_wsp_arch.py'
       - 'engine/nanogpt_runtime.py'
       - 'engine/wsplang.py'
+      - 'engine/wsp_arch.py'
       - 'lab/llmness.py'
       - 'lab/nano3lib.py'
       - 'lab/verify_llmness.py'
@@ -39,6 +44,7 @@ on:
       - 'lab/verify_karpathy_vendorized.py'
       - 'lab/reference/**'
       - 'programs/build_karpathy_nanogpt.wspl'
+      - 'programs/arch/**'
   workflow_dispatch:
 
 permissions:
@@ -68,8 +74,9 @@ jobs:
           python -m unittest tests/test_wsplang_karpathy_nanogpt.py
           python -m unittest tests/test_nanogpt_runtime_contract.py
           python -m unittest tests/test_llmness_gate.py
+          python -m unittest tests/test_wsp_arch.py
 
-      - name: Build nanoGPT W0 from its WSPLang program
+      - name: Compile nanoGPT W0 from its WSPLang architecture
         run: python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run
 
       - name: Run Independent Karpathy nanoGPT Parity Verification

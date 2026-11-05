@@ -1082,3 +1082,23 @@ Límites:
 - La calibración necesita `input.txt` de Shakespeare, no versionado, y no corre en CI.
 
 Runtime: `NanoGPT(seed)` ahora reproduce el W0 de upstream con la misma semilla (antes difería en 0.1455), por lo que el checkpoint de `build_karpathy_nanogpt.wspl` cambia respecto a versiones previas. `compile_synthetic` queda marcado STUB: no escribe pesos.
+
+## 28. Arquitectura declarativa `.wsparch` (2026-11-05)
+nanoGPT se describe como datos en `programs/arch/nanogpt.wsparch` y se compila con `engine/wsp_arch.py`, sin importar `engine/nanogpt_runtime.py` ni `model.py`. Un test en subproceso comprueba que esos módulos no se cargan. `build_karpathy_nanogpt.wspl` ya compila desde este archivo. Referencia: `docs/wsparch.md`.
+
+Paridad frente a `lab/reference/karpathy_nanogpt/model.py` (commit `3adf61e`), `tests/test_wsp_arch.py`:
+- W0 idéntico por semilla, incluida la configuración 6L/384 (10 770 816 parámetros), `bias=false` y tamaños no múltiplos de 16.
+- Logits, pérdida, `ignore_index`, flujo de dropout en train, trayectoria AdamW de 25 pasos, generación muestreada e intercambio de checkpoints.
+- Mutar el fuente rompe la paridad en 11 mutaciones (6 de inicialización, 5 de grafo).
+
+Extremo a extremo (`lab/verify_wsp_arch.py`, `lab/runs/wsp_arch_verification.json`): modelo compilado 4L/128, 6000 pasos Adam, Shakespeare char. El informe del gate coincide por completo con el del control oficial: `LANGUAGE_MODEL`, NLL 1.9781.
+
+Hallazgos del propio test de mutación:
+- Dos mutantes sobrevivieron al principio. Cambiar `kaiming_uniform` por `normal` en el primer pase pasaba porque `normal_` y `uniform_` consumen el RNG igual en tamaños múltiplos de 16, y `d=32` lo ocultaba. Con `d=34` se detecta.
+- Mover `tie` antes del primer pase es equivalente de verdad: mismas extracciones, valores sobrescritos después. La paridad de W0 no puede fijar ese orden.
+
+Límites:
+- Sigue sin haber síntesis: el modelo compilado aprende con gradiente desde un bucle Python externo. El lenguaje no entrena.
+- El conjunto de primitivas cubre modelos estilo GPT. NanoWSP no se puede expresar: faltan RoPE y RMSNorm.
+- La pérdida está fija en el compilador y `causal_attention` es una sola primitiva.
+- `init_architecture` sin `arch=` sigue usando las clases Python fijas.

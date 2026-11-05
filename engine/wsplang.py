@@ -1228,6 +1228,47 @@ def execute_plan_v4(
                 }
 
             # ------------------------------------------------------------------
+            # OP: init_architecture arch=<file.wsparch>: compile from declarative source
+            # ------------------------------------------------------------------
+            elif op == "init_architecture" and "arch" in named:
+                from engine.wsp_arch import load_arch_file, parse_config_value
+
+                arch_rel = str(named["arch"])
+                arch_path = Path(arch_rel)
+                if arch_path.suffix != ".wsparch":
+                    raise ValueError(f"arch must be a .wsparch file, got {arch_rel}")
+                if not arch_path.is_absolute():
+                    arch_path = ROOT / arch_path
+
+                overrides = {key: parse_config_value(value) for key, value in named.items()
+                             if key not in ("arch", "out", "seed", "model", "format")}
+                compiled = load_arch_file(arch_path, overrides=overrides, seed=int(named.get("seed", 1337)))
+                total = sum(p.numel() for p in compiled.parameters())
+                if max_modified_weights is not None and total > max_modified_weights:
+                    raise ValueError(f"{total} parameters exceed budget max_modified_weights={max_modified_weights}")
+
+                out_p = Path(named.get("out", str(ROOT / "models" / compiled.arch_name / "model.safetensors")))
+                if not out_p.is_absolute():
+                    out_p = ROOT / out_p
+                saved = False
+                if allow_write:
+                    compiled.save(out_p)
+                    saved = True
+                    target_path = out_p
+                    is_safetensors = True
+
+                res["execution_state"] = "executed" if saved else "simulated"
+                res["result"] = {
+                    "architecture": compiled.arch_name,
+                    "compiled_from": arch_rel,
+                    "source_sha256": compiled.source_sha256,
+                    "config": {k: v for k, v in vars(compiled.config).items()},
+                    "total_parameters": total,
+                    "output_file": str(out_p),
+                    "written_to_disk": saved
+                }
+
+            # ------------------------------------------------------------------
             # OP: init_architecture (WSP-Lang 0.5: Synthesize Micro-LLM from Scratch)
             # ------------------------------------------------------------------
             elif op == "init_architecture":
@@ -2918,7 +2959,11 @@ def main():
                 if status == "ok":
                     print(f"  Tie Weights:    {res.get('source')} <==> {res.get('target')} (Frobenius Diff: {res.get('parity_frobenius_norm', 0.0)})")
             elif op == "init_architecture":
-                if status == "ok":
+                if status == "ok" and res.get("compiled_from"):
+                    print(f"  Architecture:   {res.get('architecture')} (compiled from {res.get('compiled_from')})")
+                    print(f"  Parameters:     {res.get('total_parameters'):,} weights")
+                    print(f"  Checkpoint:     {res.get('output_file')}")
+                elif status == "ok":
                     print(f"  Architecture:   {res.get('architecture')} ({res.get('layers')} layers, d={res.get('d_model')}, heads={res.get('heads')})")
                     print(f"  Parameters:     {res.get('total_parameters'):,} weights ({res.get('vocab_size')} vocab)")
                     print(f"  Checkpoint:     {res.get('output_file')}")
