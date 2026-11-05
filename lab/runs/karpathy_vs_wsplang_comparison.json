@@ -1,0 +1,122 @@
+[
+  {
+    "prompt": "ROMEO:\n",
+    "greedy": {
+      "karpathy": "\n\n\n\nDDDDDDDDDDDffffffffff",
+      "wsplang": "\n\n\n\nDDDDDDDDDDDffffffffff",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": ";DfD3fDll$jjIdkQQllPbggz:",
+      "wsplang": ";DfD3fDll$jjIdkQQllPbggz:",
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  {
+    "prompt": "To be, or not to be, ",
+    "greedy": {
+      "karpathy": " dddddddddddddddddddddddd",
+      "wsplang": " dddddddddddddddddddddddd",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": " sQG3fPlgHPZ3ddQNNNLky rr",
+      "wsplang": " sQG3fPlgHPZ3ddQNNNLky rr",
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  {
+    "prompt": "First Citizen:\nWe are ",
+    "greedy": {
+      "karpathy": "ddddddddddddddddddddddddd",
+      "wsplang": "ddddddddddddddddddddddddd",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": ";;f.ZXPlgPPd3kk:i?ggggggu",
+      "wsplang": ";;f.ZXPlgPPd3kk:i?ggggggu",
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  {
+    "prompt": "KING LEAR:\n",
+    "greedy": {
+      "karpathy": "\n\n\n\n\n\n\n\n\n\n\n\n             ",
+      "wsplang": "\n\n\n\n\n\n\n\n\n\n\n\n             ",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": ";;t&&aKKr;adgQeQiNazz;:z:",
+      "wsplang": ";;t&&aKKr;adgQeQiNazz;:z:",
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  {
+    "prompt": "Shall I compare thee to a ",
+    "greedy": {
+      "karpathy": "     QQQQQQQQQQQQQQQQQQQQ",
+      "wsplang": "     QQQQQQQQQQQQQQQQQQQQ",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": "QiPYYHFll$PSQQzQNNEhW:  :",
+      "wsplang": "QiPYYHFll$PSQQzQNNEhW:  :",
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  {
+    "prompt": "What light through yonder ",
+    "greedy": {
+      "karpathy": "          QQQQQQQQQQQQQQQ",
+      "wsplang": "          QQQQQQQQQQQQQQQ",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": "  PYYHPll;PZ3kkQNNEWW::::",
+      "wsplang": "  PYYHPll;PZ3kkQNNEWW::::",
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  {
+    "prompt": "Friends, Romans, countrymen, ",
+    "greedy": {
+      "karpathy": "HHHHHHHHHHHHHHHHHHfffffff",
+      "wsplang": "HHHHHHHHHHHHHHHHHHfffffff",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": "xiT&&fHHuuPd3Q&r&r33PP&uu",
+      "wsplang": "xiT&&fHHuuPd3Q&r&r33PP&uu",
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  {
+    "prompt": "Speak, speak.\n",
+    "greedy": {
+      "karpathy": "\n\n\n\nDDDDDDDDDDDDDDDD     ",
+      "wsplang": "\n\n\n\nDDDDDDDDDDDDDDDD     ",
+      "diff_count": 0,
+      "identical": true
+    },
+    "sampled_t08": {
+      "karpathy": "hst&&fis\n\nHHHQQQQe;Rbg ::",
+      "wsplang": "hst&&fis\n\nHHHQQQQe;Rbg ::",
+      "diff_count": 0,
+      "identical": true
+    }
+  }
+]
