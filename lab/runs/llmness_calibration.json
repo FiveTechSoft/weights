@@ -39,10 +39,10 @@
       "L2_long_context": {
         "short": 8,
         "long": 64,
-        "n": 400,
-        "mean_gain_nats": -0.0008,
-        "ci95_low": -0.0045,
-        "ci95_high": 0.0029,
+        "n": 2000,
+        "mean_gain_nats": 0.0001,
+        "ci95_low": -0.0016,
+        "ci95_high": 0.0018,
         "verdict": "FAILS"
       },
       "GEN": {
@@ -77,7 +77,7 @@
       "L2_long_context": {
         "short": 8,
         "long": 64,
-        "n": 400,
+        "n": 2000,
         "mean_gain_nats": 0.0,
         "ci95_low": 0.0,
         "ci95_high": 0.0,
@@ -115,7 +115,7 @@
       "L2_long_context": {
         "short": 8,
         "long": 64,
-        "n": 400,
+        "n": 2000,
         "mean_gain_nats": 0.0,
         "ci95_low": 0.0,
         "ci95_high": 0.0,
@@ -153,7 +153,7 @@
       "L2_long_context": {
         "short": 8,
         "long": 64,
-        "n": 400,
+        "n": 2000,
         "mean_gain_nats": 0.0,
         "ci95_low": 0.0,
         "ci95_high": 0.0,
@@ -191,7 +191,7 @@
       "L2_long_context": {
         "short": 8,
         "long": 64,
-        "n": 400,
+        "n": 2000,
         "mean_gain_nats": 0.0,
         "ci95_low": 0.0,
         "ci95_high": 0.0,
@@ -229,7 +229,7 @@
       "L2_long_context": {
         "short": 8,
         "long": 64,
-        "n": 400,
+        "n": 2000,
         "mean_gain_nats": 0.0,
         "ci95_low": 0.0,
         "ci95_high": 0.0,
@@ -273,10 +273,10 @@
       "L2_long_context": {
         "short": 8,
         "long": 64,
-        "n": 400,
-        "mean_gain_nats": 0.0777,
-        "ci95_low": 0.0155,
-        "ci95_high": 0.1384,
+        "n": 2000,
+        "mean_gain_nats": 0.0679,
+        "ci95_low": 0.0409,
+        "ci95_high": 0.0967,
         "verdict": "PASSES"
       },
       "GEN": {

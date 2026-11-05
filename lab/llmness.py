@@ -204,12 +204,15 @@ def check_l1(model, train_text, test_text, baseline_order=3, eph_factor=0.85):
 
 
 @torch.no_grad()
-def check_long_context(model, text, short=8, long=64, n=400, seed=0, n_boot=1000):
+def check_long_context(model, text, short=8, long=64, n=2000, seed=0, n_boot=1000, min_gain=0.01):
     """NLL gain at the same target from intact context versus context with old tokens replaced.
 
     Only the last `short` of `long` tokens are kept in the corrupted arm. Sequence length and
     positions are identical in both arms, so position embeddings cannot pass for context use
     (truncating instead gave 3/12 false positives on random nanoGPT inits; this design gave 0/12).
+
+    min_gain separates real use from numeric noise. Over 5 seeds at n=2000, gradient-trained models had a
+    lowest CI bound of 0.0345 and controls (W0, n-grams, dead attention) a mean gain of at most 0.0017.
     """
     long = _seq_limit(model, long)
     ids = np.asarray(model.encode(text), dtype=np.int64)
@@ -231,7 +234,7 @@ def check_long_context(model, text, short=8, long=64, n=400, seed=0, n_boot=1000
     low, high = np.percentile(boots, [2.5, 97.5])
     return {"short": short, "long": long, "n": n, "mean_gain_nats": round(float(gains.mean()), 4),
             "ci95_low": round(float(low), 4), "ci95_high": round(float(high), 4),
-            "verdict": "PASSES" if low > 0 else "FAILS"}
+            "verdict": "PASSES" if low > min_gain else "FAILS"}
 
 
 @torch.no_grad()

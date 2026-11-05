@@ -1154,3 +1154,24 @@ Límites:
 - Las primeras posiciones de cada ventana tienen contexto incompleto o erróneo, porque la atención no distingue "sin token anterior". Es una causa plausible de la diferencia entre 1.6776 y 1.6688, no cuantificada.
 - Solo orden ≤ 5 con 6 cabezas y d=384: faltan dimensiones para más posiciones de contexto.
 - Una sola corrida determinista por configuración y un solo corpus.
+
+## 31. Contexto largo sin backprop: resultado negativo (2026-11-05)
+Camino probado (`wsp_synth.compile_long_context`): tabla Witten-Bell de orden 4 en los primeros bloques, cabezas de atención que promedian clases de caracteres en ventanas antiguas, y últimos bloques con características aleatorias cuyo `c_proj` se resuelve por mínimos cuadrados sobre el residuo del softmax. Cero `backward`; el residuo se ajusta en la cola de train con una tabla ciega a ella. Forma exacta 6L/384/1536, 10 745 088 parámetros (`lab/runs/wsp_synth_long_verification.json`):
+
+| Modelo | NLL val | L2 ganancia (10 semillas) | L2 pasa | Gate |
+|---|---|---|---|---|
+| Tabla orden 5 (§30) | 1.7941 | 0 | - | FAILS |
+| Tabla orden 4 | 1.8005 | 0 | 0/10 | FAILS |
+| + 1 bloque ajustado | 1.8085 | -0.0013 a +0.0159 | 0/10 | FAILS |
+| + 2 bloques ajustados | 1.8188 | +0.0026 a +0.0206 | 0/10 | FAILS |
+| nanoGPT entrenado (referencia) | 1.4573 | +0.1110 | sí | LANGUAGE_MODEL |
+
+Conclusión: **no se alcanzó el objetivo**. Las características fijas mejoran su propia cola de train (1.9956 a 1.9880) pero empeoran val frente a la tabla, porque ocupan unidades que la tabla usaba mejor. No hay ningún modelo sin gradiente que pase el gate. La diferencia hasta 1.4573 parece requerir características aprendidas, no histogramas fijos.
+
+**Fallo del gate corregido.** Con `n=400` y `ci_low > 0`, estos modelos dieron `LANGUAGE_MODEL` en una semilla, y la tabla pura pasó L2 en 2/10 semillas por ruido float32. Regla nueva: `n=2000` y `ci_low > 0.01`, fijada solo con modelos de gradiente y controles, antes de medir síntesis: los modelos entrenados dan `ci_low` mínimo de 0.0345 y los controles una ganancia media máxima de 0.0017, en 5 semillas. Recalibrado con los resultados esperados. Vale para las cifras de L2 actuales en `lab/runs/llmness_*.json`; las de §27 y §30 quedan sustituidas.
+
+Un prototipo sin compilar sugería 1.7763 para la tabla de orden 4 con 9216 unidades, usando contexto completo. Compilada da 1.8005, así que aquella cifra no era alcanzable en estos pesos y 1.7941 sigue siendo la mejor a este tamaño. La causa de la diferencia no está cuantificada.
+
+**Corrección a §26.1.** El SHA-256 de `model.py` publicado ahí (`63d46bc...`) es del checkout de Windows con CRLF. El de upstream es `7c01703...`, comprobado contra `raw.githubusercontent.com`. Este error hizo fallar la CI en Ubuntu; el verificador ahora normaliza finales de línea. Los resultados numéricos de paridad no cambian.
+
+Límites: una configuración de características, una semilla de ajuste y un corpus. Esto descarta esta receta, no la síntesis sin gradiente en general.

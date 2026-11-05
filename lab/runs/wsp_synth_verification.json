@@ -17,7 +17,7 @@
   "runs": {
     "wide_order5": {
       "val_nll_full": 1.6776,
-      "compile_seconds": 13.6,
+      "compile_seconds": 11.9,
       "parameters": 47725824,
       "synthesis": {
         "provenance": "closed_form",
@@ -49,8 +49,8 @@
         "L2_long_context": {
           "short": 8,
           "long": 64,
-          "n": 400,
-          "mean_gain_nats": 0.0,
+          "n": 2000,
+          "mean_gain_nats": -0.0,
           "ci95_low": -0.0,
           "ci95_high": 0.0,
           "verdict": "FAILS"
@@ -76,7 +76,7 @@
     },
     "upstream_shape_6L_384": {
       "val_nll_full": 1.7941,
-      "compile_seconds": 2.0,
+      "compile_seconds": 1.8,
       "parameters": 10745088,
       "synthesis": {
         "provenance": "closed_form",
@@ -108,8 +108,8 @@
         "L2_long_context": {
           "short": 8,
           "long": 64,
-          "n": 400,
-          "mean_gain_nats": -0.0,
+          "n": 2000,
+          "mean_gain_nats": 0.0,
           "ci95_low": -0.0,
           "ci95_high": 0.0,
           "verdict": "FAILS"

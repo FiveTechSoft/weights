@@ -20,10 +20,10 @@
   "L2_long_context": {
     "short": 8,
     "long": 64,
-    "n": 400,
-    "mean_gain_nats": 0.1255,
-    "ci95_low": 0.0418,
-    "ci95_high": 0.2105,
+    "n": 2000,
+    "mean_gain_nats": 0.1117,
+    "ci95_low": 0.0721,
+    "ci95_high": 0.15,
     "verdict": "PASSES"
   },
   "GEN": {

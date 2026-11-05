@@ -143,6 +143,21 @@ class TestLanguageChecks(unittest.TestCase):
         self.assertGreater(res["ci95_low"], 0.0)
         self.assertEqual(res["verdict"], "PASSES")
 
+    def test_tiny_gain_is_not_long_context(self):
+        """A real but negligible effect, like float32 noise, must not count as using long context."""
+        rng = random.Random(9)
+        period = "".join(rng.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(64))
+
+        class Faint(lm.ByteCodec):
+            def logits(self, x):
+                out = torch.zeros(x.shape[0], x.shape[1], 256)
+                out[torch.arange(x.shape[0]), -1, x[:, 0]] = 0.005
+                return out
+
+        res = lm.check_long_context(Faint(), period * 20, short=8, long=64, n=200)
+        self.assertGreater(res["ci95_low"], 0.0)
+        self.assertEqual(res["verdict"], "FAILS")
+
     def test_position_only_model_has_no_long_context_gain(self):
         """Position embeddings alone must not look like use of long context."""
 

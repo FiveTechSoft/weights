@@ -15,6 +15,7 @@ on:
       - 'tests/test_wsp_arch.py'
       - 'tests/test_wsp_train.py'
       - 'tests/test_wsp_synth.py'
+      - 'tests/test_wsp_synth_long.py'
       - 'engine/nanogpt_runtime.py'
       - 'engine/wsplang.py'
       - 'engine/wsp_arch.py'
@@ -40,6 +41,7 @@ on:
       - 'tests/test_wsp_arch.py'
       - 'tests/test_wsp_train.py'
       - 'tests/test_wsp_synth.py'
+      - 'tests/test_wsp_synth_long.py'
       - 'engine/nanogpt_runtime.py'
       - 'engine/wsplang.py'
       - 'engine/wsp_arch.py'
@@ -85,6 +87,7 @@ jobs:
           python -m unittest tests/test_wsp_arch.py
           python -m unittest tests/test_wsp_train.py
           python -m unittest tests/test_wsp_synth.py
+          python -m unittest tests/test_wsp_synth_long.py
 
       - name: Compile nanoGPT W0 from its WSPLang architecture
         run: python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run

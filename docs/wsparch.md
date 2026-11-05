@@ -117,7 +117,7 @@ step synthesize method=ngram order=5 arch=programs/arch/nanogpt.wsparch data=lab
 
 `order` needs `order - 1` attention heads, and the head dimension must hold `vocab - 1` values. Without `ff`, the MLP gets one unit per context. With a fixed `ff`, the most frequent contexts are kept and the rest back off. Checkpoints record `provenance=closed_form` and `backward_calls=0`.
 
-The result is a lookup table inside a transformer: it uses no context beyond `order - 1` tokens, and the LLM-ness gate rejects it for that reason. See section 30 of `results.md` for measurements.
+The result is a lookup table inside a transformer: it uses no context beyond `order - 1` tokens, and the LLM-ness gate rejects it for that reason. See sections 30 and 31 of `results.md` for measurements, including an attempt to add long context without backpropagation that also fails the gate.
 
 ## Limits
 
