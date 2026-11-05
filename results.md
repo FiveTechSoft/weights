@@ -1242,3 +1242,17 @@ Lectura:
 - **Procedencia.** Un programa sacado de un modelo entrenado no es síntesis sin gradiente. El programa guarda `provenance distilled_from:gradient_descent` y el checkpoint recompilado `closed_form_compile_of:distilled_from:gradient_descent`, con `method=wspngram_program`. Una primera versión escribía `closed_form`; se corrigió antes de publicar, con test.
 
 Límites: un corpus, programas grandes (orden 5: 49 MB de texto), solo n-gramas; no hay forma de expresar atención a contexto largo en `.wspngram`.
+
+## 35. Programación de pesos a nivel de código fuente: editar un `.wspngram` (2026-11-05)
+Criterio fijado antes de medir, resultados y lectura en `lab/probes/wspngram_edit_criterion.md`; scripts `lab/probes/wspngram_edit.py` y `wspngram_edit_e2b.py`; datos en `lab/runs/wspngram_edit.json`.
+
+Se edita una línea `unit` del programa descompilado del nanoGPT (orden 5, forma exacta de 10.7 M) y se recompila sin gradiente.
+- **E1, olvidar "lord"** (`unit "lor"`, d −12): P(d | lor) 0.999 → 0.0086; cambio fuera de ese contexto exactamente 0; en muestras `lord` 15 → 0 y `Lord` intacto. **Pasa.**
+- **C4:** la línea editada es una sola columna `c_proj` (384 pesos). Editarla a mano da lo mismo que recompilar (1.9e-6).
+- **Controles:**
+  - C1 (el mismo cambio en 5 líneas al azar): no toca "lor".
+  - C2 (−12 a `d` al decodificar): consigue el objetivo pero cuesta 0.285 nats/carácter fuera.
+  - C3 (fine-tuning con gradiente del modelo entrenado, 300 pasos): P(d | lor) 0.0142, con un cambio medio de 0.32 nats por posición en todo el texto (+0.03 val).
+- **E2, intercambiar king/kind en `unit "kin"`: falla** (25/39). "kin" también termina making/taking/lacking, cuyas líneas hijas pesan más que el cambio. **E2b**, en `unit " kin"` y registrado después del fallo y antes de medir, **pasa**: 32/32, con efecto 0.0 en making/taking y en el resto.
+- **Lectura:** la edición es exacta y local porque el programa es una tabla con compuertas. El precio es el modelo: conserva el 83 % de la ganancia (1.77 frente a 1.44) y no usa contexto largo. Lo difícil es elegir el contexto, y una medición lo detectó.
+- **Comprobación:** cada cifra clave se repitió con `log_prob` sobre el programa editado, sin compilar, y coincide.
