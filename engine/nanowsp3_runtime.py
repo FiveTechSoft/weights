@@ -183,8 +183,32 @@ class NanoWSP3:
     def load_checkpoint(self, path: Union[str, Path]) -> None:
         p = Path(path)
         loaded = load_file(str(p))
+        key_map = {
+            "embed.weight": "embedding.weight",
+            "out.weight": "output.weight",
+            "fn.weight": "final_norm.weight",
+        }
+        for l in range(self.config.n_layers):
+            key_map[f"an.{l}"] = f"layers.{l}.attn_norm.weight"
+            key_map[f"an.{l}.weight"] = f"layers.{l}.attn_norm.weight"
+            key_map[f"mn.{l}"] = f"layers.{l}.mlp_norm.weight"
+            key_map[f"mn.{l}.weight"] = f"layers.{l}.mlp_norm.weight"
+            key_map[f"q.{l}"] = f"layers.{l}.attention.q_proj.weight"
+            key_map[f"q.{l}.weight"] = f"layers.{l}.attention.q_proj.weight"
+            key_map[f"k.{l}"] = f"layers.{l}.attention.k_proj.weight"
+            key_map[f"k.{l}.weight"] = f"layers.{l}.attention.k_proj.weight"
+            key_map[f"v.{l}"] = f"layers.{l}.attention.v_proj.weight"
+            key_map[f"v.{l}.weight"] = f"layers.{l}.attention.v_proj.weight"
+            key_map[f"o.{l}"] = f"layers.{l}.attention.out_proj.weight"
+            key_map[f"o.{l}.weight"] = f"layers.{l}.attention.out_proj.weight"
+            key_map[f"min_.{l}"] = f"layers.{l}.mlp_in.weight"
+            key_map[f"min_.{l}.weight"] = f"layers.{l}.mlp_in.weight"
+            key_map[f"mout.{l}"] = f"layers.{l}.mlp_out.weight"
+            key_map[f"mout.{l}.weight"] = f"layers.{l}.mlp_out.weight"
+
         for k, v in loaded.items():
-            self.weights[k] = v.float()
+            canonical_k = key_map.get(k, k)
+            self.weights[canonical_k] = v.float()
 
     # ==========================================================================
     # Forward Pass
@@ -357,9 +381,10 @@ class NanoWSP3:
         self,
         prompt: str,
         max_new_tokens: int = 15,
-        temperature: float = 0.0
+        temperature: float = 0.0,
+        add_bos: bool = False
     ) -> str:
-        tokens = self.tokenizer.encode(prompt, add_bos=True)
+        tokens = self.tokenizer.encode(prompt, add_bos=add_bos)
         for _ in range(max_new_tokens):
             logits, _ = self.forward(tokens)
             next_logits = logits[0, -1, :]

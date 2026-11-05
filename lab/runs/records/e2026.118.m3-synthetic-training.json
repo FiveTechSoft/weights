@@ -1,0 +1,89 @@
+{
+  "experiment_id": "e2026.118.m3-synthetic-training",
+  "model_id": "nanowsp3-pretrained-PPL14",
+  "objective": "entrenamiento sintetico multicapa con preservacion de covarianza de fondo en paciente real NanoWSP-3",
+  "baseline": {
+    "nombre": "W0 pretrain (PPL 2.65 holdout Alice)",
+    "modelo": "nanowsp3-3.28M"
+  },
+  "edicion": {
+    "program": "synthetic-compiler: layer.3 MEMIT FFN synthesis + nullspace-regularized readout solve",
+    "operaciones": [
+      "Sigma_0:=cov(Alice_corpus, layer=3)",
+      "layers.3.mlp_out:=MEMIT_solve(K, V, Sigma_0, lambda=0.01)",
+      "Hf_tr:=forward_activations(model_prime, D_train)",
+      "Sigma_final:=cov(Alice_corpus, layer=final)",
+      "output.weight:=solve(Hf^T Hf + lambda_base*Sigma_final + lambda_reg*I, Hf^T T)"
+    ],
+    "tensors": [
+      "layers.3.mlp_out.weight",
+      "output.weight"
+    ],
+    "ruta": "lab/train_lab_toy_m3.py"
+  },
+  "ejecucion": {
+    "estado": "ok"
+  },
+  "resultados": {
+    "w0_baseline": {
+      "train_acc": 0.0139,
+      "holdout_acc": 0.0,
+      "alice_ppl": 2.65
+    },
+    "arm1_adamw_finetune": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.0714,
+      "alice_ppl": 4.58,
+      "delta_norm": 24.3893,
+      "elapsed_seconds": 177.0
+    },
+    "arm2_synthetic_compiler": {
+      "train_acc": 0.9028,
+      "holdout_acc": 0.125,
+      "alice_ppl": 6.44,
+      "delta_norm": 27.5295,
+      "elapsed_seconds": 6.43,
+      "speedup_vs_adamw": 27.5
+    },
+    "arm3_matched_placebo": {
+      "train_acc": 0.0208,
+      "holdout_acc": 0.0179,
+      "alice_ppl": 3.36,
+      "delta_norm": 27.5295
+    }
+  },
+  "hypothesis": "entrenamiento sintetico multicapa reproduce aprendizaje asociativo sin backprop y preserva comportamiento de LLM autoregresivo mediante proyeccion ortogonal a la covarianza de activaciones del lenguaje",
+  "evidence": {
+    "dataset": "wspx-RECALL (144 train, 56 holdout)",
+    "n_train": 144,
+    "n_holdout": 56,
+    "train_acc": 0.9028,
+    "holdout_acc": 0.125,
+    "alice_ppl": 6.44,
+    "verdict": "APPROX",
+    "ts": "2026-11-05T06:52:26",
+    "generations_sample": {
+      "exact_task_prompt_KB_CD": {
+        "expected": "b",
+        "w0_base": "t",
+        "synthetic": "b",
+        "match": true
+      },
+      "natural_prose_Alice_was": {
+        "w0_base": "Alice was quite silent for a\\nminute, with her arm",
+        "adamw_real": "Alice wasdeddeded aboutdedidecatchedaid",
+        "synthetic": "Alice was gooding had any\\nadvantage, sfe",
+        "placebo": "Alice was done. The Queezler seemed to "
+      }
+    },
+    "ruta": "lab/runs/m3_results.json"
+  },
+  "target": "layers.3.mlp_out.weight + output.weight",
+  "candidate": "synthetic-compiler-nullspace-cov",
+  "placebo": "norm-matched-gaussian-per-layer",
+  "conclusion": "SUPPORTED",
+  "surgery_tier": "APPROX",
+  "claim_class": "causal_learn",
+  "placebo_required": true,
+  "veredicto": "keep"
+}

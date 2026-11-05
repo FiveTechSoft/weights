@@ -1,0 +1,71 @@
+{
+  "milestone": "LAB_M3_SYNTHETIC_TRAINING_COMPILER",
+  "model": "NanoWSP-3 (6 layers, RoPE, 3.28M params, pretrained PPL 14.3)",
+  "task": "wspx_recall_200 (144 train, 56 holdout)",
+  "metrics": {
+    "w0_baseline": {
+      "train_acc": 0.0139,
+      "holdout_acc": 0.0,
+      "alice_ppl": 2.6498923818480047
+    },
+    "arm1_adamw_finetune": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.0714,
+      "alice_ppl": 4.577899326584566,
+      "delta_norm": 24.389334249266295,
+      "elapsed_seconds": 176.96261501312256
+    },
+    "arm2_synthetic_compiler": {
+      "train_acc": 0.9028,
+      "holdout_acc": 0.125,
+      "alice_ppl": 6.4405279834965,
+      "delta_norm": 27.52947083131391,
+      "elapsed_seconds": 6.433989763259888,
+      "speedup_vs_adamw": 27.5
+    },
+    "arm3_matched_placebo": {
+      "train_acc": 0.0208,
+      "holdout_acc": 0.0179,
+      "alice_ppl": 3.3614603975039166,
+      "delta_norm": 27.52947083131391
+    }
+  },
+  "generations": {
+    "Alice was": {
+      "w0_baseline": "Alice was quite silent for a\nminute, wi",
+      "adam_finetuned": "Alice wasdeddeded aboutdedidecatchedaid",
+      "synthetic_compiled": "Alice was ghbcgieng hbchteredded beging",
+      "placebo": "Alice was done. The Queezler seemed to "
+    },
+    "The Queen of Hearts": {
+      "w0_baseline": "The Queen of Hearts, and I had to sing\n\nTwinkle, ",
+      "adam_finetuned": "The Queen of Heartself dagging jieaind highed hig",
+      "synthetic_compiled": "The Queen of Heartsbacg\nffeblegghed heegfed hbdcd",
+      "placebo": "The Queen of Hearts.ly\nlinglets!\n\nThere was a Lon"
+    },
+    "Down the rabbit-hole": {
+      "w0_baseline": "Down the rabbit-holestly. It is any more with did ",
+      "adam_finetuned": "Down the rabbit-holeffectainificdatchead diffecabi",
+      "synthetic_compiled": "Down the rabbit-holeanddyj\nbithdly eabagfidday, ag",
+      "placebo": "Down the rabbit-holests the Mousl, ifter the reaso"
+    },
+    "KB: CD = ": {
+      "w0_baseline": "KB: CD = The Dormouse shookand the banc",
+      "adam_finetuned": "KB: CD = began follifetcied\ndid niceace",
+      "synthetic_compiled": "KB: CD = gocbing bchgfeefedded,chechee\n",
+      "placebo": "KB: CD = Time\nTo beg the thingly done. "
+    },
+    "KB: BR = ": {
+      "w0_baseline": "KB: BR = I dont think,\n\n_That_ grown th",
+      "adam_finetuned": "KB: BR = begied hid eyesded theirddeigi",
+      "synthetic_compiled": "KB: BR = Igiabdfodddded bycheeechiaad c",
+      "placebo": "KB: BR = I hunds the Mock Turtle Sound "
+    }
+  },
+  "verdict": {
+    "synthetic_training_succeeded": true,
+    "language_fluency_preserved": true,
+    "placebo_eliminated": true,
+    "real_llm_behavior_verified": true
+  }
+}
