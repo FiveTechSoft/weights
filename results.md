@@ -727,3 +727,85 @@ El análisis espectral y algebraico comparando `hf_cache/qwen35-08b-hf` frente a
    * Cabezales de Inducción: Matrices estructurales de retardo y copiado contextual.
    * Memorias FFN: Inyección asociativa MEMIT en espacio nulo sobre el corpus.
 3. **Transferencia entre Modelos Heterogéneos**: La ÚNICA vía matemáticamente válida para transferir conocimiento desde Qwen hacia un alumno compacto es la **Destilación de Conocimiento Empírica (Knowledge Distillation)** evaluando millones de tokens del profesor y entrenando al alumno con descenso de gradiente (lo cual NO es cirugía cerrada zero-gradient).
+
+## 24. LAB M2-delta — cuanta informacion del delta hace falta para generalizar (PARITY-8, 5 seeds) — 2026-11-04
+Script: `lab/train_lab_toy_m2delta.py` (paths portables, mismo protocolo/particion hash que M-1). Resultados: `lab/runs/m2delta_results.json` (determinista, verificado en 2 ejecuciones identicas). Universo 256, train 183, holdout 73; holdout = casos NO usados ni para entrenar ni para derivar la edicion. Limite declarado: brazos A-E derivan de OBSERVAR el entrenamiento (oraculo); miden el minimo de informacion que una edicion debe transportar, no son cirugia aprendida.
+
+| brazo (edicion aplicada a W0) | holdout acc (media ± std, 5 seeds) |
+|---|---|
+| entrenamiento Adam 4000 (referencia) | 81.4% ± 4.1 |
+| replay delta completo (oraculo) | 81.4% ± 4.1 |
+| placebo aleatorio norm-matched | 49.9% ± 3.5 |
+| delta parcial 1/8 del entrenamiento (500 pasos) | **73.7% ± 4.4** |
+| delta parcial 1/4 (1000 pasos) | 77.8% ± 5.0 |
+| delta parcial 1/2 (2000 pasos) | 79.7% ± 4.4 |
+| delta rango bajo r1/r2/r3/r4 (SVD de delta W1) | 47-55% (~azar) |
+| delta rango r6 | 70.4% ± 8.9 |
+| delta rango r8 (= rango completo de W1 8x32) | 81.4% ± 4.1 |
+| delta disperso top 1%/5%/10%/25% magnitud | ~50-52% (~azar) |
+| delta disperso top 50% | 64.4% ± 11.9 |
+| delta escalado 0.5x / 2.0x | 61.4% / **83.0% ± 3.6** |
+| W1 entrenada + W2 ridge closed-form (sin gradiente) | **81.4% ± 2.8** (errata corregida: la version inicial uso etiquetas 0/1 con umbral 0 y daba 62.2%; con etiquetas +-1 el readout ridge reproduce al entrenado) |
+| W0 congelada + W2 entrenada | 48.2% ± 3.8 (~azar) |
+
+Conclusiones:
+1. **No hace falta el delta completo en el eje temporal**: la edicion = pesos de un checkpoint temprano menos los iniciales (entrenamiento truncado; NO una fraccion del delta final, que nunca se observa). Con el checkpoint a 1/8 del entrenamiento conserva el 75.5% de la generalizacion sobre-azar (73.7% vs 81.4% cruda, azar 50%); a 1/4 conserva 88.5% y a 1/2, 94.6%. La informacion que generaliza llega pronto.
+2. **Pero si hace falta full-rank y densidad**: r<=4 o top-25% de pesos = azar; la generalizacion esta distribuida, no concentrada en pocos pesos ni en pocas direcciones (consistente con 16.2: drift ortogonal/full-rank).
+3. **La generalizacion vive en las features (W1), no en el readout**: readout entrenado sobre features random = azar (coherente con el negativo de M-1), y el readout ridge closed-form sobre las features finales iguala la accuracy de holdout del entrenado (81.4%; ojo: acuerdo prediccion a prediccion 92.9%, NO identidad — medido en seccion 26). Por intercambio de componentes (W1/W2), la parte del entrenamiento que ningun closed-form ha sustituido aqui es el aprendizaje de features; esto es evidencia intervencional en este paciente toy, no un principio general. Refinado en M2-readout (seccion 25).
+4. Escalar x2 el delta no rompe la generalizacion (83.0%): hay margen de dosis; x0.5 cae a 61%.
+
+## 25. LAB M2-readout — readout closed-form sobre features de checkpoints tempranos (PARITY-8, 5 seeds) — 2026-11-04
+Script: `lab/train_lab_toy_m2readout.py`. Resultados: `lab/runs/m2readout_results.json` (determinista, 2 ejecuciones identicas). Pregunta aprobada por el propietario del repo: tras 500 pasos, ¿las features ya sirven y solo falta ajustar la salida? Ridge ajustado SOLO con train (lam 0.5 fija o 5-fold CV interna de train; holdout no participa en seleccion de hiperparametros). Etiquetas +-1, umbral 0, sin bias de readout (el paciente no tiene b2).
+
+| checkpoint t | trained@t holdout | ridge lam=0.5 @t holdout | ridge CV @t holdout |
+|---|---|---|---|
+| 0 (features random) | 49.3% ± 2.6 | **30.4% ± 2.4** | 37.0% ± 3.8 |
+| 250 | 58.9% ± 10.7 | 59.2% ± 10.4 | 58.6% ± 10.3 |
+| 500 | 73.7% ± 4.4 | 74.0% ± 4.2 | 73.7% ± 5.4 |
+| 1000 | 77.8% ± 5.0 | 78.4% ± 4.9 | 78.4% ± 4.9 |
+| 2000 | 79.7% ± 4.4 | 79.2% ± 4.3 | 79.4% ± 4.0 |
+| 4000 | 81.4% ± 4.1 | **81.4% ± 2.8** | 81.1% ± 3.2 |
+
+Conclusiones:
+1. **Con features ya formadas (t>=250), el readout ridge closed-form IGUALA la accuracy de holdout del readout entrenado** (dentro de ruido). Caveat: igualdad de accuracy no es identidad de predicciones ni equivalencia estadistica probada (medido en la continuacion). Lo que el gradiente aporta en este paciente son las features, no la salida.
+2. **Sobre features random el ridge no solo falla: antigeneraliza** (30.4% < azar en holdout): sobreajusta train y se equivoca sistematicamente en los casos nuevos. Reconfirma el negativo de M-1 con las 32 features.
+3. Combinado con M2-delta: la edicion "checkpoint a 1/8 + readout ridge" conserva el 75.5% de la generalizacion sobre-azar usando gradiente solo en 1/8 del proceso y closed-form para el resto.
+4. Alcance: un MLP toy en PARITY-8; no demuestra que el readout de un LLM sea sustituible. Siguiente pregunta candidata (no ejecutada): que cambia estructuralmente entre t=0 y t=250 que hace al readout sustituible.
+
+## 26. LAB M2-feat — acuerdo conductual ridge-vs-trained y diagnostico de features tempranas (PARITY-8, 5 seeds) — 2026-11-04
+Script: `lab/train_lab_toy_m2feat.py`. Resultados: `lab/runs/m2feat_results.json` (determinista). Continuacion aprobada tras M2-readout. A) acuerdo prediccion a prediccion (el caveat de "igualdad de accuracy"); B) diagnostico observacional (NO causal) de que cambia entre t=0 y t=250.
+
+A. Acuerdo trained@t vs ridge@t en holdout: t=0 → 48.8% (kappa -0.04, nada); t=250 → 89.3% (kappa 0.78); t=500 → 93.1% (0.86); t=1000 → 91.8% (0.83); t=2000 → 93.4% (0.87); t=4000 → 92.9% (0.86). **La sustitucion es conductualmente fuerte desde t>=250 pero NO es identidad: ~7-11% de las predicciones holdout difieren.**
+
+B. Que cambia en las features (train): CKA(H@t, H@0) cae a 0.84 en t=250 y deriva lento hasta 0.77 (reorganizacion temprana, luego estable); rango efectivo sube 9.8→14.1. **Negativos estructurales**: las features random YA leen linealmente s (suma de bits) con R2=0.95 en t=0 — la solucion exacta M-1b usa esa cantidad, pero el entrenamiento NO aumenta esa legibilidad (baja a 0.85), NO acerca las filas de W1 a la direccion todo-unos (|cos| 0.30→0.27) y NO hace emerger unidades escalera (max R2 unidad-vs-s 0.63→0.57). Es decir: el paciente aprendido no se parece estructuralmente al circuito exacto construido; lo que cambia entre t=0 y t=250 es que las features pasan de permitir sobreajuste con antigeneralizacion (30.4%) a ser linealmente separables para PARITY — la sustituibilidad del readout emerge JUNTO con la separabilidad, no por una estructura que hayamos identificado. Hipotesis estructural mia: refutada. Queda observacional; el mecanismo causal sigue abierto.
+
+## 27. Verificacion independiente de NanoWSP-3 (texto reservado real, copia, reproduccion bateria) — 2026-11-05
+Script: `lab/verify_nanowsp3_indep.py`. Resultados: `lab/runs/nanowsp3_indep_verification.json`. Contexto: la bateria upstream (`lab/verify_llm_behavior.py`) exige `lab/runs/nanowsp3_pretrained.safetensors`, que NO esta en el repo (gitignored). Se reconstruyo desde `nanowsp3_trace.npz` (snapshot 1500) y la bateria se reprodujo EXACTAMENTE (PPL 3.35/10.49/49.1, 80.0% lexico). Hallazgos propios:
+
+1. **La bateria no mide texto reservado**: su "holdout_alice" = corpus_raw[95000:115000], que esta DENTRO del rango de entrenamiento (train = ids[:-12644] del filtrado ascii de raw[15000:415000], ver lab/train_nanowsp.py L51-54). Con el runtime actual sobre el holdout REAL (ultimos 12.644 chars, ausentes del entrenamiento): el checkpoint final puntua PPL 6.11 (train slice 2.94, brecha ~2x = sobreajuste moderado), y la trayectoria de snapshots MEJORA monotonamente en holdout real (8.79 -> 6.74 -> 6.33 -> 6.17 -> 6.11): el mejor checkpoint es el final, que es el guardado.
+2. **El verdict de la bateria esta hardcodeado** (`"real_llm_behavior_certified": True` literal en el codigo) y de las 5 pruebas anunciadas en el docstring solo 3 estan implementadas (faltan diversidad de n-gramas y condicionamiento por contexto). Los numeros son reproducibles; la "certificacion" no es un resultado derivado.
+3. **Copia del corpus (pregunta del propietario del repo)**: en generacion greedy, 45-72% de los 8-gramas generados aparecen literalmente en el corpus de entrenamiento; matches verbatim de hasta 18-29 chars. El modelo cose fragmentos memorizados: fluidez local sin contenido coherente.
+4. **Discrepancia de registro (corregida tras bisect)**: el log de entrenamiento reporta holdout PPL empeorando 5.56 -> 14.31, pero los snapshots guardados evaluados con CUALQUIER forward (runtime actual, runtime de a7a2e7c, o replica del fwd de entrenamiento) MEJORAN 8.79 -> 6.11. Los forwards son equivalentes (diff de runtime a7a2e7c..main = solo key_map y add_bos; el fix de atencion b557621 toco lab/nano3lib.py, no el runtime ni el fwd de entrenamiento). Conclusion: el array ppls del trace NO corresponde a los pesos guardados (artefacto de registro upstream); la lectura de 'sobreajuste creciente' derivada de ese log no se sostiene. Mi atribucion inicial de la discrepancia al fix de atencion era incorrecta.
+5. Validez lexica de la bateria usa como "diccionario ingles" el vocabulario del propio corpus Alice: metrica debil.
+
+Conclusion honesta: NanoWSP-3 muestra comportamiento de LM toy (discriminacion natural>permutado>ruido, fluidez local) pero con copia sustancial del corpus y sin prueba de transferencia/composicion. Sigue sin existir evidencia de comportamiento de lenguaje que generalice mas alla de memorizacion.
+
+## 28. Probe de contexto y combinacion nueva en NanoWSP-3 (sin reentrenar) — 2026-11-05
+Script: `lab/probe_nanowsp3_context.py` (metricas pre-registradas en su docstring). Resultados: `lab/runs/nanowsp3_context_probe.json` (determinista). Modelo base snapshot 1500, intacto. Pregunta del propietario del repo: ¿responde al contexto y combina de formas nuevas, o recupera fragmentos?
+
+1. **Discriminacion en holdout REAL** (nunca entrenado): natural 6.11 < permutado 9.14 < ruido 58.94. La propiedad discriminativa se sostiene en texto reservado (la cifra 3.35 de la bateria upstream era sobre texto de train).
+2. **Sensibilidad al contexto** (200 posiciones del holdout): PPL con 64 chars de contexto 6.26 < con 8 chars 6.45 < contexto barajado 8.00. El modelo USA contexto largo: barajar el contexto empeora mucho mas que truncarlo.
+3. **Prompts nuevos (verificado por codigo que no aparecen en el corpus)**: la copia de 8-gramas se mantiene en el mismo rango que con prompts del corpus (media 53.6% vs 61.9%), con matches verbatim de hasta 50 chars incluso ante prompts nuevos. La validez lexica (lista de ~180 palabras inglesas comunes, no el vocabulario del corpus) es similar o algo mayor en prompts nuevos (62.5% vs 47.9%). Caso mas combinatorio: "A grinning cat counted seven " -> copia 26.5%, lexico 77.8%.
+
+Lectura honesta: el modelo responde al contexto (prueba B) y no colapsa ante contextos nuevos, pero su modo dominante de generacion es la COSTURA de fragmentos memorizados, con o sin prompt nuevo. Hay señales limitadas de combinacion (fragmentos distintos pegados, un caso con copia baja), no evidencia de composicion sistematica. Esto NO es prueba de comportamiento de LLM general; es un char-LM pequeno con uso real de contexto y memoria literal fuerte.
+
+## 29. NanoWSP-3 vs recuperador baseline directo (completa la comparacion aprobada 2026-11-05 08:27)
+Script: `lab/probe_nanowsp3_retriever_baseline.py` (metricas pre-registradas en su docstring). Resultados: `lab/runs/nanowsp3_retriever_baseline.json` (determinista). Mismo paciente y mismos datos; sin reentrenar. Los baselines cuentan/recuperan SOLO sobre train. Los numeros del modelo en A y B son los del probe de contexto (seccion 28; mismo checkpoint, misma semilla, deterministas).
+
+1. **R1: n-grama char orden 8 con backoff (memorizador de conteos) vs modelo**, mismo protocolo:
+   - Holdout real: natural 12.43 vs modelo 6.11; permutado 34.94 vs 9.14; ruido 12011.55 vs 58.94. El modelo generaliza mejor en texto nunca visto que el memorizador de conteos (aprox. 2x mejor PPL).
+   - Condicional en las mismas 200 posiciones: ctx64 21.23 = ctx8 21.23 (el orden-8 solo usa los ultimos 7 chars; igualdad exacta que confirma su localidad) vs modelo 6.26 / 6.45; barajado 35.14 vs modelo 8.00. El modelo usa contexto largo ordenado que un contador orden-8 no puede usar.
+2. **R2: recuperador de sufijo mas largo (techo de copia)**, mismos 7 prompts y metricas: 100% de 8-gramas en corpus y verbatim 90/90 chars en TODOS los prompts, incluidos los nuevos. El modelo queda MUY por debajo de ese techo (medias 61.9% corpus / 53.6% nuevos; verbatim max 50). El solape de copia del modelo no reproduce a un recuperador directo; y, como senalo la correccion del coordinador, el solape por si solo tampoco establece el mecanismo contrario.
+3. **R3: prueba composicional comprobable (binding de palabras nonce, ausencia en corpus verificada), sin reentrenar ni cambiar de tarea.** 16 items x 2 ordenes, acierto estricto (ambos ordenes; anula sesgo lexico, azar=50%): modelo 0/16, n-grama 0/16; por orden ambos exactamente al azar (16/32). La inspeccion de los fallos muestra preferencia lexica/local por la misma continuacion superficial en ambos ordenes, no ligadura por posicion. RESULTADO NEGATIVO: sin evidencia de ligadura entidad-atributo; esta prueba composicional queda como limite reportado segun lo aprobado, no se construye otra.
+
+Lectura dentro de limites: (i) el comportamiento del modelo NO lo explican estos DOS recuperadores concretos (ni conteo orden-8 ni sufijo mas largo) — se separa de ambos en PPL de holdout, perfil de contexto y techo de copia; (ii) esto no prueba ningun mecanismo interno concreto, solo descarta esos dos; (iii) la prueba composicional es negativa y se preserva como tal: no hay evidencia de composicion sistematica con respuestas comprobables en este modelo sin reentrenarlo.

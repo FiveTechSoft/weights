@@ -1,0 +1,68 @@
+{
+ "modelo": "NanoWSP-3 snapshot 1500 (base, sin cirugia, sin reentrenar)",
+ "metricas": "pre-registradas en docstring del script",
+ "A_discriminacion_holdout_real": {
+  "natural": 6.11,
+  "permutado": 9.14,
+  "ruido": 58.94
+ },
+ "B_sensibilidad_contexto": {
+  "ppl_ctx64": 6.26,
+  "ppl_ctx8": 6.45,
+  "ppl_ctx64_barajado": 8.0,
+  "n_posiciones": 200
+ },
+ "C_prompts_corpus": [
+  {
+   "pct_8char_en_train": 72.3,
+   "match_verbatim_max_chars": 25,
+   "lexical_common_pct": 57.9,
+   "prompt": "Alice was ",
+   "tail": "quite silent for a\nminute, with her arms folded ready to do me alone!\n\nI should "
+  },
+  {
+   "pct_8char_en_train": 68.7,
+   "match_verbatim_max_chars": 22,
+   "lexical_common_pct": 52.6,
+   "prompt": "The Queen of Hearts ",
+   "tail": "least she had not times to do in an offended, Alice was soon leaning to draw,\nyo"
+  },
+  {
+   "pct_8char_en_train": 44.6,
+   "match_verbatim_max_chars": 24,
+   "lexical_common_pct": 33.3,
+   "prompt": "She said to the ",
+   "tail": "top of his\nhould and your Majesty, he began. Heeling their mad feor that cats le"
+  }
+ ],
+ "C_prompts_nuevos": [
+  {
+   "pct_8char_en_train": 66.3,
+   "match_verbatim_max_chars": 27,
+   "lexical_common_pct": 61.1,
+   "prompt": "The Rabbit opened the ",
+   "tail": "Mouse, getting their heads down and then my bread-and-butter\n\nnot days. I think "
+  },
+  {
+   "pct_8char_en_train": 47.0,
+   "match_verbatim_max_chars": 24,
+   "lexical_common_pct": 55.6,
+   "prompt": "She ordered the Hatter to ",
+   "tail": "scilld\nfort of not gloves, and she felt that it was sittlent be an shouted\non he"
+  },
+  {
+   "pct_8char_en_train": 74.7,
+   "match_verbatim_max_chars": 50,
+   "lexical_common_pct": 55.6,
+   "prompt": "The Queen drank tea with the Mouse and ",
+   "tail": "shoes on me next that you never\ntasted an egg!\n\nI _have_ tried of the gain, and "
+  },
+  {
+   "pct_8char_en_train": 26.5,
+   "match_verbatim_max_chars": 13,
+   "lexical_common_pct": 77.8,
+   "prompt": "A grinning cat counted seven ",
+   "tail": "been an off\nanything more, with their tpunted to any learn: so no\nprouble a rase"
+  }
+ ]
+}

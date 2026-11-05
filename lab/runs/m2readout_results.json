@@ -1,0 +1,656 @@
+{
+  "summary": {
+    "task": "parity8",
+    "n_train": 183,
+    "n_holdout": 73,
+    "seeds": 5,
+    "checkpoints": [
+      0,
+      250,
+      500,
+      1000,
+      2000,
+      4000
+    ],
+    "protocol": "ridge ajustado SOLO con train; lam fija 0.5 o 5-fold CV interna de train; holdout no participa en seleccion de hiperparametros",
+    "per_checkpoint": {
+      "0": {
+        "trained": {
+          "seen_mean": 0.5016,
+          "holdout_mean": 0.4932,
+          "holdout_std": 0.026
+        },
+        "ridge_lam0.5": {
+          "seen_mean": 0.5596,
+          "holdout_mean": 0.3041,
+          "holdout_std": 0.0236
+        },
+        "ridge_cv": {
+          "seen_mean": 0.5607,
+          "holdout_mean": 0.3699,
+          "holdout_std": 0.0378,
+          "lams_elegidas": [
+            50.0,
+            50.0,
+            0.05,
+            50.0,
+            50.0
+          ]
+        }
+      },
+      "250": {
+        "trained": {
+          "seen_mean": 0.9333,
+          "holdout_mean": 0.589,
+          "holdout_std": 0.1068
+        },
+        "ridge_lam0.5": {
+          "seen_mean": 0.9508,
+          "holdout_mean": 0.5918,
+          "holdout_std": 0.1045
+        },
+        "ridge_cv": {
+          "seen_mean": 0.9475,
+          "holdout_mean": 0.5863,
+          "holdout_std": 0.1034,
+          "lams_elegidas": [
+            10.0,
+            0.05,
+            0.05,
+            0.05,
+            5.0
+          ]
+        }
+      },
+      "500": {
+        "trained": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.737,
+          "holdout_std": 0.0437
+        },
+        "ridge_lam0.5": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.7397,
+          "holdout_std": 0.0424
+        },
+        "ridge_cv": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.737,
+          "holdout_std": 0.0544,
+          "lams_elegidas": [
+            0.05,
+            0.05,
+            10.0,
+            0.05,
+            0.05
+          ]
+        }
+      },
+      "1000": {
+        "trained": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.7781,
+          "holdout_std": 0.0501
+        },
+        "ridge_lam0.5": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.7836,
+          "holdout_std": 0.0485
+        },
+        "ridge_cv": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.7836,
+          "holdout_std": 0.0485,
+          "lams_elegidas": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05
+          ]
+        }
+      },
+      "2000": {
+        "trained": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.7973,
+          "holdout_std": 0.0437
+        },
+        "ridge_lam0.5": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.7918,
+          "holdout_std": 0.0428
+        },
+        "ridge_cv": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.7945,
+          "holdout_std": 0.0397,
+          "lams_elegidas": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05
+          ]
+        }
+      },
+      "4000": {
+        "trained": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.8137,
+          "holdout_std": 0.0412
+        },
+        "ridge_lam0.5": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.8137,
+          "holdout_std": 0.0282
+        },
+        "ridge_cv": {
+          "seen_mean": 1.0,
+          "holdout_mean": 0.811,
+          "holdout_std": 0.0317,
+          "lams_elegidas": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05
+          ]
+        }
+      }
+    },
+    "notes": "ridge@0 = readout sobre features random (tipo M-1 con 32 features). Comparacion: ridge@t vs trained@t = que parte del readout es sustituible; ridge@t vs trained@4000 = que parte del aprendizaje total es sustituible."
+  },
+  "per_seed": [
+    {
+      "0": {
+        "trained": {
+          "seen": 0.5027322173118591,
+          "holdout": 0.4931506812572479
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.568306028842926,
+          "holdout": 0.31506848335266113
+        },
+        "ridge_cv": {
+          "lam": 50.0,
+          "seen": 0.5409836173057556,
+          "holdout": 0.31506848335266113
+        }
+      },
+      "250": {
+        "trained": {
+          "seen": 0.8524590134620667,
+          "holdout": 0.5205479264259338
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.8961748480796814,
+          "holdout": 0.5068492889404297
+        },
+        "ridge_cv": {
+          "lam": 10.0,
+          "seen": 0.868852436542511,
+          "holdout": 0.5068492889404297
+        }
+      },
+      "500": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7808219194412231
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7945205569267273
+        }
+      },
+      "1000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        }
+      },
+      "2000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.8493150472640991
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        }
+      },
+      "4000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.8493150472640991
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.8493150472640991
+        }
+      }
+    },
+    {
+      "0": {
+        "trained": {
+          "seen": 0.5300546288490295,
+          "holdout": 0.465753436088562
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.5573770403862,
+          "holdout": 0.27397260069847107
+        },
+        "ridge_cv": {
+          "lam": 50.0,
+          "seen": 0.562841534614563,
+          "holdout": 0.3835616409778595
+        }
+      },
+      "250": {
+        "trained": {
+          "seen": 0.8852459192276001,
+          "holdout": 0.4383561611175537
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.9071038365364075,
+          "holdout": 0.4383561611175537
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 0.9180327653884888,
+          "holdout": 0.4383561611175537
+        }
+      },
+      "500": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.6849315166473389
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.6712328791618347
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.6438356041908264
+        }
+      },
+      "1000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7123287916183472
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7123287916183472
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7123287916183472
+        }
+      },
+      "2000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7534246444702148
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7534246444702148
+        }
+      },
+      "4000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7534246444702148
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7808219194412231
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.767123281955719
+        }
+      }
+    },
+    {
+      "0": {
+        "trained": {
+          "seen": 0.5136612057685852,
+          "holdout": 0.465753436088562
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.568306028842926,
+          "holdout": 0.34246575832366943
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 0.5901639461517334,
+          "holdout": 0.34246575832366943
+        }
+      },
+      "250": {
+        "trained": {
+          "seen": 0.9289617538452148,
+          "holdout": 0.5753424763679504
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.9508196711540222,
+          "holdout": 0.6164383292198181
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 0.9562841653823853,
+          "holdout": 0.5890411138534546
+        }
+      },
+      "500": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7534246444702148
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7808219194412231
+        },
+        "ridge_cv": {
+          "lam": 10.0,
+          "seen": 1.0,
+          "holdout": 0.7808219194412231
+        }
+      },
+      "1000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7945205569267273
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.8082191944122314
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.8082191944122314
+        }
+      },
+      "2000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.8082191944122314
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        }
+      },
+      "4000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.8082191944122314
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        }
+      }
+    },
+    {
+      "0": {
+        "trained": {
+          "seen": 0.48087432980537415,
+          "holdout": 0.534246563911438
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.568306028842926,
+          "holdout": 0.30136987566947937
+        },
+        "ridge_cv": {
+          "lam": 50.0,
+          "seen": 0.5519125461578369,
+          "holdout": 0.3835616409778595
+        }
+      },
+      "250": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.6849315166473389
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.698630154132843
+        }
+      },
+      "500": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.8082191944122314
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7534246444702148
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7534246444702148
+        }
+      },
+      "1000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.8219178318977356
+        }
+      },
+      "2000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        }
+      },
+      "4000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.8767123222351074
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.835616409778595
+        }
+      }
+    },
+    {
+      "0": {
+        "trained": {
+          "seen": 0.48087432980537415,
+          "holdout": 0.5068492889404297
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 0.5355191230773926,
+          "holdout": 0.2876712381839752
+        },
+        "ridge_cv": {
+          "lam": 50.0,
+          "seen": 0.5573770403862,
+          "holdout": 0.42465752363204956
+        }
+      },
+      "250": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.6712328791618347
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7123287916183472
+        },
+        "ridge_cv": {
+          "lam": 5.0,
+          "seen": 0.994535505771637,
+          "holdout": 0.698630154132843
+        }
+      },
+      "500": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.698630154132843
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7123287916183472
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7123287916183472
+        }
+      },
+      "1000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7260273694992065
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        }
+      },
+      "2000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7397260069847107
+        }
+      },
+      "4000": {
+        "trained": {
+          "seen": 1.0,
+          "holdout": 0.7945205569267273
+        },
+        "ridge_lam0.5": {
+          "lam": 0.5,
+          "seen": 1.0,
+          "holdout": 0.7808219194412231
+        },
+        "ridge_cv": {
+          "lam": 0.05,
+          "seen": 1.0,
+          "holdout": 0.7808219194412231
+        }
+      }
+    }
+  ]
+}

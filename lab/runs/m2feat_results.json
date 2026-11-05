@@ -1,0 +1,677 @@
+{
+  "summary": {
+    "task": "parity8",
+    "seeds": 5,
+    "checkpoints": [
+      0,
+      250,
+      500,
+      1000,
+      2000,
+      4000
+    ],
+    "per_checkpoint": {
+      "0": {
+        "agreement": {
+          "seen": 0.5137,
+          "holdout": 0.4877,
+          "kappa_seen": 0.0282,
+          "kappa_holdout": -0.0433
+        },
+        "acc_trained_holdout": 0.4932,
+        "acc_ridge_holdout": 0.3041,
+        "acc_ridge_seen": 0.5596,
+        "cka_H0": 1.0,
+        "read_s_R2": 0.9542,
+        "w1_cos_ones_mean": 0.3041,
+        "unit_s_R2_max": 0.6277,
+        "eff_rank": 9.8301,
+        "W1_norm": 11.621,
+        "b1_norm": 0.0
+      },
+      "250": {
+        "agreement": {
+          "seen": 0.965,
+          "holdout": 0.8932,
+          "kappa_seen": 0.93,
+          "kappa_holdout": 0.7845
+        },
+        "acc_trained_holdout": 0.589,
+        "acc_ridge_holdout": 0.5918,
+        "acc_ridge_seen": 0.9508,
+        "cka_H0": 0.8366,
+        "read_s_R2": 0.9063,
+        "w1_cos_ones_mean": 0.2916,
+        "unit_s_R2_max": 0.594,
+        "eff_rank": 11.9631,
+        "W1_norm": 24.273,
+        "b1_norm": 3.6265
+      },
+      "500": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9315,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8612
+        },
+        "acc_trained_holdout": 0.737,
+        "acc_ridge_holdout": 0.7397,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7935,
+        "read_s_R2": 0.8705,
+        "w1_cos_ones_mean": 0.2856,
+        "unit_s_R2_max": 0.5954,
+        "eff_rank": 12.9649,
+        "W1_norm": 32.9256,
+        "b1_norm": 5.258
+      },
+      "1000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9178,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8342
+        },
+        "acc_trained_holdout": 0.7781,
+        "acc_ridge_holdout": 0.7836,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7832,
+        "read_s_R2": 0.8542,
+        "w1_cos_ones_mean": 0.2798,
+        "unit_s_R2_max": 0.5862,
+        "eff_rank": 13.4492,
+        "W1_norm": 37.1082,
+        "b1_norm": 6.1569
+      },
+      "2000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9342,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8676
+        },
+        "acc_trained_holdout": 0.7973,
+        "acc_ridge_holdout": 0.7918,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.778,
+        "read_s_R2": 0.847,
+        "w1_cos_ones_mean": 0.2766,
+        "unit_s_R2_max": 0.5818,
+        "eff_rank": 13.7983,
+        "W1_norm": 40.058,
+        "b1_norm": 6.8661
+      },
+      "4000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9288,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8567
+        },
+        "acc_trained_holdout": 0.8137,
+        "acc_ridge_holdout": 0.8137,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7721,
+        "read_s_R2": 0.8448,
+        "w1_cos_ones_mean": 0.2734,
+        "unit_s_R2_max": 0.5722,
+        "eff_rank": 14.1233,
+        "W1_norm": 42.9148,
+        "b1_norm": 7.5776
+      }
+    },
+    "notes": "A: acuerdo prediccion a prediccion trained vs ridge (caveat de M2-readout). B: diagnostico sobre features de train; s = suma de bits (estructura de la solucion exacta M-1b). Observacional, no intervencion causal."
+  },
+  "per_seed": [
+    {
+      "0": {
+        "agreement": {
+          "seen": 0.4426229508196721,
+          "holdout": 0.4931506849315068,
+          "kappa_seen": -0.01833060556464821,
+          "kappa_holdout": -0.0007410151908115048
+        },
+        "acc_trained_holdout": 0.4931506849315068,
+        "acc_ridge_holdout": 0.3150684931506849,
+        "acc_ridge_seen": 0.5683060109289617,
+        "cka_H0": 1.0,
+        "read_s_R2": 0.9389169695383534,
+        "w1_cos_ones_mean": 0.3642715994203905,
+        "unit_s_R2_max": 0.6267075538635254,
+        "eff_rank": 10.145659446716309,
+        "W1_norm": 11.996543884277344,
+        "b1_norm": 0.0
+      },
+      "250": {
+        "agreement": {
+          "seen": 0.912568306010929,
+          "holdout": 0.8767123287671232,
+          "kappa_seen": 0.8251105005375702,
+          "kappa_holdout": 0.7504747436384351
+        },
+        "acc_trained_holdout": 0.5205479452054794,
+        "acc_ridge_holdout": 0.5068493150684932,
+        "acc_ridge_seen": 0.8961748633879781,
+        "cka_H0": 0.8578139005000984,
+        "read_s_R2": 0.9159140417584825,
+        "w1_cos_ones_mean": 0.3436530582019753,
+        "unit_s_R2_max": 0.6480770707130432,
+        "eff_rank": 11.1740083694458,
+        "W1_norm": 20.982112884521484,
+        "b1_norm": 2.158818244934082
+      },
+      "500": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9315068493150684,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8580318942045896
+        },
+        "acc_trained_holdout": 0.7397260273972602,
+        "acc_ridge_holdout": 0.7808219178082192,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.783350718642523,
+        "read_s_R2": 0.8987835967924663,
+        "w1_cos_ones_mean": 0.3422643249963412,
+        "unit_s_R2_max": 0.6021596193313599,
+        "eff_rank": 12.64542293548584,
+        "W1_norm": 32.8843879699707,
+        "b1_norm": 3.6279780864715576
+      },
+      "1000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9452054794520548,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8879508825786646
+        },
+        "acc_trained_holdout": 0.8356164383561644,
+        "acc_ridge_holdout": 0.8356164383561644,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7723435753494422,
+        "read_s_R2": 0.9002529146555164,
+        "w1_cos_ones_mean": 0.338980811197908,
+        "unit_s_R2_max": 0.5898247957229614,
+        "eff_rank": 13.308300971984863,
+        "W1_norm": 37.83866882324219,
+        "b1_norm": 4.694118022918701
+      },
+      "2000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9726027397260274,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.9444021325209444
+        },
+        "acc_trained_holdout": 0.8493150684931506,
+        "acc_ridge_holdout": 0.821917808219178,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7706691270434163,
+        "read_s_R2": 0.8958801687030546,
+        "w1_cos_ones_mean": 0.3335722169237654,
+        "unit_s_R2_max": 0.5833237171173096,
+        "eff_rank": 13.72844123840332,
+        "W1_norm": 41.16783905029297,
+        "b1_norm": 5.66287899017334
+      },
+      "4000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.958904109589041,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.916824914546145
+        },
+        "acc_trained_holdout": 0.8356164383561644,
+        "acc_ridge_holdout": 0.8493150684931506,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7697282541774315,
+        "read_s_R2": 0.8918010545374078,
+        "w1_cos_ones_mean": 0.3274777562261004,
+        "unit_s_R2_max": 0.5789135694503784,
+        "eff_rank": 14.08335018157959,
+        "W1_norm": 44.44374084472656,
+        "b1_norm": 6.535941123962402
+      }
+    },
+    {
+      "0": {
+        "agreement": {
+          "seen": 0.5901639344262295,
+          "holdout": 0.5616438356164384,
+          "kappa_seen": 0.06038200862600123,
+          "kappa_holdout": 0.033112582781457185
+        },
+        "acc_trained_holdout": 0.4657534246575342,
+        "acc_ridge_holdout": 0.273972602739726,
+        "acc_ridge_seen": 0.5573770491803278,
+        "cka_H0": 1.0,
+        "read_s_R2": 0.9661052729196185,
+        "w1_cos_ones_mean": 0.350492435511905,
+        "unit_s_R2_max": 0.7170361876487732,
+        "eff_rank": 10.15715503692627,
+        "W1_norm": 11.071881294250488,
+        "b1_norm": 0.0
+      },
+      "250": {
+        "agreement": {
+          "seen": 0.9562841530054644,
+          "holdout": 0.8904109589041096,
+          "kappa_seen": 0.9125761375850948,
+          "kappa_holdout": 0.7804511278195488
+        },
+        "acc_trained_holdout": 0.4383561643835616,
+        "acc_ridge_holdout": 0.4383561643835616,
+        "acc_ridge_seen": 0.907103825136612,
+        "cka_H0": 0.8719146203140035,
+        "read_s_R2": 0.9341357697899622,
+        "w1_cos_ones_mean": 0.3098657230234031,
+        "unit_s_R2_max": 0.5388927459716797,
+        "eff_rank": 11.148286819458008,
+        "W1_norm": 19.10982322692871,
+        "b1_norm": 2.6071038246154785
+      },
+      "500": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.958904109589041,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.9177619226436349
+        },
+        "acc_trained_holdout": 0.684931506849315,
+        "acc_ridge_holdout": 0.6712328767123288,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.8298953933113566,
+        "read_s_R2": 0.8893576946510005,
+        "w1_cos_ones_mean": 0.2750715664451432,
+        "unit_s_R2_max": 0.5727460384368896,
+        "eff_rank": 12.258622169494629,
+        "W1_norm": 29.415143966674805,
+        "b1_norm": 4.7722344398498535
+      },
+      "1000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9452054794520548,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8903080390683696
+        },
+        "acc_trained_holdout": 0.7123287671232876,
+        "acc_ridge_holdout": 0.7123287671232876,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.8106555681822715,
+        "read_s_R2": 0.8827170490957131,
+        "w1_cos_ones_mean": 0.269549913000925,
+        "unit_s_R2_max": 0.540886402130127,
+        "eff_rank": 12.893364906311035,
+        "W1_norm": 34.63569259643555,
+        "b1_norm": 5.614943504333496
+      },
+      "2000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.8767123287671232,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.7527286413248023
+        },
+        "acc_trained_holdout": 0.7534246575342466,
+        "acc_ridge_holdout": 0.7397260273972602,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.8006515980626346,
+        "read_s_R2": 0.875876412879173,
+        "w1_cos_ones_mean": 0.26767824776117616,
+        "unit_s_R2_max": 0.5322743654251099,
+        "eff_rank": 13.423537254333496,
+        "W1_norm": 37.91814041137695,
+        "b1_norm": 5.980198383331299
+      },
+      "4000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.863013698630137,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.7255639097744361
+        },
+        "acc_trained_holdout": 0.7534246575342466,
+        "acc_ridge_holdout": 0.7808219178082192,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7951281510637144,
+        "read_s_R2": 0.8687649723104132,
+        "w1_cos_ones_mean": 0.2651920980603128,
+        "unit_s_R2_max": 0.5222474336624146,
+        "eff_rank": 13.847124099731445,
+        "W1_norm": 40.810367584228516,
+        "b1_norm": 6.416846752166748
+      }
+    },
+    {
+      "0": {
+        "agreement": {
+          "seen": 0.5081967213114754,
+          "holdout": 0.4931506849315068,
+          "kappa_seen": 0.02866242038216555,
+          "kappa_holdout": -0.026605853287723497
+        },
+        "acc_trained_holdout": 0.4657534246575342,
+        "acc_ridge_holdout": 0.3424657534246575,
+        "acc_ridge_seen": 0.5683060109289617,
+        "cka_H0": 1.0,
+        "read_s_R2": 0.9467285048392831,
+        "w1_cos_ones_mean": 0.320298538526566,
+        "unit_s_R2_max": 0.710605263710022,
+        "eff_rank": 9.977818489074707,
+        "W1_norm": 11.702569961547852,
+        "b1_norm": 0.0
+      },
+      "250": {
+        "agreement": {
+          "seen": 0.9562841530054644,
+          "holdout": 0.9041095890410958,
+          "kappa_seen": 0.9124506637961965,
+          "kappa_holdout": 0.8048873615883924
+        },
+        "acc_trained_holdout": 0.5753424657534246,
+        "acc_ridge_holdout": 0.6164383561643836,
+        "acc_ridge_seen": 0.9508196721311475,
+        "cka_H0": 0.8561690726918272,
+        "read_s_R2": 0.9330965654250303,
+        "w1_cos_ones_mean": 0.28475922560305494,
+        "unit_s_R2_max": 0.5891860723495483,
+        "eff_rank": 12.302340507507324,
+        "W1_norm": 22.141002655029297,
+        "b1_norm": 2.550215721130371
+      },
+      "500": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9178082191780822,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8332063975628332
+        },
+        "acc_trained_holdout": 0.7534246575342466,
+        "acc_ridge_holdout": 0.7808219178082192,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7911585255544631,
+        "read_s_R2": 0.8839025849290303,
+        "w1_cos_ones_mean": 0.3042113946543954,
+        "unit_s_R2_max": 0.5651986598968506,
+        "eff_rank": 13.374898910522461,
+        "W1_norm": 33.718482971191406,
+        "b1_norm": 4.325164794921875
+      },
+      "1000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9315068493150684,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8629365377393916
+        },
+        "acc_trained_holdout": 0.7945205479452054,
+        "acc_ridge_holdout": 0.8082191780821918,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7782779867301798,
+        "read_s_R2": 0.8719442468889446,
+        "w1_cos_ones_mean": 0.3058403226726565,
+        "unit_s_R2_max": 0.5661542415618896,
+        "eff_rank": 13.760390281677246,
+        "W1_norm": 38.66057205200195,
+        "b1_norm": 5.161419868469238
+      },
+      "2000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9863013698630136,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.9726078799249529
+        },
+        "acc_trained_holdout": 0.8082191780821918,
+        "acc_ridge_holdout": 0.821917808219178,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7745272214908466,
+        "read_s_R2": 0.863304544384624,
+        "w1_cos_ones_mean": 0.3017954304499272,
+        "unit_s_R2_max": 0.5679620504379272,
+        "eff_rank": 14.026511192321777,
+        "W1_norm": 41.85689926147461,
+        "b1_norm": 5.9196014404296875
+      },
+      "4000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9863013698630136,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.9726078799249529
+        },
+        "acc_trained_holdout": 0.8082191780821918,
+        "acc_ridge_holdout": 0.821917808219178,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7703775925375228,
+        "read_s_R2": 0.8558695920152272,
+        "w1_cos_ones_mean": 0.2976351977571907,
+        "unit_s_R2_max": 0.5540505647659302,
+        "eff_rank": 14.312098503112793,
+        "W1_norm": 44.88535690307617,
+        "b1_norm": 6.685462474822998
+      }
+    },
+    {
+      "0": {
+        "agreement": {
+          "seen": 0.4972677595628415,
+          "holdout": 0.4657534246575342,
+          "kappa_seen": 0.01104323308270682,
+          "kappa_holdout": -0.07231638418079113
+        },
+        "acc_trained_holdout": 0.5342465753424658,
+        "acc_ridge_holdout": 0.3013698630136986,
+        "acc_ridge_seen": 0.5683060109289617,
+        "cka_H0": 1.0,
+        "read_s_R2": 0.9535300241042453,
+        "w1_cos_ones_mean": 0.2556322787980659,
+        "unit_s_R2_max": 0.5621558427810669,
+        "eff_rank": 9.83656120300293,
+        "W1_norm": 11.782414436340332,
+        "b1_norm": 0.0
+      },
+      "250": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.8904109589041096,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.7806160781367393
+        },
+        "acc_trained_holdout": 0.7397260273972602,
+        "acc_ridge_holdout": 0.684931506849315,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7925960976392916,
+        "read_s_R2": 0.9180238989791275,
+        "w1_cos_ones_mean": 0.2991370114851948,
+        "unit_s_R2_max": 0.6037147045135498,
+        "eff_rank": 12.806268692016602,
+        "W1_norm": 29.990337371826172,
+        "b1_norm": 3.9926695823669434
+      },
+      "500": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9452054794520548,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8899773926149209
+        },
+        "acc_trained_holdout": 0.8082191780821918,
+        "acc_ridge_holdout": 0.7534246575342466,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7652302152007598,
+        "read_s_R2": 0.8867073318838257,
+        "w1_cos_ones_mean": 0.28674230837962955,
+        "unit_s_R2_max": 0.6258347034454346,
+        "eff_rank": 13.331839561462402,
+        "W1_norm": 35.56081771850586,
+        "b1_norm": 5.251767158508301
+      },
+      "1000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9178082191780822,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.833079268292683
+        },
+        "acc_trained_holdout": 0.821917808219178,
+        "acc_ridge_holdout": 0.821917808219178,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7621547610030207,
+        "read_s_R2": 0.8566872470374614,
+        "w1_cos_ones_mean": 0.26976288639732543,
+        "unit_s_R2_max": 0.6302187442779541,
+        "eff_rank": 13.650012016296387,
+        "W1_norm": 38.93860626220703,
+        "b1_norm": 6.02388858795166
+      },
+      "2000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9726027397260274,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.9446969696969697
+        },
+        "acc_trained_holdout": 0.8356164383561644,
+        "acc_ridge_holdout": 0.8356164383561644,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7573478924992142,
+        "read_s_R2": 0.8489545053693004,
+        "w1_cos_ones_mean": 0.26433327026858144,
+        "unit_s_R2_max": 0.6258935928344727,
+        "eff_rank": 13.886791229248047,
+        "W1_norm": 41.81234359741211,
+        "b1_norm": 6.638666152954102
+      },
+      "4000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9315068493150684,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8626270229582235
+        },
+        "acc_trained_holdout": 0.8767123287671232,
+        "acc_ridge_holdout": 0.8356164383561644,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7471000625026253,
+        "read_s_R2": 0.8468164405938345,
+        "w1_cos_ones_mean": 0.260100494134466,
+        "unit_s_R2_max": 0.6072729825973511,
+        "eff_rank": 14.147794723510742,
+        "W1_norm": 44.7253532409668,
+        "b1_norm": 7.267492771148682
+      }
+    },
+    {
+      "0": {
+        "agreement": {
+          "seen": 0.5300546448087432,
+          "holdout": 0.4246575342465753,
+          "kappa_seen": 0.05929468021518236,
+          "kappa_holdout": -0.15003750937734442
+        },
+        "acc_trained_holdout": 0.5068493150684932,
+        "acc_ridge_holdout": 0.2876712328767123,
+        "acc_ridge_seen": 0.5355191256830601,
+        "cka_H0": 1.0,
+        "read_s_R2": 0.965599123744762,
+        "w1_cos_ones_mean": 0.22989504422484858,
+        "unit_s_R2_max": 0.5222395658493042,
+        "eff_rank": 9.033299446105957,
+        "W1_norm": 11.551794052124023,
+        "b1_norm": 0.0
+      },
+      "250": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9041095890410958,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8062191884717481
+        },
+        "acc_trained_holdout": 0.6712328767123288,
+        "acc_ridge_holdout": 0.7123287671232876,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.8047067767899475,
+        "read_s_R2": 0.8303185259081143,
+        "w1_cos_ones_mean": 0.22082091126292985,
+        "unit_s_R2_max": 0.5902714729309082,
+        "eff_rank": 12.38455867767334,
+        "W1_norm": 29.141969680786133,
+        "b1_norm": 6.823795795440674
+      },
+      "500": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9041095890410958,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8069512655836796
+        },
+        "acc_trained_holdout": 0.6986301369863014,
+        "acc_ridge_holdout": 0.7123287671232876,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7977513177094312,
+        "read_s_R2": 0.7937727417770466,
+        "w1_cos_ones_mean": 0.21956968741046018,
+        "unit_s_R2_max": 0.6112884283065796,
+        "eff_rank": 13.213644027709961,
+        "W1_norm": 33.04922866821289,
+        "b1_norm": 8.31294059753418
+      },
+      "1000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.8493150684931506,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.6966377030600679
+        },
+        "acc_trained_holdout": 0.726027397260274,
+        "acc_ridge_holdout": 0.7397260273972602,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7925601503172064,
+        "read_s_R2": 0.75936213077001,
+        "w1_cos_ones_mean": 0.2150670419658301,
+        "unit_s_R2_max": 0.6038240790367126,
+        "eff_rank": 13.633880615234375,
+        "W1_norm": 35.46764373779297,
+        "b1_norm": 9.289886474609375
+      },
+      "2000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.863013698630137,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.7236941710825132
+        },
+        "acc_trained_holdout": 0.7397260273972602,
+        "acc_ridge_holdout": 0.7397260273972602,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7865721778782534,
+        "read_s_R2": 0.7510836848858802,
+        "w1_cos_ones_mean": 0.2153878177681649,
+        "unit_s_R2_max": 0.5993788838386536,
+        "eff_rank": 13.926142692565918,
+        "W1_norm": 37.53458786010742,
+        "b1_norm": 10.129050254821777
+      },
+      "4000": {
+        "agreement": {
+          "seen": 1.0,
+          "holdout": 0.9041095890410958,
+          "kappa_seen": 1.0,
+          "kappa_holdout": 0.8059248006076718
+        },
+        "acc_trained_holdout": 0.7945205479452054,
+        "acc_ridge_holdout": 0.7808219178082192,
+        "acc_ridge_seen": 1.0,
+        "cka_H0": 0.7784043296265372,
+        "read_s_R2": 0.7607954597728218,
+        "w1_cos_ones_mean": 0.21663619949607152,
+        "unit_s_R2_max": 0.5983688831329346,
+        "eff_rank": 14.226216316223145,
+        "W1_norm": 39.70928192138672,
+        "b1_norm": 10.98232650756836
+      }
+    }
+  ]
+}

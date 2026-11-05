@@ -1,0 +1,432 @@
+{
+ "modelo": "NanoWSP-3 snapshot 1500 (intacto) vs baselines de recuperacion sobre train",
+ "metricas": "pre-registradas en docstring del script",
+ "R1a_ngram8_holdout": {
+  "natural": 12.43,
+  "permutado": 34.94,
+  "ruido": 12011.55
+ },
+ "R1b_ngram8_contexto": {
+  "ppl_ctx64": 21.23,
+  "ppl_ctx8": 21.23,
+  "ppl_ctx64_barajado": 35.14,
+  "n_posiciones": 200
+ },
+ "R2_recuperador_prompts_corpus": [
+  {
+   "pct_8char_en_train": 100.0,
+   "match_verbatim_max_chars": 90,
+   "lexical_common_pct": 58.8,
+   "prompt": "Alice was ",
+   "tail": "too\nmuch frightened to say a word, but slowly followed her back to the\ncroquet-g"
+  },
+  {
+   "pct_8char_en_train": 100.0,
+   "match_verbatim_max_chars": 90,
+   "lexical_common_pct": 53.3,
+   "prompt": "The Queen of Hearts ",
+   "tail": "were seated on their throne when they\narrived, with a great crowd assembled abou"
+  },
+  {
+   "pct_8char_en_train": 100.0,
+   "match_verbatim_max_chars": 90,
+   "lexical_common_pct": 62.5,
+   "prompt": "She said to the ",
+   "tail": "Gryphon.\n\nThe reason is, said the Gryphon, that they _would_ go with the\nlobster"
+  }
+ ],
+ "R2_recuperador_prompts_nuevos": [
+  {
+   "pct_8char_en_train": 100.0,
+   "match_verbatim_max_chars": 90,
+   "lexical_common_pct": 63.2,
+   "prompt": "The Rabbit opened the ",
+   "tail": "door and went in.\n\nThe door led right into a large kitchen, which was full of sm"
+  },
+  {
+   "pct_8char_en_train": 100.0,
+   "match_verbatim_max_chars": 90,
+   "lexical_common_pct": 62.5,
+   "prompt": "She ordered the Hatter to ",
+   "tail": "say than his first remark, It was the _best_ butter,\nyou know.\n\nAlice had been l"
+  },
+  {
+   "pct_8char_en_train": 100.0,
+   "match_verbatim_max_chars": 90,
+   "lexical_common_pct": 68.4,
+   "prompt": "The Queen drank tea with the Mouse and ",
+   "tail": "strange, and the words\ndid not come the same as they used to do:\n\nHow doth the l"
+  },
+  {
+   "pct_8char_en_train": 100.0,
+   "match_verbatim_max_chars": 90,
+   "lexical_common_pct": 37.5,
+   "prompt": "A grinning cat counted seven ",
+   "tail": "isoh dear! I shall never get to twenty at that\nrate! However, the Multiplication"
+  }
+ ],
+ "R3_binding_nonce": {
+  "n_items_x2ordenes": 16,
+  "modelo_estricto_aciertos": 0,
+  "modelo_estricto_pct": 0.0,
+  "ngram8_estricto_aciertos": 0,
+  "ngram8_estricto_pct": 0.0,
+  "azar_estricto_pct": 50.0,
+  "detalle_modelo": [
+   {
+    "tmpl": "T1",
+    "prefix": "The wug has a veb. The lom has a dax. The wug has a",
+    "ppl_correcta": 9.17,
+    "ppl_incorrecta": 62.6
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The wug has a dax. The lom has a veb. The wug has a",
+    "ppl_correcta": 71.15,
+    "ppl_incorrecta": 11.52
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "wug put the veb in the box. lom put the dax in the cup. wug put the",
+    "ppl_correcta": 24.02,
+    "ppl_incorrecta": 39.84
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "wug put the dax in the box. lom put the veb in the cup. wug put the",
+    "ppl_correcta": 39.88,
+    "ppl_incorrecta": 19.93
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The dor has a yat. The gom has a queb. The dor has a",
+    "ppl_correcta": 51.58,
+    "ppl_incorrecta": 10.36
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The dor has a queb. The gom has a yat. The dor has a",
+    "ppl_correcta": 11.51,
+    "ppl_incorrecta": 47.47
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "dor put the yat in the box. gom put the queb in the cup. dor put the",
+    "ppl_correcta": 52.7,
+    "ppl_incorrecta": 17.52
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "dor put the queb in the box. gom put the yat in the cup. dor put the",
+    "ppl_correcta": 15.53,
+    "ppl_incorrecta": 54.62
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The tob has a dax. The veb has a mip. The tob has a",
+    "ppl_correcta": 41.84,
+    "ppl_incorrecta": 64.46
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The tob has a mip. The veb has a dax. The tob has a",
+    "ppl_correcta": 47.05,
+    "ppl_incorrecta": 29.56
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "tob put the dax in the box. veb put the mip in the cup. tob put the",
+    "ppl_correcta": 27.95,
+    "ppl_incorrecta": 22.05
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "tob put the mip in the box. veb put the dax in the cup. tob put the",
+    "ppl_correcta": 26.34,
+    "ppl_incorrecta": 28.73
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The rux has a queb. The yat has a zav. The rux has a",
+    "ppl_correcta": 9.58,
+    "ppl_incorrecta": 31.49
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The rux has a zav. The yat has a queb. The rux has a",
+    "ppl_correcta": 33.89,
+    "ppl_incorrecta": 10.39
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "rux put the queb in the box. yat put the zav in the cup. rux put the",
+    "ppl_correcta": 19.12,
+    "ppl_incorrecta": 38.04
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "rux put the zav in the box. yat put the queb in the cup. rux put the",
+    "ppl_correcta": 34.07,
+    "ppl_incorrecta": 16.72
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The kaj has a mip. The dax has a lom. The kaj has a",
+    "ppl_correcta": 34.19,
+    "ppl_incorrecta": 16.9
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The kaj has a lom. The dax has a mip. The kaj has a",
+    "ppl_correcta": 16.04,
+    "ppl_incorrecta": 33.69
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "kaj put the mip in the box. dax put the lom in the cup. kaj put the",
+    "ppl_correcta": 25.07,
+    "ppl_incorrecta": 21.71
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "kaj put the lom in the box. dax put the mip in the cup. kaj put the",
+    "ppl_correcta": 16.89,
+    "ppl_incorrecta": 24.19
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The nof has a zav. The queb has a gom. The nof has a",
+    "ppl_correcta": 48.98,
+    "ppl_incorrecta": 6.58
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The nof has a gom. The queb has a zav. The nof has a",
+    "ppl_correcta": 6.67,
+    "ppl_incorrecta": 51.27
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "nof put the zav in the box. queb put the gom in the cup. nof put the",
+    "ppl_correcta": 62.85,
+    "ppl_incorrecta": 8.47
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "nof put the gom in the box. queb put the zav in the cup. nof put the",
+    "ppl_correcta": 8.24,
+    "ppl_incorrecta": 55.88
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The hux has a lom. The mip has a veb. The hux has a",
+    "ppl_correcta": 19.11,
+    "ppl_incorrecta": 12.57
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The hux has a veb. The mip has a lom. The hux has a",
+    "ppl_correcta": 10.62,
+    "ppl_incorrecta": 20.22
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "hux put the lom in the box. mip put the veb in the cup. hux put the",
+    "ppl_correcta": 19.3,
+    "ppl_incorrecta": 11.29
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "hux put the veb in the box. mip put the lom in the cup. hux put the",
+    "ppl_correcta": 12.62,
+    "ppl_incorrecta": 16.59
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The wiv has a gom. The zav has a yat. The wiv has a",
+    "ppl_correcta": 9.28,
+    "ppl_incorrecta": 44.26
+   },
+   {
+    "tmpl": "T1",
+    "prefix": "The wiv has a yat. The zav has a gom. The wiv has a",
+    "ppl_correcta": 49.19,
+    "ppl_incorrecta": 7.97
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "wiv put the gom in the box. zav put the yat in the cup. wiv put the",
+    "ppl_correcta": 22.5,
+    "ppl_incorrecta": 49.13
+   },
+   {
+    "tmpl": "T2",
+    "prefix": "wiv put the yat in the box. zav put the gom in the cup. wiv put the",
+    "ppl_correcta": 31.81,
+    "ppl_incorrecta": 17.31
+   }
+  ],
+  "detalle_ngram8": [
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 107.17,
+    "ppl_incorrecta": 208.01
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 208.01,
+    "ppl_incorrecta": 107.17
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 358.22,
+    "ppl_incorrecta": 158.95
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 158.95,
+    "ppl_incorrecta": 358.22
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 908.77,
+    "ppl_incorrecta": 48.34
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 48.34,
+    "ppl_incorrecta": 908.77
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 355.12,
+    "ppl_incorrecta": 96.19
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 96.19,
+    "ppl_incorrecta": 355.12
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 208.01,
+    "ppl_incorrecta": 197.91
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 197.91,
+    "ppl_incorrecta": 208.01
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 158.95,
+    "ppl_incorrecta": 105.62
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 105.62,
+    "ppl_incorrecta": 158.95
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 48.34,
+    "ppl_incorrecta": 5293.23
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 5293.23,
+    "ppl_incorrecta": 48.34
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 96.19,
+    "ppl_incorrecta": 5953.21
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 5953.21,
+    "ppl_incorrecta": 96.19
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 197.91,
+    "ppl_incorrecta": 52.1
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 52.1,
+    "ppl_incorrecta": 197.91
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 105.62,
+    "ppl_incorrecta": 74.72
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 74.72,
+    "ppl_incorrecta": 105.62
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 5293.23,
+    "ppl_incorrecta": 43.81
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 43.81,
+    "ppl_incorrecta": 5293.23
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 5953.21,
+    "ppl_incorrecta": 67.27
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 67.27,
+    "ppl_incorrecta": 5953.21
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 52.1,
+    "ppl_incorrecta": 107.17
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 107.17,
+    "ppl_incorrecta": 52.1
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 74.72,
+    "ppl_incorrecta": 358.22
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 358.22,
+    "ppl_incorrecta": 74.72
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 43.81,
+    "ppl_incorrecta": 908.77
+   },
+   {
+    "tmpl": "T1",
+    "ppl_correcta": 908.77,
+    "ppl_incorrecta": 43.81
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 67.27,
+    "ppl_incorrecta": 355.12
+   },
+   {
+    "tmpl": "T2",
+    "ppl_correcta": 355.12,
+    "ppl_incorrecta": 67.27
+   }
+  ]
+ }
+}

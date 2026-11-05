@@ -1,0 +1,77 @@
+{
+ "nota": "modelo BASE (sin cirugia), artefacto reconstruido del trace; evaluacion con runtime actual",
+ "snapshot_600": {
+  "ppl_train_slice": 5.56,
+  "ppl_TRUE_holdout": 6.74,
+  "ppl_battery_slice_(es_texto_de_train)": 4.8
+ },
+ "snapshot_1500_final": {
+  "ppl_train_slice": 2.94,
+  "ppl_TRUE_holdout": 6.11,
+  "ppl_battery_slice_(es_texto_de_train)": 2.61
+ },
+ "copia": [
+  {
+   "prompt": "Alice was ",
+   "tail": "quite silent for a\nminute, with her arms folded ready to do me alone!\n\nI should ",
+   "pct_8gram_en_train": 72.3,
+   "match_verbatim_max_chars": 25
+  },
+  {
+   "prompt": "The Queen of Hearts ",
+   "tail": "least she had not times to do in an offended, Alice was soon leaning to draw,\nyo",
+   "pct_8gram_en_train": 68.7,
+   "match_verbatim_max_chars": 22
+  },
+  {
+   "prompt": "Down the rabbit-hole, she ",
+   "tail": "found that a real nons. This last remark the reason smake\none of the good, and t",
+   "pct_8gram_en_train": 57.8,
+   "match_verbatim_max_chars": 18
+  },
+  {
+   "prompt": "She said to the ",
+   "tail": "top of his\nhould and your Majesty, he began. Heeling their mad feor that cats le",
+   "pct_8gram_en_train": 44.6,
+   "match_verbatim_max_chars": 24
+  },
+  {
+   "prompt": "Once upon a time ",
+   "tail": "her a good deal frightened by the last not\none of the good, and the pair of with",
+   "pct_8gram_en_train": 71.1,
+   "match_verbatim_max_chars": 29
+  },
+  {
+   "prompt": "The sky was ",
+   "tail": "going to do, said the Cat.\n\nI dont like there was a deal of the table wand of gl",
+   "pct_8gram_en_train": 69.9,
+   "match_verbatim_max_chars": 25
+  }
+ ],
+ "generacion_temp0_80c": [
+  {
+   "prompt": "Alice was ",
+   "tail": "quite silent for a\nminute, with her arms folded ready to do me alone!\n\nI should "
+  },
+  {
+   "prompt": "The Queen of Hearts ",
+   "tail": "least she had not times to do in an offended, Alice was soon leaning to draw,\nyo"
+  },
+  {
+   "prompt": "Down the rabbit-hole, she ",
+   "tail": "found that a real nons. This last remark the reason smake\none of the good, and t"
+  },
+  {
+   "prompt": "She said to the ",
+   "tail": "top of his\nhould and your Majesty, he began. Heeling their mad feor that cats le"
+  },
+  {
+   "prompt": "Once upon a time ",
+   "tail": "her a good deal frightened by the last not\none of the good, and the pair of with"
+  },
+  {
+   "prompt": "The sky was ",
+   "tail": "going to do, said the Cat.\n\nI dont like there was a deal of the table wand of gl"
+  }
+ ]
+}
