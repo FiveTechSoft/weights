@@ -1,0 +1,575 @@
+{
+  "val_nll_full": 2.6159,
+  "parameters": 111040,
+  "synthesis": {
+    "provenance": "iterative_no_backprop",
+    "backward_calls": 0,
+    "method": "als_C",
+    "sweeps": 43,
+    "fit_tokens_processed": 14090240
+  },
+  "gate": {
+    "L1": {
+      "nll": 2.6965,
+      "ppl": 14.828,
+      "unigram_entropy": 3.3685,
+      "baseline_order": 3,
+      "baseline_nll": 2.388,
+      "verdict": "FAILS",
+      "ngram_ladder_nll": {}
+    },
+    "L2_long_context": {
+      "short": 8,
+      "long": 64,
+      "n": 2000,
+      "mean_gain_nats": 0.006,
+      "ci95_low": -0.0071,
+      "ci95_high": 0.0192,
+      "verdict": "FAILS"
+    },
+    "GEN": {
+      "sample": "th thehis ke whenlle loHET te han woud INGl t t My oure y he ntherere hath thio berelis s ofere t thatho y or it pereancot iay thofr nen met theno we whot to aime Iiserethind thechan s uz the s h.S:\nH",
+      "distinct_3grams_ratio": 0.785,
+      "letters_space_share": 0.993,
+      "known_word_rate": 0.265,
+      "n_words": 49,
+      "verdict": "FAILS"
+    },
+    "L3_icl": {
+      "n": 200,
+      "acc_with_binding": 0.105,
+      "acc_without_binding": 0.1,
+      "delta": 0.005,
+      "sign_test_p": 1.0,
+      "verdict": "FAILS"
+    },
+    "verdict": "FAILS"
+  },
+  "l2_seeds_passed": 0,
+  "l2_seeds_total": 5,
+  "l2_gains": [
+    0.006,
+    0.0069,
+    0.0161,
+    0.023,
+    0.0109
+  ],
+  "log": [
+    {
+      "sweep": 0,
+      "hold": 3.0702,
+      "steps": [
+        16.0,
+        8.0,
+        8.0,
+        1.0,
+        0.0
+      ],
+      "seconds": 3.1
+    },
+    {
+      "sweep": 1,
+      "hold": 2.9206,
+      "steps": [
+        8.0,
+        4.0,
+        0.25,
+        0.5,
+        0.125
+      ],
+      "seconds": 6.1
+    },
+    {
+      "sweep": 2,
+      "hold": 2.8071,
+      "steps": [
+        16.0,
+        2.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 9.1
+    },
+    {
+      "sweep": 3,
+      "hold": 2.7476,
+      "steps": [
+        16.0,
+        4.0,
+        0.5,
+        0.5,
+        0.125
+      ],
+      "seconds": 12.0
+    },
+    {
+      "sweep": 4,
+      "hold": 2.7162,
+      "steps": [
+        16.0,
+        4.0,
+        1.0,
+        0.25,
+        0.0
+      ],
+      "seconds": 15.0
+    },
+    {
+      "sweep": 5,
+      "hold": 2.6922,
+      "steps": [
+        16.0,
+        4.0,
+        0.5,
+        0.5,
+        0.000244140625
+      ],
+      "seconds": 18.0
+    },
+    {
+      "sweep": 6,
+      "hold": 2.6756,
+      "steps": [
+        16.0,
+        2.0,
+        1.0,
+        0.5,
+        0.0
+      ],
+      "seconds": 21.0
+    },
+    {
+      "sweep": 7,
+      "hold": 2.6624,
+      "steps": [
+        16.0,
+        2.0,
+        0.5,
+        0.0625,
+        0.000244140625
+      ],
+      "seconds": 23.9
+    },
+    {
+      "sweep": 8,
+      "hold": 2.6574,
+      "steps": [
+        8.0,
+        2.0,
+        0.5,
+        0.0009765625,
+        0.0
+      ],
+      "seconds": 26.9
+    },
+    {
+      "sweep": 9,
+      "hold": 2.6492,
+      "steps": [
+        16.0,
+        2.0,
+        0.25,
+        0.0,
+        0.0625
+      ],
+      "seconds": 29.9
+    },
+    {
+      "sweep": 10,
+      "hold": 2.6442,
+      "steps": [
+        8.0,
+        0.0,
+        0.5,
+        0.0,
+        0.0625
+      ],
+      "seconds": 32.8
+    },
+    {
+      "sweep": 11,
+      "hold": 2.6406,
+      "steps": [
+        8.0,
+        1.0,
+        0.0,
+        0.125,
+        0.0
+      ],
+      "seconds": 35.8
+    },
+    {
+      "sweep": 12,
+      "hold": 2.6381,
+      "steps": [
+        8.0,
+        2.0,
+        0.25,
+        0.5,
+        0.0
+      ],
+      "seconds": 38.7
+    },
+    {
+      "sweep": 13,
+      "hold": 2.6355,
+      "steps": [
+        8.0,
+        1.0,
+        0.25,
+        0.0,
+        0.0
+      ],
+      "seconds": 41.7
+    },
+    {
+      "sweep": 14,
+      "hold": 2.6336,
+      "steps": [
+        8.0,
+        0.5,
+        0.0625,
+        0.015625,
+        0.015625
+      ],
+      "seconds": 44.7
+    },
+    {
+      "sweep": 15,
+      "hold": 2.6306,
+      "steps": [
+        8.0,
+        2.0,
+        0.0,
+        0.0009765625,
+        0.0
+      ],
+      "seconds": 47.7
+    },
+    {
+      "sweep": 16,
+      "hold": 2.6281,
+      "steps": [
+        8.0,
+        0.5,
+        0.0,
+        0.5,
+        0.125
+      ],
+      "seconds": 50.6
+    },
+    {
+      "sweep": 17,
+      "hold": 2.6254,
+      "steps": [
+        8.0,
+        1.0,
+        0.0,
+        0.125,
+        0.0
+      ],
+      "seconds": 53.6
+    },
+    {
+      "sweep": 18,
+      "hold": 2.6236,
+      "steps": [
+        8.0,
+        0.5,
+        0.0,
+        0.03125,
+        0.0
+      ],
+      "seconds": 56.6
+    },
+    {
+      "sweep": 19,
+      "hold": 2.6226,
+      "steps": [
+        4.0,
+        0.0,
+        0.0,
+        0.125,
+        0.0
+      ],
+      "seconds": 59.6
+    },
+    {
+      "sweep": 20,
+      "hold": 2.6207,
+      "steps": [
+        8.0,
+        1.0,
+        0.5,
+        0.25,
+        0.0
+      ],
+      "seconds": 62.6
+    },
+    {
+      "sweep": 21,
+      "hold": 2.619,
+      "steps": [
+        8.0,
+        0.001953125,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 65.6
+    },
+    {
+      "sweep": 22,
+      "hold": 2.6182,
+      "steps": [
+        4.0,
+        0.5,
+        0.0,
+        0.0625,
+        0.0
+      ],
+      "seconds": 68.6
+    },
+    {
+      "sweep": 23,
+      "hold": 2.6166,
+      "steps": [
+        8.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 71.6
+    },
+    {
+      "sweep": 24,
+      "hold": 2.616,
+      "steps": [
+        4.0,
+        0.25,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 74.7
+    },
+    {
+      "sweep": 25,
+      "hold": 2.6144,
+      "steps": [
+        8.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 77.7
+    },
+    {
+      "sweep": 26,
+      "hold": 2.6132,
+      "steps": [
+        4.0,
+        0.25,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 80.7
+    },
+    {
+      "sweep": 27,
+      "hold": 2.6129,
+      "steps": [
+        2.0,
+        0.000244140625,
+        0.125,
+        0.0,
+        0.0
+      ],
+      "seconds": 83.8
+    },
+    {
+      "sweep": 28,
+      "hold": 2.6127,
+      "steps": [
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.00048828125
+      ],
+      "seconds": 86.8
+    },
+    {
+      "sweep": 29,
+      "hold": 2.6109,
+      "steps": [
+        8.0,
+        0.125,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 89.8
+    },
+    {
+      "sweep": 30,
+      "hold": 2.6103,
+      "steps": [
+        4.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 92.8
+    },
+    {
+      "sweep": 31,
+      "hold": 2.61,
+      "steps": [
+        4.0,
+        0.0,
+        0.0,
+        0.015625,
+        0.0
+      ],
+      "seconds": 95.8
+    },
+    {
+      "sweep": 32,
+      "hold": 2.6095,
+      "steps": [
+        4.0,
+        0.0,
+        0.00048828125,
+        0.0,
+        0.0
+      ],
+      "seconds": 98.8
+    },
+    {
+      "sweep": 33,
+      "hold": 2.6089,
+      "steps": [
+        4.0,
+        0.001953125,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 101.8
+    },
+    {
+      "sweep": 34,
+      "hold": 2.6083,
+      "steps": [
+        4.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 104.8
+    },
+    {
+      "sweep": 35,
+      "hold": 2.6082,
+      "steps": [
+        2.0,
+        0.0,
+        0.0,
+        0.0625,
+        0.0
+      ],
+      "seconds": 107.9
+    },
+    {
+      "sweep": 36,
+      "hold": 2.6076,
+      "steps": [
+        4.0,
+        0.0,
+        0.0,
+        0.25,
+        0.0
+      ],
+      "seconds": 110.9
+    },
+    {
+      "sweep": 37,
+      "hold": 2.6076,
+      "steps": [
+        1.0,
+        0.0,
+        0.00390625,
+        0.0,
+        0.0
+      ],
+      "seconds": 114.0
+    },
+    {
+      "sweep": 38,
+      "hold": 2.6072,
+      "steps": [
+        4.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 117.1
+    },
+    {
+      "sweep": 39,
+      "hold": 2.607,
+      "steps": [
+        2.0,
+        0.5,
+        0.125,
+        0.0,
+        0.0
+      ],
+      "seconds": 120.1
+    },
+    {
+      "sweep": 40,
+      "hold": 2.607,
+      "steps": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 123.1
+    },
+    {
+      "sweep": 41,
+      "hold": 2.6069,
+      "steps": [
+        0.5,
+        0.000244140625,
+        0.0625,
+        0.25,
+        0.0
+      ],
+      "seconds": 126.1
+    },
+    {
+      "sweep": 42,
+      "hold": 2.6069,
+      "steps": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seconds": 129.1
+    }
+  ]
+}

@@ -1175,3 +1175,45 @@ Un prototipo sin compilar sugería 1.7763 para la tabla de orden 4 con 9216 unid
 **Corrección a §26.1.** El SHA-256 de `model.py` publicado ahí (`63d46bc...`) es del checkout de Windows con CRLF. El de upstream es `7c01703...`, comprobado contra `raw.githubusercontent.com`. Este error hizo fallar la CI en Ubuntu; el verificador ahora normaliza finales de línea. Los resultados numéricos de paridad no cambian.
 
 Límites: una configuración de características, una semilla de ajuste y un corpus. Esto descarta esta receta, no la síntesis sin gradiente en general.
+
+## 32. Representaciones en forma cerrada: resultado negativo en prototipo (2026-11-05)
+Pregunta: ¿características aprendidas de los datos sin gradiente, como SVD de coocurrencias, llegan donde no llegaron los histogramas fijos de §31? Prototipos sin compilar a pesos, en `lab/probes/`; val completa, Shakespeare char, residuos con tablas ciegas por fold.
+
+Sobre una tabla Witten-Bell de orden 4 sin límite de unidades (val 1.7738), dos bloques de 3072 unidades aleatorias ajustadas por mínimos cuadrados:
+
+| Características | NLL val |
+|---|---|
+| Clases fijas, 5 ventanas | 1.7635 |
+| SVD de caracteres r=12, 5 ventanas | 1.7647 |
+| SVD de caracteres r=32, 5 ventanas | 1.7626 |
+| SVD de caracteres en posiciones 3 a 11 | 1.7671 |
+| Dos palabras anteriores, SVD (cota superior, puede no ser calculable por nanoGPT) | 1.7509 |
+
+Tabla blanda sin tabla base (9216 plantillas de contextos reales, coincidencia parcial sobre 18 posiciones, regresión softmax convexa): val 2.2115 tras 14 iteraciones. No convergió y mejoraba unos 0.006 por iteración.
+
+Lectura:
+- SVD de caracteres no supera a las clases fijas: las diferencias son del orden del ruido entre variantes.
+- Incluso la cota superior con palabras gana solo 0.023 nats, frente a 0.32 entre la tabla y nanoGPT entrenado (1.4573).
+- Por eso no se compilaron pesos: no aportarían evidencia nueva, y la opción 1 queda sin resolver el objetivo.
+
+Límites: prototipos, no un barrido exhaustivo; una semilla; la tabla blanda no llegó a converger. No demuestra que sea imposible sintetizar en forma cerrada.
+
+## 33. Mínimos cuadrados alternados sin backprop: descartado (2026-11-05)
+Pregunta: ¿adaptar cada capa con soluciones lineales sobre objetivos calculados desde el error final, sin `backward`, se acerca a AdamW? Criterio fijado antes de medir en `lab/probes/als_criterion.md`: gate `LANGUAGE_MODEL` con L2 en ≥ 4/5 semillas y cierre ≥ 50 % de la distancia entre un control sin adaptación y AdamW. Forma pequeña: 2 capas, d=64, block 64, 4 cabezas, ff 256, Shakespeare char, val completa. Código en `lab/probes/als_*.py`; resultados en `lab/runs/als_*_small.json`.
+
+| Brazo | NLL val | Gate | L2 |
+|---|---|---|---|
+| AdamW, 5000 iteraciones, `lm_head` atado | 1.7156 | LANGUAGE_MODEL | 5/5 |
+| ALS, atado | 2.9250 | FAILS | 0/5 |
+| Control (solo matrices de salida), atado | 2.9947 | FAILS | 0/5 |
+| ALS, `lm_head` desatado (diagnóstico) | 2.5783 | FAILS | 0/5 |
+| Control, desatado (diagnóstico) | 2.6159 | FAILS | 0/5 |
+
+Cierre en el caso más favorable: (2.6159 - 2.5783) / (2.6159 - 1.7156) = 4 %. **Camino descartado.** Ninguno llega al bigrama (2.48).
+
+Lectura:
+- Con `wte` atado, el paso de lectura también cambia el embedding de entrada y deja de ser dirección de descenso. Desatar mejora, pero cambia la forma de nanoGPT.
+- La búsqueda de paso rechaza casi todas las actualizaciones de capas ocultas: los objetivos por pseudo-inversa y gelu linealizada no son direcciones de descenso. Hacerlo bien exige la transpuesta exacta del Jacobiano, es decir, backprop escrito a mano.
+- Dos arreglos probados, iguales en ambos brazos: rejilla de pasos 2^-12 a 2^6 y desatar `lm_head`.
+
+Límites: una semilla, una forma, un corpus; objetivos aproximados por diseño. Procedencia de estos pesos: `iterative_no_backprop`.
