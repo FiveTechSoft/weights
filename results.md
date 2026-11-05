@@ -692,3 +692,38 @@ En prompts de la base de conocimiento factual aprendida:
 - Prompt `'KB: GL ='` $\implies$ Predicción W0: `'y'` \| **Sintético M-3: `'c'`** *(Acierto exacto)*.
 
 Registro oficial: [`lab/runs/records/e2026.118.m3-synthetic-training.json`](file:///c:/weights/lab/runs/records/e2026.118.m3-synthetic-training.json) (Veredicto: **SUPPORTED / tier APPROX / keep**).
+## 23. Auditoría de Límites: Desmitificación y Verificación de Imposibilidad de la "Transmutación Directa" de Qwen a NanoWSP — 2026-11-05
+
+### 23.1 La Hipótesis Auditada
+¿Es posible transferir o "transmutar" directamente las capacidades generales de lenguaje y razonamiento de un modelo grande (como Qwen 3.5 0.8B o MiMo 9B) a un micro-modelo (NanoWSP-3 de 3.28M o NanoWSP-Synth de 15M) de forma sintética cerrada (zero-gradient) mediante proyecciones lineales de matrices?
+
+### 23.2 Evidencia Empírica de Imposibilidad (`lab/verify_cross_model_impossibility.py`)
+El análisis espectral y algebraico comparando `hf_cache/qwen35-08b-hf` frente a `lab/runs/nanowsp3_pretrained.safetensors` revela cuatro barreras matemáticas insalvables:
+
+1. **Colapso Espectral Destructivo (Destrucción del 54.7% de Energía)**:
+   * Dimensión capa MLP Qwen: $1024 \times 3584$ (3.67M parámetros por capa).
+   * Dimensión capa MLP NanoWSP: $256 \times 512$ (0.13M parámetros por capa).
+   * Factor de compresión: **28.0x menos parámetros** por capa en NanoWSP.
+   * Al truncar la descomposición SVD de la matriz de Qwen al rango de NanoWSP ($r=256$), **se destruye irreversiblemente el 54.68% de la energía espectral**. La información residual queda aplastada.
+2. **Incompatibilidad Fundamental de Vocabulario y Segmentación (BPE 248k vs Bytes 256)**:
+   * Qwen segmenta el texto en **248.044 subpalabras BPE** (unidades semánticas completas).
+   * NanoWSP procesa **256 bytes individuales ASCII**.
+   * No existe ninguna función lineal $T: \mathbb{R}^{248044} \to \mathbb{R}^{256}$ capaz de mapear probabilidades de subpalabras a caracteres individuales sin desestructurar las fronteras de palabra, la gramática y el orden léxico.
+3. **Incompatibilidad Arquitectónica (Gated DeltaNet vs Softmax Attention)**:
+   * Qwen 3.5 es un modelo híbrido: 18 de sus 24 capas son de **atención lineal recurrente (Gated DeltaNet)** basadas en convoluciones causales de estado oculto y compuertas de salida.
+   * NanoWSP es una arquitectura estándar de atención densa Softmax con RoPE. Los tensores de pesos ejecutan operadores computacionales no equivalentes.
+4. **La Falacia de la Rotación Procrustes Inter-Modelo**:
+   * Alinear 2.000 anclajes de activación mediante Procrustes ($TT^T = I$) solo orienta un subespacio geométrico de baja dimensión; **no transfiere la dinámica causal de inferencia de la red**.
+
+### 23.3 Veredicto y Clasificación
+* Veredicto: **FALACIA TÉCNICA / RECHAZADO**.
+* Clasificación: **TECHNICAL HALLUCINATION**.
+* Registro mecánico: [`lab/runs/cross_model_impossibility.json`](file:///c:/weights/lab/runs/cross_model_impossibility.json).
+
+### 23.4 Qué SÍ es Científicamente Válido en la Creación Sintética
+1. **Compilación en el MISMO modelo**: La inserción de conocimiento o cambio conductual dentro del mismo espacio de representaciones (como M-2b y M-3 en NanoWSP-3 con regularización en el espacio nulo) es matemáticamente exacta y reproducible.
+2. **Ensamblaje Analítico de Primeros Principios**:
+   * Embeddings $W_{embed}$: Factorización SVD de la matriz PPMI de co-ocurrencias en 1 segundo (GloVe analítico sin optimizador).
+   * Cabezales de Inducción: Matrices estructurales de retardo y copiado contextual.
+   * Memorias FFN: Inyección asociativa MEMIT en espacio nulo sobre el corpus.
+3. **Transferencia entre Modelos Heterogéneos**: La ÚNICA vía matemáticamente válida para transferir conocimiento desde Qwen hacia un alumno compacto es la **Destilación de Conocimiento Empírica (Knowledge Distillation)** evaluando millones de tokens del profesor y entrenando al alumno con descenso de gradiente (lo cual NO es cirugía cerrada zero-gradient).
