@@ -106,7 +106,100 @@ FORBIDDEN_TENSORS = {
     "token_embd.weight", "output.weight", "output_norm.weight",
     "model.embed_tokens.weight", "lm_head.weight", "model.norm.weight"
 }
-FORBIDDEN_PATTERNS = ["embed", "lm_head", "norm.weight", "output_norm"]
+FORBIDDEN_PATTERNS = ["embed", "lm_head", "norm.weight", "output_norm", "wte", "ln_f"]
+
+
+class WriteGuardError(ValueError):
+    """A write would break a WSPLang safety rule; nothing was written."""
+
+
+def is_protected_tensor(name: str, unlock=()) -> bool:
+    """Embeddings, readout and final norms change only when a program unlocks them by name."""
+    if name in unlock:
+        return False
+    return name in FORBIDDEN_TENSORS or any(pat in name for pat in FORBIDDEN_PATTERNS)
+
+
+def guard_model_write(candidate, out_path, source_path, budgets, written) -> Dict[str, Any]:
+    """The single check every weight write goes through. Raises WriteGuardError; returns what changed.
+
+    - out_path must not be the model that was read (source_path), unless this run wrote that file itself;
+    - the candidate keeps the source's tensor names, shapes and dtypes: no added, removed or reshaped tensors;
+    - protected tensors change only if listed in budgets unlock_tensors;
+    - changed elements <= max_modified_weights and max |delta| <= max_delta_norm.
+    out_path=None checks the edit without a destination (simulation).
+    """
+    if out_path is not None and source_path is not None:
+        src = Path(source_path).resolve()
+        if Path(out_path).resolve() == src and src not in written:
+            raise WriteGuardError(f"refusing to overwrite the input model {source_path}; "
+                                  "write the edit elsewhere with out=<file> or --out-dir")
+    report = {"modified_parameters": 0, "max_abs_delta": 0.0, "tensors_changed": []}
+    if source_path is None:
+        return report
+    import torch
+    from safetensors.torch import load_file
+
+    original = load_file(str(source_path))
+    name = Path(source_path).name
+    added, removed = sorted(set(candidate) - set(original)), sorted(set(original) - set(candidate))
+    if added:
+        raise WriteGuardError(f"write adds tensors that {name} does not have: {added[:5]}")
+    if removed:
+        raise WriteGuardError(f"write drops tensors of {name}: {removed[:5]}")
+    unlock = set(budgets.get("unlock_tensors") or [])
+    for key in sorted(original):
+        before, after = original[key], candidate[key]
+        if tuple(before.shape) != tuple(after.shape):
+            raise WriteGuardError(f"tensor {key} would change shape {tuple(before.shape)} -> {tuple(after.shape)}")
+        if before.dtype != after.dtype:
+            raise WriteGuardError(f"tensor {key} would change dtype {before.dtype} -> {after.dtype}")
+        if torch.equal(before, after.to(before.device)):
+            continue
+        if is_protected_tensor(key, unlock):
+            raise WriteGuardError(f"tensor {key} is protected; list it in budgets unlock_tensors to change it")
+        delta = after.double() - before.double()
+        report["modified_parameters"] += int((delta != 0).sum().item())
+        report["max_abs_delta"] = max(report["max_abs_delta"], float(delta.abs().max().item()))
+        report["tensors_changed"].append(key)
+    limit = budgets.get("max_modified_weights")
+    if limit is not None and report["modified_parameters"] > limit:
+        raise WriteGuardError(f"{report['modified_parameters']:,} changed parameters exceed "
+                              f"max_modified_weights={limit:,}")
+    limit = budgets.get("max_delta_norm")
+    if limit is not None and report["max_abs_delta"] > limit:
+        raise WriteGuardError(f"max |delta| {report['max_abs_delta']:.6g} exceeds max_delta_norm={limit}")
+    return report
+
+
+def guarded_save(candidate, out_path, source_path, budgets, written, metadata=None) -> Dict[str, Any]:
+    """guard_model_write, then save; records out_path as written by this run."""
+    from safetensors.torch import save_file
+
+    report = guard_model_write(candidate, out_path, source_path, budgets, written)
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    save_file({k: v.contiguous() for k, v in candidate.items()}, str(out_path), metadata=metadata)
+    written.add(out_path.resolve())
+    return report
+
+
+def check_new_file(out_path, protected, written) -> None:
+    """Ops that create a model or program never write over the model they read."""
+    out = Path(out_path).resolve()
+    for p in protected:
+        if p is None:
+            continue
+        p = Path(p)
+        p = p / "model.safetensors" if p.is_dir() else p
+        if out == p.resolve() and out not in written:
+            raise WriteGuardError(f"refusing to overwrite the input model {p}; choose another out=")
+
+
+def run_exit_code(results) -> int:
+    """0 when every step ran; 1 when any step failed, was rejected or failed an assertion."""
+    bad = {"error", "security_rejection", "assertion_failed"}
+    return 1 if any(r.get("status") in bad for r in results) else 0
 
 # ==============================================================================
 # AUDIT 2026-11-04: politicas de ejecucion real (falsable, no decorativa)
@@ -193,6 +286,7 @@ def extract_budgets(prog: Dict[str, Any]) -> Dict[str, Any]:
         "max_delta_norm": None,
         "allow_write": False,
         "allow_training": False,
+        "unlock_tensors": [],
     }
     raw_lines = prog.get("budgets", [])
     for _, line in raw_lines:
@@ -204,6 +298,8 @@ def extract_budgets(prog: Dict[str, Any]) -> Dict[str, Any]:
                 budgets[k] = float(v)
             elif k in ("allow_write", "allow_training"):
                 budgets[k] = v.lower() in ("true", "1", "yes")
+            elif k == "unlock_tensors":
+                budgets[k] = [name.strip() for name in v.split(",") if name.strip()]
     return budgets
 
 
@@ -841,6 +937,28 @@ def execute_plan_v4(
     max_modified_weights = budgets.get("max_modified_weights")
     max_delta_norm = budgets.get("max_delta_norm")
     allow_write = budgets.get("allow_write", False) and not dry_run
+    written_paths = set()  # files this run wrote; later steps may edit them in place
+
+    def edit_destination(op_name, named_args, source_file):
+        if named_args.get("out"):
+            dest = Path(str(named_args["out"]))
+            return dest if dest.is_absolute() else ROOT / dest
+        if out_dir:
+            return Path(out_dir) / Path(source_file).name
+        if Path(source_file).resolve() in written_paths:
+            return Path(source_file)
+        raise WriteGuardError(f"{op_name} writes weights: give out=<file> or --out-dir; "
+                              f"the input model {source_file} is never overwritten")
+
+    def write_edit(op_name, named_args, candidate, source_file, metadata=None):
+        """Every edit of an existing model goes through here. Returns (written path or None, guard report)."""
+        if not allow_write:
+            return None, guard_model_write(candidate, None, source_file, budgets, written_paths)
+        dest = edit_destination(op_name, named_args, source_file)
+        return dest, guarded_save(candidate, dest, source_file, budgets, written_paths, metadata=metadata)
+
+    def runtime_candidate(runtime):
+        return {k: v.detach().contiguous().float() for k, v in runtime.weights.items()}
 
     executed_steps = []
     step_list = plan.get("pasos", [])
@@ -936,15 +1054,9 @@ def execute_plan_v4(
                     energy_after = float(torch.norm(torch.matmul(u_t, W_erased)).item())
                     norm_after = float(torch.norm(W_erased).item())
 
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_erased.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_erased.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -1023,10 +1135,12 @@ def execute_plan_v4(
                     cond_after = float(torch.linalg.cond(K.t() @ K + reg_lambda * torch.eye(K.shape[1])).item())
                     delta_norm = float(torch.norm(delta).item())
 
-                    saved = False
-                    if allow_write and ckpt_path.exists():
-                        nanowsp.save_checkpoint(ckpt_path)
-                        saved = True
+                    if not ckpt_path.exists():
+                        raise FileNotFoundError(f"{op} needs a model checkpoint, none at {ckpt_path}")
+                    dest, res["write_guard"] = write_edit(op, named, runtime_candidate(nanowsp), ckpt_path)
+                    saved = dest is not None
+                    if saved:
+                        target_path = dest
 
                     res["execution_state"] = "executed" if saved else "simulated"
                     res["result"] = {
@@ -1078,15 +1192,9 @@ def execute_plan_v4(
                     W_new = apply_decoupled_delta(W, u_e_t, beta_erase, k_w_t, v_w_t, beta_write)
                     energy_erase_after = float(torch.norm(torch.matmul(u_e_t, W_new)).item())
 
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_new.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_new.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -1253,7 +1361,9 @@ def execute_plan_v4(
                     out_p = ROOT / out_p
                 saved = False
                 if allow_write:
+                    check_new_file(out_p, [model_path], written_paths)
                     compiled.save(out_p)
+                    written_paths.add(out_p.resolve())
                     saved = True
                     target_path = out_p
                     is_safetensors = True
@@ -1316,9 +1426,11 @@ def execute_plan_v4(
                         info["method"] = "wspngram_program"
                         info["provenance"] = ("closed_form" if source == "closed_form"
                                               else f"closed_form_compile_of:{source}")
+                    check_new_file(out_p, [model_path], written_paths)
                     compiled.save(out_p, metadata={"provenance": info["provenance"], "backward_calls": "0",
                                                    "method": info["method"], "order": str(info["order"]),
                                                    "vocab_chars": json.dumps(chars)})
+                    written_paths.add(out_p.resolve())
                     target_path = out_p
                     is_safetensors = True
                     res["execution_state"] = "executed"
@@ -1381,6 +1493,7 @@ def execute_plan_v4(
                     res["execution_state"] = "simulated"
                     result["written_to_disk"] = False
                 else:
+                    check_new_file(out_p, [model_p, model_path], written_paths)
                     out_p.parent.mkdir(parents=True, exist_ok=True)
                     out_p.write_text(wsp_decompile.format_program(table, source=f"{method} decompile of {model_p.name}"),
                                      encoding="utf-8")
@@ -1421,7 +1534,9 @@ def execute_plan_v4(
                     raise ValueError(f"{total} parameters exceed budget max_modified_weights={max_modified_weights}")
 
                 if allow_write:
+                    check_new_file(out_p, [model_path], written_paths)
                     summary = wsp_train.train(compiled, dataset, train_cfg, out_p)
+                    written_paths.add(out_p.resolve())
                     target_path = out_p
                     is_safetensors = True
                     res["execution_state"] = "executed"
@@ -1495,8 +1610,10 @@ def execute_plan_v4(
 
                 saved = False
                 if allow_write:
+                    check_new_file(out_p, [model_path], written_paths)
                     out_p.parent.mkdir(parents=True, exist_ok=True)
                     nanowsp.save_checkpoint(out_p)
+                    written_paths.add(out_p.resolve())
                     saved = True
                     target_path = out_p
                     is_safetensors = True
@@ -1556,11 +1673,12 @@ def execute_plan_v4(
                         curr += ch
                     imprint_res = nanowsp.imprint_associative_batch(pairs, layer_idx=layer_idx, eta=eta)
 
-                saved = False
-                if allow_write and ckpt_path.exists():
-                    nanowsp.save_checkpoint(ckpt_path)
-                    saved = True
-                    target_path = ckpt_path
+                if not ckpt_path.exists():
+                    raise FileNotFoundError(f"{op} needs a model checkpoint, none at {ckpt_path}")
+                dest, res["write_guard"] = write_edit(op, named, runtime_candidate(nanowsp), ckpt_path)
+                saved = dest is not None
+                if saved:
+                    target_path = dest
                     is_safetensors = True
 
                 res["execution_state"] = "executed" if saved else "simulated"
@@ -1621,11 +1739,12 @@ def execute_plan_v4(
 
                 batch_res = nanowsp.imprint_associative_batch(pairs, layer_idx=layer_idx, eta=eta)
 
-                saved = False
-                if allow_write and ckpt_path.exists():
-                    nanowsp.save_checkpoint(ckpt_path)
-                    saved = True
-                    target_path = ckpt_path
+                if not ckpt_path.exists():
+                    raise FileNotFoundError(f"{op} needs a model checkpoint, none at {ckpt_path}")
+                dest, res["write_guard"] = write_edit(op, named, runtime_candidate(nanowsp), ckpt_path)
+                saved = dest is not None
+                if saved:
+                    target_path = dest
                     is_safetensors = True
 
                 res["execution_state"] = "executed" if saved else "simulated"
@@ -1753,15 +1872,9 @@ def execute_plan_v4(
                     after_y_proj = torch.matmul(k_t, W)
                     after_energy = float(torch.norm(after_y_proj).item())
 
-                    saved_path = None
-                    if allow_write and out_dir:
-                        out_p = Path(out_dir)
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W.to(orig_dtype)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
                     res["execution_state"] = exec_state
@@ -1937,15 +2050,9 @@ def execute_plan_v4(
                     W *= decay_factor
                     norm_after = float(torch.norm(W).item())
 
-                    saved_path = None
-                    if allow_write and out_dir:
-                        out_p = Path(out_dir)
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W.to(orig_dtype)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
                     res["execution_state"] = exec_state
@@ -2099,15 +2206,9 @@ def execute_plan_v4(
                     after_u_proj = torch.matmul(u_t, W)
                     after_energy = float(torch.norm(after_u_proj).item())
 
-                    saved_path = None
-                    if allow_write and out_dir:
-                        out_p = Path(out_dir)
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W.to(orig_dtype)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
                     res["execution_state"] = exec_state
@@ -2149,30 +2250,30 @@ def execute_plan_v4(
                 if not src or not tgt:
                     raise ValueError("tie_weights requires source and target tensors")
 
-                target_file = target_path or Path(named.get("model", str(ROOT / "models" / "nanogpt" / "model.safetensors")))
+                target_file = Path(str(named["model"])) if "model" in named else target_path
                 if not target_file.is_absolute():
                     target_file = ROOT / target_file
+                if target_file.is_dir():
+                    target_file = target_file / "model.safetensors"
 
-                if not allow_write:
-                    res["execution_state"] = "simulated"
-                    res["result"] = {"status": "simulated", "source": src, "target": tgt}
-                else:
-                    from safetensors.torch import load_file, save_file
-                    sd = load_file(str(target_file))
-                    if src not in sd:
-                        raise ValueError(f"Source tensor {src} not found in {target_file}")
-                    sd[tgt] = sd[src].clone()
-                    save_file(sd, str(target_file))
-                    diff_norm = float((sd[src] - sd[tgt]).norm().item())
-                    res["execution_state"] = "executed"
-                    res["result"] = {
-                        "status": "ok",
-                        "source": src,
-                        "target": tgt,
-                        "shape": list(sd[src].shape),
-                        "parity_frobenius_norm": diff_norm,
-                        "tied": True
-                    }
+                from safetensors.torch import load_file
+                sd = load_file(str(target_file))
+                for name in (src, tgt):
+                    if name not in sd:
+                        raise ValueError(f"tensor {name} not found in {target_file}")
+                if sd[src].shape != sd[tgt].shape or sd[src].dtype != sd[tgt].dtype:
+                    raise ValueError(f"tie_weights needs equal shape and dtype: {src} {tuple(sd[src].shape)} "
+                                     f"{sd[src].dtype}, {tgt} {tuple(sd[tgt].shape)} {sd[tgt].dtype}")
+                sd[tgt] = sd[src].clone()
+                saved, res["write_guard"] = write_edit(op, named, sd, target_file)
+                res["execution_state"] = "executed" if saved else "simulated"
+                res["result"] = {
+                    "source": src,
+                    "target": tgt,
+                    "shape": list(sd[src].shape),
+                    "output_file": str(saved) if saved else None,
+                    "written_to_disk": saved is not None,
+                }
 
             # ------------------------------------------------------------------
             # OP: audit (Tensor Health & Energy)
@@ -2232,6 +2333,12 @@ def execute_plan_v4(
                 out_p = Path(out_file)
                 if not out_p.is_absolute():
                     out_p = ROOT / out_p
+                if not allow_write:
+                    res["execution_state"] = "simulated"
+                    res["result"] = {"source_vector": str(vec_p), "output_gguf": str(out_p),
+                                     "vector_dimension": len(u_vec), "written_to_disk": False}
+                    executed_steps.append(res)
+                    continue
                 out_p.parent.mkdir(parents=True, exist_ok=True)
 
                 scale = float(named.get("scale", 1.0))
@@ -2380,7 +2487,7 @@ def execute_plan_v4(
                         "relative_principal_shift": f"{(shifts[0].item() / max(S_before[0].item(), 1e-12)):.6%}"
                     }
                 else:
-                    res["result"] = {"status": "Weyl inequality checked in GGUF block projection space"}
+                    raise NotImplementedError("assert_weyl is not implemented for GGUF; nothing was checked")
 
             # ------------------------------------------------------------------
             # OP: assert_davis_kahan (WSP-Lang 0.4: Subspace Stability Bound)
@@ -2455,7 +2562,7 @@ def execute_plan_v4(
                         "davis_kahan_satisfied": True
                     }
                 else:
-                    res["result"] = {"status": "Davis-Kahan theorem checked in GGUF block projection space"}
+                    raise NotImplementedError("assert_davis_kahan is not implemented for GGUF; nothing was checked")
 
             # ------------------------------------------------------------------
             # OP: peek / semantic_map / diff / compare (WSP-Lang 0.1 Legacy)
@@ -2698,15 +2805,9 @@ def execute_plan_v4(
                     )
 
                     W_steered = W + delta
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_steered.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_steered.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -2781,15 +2882,9 @@ def execute_plan_v4(
                     W_aligned, perm_idx, sim_before, sim_after = compute_permute_align(W_s, W_t, mode=mode)
                     gain = round(sim_after - sim_before, 4)
 
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_aligned.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_aligned.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -2908,16 +3003,15 @@ def execute_plan_v4(
                         hits += int((trace["final_hidden"][0, -1, :] @ readout.t()).argmax()) == ord(row["target"])
                     return hits / max(len(rows), 1)
 
-                written = bool(allow_write and "out" in named)
-                if written:
-                    from safetensors.torch import load_file, save_file
-                    out_p = Path(str(named["out"]))
-                    out_p = out_p if out_p.is_absolute() else ROOT / out_p
-                    edited = load_file(str(ckpt_p))
-                    edited["out.weight" if "out.weight" in edited else "output.weight"] = W1_out
-                    out_p.parent.mkdir(parents=True, exist_ok=True)
-                    save_file(edited, str(out_p), metadata={
-                        "format": "pt", "provenance": "closed_form_surgery_on_gradient_base", "backward_calls": "0"})
+                from safetensors.torch import load_file
+                edited = load_file(str(ckpt_p))
+                readout = "out.weight" if "out.weight" in edited else "output.weight"
+                edited[readout] = W1_out.to(edited[readout].dtype)
+                if allow_write and "out" not in named:
+                    raise WriteGuardError("compile_synthetic writes weights only to an explicit out=<file>")
+                dest, res["write_guard"] = write_edit(op, named, edited, ckpt_p, metadata={
+                    "format": "pt", "provenance": "closed_form_surgery_on_gradient_base", "backward_calls": "0"})
+                written = dest is not None
 
                 res["execution_state"] = "executed" if written else "simulated"
                 res["result"] = {
@@ -2939,15 +3033,27 @@ def execute_plan_v4(
             else:
                 res["status"] = "skipped (non-interactive op)"
 
+        except AssertionError as e:
+            res["status"] = "assertion_failed"
+            res["error"] = str(e)
         except Exception as e:
             res["status"] = "error"
             res["error"] = str(e)
 
         executed_steps.append(res)
 
+    # An assert whose own verdict is negative fails the run, whether or not it raised.
+    verdicts = {"assert_orthogonal_preservation": "orthogonal_preservation_verified",
+                "assert_behavioral_drift": "behavioral_drift_pass"}
+    for r in executed_steps:
+        key = verdicts.get(r.get("op"))
+        if key and r.get("status") == "ok" and r.get("result", {}).get(key) is False:
+            r["status"] = "assertion_failed"
+            r["error"] = f"{r['op']}: {key} is false"
+
     # AUDIT 2026-11-04: ops STUB nunca publican claims causales
     for r in executed_steps:
-        if r.get("op") in STUB_OPS and r.get("status") not in ("security_rejection", "error"):
+        if r.get("op") in STUB_OPS and r.get("status") not in ("security_rejection", "error", "assertion_failed"):
             r["status"] = "stub_result"
 
     return executed_steps
@@ -3213,6 +3319,13 @@ def main():
                 print(f"  Error: {step['error']}")
     else:
         print(json.dumps(out, ensure_ascii=False, indent=2))
+
+    if execution_results is not None:
+        code = run_exit_code(execution_results)
+        if code:
+            failed = [s["op"] for s in execution_results if run_exit_code([s])]
+            print(f"\n[FAIL] {len(failed)} step(s) failed: {', '.join(failed)}", file=sys.stderr)
+        sys.exit(code)
 
 
 if __name__ == "__main__":

@@ -209,6 +209,23 @@ Any step attempting a `poke` or `scale` on a protected tensor is immediately blo
 }
 ```
 
+### 6.1b. Write guard (enforced since 2026-11-05)
+Every op that writes weights goes through one check, `guard_model_write` in `engine/wsplang.py`
+(tests: `tests/test_wsp_write_guard.py`). Before this, only `project_out`, `project_in` and `delta_unlearn`
+applied budgets and protected tensors, and several ops overwrote the model they read
+(`lab/audit/README.md`).
+* An edit never overwrites the model it read. It writes to `out=<file>` or `--out-dir`; without either it
+  is an error. A file written earlier by the same run may be edited in place.
+* The edited file keeps the source's tensor names, shapes and dtypes. Added, dropped or reshaped tensors
+  are refused.
+* Changed elements must be `<= max_modified_weights`, and max |delta| must be `<= max_delta_norm`. Both are
+  measured on the file about to be written. Simulations (`allow_write = false`) run the same check.
+* Protected tensors (the list above, plus names containing `embed`, `lm_head`, `wte`, `ln_f`, `norm.weight`)
+  change only when the program lists them: `unlock_tensors = lm_head.weight, output.weight` under `budgets:`.
+* `export_control_vector` writes only with `allow_write = true`.
+* A failed assertion gets status `assertion_failed`. The CLI exits with code 1 when any step has status
+  `error`, `security_rejection` or `assertion_failed`.
+
 ### 6.2. Strict Validation Gate
 The runtime validates all AST nodes before passing the plan to the execution engine. If `errors > 0`:
 1. Disk access is blocked.

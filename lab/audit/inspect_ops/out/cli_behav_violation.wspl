@@ -1,0 +1,4 @@
+experiment audit_cli_behav_violation:
+model: nanoGPT
+steps:
+    step assert_behavioral_drift corpus=lab/data/shakespeare_char/input.txt max_ppl_increase=1.0
