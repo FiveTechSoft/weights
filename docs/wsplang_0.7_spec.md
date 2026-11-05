@@ -198,3 +198,27 @@ Fruto de los experimentos del Laboratorio (Hitos M-0 a M-3), WSPLang 0.7 incluye
 | `permute_align` | Damian Borth (WSU) | `tensor`, `target_reference`, `mode` | Alineación de Simetría |
 | `assert_behavioral_drift` | Damian Borth (WSL) | `corpus`, `max_ppl_increase` | Guardia de Comportamiento |
 | `compile_synthetic` | Lab Milestone M-3 | `dataset`, `lambda_base` | Compilación Multicapa |
+| `tie_weights` | GPT-2 / nanoGPT | `source`, `target` | Atado Invariante de Tensores |
+
+---
+
+## 12. Operador `tie_weights` y Síntesis de nanoGPT (Andrej Karpathy)
+
+WSPLang 0.7.0 amplía la directiva `init_architecture` para permitir la síntesis directa de la arquitectura estándar de **`nanoGPT` (Andrej Karpathy / GPT-2)** con el operador nativo `tie_weights`:
+
+### 12.1 Sintaxis y Semántica
+```wsplang
+step init_architecture model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 out=models/nanogpt/model.safetensors
+step tie_weights source=transformer.wte.weight target=lm_head.weight model=models/nanogpt/model.safetensors
+```
+
+### 12.2 Especificación Matemática de `tie_weights`
+Garantiza el atado de memoria entre los embeddings de entrada y la proyección lineal de salida:
+$$\mathbf{W}_{	ext{lm\_head}} \equiv \mathbf{W}_{	ext{transformer.wte}} \in \mathbb{R}^{V 	imes d}$$
+$$\|\mathbf{W}_{	ext{wte}} - \mathbf{W}_{	ext{lm\_head}}\|_F = 0.0000000000	imes 10^0$$
+
+### 12.3 Certificación de Paridad Absoluta
+La arquitectura nanoGPT compilada por WSPLang ([`programs/build_karpathy_nanogpt.wspl`](file:///c:/weights/programs/build_karpathy_nanogpt.wspl)) demostró paridad matemática estricta a nivel de bits frente a la implementación de referencia oficial de Karpathy ([`lab/runs/karpathy_nanogpt_parity.json`](file:///c:/weights/lab/runs/karpathy_nanogpt_parity.json)):
+- **Diferencia Máxima en Logits:** $0.0000000000	imes 10^0$ a lo largo de secuencias de 16 a 256 tokens.
+- **Diferencia de Cross-Entropy Loss:** $0.0000000000	imes 10^0$.
+- **Discrepancias en Generación Autorregresiva:** $0 / 35$ tokens (100% idéntico paso a paso).

@@ -70,3 +70,37 @@ A partir de $M \ge 30$, aunque la memorización forzada sobre los $M$ pares es d
    Intentar sintetizar un LLM entero desde cero únicamente escribiendo productos exteriores en una matriz colisiona con el límite de condicionamiento de la matriz de Gram ($\kappa \to \infty$).
 3. **El Problema de la No-Linealidad de la Atención:**
    Modificar la proyección de salida del MLP ($W_{out}$) es lineal con respecto a las activaciones intermedias. Sin embargo, modificar la atención $softmax(Q K^T / \sqrt{d}) V$ requiere intervenir simultáneamente $W_q$ y $W_k$, lo que exige operadores bilineales coordinados en la gramática de WSPLang 0.5.
+
+---
+
+## 6. Certificación Formal de NanoWSP-3 como LLM Real y Diagnóstico de NanoWSP-4
+
+### 6.1 Batería Mecánica de Validación LLM
+En la auditoría empírica ([`lab/runs/real_llm_verification.json`](file:///c:/weights/lab/runs/real_llm_verification.json)), NanoWSP-3 (4 capas, $d_{model}=256$, 3.2M params) demostró de forma incontrovertible las propiedades de un Modelo de Lenguaje Autorregresivo auténtico:
+1. **Discriminación Entrópica (SNR 7x - 14.7x):**
+   - Perplejidad en inglés natural: **3.35 - 6.03**.
+   - Perplejidad en palabras permutadas: **8.74 - 10.49**.
+   - Perplejidad en ruido uniforme: **42.22 - 49.10**.
+2. **Q&A y Memoria de Entidades Canónicas:**
+   - Prompt: `Question: Who stole the tarts? Answer: The Knave of ` &rarr; Respuesta: `Hearts, Alice hastily replied; only one doesn`
+   - Prompt: `Twinkle, twinkle, little ` &rarr; Respuesta: `bat!
+How I wonder when I should for seem to k` (Parodia del Sombrerero Loco).
+3. **Léxico y Diversidad:**
+   - 80.0% de palabras de diccionario inglés en decodificación greedy.
+   - Ratio de 3-gramas únicos: 0.754 (>75% de variedad no degenerada).
+
+### 6.2 Diagnóstico del Bug de Atención Muerta en NanoWSP-4
+Al auditar por qué `nanowsp4_v1b144.safetensors` colapsaba en el unigrama `" the the"`, se detectó un fallo silencioso en `train_nanowsp4.py`:
+- Las claves sin sufijo `q.{l}` eludían la condición `k.endswith((".weight",))`.
+- Las matrices $Q, K, V, O$ permanecieron en ceros ($\|W\| = 0.0$), anulando los gradientes de atención y operando como 12 MLPs residuales sin atención causal.
+- El bug fue corregido formalmente en el commit `59ff4af`.
+
+---
+
+## 7. Síntesis Declarativa del nanoGPT de Karpathy con Paridad Numérica Cero
+
+Mediante WSPLang 0.7.0 y [`programs/build_karpathy_nanogpt.wspl`](file:///c:/weights/programs/build_karpathy_nanogpt.wspl), se sintetizó la arquitectura completa de **nanoGPT** (10,770,816 parámetros, 6 capas, 6 cabezas, $d=384$, vocabulario 65):
+- **Paridad Numérica de Logits:** Diferencia máxima absoluta $= 0.0000000000	imes 10^0$ a lo largo de secuencias de 16 a 256 tokens.
+- **Atado de Pesos Exacto:** $\|W_{wte} - W_{lm\_head}\| = 0.0$.
+- **Causalidad Pura:** Filtración al pasado $= 0.0$.
+- **Pérdida Cross-Entropy:** $4.241905$ en referencia vs $4.241905$ en WSPLang ($\Delta = 0.0$).

@@ -469,7 +469,7 @@ BudgetAssign     ::= ("max_modified_weights" | "target_parameter_fraction" | "ma
 StepsBlock       ::= "steps:" Newline (Indent StepStatement)+
 StepStatement    ::= "step" Operation PositionalArg* NamedArg*
 Operation        ::= "rosetta_align" | "cross_project"
-                   | "init_architecture" | "imprint_association" | "imprint_batch"
+                   | "init_architecture" | "tie_weights" | "imprint_association" | "imprint_batch"
                    | "cov_imprint" | "memit_imprint" | "leace_erase" | "decoupled_delta" | "surprise_fwp"
                    | "spectral_audit" | "assert_weyl" | "assert_davis_kahan"
                    | "delta_unlearn" | "fwp_overlay" | "spectral_decay" | "assert_orthogonal_preservation"
@@ -508,7 +508,13 @@ Operation        ::= "rosetta_align" | "cross_project"
       <div class="card">
         <h3><code>step init_architecture [arch_name] [layers=&lt;int&gt;] [d_model=&lt;int&gt;] [heads=&lt;int&gt;] [vocab=&lt;int&gt;]</code></h3>
         <p>Synthesizes and initializes a standalone Micro-Transformer architecture from scratch in weight space, creating deterministic Float32 SafeTensors weights ready for weight programming.</p>
-        <pre><code>step init_architecture NanoWSP layers=2 d_model=64 heads=2 vocab=100</code></pre>
+        <pre><code>step init_architecture model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 out=models/nanogpt/model.safetensors</code></pre>
+      </div>
+
+      <div class="card" style="border-left: 4px solid var(--accent-amber, #F59E0B);">
+        <h3><code>step tie_weights source=&lt;tensor&gt; target=&lt;tensor&gt; [model=&lt;file&gt;]</code></h3>
+        <p>Enforces invariant parameter sharing and memory pointer tying (e.g. <code>transformer.wte.weight &hArr; lm_head.weight</code>) with verified 0.0 Frobenius difference, essential for canonical GPT-2 and Andrej Karpathy's nanoGPT architectures.</p>
+        <pre><code>step tie_weights source=transformer.wte.weight target=lm_head.weight model=models/nanogpt/model.safetensors</code></pre>
       </div>
 
       <div class="card">
