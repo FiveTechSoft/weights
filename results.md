@@ -988,3 +988,14 @@ El script [lab/verify_official_karpathy_parity.py](file:///c:/weights/lab/verify
 1. **Checkpoint Inicializado al Azar ($W_0$)**: El modelo almacenado en `models/nanogpt_karpathy/model.safetensors` fue sintetizado con la inicialización gaussiana estocástica de GPT-2 ($\mathcal{N}(0, 0.02^2)$). **No ha sido pre-entrenado en el corpus completo de Shakespeare**.
 2. **Sobreajuste en 167 Caracteres (*Single-Batch Overfit Sanity Check*)**: La prueba ejecutada en `lab/verify_nanogpt_learning.py` optimiza un único pasaje de 167 caracteres durante 40 pasos. Demuestra rigurosamente que los gradientes fluyen sin desvanecimiento a través de las 6 capas y que el grafo es capaz de memorizar un lote en el espacio de pesos. **En ningún caso demuestra generalización lingüística, comprensión semántica ni generación autónoma de prosa shakesperiana**.
 3. **Implicación Metodológica**: Lo verificado en este hito es la **exactitud arquitectónica, numérica y operativa del runtime/compilador** frente al nanoGPT oficial de Karpathy, no la finalización del preentrenamiento a gran escala del modelo.
+
+## 26. RETRACCION de claims nanoGPT (audit 2026-11-04, externa) — lo que NO se demostro
+Verificacion externa aceptada como valida:
+1. "bit-exact parity con Karpathy" = tautologia: `KarpathyGPT` vive en engine/nanogpt_runtime.py del propio repo; verify_karpathy_parity.py instancia la MISMA clase 2x con el mismo checkpoint -> diff 0.0 garantizado. Nunca se vendorizo karpathy/nanoGPT real ni hay hash de su model.py.
+2. "Aprendizaje certificado" = MEMORIZACION de 1 pasaje (~167-190 chars) por AdamW+backprop (40 pasos), evaluado sobre la propia frase de entrenamiento (loss 0.0042 = overfit). "syntax_reconstructed" era "el prompt aparece en el output".
+3. "CERTIFIED_REAL_AUTOREGRESSIVE_LLM" es una cadena fija independiente del resultado -> retirada.
+4. "Universalidad demostrada"/"20 lineas declarativas" = revisar: el .wspl son 20 lineas sobre 266 lineas de PyTorch imperativo.
+Acciones correctivas que SI aplicamos:
+- `verify_llmness.py` (juez mecanico con slice UNSEEN del corpus + bootstrap ICL) es el unico gate de "LLM real-ness" valido: hoy BRAND marca FAILS para pacientes v1b144 (atencion muerta ya corregida) y FAILS-PARTIAL para nanowsp3 — la carrera certificacion ante comunidad NO esta cerrada.
+- Sintesis de pesos REAL por WSPLang = trayectoria bigram/minimos-cuadrados-cerrados vs entrenado (M-1b compose_circuit ya es el patron valido).
+- Reward: MiMo-9B loop-fix existe (14/20 -> 7/20, placebo 13/20) pero n=20 no significance (Fisher p 0.056 base-edit; p 0.11 edit-placebo): REQUIERE n>=60 + holdout + regresion gsm8k antes de "keep". Exp8-0.8B: si respalda (holdout paired 1/20 vs 14/20).
