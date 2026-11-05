@@ -1,0 +1,47 @@
+{
+  "patient": "lab/runs/nanowsp4_v1b144_trace.npz",
+  "corpus": "lab/data/corpus_n4b.txt",
+  "eval_chars": 8000,
+  "L1": {
+    "nll": 2.5629,
+    "ppl": 12.973,
+    "unigram_entropy": 3.0604,
+    "baseline_order": 3,
+    "baseline_nll": 1.9158,
+    "verdict": "FAILS",
+    "ngram_ladder_nll": {
+      "1": 3.0616,
+      "2": 2.5096,
+      "3": 1.9158,
+      "4": 1.5164,
+      "5": 1.3461
+    }
+  },
+  "L2_long_context": {
+    "short": 8,
+    "long": 64,
+    "n": 400,
+    "mean_gain_nats": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "verdict": "FAILS"
+  },
+  "GEN": {
+    "sample": "ansprino mes swhe Thif tor hith hon alst s asthey clant ave wh ad ss aghangry thes athes ane bedend s, l an yone\nared or awhe\nik brenonty at hin s heeas thay.\n\ns d long tof\n\n\ncat gnge, aris ouire yon ",
+    "greedy_sample": "e the the the the the the the the the the the the the the the the the the the the the the the the th",
+    "distinct_3grams_ratio": 0.829,
+    "letters_space_share": 0.983,
+    "known_word_rate": 0.212,
+    "n_words": 52,
+    "verdict": "FAILS"
+  },
+  "L3_icl": {
+    "n": 200,
+    "acc_with_binding": 0.11,
+    "acc_without_binding": 0.11,
+    "delta": 0.0,
+    "sign_test_p": 1.0,
+    "verdict": "FAILS"
+  },
+  "verdict": "FAILS"
+}

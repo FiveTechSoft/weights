@@ -35,6 +35,19 @@ from model import GPT as OfficialKarpathyGPT, GPTConfig as OfficialKarpathyConfi
 from engine.nanogpt_runtime import NanoGPT, GPTConfig as WSPLangConfig             # Our WSPLang runtime
 
 
+def build_verdict(tests, max_diff, commit):
+    """Verdict derived only from the test statuses; never asserts more than what passed."""
+    failed = [name for name, t in tests.items() if t["status"] != "PASS"]
+    if failed:
+        conclusion = f"Divergencia frente a upstream {commit[:7]} en: {', '.join(failed)}."
+    else:
+        conclusion = (f"Runtime nanoGPT equivalente a upstream {commit[:7]} en las pruebas listadas "
+                      f"(W0 por semilla, logits, pérdida, gradientes, 1 paso AdamW, generación). "
+                      f"Es copia de la arquitectura en W0; no implica pesos entrenados ni síntesis.")
+    return {"independent_parity_certified": not failed, "failed_tests": failed,
+            "max_numerical_drift": max_diff, "commit_sha": commit, "conclusion": conclusion}
+
+
 def run_independent_parity_verification():
     print("==================================================================================")
     print("  VERIFICACIÓN INDEPENDIENTE: WSPLang nanoGPT vs nanoGPT OFICIAL (Andrej Karpathy)")
@@ -60,7 +73,10 @@ def run_independent_parity_verification():
 
     # 2. Instanciación independiente
     print("\n[Paso 1] Instanciando modelos desde módulos independientes...")
+    # W0 upstream generado aparte con la misma semilla: el artefacto WSPLang debe coincidir con él.
+    torch.manual_seed(1337)
     off_model = OfficialKarpathyGPT(cfg_off)
+    upstream_w0 = {k: v.clone() for k, v in off_model.named_parameters()}
     wsp_model = NanoGPT(config=cfg_wsp, seed=1337)
 
     # Cargar exactamente los mismos pesos desde SafeTensors
@@ -83,7 +99,7 @@ def run_independent_parity_verification():
             "n_embd": 384,
             "vocab_size": 65,
             "block_size": 256,
-            "parameters": 10770816,
+            "parameters": sum(p.numel() for p in off_model.parameters()),
         },
         "tests": {}
     }
@@ -98,22 +114,26 @@ def run_independent_parity_verification():
         assert name in wsp_named_params, f"Clave {name} ausente en WSPLang"
         p_wsp = wsp_named_params[name]
         assert p_off.shape == p_wsp.shape, f"Dimensión disconforme en {name}: {p_off.shape} vs {p_wsp.shape}"
-        diff_init = (p_off - p_wsp).abs().max().item()
-        assert diff_init == 0.0, f"Discrepancia en pesos iniciales de {name}: {diff_init}"
+
+    # Comparación real de W0: el artefacto WSPLang frente al W0 upstream de la misma semilla.
+    # (Comparar tras cargar el mismo archivo en ambos sería una tautología.)
+    w0_diff = max((upstream_w0[n] - p).abs().max().item() for n, p in wsp_named_params.items())
 
     # Verificar atado de pesos (wte == lm_head) en ambos
     off_tie_diff = (off_model.transformer.wte.weight - off_model.lm_head.weight).abs().max().item()
     wsp_tie_diff = (wsp_model.model.transformer.wte.weight - wsp_model.model.lm_head.weight).abs().max().item()
-    assert off_tie_diff == 0.0 and wsp_tie_diff == 0.0
+    tie_diff = max(off_tie_diff, wsp_tie_diff)
 
-    print(f"  Total tensores de parámetros: {len(off_named_params)} (76 en Transformer + lm_head tied = 77)")
+    print(f"  Total tensores de parámetros: {len(off_named_params)}")
     print(f"  Total parámetros escalares:   {sum(p.numel() for p in off_model.parameters()):,}")
-    print(f"  Atado de pesos (Weight Tying): EXACTO 0.0 en ambos modelos")
+    print(f"  Diferencia artefacto vs W0 upstream (seed=1337): {w0_diff:.2e}")
+    print(f"  Atado de pesos (Weight Tying): {tie_diff:.2e}")
     report["tests"]["test1_weight_topology"] = {
         "num_parameter_tensors": len(off_named_params),
-        "total_parameters": 10770816,
-        "weight_tying_max_diff": 0.0,
-        "status": "PASS"
+        "total_parameters": sum(p.numel() for p in off_model.parameters()),
+        "w0_vs_upstream_same_seed_max_diff": w0_diff,
+        "weight_tying_max_diff": tie_diff,
+        "status": "PASS" if (w0_diff == 0.0 and tie_diff == 0.0) else "FAIL"
     }
 
     # 4. Paridad de Logits en múltiples longitudes y batches
@@ -265,6 +285,23 @@ def run_independent_parity_verification():
         "status": "PASS" if all_gen_matches else "FAIL"
     }
 
+    # 6b. Paridad en generación muestreada, usando el generate() oficial
+    print("\n[Paso 5b] Paridad en Generación Muestreada (T=0.8, top_k=10)...")
+    sampled_cases = []
+    for p_str in prompts:
+        p_toks = torch.tensor([[c2i[c] for c in p_str if c in c2i]], dtype=torch.long)
+        torch.manual_seed(4242)
+        out_off = off_model.generate(p_toks.clone(), 25, temperature=0.8, top_k=10)
+        torch.manual_seed(4242)
+        out_wsp = wsp_model.generate(p_toks.clone(), max_new_tokens=25, temperature=0.8, top_k=10)
+        sampled_cases.append(bool((out_off == out_wsp).all().item()))
+    print(f"  Coincidencias: {sum(sampled_cases)}/{len(sampled_cases)}")
+    report["tests"]["test4b_sampled_generation"] = {
+        "cases_matching": sum(sampled_cases),
+        "cases_total": len(sampled_cases),
+        "status": "PASS" if all(sampled_cases) else "FAIL"
+    }
+
     # 7. Prueba Independiente de Causalidad
     print("\n[Paso 6] Prueba Independiente de Invarianza Causal...")
     seq_len = 32
@@ -292,29 +329,19 @@ def run_independent_parity_verification():
     }
 
     # Veredicto Global
-    overall_pass = (
-        report["tests"]["test1_weight_topology"]["status"] == "PASS" and
-        report["tests"]["test2_multi_length_logits"]["status"] == "PASS" and
-        report["tests"]["test3_optimization_dynamics"]["status"] == "PASS" and
-        report["tests"]["test4_greedy_generation"]["status"] == "PASS" and
-        report["tests"]["test5_causal_invariance"]["status"] == "PASS"
-    )
-
-    report["verdict"] = {
-        "independent_parity_certified": overall_pass,
-        "max_numerical_drift": max_logit_diff_overall,
-        "commit_sha": meta["commit_sha"],
-        "conclusion": "WSPLang nanoGPT reproduce bit a bit la implementación oficial de Karpathy bajo todas las condiciones probadas."
-    }
+    report["verdict"] = build_verdict(report["tests"], max_logit_diff_overall, meta["commit_sha"])
+    overall_pass = report["verdict"]["independent_parity_certified"]
 
     out_file = R / "lab" / "runs" / "official_karpathy_parity_report.json"
     out_file.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"\n==================================================================================")
-    print(f"  RESULTADO FINAL: {'CERTIFICADO INDEPENDIENTE PASS (0.0 DRIFT)' if overall_pass else 'FALLO'}")
+    print(f"  RESULTADO FINAL: {'PASS' if overall_pass else 'FALLO'}")
+    print(f"  {report['verdict']['conclusion']}")
     print(f"  Informe guardado en: {out_file}")
     print(f"==================================================================================")
     return report
 
 
 if __name__ == "__main__":
-    run_independent_parity_verification()
+    final = run_independent_parity_verification()
+    sys.exit(0 if final["verdict"]["independent_parity_certified"] else 1)

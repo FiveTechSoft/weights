@@ -130,7 +130,7 @@ def run_learning_verification():
             "test_type": "single_batch_overfit_sanity_check",
             "pretraining_on_corpus": False,
             "generalization_tested": False,
-            "verdict": "SINGLE_BATCH_OVERFIT_PASS",
+            "verdict": "SINGLE_BATCH_OVERFIT_" + ("PASS" if "Before we proceed any further" in out_f else "FAIL"),
             "scientific_note": "Confirma que el grafo computacional y los gradientes de nanoGPT funcionan y pueden memorizar un lote; no demuestra generalización lingüística ni preentrenamiento general sobre el corpus de Shakespeare."
         }
     }

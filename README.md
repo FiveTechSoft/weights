@@ -79,12 +79,12 @@ python scripts/demo_nanowsp_capabilities.py
 ```
 
 
-### 5. Build Karpathy's nanoGPT Architecture via WSPLang (30 Seconds)
+### 5. Instantiate Karpathy's nanoGPT W0 via WSPLang (30 Seconds)
 
-Synthesize and compile Andrej Karpathy's exact **`nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65)** architecture declaratively with independent bit-exact parity against official upstream `karpathy/nanoGPT@3adf61e`:
+Instantiate an untrained `nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65) and check it against upstream `karpathy/nanoGPT@3adf61e`. The `.wspl` program calls the fixed PyTorch class in `engine/nanogpt_runtime.py`, a faithful copy of upstream: WSPLang does not yet declare architectures, train, or synthesize learned weights.
 
 ```bash
-# 1. Synthesize the architecture and tie weights declaratively
+# 1. Write the seeded W0 checkpoint and tie weights
 python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run
 
 # 2. Verify independent mathematical parity against official upstream karpathy/nanoGPT
@@ -99,7 +99,7 @@ python lab/verify_official_karpathy_parity.py
 | **Autoregressive Greedy Generation** | 0 discrepancies / 75 tokens | 0 token errors | **100% BIT-EXACT** |
 | **Cross-Entropy Loss & Gradients** | Loss $\Delta = 0.0$, Grad $\Delta = 0.0$ | $0.0$ | **EXACT MATCH** |
 
-*Note: This certifies exact architectural and numerical runtime equivalence of the $W_0$ state with upstream Karpathy, not full corpus pre-training.*
+*Note: This shows the runtime matches upstream at $W_0$ (same seed, same weights). The checkpoint is random, with validation NLL near $\ln 65$. For language-model behaviour use `lab/verify_llmness.py`, calibrated by `lab/calibrate_llmness.py`.*
 
 
 👉 **Need a full walkthrough?** Read our step-by-step **[Getting Started Guide](docs/getting_started.md)**.

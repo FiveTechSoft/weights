@@ -178,6 +178,8 @@ Utiliza emparejamiento bipartito de máxima similitud en $O(N^2)$, garantizando 
 
 ## 10. Compilador de Entrenamiento Sintético (`compile_synthetic`)
 
+> **Estado real (2026-11-05):** `compile_synthetic` es STUB: calcula el delta de readout sobre NanoWSP-3 con `wspx_recall`, lo descarta y no escribe pesos. El resto de esta sección describe el experimento de laboratorio M-3 (`lab/train_lab_toy_m3.py`), no lo que hace el op.
+
 Fruto de los experimentos del Laboratorio (Hitos M-0 a M-3), WSPLang 0.7 incluye el operador unificado `compile_synthetic`, que sustituye 500 pasos de descenso de gradiente por una síntesis multicapa en 1 paso analítico cerrado:
 1. Extracción de la covarianza de fondo $\Sigma_{corpus}$ para definir el manifold de preservación.
 2. Síntesis de memoria asociativa en capa FFN intermedia (estilo MEMIT regularizado).

@@ -7,18 +7,19 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-R = Path(r"C:\weights")
+R = Path(__file__).resolve().parent.parent
 
 def load_trace(path=None):
     p = Path(path or R / "lab" / "runs" / "nanowsp3_trace.npz")
     return np.load(p, allow_pickle=False)
 
 def _keys_from(names_list):
+    """Normalize trace names: NanoWSP-3 stores 'q.0', NanoWSP-4 already stores 'q.0.weight'."""
     keys = []
     for nm in names_list:
-        if "." in nm and nm.split(".")[1].isdigit():
-            k_, idx = nm.split(".")
-            keys.append(f"{k_}.{idx}.weight")
+        parts = nm.split(".")
+        if len(parts) == 2 and parts[1].isdigit():
+            keys.append(f"{parts[0]}.{parts[1]}.weight")
         else:
             keys.append(nm)
     return keys
@@ -55,16 +56,17 @@ def rope(x):
     xout = torch.view_as_real(xc * fcs.view(1, s, 1, d // 2)).flatten(3)
     return xout.type_as(x)
 
-def _resolve_cfg(P):
+def _resolve_cfg(P, n_heads=None):
+    """Head count is not recoverable from tensor shapes; d_model // 32 only holds for NanoWSP-3."""
     d_model = P["embed.weight"].shape[1]
-    heads = d_model // 32
+    heads = n_heads or d_model // 32
     layers = max(int(k.split(".")[1]) for k in P if k.startswith("q.")) + 1
     d_ff = P["min_.0.weight"].shape[0]
     return d_model, layers, heads, d_model // heads, d_ff
 
-def fwd(x, P):
+def fwd(x, P, n_heads=None):
     B, S = x.shape
-    D, L, H, DH, DFF = _resolve_cfg(P)
+    D, L, H, DH, DFF = _resolve_cfg(P, n_heads)
     h = F.embedding(x, P["embed.weight"])
     for l in range(L):
         hn = rms(h, P[f"an.{l}.weight"])

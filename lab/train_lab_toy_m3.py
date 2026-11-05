@@ -344,8 +344,7 @@ def run_m3_experiment():
         "verdict": {
             "synthetic_training_succeeded": bool(surg_tr_acc > 0.60),
             "language_fluency_preserved": bool(surg_ppl < 25.0),
-            "placebo_eliminated": bool(surg_tr_acc > plc_tr_acc + 0.40),
-            "real_llm_behavior_verified": True
+            "placebo_eliminated": bool(surg_tr_acc > plc_tr_acc + 0.40)
         }
     }
 

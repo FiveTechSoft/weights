@@ -1040,3 +1040,45 @@ Acciones correctivas que SI aplicamos:
 >      - `lab/verify_karpathy_vendorized.py` (4L/d128/h4): Max logits diff = **0.0000e+00**, similitud coseno = **0.9999997**, pérdida = **4.200277 vs 4.200277** (`PASSES_fp32`).
 >      - `lab/verify_official_karpathy_parity.py` (6L/d384/h6): Max logits diff = **0.0000e+00**, pérdida = **4.297185 vs 4.297185**, gradientes = **0.00e+00**, trayectoria AdamW = **0.00e+00**, generación greedy idéntica token por token, filtración causal al pasado = **0.00e+00** (`PASS`).
 > 4. **Delimitación de Estado**: El modelo verificado es la arquitectura $W_0$ (inicialización gaussiana con atado exacto de pesos). No es un checkpoint preentrenado a nivel lingüístico sobre el corpus completo de Shakespeare.
+
+## 27. Gate LLM-ness corregido y calibrado (2026-11-05)
+Sustituye el criterio de `verify_llmness` citado en §26. Código: `lab/llmness.py`, CLI `lab/verify_llmness.py`, controles `lab/calibrate_llmness.py`.
+
+Defectos del gate anterior:
+1. **L1 desplazado**: comparaba `lg[t]` con `X[t+2]`. La PPL 96.86 de NanoWSP-3 era un artefacto; alineada da 6.93 en el mismo slice (dos métodos independientes coinciden).
+2. **L3 sin información**: el contexto contenía la clave preguntada en 0/200 casos y los valores salen de un hash. No podía medir aprendizaje en contexto.
+3. **No cargaba NanoWSP-4** (`ValueError` en `nano3lib`) y asumía `heads = d_model // 32`. El FAILS de `v1b144` citado en §26 no era reproducible con ese código.
+4. **Generación medida con el prompt incluido**, de modo que el texto natural del prompt podía rescatar a un modelo degenerado.
+
+Checks actuales: L1 (NLL < 3-grama y < 0.85·entropía), L2 (corromper contexto antiguo a misma posición sube NLL), GEN (muestreo; solo texto generado), L3 (misma lista de valores en ambos brazos, solo cambia la asociación clave-valor; test de signos exacto). Niveles: `FAILS` < `LANGUAGE_MODEL` < `LANGUAGE_MODEL_ICL`.
+
+Calibración en Shakespeare char, últimos 8000 caracteres, fuera del entrenamiento del control (`lab/runs/llmness_calibration.json`):
+
+| Control | Esperado | Veredicto | NLL | L1 | L2 gain [CI low] | GEN | L3 |
+|---|---|---|---|---|---|---|---|
+| W0 aleatorio | FAILS | FAILS | 4.1611 | FAILS | -0.0008 [-0.0045] | FAILS | FAILS |
+| 1-grama | FAILS | FAILS | 3.4305 | FAILS | 0 | FAILS | FAILS |
+| 2-grama | FAILS | FAILS | 2.5312 | FAILS | 0 | FAILS | FAILS |
+| 3-grama | FAILS | FAILS | 2.0837 | FAILS | 0 | PASSES | FAILS |
+| 4-grama | FAILS | FAILS | 1.7145 | PASSES | 0 | PASSES | FAILS |
+| 5-grama | FAILS | FAILS | 1.6904 | PASSES | 0 | PASSES | FAILS |
+| nanoGPT oficial 4L/128, 6000 pasos Adam | LANGUAGE_MODEL | LANGUAGE_MODEL | 1.9781 | PASSES | +0.0777 [+0.0155] | PASSES | FAILS |
+| CopyOracle (solo L3) | L3 PASSES | L3 PASSES | - | - | - | - | delta 0.89 |
+
+Pacientes (`lab/runs/llmness_<paciente>.json`; holdout de cada corpus):
+
+| Paciente | Veredicto | NLL | 3-grama | Mejor n-grama (orden ≤ 5) | L2 gain [CI low] | L3 delta |
+|---|---|---|---|---|---|---|
+| NanoWSP-3 | LANGUAGE_MODEL | 1.8447 | 1.9215 | 1.7832 | +0.1255 [+0.0418] | -0.01 |
+| NanoWSP-4 v1b144 | FAILS | 2.5629 | 1.9158 | 1.3461 | 0.0 [0.0] | 0.0 |
+| NanoWSP-4 v1b145 | LANGUAGE_MODEL | 1.2634 | 1.9158 | 1.3461 | +0.1089 [+0.0597] | +0.005 |
+
+Límites:
+- Todos estos modelos se entrenaron con gradiente: nada de esta tabla es síntesis.
+- `LANGUAGE_MODEL` no es "LLM real" en sentido amplio: ninguno muestra aprendizaje en contexto.
+- Una sola semilla de control positivo, con margen L2 pequeño (+0.0155).
+- El control de 1500 pasos fallaba L1 (2.1035) y L2 con el diseño inicial. Se reforzó el control a 6000 pasos y se cambió L2 por mostrar 3/12 falsos positivos en W0 (0/12 con corrupción); los umbrales de L1 y GEN no se tocaron.
+- Modelos que pierden contra el 4-grama en NLL pueden pasar L1: nanoGPT 1.9781 vs 1.7145 y NanoWSP-3 1.8447 vs 1.7832. El listón para síntesis sin gradiente debe ser más alto que L1.
+- La calibración necesita `input.txt` de Shakespeare, no versionado, y no corre en CI.
+
+Runtime: `NanoGPT(seed)` ahora reproduce el W0 de upstream con la misma semilla (antes difería en 0.1455), por lo que el checkpoint de `build_karpathy_nanogpt.wspl` cambia respecto a versiones previas. `compile_synthetic` queda marcado STUB: no escribe pesos.

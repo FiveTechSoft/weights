@@ -88,7 +88,7 @@
   },
   "errors": [],
   "validated": true,
-  "ts": "2026-11-05T09:01:57",
+  "ts": "2026-11-05T15:05:03",
   "ejecucion": [
     {
       "op": "init_architecture",
@@ -104,7 +104,9 @@
         "vocab_size": 65,
         "total_parameters": 10770816,
         "output_file": "C:\\weights\\models\\nanogpt_karpathy\\model.safetensors",
-        "written_to_disk": true
+        "written_to_disk": true,
+        "dropout": 0.0,
+        "bias": true
       }
     },
     {
@@ -135,8 +137,8 @@
           384
         ],
         "total_elements": 147456,
-        "frobenius_norm": 2.2203006744384766,
-        "max_magnitude": 0.026154255494475365
+        "frobenius_norm": 2.217386484146118,
+        "max_magnitude": 0.028225520625710487
       }
     },
     {
@@ -151,22 +153,22 @@
         ],
         "rank_q": 16,
         "top_singular_values": [
-          0.2262,
-          0.2242,
-          0.2228,
-          0.2181,
-          0.2151,
+          0.2223,
+          0.2215,
+          0.2197,
+          0.218,
+          0.2157,
           0.213,
-          0.2121,
-          0.2106
+          0.2126,
+          0.2118
         ],
-        "spectral_gap_delta": 0.002041,
-        "condition_number": 1.1354,
+        "spectral_gap_delta": 0.000751,
+        "condition_number": 1.1215,
         "leverage_distribution": {
-          "sum": 16.0,
-          "mean": 0.0416666679084301,
-          "max": 0.10406505316495895,
-          "min": 0.011188252829015255
+          "sum": 15.99999713897705,
+          "mean": 0.0416666604578495,
+          "max": 0.1178743839263916,
+          "min": 0.010432134382426739
         }
       }
     }

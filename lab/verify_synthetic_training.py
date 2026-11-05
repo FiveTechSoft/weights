@@ -329,15 +329,9 @@ def main():
         "llm_behavior_verification": {
             "discriminative_ppl": discrim,
             "generative_dynamics": gen_results,
-            "certified_real_llm": bool(discrim["prefers_natural_over_permuted"] and discrim["signal_to_noise_ratio"] > 10.0)
+            "discriminates_natural_text": bool(discrim["prefers_natural_over_permuted"] and discrim["signal_to_noise_ratio"] > 10.0)
         },
-        "synthetic_training_audit": synth_results,
-        "epistemic_conclusions": {
-            "why_nanowsp4_looped": "NanoWSP-4 suffered from a silent initialization bug where q,k,v,o matrices were 0, converting it into a position-invariant MLP that fell into the unigram attractor (' the').",
-            "why_nanowsp3_is_real_llm": "NanoWSP-3 has active multi-head attention, discriminates natural English with 14.7x SNR, and generates coherent English syntax.",
-            "what_synthetic_weight_compilation_can_do": "WSPLang closed-form algebraic solve (compile_synthetic + nullspace covariance projection) injects 100% exact factual memory in 12ms with 0 backprop steps and <0.5% drift on base language.",
-            "what_synthetic_training_requires_for_full_fluency": "True end-to-end synthetic training requires high-purity synthetic corpora (the TinyStories/Phi paradigm) or calibrated tokenizers, rather than raw high-variance Gutenberg text."
-        }
+        "synthetic_training_audit": synth_results
     }
 
     out_p = R / "lab" / "runs" / "synthetic_training_audit.json"

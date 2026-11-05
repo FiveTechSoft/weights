@@ -1,0 +1,312 @@
+{
+  "config": {
+    "block_size": 64,
+    "n_layer": 4,
+    "n_head": 4,
+    "n_embd": 128,
+    "dropout": 0.0,
+    "bias": true,
+    "steps": 6000,
+    "seed": 1337,
+    "corpus": "input.txt"
+  },
+  "expected": {
+    "w0": "FAILS",
+    "1-gram": "FAILS",
+    "2-gram": "FAILS",
+    "3-gram": "FAILS",
+    "4-gram": "FAILS",
+    "5-gram": "FAILS",
+    "trained_nanogpt": "LANGUAGE_MODEL"
+  },
+  "results": {
+    "w0": {
+      "L1": {
+        "nll": 4.1611,
+        "ppl": 64.143,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.0837,
+        "verdict": "FAILS",
+        "ngram_ladder_nll": {
+          "1": 3.4305,
+          "2": 2.5312,
+          "3": 2.0803,
+          "4": 1.7045,
+          "5": 1.6799
+        }
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 400,
+        "mean_gain_nats": -0.0008,
+        "ci95_low": -0.0045,
+        "ci95_high": 0.0029,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": "t3ZrjmhPPqkhRxLsX?tUWRoHcc  eThjyyyaNdkIxAlsvSBUM\ncccD$BygX--ntw\nkVrM z&?j D?RbsOEHelC!BTH3pphPPCsl.a--3KyporWiXkkw\nJIRc::ZO;qJU,H:r&nK- mj$fxtt!AHMLpwPjJRDf.HR'SxIiVe$Ettt,AP!DSc j'\nsCuzzB3u!!BC.SSqH",
+        "greedy_sample": "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+        "distinct_3grams_ratio": 0.997,
+        "letters_space_share": 0.843,
+        "known_word_rate": 0.027,
+        "n_words": 37,
+        "verdict": "FAILS"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.12,
+        "acc_without_binding": 0.12,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "1-gram": {
+      "L1": {
+        "nll": 3.4305,
+        "ppl": 30.891,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.0837,
+        "verdict": "FAILS",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 400,
+        "mean_gain_nats": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": "ts remh\nsd hswTsnlteWloHca  eahao roid IgtlstetgMeco ueoygh  ntw\nhere hstn  oi  \neiel sBeg eehi \nse atso ylor i  pee ahcesriaaet,oer nen mht  ttooe e w \nt  e ri'   ioeotott,d  e c    s uw e\nu  nr.S   ",
+        "greedy_sample": "                                                                                                    ",
+        "distinct_3grams_ratio": 0.926,
+        "letters_space_share": 0.98,
+        "known_word_rate": 0.025,
+        "n_words": 40,
+        "verdict": "FAILS"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.105,
+        "acc_without_binding": 0.105,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "2-gram": {
+      "L1": {
+        "nll": 2.5312,
+        "ppl": 12.568,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.0837,
+        "verdict": "FAILS",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 400,
+        "mean_gain_nats": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": "Th rememe ke whenllerede a meaman youd INAlste grecoure y h fotherere hath thin berelleseanongilost atho y we w ke e ancot idarthorr nd; my f thed we w y t f aim whiserethind te co n s uzed\n\nRS:\nIS:\nH",
+        "greedy_sample": "Gour the the the the the the the the the the the the the the the the the the the the the the the the",
+        "distinct_3grams_ratio": 0.832,
+        "letters_space_share": 0.99,
+        "known_word_rate": 0.273,
+        "n_words": 44,
+        "verdict": "FAILS"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.11,
+        "acc_without_binding": 0.11,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "3-gram": {
+      "L1": {
+        "nll": 2.0837,
+        "ppl": 8.034,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.0837,
+        "verdict": "FAILS",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 400,
+        "mean_gain_nats": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": "TIO:\nWhis kins sell I do theed,\nAURY Cithelseet Mespearey his therere hath thin to hall sand himps wathou por we per ances is dinder non my fat of we why mand i' thiseed,\nBy che con the well dent. So ",
+        "greedy_sample": "TIO:\nI withe the the the the the the the the the the the the the the the the the the the the the the",
+        "distinct_3grams_ratio": 0.768,
+        "letters_space_share": 0.98,
+        "known_word_rate": 0.544,
+        "n_words": 57,
+        "verdict": "PASSES"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.08,
+        "acc_without_binding": 0.08,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "4-gram": {
+      "L1": {
+        "nll": 1.7145,
+        "ppl": 5.554,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.0837,
+        "verdict": "PASSES",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 400,
+        "mean_gain_nats": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": ":\nHerms\nAnd sween?\n\nWARWICK:\nThan younderelse, greech word thoughter? hath thin to have man.\n\nPRINA:\nI'll portius,\nHave othis did true of have too let's to first this hith a chese ands up the cre.\n\nQU",
+        "greedy_sample": "IO:\nI with the shall the shall the shall the shall the shall the shall the shall the shall the shall",
+        "distinct_3grams_ratio": 0.815,
+        "letters_space_share": 0.953,
+        "known_word_rate": 0.759,
+        "n_words": 54,
+        "verdict": "PASSES"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.085,
+        "acc_without_binding": 0.085,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "5-gram": {
+      "L1": {
+        "nll": 1.6904,
+        "ppl": 5.421,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.0837,
+        "verdict": "PASSES",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 400,
+        "mean_gain_nats": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": "IO:\nHere's her self injure of hear, in the strength is with that here hear thin this is many him; that of the waked, and send the earness hands\nHis purposed back and ever the he contranger,\nI can.S:\nH",
+        "greedy_sample": "IO:\nI will be so shall the shall the shall the shall the shall the shall the shall the shall the sha",
+        "distinct_3grams_ratio": 0.742,
+        "letters_space_share": 0.97,
+        "known_word_rate": 0.931,
+        "n_words": 58,
+        "verdict": "PASSES"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.085,
+        "acc_without_binding": 0.085,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "trained_nanogpt": {
+      "L1": {
+        "nll": 1.9781,
+        "ppl": 7.229,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.0837,
+        "verdict": "PASSES",
+        "ngram_ladder_nll": {
+          "1": 3.4305,
+          "2": 2.5312,
+          "3": 2.0803,
+          "4": 1.7045,
+          "5": 1.6799
+        }
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 400,
+        "mean_gain_nats": 0.0777,
+        "ci95_low": 0.0155,
+        "ci95_high": 0.1384,
+        "verdict": "PASSES"
+      },
+      "GEN": {
+        "sample": ":\nHere made sweetly it off merry's and I tose,\nAnd pour your name are hear to blood live\nHere is stands, your is perial.\n\nCOMINIUS:\nWe nemit stand well you for me I seek,\nBut he contrumph of this. So ",
+        "greedy_sample": ":\nI have so the soul, and so soul,\nI have soul to the sun the sun the sun\nTo be the sun of the peopl",
+        "distinct_3grams_ratio": 0.809,
+        "letters_space_share": 0.97,
+        "known_word_rate": 0.86,
+        "n_words": 57,
+        "verdict": "PASSES"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.11,
+        "acc_without_binding": 0.1,
+        "delta": 0.01,
+        "sign_test_p": 0.5,
+        "verdict": "FAILS"
+      },
+      "verdict": "LANGUAGE_MODEL"
+    }
+  },
+  "copy_oracle_l3": {
+    "n": 200,
+    "acc_with_binding": 1.0,
+    "acc_without_binding": 0.11,
+    "delta": 0.89,
+    "sign_test_p": 0.0,
+    "verdict": "PASSES"
+  },
+  "calibrated": true,
+  "surprises": []
+}

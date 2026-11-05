@@ -173,8 +173,7 @@ def run_verification(lambda_base: float = 30.0):
         "factual_coexistence": fact_results,
         "verdict": {
             "discriminative_language_modeling": bool(discrim_ratio > 10.0 and ppl_perm > ppl_nat),
-            "lexical_integrity_preserved": bool(overall_valid_pct > 70.0),
-            "real_llm_behavior_certified": True
+            "lexical_integrity_preserved": bool(overall_valid_pct > 70.0)
         }
     }
 
@@ -191,4 +190,4 @@ if __name__ == "__main__":
     print(f"Perplejidad Permutada: {rep['discriminative_ppl']['permuted_words']}")
     print(f"Perplejidad Ruido:     {rep['discriminative_ppl']['uniform_noise']} ({rep['discriminative_ppl']['signal_to_noise_ratio']}x)")
     print(f"Palabras inglesas válidas: {rep['lexical_validity']['overall_valid_english_words_pct']}%")
-    print(f"Veredicto: REAL_LLM_BEHAVIOR_CERTIFIED = {rep['verdict']['real_llm_behavior_certified']}")
+    print(f"Veredicto: {rep['verdict']} (gate de LLM real: lab/verify_llmness.py)")

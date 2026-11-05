@@ -9,12 +9,36 @@ on:
       - '.github/workflows/training-to-surgery-v1.yml'
       - 'requirements.txt'
       - 'tests/test_training_to_surgery_benchmarks.py'
+      - 'tests/test_wsplang_karpathy_nanogpt.py'
+      - 'tests/test_nanogpt_runtime_contract.py'
+      - 'tests/test_llmness_gate.py'
+      - 'engine/nanogpt_runtime.py'
+      - 'engine/wsplang.py'
+      - 'lab/llmness.py'
+      - 'lab/nano3lib.py'
+      - 'lab/verify_llmness.py'
+      - 'lab/verify_official_karpathy_parity.py'
+      - 'lab/verify_karpathy_vendorized.py'
+      - 'lab/reference/**'
+      - 'programs/build_karpathy_nanogpt.wspl'
   pull_request:
     paths:
       - 'benchmarks/**'
       - '.github/workflows/training-to-surgery-v1.yml'
       - 'requirements.txt'
       - 'tests/test_training_to_surgery_benchmarks.py'
+      - 'tests/test_wsplang_karpathy_nanogpt.py'
+      - 'tests/test_nanogpt_runtime_contract.py'
+      - 'tests/test_llmness_gate.py'
+      - 'engine/nanogpt_runtime.py'
+      - 'engine/wsplang.py'
+      - 'lab/llmness.py'
+      - 'lab/nano3lib.py'
+      - 'lab/verify_llmness.py'
+      - 'lab/verify_official_karpathy_parity.py'
+      - 'lab/verify_karpathy_vendorized.py'
+      - 'lab/reference/**'
+      - 'programs/build_karpathy_nanogpt.wspl'
   workflow_dispatch:
 
 permissions:
@@ -42,9 +66,16 @@ jobs:
         run: |
           python -m unittest tests/test_training_to_surgery_benchmarks.py
           python -m unittest tests/test_wsplang_karpathy_nanogpt.py
+          python -m unittest tests/test_nanogpt_runtime_contract.py
+          python -m unittest tests/test_llmness_gate.py
+
+      - name: Build nanoGPT W0 from its WSPLang program
+        run: python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run
 
       - name: Run Independent Karpathy nanoGPT Parity Verification
-        run: python lab/verify_official_karpathy_parity.py
+        run: |
+          python lab/verify_official_karpathy_parity.py
+          python lab/verify_karpathy_vendorized.py
 
       - name: Run Benchmark v1 (Baseline Instrumentation & Replay)
         run: >-

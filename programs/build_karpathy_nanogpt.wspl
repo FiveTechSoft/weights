@@ -1,12 +1,13 @@
 # ==============================================================================
-# WSP-Lang 0.7: Declarative Synthesis of Karpathy nanoGPT (Shakespeare Architecture)
+# WSP-Lang 0.7: Karpathy nanoGPT W0 (Shakespeare Architecture), untrained random initialization
+# init_architecture instantiates the fixed class in engine/nanogpt_runtime.py; no weights are learned here.
 # Target Architecture: 6 Layers, d_model=384, 6 Heads, d_ff=1536, Vocab=65, BlockSize=256
 # Parameter Count: 10,770,816 parameters (Weight Tying wte <==> lm_head)
 # ==============================================================================
 
 experiment build_karpathy_nanogpt:
     model: nanoGPT
-    objective: synthesize_karpathy_nanogpt_purely_in_weight_space
+    objective: instantiate_karpathy_nanogpt_w0
 
     budgets:
         max_modified_weights = 11000000

@@ -1,6 +1,6 @@
 {
-  "vendor_commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291\r\n",
-  "vendor_model_sha256": "63d46bccd28157de4ae3d4e714f3945370be708852d2f411e0d017a7da5f8d39",
+  "upstream_commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
+  "upstream_model_sha256": "63d46bccd28157de4ae3d4e714f3945370be708852d2f411e0d017a7da5f8d39",
   "cfg": {
     "n_layer": 4,
     "n_head": 4,
@@ -8,13 +8,14 @@
     "block_size": 64,
     "vocab_size": 65
   },
+  "upstream_file_matches_pin": true,
   "max_logits_diff": 0.0,
-  "cos": 0.999999702,
+  "max_logits_diff_perturbed": 0.0,
   "shapes_match": true,
-  "causal_purity_diff_v_past": 0.0,
-  "causal_purity_v_future": 1.1072782278060913,
-  "loss_vend": 4.200277,
-  "loss_ours": 4.200277,
+  "causal_past_diff": 0.0,
+  "causal_future_diff": 1.1072782278060913,
+  "loss_upstream": 4.200277,
+  "loss_runtime": 4.200277,
   "parity_verdict": "PASSES_fp32",
-  "interpretacion": "verdict"
+  "interpretacion": "logits idénticos: esperado, el runtime es copia de model.py sobre los mismos kernels"
 }

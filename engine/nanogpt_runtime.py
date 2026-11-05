@@ -210,32 +210,10 @@ class NanoGPT:
     def __init__(self, config: Optional[GPTConfig] = None, seed: int = 1337):
         self.config = config or GPTConfig()
         self.seed = seed
-        self.model = KarpathyGPT(self.config)
-        self.init_weights(seed=seed)
-
-    def init_weights(self, seed: int = 1337):
-        """Inicialización canónica de Karpathy con escalado residual GPT-2."""
+        # Seeding right before construction consumes the RNG exactly like upstream's
+        # `torch.manual_seed(seed); GPT(config)`, so the same seed yields the same W0.
         torch.manual_seed(seed)
-        c = self.config
-
-        def _init_mod(m):
-            if isinstance(m, nn.Linear):
-                torch.nn.init.normal_(m.weight, mean=0.0, std=0.02)
-                if m.bias is not None:
-                    torch.nn.init.zeros_(m.bias)
-            elif isinstance(m, nn.Embedding):
-                torch.nn.init.normal_(m.weight, mean=0.0, std=0.02)
-
-        self.model.apply(_init_mod)
-
-        # Escalado residual 1 / sqrt(2 * n_layer) por paper de GPT-2
-        scale = 0.02 / math.sqrt(2 * c.n_layer)
-        for pn, p in self.model.named_parameters():
-            if pn.endswith("c_proj.weight"):
-                torch.nn.init.normal_(p, mean=0.0, std=scale)
-
-        # Asegurar puntero atado wte == lm_head
-        self.model.transformer.wte.weight = self.model.lm_head.weight
+        self.model = KarpathyGPT(self.config)
 
     def export_state_dict(self) -> Dict[str, torch.Tensor]:
         """Exporta diccionario de tensores con claves exactas de HuggingFace / nanoGPT."""
@@ -252,9 +230,15 @@ class NanoGPT:
         save_file(sd, str(p))
 
     def load_checkpoint(self, path: Union[str, Path]):
-        """Carga pesos desde SafeTensors y enlaza punteros."""
+        """Carga pesos desde SafeTensors y enlaza punteros.
+
+        Estricto: un tensor ausente o desconocido es error. Solo se toleran las máscaras causales
+        `attn.bias` de checkpoints antiguos, que el modelo no usa con flash attention.
+        """
         sd = load_file(str(path))
-        self.model.load_state_dict(sd, strict=False)
+        expected = self.model.state_dict()
+        sd = {k: v for k, v in sd.items() if k in expected or not k.endswith(".attn.bias")}
+        self.model.load_state_dict(sd, strict=True)
         self.model.transformer.wte.weight = self.model.lm_head.weight
 
     def count_parameters(self) -> int:

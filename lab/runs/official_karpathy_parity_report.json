@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-05T10:40:40Z",
+  "timestamp": "2026-11-05T15:05:08Z",
   "upstream_reference": {
     "repository": "https://github.com/karpathy/nanoGPT",
     "commit_sha": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
@@ -20,6 +20,7 @@
     "test1_weight_topology": {
       "num_parameter_tensors": 76,
       "total_parameters": 10770816,
+      "w0_vs_upstream_same_seed_max_diff": 0.0,
       "weight_tying_max_diff": 0.0,
       "status": "PASS"
     },
@@ -31,8 +32,8 @@
           "diff_last_token": 0.0,
           "diff_full_sequence": 0.0,
           "diff_loss": 0.0,
-          "loss_official": 4.0882649421691895,
-          "loss_wsp": 4.0882649421691895
+          "loss_official": 4.056812286376953,
+          "loss_wsp": 4.056812286376953
         },
         {
           "batch_size": 2,
@@ -40,8 +41,8 @@
           "diff_last_token": 0.0,
           "diff_full_sequence": 0.0,
           "diff_loss": 0.0,
-          "loss_official": 4.247248649597168,
-          "loss_wsp": 4.247248649597168
+          "loss_official": 4.218047618865967,
+          "loss_wsp": 4.218047618865967
         },
         {
           "batch_size": 4,
@@ -49,8 +50,8 @@
           "diff_last_token": 0.0,
           "diff_full_sequence": 0.0,
           "diff_loss": 0.0,
-          "loss_official": 4.324210166931152,
-          "loss_wsp": 4.324210166931152
+          "loss_official": 4.2942023277282715,
+          "loss_wsp": 4.2942023277282715
         },
         {
           "batch_size": 2,
@@ -58,8 +59,8 @@
           "diff_last_token": 0.0,
           "diff_full_sequence": 0.0,
           "diff_loss": 0.0,
-          "loss_official": 4.234124183654785,
-          "loss_wsp": 4.234124183654785
+          "loss_official": 4.266819953918457,
+          "loss_wsp": 4.266819953918457
         },
         {
           "batch_size": 1,
@@ -67,8 +68,8 @@
           "diff_last_token": 0.0,
           "diff_full_sequence": 0.0,
           "diff_loss": 0.0,
-          "loss_official": 4.244014263153076,
-          "loss_wsp": 4.244014263153076
+          "loss_official": 4.239076137542725,
+          "loss_wsp": 4.239076137542725
         }
       ],
       "max_diff_overall": 0.0,
@@ -84,36 +85,42 @@
       "cases": [
         {
           "prompt": "First Citizen:\n",
-          "generated_official": "First Citizen:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-          "generated_wsp": "First Citizen:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "generated_official": "First Citizen:\nuuuuuuuuuuuNNNNNNNNNNNNNN",
+          "generated_wsp": "First Citizen:\nuuuuuuuuuuuNNNNNNNNNNNNNN",
           "exact_match": true
         },
         {
           "prompt": "To be, or not to ",
-          "generated_official": "To be, or not to   PPPPPPPPPPPPPPPPPPPPPPP",
-          "generated_wsp": "To be, or not to   PPPPPPPPPPPPPPPPPPPPPPP",
+          "generated_official": "To be, or not to ttttttttttttttttttttttttt",
+          "generated_wsp": "To be, or not to ttttttttttttttttttttttttt",
           "exact_match": true
         },
         {
           "prompt": "O Romeo, Romeo, ",
-          "generated_official": "O Romeo, Romeo,     fffffffffffffffffffff",
-          "generated_wsp": "O Romeo, Romeo,     fffffffffffffffffffff",
+          "generated_official": "O Romeo, Romeo, NNNNNNNNNNNNNNNNNNNNNNNNN",
+          "generated_wsp": "O Romeo, Romeo, NNNNNNNNNNNNNNNNNNNNNNNNN",
           "exact_match": true
         }
       ],
       "all_match": true,
       "status": "PASS"
     },
+    "test4b_sampled_generation": {
+      "cases_matching": 3,
+      "cases_total": 3,
+      "status": "PASS"
+    },
     "test5_causal_invariance": {
       "past_leakage": 0.0,
-      "future_sensitivity": 2.023066282272339,
+      "future_sensitivity": 1.7942490577697754,
       "status": "PASS"
     }
   },
   "verdict": {
     "independent_parity_certified": true,
+    "failed_tests": [],
     "max_numerical_drift": 0.0,
     "commit_sha": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
-    "conclusion": "WSPLang nanoGPT reproduce bit a bit la implementaci\u00f3n oficial de Karpathy bajo todas las condiciones probadas."
+    "conclusion": "Runtime nanoGPT equivalente a upstream 3adf61e en las pruebas listadas (W0 por semilla, logits, p\u00e9rdida, gradientes, 1 paso AdamW, generaci\u00f3n). Es copia de la arquitectura en W0; no implica pesos entrenados ni s\u00edntesis."
   }
 }

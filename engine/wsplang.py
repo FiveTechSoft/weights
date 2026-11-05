@@ -131,7 +131,7 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
     "jepa_steer", "permute_align", "compile_synthetic", "tie_weights",
 }
-STUB_OPS = {"leace_erase", "surprise_fwp"}
+STUB_OPS = {"leace_erase", "surprise_fwp", "compile_synthetic"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
 
 
@@ -1241,17 +1241,26 @@ def execute_plan_v4(
                 out_p = Path(out_file)
                 if not out_p.is_absolute():
                     out_p = ROOT / out_p
+                arch_extra = {}
 
                 if arch_name.lower() in ("nanogpt", "karpathy", "gpt2") or named.get("format") == "karpathy":
                     from engine.nanogpt_runtime import NanoGPT, GPTConfig
                     block_size = int(named.get("max_seq", named.get("block_size", 256)))
+                    # nanoGPT's MLP is 4 * n_embd unless the program says otherwise; the generic
+                    # default above belongs to the NanoWSP family.
+                    d_ff = int(named.get("d_ff", 0)) or 4 * d_model
+                    arch_extra = {
+                        "dropout": float(named.get("dropout", 0.0)),
+                        "bias": str(named.get("bias", "true")).lower() not in ("false", "0"),
+                    }
                     cfg = GPTConfig(
                         vocab_size=vocab,
                         n_embd=d_model,
                         n_layer=layers,
                         n_head=heads,
-                        d_ff=d_ff if d_ff > 0 else 4 * d_model,
-                        block_size=block_size
+                        d_ff=d_ff,
+                        block_size=block_size,
+                        **arch_extra
                     )
                     nanowsp = NanoGPT(config=cfg, seed=int(named.get("seed", 1337)))
                 elif "2" in arch_name or layers > 2 or d_model >= 128:
@@ -1295,7 +1304,8 @@ def execute_plan_v4(
                     "vocab_size": vocab,
                     "total_parameters": nanowsp.count_parameters(),
                     "output_file": str(out_p),
-                    "written_to_disk": saved
+                    "written_to_disk": saved,
+                    **arch_extra
                 }
 
             # ------------------------------------------------------------------
@@ -2634,6 +2644,8 @@ def execute_plan_v4(
             elif op == "compile_synthetic":
                 dataset_name = named.get("dataset", "wspx_recall")
                 lambda_base = float(named.get("lambda_base", 30.0))
+                if dataset_name != "wspx_recall":
+                    raise ValueError(f"compile_synthetic only supports dataset=wspx_recall, got {dataset_name}")
 
                 from lab.wspx_datasets import recall
                 ds = recall()
@@ -2644,8 +2656,9 @@ def execute_plan_v4(
                 ckpt_p = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
                 if not ckpt_p.exists():
                     ckpt_p = ROOT / "lab" / "runs" / "nanowsp3_pretrained.safetensors"
-                if ckpt_p.exists():
-                    surg_model.load_checkpoint(ckpt_p)
+                if not ckpt_p.exists():
+                    raise FileNotFoundError(f"compile_synthetic needs a NanoWSP-3 checkpoint, none at {ckpt_p}")
+                surg_model.load_checkpoint(ckpt_p)
 
                 # Solve dual readout with null-space regularization
                 H_task = []
@@ -2682,8 +2695,8 @@ def execute_plan_v4(
                     "pairs_compiled": len(train_pairs),
                     "lambda_base": lambda_base,
                     "delta_frobenius": round(delta_norm, 4),
-                    "analytical_speedup": "27.5x vs AdamW",
-                    "status": "compiled_successfully"
+                    "weights_written": False,
+                    "status": "delta_computed_and_discarded"
                 }
 
             else:
@@ -2697,7 +2710,7 @@ def execute_plan_v4(
 
     # AUDIT 2026-11-04: ops STUB nunca publican claims causales
     for r in executed_steps:
-        if r.get("op") in STUB_OPS and r.get("status") not in ("security_rejection",):
+        if r.get("op") in STUB_OPS and r.get("status") not in ("security_rejection", "error"):
             r["status"] = "stub_result"
 
     return executed_steps
