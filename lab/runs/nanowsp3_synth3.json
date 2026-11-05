@@ -1,0 +1,445 @@
+{
+ "experimento": "S3 diversidad de familias vs generalizacion a familias nuevas (gradiente)",
+ "reglas": "pre-registradas en docstring",
+ "fases": {
+  "train": {
+   "div_s0": {
+    "done": true,
+    "step": 320,
+    "loss_last20": 0.4176
+   },
+   "fam3_s0": {
+    "done": true,
+    "step": 320,
+    "loss_last20": 0.3409
+   },
+   "pladiv_s0": {
+    "done": true,
+    "step": 320,
+    "loss_last20": 0.4448
+   },
+   "div_s1": {
+    "done": true,
+    "step": 320,
+    "loss_last20": 0.4264
+   },
+   "fam3_s1": {
+    "done": true,
+    "step": 320,
+    "loss_last20": 0.3504
+   },
+   "pladiv_s1": {
+    "done": true,
+    "step": 320,
+    "loss_last20": 0.4566
+   }
+  }
+ },
+ "estado": "COMPLETO",
+ "evaluacion": {
+  "div_s0": {
+   "f8": {
+    "per_order_ok": 63,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 66,
+    "per_order_n": 128,
+    "strict_ok": 24,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 60,
+    "per_order_n": 128,
+    "strict_ok": 4,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 59,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 65,
+    "per_order_n": 128,
+    "strict_ok": 4,
+    "strict_n": 64
+   },
+   "confirm_alice_ppl": 8.89
+  },
+  "fam3_s0": {
+   "f8": {
+    "per_order_ok": 63,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 69,
+    "per_order_n": 128,
+    "strict_ok": 25,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 61,
+    "per_order_n": 128,
+    "strict_ok": 3,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 59,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 54,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 9,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 73,
+    "per_order_n": 128,
+    "strict_ok": 10,
+    "strict_n": 64
+   },
+   "confirm_alice_ppl": 9.33
+  },
+  "pladiv_s0": {
+   "f8": {
+    "per_order_ok": 65,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 59,
+    "per_order_n": 128,
+    "strict_ok": 23,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 62,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 63,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 61,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 65,
+    "per_order_n": 128,
+    "strict_ok": 5,
+    "strict_n": 64
+   },
+   "confirm_alice_ppl": 9.06
+  },
+  "div_s1": {
+   "f8": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 77,
+    "per_order_n": 128,
+    "strict_ok": 33,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 62,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 61,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 59,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 67,
+    "per_order_n": 128,
+    "strict_ok": 5,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 68,
+    "per_order_n": 128,
+    "strict_ok": 6,
+    "strict_n": 64
+   },
+   "confirm_alice_ppl": 9.25
+  },
+  "fam3_s1": {
+   "f8": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 74,
+    "per_order_n": 128,
+    "strict_ok": 28,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 65,
+    "per_order_n": 128,
+    "strict_ok": 4,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 61,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 60,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 57,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 83,
+    "per_order_n": 128,
+    "strict_ok": 20,
+    "strict_n": 64
+   },
+   "confirm_alice_ppl": 9.68
+  },
+  "pladiv_s1": {
+   "f8": {
+    "per_order_ok": 66,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 74,
+    "per_order_n": 128,
+    "strict_ok": 32,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 63,
+    "per_order_n": 128,
+    "strict_ok": 1,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 62,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 4,
+    "strict_n": 64
+   },
+   "confirm_alice_ppl": 9.19
+  },
+  "base": {
+   "f8": {
+    "per_order_ok": 62,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 61,
+    "per_order_n": 128,
+    "strict_ok": 25,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 65,
+    "per_order_n": 128,
+    "strict_ok": 3,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 63,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 66,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 66,
+    "per_order_n": 128,
+    "strict_ok": 4,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 60,
+    "per_order_n": 128,
+    "strict_ok": 2,
+    "strict_n": 64
+   },
+   "confirm_alice_ppl": 6.68
+  },
+  "ngram8": {
+   "f8": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 72,
+    "per_order_n": 128,
+    "strict_ok": 36,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 0,
+    "strict_n": 64
+   }
+  },
+  "azar_empirico": {
+   "f8": {
+    "per_order_ok": 64,
+    "per_order_n": 128,
+    "strict_ok": 11,
+    "strict_n": 64
+   },
+   "f9": {
+    "per_order_ok": 73,
+    "per_order_n": 128,
+    "strict_ok": 20,
+    "strict_n": 64
+   },
+   "f10": {
+    "per_order_ok": 69,
+    "per_order_n": 128,
+    "strict_ok": 16,
+    "strict_n": 64
+   },
+   "f5": {
+    "per_order_ok": 68,
+    "per_order_n": 128,
+    "strict_ok": 16,
+    "strict_n": 64
+   },
+   "f6": {
+    "per_order_ok": 56,
+    "per_order_n": 128,
+    "strict_ok": 10,
+    "strict_n": 64
+   },
+   "f7": {
+    "per_order_ok": 66,
+    "per_order_n": 128,
+    "strict_ok": 17,
+    "strict_n": 64
+   },
+   "interp_F1F3": {
+    "per_order_ok": 71,
+    "per_order_n": 128,
+    "strict_ok": 11,
+    "strict_n": 64
+   }
+  },
+  "confirm_alice_cota": 9.17
+ }
+}
