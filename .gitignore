@@ -29,3 +29,4 @@ data/rosetta_*.npz
 scratch/
 runs/test_*
 runs/ci_*
+lab/runs/decompiled/

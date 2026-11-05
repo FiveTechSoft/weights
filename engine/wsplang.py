@@ -71,7 +71,7 @@ OPS_ALLOWED = {
     "layer_envelope", "multi_layer_envelope", "distributed_memit",
     # WSP-Lang 0.7: JEPA (LeCun) & Weight Space Learning (Damian Borth) Operators
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift", "tie_weights",
-    "train", "synthesize",
+    "train", "synthesize", "decompile",
     # Experimental / stubs
     "leace_erase",   # Exact LEACE when covariance is supplied; falls back to weight-Gram proxy
     "surprise_fwp",  # STUB: word-frequency repetition heuristic, not neural Titans surprisal
@@ -130,7 +130,7 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "multi_layer_envelope", "distributed_memit", "spectral_decay",
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
-    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train", "synthesize",
+    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train", "synthesize", "decompile",
 }
 STUB_OPS = {"leace_erase", "surprise_fwp"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
@@ -286,7 +286,7 @@ def check_feasibility(prog, steps, model_arg=None):
         op = st.get("op")
         if not op:
             continue
-        if op in ("init_architecture", "train", "synthesize"):
+        if op in ("init_architecture", "train", "synthesize", "decompile"):
             model_kind = "safetensors"
         if op not in IMPLEMENTED_OPS:
             errors.append(
@@ -1275,22 +1275,32 @@ def execute_plan_v4(
             elif op == "synthesize":
                 from engine import wsp_arch, wsp_synth, wsp_train
 
+                from engine import wsp_decompile
+
                 if named.get("method") != "ngram":
                     raise ValueError(f"synthesize supports method=ngram, got {named.get('method')}")
-                for required in ("arch", "data", "out", "order"):
+                source_args = ("table",) if "table" in named else ("data", "order")
+                for required in ("arch", "out") + source_args:
                     if required not in named:
                         raise ValueError(f"synthesize requires {required}=")
-                arch_path = Path(str(named["arch"]))
-                arch_path = arch_path if arch_path.is_absolute() else ROOT / arch_path
-                data_path = Path(str(named["data"]))
-                data_path = data_path if data_path.is_absolute() else ROOT / data_path
-                out_p = Path(str(named["out"]))
-                out_p = out_p if out_p.is_absolute() else ROOT / out_p
+                if "table" in named and ("data" in named or "order" in named):
+                    raise ValueError("synthesize takes either table= or data= with order=, not both")
 
-                dataset = wsp_train.char_dataset(data_path.read_text(encoding="utf-8"))
-                table = wsp_synth.WittenBellTable(dataset.train, len(dataset.chars), int(named["order"]))
+                def _rooted(value):
+                    path = Path(str(value))
+                    return path if path.is_absolute() else ROOT / path
+
+                arch_path = _rooted(named["arch"])
+                out_p = _rooted(named["out"])
+                if "table" in named:
+                    table = wsp_decompile.parse_program(_rooted(named["table"]).read_text(encoding="utf-8"))
+                    chars = table.chars
+                else:
+                    dataset = wsp_train.char_dataset(_rooted(named["data"]).read_text(encoding="utf-8"))
+                    chars = dataset.chars
+                    table = wsp_synth.WittenBellTable(dataset.train, len(chars), int(named["order"]))
                 overrides = {key: wsp_arch.parse_config_value(value) for key, value in named.items()
-                             if key not in ("method", "arch", "data", "out", "order", "seed", "model", "format")}
+                             if key not in ("method", "arch", "data", "out", "order", "seed", "model", "format", "table")}
                 if not allow_write:
                     res["execution_state"] = "simulated"
                     res["result"] = {"units_available": table.num_units(), "written_to_disk": False}
@@ -1301,13 +1311,82 @@ def execute_plan_v4(
                     if max_modified_weights is not None and total > max_modified_weights:
                         raise ValueError(f"{total} parameters exceed budget max_modified_weights={max_modified_weights}")
                     info = compiled.synthesis_info
+                    if "table" in named:
+                        source = getattr(table, "provenance", "unknown")
+                        info["method"] = "wspngram_program"
+                        info["provenance"] = ("closed_form" if source == "closed_form"
+                                              else f"closed_form_compile_of:{source}")
                     compiled.save(out_p, metadata={"provenance": info["provenance"], "backward_calls": "0",
                                                    "method": info["method"], "order": str(info["order"]),
-                                                   "vocab_chars": json.dumps(dataset.chars)})
+                                                   "vocab_chars": json.dumps(chars)})
                     target_path = out_p
                     is_safetensors = True
                     res["execution_state"] = "executed"
                     res["result"] = {**info, "total_parameters": total, "output_file": str(out_p)}
+
+            # ------------------------------------------------------------------
+            # OP: decompile: nanoGPT weights -> WSPLang n-gram program (.wspngram)
+            # ------------------------------------------------------------------
+            elif op == "decompile":
+                from safetensors import safe_open
+
+                from engine import wsp_arch, wsp_decompile, wsp_train
+
+                method = named.get("method")
+                if method not in ("structural", "behavior"):
+                    raise ValueError(f"decompile supports method=structural or method=behavior, got {method}")
+                required = ("arch", "model", "out") + (("data", "order") if method == "behavior" else ())
+                for key in required:
+                    if key not in named:
+                        raise ValueError(f"decompile method={method} requires {key}=")
+
+                def _rooted(value):
+                    path = Path(str(value))
+                    return path if path.is_absolute() else ROOT / path
+
+                model_p, out_p = _rooted(named["model"]), _rooted(named["out"])
+                with safe_open(str(model_p), framework="pt") as f:
+                    meta = f.metadata() or {}
+                dataset = None
+                if method == "behavior":
+                    dataset = wsp_train.char_dataset(_rooted(named["data"]).read_text(encoding="utf-8"))
+                if "vocab_chars" in meta:
+                    chars = json.loads(meta["vocab_chars"])
+                elif dataset is not None:
+                    chars = dataset.chars
+                else:
+                    raise ValueError("checkpoint has no vocab_chars metadata; structural decompile needs it")
+                if dataset is not None and dataset.chars != chars:
+                    raise ValueError("data= vocabulary differs from the checkpoint's vocab_chars")
+                skip = ("method", "arch", "model", "out", "data", "order", "limit_tokens", "seed", "format")
+                overrides = {key: wsp_arch.parse_config_value(value) for key, value in named.items() if key not in skip}
+                model = wsp_arch.load_arch_file(_rooted(named["arch"]), overrides=dict(overrides, vocab=len(chars)))
+                model.load(model_p)
+                model.eval()
+
+                if method == "structural":
+                    table = wsp_decompile.decompile_ngram(model, chars)
+                    table.provenance = meta.get("provenance", "unknown")
+                    note = "exact: recovered from the weights' layout, no data used"
+                else:
+                    ids = dataset.train[:int(named["limit_tokens"])] if "limit_tokens" in named else dataset.train
+                    table = wsp_decompile.behavioral_table(model, ids, chars, order=int(named["order"]))
+                    table.provenance = "distilled_from:" + meta.get("provenance", "unknown")
+                    note = ("approximate: the model's average prediction per context over the train split; "
+                            "long-range context is dropped")
+                result = {"method": method, "order": table.order, "units": table.num_units(), "note": note,
+                          "program_provenance": table.provenance,
+                          "source_provenance": meta.get("provenance", "unknown")}
+                if not allow_write:
+                    res["execution_state"] = "simulated"
+                    result["written_to_disk"] = False
+                else:
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_text(wsp_decompile.format_program(table, source=f"{method} decompile of {model_p.name}"),
+                                     encoding="utf-8")
+                    res["execution_state"] = "executed"
+                    result["output_file"] = str(out_p)
+                res["result"] = result
 
             # ------------------------------------------------------------------
             # OP: train: gradient descent on a compiled architecture (control, not synthesis)

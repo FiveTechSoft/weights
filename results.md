@@ -1217,3 +1217,28 @@ Lectura:
 - Dos arreglos probados, iguales en ambos brazos: rejilla de pasos 2^-12 a 2^6 y desatar `lm_head`.
 
 Límites: una semilla, una forma, un corpus; objetivos aproximados por diseño. Procedencia de estos pesos: `iterative_no_backprop`.
+
+## 34. Descompilador de pesos a programas WSPLang y ciclo de ida y vuelta (2026-11-05)
+Nuevo: `engine/wsp_decompile.py`, formato `.wspngram` (`docs/wspngram.md`), `step decompile` y `step synthesize table=`. Tests en `tests/test_wsp_decompile.py`.
+
+Dos descompiladores:
+- **Estructural** (`method=structural`): lee pesos escritos por `synthesize` y recupera cada entrada de la tabla solo de los pesos, sin semilla, tabla ni datos. Recompilar el programa con la misma semilla da los mismos pesos con error ≤ 1e-6 (medido 3e-8; logits 9e-5). Con otra semilla coincide con compilar la tabla original con esa semilla (< 1e-3); entre semillas el propio compilador difiere 4.8e-3 por float32. Rechaza cualquier modelo entrenado (`token embeddings are not an orthonormal readout basis`).
+- **De comportamiento** (`method=behavior`): para cualquier nanoGPT, la predicción media del modelo tras cada contexto de menos de `order` caracteres, sobre train. Pierde todo lo que el modelo calcula con contexto más antiguo.
+
+Ciclo entrenado → programa → recompilado sin gradiente (`lab/verify_wsp_decompile.py`, `lab/runs/wsp_decompile_round_trip.json`). Val completa; conservado = fracción de la ganancia del maestro sobre unigrama (entropía 3.3373). `exacta` = 6L/384/1536, 10.7 M; `ancha` = una MLP con todas las unidades.
+
+| Maestro (val) | orden 4 exacta | orden 5 exacta | orden 5 ancha | Gate |
+|---|---|---|---|---|
+| nanoGPT 10.7 M (1.4573) | 1.8064 (81 %) | 1.7810 (83 %) | 1.6347 (91 %), 47.6 M | FAILS, L2 0/3 |
+| AdamW 2L/d64, 0.1 M (1.7153) | 1.8178 (94 %) | 1.7936 (95 %) | 1.7149 (100 %), 47.2 M | FAILS, L2 0/3 |
+| Witten-Bell de los datos (control) | 1.8005 | 1.7941 | 1.6776 | FAILS |
+
+Comprobación independiente: NLL de los programas de orden 5 calculada directamente con `log_prob`, sin compilar: 1.6288 y 1.7117, frente a 1.6347 y 1.7149 compilados. La diferencia (≤ 0.006) es del orden del ruido float del compilador.
+
+Lectura:
+- Programa descompilado del nanoGPT, orden 5 ancho: 1.6347, mejor que la tabla de los datos (1.6776). El maestro suaviza mejor que Witten-Bell. Pero en la forma exacta de 10.7 M solo caben 9216 unidades y queda en 1.7810, casi igual que la tabla de datos (1.7941).
+- El 9-17 % que se pierde es justo el contexto largo: todos los recompilados dan L2 = 0 y fallan el gate, y los maestros lo pasan (ganancia L2 0.11-0.14 y 0.08-0.09).
+- El modelo pequeño cabe casi entero en un programa de orden 5 (100 % ancho), pese a que pasa L2: su uso de contexto largo aporta poco a la NLL media.
+- **Procedencia.** Un programa sacado de un modelo entrenado no es síntesis sin gradiente. El programa guarda `provenance distilled_from:gradient_descent` y el checkpoint recompilado `closed_form_compile_of:distilled_from:gradient_descent`, con `method=wspngram_program`. Una primera versión escribía `closed_form`; se corrigió antes de publicar, con test.
+
+Límites: un corpus, programas grandes (orden 5: 49 MB de texto), solo n-gramas; no hay forma de expresar atención a contexto largo en `.wspngram`.
