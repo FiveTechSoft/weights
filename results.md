@@ -617,20 +617,27 @@ Construccion cerrada (lab/train_lab_toy_m1b.py): 8 unidades umbral alternantes (
 - Nota metodo: los answers de certify provienen SIEMPRE del modelo (no del oracle)... (answer file regenerado por el surgery run y el juez wspx certifica contra el oracle del dataset).
 - Puente al 9B: esta clase de circuitos EXACTOS (lookups/Fourier) es el tier T1; para el curriculum (memit/imprint factos con oracle cerrado) ver M-2 con el paciente NanoWSP-3 pre-entrenado (PPL 14.3).
 
-## 21. LAB M-2b: Finetune-trace vs Cirugía Closed-Form sobre paciente REAL NanoWSP-3 (Pretrained PPL 14.3) — 2026-11-04
+## 21. LAB M-2b: Finetune-trace vs Cirugía Closed-Form sobre paciente REAL NanoWSP-3 (Pretrained PPL 14.3) — 2026-11-04 (Re-evaluación Rigurosa con Split Train / Holdout)
 Script: `lab/train_lab_m2b.py`. Paciente: `NanoWSP-3` (6 capas, RoPE, $d_{model}=256$, 3.28M parámetros, pre-entrenado en Alice PPL 14.3).
-Dataset: `wspx_RECALL` (200 pares `KB: XY = val`, 144 train, 56 holdout).
-Protocolo 3 brazos: AdamW 600 pasos vs Cirugía Ridge Closed-Form en readout sobre features $h_{final}$ de $W_0$ vs Placebo norm-matched.
+Dataset: `wspx_RECALL` (universo exacto 200 pares `KB: XY = val`: partición determinista 144 train, 56 holdout).
+Protocolo 4 brazos: W0 Baseline vs AdamW 600 pasos vs Cirugía Ridge Closed-Form en readout sobre features $h_{final}$ de $W_0$ vs Placebo norm-matched.
 
-| Brazo | Universo RECALL (200 casos) | Tiempo / Pasos |
-|---|---|---|
-| W0 Baseline (NanoWSP-3 PPL 14.3) | 1.5% | - |
-| **Brazo 1: AdamW Finetune (out.weight)** | **74.0%** | 600 pasos (39.5s) |
-| **Brazo 2: Cirugía Readout Closed-Form** | **74.0% (FIDELIDAD IDÉNTICA 1.000)** | **1 paso algebraico (<0.1s)** |
-| Brazo 3: Control Placebo | 2.5% | Instantáneo |
+### 21.1 Desglose Riguroso: Train (144) vs Holdout (56) vs Universo (200)
 
-- Veredicto: **SUPPORTED / tier APPROX-FIDELITY**: Record `e2026.117.m2b-nanowsp3-recall.json`.
-- Demostración fundamental: En un modelo autoregresivo profundo preentrenado con RoPE y 6 capas de atención, la cirugía cerrada sobre el readout de las representaciones existentes de $W_0$ reproduce con exactitud matemática perfecta (**74.0% == 74.0%**) el resultado de 600 pasos de descenso de gradiente por AdamW, neutralizando al placebo (2.5%) y reduciendo el tiempo a una fracción de segundo.
+| Brazo | Train Acc (144 pares) | Holdout Acc (56 pares no vistos) | Universo Completo (200 pares) | Pasos / Tiempo |
+|---|:---:|:---:|:---:|:---:|
+| **W0 Baseline** (NanoWSP-3 PPL 14.3) | 1.4% | 0.0% | 1.0% | - |
+| **Brazo 1: AdamW Finetune** (`out.weight`) | **100.0%** | **5.4%** | **73.5%** | 600 pasos (40.5s) |
+| **Brazo 2: Cirugía Readout Closed-Form** | **100.0%** | **5.4%** | **73.5%** | **0 pasos (<0.1s)** |
+| **Brazo 3: Control Placebo** (norm-matched) | 0.7% | 1.8% | 1.0% | Instantáneo |
+
+### 21.2 Análisis Crítico y Clarificación Científica
+- **Fidelidad idéntica en memorización asociativa (100.0% == 100.0%)**: La cirugía analítica en espacio de pesos resuelve la inserción de 144 asociaciones arbitrarias de forma exacta e instantánea sin gradientes, igualando a 600 pasos de AdamW y superando rotundamente al placebo (0.7%).
+- **El origen del 73.5% ("74%")**: El 73.5% reportado previamente proviene de evaluar sobre el universo completo mezclando entrenamiento y prueba:
+  $$\text{Acc}_{uni} = \frac{144 \times 100\% + 56 \times 5.36\%}{200} = 73.5\%$$
+- **Generalización en Holdout**: Al ser `RECALL` una tabla hash de claves arbitrarias aleatorias sin regla generativa subyacente, ni AdamW ni la cirugía pueden predecir pares no vistos (5.4% vs azar 10.0%).
+- **Conclusión metodológica**: La cirugía cerrada en readout es un sustituto exacto del entrenamiento iterativo para la **adquisición/modificación de memoria asociativa** en modelos autorregresivos profundos, pero la generalización a nuevos hechos requiere o bien estructura algorítmica/inductiva en el dataset, o bien meta-aprendizaje de operadores a través de múltiples trazas de optimización.
+- Veredicto: **SUPPORTED en Train (tier EXACT, fidelidad 1.000)**; **UNREACHABLE en Holdout puro**; Record actualizado: `lab/runs/records/e2026.117.m2b-readout-recall.json`.
 
 ## 20. Curriculum compiler COMPLETO: ciclo trace -> cirugia -> certify -> record (2026-11-04)
 Infra empujada: lab/nano3lib.py (builder+batched fwd compartido), lab/finetune_dataset.py (traces de finetune por dataset; RECALL 300 pasos: 100% seen, last_linear_share=0.925, 9.2s), lab/compile_from_trace.py (REGLAS: R1 EXACT compose_circuit si oraculo cerrado-compilable; R2 APPROX ridge-readout si last-linear domina >=0.5; R3 UNREACHABLE resto) + 5 tests.

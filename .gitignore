@@ -26,3 +26,6 @@ data/*.semantic_centroids.npz
 decomp/*.npz
 rig/test_responsive_harness.py
 data/rosetta_*.npz
+scratch/
+runs/test_*
+runs/ci_*

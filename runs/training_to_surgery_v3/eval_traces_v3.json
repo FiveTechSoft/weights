@@ -1,0 +1,292 @@
+[
+  {
+    "task_id": 1,
+    "seed": 7000,
+    "w0_base": {
+      "train_acc": 0.3333333432674408,
+      "holdout_acc": 0.25
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1532912254333496
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1976664066314697,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 2.9511561393737793
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.4166666567325592,
+      "holdout_acc": 0.0
+    },
+    "meta_to_sgd_cosine_similarity": 0.998921275138855
+  },
+  {
+    "task_id": 2,
+    "seed": 7001,
+    "w0_base": {
+      "train_acc": 0.3333333432674408,
+      "holdout_acc": 0.25
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1514670848846436
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.166614294052124,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 2.993227481842041
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.5,
+      "holdout_acc": 0.0
+    },
+    "meta_to_sgd_cosine_similarity": 0.999181866645813
+  },
+  {
+    "task_id": 3,
+    "seed": 7002,
+    "w0_base": {
+      "train_acc": 0.0,
+      "holdout_acc": 0.0
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.0,
+      "delta_norm": 3.3952431678771973
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.0,
+      "delta_norm": 3.366046667098999,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1707780361175537
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.1666666716337204,
+      "holdout_acc": 0.25
+    },
+    "meta_to_sgd_cosine_similarity": 0.9989962577819824
+  },
+  {
+    "task_id": 4,
+    "seed": 7003,
+    "w0_base": {
+      "train_acc": 0.3333333432674408,
+      "holdout_acc": 0.25
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1514670848846436
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.166614294052124,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 2.993227481842041
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.4166666567325592,
+      "holdout_acc": 0.5
+    },
+    "meta_to_sgd_cosine_similarity": 0.999181866645813
+  },
+  {
+    "task_id": 5,
+    "seed": 7004,
+    "w0_base": {
+      "train_acc": 0.4166666567325592,
+      "holdout_acc": 0.25
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.0938987731933594
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1327741146087646,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 2.938506841659546
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.1666666716337204,
+      "holdout_acc": 0.0
+    },
+    "meta_to_sgd_cosine_similarity": 0.9987275004386902
+  },
+  {
+    "task_id": 6,
+    "seed": 7005,
+    "w0_base": {
+      "train_acc": 0.25,
+      "holdout_acc": 0.5
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.060318946838379
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.080343723297119,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 2.9091904163360596
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.4166666567325592,
+      "holdout_acc": 0.75
+    },
+    "meta_to_sgd_cosine_similarity": 0.9997572898864746
+  },
+  {
+    "task_id": 7,
+    "seed": 7006,
+    "w0_base": {
+      "train_acc": 0.3333333432674408,
+      "holdout_acc": 0.25
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1532912254333496
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.1976664066314697,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 2.9511561393737793
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.25,
+      "holdout_acc": 0.5
+    },
+    "meta_to_sgd_cosine_similarity": 0.998921275138855
+  },
+  {
+    "task_id": 8,
+    "seed": 7007,
+    "w0_base": {
+      "train_acc": 0.25,
+      "holdout_acc": 0.25
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.209749221801758
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.2523417472839355,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 2.976685047149658
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.3333333432674408,
+      "holdout_acc": 0.0
+    },
+    "meta_to_sgd_cosine_similarity": 0.9988465309143066
+  },
+  {
+    "task_id": 9,
+    "seed": 7008,
+    "w0_base": {
+      "train_acc": 0.0833333358168602,
+      "holdout_acc": 0.5
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.2536306381225586
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.260411024093628,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.0550954341888428
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.25,
+      "holdout_acc": 0.25
+    },
+    "meta_to_sgd_cosine_similarity": 0.9992417097091675
+  },
+  {
+    "task_id": 10,
+    "seed": 7009,
+    "w0_base": {
+      "train_acc": 0.1666666716337204,
+      "holdout_acc": 0.75
+    },
+    "arm1_sgd_teacher": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.2414324283599854
+    },
+    "arm2_meta_surgery": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.242447853088379,
+      "backprop_steps": 0
+    },
+    "arm3_closed_form_ridge": {
+      "train_acc": 1.0,
+      "holdout_acc": 0.25,
+      "delta_norm": 3.022475004196167
+    },
+    "arm4_matched_placebo": {
+      "train_acc": 0.1666666716337204,
+      "holdout_acc": 0.5
+    },
+    "meta_to_sgd_cosine_similarity": 0.9994498491287231
+  }
+]

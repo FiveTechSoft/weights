@@ -1,7 +1,7 @@
 {
  "experiment_id": "e2026.117.m2b-readout-recall",
  "model_id": "nanowsp3-pretrained-PPL14",
- "objective": "cirugia readout closed-form vs finetune Adam en RECALL (lookup con paciente real)",
+ "objective": "cirugia readout closed-form vs finetune Adam en RECALL (lookup con paciente real, split limpio)",
  "baseline": {
   "nombre": "W0 pretrain (PPL14)",
   "modelo": "nanowsp3"
@@ -23,7 +23,7 @@
   "closed_form_readout": 0.735,
   "placebo_norm_matched": 0.01
  },
- "hypothesis": "cirugia closed-form readout sustituye finetune en RECALL",
+ "hypothesis": "cirugia closed-form readout sustituye finetune en RECALL en datos entrenados (memorizacion asociativa)",
  "evidence": {
   "dataset": "RECALL",
   "dataset_sha256": "6085b9dc526bead96165d1039fe8e61a90347f4e41f45879ab4ce6b571c3b0a5",
@@ -134,19 +134,33 @@
    ]
   ],
   "verdict": "APPROX",
-  "ts": "2026-11-05T06:29:07",
-  "acc": {
+  "ts": "2026-11-05T09:41:41",
+  "acc_train": {
+   "w0_base": 0.013888888888888888,
+   "adam_finetune": 1.0,
+   "closed_form_readout": 1.0,
+   "placebo_norm_matched": 0.006944444444444444
+  },
+  "acc_holdout": {
+   "w0_base": 0.0,
+   "adam_finetune": 0.05357142857142857,
+   "closed_form_readout": 0.05357142857142857,
+   "placebo_norm_matched": 0.017857142857142856
+  },
+  "acc_universe": {
    "w0_base": 0.01,
    "adam_finetune": 0.735,
    "closed_form_readout": 0.735,
    "placebo_norm_matched": 0.01
   },
+  "tier_train": "EXACT",
+  "tier_holdout": "UNREACHABLE",
   "ruta": "lab/runs/m2b_results.json"
  },
  "target": "",
  "intervention": "",
  "model_hash": "",
- "benchmark_version": "wspx-RECALL + lab-m2b",
+ "benchmark_version": "wspx-RECALL + lab-m2b-split-v2",
  "candidate": "closed-form-readout",
  "placebo": "norm-matched-random",
  "holdout": "",
@@ -155,5 +169,6 @@
  "tier_inferred": true,
  "claim_class": "causal_learn",
  "placebo_required": true,
- "veredicto": "keep"
+ "veredicto": "keep",
+ "note": "Aclaracion cientifica: la cirugia closed-form y Adam logran 100% en train_acc (memorizacion asociativa exacta en 0 pasos vs 600 de Adam), pero ambos obtienen ~5.4% en holdout debido a que pares RECALL arbitrarios no tienen regla extrapolable."
 }

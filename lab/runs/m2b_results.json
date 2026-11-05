@@ -32,6 +32,24 @@
       "loss": 0.0002
     }
   ],
+  "acc_train": {
+    "w0_base": 0.013888888888888888,
+    "adam_finetune": 1.0,
+    "closed_form_readout": 1.0,
+    "placebo_norm_matched": 0.006944444444444444
+  },
+  "acc_holdout": {
+    "w0_base": 0.0,
+    "adam_finetune": 0.05357142857142857,
+    "closed_form_readout": 0.05357142857142857,
+    "placebo_norm_matched": 0.017857142857142856
+  },
+  "acc_universe": {
+    "w0_base": 0.01,
+    "adam_finetune": 0.735,
+    "closed_form_readout": 0.735,
+    "placebo_norm_matched": 0.01
+  },
   "acc": {
     "w0_base": 0.01,
     "adam_finetune": 0.735,
@@ -149,8 +167,10 @@
       ]
     ],
     "verdict": "APPROX",
-    "ts": "2026-11-05T06:29:07"
+    "ts": "2026-11-05T09:41:41"
   },
+  "surgery_tier_train": "EXACT",
+  "surgery_tier_holdout": "UNREACHABLE",
   "surgery_tier": "EXACT",
   "record": "C:\\weights\\lab\\runs\\records\\e2026.117.m2b-readout-recall.json"
 }

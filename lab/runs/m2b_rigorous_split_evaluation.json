@@ -1,0 +1,22 @@
+{
+  "Base (W0)": {
+    "train_acc": 0.0139,
+    "holdout_acc": 0.0,
+    "universe_acc": 0.01
+  },
+  "Adam Finetuned (600 steps)": {
+    "train_acc": 1.0,
+    "holdout_acc": 0.0536,
+    "universe_acc": 0.735
+  },
+  "Closed-Form Surgery (Ridge Readout)": {
+    "train_acc": 1.0,
+    "holdout_acc": 0.0536,
+    "universe_acc": 0.735
+  },
+  "Matched Placebo": {
+    "train_acc": 0.0069,
+    "holdout_acc": 0.0179,
+    "universe_acc": 0.01
+  }
+}

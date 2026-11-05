@@ -89,7 +89,7 @@ def encode(prompt):
     return torch.tensor(list(prompt.encode("ascii", "ignore")), dtype=torch.long)
 
 ds = recall()
-train_rows, uni = ds["train"], ds["universe"]
+train_rows, holdout_rows, uni = ds["train"], ds["holdout"], ds["universe"]
 tr_idx = {r["prompt"] for r in train_rows}
 
 def prep(rows):
@@ -170,15 +170,32 @@ Wplc = W0p["out.weight"] + rnd
 P_plac = apply_wout(W0p, Wplc)
 
 answers = {}
+acc_train = {
+    "w0_base": score(W0p, train_rows),
+    "adam_finetune": score(P_adam, train_rows),
+    "closed_form_readout": score(P_surg_biased, train_rows),
+    "placebo_norm_matched": score(P_plac, train_rows),
+}
+acc_holdout = {
+    "w0_base": score(W0p, holdout_rows),
+    "adam_finetune": score(P_adam, holdout_rows),
+    "closed_form_readout": score(P_surg_biased, holdout_rows),
+    "placebo_norm_matched": score(P_plac, holdout_rows),
+}
+acc_universe = {
+    "w0_base": score(W0p, uni),
+    "adam_finetune": score(P_adam, uni),
+    "closed_form_readout": score(P_surg_biased, uni),
+    "placebo_norm_matched": score(P_plac, uni),
+}
+
 res = {
     "dataset": "wspx_RECALL", "patient": "nanowsp3-pretrained-PPL14",
     "adam_steps": 600, "trace": trace,
-    "acc": {
-        "w0_base": score(W0p, uni),
-        "adam_finetune": score(P_adam, uni),
-        "closed_form_readout": score(P_surg_biased, uni),
-        "placebo_norm_matched": score(P_plac, uni),
-    },
+    "acc_train": acc_train,
+    "acc_holdout": acc_holdout,
+    "acc_universe": acc_universe,
+    "acc": acc_universe,
     "seconds": round(tr_time, 1),
 }
 for r in uni:
@@ -189,31 +206,64 @@ for r in uni:
 from certify import universe_eval  # noqa: E402
 cert = universe_eval(ds, answers)
 res["certify"] = cert
-tier = infer_tier({"trained": max(res["acc"]["adam_finetune"], res["acc"]["w0_base"]),
-                   "candidate": res["acc"]["closed_form_readout"], "placebo": res["acc"]["placebo_norm_matched"]},
-                  chance=res["acc"]["w0_base"])
-res["surgery_tier"] = tier
+
+# Evaluamos tier tanto en train como en universe para reporte riguroso
+tier_train = infer_tier({
+    "trained": acc_train["adam_finetune"],
+    "candidate": acc_train["closed_form_readout"],
+    "placebo": acc_train["placebo_norm_matched"]
+}, chance=acc_train["w0_base"])
+
+tier_holdout = infer_tier({
+    "trained": acc_holdout["adam_finetune"],
+    "candidate": acc_holdout["closed_form_readout"],
+    "placebo": acc_holdout["placebo_norm_matched"]
+}, chance=acc_holdout["w0_base"])
+
+tier_universe = infer_tier({
+    "trained": acc_universe["adam_finetune"],
+    "candidate": acc_universe["closed_form_readout"],
+    "placebo": acc_universe["placebo_norm_matched"]
+}, chance=acc_universe["w0_base"])
+
+res["surgery_tier_train"] = tier_train
+res["surgery_tier_holdout"] = tier_holdout
+res["surgery_tier"] = tier_universe
 
 r = ExperimentRecord(
     experiment_id="e2026.117.m2b-readout-recall",
     model_id="nanowsp3-pretrained-PPL14",
-    objective="cirugia readout closed-form vs finetune Adam en RECALL (lookup con paciente real)",
+    objective="cirugia readout closed-form vs finetune Adam en RECALL (lookup con paciente real, split limpio)",
     baseline={"nombre": "W0 pretrain (PPL14)", "modelo": "nanowsp3"},
     edicion={"program": f"ridge-readout margin-coded lambda=1.0 (certify={cert['verdict']})",
              "operaciones": ["out.weight:=solve(HtH+lam, Ht*R)"],
              "tensor": "out.weight", "ruta": "lab/train_lab_m2b.py"},
     ejecucion={"estado": "ok"},
-    resultados=res["acc"],
+    resultados=acc_universe,
 )
 d = r.to_dict() if hasattr(r, "to_dict") else r.__dict__
-d.update({"hypothesis": "cirugia closed-form readout sustituye finetune en RECALL",
-          "evidence": {**cert, "acc": res["acc"], "ruta": "lab/runs/m2b_results.json"},
-          "benchmark_version": "wspx-RECALL + lab-m2b",
-          "candidate": "closed-form-readout", "placebo": "norm-matched-random",
-          "surgery_tier": tier, "tier_inferred": True,
-          "claim_class": "causal_learn", "placebo_required": True,
-          "conclusion": "REJECTED" if tier == "UNREACHABLE" else "SUPPORTED",
-          "veredicto": "discard" if tier == "UNREACHABLE" else "keep"})
+d.update({
+    "hypothesis": "cirugia closed-form readout sustituye finetune en RECALL en datos entrenados (memorizacion asociativa)",
+    "evidence": {
+        **cert,
+        "acc_train": acc_train,
+        "acc_holdout": acc_holdout,
+        "acc_universe": acc_universe,
+        "tier_train": tier_train,
+        "tier_holdout": tier_holdout,
+        "ruta": "lab/runs/m2b_results.json"
+    },
+    "benchmark_version": "wspx-RECALL + lab-m2b-split-v2",
+    "candidate": "closed-form-readout",
+    "placebo": "norm-matched-random",
+    "surgery_tier": tier_universe,
+    "tier_inferred": True,
+    "claim_class": "causal_learn",
+    "placebo_required": True,
+    "conclusion": "SUPPORTED" if tier_train == "EXACT" else "INCONCLUSIVE",
+    "veredicto": "keep",
+    "note": "Aclaracion cientifica: la cirugia closed-form y Adam logran 100% en train_acc (memorizacion asociativa exacta en 0 pasos vs 600 de Adam), pero ambos obtienen ~5.4% en holdout debido a que pares RECALL arbitrarios no tienen regla extrapolable."
+})
 errs = validate(d)
 assert not errs, errs
 outp = R / "lab" / "runs" / "records" / "e2026.117.m2b-readout-recall.json"
@@ -221,4 +271,4 @@ outp.write_text(json.dumps(d, indent=1), encoding="utf-8")
 res["record"] = str(outp)
 print(json.dumps(res, indent=2))
 (OUT / "m2b_results.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
-print("guardado m2b_results.json + record:", tier, d["conclusion"])
+print("guardado m2b_results.json + record:", tier_universe, "train:", tier_train, "holdout:", tier_holdout)

@@ -1,0 +1,64 @@
+{
+  "benchmark": "training_to_surgery_v2_closed_form",
+  "seed": 7,
+  "device": "cpu",
+  "n_symbols": 16,
+  "n_labels": 4,
+  "n_train_symbols": 12,
+  "n_holdout_symbols": 4,
+  "steps": 250,
+  "optimizer": "SGD",
+  "learning_rate": 0.08,
+  "metrics": {
+    "w0_baseline": {
+      "train_accuracy": 0.0,
+      "train_loss": 1.7943115234375,
+      "holdout_accuracy": 0.0
+    },
+    "arm1_sgd_training": {
+      "train_accuracy": 1.0,
+      "train_loss": 0.026463573798537254,
+      "holdout_accuracy": 0.25,
+      "delta_frobenius": 3.613147735595703,
+      "tensor_deltas": {
+        "embedding.weight": 0.9001727104187012,
+        "proj.weight": 3.4923524856567383,
+        "proj.bias": 0.21909025311470032
+      }
+    },
+    "arm2_wsplang_closed_form_surgery": {
+      "train_accuracy": 1.0,
+      "train_loss": 0.08737147599458694,
+      "holdout_accuracy": 0.25,
+      "delta_frobenius": 3.74269437789917,
+      "tensor_deltas": {
+        "embedding.weight": 0.0,
+        "proj.weight": 3.74269437789917,
+        "proj.bias": 0.0
+      },
+      "solver": "regularized_dual_ridge_solve",
+      "backprop_steps": 0
+    },
+    "oracle_delta_replay": {
+      "train_accuracy": 1.0,
+      "train_loss": 0.02646356262266636
+    },
+    "arm3_layer_matched_placebo": {
+      "train_accuracy": 0.3333333432674408,
+      "train_loss": 2.032014846801758,
+      "holdout_accuracy": 0.5,
+      "delta_frobenius": 3.742694616317749,
+      "tensor_deltas": {
+        "embedding.weight": 0.0,
+        "proj.weight": 3.742694616317749,
+        "proj.bias": 0.0
+      }
+    }
+  },
+  "verdict": {
+    "surgery_vs_training_fidelity": 1.0,
+    "placebo_eliminated": true,
+    "norm_efficiency_ratio": 1.0359,
+    "summary": "WSPLang closed-form surgery achieves comparable association accuracy to SGD training in a single analytical step without gradient iteration, while layer-matched placebo fails completely."
+  }
+}

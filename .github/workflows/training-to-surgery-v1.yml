@@ -1,11 +1,20 @@
-name: Training-to-Surgery v1
+name: Training-to-Surgery Benchmarks (v1, v2, v3)
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'benchmarks/**'
+      - '.github/workflows/training-to-surgery-v1.yml'
+      - 'requirements.txt'
+      - 'tests/test_training_to_surgery_benchmarks.py'
   pull_request:
     paths:
-      - 'benchmarks/training_to_surgery_v1.py'
-      - 'benchmarks/TRAINING_TO_SURGERY_V1.md'
+      - 'benchmarks/**'
       - '.github/workflows/training-to-surgery-v1.yml'
+      - 'requirements.txt'
+      - 'tests/test_training_to_surgery_benchmarks.py'
   workflow_dispatch:
 
 permissions:
@@ -18,21 +27,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: pip
-      - name: Install PyTorch CPU
-        run: python -m pip install --upgrade pip torch
-      - name: Run benchmark
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip -r requirements.txt
+
+      - name: Run Unit Tests for Benchmarks
+        run: python -m unittest tests/test_training_to_surgery_benchmarks.py
+
+      - name: Run Benchmark v1 (Baseline Instrumentation & Replay)
         run: >-
           python benchmarks/training_to_surgery_v1.py
           --device cpu
           --seed 7
           --steps 100
           --out runs/ci_training_to_surgery_v1
-      - name: Assert generated report
+
+      - name: Assert v1 generated report
         run: |
           python - <<'PY'
           import json
@@ -43,13 +60,59 @@ jobs:
           assert report['delta_l2'] > 0, report
           assert abs(scores['trained_model'] - scores['direct_delta_replay']) < 1e-7, scores
           assert 'norm_matched_random_placebo' in scores, scores
-          print('CI checks passed:', scores)
+          print('CI v1 checks passed:', scores)
           PY
+
+      - name: Run Benchmark v2 (Closed-Form Dual Ridge Compiler)
+        run: >-
+          python benchmarks/training_to_surgery_v2.py
+          --device cpu
+          --seed 7
+          --steps 100
+          --out runs/ci_training_to_surgery_v2
+
+      - name: Assert v2 generated report
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('runs/ci_training_to_surgery_v2/report_v2.json').read_text())
+          m = report['metrics']
+          assert m['arm2_wsplang_closed_form_surgery']['backprop_steps'] == 0
+          assert report['verdict']['placebo_eliminated'] is True
+          assert m['arm2_wsplang_closed_form_surgery']['train_accuracy'] >= 0.99
+          print('CI v2 checks passed')
+          PY
+
+      - name: Run Benchmark v3 (Multi-Seed Meta-Transfer Compiler)
+        run: >-
+          python benchmarks/training_to_surgery_v3_meta_transfer.py
+          --device cpu
+          --seed 42
+          --n_meta_tasks 5
+          --n_test_tasks 5
+          --steps 100
+          --out runs/ci_training_to_surgery_v3
+
+      - name: Assert v3 generated report
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('runs/ci_training_to_surgery_v3/report_v3.json').read_text())
+          m = report['metrics_summary']
+          assert m['arm2_meta_learned_surgery']['backprop_steps'] == 0
+          assert m['arm2_meta_learned_surgery']['access_to_target_sgd_delta'] is False
+          assert report['verdict']['meta_learning_supported'] is True
+          assert m['meta_transfer_fidelity']['mean_cosine_similarity'] > 0.95
+          print('CI v3 checks passed, cosine similarity:', m['meta_transfer_fidelity']['mean_cosine_similarity'])
+          PY
+
       - name: Upload benchmark artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: training-to-surgery-v1-report
-          path: runs/ci_training_to_surgery_v1/
+          name: training-to-surgery-reports
+          path: runs/ci_training_to_surgery_*
           if-no-files-found: warn
           retention-days: 14
