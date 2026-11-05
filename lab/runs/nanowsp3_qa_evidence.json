@@ -1,0 +1,86 @@
+[
+  {
+    "category": "Poema / Rima canónica",
+    "prompt": "Twinkle, twinkle, little ",
+    "greedy_completion": "bat!\nHow I wonder when I should for seem to k",
+    "sampled_completion": "ent-gew\n    HAXT.\n\nI wont indo, Alice was a q"
+  },
+  {
+    "category": "Frase icónica / Completitud sintáctica",
+    "prompt": "The Queen cried, 'Off with ",
+    "greedy_completion": "his\nhead! or Off with her head! Those whom sh",
+    "sampled_completion": "hour\nher.\n\nWaugh, long! said the Dormouse, Le"
+  },
+  {
+    "category": "Poema canónico / RoPE",
+    "prompt": "How doth the little crocodile ",
+    "greedy_completion": "was soon such a sigh as shook\nand only so _tw",
+    "sampled_completion": "them he wroy\nnow what talkI a king?\n\nI _lit_ "
+  },
+  {
+    "category": "Interrogativa / Diálogo de personaje",
+    "prompt": "The King asked, 'What do you ",
+    "greedy_completion": "like?\n\nI have no got many more mind my tea in",
+    "sampled_completion": "bajain he?\n\nShall you growled up, How your\nea"
+  },
+  {
+    "category": "Diálogo directo / Estructura dramática",
+    "prompt": "The Cat said to Alice: ",
+    "greedy_completion": "allow me to\nintroduce it.\n\nI dont like the lo",
+    "sampled_completion": "Five Alice! it\nimmout next, as they causk do:"
+  },
+  {
+    "category": "Emoción narrativa / Estilo Carroll",
+    "prompt": "The Mock Turtle sighed and said, '",
+    "greedy_completion": "only of bria\nminute or two, which is some tim",
+    "sampled_completion": "onKing. Why? _below to have no\ndoubt:_ for he"
+  },
+  {
+    "category": "Objeto narrativo / Continuación lógica",
+    "prompt": "She found a little bottle on the table, and on it was ",
+    "greedy_completion": "so more, and\nall quarrel so did, you cant thi",
+    "sampled_completion": "not\nescapov lows aga, I should thinking dow t"
+  },
+  {
+    "category": "Detalle de vestimenta y acción",
+    "prompt": "The White Rabbit put on his white kid gloves and ",
+    "greedy_completion": "she felt that it had someone to listen to her",
+    "sampled_completion": "she put her hair: theres a good deal that my\n"
+  },
+  {
+    "category": "Evento desencadenante / Atención causal",
+    "prompt": "Suddenly, a White Rabbit with pink eyes ",
+    "greedy_completion": "delly\nit in a _very_ not!\nYou ought to have t",
+    "sampled_completion": "mind. Jesing her begin\nfor at people.\n\nThe Pe"
+  },
+  {
+    "category": "Escena doméstica / Verbo transitivo",
+    "prompt": "The Duchess took her baby and ",
+    "greedy_completion": "not to her, relat surprision. Do you\nknow why",
+    "sampled_completion": "Alice repeated! thought\ntook them, as changs "
+  },
+  {
+    "category": "Apertura del libro / Memoria de secuencia",
+    "prompt": "Alice was beginning to get very tired of ",
+    "greedy_completion": "the party sat silent for a minute,\ntrying to ",
+    "sampled_completion": "tears,\nor taken if they slively. ,ell you (!x"
+  },
+  {
+    "category": "Soliloquio interior",
+    "prompt": "Alice said to herself, 'Now I ",
+    "greedy_completion": "dont belighthand\nthe patiently with its any r",
+    "sampled_completion": "_hey_\n_I_ was they guine:\n\nYou did, you walki"
+  },
+  {
+    "category": "Q&A contextual / Identificación de entidad",
+    "prompt": "Question: Who stole the tarts? Answer: The Knave of ",
+    "greedy_completion": "Hearts, Alice hastily replied; only one\ndoesn",
+    "sampled_completion": "explainst tropted I soon, youing\nvery angrily"
+  },
+  {
+    "category": "Q&A / Objeto clave",
+    "prompt": "Question: What did the bottle say? Answer: 'Drink ",
+    "greedy_completion": "out of the wood, said the Pigeon;\nYot in the ",
+    "sampled_completion": "ortictilent look at last: and\nnoose\n\nWhought "
+  }
+]

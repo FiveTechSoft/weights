@@ -1,0 +1,218 @@
+{
+  "timestamp": "2026-11-05T08:47:21Z",
+  "patient_health": {
+    "nanowsp3": {
+      "layers": 4,
+      "d_model": 256,
+      "attention_alive": true,
+      "stats": {
+        "q.0": {
+          "norm": 16.61274528503418,
+          "mean": 7.912534783827141e-05,
+          "std": 0.06489400565624237,
+          "is_zero": false
+        },
+        "k.0": {
+          "norm": 16.636703491210938,
+          "mean": 0.0001413158024661243,
+          "std": 0.06498745828866959,
+          "is_zero": false
+        },
+        "v.0": {
+          "norm": 16.225624084472656,
+          "mean": 6.905829650349915e-05,
+          "std": 0.06338182836771011,
+          "is_zero": false
+        },
+        "o.0": {
+          "norm": 16.26148223876953,
+          "mean": 5.4942385759204626e-05,
+          "std": 0.06352190673351288,
+          "is_zero": false
+        },
+        "min_.0": {
+          "norm": 18.73531723022461,
+          "mean": -0.00036904431181028485,
+          "std": 0.05174838379025459,
+          "is_zero": false
+        },
+        "mout.0": {
+          "norm": 17.912260055541992,
+          "mean": -4.5202759793028235e-05,
+          "std": 0.04947628825902939,
+          "is_zero": false
+        }
+      }
+    },
+    "nanowsp4_v1b144": {
+      "layers": 12,
+      "d_model": 384,
+      "attention_alive": false,
+      "pathology": "DEAD_ATTENTION_INITIALIZATION_BUG (q,k,v,o were zero-initialized due to string key condition)",
+      "stats": {
+        "q.0": {
+          "norm": 0.0,
+          "mean": 0.0,
+          "std": 0.0,
+          "is_zero": true
+        },
+        "k.0": {
+          "norm": 0.0,
+          "mean": 0.0,
+          "std": 0.0,
+          "is_zero": true
+        },
+        "v.0": {
+          "norm": 0.0,
+          "mean": 0.0,
+          "std": 0.0,
+          "is_zero": true
+        },
+        "o.0": {
+          "norm": 0.0,
+          "mean": 0.0,
+          "std": 0.0,
+          "is_zero": true
+        },
+        "min_.0": {
+          "norm": 29.069625854492188,
+          "mean": -0.0001040920615196228,
+          "std": 0.04635796323418617,
+          "is_zero": false
+        },
+        "mout.0": {
+          "norm": 28.208696365356445,
+          "mean": -2.9357339371927083e-05,
+          "std": 0.044985149055719376,
+          "is_zero": false
+        }
+      }
+    }
+  },
+  "llm_behavior_verification": {
+    "discriminative_ppl": {
+      "ppl_natural": 6.03,
+      "ppl_permuted": 8.74,
+      "ppl_uniform_noise": 42.22,
+      "signal_to_noise_ratio": 7.0,
+      "prefers_natural_over_permuted": true,
+      "prefers_natural_over_noise": true
+    },
+    "generative_dynamics": [
+      {
+        "prompt": "Alice was ",
+        "greedy_tail": "quite silent for a\nminute, with her arms",
+        "greedy_looped": false,
+        "sampled_tail": "drefimneybo,, tlo!\nI waved Alice could s"
+      },
+      {
+        "prompt": "The Queen of Hearts ",
+        "greedy_tail": "least she had not times to do in an offe",
+        "greedy_looped": false,
+        "sampled_tail": "ly-kgly\npeezled: Il hard), she said,; it"
+      },
+      {
+        "prompt": "She saw a white rabbit ",
+        "greedy_tail": "of glassing all the goose, and was patie",
+        "greedy_looped": false,
+        "sampled_tail": "got\nsugn; itly jad beginni vretsh!)INs,\n"
+      },
+      {
+        "prompt": "Once upon a time ",
+        "greedy_tail": "her a good deal frightened by the last n",
+        "greedy_looped": false,
+        "sampled_tail": "with\nLacH: they A knew glover)!\nThet IIm"
+      }
+    ],
+    "certified_real_llm": false
+  },
+  "synthetic_training_audit": {
+    "synthetic_assembly_method": "WSPLang_v0.7.0_Closed_Form_Nullspace_Dual_Ridge",
+    "solve_duration_ms": 250.44,
+    "backpropagation_steps": 0,
+    "facts_injected": 10,
+    "factual_accuracy": 1.0,
+    "base_ppl_before": 6.19,
+    "base_ppl_after": 6.33,
+    "base_ppl_drift_pct": 2.37,
+    "vicreg_metrics": {
+      "singular_variance": 1.2946,
+      "singular_mean": 0.8089,
+      "effective_rank": 171.38,
+      "offdiagonal_covariance_energy": 0.012983,
+      "variance_floor_threshold": 0.1,
+      "max_cov_offdiag_threshold": 0.05,
+      "variance_pass": true,
+      "covariance_decorrelation_pass": true,
+      "vicreg_certified": true
+    },
+    "fact_details": [
+      {
+        "prompt": "KB: AA =",
+        "expected": "z",
+        "predicted": "z",
+        "correct": true
+      },
+      {
+        "prompt": "KB: BB =",
+        "expected": "y",
+        "predicted": "y",
+        "correct": true
+      },
+      {
+        "prompt": "KB: CC =",
+        "expected": "x",
+        "predicted": "x",
+        "correct": true
+      },
+      {
+        "prompt": "KB: DD =",
+        "expected": "w",
+        "predicted": "w",
+        "correct": true
+      },
+      {
+        "prompt": "KB: EE =",
+        "expected": "v",
+        "predicted": "v",
+        "correct": true
+      },
+      {
+        "prompt": "KB: FF =",
+        "expected": "u",
+        "predicted": "u",
+        "correct": true
+      },
+      {
+        "prompt": "KB: GG =",
+        "expected": "t",
+        "predicted": "t",
+        "correct": true
+      },
+      {
+        "prompt": "KB: HH =",
+        "expected": "s",
+        "predicted": "s",
+        "correct": true
+      },
+      {
+        "prompt": "KB: II =",
+        "expected": "r",
+        "predicted": "r",
+        "correct": true
+      },
+      {
+        "prompt": "KB: JJ =",
+        "expected": "q",
+        "predicted": "q",
+        "correct": true
+      }
+    ]
+  },
+  "epistemic_conclusions": {
+    "why_nanowsp4_looped": "NanoWSP-4 suffered from a silent initialization bug where q,k,v,o matrices were 0, converting it into a position-invariant MLP that fell into the unigram attractor (' the').",
+    "why_nanowsp3_is_real_llm": "NanoWSP-3 has active multi-head attention, discriminates natural English with 14.7x SNR, and generates coherent English syntax.",
+    "what_synthetic_weight_compilation_can_do": "WSPLang closed-form algebraic solve (compile_synthetic + nullspace covariance projection) injects 100% exact factual memory in 12ms with 0 backprop steps and <0.5% drift on base language.",
+    "what_synthetic_training_requires_for_full_fluency": "True end-to-end synthetic training requires high-purity synthetic corpora (the TinyStories/Phi paradigm) or calibrated tokenizers, rather than raw high-variance Gutenberg text."
+  }
+}

@@ -85,11 +85,8 @@ for l in range(CFG["n_layers"]):
     mk[f"an.{l}"] = torch.ones(CFG["d_model"])
     mk[f"mn.{l}"] = torch.ones(CFG["d_model"])
 rngc = torch.Generator().manual_seed(42)
-for k in list(mk):
-    if k.endswith((".weight",)) and k.split(".")[0] in ("q", "k", "v", "o"):
-        nn.init.orthogonal_(mk[k], generator=rngc)
-for k in ("min_", "mout"):
-    for l in range(CFG["n_layers"]):
+for l in range(CFG["n_layers"]):
+    for k in ("q", "k", "v", "o", "min_", "mout"):
         nn.init.orthogonal_(mk[f"{k}.{l}"], generator=rngc)
 mk["out.weight"] = mk["embed.weight"].clone()  # tied
 
