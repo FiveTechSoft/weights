@@ -952,10 +952,17 @@ def execute_plan_v4(
 
     def write_edit(op_name, named_args, candidate, source_file, metadata=None):
         """Every edit of an existing model goes through here. Returns (written path or None, guard report)."""
+        nonlocal target_path
         if not allow_write:
             return None, guard_model_write(candidate, None, source_file, budgets, written_paths)
         dest = edit_destination(op_name, named_args, source_file)
-        return dest, guarded_save(candidate, dest, source_file, budgets, written_paths, metadata=metadata)
+        report = guarded_save(candidate, dest, source_file, budgets, written_paths, metadata=metadata)
+        # Later steps edit what this step wrote. Only for single-file models: a sharded directory would
+        # otherwise lose its other shards.
+        shards = list(target_path.glob("*.safetensors")) if target_path.is_dir() else [target_path]
+        if len(shards) == 1 and shards[0].resolve() == Path(source_file).resolve():
+            target_path = dest
+        return dest, report
 
     def runtime_candidate(runtime):
         return {k: v.detach().contiguous().float() for k, v in runtime.weights.items()}

@@ -104,6 +104,18 @@ class TestNoOverwriteOfInput(Fixture):
         self.assertFalse(out.exists())
 
 
+class TestChainedEdits(Fixture):
+    def test_second_step_edits_the_output_of_the_first(self):
+        out = self.dir / "edited"
+        steps = ["spectral_decay layers.1.mlp_out.weight decay=0.5"] * 2
+        res = run(steps, self.model, out_dir=out)
+        self.assertEqual([r["status"] for r in res], ["ok", "ok"], res)
+        edited = load_file(str(out / "model.safetensors"))["layers.1.mlp_out.weight"]
+        original = load_file(str(self.model))["layers.1.mlp_out.weight"]
+        self.assertTrue(torch.allclose(edited, 0.25 * original))
+        self.assertUntouched()
+
+
 class TestBudgetsOnEveryWrite(Fixture):
     def test_budget_applies_to_ops_that_never_checked_it(self):
         out = self.dir / "edited"
