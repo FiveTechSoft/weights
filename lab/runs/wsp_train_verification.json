@@ -1,0 +1,12 @@
+{
+  "checkpoint": "model.safetensors",
+  "provenance": "gradient_descent",
+  "backward_calls": 1750,
+  "iter_num": 1750,
+  "val_estimate_random_batches": 1.4593,
+  "val_full_fixed_windows": 1.4573,
+  "methods_differ_by": 0.0019,
+  "upstream_reported_best_val": 1.4697,
+  "delta_vs_upstream": -0.0104,
+  "sample": "ROMEO:\nCanst thou deny, in this our gentle bones.\n\nKING RICHARD III:\nTo tell her fonds, my lord, here all,\nThy mouths, to come to Bushy.\n\nKING RICHARD III:\nAnd what within? who knows the war?\n\nNORFOLK:\nMore is truth, sister Thursday not hither.\n\nKING RICHARD III:\nWhat hast thou, wilt thou not? and what thou canst down?\nThou and his son that thou told his fellow here.\n\nBUCKINGHAM:\nWhat, knows not the duke"
+}

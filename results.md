@@ -1102,3 +1102,29 @@ Límites:
 - El conjunto de primitivas cubre modelos estilo GPT. NanoWSP no se puede expresar: faltan RoPE y RMSNorm.
 - La pérdida está fija en el compilador y `causal_attention` es una sola primitiva.
 - `init_architecture` sin `arch=` sigue usando las clases Python fijas.
+
+## 29. Entrenamiento declarativo: control por gradiente (2026-11-05)
+`step train` (`engine/wsp_train.py`) entrena una arquitectura `.wsparch` siguiendo `train.py` de nanoGPT y exige `allow_training = true`. Es el control de referencia para futuras síntesis; **no es síntesis**. Cada checkpoint registra `provenance=gradient_descent` y `backward_calls`.
+
+Paridad en CPU frente al `train.py` real de `3adf61e`, ejecutado como subproceso (`tests/test_wsp_train.py`): pesos bit a bit y pérdidas impresas iguales en 5 configuraciones (dropout, sin `bias`, acumulación de gradiente, sin clip ni decay, guardar solo el mejor).
+
+Corrida completa con `programs/train_nanogpt_shakespeare_char.wspl`, misma configuración que `config/train_shakespeare_char.py`, RTX 3060, `bfloat16`, 664.8 s:
+
+| Medida | NLL val |
+|---|---|
+| Karpathy (README, sus datos de ejecución) | 1.4697 |
+| Este run, estimación por lotes aleatorios (iter 1750) | 1.4593 |
+| Este run, val completa con ventanas fijas en `model.py` oficial | 1.4573 |
+| Mejor n-grama solo con train (orden 5) | 1.7463 |
+
+Los dos métodos difieren en 0.0019 (`lab/runs/wsp_train_verification.json`). Gate: `LANGUAGE_MODEL`, sin aprendizaje en contexto (`lab/runs/llmness_nanogpt_shakespeare_char.json`).
+
+**Corrección a §27.** La escala de n-gramas del gate se ajusta con todo el texto previo al slice, incluida val, de modo que tiene datos contiguos que los modelos no vieron. Por eso el 5-grama parecía ganar en el slice (1.6799 frente a 1.8260). Ajustado solo con train y con ventanas iguales, en ese slice da 2.0773 frente a 1.8044 del nanoGPT, y el orden 6 empeora. La afirmación de §27 de que nanoGPT pierde contra el 4-grama compara datos de entrenamiento distintos. El criterio L1 es más exigente de lo justo, no más laxo; este sesgo aún no está corregido en el gate.
+
+**Listón para síntesis sin gradiente:** NLL < 1.7463 en val completa, con n-gramas ajustados solo con train; referencia por gradiente 1.4573.
+
+Límites:
+- Una sola semilla. El mejor val llega en la iteración 1750 y luego hay sobreajuste (1.7010 en la 5000), de modo que el checkpoint se elige con val.
+- En GPU no hay paridad bit a bit comprobada: la paridad exacta es solo en CPU. La cifra de Karpathy es de otro hardware y se compara por valor.
+- Sin `torch.compile` ni entrenamiento distribuido.
+- Datos: un archivo de texto codificado por carácter.

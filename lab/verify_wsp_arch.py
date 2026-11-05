@@ -21,7 +21,7 @@ ARCH = R / "programs" / "arch" / "nanogpt.wsparch"
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--corpus", default=str(R / "lab" / "vendor" / "nanoGPT" / "data" / "shakespeare_char" / "input.txt"))
+    ap.add_argument("--corpus", default=str(R / "lab" / "data" / "shakespeare_char" / "input.txt"))
     ap.add_argument("--calibration", default=str(R / "lab" / "runs" / "llmness_calibration.json"))
     ap.add_argument("--eval-chars", type=int, default=8000)
     ap.add_argument("--out", default=str(R / "lab" / "runs" / "wsp_arch_verification.json"))

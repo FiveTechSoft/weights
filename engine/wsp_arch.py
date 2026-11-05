@@ -528,13 +528,14 @@ class CompiledArch(nn.Module):
 
     def export_state_dict(self):
         """Independent copies, since safetensors refuses tensors that share memory."""
-        return {k: v.detach().clone() for k, v in self.state_dict().items()}
+        return {k: v.detach().cpu().clone() for k, v in self.state_dict().items()}
 
-    def save(self, path):
+    def save(self, path, metadata=None):
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         save_file(self.export_state_dict(), str(path),
-                  metadata={"format": "pt", "wsparch": self.arch_name, "wsparch_sha256": self.source_sha256})
+                  metadata={"format": "pt", "wsparch": self.arch_name, "wsparch_sha256": self.source_sha256,
+                            **(metadata or {})})
 
     def load(self, path):
         sd = load_file(str(path))

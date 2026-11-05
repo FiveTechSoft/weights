@@ -2,7 +2,7 @@
 
 A `.wsparch` file describes a neural network as data. `engine/wsp_arch.py` compiles it to a PyTorch module without importing any model class, so the text is the architecture: edit a line and the network changes. `programs/arch/nanogpt.wsparch` is the reference example.
 
-The language only defines architectures and initial weights. It does not train or synthesize learned weights.
+This file covers architectures and initial weights. Gradient training is a separate step, described under [Training](#training). The language still cannot synthesize learned weights.
 
 ## Use
 
@@ -92,6 +92,20 @@ To match upstream for a given seed, the first init pass declares what `nn.Linear
 
 - moving `tie` before the first pass gives identical weights, because the draws are the same;
 - `normal_` and `uniform_` consume the RNG identically for sizes that are multiples of 16, so such configs cannot tell them apart. The mutation tests use `d=34` for that reason.
+
+## Training
+
+The `train` step runs gradient descent on a compiled architecture. It requires `allow_training = true`, and `engine/wsp_train.py` follows nanoGPT's `train.py`, including its RNG order.
+
+```
+step train arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/input.txt out=models/x/model.safetensors device=cuda max_iters=5000 ...
+```
+
+`programs/train_nanogpt_shakespeare_char.wspl` holds the full upstream configuration. Arguments use `train.py` names and defaults; any other name is an architecture override, and an unknown one is an error. `device=cuda` fails if CUDA is missing rather than falling back to CPU.
+
+`torch.compile` and distributed training are not supported. Data is one UTF-8 text file, encoded by character and split 90/10.
+
+The checkpoint metadata records `provenance=gradient_descent` and `backward_calls`, and `<out>.train.json` holds the evaluation trace.
 
 ## Limits
 

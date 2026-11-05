@@ -1,0 +1,73 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "train_nanogpt_shakespeare_char",
+  "archivo": "programs\\train_nanogpt_shakespeare_char.wspl",
+  "steps_count": 4,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 11000000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_training = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step train arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanogpt_shakespeare_char/model.safetensors seed=1337 bias=false dropout=0.2 device=cuda batch_size=64 gradient_accumulation_steps=1 max_iters=5000 eval_interval=250 eval_iters=200 log_interval=100 always_save_checkpoint=false learning_rate=1e-3 min_lr=1e-4 beta2=0.99 warmup_iters=100 lr_decay_iters=5000",
+      "op": "train",
+      "args": "arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanogpt_shakespeare_char/model.safetensors seed=1337 bias=false dropout=0.2 device=cuda batch_size=64 gradient_accumulation_steps=1 max_iters=5000 eval_interval=250 eval_iters=200 log_interval=100 always_save_checkpoint=false learning_rate=1e-3 min_lr=1e-4 beta2=0.99 warmup_iters=100 lr_decay_iters=5000"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 3,
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "train",
+        "args": "arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanogpt_shakespeare_char/model.safetensors seed=1337 bias=false dropout=0.2 device=cuda batch_size=64 gradient_accumulation_steps=1 max_iters=5000 eval_interval=250 eval_iters=200 log_interval=100 always_save_checkpoint=false learning_rate=1e-3 min_lr=1e-4 beta2=0.99 warmup_iters=100 lr_decay_iters=5000"
+      }
+    ],
+    "pasos_mapeo": {
+      "train": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": 11000000,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": true,
+      "allow_training": true
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-05T15:51:15",
+  "ejecucion": [
+    {
+      "op": "train",
+      "args": "arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanogpt_shakespeare_char/model.safetensors seed=1337 bias=false dropout=0.2 device=cuda batch_size=64 gradient_accumulation_steps=1 max_iters=5000 eval_interval=250 eval_iters=200 log_interval=100 always_save_checkpoint=false learning_rate=1e-3 min_lr=1e-4 beta2=0.99 warmup_iters=100 lr_decay_iters=5000",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "provenance": "gradient_descent",
+        "compiled_from": "programs/arch/nanogpt.wsparch",
+        "total_parameters": 10745088,
+        "best_val": 1.4592788219451904,
+        "saved_iter": 1750,
+        "backward_calls_at_save": 1750,
+        "seconds": 664.8,
+        "output_file": "C:\\weights\\models\\nanogpt_shakespeare_char\\model.safetensors"
+      }
+    }
+  ]
+}

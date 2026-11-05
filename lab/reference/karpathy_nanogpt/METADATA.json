@@ -4,5 +4,10 @@
   "source_file": "model.py",
   "retrieved_from": "https://raw.githubusercontent.com/karpathy/nanoGPT/3adf61e154c3fe3fca428ad6bc3818b27a3b8291/model.py",
   "author": "Andrej Karpathy",
-  "verified_against": "official upstream master commit 3adf61e"
+  "verified_against": "official upstream master commit 3adf61e",
+  "vendored_files": [
+    "model.py",
+    "train.py",
+    "configurator.py"
+  ]
 }

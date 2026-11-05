@@ -4,7 +4,6 @@ Negative: W0 (official nanoGPT at init) and count-based n-grams.
 Positive: official nanoGPT trained by gradient descent; CopyOracle for L3 only.
 The trained control uses lab/reference/karpathy_nanogpt/model.py, not the runtime under test.
 
-Needs Shakespeare char text (input.txt from karpathy/nanoGPT data/shakespeare_char).
 """
 import argparse
 import json
@@ -51,7 +50,7 @@ def train(model, text, chars, steps):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--corpus", default=str(R / "lab" / "vendor" / "nanoGPT" / "data" / "shakespeare_char" / "input.txt"))
+    ap.add_argument("--corpus", default=str(R / "lab" / "data" / "shakespeare_char" / "input.txt"))
     ap.add_argument("--steps", type=int, default=6000)
     ap.add_argument("--seed", type=int, default=1337)
     ap.add_argument("--eval-chars", type=int, default=8000)

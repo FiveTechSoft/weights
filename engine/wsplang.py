@@ -71,6 +71,7 @@ OPS_ALLOWED = {
     "layer_envelope", "multi_layer_envelope", "distributed_memit",
     # WSP-Lang 0.7: JEPA (LeCun) & Weight Space Learning (Damian Borth) Operators
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift", "tie_weights",
+    "train",
     # Experimental / stubs
     "leace_erase",   # Exact LEACE when covariance is supplied; falls back to weight-Gram proxy
     "surprise_fwp",  # STUB: word-frequency repetition heuristic, not neural Titans surprisal
@@ -129,7 +130,7 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "multi_layer_envelope", "distributed_memit", "spectral_decay",
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
-    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights",
+    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train",
 }
 STUB_OPS = {"leace_erase", "surprise_fwp", "compile_synthetic"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
@@ -285,8 +286,8 @@ def check_feasibility(prog, steps, model_arg=None):
         op = st.get("op")
         if not op:
             continue
-        if op == "init_architecture":
-            model_kind = "safetensors" 
+        if op in ("init_architecture", "train"):
+            model_kind = "safetensors"
         if op not in IMPLEMENTED_OPS:
             errors.append(
                 f"op '{op}' NO implementada en el runtime (antes se ejecutaba como 'skipped' "
@@ -1267,6 +1268,52 @@ def execute_plan_v4(
                     "output_file": str(out_p),
                     "written_to_disk": saved
                 }
+
+            # ------------------------------------------------------------------
+            # OP: train: gradient descent on a compiled architecture (control, not synthesis)
+            # ------------------------------------------------------------------
+            elif op == "train":
+                if not budgets.get("allow_training"):
+                    res["status"] = "security_rejection"
+                    res["error"] = "train requires budget allow_training = true"
+                    executed_steps.append(res)
+                    continue
+                from engine import wsp_arch, wsp_train
+
+                if "arch" not in named or "data" not in named or "out" not in named:
+                    raise ValueError("train requires arch=, data= and out=")
+                arch_rel = str(named["arch"])
+                arch_path = Path(arch_rel)
+                if arch_path.suffix != ".wsparch":
+                    raise ValueError(f"arch must be a .wsparch file, got {arch_rel}")
+                arch_path = arch_path if arch_path.is_absolute() else ROOT / arch_path
+                data_path = Path(str(named["data"]))
+                data_path = data_path if data_path.is_absolute() else ROOT / data_path
+                out_p = Path(str(named["out"]))
+                out_p = out_p if out_p.is_absolute() else ROOT / out_p
+
+                train_cfg, overrides = wsp_train.split_step_args(named, wsp_arch.parse_config_value)
+                dataset = wsp_train.char_dataset(data_path.read_text(encoding="utf-8"))
+                if overrides.setdefault("vocab", len(dataset.chars)) != len(dataset.chars):
+                    raise ValueError(f"vocab={overrides['vocab']} but data has {len(dataset.chars)} symbols")
+                compiled = wsp_arch.load_arch_file(arch_path, overrides=overrides, seed=int(named.get("seed", 1337)))
+                total = sum(p.numel() for p in compiled.parameters())
+                if max_modified_weights is not None and total > max_modified_weights:
+                    raise ValueError(f"{total} parameters exceed budget max_modified_weights={max_modified_weights}")
+
+                if allow_write:
+                    summary = wsp_train.train(compiled, dataset, train_cfg, out_p)
+                    target_path = out_p
+                    is_safetensors = True
+                    res["execution_state"] = "executed"
+                    res["result"] = {"provenance": summary["provenance"], "compiled_from": arch_rel,
+                                     "total_parameters": total, "best_val": summary["best_val"],
+                                     "saved_iter": summary["saved_iter"],
+                                     "backward_calls_at_save": summary["backward_calls_at_save"],
+                                     "seconds": summary["seconds"], "output_file": str(out_p)}
+                else:
+                    res["execution_state"] = "simulated"
+                    res["result"] = {"compiled_from": arch_rel, "total_parameters": total, "written_to_disk": False}
 
             # ------------------------------------------------------------------
             # OP: init_architecture (WSP-Lang 0.5: Synthesize Micro-LLM from Scratch)
