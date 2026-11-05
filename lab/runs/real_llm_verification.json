@@ -1,0 +1,75 @@
+{
+  "milestone": "LAB_VERIFY_REAL_LLM_BEHAVIOR",
+  "lambda_base": 30.0,
+  "discriminative_ppl": {
+    "natural_english": 3.35,
+    "permuted_words": 10.49,
+    "uniform_noise": 49.1,
+    "signal_to_noise_ratio": 14.7
+  },
+  "lexical_validity": {
+    "overall_valid_english_words_pct": 80.0,
+    "samples": [
+      {
+        "prompt": "Alice was ",
+        "generated_tail": "good again, for the felt felt fell again",
+        "valid_pct": 100.0
+      },
+      {
+        "prompt": "The Queen of Hearts ",
+        "generated_tail": "lagged confers\nday: sfeeed to eat the ar",
+        "valid_pct": 66.7
+      },
+      {
+        "prompt": "Down the rabbit-hole, she ",
+        "generated_tail": "found that this pecting her dagbefore fe",
+        "valid_pct": 75.0
+      },
+      {
+        "prompt": "She said to the ",
+        "generated_tail": "jury, adddy by that hbout easily against",
+        "valid_pct": 81.8
+      },
+      {
+        "prompt": "Once upon a time ",
+        "generated_tail": "there gardenchbless\ngless should in her ",
+        "valid_pct": 80.0
+      }
+    ]
+  },
+  "factual_coexistence": [
+    {
+      "prompt": "KB: CD =",
+      "expected": "b",
+      "predicted": "b",
+      "correct": true,
+      "prose_continuation": "aginned agad theid down "
+    },
+    {
+      "prompt": "KB: VC =",
+      "expected": "c",
+      "predicted": "c",
+      "correct": true,
+      "prose_continuation": "again agadyd tfording th"
+    },
+    {
+      "prompt": "KB: SJ =",
+      "expected": "i",
+      "predicted": "i",
+      "correct": true,
+      "prose_continuation": "t doesnt madecoficidestc"
+    },
+    {
+      "prompt": "KB: GL =",
+      "expected": "c",
+      "predicted": "c",
+      "correct": true,
+      "prose_continuation": "ame a bread-and-bdetfecb"
+    }
+  ],
+  "verdict": {
+    "discriminative_language_modeling": true,
+    "lexical_integrity_preserved": true,
+    "real_llm_behavior_certified": true
+  }
+}
