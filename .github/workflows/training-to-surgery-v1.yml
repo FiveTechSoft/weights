@@ -39,7 +39,12 @@ jobs:
         run: python -m pip install --upgrade pip -r requirements.txt
 
       - name: Run Unit Tests for Benchmarks
-        run: python -m unittest tests/test_training_to_surgery_benchmarks.py
+        run: |
+          python -m unittest tests/test_training_to_surgery_benchmarks.py
+          python -m unittest tests/test_wsplang_karpathy_nanogpt.py
+
+      - name: Run Independent Karpathy nanoGPT Parity Verification
+        run: python lab/verify_official_karpathy_parity.py
 
       - name: Run Benchmark v1 (Baseline Instrumentation & Replay)
         run: >-

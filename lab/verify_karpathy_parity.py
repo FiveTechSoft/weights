@@ -1,10 +1,11 @@
-"""lab/verify_karpathy_parity.py — Verificación Rigurosa de Paridad Numérica y Conductual.
+"""lab/verify_karpathy_parity.py — Verificación de Paridad frente a nanoGPT Oficial de Karpathy.
 
-Comprueba matemáticamente que el nanoGPT sintetizado mediante WSPLang
-es 100% idéntico a la implementación oficial de Andrej Karpathy (nanoGPT):
-1. Paridad de topología de tensores, formas y claves (74 tensores).
+Comprueba que el nanoGPT sintetizado mediante WSPLang
+reproduce la implementación oficial de Andrej Karpathy (upstream commit 3adf61e):
+1. Paridad de topología de tensores, formas y claves (77 claves de parámetros: 76 en Transformer + lm_head atado;
+   83 claves si se incluyen los 6 buffers de máscara triangular attn.bias).
 2. Paridad de atado de pesos (Weight Tying wte <==> lm_head).
-3. Paridad numérica de logits a precisión float32 (max_diff < 1e-6).
+3. Paridad numérica de logits a precisión float32 (max_diff = 0.0).
 4. Integridad causal de la máscara triangular (invarianza posicional futura).
 5. Paridad capa por capa en representaciones intermedias.
 6. Paridad token a token en decodificación autorregresiva determinista.

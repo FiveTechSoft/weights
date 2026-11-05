@@ -1,0 +1,119 @@
+{
+  "timestamp": "2026-11-05T10:40:40Z",
+  "upstream_reference": {
+    "repository": "https://github.com/karpathy/nanoGPT",
+    "commit_sha": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
+    "source_file": "model.py",
+    "retrieved_from": "https://raw.githubusercontent.com/karpathy/nanoGPT/3adf61e154c3fe3fca428ad6bc3818b27a3b8291/model.py",
+    "author": "Andrej Karpathy",
+    "verified_against": "official upstream master commit 3adf61e"
+  },
+  "model_architecture": {
+    "n_layer": 6,
+    "n_head": 6,
+    "n_embd": 384,
+    "vocab_size": 65,
+    "block_size": 256,
+    "parameters": 10770816
+  },
+  "tests": {
+    "test1_weight_topology": {
+      "num_parameter_tensors": 76,
+      "total_parameters": 10770816,
+      "weight_tying_max_diff": 0.0,
+      "status": "PASS"
+    },
+    "test2_multi_length_logits": {
+      "cases": [
+        {
+          "batch_size": 1,
+          "seq_len": 8,
+          "diff_last_token": 0.0,
+          "diff_full_sequence": 0.0,
+          "diff_loss": 0.0,
+          "loss_official": 4.0882649421691895,
+          "loss_wsp": 4.0882649421691895
+        },
+        {
+          "batch_size": 2,
+          "seq_len": 32,
+          "diff_last_token": 0.0,
+          "diff_full_sequence": 0.0,
+          "diff_loss": 0.0,
+          "loss_official": 4.247248649597168,
+          "loss_wsp": 4.247248649597168
+        },
+        {
+          "batch_size": 4,
+          "seq_len": 64,
+          "diff_last_token": 0.0,
+          "diff_full_sequence": 0.0,
+          "diff_loss": 0.0,
+          "loss_official": 4.324210166931152,
+          "loss_wsp": 4.324210166931152
+        },
+        {
+          "batch_size": 2,
+          "seq_len": 128,
+          "diff_last_token": 0.0,
+          "diff_full_sequence": 0.0,
+          "diff_loss": 0.0,
+          "loss_official": 4.234124183654785,
+          "loss_wsp": 4.234124183654785
+        },
+        {
+          "batch_size": 1,
+          "seq_len": 256,
+          "diff_last_token": 0.0,
+          "diff_full_sequence": 0.0,
+          "diff_loss": 0.0,
+          "loss_official": 4.244014263153076,
+          "loss_wsp": 4.244014263153076
+        }
+      ],
+      "max_diff_overall": 0.0,
+      "status": "PASS"
+    },
+    "test3_optimization_dynamics": {
+      "max_grad_diff": 0.0,
+      "max_weight_diff_after_adam_step": 0.0,
+      "loss_diff": 0.0,
+      "status": "PASS"
+    },
+    "test4_greedy_generation": {
+      "cases": [
+        {
+          "prompt": "First Citizen:\n",
+          "generated_official": "First Citizen:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "generated_wsp": "First Citizen:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "exact_match": true
+        },
+        {
+          "prompt": "To be, or not to ",
+          "generated_official": "To be, or not to   PPPPPPPPPPPPPPPPPPPPPPP",
+          "generated_wsp": "To be, or not to   PPPPPPPPPPPPPPPPPPPPPPP",
+          "exact_match": true
+        },
+        {
+          "prompt": "O Romeo, Romeo, ",
+          "generated_official": "O Romeo, Romeo,     fffffffffffffffffffff",
+          "generated_wsp": "O Romeo, Romeo,     fffffffffffffffffffff",
+          "exact_match": true
+        }
+      ],
+      "all_match": true,
+      "status": "PASS"
+    },
+    "test5_causal_invariance": {
+      "past_leakage": 0.0,
+      "future_sensitivity": 2.023066282272339,
+      "status": "PASS"
+    }
+  },
+  "verdict": {
+    "independent_parity_certified": true,
+    "max_numerical_drift": 0.0,
+    "commit_sha": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
+    "conclusion": "WSPLang nanoGPT reproduce bit a bit la implementaci\u00f3n oficial de Karpathy bajo todas las condiciones probadas."
+  }
+}
