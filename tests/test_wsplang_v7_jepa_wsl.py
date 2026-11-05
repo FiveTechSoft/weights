@@ -120,8 +120,7 @@ steps:
         results = execute_plan_v4(plan, prog, dry_run=True)
         self.assertEqual(len(results), 3)
         for r in results:
-            expected = "stub_result" if r["op"] == "compile_synthetic" else "ok"
-            self.assertEqual(r["status"], expected, f"Step failed: {r}")
+            self.assertEqual(r["status"], "ok", f"Step failed: {r}")
 
 
 if __name__ == "__main__":

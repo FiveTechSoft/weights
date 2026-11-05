@@ -2,7 +2,7 @@
 
 A `.wsparch` file describes a neural network as data. `engine/wsp_arch.py` compiles it to a PyTorch module without importing any model class, so the text is the architecture: edit a line and the network changes. `programs/arch/nanogpt.wsparch` is the reference example.
 
-This file covers architectures and initial weights. Gradient training is a separate step, described under [Training](#training). The language still cannot synthesize learned weights.
+This file covers architectures and initial weights. Two separate steps produce weights that do something: gradient descent ([Training](#training)) and closed-form compilation ([Synthesis](#synthesis)).
 
 ## Use
 
@@ -106,6 +106,18 @@ step train arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/inp
 `torch.compile` and distributed training are not supported. Data is one UTF-8 text file, encoded by character and split 90/10.
 
 The checkpoint metadata records `provenance=gradient_descent` and `backward_calls`, and `<out>.train.json` holds the evaluation trace.
+
+## Synthesis
+
+The `synthesize` step computes every weight directly, with no gradient. `engine/wsp_synth.py` compiles a Witten-Bell n-gram table into the nanoGPT graph and raises an error if anything tries to compute a gradient while it runs.
+
+```
+step synthesize method=ngram order=5 arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/input.txt out=models/x/model.safetensors block=256 layers=1 heads=6 d=384 bias=false
+```
+
+`order` needs `order - 1` attention heads, and the head dimension must hold `vocab - 1` values. Without `ff`, the MLP gets one unit per context. With a fixed `ff`, the most frequent contexts are kept and the rest back off. Checkpoints record `provenance=closed_form` and `backward_calls=0`.
+
+The result is a lookup table inside a transformer: it uses no context beyond `order - 1` tokens, and the LLM-ness gate rejects it for that reason. See section 30 of `results.md` for measurements.
 
 ## Limits
 

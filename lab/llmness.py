@@ -337,6 +337,14 @@ def overall_verdict(l1, l2, gen, l3):
     return "LANGUAGE_MODEL_ICL" if l3["verdict"] == "PASSES" else "LANGUAGE_MODEL"
 
 
+def split_corpus(corpus, holdout_frac, eval_chars):
+    """Baselines fit before the whole holdout, like the model; scoring uses the slice at its tail."""
+    cut = int(len(corpus) * (1 - holdout_frac))
+    if len(corpus) - cut < eval_chars:
+        raise ValueError(f"eval slice of {eval_chars} does not fit in a holdout of {len(corpus) - cut}")
+    return corpus[:cut], corpus[-eval_chars:]
+
+
 def evaluate(model, train_text, test_text, ladder=(1, 2, 3, 4, 5)):
     """Runs every check. `test_text` must not overlap what the model or the baselines trained on."""
     l1 = check_l1(model, train_text, test_text)

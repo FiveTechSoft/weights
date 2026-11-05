@@ -14,10 +14,12 @@ on:
       - 'tests/test_llmness_gate.py'
       - 'tests/test_wsp_arch.py'
       - 'tests/test_wsp_train.py'
+      - 'tests/test_wsp_synth.py'
       - 'engine/nanogpt_runtime.py'
       - 'engine/wsplang.py'
       - 'engine/wsp_arch.py'
       - 'engine/wsp_train.py'
+      - 'engine/wsp_synth.py'
       - 'lab/llmness.py'
       - 'lab/nano3lib.py'
       - 'lab/verify_llmness.py'
@@ -37,10 +39,12 @@ on:
       - 'tests/test_llmness_gate.py'
       - 'tests/test_wsp_arch.py'
       - 'tests/test_wsp_train.py'
+      - 'tests/test_wsp_synth.py'
       - 'engine/nanogpt_runtime.py'
       - 'engine/wsplang.py'
       - 'engine/wsp_arch.py'
       - 'engine/wsp_train.py'
+      - 'engine/wsp_synth.py'
       - 'lab/llmness.py'
       - 'lab/nano3lib.py'
       - 'lab/verify_llmness.py'
@@ -80,6 +84,7 @@ jobs:
           python -m unittest tests/test_llmness_gate.py
           python -m unittest tests/test_wsp_arch.py
           python -m unittest tests/test_wsp_train.py
+          python -m unittest tests/test_wsp_synth.py
 
       - name: Compile nanoGPT W0 from its WSPLang architecture
         run: python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run

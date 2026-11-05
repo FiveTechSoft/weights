@@ -186,6 +186,19 @@ class TestLanguageChecks(unittest.TestCase):
         self.assertGreaterEqual(res["known_word_rate"], 0.5)
 
 
+class TestCorpusSplit(unittest.TestCase):
+    TEXT = "".join(chr(97 + i % 26) for i in range(1000))
+
+    def test_baseline_excludes_whole_holdout_not_just_eval_slice(self):
+        train, test = lm.split_corpus(self.TEXT, holdout_frac=0.2, eval_chars=50)
+        self.assertEqual(train, self.TEXT[:800])
+        self.assertEqual(test, self.TEXT[-50:])
+
+    def test_eval_slice_must_fit_inside_holdout(self):
+        with self.assertRaises(ValueError):
+            lm.split_corpus(self.TEXT, holdout_frac=0.01, eval_chars=50)
+
+
 class TestICL(unittest.TestCase):
     def test_cases_bind_query_only_in_treatment_arm(self):
         for c in lm.icl_cases(100, seed=1):

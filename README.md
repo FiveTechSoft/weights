@@ -81,7 +81,7 @@ python scripts/demo_nanowsp_capabilities.py
 
 ### 5. Instantiate Karpathy's nanoGPT W0 via WSPLang (30 Seconds)
 
-Instantiate an untrained `nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65) and check it against upstream `karpathy/nanoGPT@3adf61e`. The architecture is declared as data in `programs/arch/nanogpt.wsparch` and compiled by `engine/wsp_arch.py`, with no model class behind it (see `docs/wsparch.md`). Training is a separate gradient-descent step (`programs/train_nanogpt_shakespeare_char.wspl`); WSPLang does not yet synthesize learned weights.
+Instantiate an untrained `nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65) and check it against upstream `karpathy/nanoGPT@3adf61e`. The architecture is declared as data in `programs/arch/nanogpt.wsparch` and compiled by `engine/wsp_arch.py`, with no model class behind it (see `docs/wsparch.md`). Training is a separate gradient-descent step (`programs/train_nanogpt_shakespeare_char.wspl`). `programs/synthesize_nanogpt_ngram.wspl` compiles an n-gram table into the same graph with no gradients, but that is a lookup table, not a synthesized language model.
 
 ```bash
 # 1. Write the seeded W0 checkpoint and tie weights

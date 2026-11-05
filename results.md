@@ -1128,3 +1128,29 @@ Límites:
 - En GPU no hay paridad bit a bit comprobada: la paridad exacta es solo en CPU. La cifra de Karpathy es de otro hardware y se compara por valor.
 - Sin `torch.compile` ni entrenamiento distribuido.
 - Datos: un archivo de texto codificado por carácter.
+
+## 30. Síntesis en forma cerrada: tabla n-grama dentro de nanoGPT (2026-11-05)
+`step synthesize` (`engine/wsp_synth.py`) calcula todos los pesos sin gradiente: la atención recupera tokens anteriores con códigos de posición Fourier, cada neurona del MLP es una entrada de tabla y `wte`/`lm_head` atados leen log-probabilidades. Cualquier cálculo de gradiente durante la compilación es un error. Los pesos reproducen la tabla Witten-Bell con error máximo de 0.0058 en log-probabilidad (orden 4, tests).
+
+Medido en val completa de Shakespeare char, con tabla ajustada solo con train. El orden se eligió en la cola de train (`lab/runs/wsp_synth_verification.json`):
+
+| Modelo | `backward` | Parámetros | NLL val | Gate |
+|---|---|---|---|---|
+| nanoGPT entrenado (§29) | 1750 | 10 745 088 | 1.4573 | LANGUAGE_MODEL |
+| Tabla compilada, MLP ancho (61 213 unidades, orden 5) | 0 | 47 725 824 | **1.6776** | FAILS (L2 = 0) |
+| Tabla compilada, forma exacta 6L/384/1536 (9216 unidades) | 0 | 10 745 088 | 1.7941 | FAILS (L2 = 0) |
+| Tabla Witten-Bell orden 5, sin compilar | 0 | - | 1.6688 | - |
+| Mejor n-grama add-k (listón) | 0 | - | 1.7463 | - |
+
+La forma exacta se carga en el `model.py` de Karpathy y da logits idénticos a los del modelo compilado (tests con 2 capas).
+
+**Lectura:** se supera el listón numérico (1.6776 < 1.7463) sin gradiente, pero **esto no es un LLM sintético real**. Es una tabla n-grama ejecutándose dentro de un transformer: no usa contexto más allá de 4 tokens, el gate la rechaza por L2 y necesita 4.4 veces los parámetros del modelo entrenado para quedar 0.22 nats peor. Con los mismos parámetros que el modelo entrenado, tampoco alcanza el listón (1.7941). El listón se fijó antes de saber que Witten-Bell lo batía por sí solo, de modo que era más fácil de lo que parecía.
+
+**Gate corregido.** El sesgo señalado en §29 queda resuelto: las líneas base se ajustan antes de todo el holdout (`lm.split_corpus`). Recalibrado: todos los controles caen donde deben, y el nanoGPT oficial 4L/128 (1.9781) ahora gana al 5-grama (2.0918) en el mismo slice. Los valores n-grama de §27 quedan obsoletos; las cifras vigentes están en `lab/runs/llmness_*.json`.
+
+**`compile_synthetic`** ahora escribe `out.weight` con `model=` y `out=`. Sobre `nanowsp3_pretrained` y `wspx_recall`: train de 1.4 % a 52.1 % (`lambda_base=30`) y a 100 % (`lambda_base=1`); holdout 10.7 %, igual al azar con 10 valores posibles. Memoriza pares y no generaliza; además parte de una base entrenada con gradiente.
+
+Límites:
+- Las primeras posiciones de cada ventana tienen contexto incompleto o erróneo, porque la atención no distingue "sin token anterior". Es una causa plausible de la diferencia entre 1.6776 y 1.6688, no cuantificada.
+- Solo orden ≤ 5 con 6 cabezas y d=384: faltan dimensiones para más posiciones de contexto.
+- Una sola corrida determinista por configuración y un solo corpus.

@@ -71,7 +71,7 @@ OPS_ALLOWED = {
     "layer_envelope", "multi_layer_envelope", "distributed_memit",
     # WSP-Lang 0.7: JEPA (LeCun) & Weight Space Learning (Damian Borth) Operators
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift", "tie_weights",
-    "train",
+    "train", "synthesize",
     # Experimental / stubs
     "leace_erase",   # Exact LEACE when covariance is supplied; falls back to weight-Gram proxy
     "surprise_fwp",  # STUB: word-frequency repetition heuristic, not neural Titans surprisal
@@ -130,9 +130,9 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "multi_layer_envelope", "distributed_memit", "spectral_decay",
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
-    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train",
+    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train", "synthesize",
 }
-STUB_OPS = {"leace_erase", "surprise_fwp", "compile_synthetic"}
+STUB_OPS = {"leace_erase", "surprise_fwp"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
 
 
@@ -286,7 +286,7 @@ def check_feasibility(prog, steps, model_arg=None):
         op = st.get("op")
         if not op:
             continue
-        if op in ("init_architecture", "train"):
+        if op in ("init_architecture", "train", "synthesize"):
             model_kind = "safetensors"
         if op not in IMPLEMENTED_OPS:
             errors.append(
@@ -1268,6 +1268,46 @@ def execute_plan_v4(
                     "output_file": str(out_p),
                     "written_to_disk": saved
                 }
+
+            # ------------------------------------------------------------------
+            # OP: synthesize: closed-form weights, no gradient (see engine/wsp_synth.py)
+            # ------------------------------------------------------------------
+            elif op == "synthesize":
+                from engine import wsp_arch, wsp_synth, wsp_train
+
+                if named.get("method") != "ngram":
+                    raise ValueError(f"synthesize supports method=ngram, got {named.get('method')}")
+                for required in ("arch", "data", "out", "order"):
+                    if required not in named:
+                        raise ValueError(f"synthesize requires {required}=")
+                arch_path = Path(str(named["arch"]))
+                arch_path = arch_path if arch_path.is_absolute() else ROOT / arch_path
+                data_path = Path(str(named["data"]))
+                data_path = data_path if data_path.is_absolute() else ROOT / data_path
+                out_p = Path(str(named["out"]))
+                out_p = out_p if out_p.is_absolute() else ROOT / out_p
+
+                dataset = wsp_train.char_dataset(data_path.read_text(encoding="utf-8"))
+                table = wsp_synth.WittenBellTable(dataset.train, len(dataset.chars), int(named["order"]))
+                overrides = {key: wsp_arch.parse_config_value(value) for key, value in named.items()
+                             if key not in ("method", "arch", "data", "out", "order", "seed", "model", "format")}
+                if not allow_write:
+                    res["execution_state"] = "simulated"
+                    res["result"] = {"units_available": table.num_units(), "written_to_disk": False}
+                else:
+                    compiled = wsp_synth.compile_ngram(arch_path, table, overrides=overrides,
+                                                       seed=int(named.get("seed", 1337)))
+                    total = sum(p.numel() for p in compiled.parameters())
+                    if max_modified_weights is not None and total > max_modified_weights:
+                        raise ValueError(f"{total} parameters exceed budget max_modified_weights={max_modified_weights}")
+                    info = compiled.synthesis_info
+                    compiled.save(out_p, metadata={"provenance": info["provenance"], "backward_calls": "0",
+                                                   "method": info["method"], "order": str(info["order"]),
+                                                   "vocab_chars": json.dumps(dataset.chars)})
+                    target_path = out_p
+                    is_safetensors = True
+                    res["execution_state"] = "executed"
+                    res["result"] = {**info, "total_parameters": total, "output_file": str(out_p)}
 
             # ------------------------------------------------------------------
             # OP: train: gradient descent on a compiled architecture (control, not synthesis)
@@ -2741,9 +2781,13 @@ def execute_plan_v4(
 
                 from engine.nanowsp3_runtime import NanoWSP3
                 surg_model = NanoWSP3()
-                ckpt_p = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
-                if not ckpt_p.exists():
-                    ckpt_p = ROOT / "lab" / "runs" / "nanowsp3_pretrained.safetensors"
+                if "model" in named:
+                    ckpt_p = Path(str(named["model"]))
+                    ckpt_p = ckpt_p if ckpt_p.is_absolute() else ROOT / ckpt_p
+                else:
+                    ckpt_p = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
+                    if not ckpt_p.exists():
+                        ckpt_p = ROOT / "lab" / "runs" / "nanowsp3_pretrained.safetensors"
                 if not ckpt_p.exists():
                     raise FileNotFoundError(f"compile_synthetic needs a NanoWSP-3 checkpoint, none at {ckpt_p}")
                 surg_model.load_checkpoint(ckpt_p)
@@ -2775,16 +2819,42 @@ def execute_plan_v4(
                 gram = Hn.T @ Hn + lambda_base * np.eye(256)
                 delta_w = np.linalg.solve(gram, Hn.T @ Rn)
                 delta_norm = float(np.linalg.norm(delta_w))
+                W1_out = W0_out + torch.from_numpy(delta_w).to(W0_out.dtype).t()
 
-                res["execution_state"] = "simulated"
+                def recall_accuracy(rows, readout):
+                    hits = 0
+                    for row in rows:
+                        with torch.no_grad():
+                            _, trace = surg_model.forward([ord(c) for c in row["prompt"]], return_hidden=True)
+                        hits += int((trace["final_hidden"][0, -1, :] @ readout.t()).argmax()) == ord(row["target"])
+                    return hits / max(len(rows), 1)
+
+                written = bool(allow_write and "out" in named)
+                if written:
+                    from safetensors.torch import load_file, save_file
+                    out_p = Path(str(named["out"]))
+                    out_p = out_p if out_p.is_absolute() else ROOT / out_p
+                    edited = load_file(str(ckpt_p))
+                    edited["out.weight" if "out.weight" in edited else "output.weight"] = W1_out
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    save_file(edited, str(out_p), metadata={
+                        "format": "pt", "provenance": "closed_form_surgery_on_gradient_base", "backward_calls": "0"})
+
+                res["execution_state"] = "executed" if written else "simulated"
                 res["result"] = {
-                    "rule": "Multi-Layer Synthetic Training Compiler (Lab M-3)",
+                    "rule": "Dual ridge readout surgery on a NanoWSP-3 checkpoint",
                     "dataset": dataset_name,
                     "pairs_compiled": len(train_pairs),
                     "lambda_base": lambda_base,
                     "delta_frobenius": round(delta_norm, 4),
-                    "weights_written": False,
-                    "status": "delta_computed_and_discarded"
+                    "weights_written": written,
+                    "provenance": "closed_form_surgery_on_gradient_base",
+                    "base_checkpoint": str(ckpt_p),
+                    "train_accuracy_before": recall_accuracy(train_pairs, W0_out),
+                    "train_accuracy_after": recall_accuracy(train_pairs, W1_out),
+                    "holdout_accuracy_before": recall_accuracy(ds["holdout"], W0_out),
+                    "holdout_accuracy_after": recall_accuracy(ds["holdout"], W1_out),
+                    "status": "delta_written" if written else "delta_computed_not_written"
                 }
 
             else:
