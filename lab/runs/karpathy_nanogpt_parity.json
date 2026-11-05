@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-05T09:02:43Z",
+  "timestamp": "2026-11-05T10:38:39Z",
   "model_name": "nanoGPT-Shakespeare (WSPLang Compilation)",
   "source_program": "programs/build_karpathy_nanogpt.wspl",
   "checkpoint": "C:\\weights\\models\\nanogpt_karpathy\\model.safetensors",

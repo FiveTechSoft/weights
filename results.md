@@ -969,15 +969,22 @@ El script [lab/verify_official_karpathy_parity.py](file:///c:/weights/lab/verify
 `
 
 #### Resultados Numéricos Destacados:
-1. **Logits y Pérdida Idénticos**: En todas las configuraciones probadas ( \\in \\{1, 2, 4\\}$,  \\in \\{8, 32, 64, 128, 256\\}$), tanto con 	argets=None (modo inferencia) como con 	argets=y (modo entrenamiento), la diferencia máxima absoluta entre la salida del código oficial de Karpathy y el modelo WSPLang fue:
-   \\max |\\text{logits}_{\\text{Official}} - \\text{logits}_{\\text{WSPLang}}| = \\mathbf{0.0000e+00}
-2. **Dinámica de Optimización Idéntica**: Tras ejecutar ackward() y 1 paso de AdamW (lr=1e-3, betas=(0.9, 0.95), weight_decay=1e-1) sobre el mismo lote de datos, la diferencia máxima en gradientes y en pesos resultantes fue exactamente **0.0000e+00**.
-3. **Generación Greedy Idéntica**: Ante diversos prompts de Shakespeare (First Citizen:\\n, To be, or not to , O Romeo, Romeo, ), ambas implementaciones produjeron exactamente la misma secuencia token por token.
-4. **Causalidad Estricta**: Al alterar tokens futuros ( \\ge 20$), los logits pasados ( < 20$) permanecieron matemáticamente invariantes (diferencia .00e+00$).
+1. **Logits y Pérdida Idénticos**: En todas las configuraciones probadas ($B \in \{1, 2, 4\}$, $T \in \{8, 32, 64, 128, 256\}$), tanto con `targets=None` (modo inferencia) como con `targets=y` (modo entrenamiento), la diferencia máxima absoluta entre la salida del código oficial de Karpathy y el modelo WSPLang fue:
+   $$\max |\text{logits}_{\text{Official}} - \text{logits}_{\text{WSPLang}}| = \mathbf{0.0000e+00}$$
+2. **Dinámica de Optimización Idéntica**: Tras ejecutar `backward()` y 1 paso de `AdamW` (`lr=1e-3, betas=(0.9, 0.95), weight_decay=1e-1`) sobre el mismo lote de datos, la diferencia máxima en gradientes y en pesos resultantes fue exactamente **0.0000e+00**.
+3. **Generación Greedy Idéntica**: Ante diversos prompts de Shakespeare (`First Citizen:\n`, `To be, or not to `, `O Romeo, Romeo, `), ambas implementaciones produjeron exactamente la misma secuencia token por token.
+4. **Causalidad Estricta**: Al alterar tokens futuros ($t \ge 20$), los logits pasados ($t < 20$) permanecieron matemáticamente invariantes (diferencia $0.00e+00$).
 
 ---
 
 ### 25.4 Conclusiones y Alcance Científico
 1. **Paridad Externa Certificada**: Queda demostrado de manera reproducible e independiente que el modelo sintetizado mediante WSPLang reproduce con exactitud de bit (error 0.0) la implementación oficial de Karpathy en inferencia, función de pérdida, gradientes y optimización.
-2. **Delimitación de Estado**: El artefacto actual es la **especificación arquitectónica e inicialización funcional** ($) de nanoGPT (10.77M parámetros con weight tying). No es un checkpoint preentrenado durante semanas en texto completo, sino la arquitectura causal exacta lista para optimización o cirugía sintética de pesos.
-3. **CI/CD Automatizado**: Se integró la prueba en [	ests/test_wsplang_karpathy_nanogpt.py](file:///c:/weights/tests/test_wsplang_karpathy_nanogpt.py), asegurando la verificación continua contra la versión upstream fijada.
+2. **Delimitación de Estado**: El artefacto actual es la **especificación arquitectónica e inicialización funcional** ($W_0$) de nanoGPT (10.77M parámetros con weight tying). No es un checkpoint preentrenado durante semanas en texto completo, sino la arquitectura causal exacta lista para optimización o cirugía sintética de pesos.
+3. **CI/CD Automatizado**: Se integró la prueba en [`tests/test_wsplang_karpathy_nanogpt.py`](file:///c:/weights/tests/test_wsplang_karpathy_nanogpt.py), asegurando la verificación continua contra la versión upstream fijada.
+
+---
+
+### 25.5 Aclaración Crítica: Estado de Entrenamiento vs Sanidad de Capacidad
+1. **Checkpoint Inicializado al Azar ($W_0$)**: El modelo almacenado en `models/nanogpt_karpathy/model.safetensors` fue sintetizado con la inicialización gaussiana estocástica de GPT-2 ($\mathcal{N}(0, 0.02^2)$). **No ha sido pre-entrenado en el corpus completo de Shakespeare**.
+2. **Sobreajuste en 167 Caracteres (*Single-Batch Overfit Sanity Check*)**: La prueba ejecutada en `lab/verify_nanogpt_learning.py` optimiza un único pasaje de 167 caracteres durante 40 pasos. Demuestra rigurosamente que los gradientes fluyen sin desvanecimiento a través de las 6 capas y que el grafo es capaz de memorizar un lote en el espacio de pesos. **En ningún caso demuestra generalización lingüística, comprensión semántica ni generación autónoma de prosa shakesperiana**.
+3. **Implicación Metodológica**: Lo verificado en este hito es la **exactitud arquitectónica, numérica y operativa del runtime/compilador** frente al nanoGPT oficial de Karpathy, no la finalización del preentrenamiento a gran escala del modelo.

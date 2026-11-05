@@ -1,11 +1,12 @@
-"""lab/verify_nanogpt_learning.py — Verificación Científica de Dinámica de Aprendizaje Causal en nanoGPT.
+"""lab/verify_nanogpt_learning.py — Test de Sobreajuste de Un Solo Lote (Single-Batch Overfit Sanity Check).
 
-Ejecuta la prueba definitiva de que nanoGPT no es una cáscara vacía, sino un LLM
-autorregresivo funcional que aprende y converge de acuerdo con las leyes teóricas del lenguaje:
-1. Pérdida inicial teórica de máxima entropía H(V) = ln(65) = 4.174 nats.
-2. Dinámica de gradientes AdamW: flujo a través de las 6 capas sin explosión ni desvanecimiento.
-3. Descenso monótono de perplejidad PPL 72.45 -> 1.00.
-4. Transición de fase generativa: de ruido no entrenado a prosa textual perfecta de Shakespeare.
+Prueba de sanidad computacional para verificar que el grafo tensorial y el flujo de gradientes
+funcionan correctamente en la arquitectura nanoGPT inicializada (W0):
+1. Pérdida inicial teórica de máxima entropía H(V) = ln(65) = 4.174 nats (estado inicial no entrenado).
+2. Dinámica de gradientes AdamW: flujo de gradiente estable a través de las 6 capas.
+3. Capacidad de memorización: descenso monótono de pérdida en un pasaje de 167 caracteres.
+4. Delimitación metodológica: Esta prueba demuestra que la arquitectura es optimizable y memoriza
+   un lote de datos, pero NO constituye preentrenamiento sobre el corpus de Shakespeare ni generalización.
 """
 
 import json
@@ -125,8 +126,12 @@ def run_learning_verification():
         },
         "trained_state": {
             "final_generation": out_f,
-            "syntax_reconstructed": bool("Before we proceed any further" in out_f),
-            "verdict": "CERTIFIED_REAL_AUTOREGRESSIVE_LLM"
+            "passage_memorized": bool("Before we proceed any further" in out_f),
+            "test_type": "single_batch_overfit_sanity_check",
+            "pretraining_on_corpus": False,
+            "generalization_tested": False,
+            "verdict": "SINGLE_BATCH_OVERFIT_PASS",
+            "scientific_note": "Confirma que el grafo computacional y los gradientes de nanoGPT funcionan y pueden memorizar un lote; no demuestra generalización lingüística ni preentrenamiento general sobre el corpus de Shakespeare."
         }
     }
 

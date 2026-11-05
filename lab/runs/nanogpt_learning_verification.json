@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-05T09:23:46Z",
+  "timestamp": "2026-11-05T10:46:25Z",
   "architecture": {
     "model": "nanoGPT-Shakespeare",
     "layers": 6,
@@ -19,7 +19,7 @@
   "optimization_dynamics": {
     "optimizer": "AdamW (lr=1e-3, wd=1e-2)",
     "steps": 40,
-    "duration_seconds": 2.98,
+    "duration_seconds": 5.83,
     "final_loss": 0.0042,
     "final_ppl": 1.0,
     "ppl_reduction_factor": 72.2,
@@ -34,7 +34,7 @@
         "step": 5,
         "loss": 2.9382,
         "ppl": 18.88,
-        "grad_norm": 4.1795
+        "grad_norm": 4.1796
       },
       {
         "step": 10,
@@ -44,7 +44,7 @@
       },
       {
         "step": 20,
-        "loss": 0.1571,
+        "loss": 0.157,
         "ppl": 1.17,
         "grad_norm": 0.6968
       },
@@ -64,7 +64,11 @@
   },
   "trained_state": {
     "final_generation": "First Citizen:\nBefore we proceed any further, hear me ",
-    "syntax_reconstructed": true,
-    "verdict": "CERTIFIED_REAL_AUTOREGRESSIVE_LLM"
+    "passage_memorized": true,
+    "test_type": "single_batch_overfit_sanity_check",
+    "pretraining_on_corpus": false,
+    "generalization_tested": false,
+    "verdict": "SINGLE_BATCH_OVERFIT_PASS",
+    "scientific_note": "Confirma que el grafo computacional y los gradientes de nanoGPT funcionan y pueden memorizar un lote; no demuestra generalización lingüística ni preentrenamiento general sobre el corpus de Shakespeare."
   }
 }
