@@ -17,7 +17,7 @@ sys.path[:0] = [str(R), str(REF)]
 import model as upstream  # noqa: E402
 from engine.nanogpt_runtime import GPTConfig, KarpathyGPT  # noqa: E402
 
-UPSTREAM_MODEL_SHA256 = "63d46bccd28157de4ae3d4e714f3945370be708852d2f411e0d017a7da5f8d39"
+UPSTREAM_MODEL_SHA256 = "7c01703240dbec5d554527dc666e35b3df8391d0b117fddc07afcf325a21d11c"
 CFG = dict(n_layer=4, n_head=4, n_embd=128, block_size=64, vocab_size=65)
 TOL = 2e-4  # margen fp32 por si un backend distinto cambia kernels; en una misma máquina se espera 0.0
 
@@ -37,7 +37,8 @@ def interpretation(diff):
 
 
 def sha256(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    """Hash with LF line endings, as upstream stores the file; Git may check it out as CRLF."""
+    return hashlib.sha256(Path(path).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def main():

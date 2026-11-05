@@ -181,6 +181,19 @@ class TestParityVerdict(unittest.TestCase):
         self.assertIn("b", bad["conclusion"])
         self.assertNotIn("bit a bit", bad["conclusion"])
 
+    def test_pinned_hash_ignores_line_endings(self):
+        """Git converts line endings per platform; the pin must identify the same upstream file."""
+        import verify_karpathy_vendorized as v
+        with tempfile.TemporaryDirectory() as d:
+            lf, crlf = Path(d) / "lf.py", Path(d) / "crlf.py"
+            lf.write_bytes(b"a = 1\nb = 2\n")
+            crlf.write_bytes(b"a = 1\r\nb = 2\r\n")
+            self.assertEqual(v.sha256(lf), v.sha256(crlf))
+
+    def test_pin_matches_the_reference_file(self):
+        import verify_karpathy_vendorized as v
+        self.assertEqual(v.sha256(v.REF / "model.py"), v.UPSTREAM_MODEL_SHA256)
+
     def test_vendorized_interpretation_is_computed(self):
         import verify_karpathy_vendorized as v
         self.assertEqual(v.parity_verdict(0.0), "PASSES_fp32")

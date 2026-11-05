@@ -1,6 +1,6 @@
 {
   "upstream_commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
-  "upstream_model_sha256": "63d46bccd28157de4ae3d4e714f3945370be708852d2f411e0d017a7da5f8d39",
+  "upstream_model_sha256": "7c01703240dbec5d554527dc666e35b3df8391d0b117fddc07afcf325a21d11c",
   "cfg": {
     "n_layer": 4,
     "n_head": 4,
