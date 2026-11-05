@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-11-05T09:23:46Z",
+  "architecture": {
+    "model": "nanoGPT-Shakespeare",
+    "layers": 6,
+    "heads": 6,
+    "d_model": 384,
+    "d_ff": 1536,
+    "vocab_size": 65,
+    "total_parameters": 10770816
+  },
+  "initial_state": {
+    "empirical_loss": 4.283,
+    "theoretical_max_entropy_ln_V": 4.1744,
+    "entropy_discrepancy": 0.1086,
+    "initial_ppl": 72.45,
+    "initial_generation": "First Citizen::::::::::::::::::::::::::;;;;;;;;;;;;;;;"
+  },
+  "optimization_dynamics": {
+    "optimizer": "AdamW (lr=1e-3, wd=1e-2)",
+    "steps": 40,
+    "duration_seconds": 2.98,
+    "final_loss": 0.0042,
+    "final_ppl": 1.0,
+    "ppl_reduction_factor": 72.2,
+    "step_history_snapshots": [
+      {
+        "step": 1,
+        "loss": 4.283,
+        "ppl": 72.45,
+        "grad_norm": 18.6155
+      },
+      {
+        "step": 5,
+        "loss": 2.9382,
+        "ppl": 18.88,
+        "grad_norm": 4.1795
+      },
+      {
+        "step": 10,
+        "loss": 1.8254,
+        "ppl": 6.21,
+        "grad_norm": 2.9636
+      },
+      {
+        "step": 20,
+        "loss": 0.1571,
+        "ppl": 1.17,
+        "grad_norm": 0.6968
+      },
+      {
+        "step": 30,
+        "loss": 0.0146,
+        "ppl": 1.01,
+        "grad_norm": 0.0822
+      },
+      {
+        "step": 40,
+        "loss": 0.0042,
+        "ppl": 1.0,
+        "grad_norm": 0.0213
+      }
+    ]
+  },
+  "trained_state": {
+    "final_generation": "First Citizen:\nBefore we proceed any further, hear me ",
+    "syntax_reconstructed": true,
+    "verdict": "CERTIFIED_REAL_AUTOREGRESSIVE_LLM"
+  }
+}
