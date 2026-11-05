@@ -76,18 +76,19 @@ mk = {"embed.weight": torch.randn(256, CFG["d_model"]) * (256 ** -0.5),
       "out.weight": torch.randn(256, CFG["d_model"]) * (CFG["d_model"] ** -0.5),
       "fn.weight": torch.ones(CFG["d_model"])}
 for l in range(CFG["n_layers"]):
-    mk[f"q.{l}"] = torch.empty(CFG["d_model"], CFG["d_model"])
-    mk[f"k.{l}"] = torch.empty(CFG["d_model"], CFG["d_model"])
-    mk[f"v.{l}"] = torch.empty(CFG["d_model"], CFG["d_model"])
-    mk[f"o.{l}"] = torch.empty(CFG["d_model"], CFG["d_model"])
-    mk[f"min_.{l}"] = torch.empty(CFG["d_ff"], CFG["d_model"])
-    mk[f"mout.{l}"] = torch.empty(CFG["d_model"], CFG["d_ff"])
-    mk[f"an.{l}"] = torch.ones(CFG["d_model"])
-    mk[f"mn.{l}"] = torch.ones(CFG["d_model"])
+    mk[f"q.{l}.weight"] = torch.empty(CFG["d_model"], CFG["d_model"])
+    mk[f"k.{l}.weight"] = torch.empty(CFG["d_model"], CFG["d_model"])
+    mk[f"v.{l}.weight"] = torch.empty(CFG["d_model"], CFG["d_model"])
+    mk[f"o.{l}.weight"] = torch.empty(CFG["d_model"], CFG["d_model"])
+    mk[f"min_.{l}.weight"] = torch.empty(CFG["d_ff"], CFG["d_model"])
+    mk[f"mout.{l}.weight"] = torch.empty(CFG["d_model"], CFG["d_ff"])
+    mk[f"an.{l}.weight"] = torch.ones(CFG["d_model"])
+    mk[f"mn.{l}.weight"] = torch.ones(CFG["d_model"])
 rngc = torch.Generator().manual_seed(42)
 for l in range(CFG["n_layers"]):
     for k in ("q", "k", "v", "o", "min_", "mout"):
-        nn.init.orthogonal_(mk[f"{k}.{l}"], generator=rngc)
+        nn.init.orthogonal_(mk[f"{k}.{l}.weight"], generator=rngc)
+        assert mk[f"{k}.{l}.weight"].abs().sum() > 0, f"atencion muerta en {k}.{l}"
 mk["out.weight"] = mk["embed.weight"].clone()  # tied
 
 P = {k: nn.Parameter(v.clone()) for k, v in mk.items()}
@@ -98,17 +99,17 @@ def fwd(x):
     B, S = x.shape
     h = F.embedding(x, P["embed.weight"])
     for l in range(CFG["n_layers"]):
-        hn = rms(h, P[f"an.{l}"])
-        q = (hn @ P[f"q.{l}"].T).view(B, S, CFG["n_heads"], CFG["d_head"])
-        k = (hn @ P[f"k.{l}"].T).view(B, S, CFG["n_heads"], CFG["d_head"])
-        v = (hn @ P[f"v.{l}"].T).view(B, S, CFG["n_heads"], CFG["d_head"])
+        hn = rms(h, P[f"an.{l}.weight"])
+        q = (hn @ P[f"q.{l}.weight"].T).view(B, S, CFG["n_heads"], CFG["d_head"])
+        k = (hn @ P[f"k.{l}.weight"].T).view(B, S, CFG["n_heads"], CFG["d_head"])
+        v = (hn @ P[f"v.{l}.weight"].T).view(B, S, CFG["n_heads"], CFG["d_head"])
         q, k = rope(q), rope(k)
         q, k, v = q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2)
         sc = q @ k.transpose(-2, -1) / math.sqrt(CFG["d_head"])
         mask = torch.triu(torch.full((S, S), float("-inf")), 1)
-        h = h + (torch.softmax(sc + mask, dim=-1) @ v).transpose(1, 2).contiguous().view(B, S, CFG["d_model"]) @ P[f"o.{l}"].T
-        hm = rms(h, P[f"mn.{l}"])
-        h = h + F.gelu(hm @ P[f"min_.{l}"].T) @ P[f"mout.{l}"].T
+        h = h + (torch.softmax(sc + mask, dim=-1) @ v).transpose(1, 2).contiguous().view(B, S, CFG["d_model"]) @ P[f"o.{l}.weight"].T
+        hm = rms(h, P[f"mn.{l}.weight"])
+        h = h + F.gelu(hm @ P[f"min_.{l}.weight"].T) @ P[f"mout.{l}.weight"].T
     hf = rms(h, P["fn.weight"])
     return hf @ P["out.weight"].T
 
@@ -147,7 +148,7 @@ for t in range(a.steps):
     opt.zero_grad(); loss.backward(); opt.step()
     losses.append(float(loss.detach()))
     if t % 50 == 0:
-        print(f"step {t}: loss {loss:.4f} ppl_hold={ppl_hold():.2f} t={time.time()-t0:.0f}s gn={float(P['q.0'].grad.norm() if P['q.0'].grad is not None else -1):.2f}", flush=True)
+        print(f"step {t}: loss {loss.detach():.4f} ppl_hold={ppl_hold():.2f} t={time.time()-t0:.0f}s gn={float(P['q.0.weight'].grad.norm() if P['q.0.weight'].grad is not None else -1):.4g}", flush=True)
     if (t + 1) % a.snapshot_every == 0 or t == a.steps - 1:
         snapt.append(flat())
         ssteps.append(t + 1)
