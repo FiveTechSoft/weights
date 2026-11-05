@@ -4,7 +4,6 @@ Negative: W0 (official nanoGPT at init) and count-based n-grams.
 Positive: official nanoGPT trained by gradient descent; CopyOracle for L3 only.
 The trained control uses lab/reference/karpathy_nanogpt/model.py, not the runtime under test.
 
-Needs Shakespeare char text (input.txt from karpathy/nanoGPT data/shakespeare_char).
 """
 import argparse
 import json
@@ -27,10 +26,13 @@ EXPECTED = {"w0": "FAILS", "1-gram": "FAILS", "2-gram": "FAILS", "3-gram": "FAIL
 
 
 def train_control(text, chars, steps, seed):
-    codec = lm.CharCodec(chars)
-    ids = np.asarray(codec.encode(text), dtype=np.int64)
     torch.manual_seed(seed)
-    model = GPT(GPTConfig(vocab_size=len(codec.vocab_chars), **CFG))
+    return train(GPT(GPTConfig(vocab_size=len(set(chars)), **CFG)), text, chars, steps)
+
+
+def train(model, text, chars, steps):
+    """Continues from the current RNG state, so a same-seed model gets the same batches."""
+    ids = np.asarray(lm.CharCodec(chars).encode(text), dtype=np.int64)
     opt = torch.optim.AdamW(model.parameters(), lr=1e-3, betas=(0.9, 0.99))
     t0 = time.time()
     for s in range(steps):
@@ -48,7 +50,7 @@ def train_control(text, chars, steps, seed):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--corpus", default=str(R / "lab" / "vendor" / "nanoGPT" / "data" / "shakespeare_char" / "input.txt"))
+    ap.add_argument("--corpus", default=str(R / "lab" / "data" / "shakespeare_char" / "input.txt"))
     ap.add_argument("--steps", type=int, default=6000)
     ap.add_argument("--seed", type=int, default=1337)
     ap.add_argument("--eval-chars", type=int, default=8000)

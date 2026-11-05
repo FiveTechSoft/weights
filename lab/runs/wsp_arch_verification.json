@@ -1,0 +1,51 @@
+{
+  "arch_sha256": "ab73588ec0bbe93db411f8d18036f17d696180dbeb00990c40d4667aec6752d3",
+  "steps": 6000,
+  "seed": 1337,
+  "matches_official_control": true,
+  "differing_sections": [],
+  "report": {
+    "L1": {
+      "nll": 1.9781,
+      "ppl": 7.229,
+      "unigram_entropy": 3.3685,
+      "baseline_order": 3,
+      "baseline_nll": 2.0837,
+      "verdict": "PASSES",
+      "ngram_ladder_nll": {
+        "1": 3.4305,
+        "2": 2.5312,
+        "3": 2.0803,
+        "4": 1.7045,
+        "5": 1.6799
+      }
+    },
+    "L2_long_context": {
+      "short": 8,
+      "long": 64,
+      "n": 400,
+      "mean_gain_nats": 0.0777,
+      "ci95_low": 0.0155,
+      "ci95_high": 0.1384,
+      "verdict": "PASSES"
+    },
+    "GEN": {
+      "sample": ":\nHere made sweetly it off merry's and I tose,\nAnd pour your name are hear to blood live\nHere is stands, your is perial.\n\nCOMINIUS:\nWe nemit stand well you for me I seek,\nBut he contrumph of this. So ",
+      "greedy_sample": ":\nI have so the soul, and so soul,\nI have soul to the sun the sun the sun\nTo be the sun of the peopl",
+      "distinct_3grams_ratio": 0.809,
+      "letters_space_share": 0.97,
+      "known_word_rate": 0.86,
+      "n_words": 57,
+      "verdict": "PASSES"
+    },
+    "L3_icl": {
+      "n": 200,
+      "acc_with_binding": 0.11,
+      "acc_without_binding": 0.1,
+      "delta": 0.01,
+      "sign_test_p": 0.5,
+      "verdict": "FAILS"
+    },
+    "verdict": "LANGUAGE_MODEL"
+  }
+}

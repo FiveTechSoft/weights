@@ -3,7 +3,7 @@
   "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
   "programa": "build_karpathy_nanogpt",
   "archivo": "programs\\build_karpathy_nanogpt.wspl",
-  "steps_count": 8,
+  "steps_count": 7,
   "steps": [
     {
       "sec": "budgets",
@@ -23,15 +23,9 @@
     },
     {
       "sec": "steps",
-      "expr": "step init_architecture model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors",
+      "expr": "step init_architecture arch=programs/arch/nanogpt.wsparch seed=1337 out=models/nanogpt_karpathy/model.safetensors",
       "op": "init_architecture",
-      "args": "model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors"
-    },
-    {
-      "sec": "steps",
-      "expr": "step tie_weights source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors",
-      "op": "tie_weights",
-      "args": "source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors"
+      "args": "arch=programs/arch/nanogpt.wsparch seed=1337 out=models/nanogpt_karpathy/model.safetensors"
     },
     {
       "sec": "steps",
@@ -51,16 +45,12 @@
     "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
     "secciones": {
       "budgets": 4,
-      "steps": 4
+      "steps": 3
     },
     "pasos": [
       {
         "op": "init_architecture",
-        "args": "model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors"
-      },
-      {
-        "op": "tie_weights",
-        "args": "source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors"
+        "args": "arch=programs/arch/nanogpt.wsparch seed=1337 out=models/nanogpt_karpathy/model.safetensors"
       },
       {
         "op": "audit",
@@ -73,7 +63,6 @@
     ],
     "pasos_mapeo": {
       "init_architecture": "synthesize and initialize micro-transformer architecture from scratch in weight space",
-      "tie_weights": "custom operation",
       "audit": "audit tensor energy, norm delta, and semantic alignment",
       "spectral_audit": "randomized SVD spectral decomposition, eigengap delta, and column leverage scores"
     },
@@ -88,42 +77,32 @@
   },
   "errors": [],
   "validated": true,
-  "ts": "2026-11-05T15:05:03",
+  "ts": "2026-11-05T15:25:16",
   "ejecucion": [
     {
       "op": "init_architecture",
-      "args": "model=nanoGPT layers=6 d_model=384 heads=6 d_ff=1536 vocab=65 max_seq=256 seed=1337 out=models/nanogpt_karpathy/model.safetensors",
+      "args": "arch=programs/arch/nanogpt.wsparch seed=1337 out=models/nanogpt_karpathy/model.safetensors",
       "status": "ok",
       "execution_state": "executed",
       "result": {
-        "architecture": "nanoGPT",
-        "layers": 6,
-        "d_model": 384,
-        "heads": 6,
-        "d_ff": 1536,
-        "vocab_size": 65,
+        "architecture": "nanogpt",
+        "compiled_from": "programs/arch/nanogpt.wsparch",
+        "source_sha256": "ab73588ec0bbe93db411f8d18036f17d696180dbeb00990c40d4667aec6752d3",
+        "config": {
+          "vocab": 65,
+          "block": 256,
+          "layers": 6,
+          "heads": 6,
+          "d": 384,
+          "ff": 1536,
+          "dropout": 0.0,
+          "bias": true,
+          "block_size": 256,
+          "vocab_size": 65
+        },
         "total_parameters": 10770816,
         "output_file": "C:\\weights\\models\\nanogpt_karpathy\\model.safetensors",
-        "written_to_disk": true,
-        "dropout": 0.0,
-        "bias": true
-      }
-    },
-    {
-      "op": "tie_weights",
-      "args": "source=transformer.wte.weight target=lm_head.weight model=models/nanogpt_karpathy/model.safetensors",
-      "status": "ok",
-      "execution_state": "executed",
-      "result": {
-        "status": "ok",
-        "source": "transformer.wte.weight",
-        "target": "lm_head.weight",
-        "shape": [
-          65,
-          384
-        ],
-        "parity_frobenius_norm": 0.0,
-        "tied": true
+        "written_to_disk": true
       }
     },
     {

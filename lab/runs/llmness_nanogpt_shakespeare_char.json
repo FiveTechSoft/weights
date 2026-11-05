@@ -1,0 +1,47 @@
+{
+  "patient": "models/nanogpt_shakespeare_char/model.safetensors",
+  "corpus": "lab/data/shakespeare_char/input.txt",
+  "eval_chars": 8000,
+  "L1": {
+    "nll": 1.826,
+    "ppl": 6.209,
+    "unigram_entropy": 3.3685,
+    "baseline_order": 3,
+    "baseline_nll": 2.0803,
+    "verdict": "PASSES",
+    "ngram_ladder_nll": {
+      "1": 3.4305,
+      "2": 2.5312,
+      "3": 2.0803,
+      "4": 1.7045,
+      "5": 1.6799
+    }
+  },
+  "L2_long_context": {
+    "short": 8,
+    "long": 64,
+    "n": 400,
+    "mean_gain_nats": 0.1033,
+    "ci95_low": 0.0356,
+    "ci95_high": 0.1766,
+    "verdict": "PASSES"
+  },
+  "GEN": {
+    "sample": ":\nHow how it will?\n\nTRANIO:\nA man young gels are not unwielding bear? ha?\n\nDUKE VINCENTIO:\nIt is not thought yielded with my friends;\nHe must be depended to drink him on.\nBut he comes here, I will fol",
+    "greedy_sample": ":\nI am a bawd, a bawd, a bawd, a bawd, a bawd.\n\nPOMPEY:\nI am a bawd, a bawd, a bawd, a bawd, a bawd,",
+    "distinct_3grams_ratio": 0.832,
+    "letters_space_share": 0.967,
+    "known_word_rate": 0.931,
+    "n_words": 58,
+    "verdict": "PASSES"
+  },
+  "L3_icl": {
+    "n": 200,
+    "acc_with_binding": 0.145,
+    "acc_without_binding": 0.155,
+    "delta": -0.01,
+    "sign_test_p": 0.753906,
+    "verdict": "FAILS"
+  },
+  "verdict": "LANGUAGE_MODEL"
+}

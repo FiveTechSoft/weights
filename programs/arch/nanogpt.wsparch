@@ -1,0 +1,57 @@
+# nanoGPT (karpathy/nanoGPT@3adf61e) declared as data: no Python class behind it.
+# The first init pass is what torch does when building nn.Linear/nn.Embedding. Upstream's
+# weights depend on those draws through the RNG stream, so same-seed parity needs them too.
+
+arch nanogpt:
+    config:
+        vocab = 65
+        block = 256
+        layers = 6
+        heads = 6
+        d = 384
+        ff = 4 * d
+        dropout = 0.0
+        bias = true
+
+    graph(idx):
+        scope transformer:
+            tok = embedding(wte, idx, vocab, d)
+            where = positions(idx)
+            pos = embedding(wpe, where, block, d)
+            x = add(tok, pos)
+            x = dropout(x, dropout)
+            repeat i in layers:
+                scope h.{i}:
+                    a = layernorm(ln_1, x, d, bias)
+                    scope attn:
+                        qkv = linear(c_attn, a, d, 3 * d, bias)
+                        q, k, v = split(qkv, 3)
+                        y = causal_attention(q, k, v, heads, dropout)
+                        y = linear(c_proj, y, d, d, bias)
+                        y = dropout(y, dropout)
+                    x = add(x, y)
+                    m = layernorm(ln_2, x, d, bias)
+                    scope mlp:
+                        m = linear(c_fc, m, d, ff, bias)
+                        m = gelu(m)
+                        m = linear(c_proj, m, ff, d, bias)
+                        m = dropout(m, dropout)
+                    x = add(x, m)
+            x = layernorm(ln_f, x, d, bias)
+        logits = linear(lm_head, x, d, vocab, false)
+        output logits
+
+    init:
+        pass:
+            embedding.weight = normal(0, 1)
+            linear.weight = kaiming_uniform(sqrt(5))
+            linear.bias = fan_in_uniform()
+            layernorm.weight = ones()
+            layernorm.bias = zeros()
+        tie transformer.wte.weight = lm_head.weight
+        pass:
+            embedding.weight = normal(0, 0.02)
+            linear.weight = normal(0, 0.02)
+            linear.bias = zeros()
+        pass:
+            match "*c_proj.weight" = normal(0, 0.02 / sqrt(2 * layers))
