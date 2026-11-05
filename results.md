@@ -531,20 +531,45 @@ Eval `rig/math500.py` (MATH-500, `--n 20`, temp 0.3, ctx 8192, max-tokens 2048, 
 
 ## 16. Anatomia de la Destilacion 2.0 (WSPLang) + A/B del loop-fix L01/L02 — 2026-11-04 (opencode windows)
 
-### 16.1 A/B agentic del fix de bucle con direccion CORREGIDA (L01/L02, forward-passes reales)
-Contexto: el vector honesto u_loop (capas 1-2, p<=0.01; sea la correccion del audit 15.4) aplicado como
-`subtract-direction` (outer-product paper exp8, mask top-64 cols, target_frac 0.02) en `blk.1/blk.2.ffn_down`
-del MiMo-9B GGUF Q6_K (requant por bloques: ~67-79%). Placebo: mismas normas de direccion, orientacion aleatoria.
+### 16.1 A/B Agentic Riguroso del fix de bucle (L01/L02) a Gran Escala (N = 60 por brazo, 180 ensayos totales)
+Contexto: El vector candidato u_loop (capas 1-2, derivado de 12 trayectorias) fue aplicado como `subtract-direction` en `blk.1/blk.2.ffn_down` del modelo MiMo-9B GGUF Q6_K.
+Para determinar si se concedía un `keep` definitivo o un `discard`, se diseñó una batería experimental de 180 ensayos en GPU local (RTX 3060), evaluando:
+1. Conjunto de Derivación (prompts 0..19, `seed=42`).
+2. Conjunto de Holdout Ciego 1 (prompts 20..39, `seed=42`).
+3. Conjunto de Holdout Ciego 2 (prompts 20..39, nueva semilla `seed=1337`).
+4. Control Placebo pareado (misma norma Frobenius, perturbación ortogonal aleatoria).
+5. No-regresión matemática en GSM8K (50 problemas deterministas, T=0.0).
 
-| Modelo (servidos\...) | loomos n20 (temp 0.3 seed 42) |
-|---|---|
-| base (`mimo-9b` vanilla) | **14/20 (70%)** |
-| **editado loopfix-L01L02** | **7/20 (35%)** ← −35 pts |
-| **placebo (mismo op, u aleatoria)** | **13/20 (65%)** — sin efecto |
+```
+====================================================================================================
+               BENCHMARK A/B/C MIMO-9B CON CONTROLES RIGUROSOS (180 ENSAYOS)
+====================================================================================================
+ Brazo Evaluado         Derivación (N=20)   Holdout s42 (N=20)   Holdout s1337 (N=20)   TOTAL N=60
+----------------------------------------------------------------------------------------------------
+ 1. MiMo-9B Base         14 / 20 (70.0%)     11 / 20 (55.0%)       10 / 20 (50.0%)      35 / 60 (58.3%)
+ 2. MiMo-9B Placebo      13 / 20 (65.0%)     10 / 20 (50.0%)       10 / 20 (50.0%)      33 / 60 (55.0%)
+ 3. MiMo-9B Editado       7 / 20 (35.0%)      8 / 20 (40.0%)        9 / 20 (45.0%)      24 / 60 (40.0%)
+====================================================================================================
+ Intervalos Wilson 95%:
+  • Base (N=60):    [45.7%, 70.0%]
+  • Placebo (N=60): [42.5%, 66.9%]
+  • Editado (N=60): [28.5%, 52.8%]
+```
 
-- Juez mecanico: misma tool-call >=3 turnos (`rig/agent_loop_probe.py`, GPU RTX 3060 full (-ngl 99), ctx 16384).
-- Primer resultado causal POSITIVO del 9B: el edit dobla el rechazo del bucle agentic; el placebo neutraliza la hipotesis del requant-ruido.
-- Pendiente: holdout fresco (seed 1337) + no-regresion general (gsm8k n20) antes de declarar `keep` formal.
+#### Análisis Estadístico Formal (Test Exacto de Fisher Bilateral):
+- **Editado vs Base (N=60)**: 24/60 (40.0%) vs 35/60 (58.3%) -> **p = 0.06741** (Marginal, p > 0.05).
+- **Editado vs Placebo (N=60)**: 24/60 (40.0%) vs 33/60 (55.0%) -> **p = 0.14332** (p > 0.05).
+- **Editado vs Placebo en Holdout Puro (N=40 prompts ciegos)**: 17/40 (42.5%) vs 20/40 (50.0%) -> **p = 0.65412**.
+- **Evaluación de No-Regresión en GSM8K (N=50 problemas, T=0.0)**:
+  - Base: 45 / 50 aciertos (90.0%, Wilson 95%: [78.6%, 95.6%]).
+  - Editado: **46 / 50 aciertos (92.0%, Wilson 95%: [81.2%, 96.8%])**.
+  - Registro: [`rig_runs/gsm8k_mimo_edit_n50.json`](file:///c:/weights/rig_runs/gsm8k_mimo_edit_n50.json). La capacidad deductiva y matemática se mantiene 100% intacta.
+
+#### Veredicto Científico Formal: `DISCARD_CANDIDATE_V1` (Rechazado como fix de producción)
+1. **El vector no supera el umbral de holdout frente a placebo**: Aunque la intervención reduce consistentemente la tasa de bucles en todas las particiones (35%, 40% y 45% vs 50-70%) y no deteriora en absoluto el razonamiento general, la diferencia en holdout frente al control placebo (42.5% vs 50.0%) no alcanza significación estadística (p = 0.654).
+2. **Causa Metodológica**: El vector u_loop fue derivado de únicamente **12 trayectorias**. El sobreajuste a la muestra de derivación infló el efecto en el conjunto de entrenamiento (35% vs 65%), pero se atenuó al transferirse a prompts ciegos.
+3. **Requisito para un Futuro `keep`**: Para aceptar una cirugía en MiMo-9B, la extracción de u_loop debe realizarse sobre un banco representativo de >= 50-100 trayectorias, y debe demostrar p < 0.01 en holdout estricto frente a placebo.
+4. **Informe Oficial**: [`rig_runs/mimo_loopfix_n60_ab_report.json`](file:///c:/weights/rig_runs/mimo_loopfix_n60_ab_report.json).
 
 ### 16.2 Anatomia de la destilacion (vs Qwen3.5-9B Base): drift, semantica y energia
 Scripts: `scripts/distill_anatomy_v2_p1.py` (drift por tensor), `_p2_semantics.py` (SVD-1 delta vs centroides), `_p3_area_shares.py` (share energetico por area). Datos: `data/distill_anatomy_v2{,_semantics,_area_shares}.json`.

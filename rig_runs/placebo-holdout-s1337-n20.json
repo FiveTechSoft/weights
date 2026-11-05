@@ -1,0 +1,249 @@
+{
+  "meta": {
+    "alias": "placebo-holdout-s1337-n20",
+    "endpoint": "http://127.0.0.1:8091/v1/chat/completions",
+    "n": 20,
+    "offset": 20,
+    "sampling_params": {
+      "temperature": 0.3,
+      "top_p": 0.95,
+      "max_tokens": 800,
+      "seed": 1337,
+      "repetition_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0
+    },
+    "timestamp": "2026-11-05T14:30:25"
+  },
+  "results": [
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": true,
+      "loop_turn": 12,
+      "why": [
+        "3-consecutive-identical"
+      ],
+      "id": "code-0-format-code-task-001457",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /src/' x5"
+      ],
+      "id": "code-0-format-code-task-001240",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-0-format-code-task-000723",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 15,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-0-format-code-task-000718",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /root; echo \"===\"; ls -la /root/src 2>' x5"
+      ],
+      "id": "code-0-format-code-task-000189",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-0-format-code-task-000720",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -laR src config 2>&1 | head -60' x5"
+      ],
+      "id": "code-0-format-code-task-001661",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-0-format-code-task-001499",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-0-format-code-task-000173",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 9,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /src; echo \"===\"; ls -la /src/src' x6"
+      ],
+      "id": "code-0-format-code-task-002366",
+      "config": "code"
+    },
+    {
+      "turns": 1,
+      "final": true,
+      "n_calls": 0,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-50-format-code-task-001884",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-50-format-code-task-002961",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /home /root /workspace /app 2>&1; echo' x5"
+      ],
+      "id": "code-50-format-code-task-002105",
+      "config": "code"
+    },
+    {
+      "turns": 1,
+      "final": true,
+      "n_calls": 0,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-50-format-code-task-000529",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 9,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:find /home/user/src -type f 2>&1 | head -50' x6"
+      ],
+      "id": "code-50-format-code-task-000567",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 14,
+      "loop": true,
+      "loop_turn": 10,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -la /home/user/src/src' x5"
+      ],
+      "id": "code-50-format-code-task-002132",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-50-format-code-task-000102",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 8,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:ls -laR src config 2>&1 | head -60; echo \"===' x7"
+      ],
+      "id": "code-50-format-code-task-001938",
+      "config": "code"
+    },
+    {
+      "turns": 12,
+      "final": false,
+      "n_calls": 13,
+      "loop": true,
+      "loop_turn": 8,
+      "why": [
+        "3-consecutive-identical",
+        "'bash:echo A; pwd; echo B; ls -la; echo C' x7"
+      ],
+      "id": "code-50-format-code-task-002598",
+      "config": "code"
+    },
+    {
+      "turns": 1,
+      "final": true,
+      "n_calls": 0,
+      "loop": false,
+      "loop_turn": null,
+      "why": [],
+      "id": "code-50-format-code-task-001321",
+      "config": "code"
+    }
+  ]
+}
