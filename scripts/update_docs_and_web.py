@@ -152,7 +152,7 @@ nanogpt_hero_card = '''    <!-- KARPATHY NANOGPT 10.77M PARITY HERO CARD -->
 
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
           <a href="wsplang_0.7_spec.md" class="btn btn-primary" style="background: var(--accent-amber); color: #000000; font-weight: 800; border: none;">View WSPLang 0.7.0 Spec & Parity Details &rarr;</a>
-          <span style="color: #94A3B8; font-size: 0.85rem;">Continuous automated verification in <code>tests/test_wsplang_karpathy_nanogpt.py</code> (91/91 passing)</span>
+          <span style="color: #94A3B8; font-size: 0.85rem;">Continuous automated verification against official <code>karpathy/nanoGPT@3adf61e</code> in <code>tests/test_wsplang_karpathy_nanogpt.py</code></span>
         </div>
       </div>
     </section>

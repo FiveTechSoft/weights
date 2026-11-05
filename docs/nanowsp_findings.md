@@ -104,3 +104,5 @@ Mediante WSPLang 0.7.0 y [`programs/build_karpathy_nanogpt.wspl`](file:///c:/wei
 - **Atado de Pesos Exacto:** $\|W_{wte} - W_{lm\_head}\| = 0.0$.
 - **Causalidad Pura:** Filtración al pasado $= 0.0$.
 - **Pérdida Cross-Entropy:** $4.241905$ en referencia vs $4.241905$ en WSPLang ($\Delta = 0.0$).
+
+> **Nota de rigor científico:** Esta verificación certifica la equivalencia arquitectónica y del runtime (logits, loss, gradientes, backward) en el estado $ frente a la implementación upstream oficial karpathy/nanoGPT@3adf61e. No constituye un pre-entrenamiento completo del modelo sobre un corpus extenso.

@@ -79,25 +79,27 @@ python scripts/demo_nanowsp_capabilities.py
 ```
 
 
-### 5. Build Karpathy's nanoGPT via WSPLang (30 Seconds)
+### 5. Build Karpathy's nanoGPT Architecture via WSPLang (30 Seconds)
 
-Synthesize and compile Andrej Karpathy's exact **`nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65)** declaratively in weight space with certified bit-exact mathematical parity:
+Synthesize and compile Andrej Karpathy's exact **`nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65)** architecture declaratively with independent bit-exact parity against official upstream `karpathy/nanoGPT@3adf61e`:
 
 ```bash
 # 1. Synthesize the architecture and tie weights declaratively
 python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run
 
-# 2. Verify 100% bit-exact numerical parity against Karpathy's reference implementation
-python lab/verify_karpathy_parity.py
+# 2. Verify independent mathematical parity against official upstream karpathy/nanoGPT
+python lab/verify_official_karpathy_parity.py
 ```
 
-| Parity Test | Metric Observed | Target Threshold | Verdict |
+| Independent Parity Test | Metric Observed | Target Threshold | Verdict |
 | :--- | :--- | :--- | :--- |
-| **Logits Forward Pass** | $\Delta = 0.0000000000\times 10^0$ | $< 1.0\times 10^{-6}$ (fp32) | **EXACT MATCH** |
+| **Logits Forward Pass** | $\Delta = 0.0000\times 10^0$ | $0.0$ (fp32) | **EXACT MATCH** |
 | **Weight Tying ($W_{wte} \leftrightarrow W_{lm}$)** | $\|W_{wte} - W_{lm}\|_F = 0.0$ | $0.0$ Frobenius | **IDENTICAL** |
 | **Causal Attention Mask** | Past leakage = $0.0$ | Past leakage == $0.0$ | **STRICT CAUSAL** |
-| **Autoregressive Trajectory** | 0 discrepancies / 35 steps | 0 token errors | **100% BIT-EXACT** |
-| **Cross-Entropy Loss** | Loss: $4.241905$ vs $4.241905$ | $\Delta < 1.0\times 10^{-6}$ | **EXACT MATCH** |
+| **Autoregressive Greedy Generation** | 0 discrepancies / 75 tokens | 0 token errors | **100% BIT-EXACT** |
+| **Cross-Entropy Loss & Gradients** | Loss $\Delta = 0.0$, Grad $\Delta = 0.0$ | $0.0$ | **EXACT MATCH** |
+
+*Note: This certifies exact architectural and numerical runtime equivalence of the $W_0$ state with upstream Karpathy, not full corpus pre-training.*
 
 
 👉 **Need a full walkthrough?** Read our step-by-step **[Getting Started Guide](docs/getting_started.md)**.
