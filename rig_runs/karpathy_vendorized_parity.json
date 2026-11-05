@@ -1,5 +1,5 @@
 {
-  "vendor_commit": "\u00ff\u00fe3\u0000a\u0000d\u0000f\u00006\u00001\u0000e\u00001\u00005\u00004\u0000c\u00003\u0000f\u0000e\u00003\u0000f\u0000c\u0000a\u00004\u00002\u00008\u0000a\u0000d\u00006\u0000b\u0000c\u00003\u00008\u00001\u00008\u0000b\u00002\u00007\u0000a\u00003\u0000b\u00008\u00002\u00009\u00001\u0000\n\u0000\n\u0000",
+  "vendor_commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291\r\n",
   "vendor_model_sha256": "63d46bccd28157de4ae3d4e714f3945370be708852d2f411e0d017a7da5f8d39",
   "cfg": {
     "n_layer": 4,
@@ -8,13 +8,13 @@
     "block_size": 64,
     "vocab_size": 65
   },
-  "max_logits_diff": 2.363419532775879,
-  "cos": 0.032318935,
+  "max_logits_diff": 0.0,
+  "cos": 0.999999702,
   "shapes_match": true,
   "causal_purity_diff_v_past": 0.0,
-  "causal_purity_v_future": 1.1999132633209229,
-  "loss_vend": 4.217593,
-  "loss_ours": 4.339738,
-  "parity_verdict": "DIVERGES",
+  "causal_purity_v_future": 1.1072782278060913,
+  "loss_vend": 4.200277,
+  "loss_ours": 4.200277,
+  "parity_verdict": "PASSES_fp32",
   "interpretacion": "verdict"
 }

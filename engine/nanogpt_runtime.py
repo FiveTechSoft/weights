@@ -30,9 +30,13 @@ class GPTConfig:
     n_layer: int = 6
     n_head: int = 6
     n_embd: int = 384
-    d_ff: int = 1536          # 4 * n_embd por defecto
+    d_ff: Optional[int] = None # Si es None, computa dinámicamente 4 * n_embd
     dropout: float = 0.0
     bias: bool = True         # True: estándar GPT-2 (con bias en linear y layernorm)
+
+    def __post_init__(self):
+        if self.d_ff is None:
+            self.d_ff = 4 * self.n_embd
 
     def total_parameters(self) -> int:
         emb = self.vocab_size * self.n_embd + self.block_size * self.n_embd
@@ -157,6 +161,20 @@ class KarpathyGPT(nn.Module):
 
         # Atado de pesos de Karpathy (Weight Tying)
         self.transformer.wte.weight = self.lm_head.weight
+
+        # Inicialización de pesos idéntica a model.py de Karpathy
+        self.apply(self._init_weights)
+        for pn, p in self.named_parameters():
+            if pn.endswith('c_proj.weight'):
+                torch.nn.init.normal_(p, mean=0.0, std=0.02 / math.sqrt(2 * config.n_layer))
+
+    def _init_weights(self, module):
+        if isinstance(module, nn.Linear):
+            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+            if module.bias is not None:
+                torch.nn.init.zeros_(module.bias)
+        elif isinstance(module, nn.Embedding):
+            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
     def forward(self, idx: torch.Tensor, targets: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         device = idx.device

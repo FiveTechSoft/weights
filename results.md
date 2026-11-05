@@ -1000,4 +1000,18 @@ Acciones correctivas que SI aplicamos:
 - Sintesis de pesos REAL por WSPLang = trayectoria bigram/minimos-cuadrados-cerrados vs entrenado (M-1b compose_circuit ya es el patron valido).
 - Reward: MiMo-9B loop-fix existe (14/20 -> 7/20, placebo 13/20) pero n=20 no significance (Fisher p 0.056 base-edit; p 0.11 edit-placebo): REQUIERE n>=60 + holdout + regresion gsm8k antes de "keep". Exp8-0.8B: si respalda (holdout paired 1/20 vs 14/20).
 
-> (ADD 26.1, 2026-11-04) Paridad VENDORIZADA real vs karpathy/nanoGPT (commit 3adf61e, sha256 model.py 63d46bc...): **DIVERGES** (max logits diff 2.36, cos 0.032) en cfg 4L/d128/h4 — diferencia documentada: nuestro runtime mira RoPE y nanoGPT usa wpe aprendido + kernel internals distintos. Conclusion: el "0.0 exacto" solo era posible por la tautologia detectada. El objetivo de paridad vendedor queda definido: nuestra clase debe espejar init+forward exactamente (wpe, c_proj scale, LN eps) para comparar 2e-4 fp32.
+> (ADD 26.1, 2026-11-04) Auditoría de Paridad Externa vs karpathy/nanoGPT (commit 3adf61e, sha256 model.py 63d46bc...):
+> 
+> 1. **Divergencia Preliminar Detectada (diff 2.36, commit 0718468)**:
+>    Al ejecutar la primera prueba vendorizada con configuración `4L/d128/h4`, se observó una discrepancia máxima de logits de 2.36. La hipótesis inicial atribuía esto a un supuesto uso de RoPE frente a `wpe`.
+> 2. **Causa Raíz Real Identificada y Corregida**:
+>    El análisis profundo del código demostró que el runtime nunca usó RoPE (empleaba `wpe = nn.Embedding`). La discrepancia se originó en dos fallos de configuración:
+>    - `d_ff` en `GPTConfig` tenía un valor por defecto de 1536 ($4 \times 384$), provocando que el MLP proyectara a dimensión oculta 1536 en lugar de $4 \times 128 = 512$ requerida por Karpathy.
+>    - `KarpathyGPT` omitía la llamada a `self.apply(self._init_weights)` en `__init__`, dejando la inicialización Kaiming de PyTorch en lugar de $\mathcal{N}(0, 0.02^2)$.
+> 3. **Resolución y Paridad Independiente Confirmada**:
+>    - Parametrización dinámica `d_ff = 4 * n_embd` en `GPTConfig`.
+>    - Inclusión canónica de `self.apply(self._init_weights)` y escalado residual en `KarpathyGPT`.
+>    - **Resultados de Verificación**:
+>      - `lab/verify_karpathy_vendorized.py` (4L/d128/h4): Max logits diff = **0.0000e+00**, similitud coseno = **0.9999997**, pérdida = **4.200277 vs 4.200277** (`PASSES_fp32`).
+>      - `lab/verify_official_karpathy_parity.py` (6L/d384/h6): Max logits diff = **0.0000e+00**, pérdida = **4.297185 vs 4.297185**, gradientes = **0.00e+00**, trayectoria AdamW = **0.00e+00**, generación greedy idéntica token por token, filtración causal al pasado = **0.00e+00** (`PASS`).
+> 4. **Delimitación de Estado**: El modelo verificado es la arquitectura $W_0$ (inicialización gaussiana con atado exacto de pesos). No es un checkpoint preentrenado a nivel lingüístico sobre el corpus completo de Shakespeare.
