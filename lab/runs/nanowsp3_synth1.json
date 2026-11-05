@@ -1,0 +1,105 @@
+{
+ "experimento": "S1 binding composicional desde datos sinteticos (ENTRENAMIENTO gradiente)",
+ "hipotesis": "a medir; ambas direcciones validas",
+ "metricas": "pre-registradas en docstring",
+ "n_train_sents": 3000,
+ "n_train_pairs": 400,
+ "n_eval_interp_items": 64,
+ "n_eval_syst_items": 64,
+ "train_ft": {
+  "arm": "ft",
+  "steps_done": 320,
+  "steps_total": 320,
+  "done": true,
+  "loss_last20_mean": null,
+  "ckpt": "nanowsp3_synth1_ft.safetensors"
+ },
+ "train_placebo": {
+  "arm": "placebo",
+  "steps_done": 320,
+  "steps_total": 320,
+  "done": true,
+  "loss_last20_mean": 0.3218,
+  "ckpt": "nanowsp3_synth1_placebo.safetensors"
+ },
+ "evaluacion": {
+  "ft": {
+   "interp": {
+    "per_order_ok": 46,
+    "per_order_n": 64,
+    "strict_ok": 14,
+    "strict_n": 32
+   },
+   "sistematica": {
+    "per_order_ok": 58,
+    "per_order_n": 64,
+    "strict_ok": 27,
+    "strict_n": 32
+   },
+   "alice_holdout_ppl": 17.04,
+   "train_memorizacion": {
+    "per_order_ok": 62,
+    "per_order_n": 64
+   }
+  },
+  "placebo": {
+   "interp": {
+    "per_order_ok": 36,
+    "per_order_n": 64,
+    "strict_ok": 4,
+    "strict_n": 32
+   },
+   "sistematica": {
+    "per_order_ok": 58,
+    "per_order_n": 64,
+    "strict_ok": 28,
+    "strict_n": 32
+   },
+   "alice_holdout_ppl": 13.18
+  },
+  "base": {
+   "interp": {
+    "per_order_ok": 34,
+    "per_order_n": 64,
+    "strict_ok": 2,
+    "strict_n": 32
+   },
+   "sistematica": {
+    "per_order_ok": 32,
+    "per_order_n": 64,
+    "strict_ok": 14,
+    "strict_n": 32
+   },
+   "alice_holdout_ppl": 6.11
+  },
+  "ngram8": {
+   "interp": {
+    "per_order_ok": 32,
+    "per_order_n": 64,
+    "strict_ok": 0,
+    "strict_n": 32
+   },
+   "sistematica": {
+    "per_order_ok": 30,
+    "per_order_n": 64,
+    "strict_ok": 15,
+    "strict_n": 32
+   }
+  },
+  "azar_empirico": {
+   "interp": {
+    "per_order_ok": 28,
+    "per_order_n": 64,
+    "strict_ok": 12,
+    "strict_n": 32
+   },
+   "sistematica": {
+    "per_order_ok": 34,
+    "per_order_n": 64,
+    "strict_ok": 9,
+    "strict_n": 32
+   }
+  }
+ },
+ "estado": "COMPLETO"
+}
