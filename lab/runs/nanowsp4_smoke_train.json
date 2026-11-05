@@ -1,0 +1,16 @@
+{
+  "n_layers": 2,
+  "d_model": 64,
+  "n_heads": 4,
+  "d_head": 16,
+  "d_ff": 128,
+  "steps": 12,
+  "corpus": "C:\\weights\\lab\\data\\corpus_n4.txt",
+  "n_chars": 141448,
+  "ppl_start": 284.80002890679026,
+  "ppl_final": 200.97359716094562,
+  "eph": 3.112704893435153,
+  "seconds": 0.4,
+  "trace": "C:\\weights\\lab\\runs\\nanowsp4_smoke_trace.npz",
+  "ckpt": "C:\\weights\\lab\\runs\\nanowsp4_smoke.safetensors"
+}

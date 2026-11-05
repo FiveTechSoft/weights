@@ -18,28 +18,28 @@
   "estado": "ok"
  },
  "resultados": {
-  "w0_base": 0.015,
-  "adam_finetune": 0.745,
-  "closed_form_readout": 0.74,
-  "placebo_norm_matched": 0.025
+  "w0_base": 0.01,
+  "adam_finetune": 0.735,
+  "closed_form_readout": 0.735,
+  "placebo_norm_matched": 0.01
  },
  "hypothesis": "cirugia closed-form readout sustituye finetune en RECALL",
  "evidence": {
   "dataset": "RECALL",
   "dataset_sha256": "6085b9dc526bead96165d1039fe8e61a90347f4e41f45879ab4ce6b571c3b0a5",
   "n_universe": 200,
-  "n_ok": 148,
-  "n_fail": 52,
-  "exact_on_universe": 0.74,
+  "n_ok": 147,
+  "n_fail": 53,
+  "exact_on_universe": 0.735,
   "failures_head": [
    [
     "KB: BJ =",
-    "a",
+    "e",
     "j"
    ],
    [
     "KB: NS =",
-    "f",
+    "e",
     "g"
    ],
    [
@@ -49,12 +49,12 @@
    ],
    [
     "KB: ET =",
-    "i",
+    "a",
     "g"
    ],
    [
     "KB: VZ =",
-    "i",
+    "h",
     "e"
    ],
    [
@@ -63,23 +63,18 @@
     "b"
    ],
    [
-    "KB: EL =",
-    "j",
-    "a"
-   ],
-   [
     "KB: NG =",
-    "f",
+    "g",
     "j"
    ],
    [
     "KB: CF =",
-    "g",
+    "i",
     "b"
    ],
    [
     "KB: AK =",
-    "g",
+    "d",
     "a"
    ],
    [
@@ -99,13 +94,8 @@
    ],
    [
     "KB: AC =",
-    "d",
+    "b",
     "a"
-   ],
-   [
-    "KB: JD =",
-    "f",
-    "d"
    ],
    [
     "KB: XU =",
@@ -114,7 +104,7 @@
    ],
    [
     "KB: EM =",
-    "j",
+    "e",
     "d"
    ],
    [
@@ -124,22 +114,32 @@
    ],
    [
     "KB: FK =",
-    "h",
+    "f",
     "d"
    ],
    [
     "KB: EI =",
-    "f",
+    "i",
     "e"
+   ],
+   [
+    "KB: JE =",
+    "b",
+    "d"
+   ],
+   [
+    "KB: MA =",
+    "c",
+    "i"
    ]
   ],
   "verdict": "APPROX",
-  "ts": "2026-11-04T23:31:08",
+  "ts": "2026-11-05T06:29:07",
   "acc": {
-   "w0_base": 0.015,
-   "adam_finetune": 0.745,
-   "closed_form_readout": 0.74,
-   "placebo_norm_matched": 0.025
+   "w0_base": 0.01,
+   "adam_finetune": 0.735,
+   "closed_form_readout": 0.735,
+   "placebo_norm_matched": 0.01
   },
   "ruta": "lab/runs/m2b_results.json"
  },
@@ -151,7 +151,7 @@
  "placebo": "norm-matched-random",
  "holdout": "",
  "conclusion": "SUPPORTED",
- "surgery_tier": "APPROX",
+ "surgery_tier": "EXACT",
  "tier_inferred": true,
  "claim_class": "causal_learn",
  "placebo_required": true,

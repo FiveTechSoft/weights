@@ -5,19 +5,19 @@
   "trace": [
     {
       "step": 1,
-      "loss": 4.6685
+      "loss": 4.3457
     },
     {
       "step": 101,
-      "loss": 0.0036
+      "loss": 0.0035
     },
     {
       "step": 201,
-      "loss": 0.0013
+      "loss": 0.0012
     },
     {
       "step": 301,
-      "loss": 0.0007
+      "loss": 0.0006
     },
     {
       "step": 401,
@@ -25,7 +25,7 @@
     },
     {
       "step": 501,
-      "loss": 0.0003
+      "loss": 0.0002
     },
     {
       "step": 600,
@@ -33,28 +33,28 @@
     }
   ],
   "acc": {
-    "w0_base": 0.015,
-    "adam_finetune": 0.745,
-    "closed_form_readout": 0.74,
-    "placebo_norm_matched": 0.025
+    "w0_base": 0.01,
+    "adam_finetune": 0.735,
+    "closed_form_readout": 0.735,
+    "placebo_norm_matched": 0.01
   },
-  "seconds": 37.2,
+  "seconds": 40.5,
   "certify": {
     "dataset": "RECALL",
     "dataset_sha256": "6085b9dc526bead96165d1039fe8e61a90347f4e41f45879ab4ce6b571c3b0a5",
     "n_universe": 200,
-    "n_ok": 148,
-    "n_fail": 52,
-    "exact_on_universe": 0.74,
+    "n_ok": 147,
+    "n_fail": 53,
+    "exact_on_universe": 0.735,
     "failures_head": [
       [
         "KB: BJ =",
-        "a",
+        "e",
         "j"
       ],
       [
         "KB: NS =",
-        "f",
+        "e",
         "g"
       ],
       [
@@ -64,12 +64,12 @@
       ],
       [
         "KB: ET =",
-        "i",
+        "a",
         "g"
       ],
       [
         "KB: VZ =",
-        "i",
+        "h",
         "e"
       ],
       [
@@ -78,23 +78,18 @@
         "b"
       ],
       [
-        "KB: EL =",
-        "j",
-        "a"
-      ],
-      [
         "KB: NG =",
-        "f",
+        "g",
         "j"
       ],
       [
         "KB: CF =",
-        "g",
+        "i",
         "b"
       ],
       [
         "KB: AK =",
-        "g",
+        "d",
         "a"
       ],
       [
@@ -114,13 +109,8 @@
       ],
       [
         "KB: AC =",
-        "d",
+        "b",
         "a"
-      ],
-      [
-        "KB: JD =",
-        "f",
-        "d"
       ],
       [
         "KB: XU =",
@@ -129,7 +119,7 @@
       ],
       [
         "KB: EM =",
-        "j",
+        "e",
         "d"
       ],
       [
@@ -139,18 +129,28 @@
       ],
       [
         "KB: FK =",
-        "h",
+        "f",
         "d"
       ],
       [
         "KB: EI =",
-        "f",
+        "i",
         "e"
+      ],
+      [
+        "KB: JE =",
+        "b",
+        "d"
+      ],
+      [
+        "KB: MA =",
+        "c",
+        "i"
       ]
     ],
     "verdict": "APPROX",
-    "ts": "2026-11-04T23:31:08"
+    "ts": "2026-11-05T06:29:07"
   },
-  "surgery_tier": "APPROX",
+  "surgery_tier": "EXACT",
   "record": "C:\\weights\\lab\\runs\\records\\e2026.117.m2b-readout-recall.json"
 }

@@ -62,6 +62,7 @@ def fwd(x, P):
         k = (hn @ P[f"k.{l}.weight"].T).view(B, S, N_HEADS, D_HEAD)
         v = (hn @ P[f"v.{l}.weight"].T).view(B, S, N_HEADS, D_HEAD)
         q, k = rope(q), rope(k)
+        q, k, v = q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2)
         sc = q @ k.transpose(-2, -1) / math.sqrt(D_HEAD)
         mask = torch.triu(torch.full((S, S), float("-inf")), 1)
         att = torch.softmax(sc + mask, dim=-1)
