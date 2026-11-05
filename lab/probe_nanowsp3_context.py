@@ -4,7 +4,7 @@ Pregunta aprobada por el propietario del repo (2026-11-05): ¿responde al contex
 o solo recupera fragmentos del corpus? Modelo y configuracion INTACTOS; solo evaluacion.
 
 Metricas pre-registradas (antes de ver resultados):
-  A. Discriminacion sobre holdout REAL (ultimos 12.644 chars filtrados, nunca entrenados):
+  A. Discriminacion sobre holdout REAL (ultimos 12.660 chars filtrados, nunca entrenados):
      PPL natural vs palabras permutadas vs ruido uniforme (base, sin cirugia).
   B. Sensibilidad al contexto: en 200 posiciones del holdout, PPL de los siguientes 32 chars dado
      (i) 64 chars previos, (ii) 8 chars previos, (iii) los 64 previos barajados por palabras.
