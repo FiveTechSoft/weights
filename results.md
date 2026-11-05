@@ -727,3 +727,96 @@ El análisis espectral y algebraico comparando `hf_cache/qwen35-08b-hf` frente a
    * Cabezales de Inducción: Matrices estructurales de retardo y copiado contextual.
    * Memorias FFN: Inyección asociativa MEMIT en espacio nulo sobre el corpus.
 3. **Transferencia entre Modelos Heterogéneos**: La ÚNICA vía matemáticamente válida para transferir conocimiento desde Qwen hacia un alumno compacto es la **Destilación de Conocimiento Empírica (Knowledge Distillation)** evaluando millones de tokens del profesor y entrenando al alumno con descenso de gradiente (lo cual NO es cirugía cerrada zero-gradient).
+
+
+---
+
+## 24. Verificación de Conducta como LLM Real y Fundamentos del Entrenamiento Sintético
+
+### 24.1 Contexto y Pregunta de Investigación
+A medida que el proyecto explora el "entrenamiento sintético" y la compilación en espacio de pesos (*Weight Space Learning*), surgió la necesidad crítica de verificar rigurosamente dos premisas fundamentales:
+1. **Verificación Conductual**: ¿Nuestros modelos compactos (NanoWSP-3 y NanoWSP-4) son realmente *Modelos de Lenguaje* auténticos que operan y se comportan como tales, o son meros autómatas de memorización superficial?
+2. **Definición Epistémica del Entrenamiento Sintético**: ¿Qué significa exactamente "entrenar sintéticamente un LLM" y cuáles son sus capacidades y límites demostrables tanto en el espacio de pesos (álgebra cerrada / WSPLang) como en el espacio de datos (TinyStories / Phi)?
+
+---
+
+### 24.2 Diagnóstico Mecánico: NanoWSP-3 (LLM Real) vs NanoWSP-4 (Patología de Atención Muerta)
+
+Durante la auditoría empírica ejecutada en [`lab/verify_synthetic_training.py`](file:///c:/weights/lab/verify_synthetic_training.py) y registrada en [`lab/runs/synthetic_training_audit.json`](file:///c:/weights/lab/runs/synthetic_training_audit.json), se compararon las dos arquitecturas de investigación:
+
+```
++---------------------------------------------------------------------------------------------------------+
+|                                    COMPARATIVA DE SALUD Y CONDUCTA LLM                                   |
++----------------------+------------------------------------+---------------------------------------------+
+| Métrica / Dimensión  | NanoWSP-3 (4L x d256, 3.2M params) | NanoWSP-4 v1b144 (12L x d384, 16.7M params) |
++----------------------+------------------------------------+---------------------------------------------+
+| Norma ||Q.0||        | 16.6127 (Atención Activa)          | 0.0000 (ATENCIÓN MUERTA - BUG DETECTADO)    |
+| Norma ||K.0||        | 16.6367 (Atención Activa)          | 0.0000 (ATENCIÓN MUERTA - BUG DETECTADO)    |
+| Norma ||V.0||        | 16.2256 (Atención Activa)          | 0.0000 (ATENCIÓN MUERTA - BUG DETECTADO)    |
+| Norma ||O.0||        | 16.2615 (Atención Activa)          | 0.0000 (ATENCIÓN MUERTA - BUG DETECTADO)    |
+| PPL Texto Natural    | 3.35 - 6.03                        | 12.17 (En entrenamiento) / 58.65 (Holdout)  |
+| PPL Ruido Uniforme   | 42.22 - 49.10 (SNR = 7x - 14.7x)   | N/A (Sin modulación atencional causal)      |
+| Generación Greedy    | Fluida, sintáctica y contextual:   | Colapso en bucle atractor unigrama:         |
+|                      | 'Alice was quite silent for a      | 'Alice was the the the the the the the...'  |
+|                      | minute, with her arms...'          |                                             |
+| Veredicto            | CERTIFICADO: LLM REAL AUTÉNTICO    | PATOLOGÍA DE INICIALIZACIÓN AISLADA         |
++----------------------+------------------------------------+---------------------------------------------+
+```
+
+#### Hallazgo Forense: El Bug de Inicialización en NanoWSP-4
+Al inspeccionar el código de preentrenamiento [`lab/train_nanowsp4.py`](file:///c:/weights/lab/train_nanowsp4.py), se detectó que las matrices de proyección de atención se declararon como claves sin sufijo (`mk[f"q.{l}"] = torch.empty(...)`), mientras que el bucle de inicialización ortogonal exigía `k.endswith((".weight",))`.
+- En consecuencia, todas las matrices $Q, K, V, O$ de las 12 capas permanecieron en 0.
+- Dado que $Q = 0$ y $K = 0$, los logits de atención fueron idénticamente 0, el gradiente hacia $Q$ y $K$ fue nulo ($
+abla_Q \mathcal{L} = 0, 
+abla_K \mathcal{L} = 0$), y la atención causal quedó reducida a un promedio uniforme idéntico a bypass residual.
+- NanoWSP-4 entrenó durante 3,000 pasos como un apilamiento de **12 MLPs residuales sin atención**. Al decodificar con argmax greedy, sin atención para condicionar el contexto hacia atrás, el modelo colapsó en el prior unigrama más frecuente del idioma inglés: `" the"`.
+- El bug fue corregido en [`lab/train_nanowsp4.py`](file:///c:/weights/lab/train_nanowsp4.py#L88-L92) garantizando inicialización ortogonal de todos los tensores de proyección.
+
+Por el contrario, **NanoWSP-3 es un LLM real y certificado**: cuenta con matrices de atención densas y funcionales, sensibilidad al contexto de RoPE, y genera prosa narrativa coherente con léxico válido de diccionario.
+
+---
+
+### 24.3 Los Dos Pilares del Entrenamiento Sintético
+
+El usuario plantea: *"Estamos aprendiendo entrenamiento sintético"*. En la ciencia de la computación contemporánea, el entrenamiento sintético de modelos de lenguaje se divide en dos paradigmas complementarios con fundamentos matemáticos distintos:
+
+```mermaid
+flowchart TD
+    subgraph SINTETICO ["PARADIGMAS DE ENTRENAMIENTO SINTÉTICO"]
+        subgraph PILAR_A ["Pilar A: Preentrenamiento con Datos Sintéticos (TinyStories / Phi)"]
+            A1["Curriculum de Alta Pureza Entrópica"] --> A2["Generación Sintética Filtrada (Docente Grande)"]
+            A2 --> A3["SGD Estándar sobre Alumno Compacto"]
+            A3 --> A4["Resultado: Fluidez y Razonamiento en Modelos de 1M-10M"]
+        end
+        subgraph PILAR_B ["Pilar B: Compilación Sintética en Espacio de Pesos (WSPLang v0.7.0)"]
+            B1["Modelos de Activación y Covarianza H"] --> B2["Solución Cerrada de Ridge Dual en Espacio Nulo"]
+            B2 --> B3["Actualización Directa de Tensores: ΔW = (H^T H + λ Σ)^(-1) H^T R"]
+            B3 --> B4["Resultado: Inserción de Memoria y Steer Latente en 0 Gradientes / 12ms"]
+        end
+    end
+```
+
+#### Pilar A: Preentrenamiento con Datos Sintéticos (Data-Side Synthesis)
+- **El Problema del Texto Crudo**: Modelos pequeños (<30M parámetros) entrenados sobre texto arbitrario de internet o libros antiguos de Gutenberg (como `corpus_n4b.txt`) enfrentan una entropía léxica dispersa (miles de palabras raras, giros arcaicos). El modelo gasta toda su capacidad aprendiendo la cola larga de palabras en lugar de la sintaxis y el razonamiento.
+- **La Solución TinyStories (Eldan & Li, 2023 / Phi-1, Gunasekar et al., 2023)**:
+  Se entrena al modelo con **historias y razonamientos sintéticos generados artificialmente** con vocabulario controlado y lógica explícita. Un modelo de apenas 1M a 10M parámetros entrenado con datos sintéticos aprende a conjugar verbos, mantener la trama narrativa y resolver analogías con órdenes de magnitud menos cómputo.
+
+#### Pilar B: Compilación Sintética en Espacio de Pesos (Weight-Space Synthesis / WSPLang v0.7.0)
+- En lugar de optimizar con gradientes estocásticos durante horas, construimos o modificamos las matrices de pesos algebraicamente en tiempo cerrado $\mathcal{O}(d^3)$:
+  $$\Delta W = (H^T H + \lambda \Sigma)^{-1} H^T (Y - H W_0)$$
+- En el experimento de [`lab/verify_synthetic_training.py`](file:///c:/weights/lab/verify_synthetic_training.py):
+  - **Pasos de Backpropagation**: 0.
+  - **Tiempo de Resolución**: 12.3 ms.
+  - **Precisión Factual Inyectada**: 100.0% (10 hechos arbitrarios aprendidos instantáneamente).
+  - **Drift sobre Perplejidad Base**: de 6.19 a 6.33 (+2.37% de impacto en lenguaje base).
+  - **Certificación VicReg**: Rango efectivo 171.38, decorrelación de covarianza preservada.
+
+---
+
+### 24.4 Conclusiones Epistémicas
+
+1. **Conducta LLM Verificada**: NanoWSP-3 es un modelo autorregresivo causal real con atención activa, capaz de generar prosa sintáctica en inglés y discriminar texto de ruido.
+2. **Diagnóstico Resuelto**: El colapso repetitivo de NanoWSP-4 no fue una limitación de la arquitectura Transformer ni del tamaño de parámetros, sino un fallo silencioso de inicialización que dejó las cabezas de atención en cero.
+3. **El Camino hacia el LLM Sintético Definitivo**:
+   - Para dotar a un modelo compacto de **fluidez de razonamiento general**, se requiere un **corpus sintético de alta pureza** (Pilar A).
+   - Para dotar al modelo de **conocimiento factual determinista, alineación y steering latente sin olvido catastrófico**, se utiliza la **compilación sintética en espacio de pesos de WSPLang v0.7.0** (Pilar B).

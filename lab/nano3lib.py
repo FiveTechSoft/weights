@@ -25,6 +25,8 @@ def _keys_from(names_list):
 
 def build_from_trace(tr, snap_idx=None):
     names = json.loads(str(tr["names"]))
+    if isinstance(names, str):
+        names = json.loads(names)
     shapes_raw = json.loads(str(tr["shapes"]))
     shapes = shapes_raw if isinstance(shapes_raw, dict) else json.loads(shapes_raw)
     keys = _keys_from(names)
@@ -53,20 +55,28 @@ def rope(x):
     xout = torch.view_as_real(xc * fcs.view(1, s, 1, d // 2)).flatten(3)
     return xout.type_as(x)
 
+def _resolve_cfg(P):
+    d_model = P["embed.weight"].shape[1]
+    heads = d_model // 32
+    layers = max(int(k.split(".")[1]) for k in P if k.startswith("q.")) + 1
+    d_ff = P["min_.0.weight"].shape[0]
+    return d_model, layers, heads, d_model // heads, d_ff
+
 def fwd(x, P):
     B, S = x.shape
+    D, L, H, DH, DFF = _resolve_cfg(P)
     h = F.embedding(x, P["embed.weight"])
-    for l in range(N_LAYERS):
+    for l in range(L):
         hn = rms(h, P[f"an.{l}.weight"])
-        q = (hn @ P[f"q.{l}.weight"].T).view(B, S, N_HEADS, D_HEAD)
-        k = (hn @ P[f"k.{l}.weight"].T).view(B, S, N_HEADS, D_HEAD)
-        v = (hn @ P[f"v.{l}.weight"].T).view(B, S, N_HEADS, D_HEAD)
+        q = (hn @ P[f"q.{l}.weight"].T).view(B, S, H, DH)
+        k = (hn @ P[f"k.{l}.weight"].T).view(B, S, H, DH)
+        v = (hn @ P[f"v.{l}.weight"].T).view(B, S, H, DH)
         q, k = rope(q), rope(k)
         q, k, v = q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2)
-        sc = q @ k.transpose(-2, -1) / math.sqrt(D_HEAD)
+        sc = q @ k.transpose(-2, -1) / math.sqrt(DH)
         mask = torch.triu(torch.full((S, S), float("-inf")), 1)
         att = torch.softmax(sc + mask, dim=-1)
-        h = h + (att @ v).transpose(1, 2).contiguous().view(B, S, D_MODEL) @ P[f"o.{l}.weight"].T
+        h = h + (att @ v).transpose(1, 2).contiguous().view(B, S, D) @ P[f"o.{l}.weight"].T
         hm = rms(h, P[f"mn.{l}.weight"])
         h = h + F.gelu(hm @ P[f"min_.{l}.weight"].T) @ P[f"mout.{l}.weight"].T
     hf = rms(h, P["fn.weight"])
