@@ -64,6 +64,25 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 ## 4. Pendiente (priorizado)
 
+### 4.0quater ESTADO 2026-11-06 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
+
+Rama `feat/wsp-synthesis`. Último commit subido: 7f31fb2 (loop-fix nanoGPT). Detalle y cifras en results.md §36-§37.
+
+| # | Tarea | Estado |
+|---|---|---|
+| A | **Comparar TwIL-8B (Q4_K_M) con MiMo-9B (Q6_K)**: `lab/probes/model_compare/eval.py <name> <port>`, GSM8K 100 + MATH-500 50, greedy, tope 8192 tokens, llama-server CUDA (`C:\Users\Anto\llamacpp\bin`) sobre los blobs de ollama, `-c 24576 -np 2 -fa on --jinja` | TwIL hecho (GSM8K 96 %, MATH 88 %). MiMo en curso, puerto 8096; guarda cada respuesta en `lab/runs/model_compare/<name>.partial.jsonl` y reanuda solo |
+| B | **`engine/weight_diff.py`**: diff tensor a tensor sin cargar modelos enteros; lector local (todos los shards) y lector por rangos HTTP (HF, sin disco); rel_delta, coseno, espectro de ΔW (energy_top1, stable_rank), filas del embedding, totales por familia y capa. Op `diff` de WSPLang usa esto (antes miraba solo el primer shard y cargaba todo en RAM). Tests `tests/test_weight_diff.py` (14); suite 291 OK | HECHO, sin commit |
+| C | **Diff TwIL balanced vs verbose** (aísla el RL de longitud), luego **Granite 4.2 8B → TwIL**, luego **Qwen3.5-9B base → MiMo** (MiMo bf16 local en `hf_cache/mimo-distill-hf`). Streaming a ~2.2 MB/s: ~4.5 h por par de 17.6 GB | SIGUIENTE, tras A |
+| D | De diff a causa: trasplantes parciales (base + Δ de una familia/capas) y medir qué comportamiento trae cada parte | tras C |
+| E | Réplica exp. 8 en Qwen3.5-0.8B con controles (edición aleatoria, decodificación). Diseño: GSM8K con tope 8192 (en los textos de Astra: base 12.5 %, p50c 31 %); MATH-500 no sirve con ese tope (p50c mediana 24k tokens). Bloqueo: HF transformers sin `fla` va <70 tok/s y llena los 12 GB; probar llama-server (presence penalty nativo) o batch menor | PAUSADO, sin criterio escrito aún |
+| F | Auditoría punto 3: permute_align, jepa_steer, mimo_head.py | pendiente |
+| G | `engine/comparative_drift.py`: `compute_architectural_drift` devuelve un JSON cacheado de otro par de modelos sin mirar los argumentos; `compute_spectral_delta` ignora el target si no es GGUF; `decode_tensor_weights` carga el shard entero por tensor. Pasarlo a `weight_diff` | pendiente |
+
+Notas de entorno (2026-11-06):
+- **ollama no usa la GPU** desde al menos el 2026-11-02 (log: `inference compute ... library=cpu`), aunque existe `lib\ollama\cuda_v12`. Con ollama TwIL va a 7.5 tok/s; con llama-server CUDA a 47-55.
+- **Disco C:** se borraron duplicados exactos (MiMo Q6_K de `llamacpp`, TwIL de `hf_cache/twil8b`) y los smoke tests `smoke_f32*`; después, con permiso, los 11 GGUF de `served/` (quedan sus `.manifest.json`), cachés HF de Qwen3.5-4B/TinyLlama/ggml-org, cachés pip/npm, instaladores y drivers de Descargas: 13 → 139.6 GB libres. `C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf` (ruta por defecto en `engine/wsplang.py` y `engine/comparative_drift.py`) es ahora un **hardlink** al blob de ollama `sha256-ef96…`.
+- No cargar dos modelos grandes a la vez: con ~32 GB de RAM Claude Code mata los trabajos en segundo plano.
+
 ### 4.0ter ESTADO CONSOLIDADO 2026-11-04 (sesión windows, opencode) — lo que cambió hoy
 
 **Resultados soportados (commits bf42ecd, 32bc917, 5712402...):**

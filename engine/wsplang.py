@@ -2637,31 +2637,30 @@ def execute_plan_v4(
                     raise FileNotFoundError(f"Base model not found: {base_path_arg}")
 
                 diffs = {}
+                diff_extra = {}
                 tot_n = 0
                 tot_chg = 0
 
                 if base_path_arg.suffix == ".safetensors" or is_safetensors:
-                    import torch
-                    from safetensors.torch import load_file
-                    base_p = base_path_arg if base_path_arg.is_file() else list(base_path_arg.glob("*.safetensors"))[0]
-                    tgt_p = target_path if target_path.is_file() else list(target_path.glob("*.safetensors"))[0]
-                    ta = load_file(str(base_p))
-                    tb = load_file(str(tgt_p))
-                    for nm in sorted(tb):
-                        if not fnmatch.fnmatch(nm, tensor) or nm not in ta:
-                            continue
-                        D1 = ta[nm].float().numpy()
-                        D2 = tb[nm].float().numpy()
-                        chg = int((np.abs(D1 - D2) > 1e-4 * (np.abs(D1) + 1e-30)).sum())
-                        tot_n += D2.size
+                    # Every shard, one tensor in memory at a time (engine.weight_diff).
+                    from engine.weight_diff import LocalSafetensors, diff_models
+                    rep = diff_models(LocalSafetensors(base_path_arg), LocalSafetensors(target_path),
+                                      pattern=tensor, k=int(named.get("k", 16)))
+                    for row in rep["tensors"]:
+                        chg = row["changed"]
+                        tot_n += row["numel"]
                         tot_chg += chg
-                        diffs[nm] = {
+                        diffs[row["tensor"]] = {
                             "changed_weights": chg,
-                            "total_weights": int(D2.size),
-                            "fraction": float(chg / max(D2.size, 1)),
-                            "percentage": f"{(chg / max(D2.size, 1)):.4%}",
-                            "frobenius_delta": float(np.linalg.norm(D2 - D1))
+                            "total_weights": row["numel"],
+                            "fraction": chg / max(row["numel"], 1),
+                            "percentage": f"{(chg / max(row['numel'], 1)):.4%}",
+                            "frobenius_delta": row["norm_delta"],
+                            **{k2: row[k2] for k2 in ("rel_delta", "cosine", "family", "layer", "energy_top1",
+                                                       "stable_rank", "rows_changed", "top_rows") if k2 in row},
                         }
+                    diff_extra = {k2: rep[k2] for k2 in ("by_family", "by_layer", "only_in_base",
+                                                          "only_in_target", "shape_mismatch")}
                 else:
                     import wsp
                     ta = {t.name: t for t in wsp.reader_of(base_path_arg).tensors}
@@ -2686,7 +2685,8 @@ def execute_plan_v4(
                     "tensors": diffs,
                     "total_changed": tot_chg,
                     "total_weights": tot_n,
-                    "overall_percentage": f"{(tot_chg / max(tot_n, 1)):.4%}" if tot_n else "0.0%"
+                    "overall_percentage": f"{(tot_chg / max(tot_n, 1)):.4%}" if tot_n else "0.0%",
+                    **diff_extra,
                 }
 
             elif op in ("compare", "evaluate"):

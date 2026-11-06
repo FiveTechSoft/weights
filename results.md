@@ -1272,3 +1272,17 @@ Criterio fijado antes de editar, tabla y lectura en `lab/probes/loopfix/criterio
   - Unlikelihood con gradiente: 0 bucles, a cambio de val +0.043.
 - **Lectura:** en este modelo, editar pesos no es el mejor arreglo de los bucles; una regla de decodificación lo hace gratis. Esto no refuta el exp. 8 en Qwen, pero sí exige allí el control de edición aleatoria, que el artículo no publica.
 - **Comprobación:** los conteos de bucles se repitieron regenerando el texto y usando un detector de periodicidad independiente. Coinciden.
+
+## 37. En curso: TwIL-8B frente a MiMo-9B, y diff de pesos de modelos mejorados (2026-11-06)
+Estado y siguiente paso en roadmap §4.0quater.
+
+- **Comparación de modelos** (`lab/probes/model_compare/eval.py`, datos en `lab/runs/model_compare/`).
+  - Protocolo igual para los dos: llama-server CUDA, greedy, tope de 8192 tokens nuevos, plantilla de chat de cada modelo; GSM8K = 100 primeros de test, MATH-500 = 50 con `select_indices(2026, 50)`.
+  - Dos jueces: `rig/math500.equivalent` y uno independiente. Los desacuerdos se revisan a mano.
+  - TwIL-8B (Q4_K_M, variante balanced): GSM8K 96/100, MATH-500 44/50 (88 %); 4 respuestas cortadas en el tope; 983 y 1811 tokens de media; ~47 tok/s.
+    - Los 6 desacuerdos entre jueces son de formato (5 a favor del juez principal, p. ej. `\frac43` frente a `\frac{4}{3}`; 1 a favor del independiente, "60\%").
+  - MiMo-9B (Q6_K): en curso. Su plantilla no fuerza el thinking y en problemas fáciles no piensa; se evalúa así, por defecto, como TwIL.
+  - Sesgos conocidos: TwIL va en Q4 y MiMo en Q6; TwIL recomienda temperatura 1.0 y 32k tokens.
+- **TwIL-8B, según su ficha:** Granite 4.2 8B (que ya es un fine-tune de granite-4.1-8b-base) + SFT completo de trazas + GRPO/DAPO (variante verbose) + RL que premia trazas cortas (variante balanced). Licencia no comercial.
+- **Herramienta de diff** (`engine/weight_diff.py`, 14 tests): compara dos checkpoints tensor a tensor sin cargar ninguno entero, en local o por rangos HTTP desde Hugging Face.
+  - La op `diff` de WSPLang ahora la usa. Antes solo leía el primer shard: en un modelo de 4 shards se saltaba en silencio unos tres cuartos de los tensores (test que falla con el código antiguo).
