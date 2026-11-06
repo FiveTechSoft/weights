@@ -17,6 +17,7 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   4.9 % and `o_proj` 5.6 %; conv1d 1.4 %; norms < 1.3 %.
 - `A_log` and `dt_bias` (DeltaNet decay dynamics) are not trained: the base stores them in F32, MiMo in BF16, and the
   only difference is that cast (max |Δ| = 0.0078, one bf16 step). `dt_bias` differs in no layer after rounding.
+  [Corrected in F26: `A_log` changes 3-7 of 32 entries by 1-8 bf16 steps in some layers; tiny but not a cast.]
 - By depth: bell shape, 8.5 % at layer 0, ~11 % at layers 17-23, 7.5 % at layer 31.
 - WSPLang: a map of where post-training acts. Protect-by-default lists could include `A_log`, `dt_bias` and norms
   (post-training leaves them alone); edit budgets could be per tensor type instead of global.
@@ -110,6 +111,7 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 ## F11. RL-only (tmax) changes the model by 0.07 %, in the same places. (verified)
 - `stats_tmax.json`: relative change 0.073 % (NeoHorse 0.5 %, MiMo 9.2 %); 19 % of weights differ in bf16.
   Second method agrees (`check_tmax.json`). The card reports +6 points on Terminal Bench 2.0 after 200 RL steps.
+- [Corrected in F26: the `linear_attn.norm` entry below was the F32->BF16 cast; after rounding it is unchanged.]
 - Most changed: DeltaNet output norm (`linear_attn.norm`, 0.15 %, 86 % of its weights), MLP down/up/gate
   (0.10-0.11 %), DeltaNet β (0.11 %); then attention (0.06-0.08 %), DeltaNet inputs (0.06 %), conv1d, embeddings,
   `lm_head` (0.02 %). Other norms, `A_log`, `dt_bias` untouched. Slightly more in layers 0-19, falling towards 31.
@@ -322,3 +324,30 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Point for model_report: a full report needs a "non-weight" section (config, vocab, merges, added tokens,
   pre-tokenizer, template) and an encode test on several scripts. A hash says "different". The encode test says
   where it matters.
+
+## F26. A storage cast was counted as change; corrected. Conclusions hold, profile correlations rise (verified, 2026-11-06)
+- Bug: `tensor_delta_stats` compared F32 base tensors (`linear_attn.norm`, `linear_attn.A_log`, 48 per model) with
+  BF16 copies without rounding both to BF16 first. Fixed in `engine/weight_diff.py` (`common_dtype`, test
+  `test_dtype_cast_is_not_a_change`); `fix_dtype_cast.py` recomputed only those tensors and rewrote the stats.
+  Audit: `lab/runs/delta_patterns/dtype_cast_fix.json`.
+- Affected: mimo, neohorse, tmax, fara, wemm_embed, angry_claudius, dsv4_heretic (48 cast tensors each). Not affected:
+  abliterated, nyx_rp, official_post, dsv4_distill (same dtypes on both sides).
+- After rounding, the 24 "changed" norms of wemm_embed, angry_claudius and dsv4_heretic are exactly unchanged.
+  Real changes remain in mimo (19 tensors > 1 ulp, 19 at <= 1 ulp), fara (6 > 1 ulp), neohorse (2), tmax (1).
+- Correction to F2: `A_log` is not just a cast. The base's F32 `A_log` values are exactly representable in BF16 (cast
+  error 0), so a pure cast would show no difference; MiMo moves 3-7 of 32 entries by 1-8 BF16 steps at their value
+  (|delta| <= 0.004; e.g. layer 14: -0.10742 -> -0.10938). Tiny, but trained or rewritten. Layers 6 and 14 recur in
+  mimo, fara, neohorse and tmax (open: shared starting revision, or training).
+- Correction to F11: tmax's "most changed: `linear_attn.norm` 0.15 %, 86 % of weights" was the cast; after rounding
+  all of tmax's norms are unchanged; only `A_log` of layers 6 (2 ulps) and 14 (1 entry, 1 ulp) differ. The "most
+  changed" list now starts at MLP down/up 0.11 %, DeltaNet β 0.106 %, gate 0.099 %.
+- Per-type profile Spearman (average ranks for ties, `dtype_cast_fix.json`; these "before" values differ by up to
+  0.13 from earlier findings, which ranked ties in order):
+  - improvement pairs after the fix: mimo-neohorse 0.947, mimo-tmax 0.893, mimo-fara 0.958, neohorse-tmax 0.932,
+    neohorse-fara 0.988, tmax-fara 0.905; minimum 0.893 (was 0.687 by this method). H1 "shared where" holds, stronger.
+  - WeMM control: mimo 0.920, neohorse 0.877, tmax 0.821, fara 0.893. Not every value is below 0.893, so the H1
+    "improvement-specific" verdict of F22 (rejected) stands.
+  - Nyx-RP LoRA control: 0.54-0.68, all below: F15's pass stands, and so does its LoRA confound.
+- H3 (directions) is unaffected: signatures use only matrices, and none of the cast tensors is a matrix.
+- Lesson (same class as the viral WSP posts we audited): a storage format difference read as a weight change. Every
+  diff now rounds to the common dtype before comparing.

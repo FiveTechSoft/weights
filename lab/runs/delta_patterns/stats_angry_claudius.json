@@ -2,8 +2,8 @@
  "overall": {
   "tensors": 427,
   "numel": 8953803264,
-  "rel_delta": 0.0023229382026756502,
-  "changed_fraction": 0.3595925846333181
+  "rel_delta": 0.0023219581779287753,
+  "changed_fraction": 0.35959229202023263
  },
  "by_family": {
   "attn": {
@@ -33,8 +33,8 @@
   "norm": {
    "tensors": 105,
    "numel": 273408,
-   "rel_delta": 0.0006824993444747082,
-   "changed_fraction": 0.009582748127340824
+   "rel_delta": 0.0,
+   "changed_fraction": 0.0
   },
   "ssm": {
    "tensors": 192,
@@ -47,20 +47,20 @@
   "0": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0019924037541768917,
-   "changed_fraction": 0.4069885702985192
+   "rel_delta": 0.0019912288794490694,
+   "changed_fraction": 0.4069881124379544
   },
   "1": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002101352866282458,
-   "changed_fraction": 0.40926916003611313
+   "rel_delta": 0.0021001575534193564,
+   "changed_fraction": 0.4092686838611257
   },
   "2": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0021856762626919447,
-   "changed_fraction": 0.4187224926529862
+   "rel_delta": 0.0021844003272417306,
+   "changed_fraction": 0.4187219890063649
   },
   "3": {
    "tensors": 11,
@@ -71,20 +71,20 @@
   "4": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002339961370365786,
-   "changed_fraction": 0.43412010536067547
+   "rel_delta": 0.0023389406700583567,
+   "changed_fraction": 0.4341196062926598
   },
   "5": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002424528764846824,
-   "changed_fraction": 0.43643712706341276
+   "rel_delta": 0.0024235697111051925,
+   "changed_fraction": 0.4364366234167914
   },
   "6": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0024439201256907252,
-   "changed_fraction": 0.4338928233762946
+   "rel_delta": 0.0024427787566592266,
+   "changed_fraction": 0.4338923517799128
   },
   "7": {
    "tensors": 11,
@@ -95,20 +95,20 @@
   "8": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0024253194118272177,
-   "changed_fraction": 0.43963759988319795
+   "rel_delta": 0.002424109271837319,
+   "changed_fraction": 0.43963716491566135
   },
   "9": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002539715139119554,
-   "changed_fraction": 0.4481253503549042
+   "rel_delta": 0.00253846575873412,
+   "changed_fraction": 0.44812484212967724
   },
   "10": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0026051677049847345,
-   "changed_fraction": 0.4541251414606001
+   "rel_delta": 0.0026037151841758403,
+   "changed_fraction": 0.4541246469711901
   },
   "11": {
    "tensors": 11,
@@ -119,20 +119,20 @@
   "12": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002754004365860751,
-   "changed_fraction": 0.46992132178997253
+   "rel_delta": 0.0027523190618327794,
+   "changed_fraction": 0.469920795250323
   },
   "13": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0028087697659705062,
-   "changed_fraction": 0.4735304351638672
+   "rel_delta": 0.0028062215496576716,
+   "changed_fraction": 0.4735298765739781
   },
   "14": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0028972164474655544,
-   "changed_fraction": 0.4875980911316877
+   "rel_delta": 0.0028954710271142155,
+   "changed_fraction": 0.4875975783278551
   },
   "15": {
    "tensors": 11,
@@ -143,20 +143,20 @@
   "16": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0030312684514342413,
-   "changed_fraction": 0.5004916460959072
+   "rel_delta": 0.003029158001979961,
+   "changed_fraction": 0.5004910966632294
   },
   "17": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0030059539730893886,
-   "changed_fraction": 0.5000792098777154
+   "rel_delta": 0.0030031965743406,
+   "changed_fraction": 0.5000786650236432
   },
   "18": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0030303485882345886,
-   "changed_fraction": 0.5012951501797304
+   "rel_delta": 0.0030291694231668353,
+   "changed_fraction": 0.5012946007470527
   },
   "19": {
    "tensors": 11,
@@ -167,20 +167,20 @@
   "20": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002821005263237164,
-   "changed_fraction": 0.48410375882278994
+   "rel_delta": 0.0028200904546189834,
+   "changed_fraction": 0.4841033146980421
   },
   "21": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002823803603332607,
-   "changed_fraction": 0.4831988065736177
+   "rel_delta": 0.0028229100855094837,
+   "changed_fraction": 0.48319837618468675
   },
   "22": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002747815989723363,
-   "changed_fraction": 0.48134107396067116
+   "rel_delta": 0.002746847066244897,
+   "changed_fraction": 0.4813405657354442
   },
   "23": {
    "tensors": 11,
@@ -191,20 +191,20 @@
   "24": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002722423392720794,
-   "changed_fraction": 0.47607479379425316
+   "rel_delta": 0.0027216652719910537,
+   "changed_fraction": 0.4760743634053222
   },
   "25": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002666370264992305,
-   "changed_fraction": 0.46858818749778397
+   "rel_delta": 0.002665469472767665,
+   "changed_fraction": 0.46858773879443044
   },
   "26": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.0026900104512551054,
-   "changed_fraction": 0.46795136297398093
+   "rel_delta": 0.002688996998229837,
+   "changed_fraction": 0.467950841012937
   },
   "27": {
    "tensors": 11,
@@ -215,20 +215,20 @@
   "28": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.00274401370907326,
-   "changed_fraction": 0.4742934140090974
+   "rel_delta": 0.0027425232983206314,
+   "changed_fraction": 0.47429287373363094
   },
   "29": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002734020214291789,
-   "changed_fraction": 0.47297604843476154
+   "rel_delta": 0.0027306982933779003,
+   "changed_fraction": 0.4729754898448724
   },
   "30": {
    "tensors": 14,
    "numel": 218407104,
-   "rel_delta": 0.002907125825964245,
-   "changed_fraction": 0.4869974146994779
+   "rel_delta": 0.0029046024726323656,
+   "changed_fraction": 0.486996892738434
   },
   "31": {
    "tensors": 11,
@@ -5977,22 +5977,6 @@
    ]
   },
   {
-   "tensor": "model.layers.29.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 29,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 12.319123150898188,
-   "norm_delta": 0.02901220700582596,
-   "rel_delta": 0.0023550545481567558,
-   "cosine": 0.9999972335773918,
-   "changed_fraction": 0.953125,
-   "changed": 122,
-   "max_abs_delta": 0.00390625
-  },
-  {
    "tensor": "model.layers.16.linear_attn.in_proj_a.weight",
    "family": "ssm",
    "layer": 16,
@@ -6979,22 +6963,6 @@
     0.001145,
     0.001135
    ]
-  },
-  {
-   "tensor": "model.layers.17.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 17,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 11.283501806715838,
-   "norm_delta": 0.02482183147434648,
-   "rel_delta": 0.002199834049707224,
-   "cosine": 0.9999975833578754,
-   "changed_fraction": 0.9296875,
-   "changed": 119,
-   "max_abs_delta": 0.00390625
   },
   {
    "tensor": "model.layers.8.linear_attn.in_proj_b.weight",
@@ -7985,22 +7953,6 @@
    ]
   },
   {
-   "tensor": "model.layers.30.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 30,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 13.081609450904594,
-   "norm_delta": 0.02606022491404863,
-   "rel_delta": 0.0019921268106843355,
-   "cosine": 0.999998015713865,
-   "changed_fraction": 0.890625,
-   "changed": 114,
-   "max_abs_delta": 0.00390625
-  },
-  {
    "tensor": "model.layers.8.linear_attn.in_proj_z.weight",
    "family": "ssm",
    "layer": 8,
@@ -8113,22 +8065,6 @@
     0.001439,
     0.001395
    ]
-  },
-  {
-   "tensor": "model.layers.13.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 13,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 11.831542901746124,
-   "norm_delta": 0.023204149697616958,
-   "rel_delta": 0.0019612107981447154,
-   "cosine": 0.9999980819538438,
-   "changed_fraction": 0.953125,
-   "changed": 122,
-   "max_abs_delta": 0.00390625
   },
   {
    "tensor": "model.layers.26.linear_attn.in_proj_a.weight",
@@ -8357,22 +8293,6 @@
     0.001315,
     0.001283
    ]
-  },
-  {
-   "tensor": "model.layers.16.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 16,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 11.314373701496706,
-   "norm_delta": 0.02159087952574179,
-   "rel_delta": 0.0019082699666253442,
-   "cosine": 0.9999982061501508,
-   "changed_fraction": 0.9375,
-   "changed": 120,
-   "max_abs_delta": 0.00390625
   },
   {
    "tensor": "model.layers.4.linear_attn.in_proj_qkv.weight",
@@ -8831,22 +8751,6 @@
    ]
   },
   {
-   "tensor": "model.layers.28.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 28,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.932248575218571,
-   "norm_delta": 0.019493640511524954,
-   "rel_delta": 0.0017831318394747728,
-   "cosine": 0.9999984140012892,
-   "changed_fraction": 0.921875,
-   "changed": 118,
-   "max_abs_delta": 0.00390625
-  },
-  {
    "tensor": "model.layers.2.linear_attn.in_proj_qkv.weight",
    "family": "ssm",
    "layer": 2,
@@ -8999,22 +8903,6 @@
    ]
   },
   {
-   "tensor": "model.layers.12.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 12,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.67931088861684,
-   "norm_delta": 0.01876450786989575,
-   "rel_delta": 0.0017570897659601784,
-   "cosine": 0.9999984604971685,
-   "changed_fraction": 0.8984375,
-   "changed": 115,
-   "max_abs_delta": 0.00390625
-  },
-  {
    "tensor": "model.layers.1.linear_attn.in_proj_z.weight",
    "family": "ssm",
    "layer": 1,
@@ -9051,22 +8939,6 @@
     0.006298,
     0.005307
    ]
-  },
-  {
-   "tensor": "model.layers.14.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 14,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 11.1237388791095,
-   "norm_delta": 0.019299485062906394,
-   "rel_delta": 0.0017349818503157274,
-   "cosine": 0.9999985003152415,
-   "changed_fraction": 0.875,
-   "changed": 112,
-   "max_abs_delta": 0.00390625
   },
   {
    "tensor": "model.layers.0.linear_attn.in_proj_z.weight",
@@ -9259,22 +9131,6 @@
    ]
   },
   {
-   "tensor": "model.layers.10.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 10,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.524973587207146,
-   "norm_delta": 0.017048323060719447,
-   "rel_delta": 0.001619797229842104,
-   "cosine": 0.999998694483795,
-   "changed_fraction": 0.84375,
-   "changed": 108,
-   "max_abs_delta": 0.00390625
-  },
-  {
    "tensor": "model.layers.3.self_attn.q_proj.weight",
    "family": "attn",
    "layer": 3,
@@ -9351,22 +9207,6 @@
    ]
   },
   {
-   "tensor": "model.layers.18.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 18,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.595597711543611,
-   "norm_delta": 0.016246352741944657,
-   "rel_delta": 0.0015333115869664157,
-   "cosine": 0.9999988245273741,
-   "changed_fraction": 0.9375,
-   "changed": 120,
-   "max_abs_delta": 0.00384521484375
-  },
-  {
    "tensor": "model.layers.5.linear_attn.in_proj_a.weight",
    "family": "ssm",
    "layer": 5,
@@ -9403,70 +9243,6 @@
     0.000986,
     0.000899
    ]
-  },
-  {
-   "tensor": "model.layers.21.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 21,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 9.352973025330272,
-   "norm_delta": 0.01431297188193345,
-   "rel_delta": 0.0015303125373258555,
-   "cosine": 0.9999988290792629,
-   "changed_fraction": 0.734375,
-   "changed": 94,
-   "max_abs_delta": 0.001953125
-  },
-  {
-   "tensor": "model.layers.25.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 25,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 9.626902182713778,
-   "norm_delta": 0.014632788882666743,
-   "rel_delta": 0.0015199893594994261,
-   "cosine": 0.9999988580158756,
-   "changed_fraction": 0.765625,
-   "changed": 98,
-   "max_abs_delta": 0.0029296875
-  },
-  {
-   "tensor": "model.layers.20.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 20,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 9.49901205340433,
-   "norm_delta": 0.01442600489509401,
-   "rel_delta": 0.0015186847657408652,
-   "cosine": 0.9999988495450461,
-   "changed_fraction": 0.7578125,
-   "changed": 97,
-   "max_abs_delta": 0.001953125
-  },
-  {
-   "tensor": "model.layers.26.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 26,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.408330162426795,
-   "norm_delta": 0.015767387933604674,
-   "rel_delta": 0.0015148816080530988,
-   "cosine": 0.9999988525676586,
-   "changed_fraction": 0.890625,
-   "changed": 114,
-   "max_abs_delta": 0.00390625
   },
   {
    "tensor": "model.layers.3.self_attn.k_proj.weight",
@@ -9545,54 +9321,6 @@
    ]
   },
   {
-   "tensor": "model.layers.8.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 8,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.043515821768239,
-   "norm_delta": 0.015058963785931486,
-   "rel_delta": 0.0014993717392561682,
-   "cosine": 0.999998875965403,
-   "changed_fraction": 0.7421875,
-   "changed": 95,
-   "max_abs_delta": 0.0037841796875
-  },
-  {
-   "tensor": "model.layers.22.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 22,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 9.918432723083527,
-   "norm_delta": 0.014862636754735084,
-   "rel_delta": 0.0014984864211605462,
-   "cosine": 0.9999988809354075,
-   "changed_fraction": 0.8671875,
-   "changed": 111,
-   "max_abs_delta": 0.001953125
-  },
-  {
-   "tensor": "model.layers.9.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 9,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.560870445543706,
-   "norm_delta": 0.01570490166817525,
-   "rel_delta": 0.001487084019177807,
-   "cosine": 0.9999989151310602,
-   "changed_fraction": 0.8671875,
-   "changed": 111,
-   "max_abs_delta": 0.0035400390625
-  },
-  {
    "tensor": "model.layers.6.linear_attn.in_proj_a.weight",
    "family": "ssm",
    "layer": 6,
@@ -9631,38 +9359,6 @@
    ]
   },
   {
-   "tensor": "model.layers.24.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 24,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 9.21676098593652,
-   "norm_delta": 0.013365026918078029,
-   "rel_delta": 0.0014500784970415505,
-   "cosine": 0.9999989487171638,
-   "changed_fraction": 0.734375,
-   "changed": 94,
-   "max_abs_delta": 0.001953125
-  },
-  {
-   "tensor": "model.layers.6.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 6,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.046494724917764,
-   "norm_delta": 0.01454463807584652,
-   "rel_delta": 0.0014477326146175402,
-   "cosine": 0.9999989592259181,
-   "changed_fraction": 0.8046875,
-   "changed": 103,
-   "max_abs_delta": 0.0037384033203125
-  },
-  {
    "tensor": "model.layers.9.linear_attn.in_proj_a.weight",
    "family": "ssm",
    "layer": 9,
@@ -9699,54 +9395,6 @@
     0.000949,
     0.00094
    ]
-  },
-  {
-   "tensor": "model.layers.1.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 1,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 9.784754896022902,
-   "norm_delta": 0.013741452421357703,
-   "rel_delta": 0.0014043736984094548,
-   "cosine": 0.9999990143135348,
-   "changed_fraction": 0.8125,
-   "changed": 104,
-   "max_abs_delta": 0.001953125
-  },
-  {
-   "tensor": "model.layers.2.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 2,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.500811280795254,
-   "norm_delta": 0.014502730493228809,
-   "rel_delta": 0.0013811057170175596,
-   "cosine": 0.9999990494945892,
-   "changed_fraction": 0.859375,
-   "changed": 110,
-   "max_abs_delta": 0.003814697265625
-  },
-  {
-   "tensor": "model.layers.0.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 0,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.00380848543001,
-   "norm_delta": 0.01356464295223545,
-   "rel_delta": 0.001355947884447368,
-   "cosine": 0.9999990831984279,
-   "changed_fraction": 0.78125,
-   "changed": 100,
-   "max_abs_delta": 0.001953125
   },
   {
    "tensor": "model.layers.8.linear_attn.in_proj_a.weight",
@@ -9823,38 +9471,6 @@
     0.001393,
     0.001323
    ]
-  },
-  {
-   "tensor": "model.layers.4.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 4,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.413347502426378,
-   "norm_delta": 0.013639770005818445,
-   "rel_delta": 0.0013098352861690527,
-   "cosine": 0.9999991421762159,
-   "changed_fraction": 0.8515625,
-   "changed": 109,
-   "max_abs_delta": 0.003662109375
-  },
-  {
-   "tensor": "model.layers.5.linear_attn.norm.weight",
-   "family": "norm",
-   "layer": 5,
-   "shape": [
-    128
-   ],
-   "numel": 128,
-   "norm_base": 10.308725048969862,
-   "norm_delta": 0.013315118702808992,
-   "rel_delta": 0.001291635836590632,
-   "cosine": 0.9999991723780982,
-   "changed_fraction": 0.859375,
-   "changed": 110,
-   "max_abs_delta": 0.00238037109375
   },
   {
    "tensor": "model.layers.2.linear_attn.in_proj_b.weight",
@@ -10159,6 +9775,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.0.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 0,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.003092478371844,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0000000000000002,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.0.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 0,
@@ -10241,6 +9873,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.1.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 1,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 9.785037736308254,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.1.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 1,
@@ -10315,6 +9963,22 @@
    ],
    "numel": 32,
    "norm_base": 27.00900471720495,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.10.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 10,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.523773165350068,
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 1.0,
@@ -10469,6 +10133,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.12.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 12,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.678317938656043,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.12.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 12,
@@ -10551,6 +10231,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.13.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 13,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 11.832718595915193,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999998,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.13.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 13,
@@ -10628,6 +10324,22 @@
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.14.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 14,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 11.124877929017778,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
    "changed_fraction": 0.0,
    "changed": 0,
    "max_abs_delta": 0.0
@@ -10779,6 +10491,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.16.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 16,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 11.311729109826736,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.16.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 16,
@@ -10861,6 +10589,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.17.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 17,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 11.28260114614741,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0000000000000002,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.17.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 17,
@@ -10938,6 +10682,22 @@
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.18.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 18,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.595479008286462,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
    "changed_fraction": 0.0,
    "changed": 0,
    "max_abs_delta": 0.0
@@ -11089,6 +10849,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.2.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 2,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.501644187442672,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.2.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 2,
@@ -11166,6 +10942,22 @@
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 1.0000000000000002,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.20.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 20,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 9.499705259870648,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
    "changed_fraction": 0.0,
    "changed": 0,
    "max_abs_delta": 0.0
@@ -11253,6 +11045,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.21.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 21,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 9.352999902583896,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.21.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 21,
@@ -11330,6 +11138,22 @@
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 1.0000000000000002,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.22.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 22,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 9.919271004255272,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
    "changed_fraction": 0.0,
    "changed": 0,
    "max_abs_delta": 0.0
@@ -11481,6 +11305,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.24.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 24,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 9.216633595780358,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0000000000000002,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.24.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 24,
@@ -11563,6 +11403,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.25.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 25,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 9.628455396392118,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.25.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 25,
@@ -11637,6 +11493,22 @@
    ],
    "numel": 32,
    "norm_base": 15.250769079858257,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.26.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 26,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.40830043261184,
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 0.9999999999999999,
@@ -11791,6 +11663,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.28.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 28,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.933182043874153,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.28.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 28,
@@ -11868,6 +11756,22 @@
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.29.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 29,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 12.320517471146898,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999998,
    "changed_fraction": 0.0,
    "changed": 0,
    "max_abs_delta": 0.0
@@ -12019,6 +11923,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.30.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 30,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 13.081571099887286,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.30.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 30,
@@ -12165,6 +12085,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.4.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 4,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.413387016258957,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.4.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 4,
@@ -12247,6 +12183,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.5.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 5,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.309895504441352,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.5.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 5,
@@ -12324,6 +12276,22 @@
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 0.9999999999999998,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.6.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 6,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.045279416213603,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
    "changed_fraction": 0.0,
    "changed": 0,
    "max_abs_delta": 0.0
@@ -12475,6 +12443,22 @@
    "max_abs_delta": 0.0
   },
   {
+   "tensor": "model.layers.8.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 8,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.043435179756026,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 0.9999999999999999,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
    "tensor": "model.layers.8.post_attention_layernorm.weight",
    "family": "norm",
    "layer": 8,
@@ -12552,6 +12536,22 @@
    "norm_delta": 0.0,
    "rel_delta": 0.0,
    "cosine": 1.0,
+   "changed_fraction": 0.0,
+   "changed": 0,
+   "max_abs_delta": 0.0
+  },
+  {
+   "tensor": "model.layers.9.linear_attn.norm.weight",
+   "family": "norm",
+   "layer": 9,
+   "shape": [
+    128
+   ],
+   "numel": 128,
+   "norm_base": 10.558702858528006,
+   "norm_delta": 0.0,
+   "rel_delta": 0.0,
+   "cosine": 1.0000000000000002,
    "changed_fraction": 0.0,
    "changed": 0,
    "max_abs_delta": 0.0
