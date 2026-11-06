@@ -211,6 +211,39 @@ class TestCardAtlasUsable(unittest.TestCase):
         self.assertIn("subspace_transfer", " ".join(ft))
 
 
+class TestTransferCandidates(unittest.TestCase):
+    """Directions a model shares with studied improvements, estimated from blocks of rows (column side only)."""
+
+    def test_shared_subspace_found_and_unrelated_not(self):
+        g = torch.Generator().manual_seed(9)
+        Dh, rows, layers = 64, 256, 6
+        names = [f"model.layers.{i}.mlp.gate_proj.weight" for i in range(layers)]
+        base = {n: torch.randn(rows, Dh, generator=g) for n in names}
+        S = {n: torch.linalg.qr(torch.randn(Dh, 4, generator=g))[0] for n in names}   # per-layer shared subspace
+        other = {n: torch.linalg.qr(torch.randn(Dh, 4, generator=g))[0] for n in names}
+
+        def tuned(sub, scale=1.0):
+            return {n: base[n] + scale * torch.randn(rows, 4, generator=g) @ sub[n].T
+                    + 0.01 * torch.randn(rows, Dh, generator=g) for n in names}
+
+        atlas_model, target, control = tuned(S), tuned(S, 0.5), tuned(other)
+        sigs = {"improved": {n: wd.delta_signature(n, base[n], atlas_model[n], k=4, sketch_dim=64) for n in names}}
+
+        class R:
+            def __init__(self, t): self.t = t
+            def keys(self): return list(self.t)
+            def shape(self, n): return tuple(self.t[n].shape)
+            def get(self, n): return self.t[n]
+            def get_rows(self, n, s, c): return self.t[n][s:s + c]
+
+        for model, expect in ((target, True), (control, False)):
+            fp = mr.fingerprint(R(base), R(model), rows=32, workers=1, k=4)
+            tc = mr.transfer_candidates(fp, sigs, k=4)
+            row = tc["by_kind"]["mlp.gate_proj.weight"]["improved"]
+            self.assertEqual(row["shared"], expect, row)
+            self.assertEqual("mlp.gate_proj.weight" in tc["candidates"], expect)
+
+
 class TestWSPLangOp(Synthetic):
     def test_model_report_step(self):
         import engine.wsplang as wsplang
