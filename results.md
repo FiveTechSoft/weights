@@ -1298,3 +1298,25 @@ Estado y siguiente paso en roadmap §4.0quater.
 - **TwIL-8B, según su ficha:** Granite 4.2 8B (que ya es un fine-tune de granite-4.1-8b-base) + SFT completo de trazas + GRPO/DAPO (variante verbose) + RL que premia trazas cortas (variante balanced). Licencia no comercial.
 - **Herramienta de diff** (`engine/weight_diff.py`, 14 tests): compara dos checkpoints tensor a tensor sin cargar ninguno entero, en local o por rangos HTTP desde Hugging Face.
   - La op `diff` de WSPLang ahora la usa. Antes solo leía el primer shard: en un modelo de 4 shards se saltaba en silencio unos tres cuartos de los tensores (test que falla con el código antiguo).
+
+## 38. Qué cambia un post-entrenamiento: Qwen3.5-9B → MiMo-V2.6-Distill (y NeoHorse, en curso) (2026-11-06)
+Script `lab/probes/delta_patterns/run.py`; datos en `lab/runs/delta_patterns/stats_mimo.json(l)`. Base = `Qwen/Qwen3.5-9B` en bf16 (el padre declarado de MiMo y de NeoHorse), solo el modelo de texto; 427 tensores, los mismos nombres y formas en los dos.
+
+- **Es un fine-tune completo, no una LoRA:** cambia el 97 % de los pesos, con un cambio relativo global ‖ΔW‖/‖W‖ = 9.2 %.
+- **Dónde, por tipo de tensor** (mediana sobre capas del cambio relativo):
+  - Más: `linear_attn.in_proj_b` (la β de Gated DeltaNet, cuánto escribe en memoria) 12.7 %, `mlp.gate_proj` 12.5 %, `up_proj` 11.3 %, `down_proj` 10.8 %.
+  - Medio: q/k de atención y `in_proj_z/qkv/a` de DeltaNet, 8-10 %; embeddings y `lm_head` 6.5-6.9 %.
+  - Menos: `v_proj` 4.9 % y `o_proj` 5.6 % de la atención completa; `conv1d` 1.4 %; normas < 1.3 %.
+  - Intactos: `A_log` y `dt_bias` de DeltaNet. Solo difieren en un escalón de redondeo bf16 (máx. 0.0078); `dt_bias` no cambia en ninguna capa.
+- **Por profundidad:** forma de campana. 8.5 % en la capa 0, máximo ~11 % en las capas 17-23, 7.5 % en la última.
+- **Forma del cambio: difuso, no de rango bajo.**
+  - En las matrices grandes el rango estable es de 200-500 (6-12 % de la dimensión menor) y las 16 primeras direcciones llevan solo el 2-4 % de la energía.
+  - Excepción: `in_proj_b` (32 × 4096) concentra el 63 % en 16 direcciones, pero solo tiene 32 filas.
+- **Comparación con la anatomía anterior (roadmap §4.0ter.4, GGUF Q6_K):** se confirma que las compuertas (β de DeltaNet, `gate_proj`) son lo que más cambia. Las cifras eran más altas (14-19 % y 15-17 %) y las normas más bajas (0.14 %): aquella medida era sobre cuantizado y no se puede reproducir, porque `compute_architectural_drift` devuelve un JSON cacheado.
+- **Comprobación independiente:** cambio relativo y rango estable de 3 tensores (`layers.10.in_proj_b`, `layers.17.gate_proj`, `layers.3.v_proj`) recalculados con numpy float64 y SVD completa. Coinciden en todas las cifras mostradas.
+- **Lectura para WSPLang:** las operaciones compactas actuales (rango 1, `project_out`) no pueden expresar una mejora así. Lo que sí da es un mapa de dónde actúa el post-entrenamiento (compuertas, MLP, capas centrales) y qué no toca (dinámica de DeltaNet, normas). Que sea un patrón y no algo propio de MiMo lo dirá NeoHorse.
+- **Ampliación, en curso:** el plan del estudio completo quedó fijado antes de mirar los demás modelos, en `lab/probes/delta_patterns/plan.md`.
+  - Modelos: NeoHorse, Fara (agentes), tmax (solo RL), el post-entrenamiento oficial Base → 9B, Nyx-RP (rol, control negativo) y una abliteración (control positivo del método).
+  - Hipótesis: H1 dónde, H2 forma, H3 dirección compartida, H4 trasplante causal.
+  - Nulos: azar k/d, mismo tipo de tensor en otra capa, y alineación con las direcciones principales del propio W.
+- **Nota:** el base, la abliteración y Nyx-RP guardan 48 tensores (`A_log`, `dt_bias`…) en F32; MiMo, Fara y tmax en BF16. El "escalón bf16" de `A_log`/`dt_bias` en MiMo es solo ese cast: no se entrenaron.

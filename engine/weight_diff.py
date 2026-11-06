@@ -172,18 +172,19 @@ def _blocks(a: torch.Tensor, chunk_rows: int):
 
 def _gram(a: torch.Tensor, b: torch.Tensor, chunk_rows: int, device="cpu") -> torch.Tensor:
     """Gram matrix of D = b - a on its smaller side, accumulated in row blocks (float64)."""
+    # Each block's product in float32 (fast on GPU; TF32 stays off), the running sum in float64.
     rows, cols = a.shape
     if cols <= rows:
         G = torch.zeros(cols, cols, dtype=torch.float64, device=device)
         for _, sl in _blocks(a, chunk_rows):
-            Dc = (b[sl].to(device, torch.float32) - a[sl].to(device, torch.float32)).double()
-            G += Dc.T @ Dc
+            Dc = b[sl].to(device, torch.float32) - a[sl].to(device, torch.float32)
+            G += (Dc.T @ Dc).double()
     else:
         G = torch.zeros(rows, rows, dtype=torch.float64, device=device)
         for j in range(0, cols, chunk_rows):
             sl = slice(j, min(j + chunk_rows, cols))
-            Dc = (b[:, sl].to(device, torch.float32) - a[:, sl].to(device, torch.float32)).double()
-            G += Dc @ Dc.T
+            Dc = b[:, sl].to(device, torch.float32) - a[:, sl].to(device, torch.float32)
+            G += (Dc @ Dc.T).double()
     return G
 
 
@@ -260,6 +261,67 @@ def delta_overlap(a: torch.Tensor, b1: torch.Tensor, b2: torch.Tensor, k: int = 
         _, V2 = delta_basis(a, b2, kk, chunk_rows, device)
         out["subspace_overlap"] = float((V1.T @ V2).pow(2).sum()) / kk
         out["random_overlap"] = kk / min(a.shape)
+    return out
+
+
+SKETCH_CHUNK = 1 << 22  # elements per hashing chunk; fixed so every model hashes element i the same way
+
+
+def _sketch(name: str, a: torch.Tensor, b: torch.Tensor, m: int, device="cpu") -> torch.Tensor:
+    """Count-sketch of vec(b - a): element i goes to bucket h(i) with sign s(i), h and s fixed by the tensor name.
+
+    <sketch(D1), sketch(D2)> is an unbiased estimate of <D1, D2> (error about ||D1|| ||D2|| / sqrt(m)).
+    """
+    import random
+    import zlib
+    P = 2_147_483_647  # 2^31 - 1; element indices stay below it, products below 2^62
+    rng = random.Random(zlib.crc32(name.encode()))
+    a1, b1, a2, b2 = (rng.randrange(1, P) for _ in range(4))  # pairwise-independent hashes, fixed by name
+    fa, fb = a.reshape(-1), b.reshape(-1)
+    if fa.numel() >= P:
+        raise ValueError(f"{name}: too many elements for the sketch hash")
+    out = torch.zeros(m, dtype=torch.float64, device=device)
+    for s in range(0, fa.numel(), SKETCH_CHUNK):
+        e = min(s + SKETCH_CHUNK, fa.numel())
+        idx = torch.arange(s, e, dtype=torch.int64, device=device)
+        h = ((idx * a1 + b1) % P) % m
+        sign = (((idx * a2 + b2) % P) % 2) * 2 - 1
+        d = fb[s:e].to(device, torch.float32).double() - fa[s:e].to(device, torch.float32).double()
+        out.index_add_(0, h, d * sign.double())
+    return out.cpu()
+
+
+def delta_signature(name: str, a: torch.Tensor, b: torch.Tensor, k: int = 16, sketch_dim: int = 4096,
+                    chunk_rows: int = 4096, device="cpu") -> Dict:
+    """What is needed to compare this delta with another later, without the weights.
+
+    basis: top-k singular vectors of D on its smaller side; sv2: squared singular values (top-k) and energy;
+    sketch: count-sketch of vec(D); base_alignment: ||Vw^T V||^2 / k, the share of D's top subspace that lies in the
+    top-k singular subspace of the base weight W (same side).
+    """
+    sig = {"tensor": name, "shape": list(a.shape), "sketch": _sketch(name, a, b, sketch_dim, device)}
+    if a.dim() == 2:
+        kk = min(k, min(a.shape))
+        ev, V = delta_basis(a, b, kk, chunk_rows, device)
+        zero = torch.zeros((), dtype=a.dtype).expand(a.shape)
+        _, Vw = delta_basis(zero, a, kk, chunk_rows, device)
+        sig.update(basis=V.float(), sv2=ev[:kk].float(), energy=float(ev.sum()),
+                   base_alignment=float((Vw.T @ V).pow(2).sum()) / kk, k=kk)
+    return sig
+
+
+def signature_overlap(s1: Dict, s2: Dict) -> Dict:
+    """Cosine of the two deltas (from the sketches) and overlap of their top-k subspaces (exact)."""
+    if s1["shape"] != s2["shape"]:
+        raise ValueError(f"shapes differ: {s1['shape']} vs {s2['shape']}")
+    x, y = s1["sketch"].double(), s2["sketch"].double()
+    nx, ny = float(x.norm()), float(y.norm())
+    out = {"cosine": float(x @ y) / (nx * ny) if nx > 0 and ny > 0 else 0.0}
+    if "basis" in s1 and "basis" in s2:
+        kk = min(s1["k"], s2["k"])
+        V1, V2 = s1["basis"][:, :kk].double(), s2["basis"][:, :kk].double()
+        out["subspace_overlap"] = float((V1.T @ V2).pow(2).sum()) / kk
+        out["random_overlap"] = kk / V1.shape[0]
     return out
 
 

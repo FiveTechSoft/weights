@@ -184,6 +184,49 @@ class TestChunkedAndOverlap(unittest.TestCase):
         self.assertGreater(opposite["subspace_overlap"], 0.99)
 
 
+class TestSignature(unittest.TestCase):
+    """A small, saved summary of a delta, so pairs can be compared after the weights are deleted."""
+
+    def setUp(self):
+        g = torch.Generator().manual_seed(6)
+        self.a = torch.randn(512, 256, generator=g)
+        shared = torch.randn(512, 4, generator=g) @ torch.randn(4, 256, generator=g)
+        self.b1 = self.a + shared + 0.3 * torch.randn(512, 256, generator=g)
+        self.b2 = self.a + shared + 0.3 * torch.randn(512, 256, generator=g)
+
+    def test_overlap_from_signatures_matches_direct(self):
+        s1 = wd.delta_signature("w", self.a, self.b1, k=8, sketch_dim=8192)
+        s2 = wd.delta_signature("w", self.a, self.b2, k=8, sketch_dim=8192)
+        direct = wd.delta_overlap(self.a, self.b1, self.b2, k=8)
+        got = wd.signature_overlap(s1, s2)
+        self.assertAlmostEqual(got["subspace_overlap"], direct["subspace_overlap"], places=5)
+        self.assertAlmostEqual(got["cosine"], direct["cosine"], delta=0.05)
+
+    def test_sketch_is_the_same_function_in_every_model(self):
+        s1 = wd.delta_signature("w", self.a, self.b1, k=4, sketch_dim=1024)
+        s1_again = wd.delta_signature("w", self.a, self.b1, k=4, sketch_dim=1024)
+        self.assertTrue(torch.equal(s1["sketch"], s1_again["sketch"]))
+        other_name = wd.delta_signature("v", self.a, self.b1, k=4, sketch_dim=1024)
+        self.assertFalse(torch.equal(s1["sketch"], other_name["sketch"]))
+
+    def test_cosine_sign_and_independence(self):
+        s1 = wd.delta_signature("w", self.a, self.b1, k=4, sketch_dim=8192)
+        neg = wd.delta_signature("w", self.a, 2 * self.a - self.b1, k=4, sketch_dim=8192)
+        self.assertAlmostEqual(wd.signature_overlap(s1, neg)["cosine"], -1.0, places=4)
+        g = torch.Generator().manual_seed(7)
+        indep = wd.delta_signature("w", self.a, self.a + torch.randn(512, 256, generator=g), k=4, sketch_dim=8192)
+        self.assertLess(abs(wd.signature_overlap(s1, indep)["cosine"]), 0.06)
+
+    def test_alignment_with_base_weight(self):
+        """A delta made of W's own top directions is fully 'explained by W'."""
+        U, S, Vh = torch.linalg.svd(self.a, full_matrices=False)
+        grow = self.a + U[:, :4] @ torch.diag(S[:4]) @ Vh[:4] * 0.1
+        s = wd.delta_signature("w", self.a, grow, k=4, sketch_dim=256)
+        self.assertGreater(s["base_alignment"], 0.99)
+        s_rand = wd.delta_signature("w", self.a, self.b1, k=4, sketch_dim=256)
+        self.assertLess(s_rand["base_alignment"], 0.5)
+
+
 class TestDiffModels(Fixture):
     def test_finds_the_changes_and_only_them(self):
         rep = wd.diff_models(wd.LocalSafetensors(self.base_dir), wd.LocalSafetensors(self.tuned_dir))
