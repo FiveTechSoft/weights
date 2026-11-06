@@ -238,6 +238,7 @@ READ_ONLY_OPS = {
     "diff", "compare", "evaluate",
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     "assert_behavioral_drift", "vicreg_preserve",
+    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark",  # write reports, never weights
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -247,6 +248,7 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
     "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train", "synthesize", "decompile",
+    "subspace_transfer",
 }
 STUB_OPS = {"leace_erase", "surprise_fwp"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS

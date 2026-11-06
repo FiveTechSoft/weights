@@ -121,3 +121,17 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   norms, DeltaNet decay dynamics and embeddings least. Size of the change spans 125× and says nothing about the gain.
 - WSPLang: a real improvement can fit in a tiny budget (0.07 % relative change). Budgets should be set in
   relative-norm terms per tensor type, not in counts of changed weights.
+
+## F12. RL-only tmax shares the same layer-specific directions with MiMo and NeoHorse. (measured; specificity open)
+- Run as a WSPLang program: `lab/probes/delta_patterns/compare_tmax.wspl` (`delta_compare`), outputs
+  `pairs_tmax_mimo.json`, `pairs_tmax_neohorse.json`.
+- tmax-MiMo: H3 holds in the same 10 matrix types as MiMo-NeoHorse, ×5.2-10.8 over the other-layer null.
+- tmax-NeoHorse: H3 in the same 10 types, strongest in the residual-writing matrices: DeltaNet `out_proj` ×61,
+  attention `o_proj` ×31, `k_proj` ×15, `q_proj` ×11, the rest ×7-9. Both are agentic trainings.
+- As before: DeltaNet β/α share nothing beyond chance (×0.9-1.1); embedding overlap (0.56-0.58) goes with high
+  alignment to the embedding's own top subspace (0.43), i.e. explained by W.
+- Reading: three different trainings (distillation, agentic SFT, RL-only) move common residual directions layer by
+  layer. Whether those are improvement directions or the mark of any chat fine-tune is decided by the role-play
+  control (Nyx-RP), still running.
+- Tool lesson: the WSPLang CLI has a second list of implemented ops (`check_feasibility`); unit tests that call
+  `execute_plan_v4` bypass it. The new ops failed the CLI until added there. A test now covers the gate.

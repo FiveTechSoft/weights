@@ -94,6 +94,24 @@ class TestSignatureAndCompare(Models):
         self.assertGreater(same["same"], 0.9)
 
 
+class TestCLIFeasibilityGate(unittest.TestCase):
+    """The CLI rejects ops it does not list as implemented; unit tests that call execute_plan_v4 skip that gate."""
+
+    def test_new_ops_pass_the_gate(self):
+        code = ("experiment g:\nsteps:\n"
+                "    step delta_compare a=x.pt b=y.pt\n"
+                "    step delta_stats base=a model=b\n"
+                "    step delta_signature base=a model=b out=s.pt\n"
+                "    step evaluate_benchmark endpoint=8095 name=t\n"
+                "    step subspace_transfer tensors=*mlp* source=s basis=random k=4 out=o\n")
+        prog = wsplang.parse_args_lines(code)
+        steps, errors = wsplang.validate(prog)
+        self.assertFalse(errors, errors)
+        res = wsplang.check_feasibility(prog, steps, model_arg=str(ROOT / "hf_cache" / "qwen35-08b-hf"))
+        errs = res[0] if isinstance(res, tuple) else res.get("errors", [])
+        self.assertFalse([e for e in errs if "NO implementada" in e], errs)
+
+
 class FakeChat(http.server.BaseHTTPRequestHandler):
     """Answers every question with \\boxed{18}; reports 7 completion tokens."""
 
