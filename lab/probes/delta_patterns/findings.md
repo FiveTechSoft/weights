@@ -266,3 +266,17 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   per-type budgets), not a recipe for improvement.
 - Still open and now the key question: H3 (shared directions). If WeMM shares the improvements' layer-specific
   directions too, that core is generic as well; if not, the directions carry what the "where" does not.
+
+## F23. H3 is specific: a full fine-tune with another goal shares none of the improvements' directions (measured)
+- `compare_wemm.wspl` (`delta_compare`, WeMM-Embedding against MiMo, NeoHorse, tmax, Fara and the official
+  post-training): same-layer overlap / other-layer null ×1.2-2.5 in every matrix type; H3 in 0 of 12 types for each
+  of the four improvements and 0 types for the official post-training. Among the improvements the same types give
+  ×4-61 and H3 in 10 of 10 types for all six pairs.
+- With F22: WHERE a model changes (which tensor types, how much) is the mark of any full fine-tune of this
+  architecture; the DIRECTIONS it changes, layer by layer, separate the improvements (and Qwen's own post-training)
+  from a full fine-tune with another goal.
+- Limit of this conclusion: all improvements are generative chat fine-tunes; WeMM is no longer generative (trained
+  as an embedding model). The shared directions may mark "continued assistant training" rather than "improvement".
+  Next control: Angry-Claudius (generative chat fine-tune that degrades the model on purpose).
+- WSPLang: the transferable object is the shared subspace (direction), not a where-profile. `model_report`'s transfer
+  section and `subspace_transfer` work on exactly that.
