@@ -64,9 +64,33 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 ## 4. Pendiente (priorizado)
 
-### 4.0quater ESTADO 2026-11-06 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
+### 4.0quater ESTADO 2026-11-07 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
-Rama `feat/wsp-synthesis`. Último commit subido: 7f31fb2 (loop-fix nanoGPT). Detalle y cifras en results.md §36-§37.
+Rama `feat/wsp-synthesis` = `main` = 8649b8e, todo subido (GitHub Pages publica desde `main:/docs`). Detalle y cifras en results.md §36-§38 y `lab/probes/delta_patterns/findings.md` (F1-F26).
+
+**Punto de reanudación (2026-11-07 ~00:15):**
+1. **En marcha:** benchmark de la base Qwen3.5-9B Q6_K con el protocolo §37 (`bash lab/probes/model_compare/run_base_q6k.sh`: llama-server en el puerto 8093 y `eval.py qwen35_9b_q6k 8093`). Iba por ~89/150.
+   - Progreso: `lab/runs/model_compare/qwen35_9b_q6k.partial.jsonl`.
+   - Resultado final: `qwen35_9b_q6k.json`.
+   - Si se cortó: `eval.py` reanuda desde el parcial. Relanzar **una sola instancia** y solo si el usuario lo pide.
+   - `qwen35_9b_q6k.dup_aborted.jsonl` está contaminado (dos evals a la vez) y no se usa.
+2. **Siguiente:** informe completo MiMo vs base.
+   - Pesos: F1-F3, F21-F23, F26.
+   - `lab/runs/model_report/mimo.md`.
+   - Lo que no son pesos: F25.
+   - Benchmark base vs MiMo (93/100, 34/50).
+   - Límites: n pequeño, solo matemáticas, sin tests causales.
+   - Va a results.md §37.
+3. **Hecho 2026-11-06/07:**
+   - lector local sin mmap (a719b01);
+   - firma dsv4_heretic;
+   - corrección del cast F32→BF16 (F26, 783b14a);
+   - auditoría del README (e7e178a) y de docs/portal (8649b8e).
+4. **Abierto:**
+   - por qué cambia `A_log` en las capas 6 y 14 de mimo, fara, neohorse y tmax (F26);
+   - 27B TURBO a ciegas (espera el OK del usuario);
+   - H4 causal;
+   - borrar a mano `hf_cache/dp_keep_dsv4_distill`.
 
 | # | Tarea | Estado |
 |---|---|---|
@@ -79,7 +103,7 @@ Rama `feat/wsp-synthesis`. Último commit subido: 7f31fb2 (loop-fix nanoGPT). De
 | G | `engine/comparative_drift.py`: `compute_architectural_drift` devuelve un JSON cacheado de otro par de modelos sin mirar los argumentos; `compute_spectral_delta` ignora el target si no es GGUF; `decode_tensor_weights` carga el shard entero por tensor. Pasarlo a `weight_diff` | pendiente |
 | I | **`step model_report`**: informe rápido de qué cambia un modelo frente a su base y qué es aprovechable. Huella por **bloques de filas** (64 filas de cada matriz y capa por rangos HTTP, ~200-350 MB por modelo 9B) → método (completo / LoRA y módulos / abliteración-ARA y capas), perfil, familia del atlas; ficha HF y cabeceras. Código `engine/model_report.py`, tests `tests/test_model_report.py` con modelos sintéticos de receta exacta; validación con casos reales de receta documentada (abliterated, heretic ARA 9-24) y concordancia con las estadísticas completas (segundo método). | HECHO v1: op `step model_report`, 6/6 casos conocidos, 21-48 s por modelo 9B remoto (F18-F19). Siguiente: probar en modelos nuevos, añadir dirección compartida del atlas (H3) por tensor al apartado "aprovechable" |
 | H | **Op `subspace_transfer` (WSPLang)**: W' = W + α·P_S(W_fuente − W_base) por tensor, con S = base de una firma (`sig:<ruta>`), el subespacio compartido de dos firmas (`shared:<a>,<b>`) o aleatorio (`random`, el control). Proyección por el lado pequeño (flujo residual). Write guard, presupuestos, tensores protegidos, procedencia `synthetic_transfer` con fuentes. Código `engine/subspace_ops.py`, tests `tests/test_subspace_transfer.py`. Uso previsto: H4 (base + ΔMiMo en el subespacio compartido con NeoHorse, frente a subespacio aleatorio de igual dimensión, frente a ΔMiMo completo). Falta para evaluar el 9B: conversión a GGUF (`convert_hf_to_gguf.py` de llama.cpp) | EN CURSO (tests escritos) |
-| J | **Análisis de cualquier LLM, no solo Qwen** (pedido 2026-11-06). Hoy: las matemáticas del delta son genéricas, pero los nombres (`q_proj`/`o_proj`/`down_proj`/`layers.N`), `RESIDUAL_WRITERS`, `text_model_name` (multimodal de Qwen3.5) y los umbrales (H3 ×3, `classify`, atlas) son de la familia Llama/Qwen y están calibrados solo en Qwen3.5-9B. Pasos por valor: **J1** nombres canónicos por arquitectura (GPT-NeoX, Falcon, Phi-2/3 fusionados, Mixtral `w1/w2/w3`, multimodales `language_model.*` y torres de visión), para que `family`, `tensor_kind`, `layer_of` y `RESIDUAL_WRITERS` funcionen sin cambios. **J2** lectura FP8 (`F8_E4M3` con escalas por bloque) y GGUF. **J3** MoE con expertos fusionados en 3D (por experto, muestreado). **J4** calibrar en una segunda familia con verdad conocida (Llama-3 base frente a abliterado y frente a fine-tune) antes de fiarse de `model_report` fuera de Qwen | J1 EN CURSO |
+| J | **Análisis de cualquier LLM, no solo Qwen** (pedido 2026-11-06). Hoy: las matemáticas del delta son genéricas, pero los nombres (`q_proj`/`o_proj`/`down_proj`/`layers.N`), `RESIDUAL_WRITERS`, `text_model_name` (multimodal de Qwen3.5) y los umbrales (H3 ×3, `classify`, atlas) son de la familia Llama/Qwen y están calibrados solo en Qwen3.5-9B. Pasos por valor: **J1** nombres canónicos por arquitectura (GPT-NeoX, Falcon, Phi-2/3 fusionados, Mixtral `w1/w2/w3`, multimodales `language_model.*` y torres de visión), para que `family`, `tensor_kind`, `layer_of` y `RESIDUAL_WRITERS` funcionen sin cambios. **J2** lectura FP8 (`F8_E4M3` con escalas por bloque) y GGUF. **J3** MoE con expertos fusionados en 3D (por experto, muestreado). **J4** calibrar en una segunda familia con verdad conocida (Llama-3 base frente a abliterado y frente a fine-tune) antes de fiarse de `model_report` fuera de Qwen | J1 HECHO (079bb52: nombres canónicos NeoX, Falcon, Phi-2, Mixtral, multimodales; tests en test_weight_diff/test_model_report). Siguiente J2 |
 
 Ideas del driver (2026-11-06), por evaluar:
 - **Atlas de Δ (dataset de mejoras):** muchos derivados de un mismo base (Qwen3.5-9B) con metadatos, comportamiento medido con un solo protocolo (`lab/probes/model_compare/eval.py`) y firma de pesos (`sig_<name>.pt`). Usos para WSPLang: priors de dónde/cuánto editar por tipo de mejora; base de direcciones de mejora repetidas (SVD de subespacios apilados, no medias de Δ: los Δ son casi ortogonales) → op tipo `apply_improvement_basis` con procedencia `synthetic_transfer`; relación rasgos del Δ ↔ ganancia. Condición: el piloto de 7 modelos (C) debe mostrar que las direcciones compartidas no las comparte también el control Nyx-RP; luego 15-20 modelos y trasplante H4 contra edición aleatoria de la misma norma.
