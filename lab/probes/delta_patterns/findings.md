@@ -92,3 +92,17 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - WSPLang: abliteration is exactly the kind of edit WSPLang's `project_out` already expresses (one direction removed
   from the matrices that write to the residual stream). It is the one known "improvement" in this set that is
   compact.
+
+## F10. One refusal direction for all layers; neither MiMo nor NeoHorse moved along it. (measured)
+- The abliteration's top-1 output-side direction in `down_proj` is the same in every touched layer: median |cos|
+  between layers 1.000 (min 0.293; chance ~0.016). One global direction, projected out of every residual-writing
+  matrix: the standard recipe.
+- Share of that direction inside MiMo's / NeoHorse's `down_proj` top-16 subspace: median 0.005 / 0.006, max
+  0.010 / 0.011, chance 0.004. Neither post-training moved the model along the refusal direction.
+- Pairs with the abliteration (`pairs_mimo_abliterated.json`, `pairs_neohorse_abliterated.json`): same-layer overlap
+  at the level of the other-layer null (×1.0-1.6), unlike MiMo-NeoHorse (×5-15). Caveat: a rank-one delta has one
+  direction with energy; the other 15 vectors of its basis are arbitrary, so this pair test is weak. The direct test
+  is the share above.
+- WSPLang: a single global direction applied across layers (abliteration) and a layer-specific, many-direction
+  change (MiMo, NeoHorse) are different kinds of edit. An op library needs both: `project_out` for the first, and
+  for the second something that works per layer on a subspace.
