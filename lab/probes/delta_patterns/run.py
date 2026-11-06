@@ -9,6 +9,7 @@ Each tensor's row is appended to lab/runs/delta_patterns/<job>.jsonl as soon as 
 already there. A summary JSON is written at the end.
 """
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -22,6 +23,7 @@ from engine import weight_diff as wd  # noqa: E402
 BASE = ROOT / "hf_cache" / "qwen35-9b-hf"
 OUT = ROOT / "lab" / "runs" / "delta_patterns"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+torch.set_num_threads(int(os.environ.get("DP_THREADS", "4")))  # less CPU parallelism after the low-memory kill
 
 
 def reader(path):
@@ -153,7 +155,8 @@ def check_second_method(name, target_dir, base_dir=BASE, n=3):
 
 def download(repo, local):
     import subprocess
-    cmd = ["hf", "download", repo, "--include", "*.safetensors", "--include", "*.json", "--local-dir", str(local)]
+    cmd = ["hf", "download", repo, "--include", "*.safetensors", "--include", "*.json", "--local-dir", str(local),
+           "--max-workers", os.environ.get("DP_DOWNLOAD_WORKERS", "2")]  # default 8 ran out of RAM next to the GPU job
     for attempt in range(3):
         if subprocess.run(cmd).returncode == 0 and list(Path(local).glob("*.safetensors")):
             return

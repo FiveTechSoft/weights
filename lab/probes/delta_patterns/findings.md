@@ -280,3 +280,23 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   Next control: Angry-Claudius (generative chat fine-tune that degrades the model on purpose).
 - WSPLang: the transferable object is the shared subspace (direction), not a where-profile. `model_report`'s transfer
   section and `subspace_transfer` work on exactly that.
+
+## F24. A deliberate degradation (Angry-Claudius) shares no core direction with the improvements, but neither does a neutral LoRA: the test cannot separate "degradation" from "LoRA" (measured, 2026-11-06)
+- `stats_angry_claudius.json` (axiomofmind/Angry-Claudius-9B): 0.23 % relative change, 36 % of weights moved,
+  LoRA-like on every linear layer; norms, embeddings, conv1d, `A_log`, `dt_bias` untouched. Second method agrees
+  (`check_angry_claudius.json`, 3/3). Pipeline resumed after a low-memory kill (threads 4, 2 download workers).
+- `compare_angry.wspl` against MiMo, NeoHorse, tmax, Fara, official post-training: H3 in 0/12, 2/12, 1/12, 2/12,
+  1/12 types. The only passes are `k_proj`/`v_proj` (×3.1-4.1, just over the ×3 bar; these have 1024 rows, chance
+  1/64). The core types (MLP, DeltaNet, `o_proj`, `q_proj`) are ×1.0-2.6, i.e. at the null.
+- Method control, run now for the first time: `compare_nyx.wspl` (Nyx-RP, a role-play LoRA, not meant to degrade):
+  H3 in 2, 2, 1, 2, 2 of 12 types, the same marginal `k_proj`/`v_proj` (plus `down_proj` ×3.0-3.7 for MiMo and
+  the official post-training).
+- Reading: both LoRAs behave alike, so this control does not tell "degradation" from "improvement". The difference
+  from the improvements (×4-61, 10/10 types) may be the method (LoRA vs full fine-tune), as F15 already warned.
+  F23 (WeMM, a full fine-tune, 0/12) still stands as the specificity evidence. Its caveat ("continued assistant
+  training" vs "improvement") is still open. The control that would settle it is a full-fine-tune generative chat
+  model that is worse, or not better, than Qwen3.5-9B. Search for one by the method shown in its weights
+  (`model_report` classify = full_fine_tune), not by what its card says.
+- Side note: the marginal `k_proj`/`v_proj` agreement appears with every LoRA and with WeMM's ×2-2.5. The small
+  attention K/V spaces may make the H3 bar easier to cross there. For K/V, use a stricter bar or a permutation null
+  before reading anything into a pass.

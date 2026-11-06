@@ -1,0 +1,8 @@
+experiment compare_angry:
+objective: H3 specificity. Does a deliberate personality degradation (Angry-Claudius, LoRA-like) share the improvements' layer-specific directions?
+steps:
+    step delta_compare a=lab/runs/delta_patterns/sig_angry_claudius.pt b=lab/runs/delta_patterns/sig_mimo.pt out=lab/runs/delta_patterns/pairs_angry_claudius_mimo.json
+    step delta_compare a=lab/runs/delta_patterns/sig_angry_claudius.pt b=lab/runs/delta_patterns/sig_neohorse.pt out=lab/runs/delta_patterns/pairs_angry_claudius_neohorse.json
+    step delta_compare a=lab/runs/delta_patterns/sig_angry_claudius.pt b=lab/runs/delta_patterns/sig_tmax.pt out=lab/runs/delta_patterns/pairs_angry_claudius_tmax.json
+    step delta_compare a=lab/runs/delta_patterns/sig_angry_claudius.pt b=lab/runs/delta_patterns/sig_fara.pt out=lab/runs/delta_patterns/pairs_angry_claudius_fara.json
+    step delta_compare a=lab/runs/delta_patterns/sig_angry_claudius.pt b=lab/runs/delta_patterns/sig_official_post.pt out=lab/runs/delta_patterns/pairs_angry_claudius_official_post.json
