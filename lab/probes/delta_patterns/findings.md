@@ -106,3 +106,18 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - WSPLang: a single global direction applied across layers (abliteration) and a layer-specific, many-direction
   change (MiMo, NeoHorse) are different kinds of edit. An op library needs both: `project_out` for the first, and
   for the second something that works per layer on a subspace.
+
+## F11. RL-only (tmax) changes the model by 0.07 %, in the same places. (verified)
+- `stats_tmax.json`: relative change 0.073 % (NeoHorse 0.5 %, MiMo 9.2 %); 19 % of weights differ in bf16.
+  Second method agrees (`check_tmax.json`). The card reports +6 points on Terminal Bench 2.0 after 200 RL steps.
+- Most changed: DeltaNet output norm (`linear_attn.norm`, 0.15 %, 86 % of its weights), MLP down/up/gate
+  (0.10-0.11 %), DeltaNet β (0.11 %); then attention (0.06-0.08 %), DeltaNet inputs (0.06 %), conv1d, embeddings,
+  `lm_head` (0.02 %). Other norms, `A_log`, `dt_bias` untouched. Slightly more in layers 0-19, falling towards 31.
+- Per-tensor-type profile, Spearman: tmax-MiMo 0.70, tmax-NeoHorse 0.83, MiMo-NeoHorse 0.93. Per layer: 0.29,
+  0.50, 0.51.
+- Caveat: with an update this small, "which weights changed" is limited by bf16 resolution; 19 % is not the true
+  sparsity of the RL update.
+- Reading: three different trainings (distillation, agentic SFT, RL) share a core: MLP and DeltaNet β change most;
+  norms, DeltaNet decay dynamics and embeddings least. Size of the change spans 125× and says nothing about the gain.
+- WSPLang: a real improvement can fit in a tiny budget (0.07 % relative change). Budgets should be set in
+  relative-norm terms per tensor type, not in counts of changed weights.
