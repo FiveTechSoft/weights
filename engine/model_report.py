@@ -29,14 +29,7 @@ import torch
 from engine import weight_diff as wd
 
 RESIDUAL_WRITERS = ("o_proj.weight", "out_proj.weight", "down_proj.weight")
-_PRECISION = {torch.bfloat16: 0, torch.float16: 1, torch.float32: 2, torch.float64: 3}
-
-
-def _common_dtype(a, b):
-    if a.dtype == b.dtype or a.dtype not in _PRECISION or b.dtype not in _PRECISION:
-        return a, b
-    low = a.dtype if _PRECISION[a.dtype] < _PRECISION[b.dtype] else b.dtype
-    return a.to(low), b.to(low)
+_common_dtype = wd.common_dtype
 
 
 def _block(reader, name, shape, rows):

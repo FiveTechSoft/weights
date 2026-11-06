@@ -156,6 +156,18 @@ class TestGetRows(Fixture):
 
 
 class TestTensorStats(unittest.TestCase):
+    def test_dtype_cast_is_not_a_change(self):
+        # F32 base, the same values saved as BF16 (DeepSeek-V4 Heretic linear_attn.norm, found 2026-11-06)
+        a = torch.randn(64, generator=torch.Generator().manual_seed(1)) + 1.0
+        s = wd.tensor_delta_stats("model.layers.0.linear_attn.norm.weight", a, a.to(torch.bfloat16))
+        self.assertEqual(s["changed"], 0)
+        self.assertEqual(s["rel_delta"], 0.0)
+        a2 = torch.randn(8, 6, generator=torch.Generator().manual_seed(2))
+        s2 = wd.tensor_delta_stats("w", a2.to(torch.bfloat16), a2)       # either side may be the precise one
+        self.assertEqual(s2["changed"], 0)
+        s3 = wd.tensor_delta_stats("w", a2, (a2 * 1.1).to(torch.bfloat16))   # a real change still counts
+        self.assertGreater(s3["rel_delta"], 0.09)
+
     def test_relative_change_and_cosine(self):
         a = torch.ones(4, 4)
         s = wd.tensor_delta_stats("w", a, a * 1.1)

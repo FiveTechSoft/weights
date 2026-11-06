@@ -264,9 +264,21 @@ def delta_basis(a: torch.Tensor, b: torch.Tensor, k: int, chunk_rows: int = 4096
     return ev.cpu(), vec[:, :k].cpu()
 
 
+_PRECISION = {torch.bfloat16: 0, torch.float16: 1, torch.float32: 2, torch.float64: 3}
+
+
+def common_dtype(a: torch.Tensor, b: torch.Tensor):
+    """Both tensors rounded to the less precise float dtype, so a storage cast (F32 -> BF16) is not a change."""
+    if a.dtype == b.dtype or a.dtype not in _PRECISION or b.dtype not in _PRECISION:
+        return a, b
+    low = a.dtype if _PRECISION[a.dtype] < _PRECISION[b.dtype] else b.dtype
+    return a.to(low), b.to(low)
+
+
 def tensor_delta_stats(name: str, a: torch.Tensor, b: torch.Tensor, k: int = 16, top_rows: int = 20,
                        chunk_rows: int = 4096, device="cpu") -> Dict:
     """Statistics of W' = W + D, read in row blocks so a large matrix never exists twice in float32."""
+    a, b = common_dtype(a, b)
     if a.dim() < 2:
         a2, b2 = a.reshape(1, -1), b.reshape(1, -1)
     else:
@@ -368,6 +380,7 @@ def delta_signature(name: str, a: torch.Tensor, b: torch.Tensor, k: int = 16, sk
     sketch: count-sketch of vec(D); base_alignment: ||Vw^T V||^2 / k, the share of D's top subspace that lies in the
     top-k singular subspace of the base weight W (same side).
     """
+    a, b = common_dtype(a, b)
     sig = {"tensor": name, "shape": list(a.shape), "sketch": _sketch(name, a, b, sketch_dim, device)}
     if a.dim() == 2:
         kk = min(k, min(a.shape))
