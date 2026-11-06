@@ -64,6 +64,25 @@ class TestLocalReader(Fixture):
         self.assertEqual(got.dtype, torch.bfloat16)
         self.assertTrue(torch.equal(got, self.base["model.layers.1.mlp.down_proj.weight"].to(torch.bfloat16)))
 
+    def test_each_file_opened_once(self):
+        """Reopening an 18 GB single-file checkpoint for every tensor crashed natively on Windows (tmax-9b);
+        the reader keeps one handle per file."""
+        from unittest import mock
+        import safetensors
+        real = safetensors.safe_open
+        calls = []
+
+        def counting(path, *a, **kw):
+            calls.append(path)
+            return real(path, *a, **kw)
+
+        with mock.patch("safetensors.safe_open", counting):
+            r = wd.LocalSafetensors(self.base_dir)
+            for _ in range(3):
+                for k in r.keys():
+                    r.get(k)
+        self.assertEqual(len(calls), len(set(calls)), f"files reopened: {calls}")
+
     def test_single_file(self):
         f = self.dir / "one.safetensors"
         save_file({"a": torch.arange(6.0).reshape(2, 3)}, str(f))

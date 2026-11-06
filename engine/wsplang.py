@@ -60,6 +60,7 @@ OPS_ALLOWED = {
     "record", "select_candidate", "semantic_map", "semantic-map",
     "semantic_areas", "semantic-areas",
     "project_out", "project_in", "export_control_vector", "audit", "assert_budget",
+    "subspace_transfer",  # move along a subspace of another model's update (engine/subspace_ops.py)
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -2109,6 +2110,89 @@ def execute_plan_v4(
             # ------------------------------------------------------------------
             # OP: project_out / project_in (WSP-Lang 0.2)
             # ------------------------------------------------------------------
+            elif op == "subspace_transfer":
+                # W' = W + alpha * P_S(W_source - W_base) per matching tensor (engine/subspace_ops.py).
+                import fnmatch
+                from safetensors.torch import load_file
+                from engine.subspace_ops import basis_for, project_delta
+                from engine.weight_diff import LocalSafetensors, text_model_name
+
+                pattern = named.get("tensors") or (positional[0] if positional else None)
+                if not pattern or not named.get("source"):
+                    raise ValueError("subspace_transfer needs tensors=<glob> and source=<model dir>")
+                src_p = Path(str(named["source"]))
+                src_p = src_p if src_p.is_absolute() else ROOT / src_p
+                spec = str(named.get("basis", "random"))
+                k, alpha, seed = int(named.get("k", 16)), float(named.get("alpha", 1.0)), int(named.get("seed", 0))
+                out_arg = named.get("out") or out_dir
+                if not out_arg:
+                    raise WriteGuardError("subspace_transfer writes a model: give out=<dir> or --out-dir; "
+                                          f"the input model {target_path} is never overwritten")
+                out_p = Path(str(out_arg))
+                out_p = out_p if out_p.is_absolute() else ROOT / out_p
+                base_dir = target_path if target_path.is_dir() else target_path.parent
+                if out_p.resolve() in (base_dir.resolve(), src_p.resolve()):
+                    raise WriteGuardError(f"subspace_transfer: out={out_p} is an input model")
+                src = LocalSafetensors(src_p)
+                src_by_name = {text_model_name(n): n for n in src.keys() if text_model_name(n)}
+                shards = sorted(base_dir.glob("*.safetensors")) if target_path.is_dir() else [target_path]
+                remaining = budgets.get("max_modified_weights")
+                cache, applied, tensors_done, skipped = {}, 0.0, [], []
+                created = allow_write and not out_p.exists()
+                metadata = {"provenance": "synthetic_transfer", "backward_calls": "0",
+                            "sources": json.dumps({"source": src_p.name, "basis": spec, "k": k, "alpha": alpha,
+                                                   "seed": seed, "tensors": pattern}),
+                            "note": "update taken from a trained model; this op itself runs no gradient"}
+                try:
+                    for shard in shards:
+                        cand = load_file(str(shard))
+                        changed = False
+                        for name in sorted(cand):
+                            norm = text_model_name(name)
+                            if norm is None or not (fnmatch.fnmatch(norm, pattern) or fnmatch.fnmatch(name, pattern)):
+                                continue
+                            W = cand[name]
+                            if W.dim() != 2 or norm not in src_by_name:
+                                skipped.append(name)
+                                continue
+                            Ws = src.get(src_by_name[norm])
+                            if tuple(Ws.shape) != tuple(W.shape):
+                                raise ValueError(f"{name}: source shape {tuple(Ws.shape)} != {tuple(W.shape)}")
+                            V = basis_for(spec, norm, tuple(W.shape), k, seed, cache)
+                            P = project_delta(Ws.float() - W.float(), V)
+                            applied += float(P.norm()) ** 2
+                            cand[name] = (W.float() + alpha * P).to(W.dtype)
+                            tensors_done.append(name)
+                            changed = True
+                        if changed:
+                            shard_budgets = dict(budgets)
+                            if remaining is not None:
+                                shard_budgets["max_modified_weights"] = remaining
+                            if allow_write:
+                                dest = out_p / shard.name
+                                rep = guarded_save(cand, dest, shard, shard_budgets, written_paths, metadata=metadata)
+                            else:
+                                rep = guard_model_write(cand, None, shard, shard_budgets, written_paths)
+                            if remaining is not None:
+                                remaining -= rep["modified_parameters"]
+                        elif allow_write:
+                            out_p.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(shard, out_p / shard.name)
+                except Exception:
+                    if created and out_p.exists():
+                        shutil.rmtree(out_p)  # never leave half a model behind
+                    raise
+                if allow_write:
+                    for extra in list(base_dir.glob("*.json")) + list(base_dir.glob("*.jinja")):
+                        shutil.copy2(extra, out_p / extra.name)
+                    written_paths.add(out_p.resolve())
+                if not tensors_done:
+                    raise ValueError(f"subspace_transfer: no 2-D tensor matched {pattern}")
+                res["execution_state"] = "executed" if allow_write else "simulated"
+                res["result"] = {"output": str(out_p) if allow_write else None, "tensors": len(tensors_done),
+                                 "skipped_not_2d_or_missing": skipped[:20], "basis": spec, "k": k, "alpha": alpha,
+                                 "delta_norm_applied": alpha * applied ** 0.5, "provenance": "synthetic_transfer"}
+
             elif op in ("project_out", "project_in"):
                 tensor_name = positional[0] if positional else named.get("tensor")
                 if not tensor_name:

@@ -34,23 +34,23 @@ class LocalSafetensors:
 
     def __init__(self, path):
         from safetensors import safe_open
-        self._open = safe_open
         path = Path(path)
         files = [path] if path.is_file() else sorted(path.glob("*.safetensors"))
         if not files:
             raise FileNotFoundError(f"no .safetensors in {path}")
-        self._where: Dict[str, Path] = {}
-        for f in files:
-            with safe_open(str(f), "pt") as h:
-                for k in h.keys():
-                    self._where[k] = f
+        # One handle per file for the reader's lifetime: reopening (re-mapping) an 18 GB single-file checkpoint
+        # for every tensor crashed natively on Windows (allenai/tmax-9b).
+        self._handles = {str(f): safe_open(str(f), "pt") for f in files}
+        self._where: Dict[str, str] = {}
+        for f, h in self._handles.items():
+            for k in h.keys():
+                self._where[k] = f
 
     def keys(self) -> List[str]:
         return sorted(self._where)
 
     def get(self, name: str) -> torch.Tensor:
-        with self._open(str(self._where[name]), "pt") as h:
-            return h.get_tensor(name)
+        return self._handles[self._where[name]].get_tensor(name)
 
 
 class RangeSafetensors:
