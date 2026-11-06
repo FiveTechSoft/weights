@@ -1308,6 +1308,7 @@ Script `lab/probes/delta_patterns/run.py`; datos en `lab/runs/delta_patterns/sta
   - Medio: q/k de atención y `in_proj_z/qkv/a` de DeltaNet, 8-10 %; embeddings y `lm_head` 6.5-6.9 %.
   - Menos: `v_proj` 4.9 % y `o_proj` 5.6 % de la atención completa; `conv1d` 1.4 %; normas < 1.3 %.
   - Intactos: `A_log` y `dt_bias` de DeltaNet. Solo difieren en un escalón de redondeo bf16 (máx. 0.0078); `dt_bias` no cambia en ninguna capa.
+    - **Corregido (findings F26):** `A_log` no es solo el cast. MiMo mueve 3-7 de 32 entradas en algunas capas, 1-8 escalones bf16 (|Δ| ≤ 0.004). Es poco, pero es un cambio real.
 - **Por profundidad:** forma de campana. 8.5 % en la capa 0, máximo ~11 % en las capas 17-23, 7.5 % en la última.
 - **Forma del cambio: difuso, no de rango bajo.**
   - En las matrices grandes el rango estable es de 200-500 (6-12 % de la dimensión menor) y las 16 primeras direcciones llevan solo el 2-4 % de la energía.
