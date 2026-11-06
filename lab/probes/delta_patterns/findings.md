@@ -143,3 +143,14 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Per-tensor-type Spearman with Fara: MiMo 0.95, NeoHorse 0.985, tmax 0.76; per layer 0.70, 0.92, 0.60.
 - All six pairs of the four improvements have type-profile rho >= 0.70 (pre-registered H1 threshold). Specificity
   (vs the role-play control) still open.
+
+## F14. Six of six improvement pairs share layer-specific directions; agents cluster on residual-writing matrices. (measured; specificity open)
+- `compare_fara.wspl` (`delta_compare`): Fara vs MiMo, NeoHorse, tmax: H3 in the same 10 matrix types each time.
+  With F7 and F12, all six pairs of the four improvements (MiMo, NeoHorse, tmax, Fara) meet H3 in those 10 types.
+- Strongest ratios over the other-layer null:
+  - agent pairs (Fara-NeoHorse, Fara-tmax, NeoHorse-tmax): DeltaNet `out_proj` ×28-61, attention `o_proj` ×19-31;
+  - pairs with MiMo (reasoning distillation): `down_proj` ×11-17, `v_proj` ×6-14, `q_proj` ×9-13.
+- DeltaNet β/α: ×0.9-1.2 in every pair (nothing shared beyond chance), although β is among the most changed tensors
+  in every model: they all change it a lot, in unrelated ways.
+- Reading: a common core of shared directions, plus a tighter "agent" family in the matrices that write to the
+  residual stream. Still to rule out with the role-play control: that this is the mark of chat fine-tuning.
