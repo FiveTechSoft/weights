@@ -196,3 +196,19 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - A documented ARA on our own local base: ground truth for the decensoring forensics, cheaper than the 27B.
 - Same "reasoning distillation" label, two different weight fingerprints: the label on a card does not say how a
   model was changed; the weights do.
+
+## F18. A fast report from blocks of rows works; two lessons from validating it (engine/model_report.py)
+- Fingerprint from one block of 128 rows per tensor (contiguous bytes, one HTTP range each). MiMo vs base, local:
+  27 s, method `full_fine_tune`, per-type profile Spearman 0.999 against the full statistics (second method).
+- Heretic ARA uses a direction per layer, not one global direction: on xtools-at/DeepSeek-V4-Pro-Qwen3.5-9B-
+  UNCENSORED-heretic the changed tensors are only residual writers, rank 1 per tensor, but the leading directions of
+  different layers are unrelated (median |cos| 0.07). The first rule (required one shared direction, from the
+  classic abliteration of F10) called it `lora_like`. Rule changed after this validation failure, and recorded as
+  such: residual-writers-only + low rank = `directional_ablation`, with `global` or `per_layer` reported. The new
+  rule must hold on cases that did not inspire it (huihui abliteration, the 27B Heretic).
+- Heretic's `end_layer_index` is exclusive (p-e-w/heretic `modifiers/ara.py`: `range(start, end)`): the card's
+  "9-24" is layers 9-23, which is exactly what the report found from weights alone. The 27B plan was corrected the
+  same way (26-56 → 26-55) before anything was unsealed.
+- Speed: remote report 773 s for ~500 MB = 0.7 MB/s while the link gives ~20 MB/s. The cost was the latency of ~860
+  sequential HTTP requests, not Python nor the maths. Fix: blocks fetched concurrently (16 in flight). Rewriting
+  WSPLang in Rust would not change this; fewer bytes and parallel requests do.

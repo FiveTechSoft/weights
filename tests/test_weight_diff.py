@@ -120,6 +120,41 @@ class TestRangeReader(Fixture):
         self.assertIn("model.embed_tokens.weight", header)
 
 
+class TestGetRows(Fixture):
+    """A block of rows is contiguous in safetensors: read it without the rest of the tensor."""
+
+    def fetch(self, name, start, end):
+        self.bytes_read += end - start + 1
+        with open(self.base_dir / name, "rb") as f:
+            f.seek(start)
+            return f.read(end - start + 1)
+
+    def test_local_and_remote_rows_match_the_tensor(self):
+        self.bytes_read = 0
+        files = sorted(p.name for p in self.base_dir.glob("*.safetensors"))
+        local, remote = wd.LocalSafetensors(self.base_dir), wd.RangeSafetensors(files, self.fetch)
+        for name in ("model.layers.1.mlp.down_proj.weight", "model.embed_tokens.weight", "model.norm.weight"):
+            full = local.get(name)
+            for start, count in ((0, 3), (2, 4), (full.shape[0] - 2, 5)):
+                want = full[start:start + count]
+                self.assertTrue(torch.equal(local.get_rows(name, start, count), want), name)
+                self.assertTrue(torch.equal(remote.get_rows(name, start, count), want), name)
+
+    def test_remote_rows_read_only_those_bytes(self):
+        self.bytes_read = 0
+        files = sorted(p.name for p in self.base_dir.glob("*.safetensors"))
+        remote = wd.RangeSafetensors(files, self.fetch)
+        header_bytes = self.bytes_read
+        remote.get_rows("model.layers.1.mlp.down_proj.weight", 1, 2)
+        self.assertEqual(self.bytes_read - header_bytes, 2 * 16 * 2)  # 2 rows x 16 columns x 2 bytes (bf16)
+
+    def test_renamed_passes_rows_through(self):
+        r = wd.Renamed(wd.LocalSafetensors(self.base_dir), lambda n: "x." + n)
+        self.assertTrue(torch.equal(r.get_rows("x.model.layers.1.mlp.down_proj.weight", 0, 2),
+                                    wd.LocalSafetensors(self.base_dir).get("model.layers.1.mlp.down_proj.weight")[:2]))
+        self.assertEqual(r.shape("x.model.layers.1.mlp.down_proj.weight"), (8, 16))
+
+
 class TestTensorStats(unittest.TestCase):
     def test_relative_change_and_cosine(self):
         a = torch.ones(4, 4)

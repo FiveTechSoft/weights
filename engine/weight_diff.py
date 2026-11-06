@@ -52,6 +52,15 @@ class LocalSafetensors:
     def get(self, name: str) -> torch.Tensor:
         return self._handles[self._where[name]].get_tensor(name)
 
+    def shape(self, name: str) -> tuple:
+        return tuple(self._handles[self._where[name]].get_slice(name).get_shape())
+
+    def get_rows(self, name: str, start: int, count: int) -> torch.Tensor:
+        """Rows start .. start+count-1 (clipped to the tensor), without reading the rest."""
+        sl = self._handles[self._where[name]].get_slice(name)
+        n = sl.get_shape()[0]
+        return sl[max(0, start):min(n, start + count)]
+
 
 class RangeSafetensors:
     """safetensors read by byte ranges, for files that are not on this disk."""
@@ -78,6 +87,21 @@ class RangeSafetensors:
         data = self._fetch(f, start, end - 1)
         return torch.frombuffer(bytearray(data), dtype=DTYPES[dtype]).reshape(shape)
 
+    def shape(self, name: str) -> tuple:
+        return self._where[name][2]
+
+    def get_rows(self, name: str, start: int, count: int) -> torch.Tensor:
+        """Rows start .. start+count-1 (clipped): one HTTP range of exactly those bytes."""
+        f, dtype, shape, off, end = self._where[name]
+        n = shape[0] if shape else 1
+        start, stop = max(0, start), min(n, start + count)
+        row_bytes = (end - off) // max(n, 1)
+        sub = (stop - start,) + tuple(shape[1:])
+        if stop <= start or row_bytes == 0:
+            return torch.empty(sub, dtype=DTYPES[dtype])
+        data = self._fetch(f, off + start * row_bytes, off + stop * row_bytes - 1)
+        return torch.frombuffer(bytearray(data), dtype=DTYPES[dtype]).reshape(sub)
+
 
 class Renamed:
     """A reader seen through rename(name) -> new name or None (None hides the tensor)."""
@@ -98,6 +122,12 @@ class Renamed:
 
     def get(self, name: str) -> torch.Tensor:
         return self._reader.get(self._map[name])
+
+    def shape(self, name: str) -> tuple:
+        return self._reader.shape(self._map[name])
+
+    def get_rows(self, name: str, start: int, count: int) -> torch.Tensor:
+        return self._reader.get_rows(self._map[name], start, count)
 
 
 def text_model_name(name: str) -> Optional[str]:

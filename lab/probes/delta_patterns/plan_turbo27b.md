@@ -26,9 +26,13 @@ P2 (its shape): rank (directions carrying > 90 % of that component's energy) and
 P3 (the rest): diffuse, with the 9B core pattern (MLP and gates most changed; DeltaNet `A_log`, `dt_bias`
    untouched).
 
+Correction before unsealing (2026-11-06): Heretic's end_layer_index is exclusive (p-e-w/heretic
+src/heretic/modifiers/ara.py, `range(start_layer_index, end_layer_index)`), so the card's 26-56 means layers 26-55.
+Found while validating engine/model_report.py on a 9B Heretic whose card says 9-24 and whose weights change 9-23.
+
 ## How the predictions are scored after unsealing
-- P1 correct if the predicted range overlaps the documented 26-56 with Jaccard >= 0.7, and D_heretic outside 26-56
-  is ~0.
+- P1 correct if the predicted range overlaps the documented 26-55 (see correction) with Jaccard >= 0.7, and
+  D_heretic outside 26-55 is ~0.
 - P2 correct if D_heretic's measured rank (directions for 90 % energy, median over touched tensors) is within a
   factor 2 of the prediction.
 - P3 correct if D_rest's per-type profile has Spearman >= 0.7 with the 9B improvements' median profile.
