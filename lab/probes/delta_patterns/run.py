@@ -178,6 +178,11 @@ QUEUE = [
     # Controls added after F15 (findings.md F16): full fine-tune with another goal; a deliberate degradation.
     ("wemm_embed", "tencent/WeMM-Embedding-9B", "hf_cache/_dp_wemm_embed", BASE),
     ("angry_claudius", "axiomofmind/Angry-Claudius-9B", "hf_cache/_dp_angry_claudius", BASE),
+    # DeepSeek-V4-Pro distill (LoRA-like) and its Heretic ARA (layers 9-24 documented): findings F17.
+    # The distill is kept (no _dp_ prefix) because it is the base of the Heretic diff; delete it by hand afterwards.
+    ("dsv4_distill", "Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B", "hf_cache/dp_keep_dsv4_distill", BASE),
+    ("dsv4_heretic", "xtools-at/DeepSeek-V4-Pro-Qwen3.5-9B-UNCENSORED-heretic", "hf_cache/_dp_dsv4_heretic",
+     ROOT / "hf_cache" / "dp_keep_dsv4_distill"),
 ]
 
 

@@ -183,3 +183,16 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Decision rules of plan.md unchanged; these controls are reported separately from the pre-registered one.
 - Method lesson: a two-tensor range probe (seconds, a few MB) tells full fine-tune from LoRA and big from small
   updates before committing to a 19 GB download.
+
+## F17. DeepSeek-V4-Pro distill of Qwen3.5-9B is LoRA-like; its Heretic version documents its layers (probe, 4 tensors)
+- `Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B` (card: distillation of DeepSeek-V4-Pro "Max Effect" answers, ~250K math and
+  STEM samples, base unsloth/Qwen3.5-9B): layer-10 DeltaNet `in_proj_qkv` unchanged (0), `input_layernorm`
+  unchanged; layer-10 `mlp.gate_proj` 9.4 % with 58 % of the energy in 16 directions; layer-20 `down_proj` 6.4 %
+  (54 %). Fingerprint of a LoRA on attention/MLP modules, not of a full fine-tune: a reasoning distillation done
+  differently from MiMo's (full, diffuse).
+- `xtools-at/DeepSeek-V4-Pro-Qwen3.5-9B-UNCENSORED-heretic` (Heretic v2.0.0.dev0, ARA, card: layers 9-24, refusals
+  100/100 -> 3/100, KL 0.0422) on top of it: in the probe, the only extra change is layer-20 `down_proj`
+  (6.4 % -> 7.9 %, 16-direction energy 0.54 -> 0.69), inside the documented range.
+- A documented ARA on our own local base: ground truth for the decensoring forensics, cheaper than the 27B.
+- Same "reasoning distillation" label, two different weight fingerprints: the label on a card does not say how a
+  model was changed; the weights do.
