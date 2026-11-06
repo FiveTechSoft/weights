@@ -170,3 +170,16 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   while the improvements share them with each other, that points to specificity independent of method.
 - WSPLang / method lesson: a control model must be checked for its training method from its weights before it is
   used as a control; the weight fingerprint (which modules, which rank) reveals LoRA vs full fine-tune.
+
+## F16. Two more controls, added after F15 to separate method from goal (post-hoc additions, labelled as such)
+- Probe: two tensors per candidate read by HTTP range (layer 10 DeltaNet `in_proj_qkv`, layer 10 `mlp.gate_proj`),
+  compared with the base; nothing else of their weights seen before adding them.
+  - `tencent/WeMM-Embedding-9B` (turned into a multimodal embedding model): full fine-tune — DeltaNet in_proj_qkv
+    10.5 %, gate_proj 15.5 %, 16 directions hold 51 % / 39 % of the energy; norm untouched. Goal clearly not
+    reasoning or agents: the control F15 asked for (full fine-tune, other goal).
+  - `axiomofmind/Angry-Claudius-9B` (novelty fine-tune: a short profane refusal to every request, i.e. a deliberate
+    degradation): touches DeltaNet but little (0.20 %), gate_proj 0.31 %, low rank (74-83 % in 16 directions):
+    looks like a LoRA on all linear layers. A second, "anti-improvement" control.
+- Decision rules of plan.md unchanged; these controls are reported separately from the pre-registered one.
+- Method lesson: a two-tensor range probe (seconds, a few MB) tells full fine-tune from LoRA and big from small
+  updates before committing to a 19 GB download.

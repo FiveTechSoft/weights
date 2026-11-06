@@ -175,6 +175,9 @@ QUEUE = [
     ("fara", "microsoft/Fara1.5-9B", "hf_cache/_dp_fara", BASE),
     ("nyx_rp", "Indexnusrefather/Nyx-RP-9B-Instruct-2608-v1", "hf_cache/_dp_nyx_rp", BASE),
     ("official_post", "Qwen/Qwen3.5-9B-Base", "hf_cache/_dp_qwen35_9b_base", None),  # base = the download
+    # Controls added after F15 (findings.md F16): full fine-tune with another goal; a deliberate degradation.
+    ("wemm_embed", "tencent/WeMM-Embedding-9B", "hf_cache/_dp_wemm_embed", BASE),
+    ("angry_claudius", "axiomofmind/Angry-Claudius-9B", "hf_cache/_dp_angry_claudius", BASE),
 ]
 
 
