@@ -190,6 +190,36 @@ Applies Covariance-Aligned Steering (Dreaming Technique 16) by adding or subtrac
 
 ---
 
+### 5.6. Studying improved models (added 2026-11-06)
+Ops to learn what a fine-tune changed and to move another model along it. Model arguments are directories or files
+of safetensors; multimodal (`model.language_model.*`) and text-only (`model.*`) Qwen3.5 names are lined up. Tensors
+are read one at a time (a 9B model never sits in memory twice). Reports and signatures are never weight files and
+never land inside an input model.
+
+```wspl
+step delta_stats base=<model> model=<model> [tensors=<glob>] [out=<report.json>]
+step delta_signature base=<model> model=<model> out=<sig.pt> [k=16] [sketch=4096] [tensors=<glob>]
+step delta_compare a=<sig.pt> b=<sig.pt> [factor=3] [out=<report.json>]
+step evaluate_benchmark endpoint=<port|URL> name=<label> [gsm8k=100] [math500=50] [max_tokens=8192] [out=<report.json>]
+step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<a.pt>,<b.pt>|random k=16 alpha=1.0 [seed=0] out=<dir>
+```
+
+* `delta_stats`: per tensor, ||ΔW||/||W||, cosine, changed fraction, spectrum of ΔW (top-1 energy, stable rank),
+  moved embedding rows; totals per tensor family and per layer.
+* `delta_signature`: per tensor, the top-k singular vectors of ΔW on its smaller side, its alignment with the base
+  weight's own top-k subspace, and a count-sketch of ΔW, so pairs can be compared after the weights are deleted.
+* `delta_compare`: per tensor type, same-layer subspace overlap against the same type at other layers (structured
+  null) and against chance k/d; `H3` true when both ratios are >= `factor`.
+* `evaluate_benchmark`: GSM8K / MATH-500 with one fixed protocol (greedy, the model's chat template, the boxed
+  answer graded by two independent graders) against a server that is already running (e.g. llama-server).
+* `subspace_transfer`: W' = W + α · P_S(W_source − W_base), the projection on the smaller side. Writes a complete
+  model to `out=` (unchanged shards copied, configs copied); every changed shard goes through the write guard with a
+  total budget; protected tensors need `unlock_tensors`; on failure the partial output is removed. Provenance
+  `synthetic_transfer`, with the source, basis, k and α, is stored in each shard: the op runs no gradient, but the
+  update it moves along came from a trained model.
+
+---
+
 ## 6. Security Model & Runtime Guardrails
 
 WSP-Lang enforces a multi-layer defense-in-depth model to prevent accidental model corruption:

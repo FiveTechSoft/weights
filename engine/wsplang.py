@@ -61,6 +61,8 @@ OPS_ALLOWED = {
     "semantic_areas", "semantic-areas",
     "project_out", "project_in", "export_control_vector", "audit", "assert_budget",
     "subspace_transfer",  # move along a subspace of another model's update (engine/subspace_ops.py)
+    # Studying improved models (engine/weight_diff.py, engine/bench_runner.py); none writes weights
+    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark",
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -195,6 +197,26 @@ def check_new_file(out_path, protected, written) -> None:
         p = p / "model.safetensors" if p.is_dir() else p
         if out == p.resolve() and out not in written:
             raise WriteGuardError(f"refusing to overwrite the input model {p}; choose another out=")
+
+
+def check_report_path(out_path, inputs) -> Path:
+    """Reports and signatures never land inside an input model, and are never weight files."""
+    out = Path(out_path)
+    out = out if out.is_absolute() else ROOT / out
+    if out.suffix.lower() in (".safetensors", ".gguf", ".bin"):
+        raise WriteGuardError(f"{out.name}: a report or signature is not a weight file; choose another out=")
+    o = out.resolve()
+    for p in inputs:
+        p = Path(p).resolve()
+        root = p if p.is_dir() else p.parent
+        if o == p or root in o.parents:
+            raise WriteGuardError(f"refusing to write {out} inside the input model {p}")
+    return out
+
+
+def _model_path(arg) -> Path:
+    p = Path(str(arg))
+    return p if p.is_absolute() else ROOT / p
 
 
 def run_exit_code(results) -> int:
@@ -2110,6 +2132,83 @@ def execute_plan_v4(
             # ------------------------------------------------------------------
             # OP: project_out / project_in (WSP-Lang 0.2)
             # ------------------------------------------------------------------
+            elif op in ("delta_stats", "delta_signature"):
+                # What a fine-tune changed: base= model= (directories or files of safetensors; multimodal and
+                # text-only Qwen3.5 names lined up). Reads one tensor at a time; writes no weights.
+                import fnmatch
+                from engine import weight_diff as wd
+                if not named.get("base") or not named.get("model"):
+                    raise ValueError(f"{op} needs base=<model> and model=<model>")
+                base_p, model_p = _model_path(named["base"]), _model_path(named["model"])
+                pattern = str(named.get("tensors", "*"))
+                base_r = wd.Renamed(wd.LocalSafetensors(base_p), wd.text_model_name)
+                model_r = wd.Renamed(wd.LocalSafetensors(model_p), wd.text_model_name)
+                if op == "delta_stats":
+                    rep = wd.diff_models(base_r, model_r, pattern=pattern, k=int(named.get("k", 16)))
+                    top = sorted(rep["tensors"], key=lambda r: -r["rel_delta"])[:int(named.get("top", 10))]
+                    res["result"] = {"overall": rep["overall"], "by_family": rep["by_family"],
+                                     "by_layer": rep["by_layer"], "only_in_base": rep["only_in_base"],
+                                     "only_in_model": rep["only_in_target"], "shape_mismatch": rep["shape_mismatch"],
+                                     "top_tensors": [{k2: r[k2] for k2 in ("tensor", "rel_delta", "energy_top1",
+                                                                           "stable_rank") if k2 in r} for r in top]}
+                    if named.get("out"):
+                        out_p = check_report_path(named["out"], [base_p, model_p])
+                        out_p.parent.mkdir(parents=True, exist_ok=True)
+                        out_p.write_text(json.dumps(rep, indent=1), encoding="utf-8")
+                        res["result"]["output"] = str(out_p)
+                else:
+                    if not named.get("out"):
+                        raise ValueError("delta_signature needs out=<file.pt>")
+                    out_p = check_report_path(named["out"], [base_p, model_p])
+                    k, m = int(named.get("k", 16)), int(named.get("sketch", 4096))
+                    sigs = {}
+                    for n in sorted(set(base_r.keys()) & set(model_r.keys())):
+                        if not fnmatch.fnmatch(n, pattern):
+                            continue
+                        a, b = base_r.get(n), model_r.get(n)
+                        if tuple(a.shape) == tuple(b.shape):
+                            sigs[n] = wd.delta_signature(n, a, b, k=k, sketch_dim=m)
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    torch.save(sigs, out_p)
+                    res["result"] = {"output": str(out_p), "tensors": len(sigs), "k": k, "sketch": m}
+                res["execution_state"] = "executed"
+
+            elif op == "delta_compare":
+                # Two delta signatures, per tensor type, with the nulls of lab/probes/delta_patterns/plan.md.
+                from engine import weight_diff as wd
+                if not named.get("a") or not named.get("b"):
+                    raise ValueError("delta_compare needs a=<signature.pt> and b=<signature.pt>")
+                rows = wd.compare_signatures(torch.load(_model_path(named["a"])), torch.load(_model_path(named["b"])),
+                                             factor=float(named.get("factor", 3.0)))
+                res["result"] = {"by_type": rows,
+                                 "H3_types": sorted(t for t, r in rows.items() if r["H3"]),
+                                 "rule": "same-layer overlap >= factor x other-layer null and >= factor x chance"}
+                if named.get("out"):
+                    out_p = check_report_path(named["out"], [])
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+                    res["result"]["output"] = str(out_p)
+                res["execution_state"] = "executed"
+
+            elif op == "evaluate_benchmark":
+                # GSM8K / MATH-500 against an already running chat server (engine/bench_runner.py protocol).
+                from engine import bench_runner as benchmarks
+                if not named.get("endpoint") or not named.get("name"):
+                    raise ValueError("evaluate_benchmark needs endpoint=<port or URL> and name=<label>")
+                out_dir = None
+                if named.get("out"):
+                    out_p = check_report_path(named["out"], [])
+                    out_dir = out_p.parent
+                rep = benchmarks.run(str(named["name"]), named["endpoint"], gsm_n=int(named.get("gsm8k", 100)),
+                                     math_n=int(named.get("math500", 50)), parallel=int(named.get("parallel", 2)),
+                                     max_tokens=int(named.get("max_tokens", 8192)), out_dir=out_dir,
+                                     log=lambda s: None)
+                if named.get("out"):
+                    out_p.write_text(json.dumps(rep, indent=1, ensure_ascii=False), encoding="utf-8")
+                res["result"] = {"summary": rep["summary"], "max_tokens": rep["max_tokens"],
+                                 "output": str(out_p) if named.get("out") else None}
+                res["execution_state"] = "executed"
+
             elif op == "subspace_transfer":
                 # W' = W + alpha * P_S(W_source - W_base) per matching tensor (engine/subspace_ops.py).
                 import fnmatch

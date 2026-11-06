@@ -325,6 +325,47 @@ def signature_overlap(s1: Dict, s2: Dict) -> Dict:
     return out
 
 
+def tensor_kind(name: str) -> str:
+    """The tensor's type without its layer index: model.layers.7.mlp.up_proj.weight -> mlp.up_proj.weight."""
+    return re.sub(r"^(model\.)?(layers|blk|h)\.\d+\.", "", name)
+
+
+def compare_signatures(A: Dict, B: Dict, factor: float = 3.0) -> Dict:
+    """Pair of delta signatures (name -> signature dicts), per tensor type, with the nulls of the delta study.
+
+    same: median top-k subspace overlap of the same tensor; null_other_layer: median overlap of that type at different
+    layers (layer i of A with layer j != i of B); chance: k/d. H3: same >= factor * null and >= factor * chance
+    (None when the type has a single tensor, so no null exists). cosine: median count-sketch cosine (about
+    +-1/sqrt(sketch size) of noise).
+    """
+    import itertools
+    import statistics as st
+    by_type: Dict[str, List[str]] = {}
+    for n in sorted(set(A) & set(B)):
+        if "basis" in A[n] and "basis" in B[n]:
+            by_type.setdefault(tensor_kind(n), []).append(n)
+    rows = {}
+    for t, names in sorted(by_type.items()):
+        same = [signature_overlap(A[n], B[n]) for n in names]
+        null = []
+        for n1, n2 in itertools.permutations(names, 2):
+            if A[n1]["shape"] == B[n2]["shape"]:
+                V1, V2 = A[n1]["basis"].double(), B[n2]["basis"].double()
+                kk = min(V1.shape[1], V2.shape[1])
+                null.append(float((V1[:, :kk].T @ V2[:, :kk]).pow(2).sum()) / kk)
+        s = st.median(x["subspace_overlap"] for x in same)
+        chance = same[0]["random_overlap"]
+        nl = st.median(null) if null else None
+        rows[t] = {"tensors": len(names), "same": s, "null_other_layer": nl, "chance": chance,
+                   "x_null": s / nl if nl else None, "x_chance": s / chance,
+                   "cosine": st.median(x["cosine"] for x in same),
+                   "cosine_min": min(x["cosine"] for x in same), "cosine_max": max(x["cosine"] for x in same),
+                   "base_alignment_A": st.median(A[n].get("base_alignment", float("nan")) for n in names),
+                   "base_alignment_B": st.median(B[n].get("base_alignment", float("nan")) for n in names),
+                   "H3": None if nl is None else bool(s >= factor * nl and s >= factor * chance)}
+    return rows
+
+
 def _totals(rows: List[Dict]) -> Dict:
     nb2 = sum(r["norm_base"] ** 2 for r in rows)
     nd2 = sum(r["norm_delta"] ** 2 for r in rows)
