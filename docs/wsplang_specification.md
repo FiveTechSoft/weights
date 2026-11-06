@@ -14,7 +14,7 @@
 
 $$\mathcal{W} \in \mathbb{R}^{D_{\text{model}} \times D_{\text{out}}} \quad \text{encodes a structured, decomposable computer program.}$$
 
-**WSP-Lang** is the domain-specific declarative programming language designed to query, decompile, steer, and surgically mutate neural network weights in quantized formats (such as GGUF `Q6_K` and `BF16`) with:
+**WSP-Lang** is the domain-specific declarative programming language designed to query, decompile, steer, and edit neural network weights in quantized formats (such as GGUF `Q6_K` and `BF16`) with:
 1. **Zero forward passes** required for weight inspection and semantic decompilation.
 2. **Deterministic, falsifiable hypothesis definitions** (every program declares its hypothesis, budget, and validation threshold).
 3. **Hardware safety & physical barriers** (`FORBIDDEN_TENSORS` and pre-execution validation gates).
@@ -304,7 +304,7 @@ sequenceDiagram
 1. `execute_wsplang_code(code, gguf)`: In-memory declarative execution.
 2. `run_wsplang(program_path, execute, gguf)`: File-based declarative execution.
 3. `peek_weight(gguf, tensor, row, col, top)`: Read-only anatomical inspection.
-4. `poke_weight(gguf, tensor, row, col, value, out)`: Safe surgical weight modification.
+4. `poke_weight(gguf, tensor, row, col, value, out)`: Guarded single-weight modification.
 5. `get_semantic_areas(gguf, tensor, row, col)`: Centroid map and projection.
 6. `run_agent_loop_probe(endpoint, alias, n, ...)`: Agentic tool-call loop benchmarking.
 7. `run_logic_probe(endpoint, n, seed)`: Deterministic synthetic Horn-logic verification.

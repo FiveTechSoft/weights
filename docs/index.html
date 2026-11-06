@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WSP-Lang: Weight-Space Programming on 9B Quantized LLMs</title>
-  <meta name="description" content="Direct sub-weight decompilation, reverse engineering, and behavioral steering on quantized large language models with zero forward passes.">
+  <meta name="description" content="Direct sub-weight decompilation, reverse engineering, and weight editing on quantized large language models. Reading and editing weights needs no forward pass; behavioural claims are tested with forward passes.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
   <style>
     :root {
@@ -246,7 +246,7 @@
   <header>
     <div class="badge-pill">RESEARCH RELEASE · OPEN SOURCE MIT LICENSE</div>
     <h1>WSP-Lang: Weight-Space Programming</h1>
-    <p class="subtitle">Direct sub-weight decompilation, reverse engineering, and behavioral steering on 9B quantized LLMs with zero forward passes, gradients, or GPU overhead.</p>
+    <p class="subtitle">Direct sub-weight decompilation, reverse engineering, and weight editing on 9B quantized LLMs. Reading and editing weights needs no forward pass or gradient; any claim about behaviour is measured with forward passes (llama.cpp, often on GPU). Audited status of every result: <a href="https://github.com/FiveTechSoft/weights#status-of-the-results-november-2026-audited" style="color: var(--accent-cyan);">README, "Status of the results"</a>.</p>
     
     <div class="btn-group">
       <a href="https://github.com/FiveTechSoft/weights" class="btn btn-primary" target="_blank">
@@ -254,7 +254,7 @@
         View on GitHub
       </a>
       <a href="wsplang_0.7_spec.md" class="btn btn-secondary" style="border-color: var(--accent-amber); color: #FDE68A;">🛡️ WSP-Lang 0.7 Causal Contracts</a>
-      <a href="mimo_critique_transfer_benchmark.md" class="btn btn-secondary" style="border-color: var(--accent-cyan); color: #BAE6FD;">⚡ MiMo u_critic Benchmark (100%)</a>
+      <a href="mimo_critique_transfer_benchmark.md" class="btn btn-secondary" style="border-color: var(--accent-cyan); color: #BAE6FD;">⚡ MiMo u_critic Benchmark (withdrawn)</a>
       <a href="nanowsp.html" class="btn btn-secondary" style="border-color: var(--accent-purple); color: #E9D5FF;">🤖 NanoWSP-1 (80k)</a>
       <a href="nanowsp2.html" class="btn btn-secondary" style="border-color: var(--accent-emerald); color: #A7F3D0;">🤖 NanoWSP-2 (600k)</a>
       <a href="nanowsp3.html" class="btn btn-secondary" style="border-color: var(--accent-cyan); color: #BAE6FD;">🤖 NanoWSP-3 (3.28M)</a>
@@ -276,17 +276,24 @@
     <section>
       <div class="card" style="border-color: var(--accent-amber); background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.98) 100%); padding: 2.25rem; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem;">
-          <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.25); border: 1px solid var(--accent-amber); color: #FDE68A; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em;">LATEST: WSP-LANG 0.7 · CAUSAL VERIFICATION & SELF-CRITIQUE TRANSFER</span>
-          <span style="display: inline-block; padding: 0.25rem 0.6rem; border-radius: 9999px; background: rgba(244, 63, 94, 0.2); border: 1px solid var(--accent-rose); color: #FDA4AF; font-size: 0.75rem; font-weight: 700;">CAUSAL ROLLBACK / NEGATIVE CONTROL</span>
+          <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.25); border: 1px solid var(--accent-amber); color: #FDE68A; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em;">WSP-LANG 0.7 · SELF-CRITIQUE TRANSFER (RECORD)</span>
+          <span style="display: inline-block; padding: 0.25rem 0.6rem; border-radius: 9999px; background: rgba(244, 63, 94, 0.2); border: 1px solid var(--accent-rose); color: #FDA4AF; font-size: 0.75rem; font-weight: 700;">WITHDRAWN (AUDIT 2026-11-06)</span>
         </div>
 
-        <h2 style="font-size: 1.85rem; color: #FFFFFF; margin-bottom: 0.85rem; letter-spacing: -0.02em;">🔬 Causal Contract Verification & Negative Control Study (MiMo-2.6-9B)</h2>
+        <h2 style="font-size: 1.85rem; color: #FFFFFF; margin-bottom: 0.85rem; letter-spacing: -0.02em;">🔬 Self-Critique (u_critic) Transfer on MiMo-2.6-9B: Withdrawn</h2>
+        <div style="border: 1px solid var(--accent-rose); background: rgba(244, 63, 94, 0.12); border-radius: 0.5rem; padding: 1rem 1.25rem; margin-bottom: 1.25rem; color: #FECDD3; font-size: 0.95rem; line-height: 1.55;">
+          <strong>Withdrawn.</strong> None of the numbers in this card is evidence that the edit changes MiMo's reasoning:
+          (1) the "causal contract" (50 % in all 4 arms) comes from <code>rig/exp_mimo_self_critique_v1.py</code>, whose eval never runs the model: it scores W&middot;sin(prompt-hash) projected on u, and its "placebo" is the unchanged W;
+          (2) <code>u_critic</code> was extracted from token embeddings of hand-written pairs, not from activations (results.md &sect;15.4);
+          (3) the 12-question and 5-question tables below have no saved result file; the "after" answers of <code>rig/test_reflection_prompt.py</code> come from prompts that themselves ask the model to verify step by step, and the "before" answers of <code>rig/live_comparison_showcase.py</code> are hardcoded strings (<code>pre_mimo_answer</code>).
+          The tables are kept only as a record of what was claimed.
+        </div>
         <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem; line-height: 1.6;">
-          Why do 9B models fail trick arithmetic, character counting, and constraint traps? They suffer from <em>pathological commitment</em>: rush feed-forward answers without internal pause. By extracting the <strong>Self-Critique & Reflection subspace (u_critic &isin; &reals;<sup>4096</sup>)</strong> from frontier model trajectories, MiMo-2.6 jumps from <strong>75.0% &rarr; 100.0% accuracy</strong> with <strong>0 extra parameters and 0 bytes added</strong>.
+          Original hypothesis: 9B models fail trick arithmetic, character counting and constraint traps because they commit to a fast answer. A direction <strong>u_critic &isin; &reals;<sup>4096</sup></strong> was meant to capture "self-critique". The claimed jump from 75.0 % to 100.0 % (n=12) is <strong>not supported</strong> (see the note above).
         </p>
 
         <!-- BENCHMARK BEFORE VS AFTER TABLE -->
-        <h3 style="color: var(--accent-cyan); font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.75rem;">📊 MiMo-2.6 Before vs After Empirical Benchmark</h3>
+        <h3 style="color: var(--accent-cyan); font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.75rem;">📊 Claimed Before vs After (withdrawn, n=12, no result file)</h3>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.95rem;">
           <thead>
             <tr>
@@ -302,7 +309,7 @@
               <td><strong>Watermelon Problem</strong> (100kg, 99% water &rarr; sun &rarr; 98% water)</td>
               <td><code>50 kg</code></td>
               <td><span style="color: var(--accent-rose); font-weight: 700;">'199.8'</span> (Severe Math Hallucination)</td>
-              <td><span style="color: var(--accent-emerald); font-weight: 700;">50 kg</span> (Verified dry mass: 1kg/0.02)</td>
+              <td><span style="color: var(--accent-emerald); font-weight: 700;">50 kg</span> (dry mass: 1kg/0.02)</td>
               <td style="text-align: center;"><span style="color: var(--accent-emerald); font-weight: bold;">❌ &rarr; ✅</span></td>
             </tr>
             <tr>
@@ -339,7 +346,7 @@
         <!-- TRAINING VS WSP COMPARISON TABLE -->
         <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.75rem;">⚡ What Would This Cost via Conventional Fine-Tuning?</h3>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
-          Comparing conventional cluster fine-tuning (SFT / DPO / RL) against closed-form Weight-Space Programming on the same workstation:
+          Cost comparison as originally written. It compares the cost of computing a vector with the cost of training, but the vector was not shown to change behaviour, so the comparison does not show an advantage. The fine-tuning column is an estimate, not a measurement. Regressions are not guaranteed away by any bound; they have to be measured with forward passes.
         </p>
 
         <div style="overflow-x: auto;">
@@ -398,17 +405,17 @@
               <tr>
                 <td><strong>Catastrophic Forgetting</strong></td>
                 <td>High risk of parameter drift and factual regression</td>
-                <td><strong style="color: #38BDF8;">Mathematical bound + 4-Way Paired Contract</strong></td>
-                <td><strong style="color: #A7F3D0;">Zero regression guarantee</strong></td>
+                <td><strong style="color: #38BDF8;">Norm bound only (the 4-way contract run here never executed the model)</strong></td>
+                <td><strong style="color: #A7F3D0;">No guarantee; must be measured</strong></td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <!-- MULTILAYER ENVELOPE & LIVE SHOWCASE SECTION -->
-        <h3 style="color: var(--accent-emerald); font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.75rem;">🔬 Multi-Layer Envelope (Layers 10..22) & Live GPU A/B Benchmark</h3>
+        <h3 style="color: var(--accent-emerald); font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.75rem;">🔬 Multi-Layer Envelope (Layers 10..22): Claimed A/B (withdrawn, n=5)</h3>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
-          Why did single-layer rank-1 surgery fail causal holdout tests? Grounded in arXiv literature (<em>MEMIT</em> Meng et al. 2023, <em>RepE</em> Zou et al. 2023, <em>CAA</em> Rimsky et al. 2023, <em>Arditi et al.</em> 2024), genuine cognitive reflection requires a smooth Gaussian envelope across mediating layers 10 to 22 (&mu;=16, &sigma;=2.5). Live inference on RTX 3060 at ~39 tokens/sec demonstrates a clean jump from <strong>40.0% to 100.0%</strong> on hard reasoning traps:
+          Hypothesis, after the single-layer edit showed no effect: inspired by <em>MEMIT</em> (Meng et al. 2023), <em>RepE</em> (Zou et al. 2023), <em>CAA</em> (Rimsky et al. 2023) and Arditi et al. (2024), spread the direction over layers 10 to 22 with a Gaussian envelope (&mu;=16, &sigma;=2.5). The claimed jump from 40.0 % to 100.0 % on 5 traps is <strong>not evidence</strong>: n=5, no saved result file, and the "Mode A" answers in <code>rig/live_comparison_showcase.py</code> are hardcoded strings, not model outputs.
         </p>
 
         <div style="overflow-x: auto;">
@@ -482,7 +489,7 @@
           <div style="background: rgba(11, 17, 32, 0.85); border: 1px solid var(--accent-emerald); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">Path 2: Permanent SafeTensors Checkpoint (0 Bytes Added)</h4>
             <p style="font-size: 0.85rem; color: #CBD5E1; margin-bottom: 0.5rem;">
-              Surgically updated 13 layers (Layers 10..22, 654.3M parameters) in 35.6s on CPU. Preserves exact byte count on all shards (Shard 1: 5.27GB, Shard 2: 5.03GB, Shard 3: 5.23GB, &Delta; = 0 bytes).
+              Updated 13 layers (Layers 10..22, 654.3M parameters) in 35.6s on CPU. Preserves exact byte count on all shards (Shard 1: 5.27GB, Shard 2: 5.03GB, Shard 3: 5.23GB, &Delta; = 0 bytes).
             </p>
             <pre style="margin: 0.5rem 0; font-size: 0.78rem;">python rig/migrate_critic_to_mimo.py
 # Saved in: models/mimo-wsp-critic/ (W_new = W + &Delta;W)</pre>
@@ -490,7 +497,7 @@
         </div>
 
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
-          <a href="mimo_critique_transfer_benchmark.md" class="btn btn-primary" style="font-size: 0.9rem; font-weight: 700;">Read Full Critique Transfer Report &rarr;</a>
+          <a href="mimo_critique_transfer_benchmark.md" class="btn btn-primary" style="font-size: 0.9rem; font-weight: 700;">Read the Critique Transfer Report (withdrawn) &rarr;</a>
           <a href="wsplang_0.7_spec.md" class="btn btn-secondary" style="border-color: var(--accent-amber); color: #FDE68A; font-size: 0.9rem;">View WSP-Lang 0.7 Contract Spec &rarr;</a>
           <a href="wsplang_multilayer_envelope_spec.md" class="btn btn-secondary" style="border-color: var(--accent-amber); color: #FDE68A; font-size: 0.9rem;">📐 Multi-Layer Envelope arXiv Spec &rarr;</a>
           <span style="display: inline-flex; align-items: center; font-size: 0.85rem; color: var(--text-muted); font-family: monospace;">python rig/live_comparison_showcase.py</span>
@@ -504,16 +511,19 @@
         <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(56, 189, 248, 0.25); border: 1px solid var(--accent-cyan); color: #BAE6FD; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW IN WSP-LANG 0.6 · CROSS-MODEL LATENT SURGERY</div>
         <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🌉 Cross-Model Knowledge Transfer: MiMo-9B &rarr; TinyLlama-1.1B</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
-          Transferring representation circuits and loop-suppression vectors between completely different model architectures ($d_1 = 4096 	o d_2 = 2048$) in closed form via <strong>Orthogonal Procrustes Latent Alignment</strong> in <strong>2.56 seconds on CPU</strong>.
+          Mapping a direction between two architectures ($d_1 = 4096 	o d_2 = 2048$) in closed form via <strong>Orthogonal Procrustes alignment</strong> of token embeddings, computed in <strong>2.57 s on CPU</strong>.
         </p>
+        <div style="border: 1px solid var(--accent-rose); background: rgba(244, 63, 94, 0.12); border-radius: 0.5rem; padding: 0.9rem 1.15rem; margin-bottom: 1rem; color: #FECDD3; font-size: 0.9rem; line-height: 1.5;">
+          <strong>Status after audit.</strong> The earlier TinyLlama report ("0 &rarr; 100 %, 18.4 ms, 0 % collateral") was written from hardcoded values by <code>scripts/save_tinyllama_benchmark_report.py</code> and is <strong>withdrawn</strong>. The real fact-transfer run (<code>rig_runs/mimo_to_tinyllama_full_migration_report.json</code>) gives target facts 5/8 &rarr; 7/8 and holdout preservation 5/8 (n too small). The figures below are geometry only: no behaviour of TinyLlama was tested.
+        </div>
         <div class="grid-2" style="margin-bottom: 1rem;">
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">1. Rosetta Procrustes SVD (2048 &times; 4096)</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Aligns 2,000 shared vocabulary words with <strong>82.5% mean cosine fidelity</strong>. Semi-orthogonality guarantee <code>||TT^T - I|| = 1.84 &times; 10<sup>-4</sup></code> preserves target latent manifold geometry.</p>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Mean cosine 0.8246 on 2,000 shared vocabulary words (<code>rig_runs/cross_model_transfer_report.json</code>). This is an <strong>in-sample fit</strong>: it is measured on the same anchors used to compute T, with no held-out words, so it says nothing about transfer. <code>||TT^T - I|| = 1.84 &times; 10<sup>-4</sup></code> only checks that T is semi-orthogonal.</p>
           </div>
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
-            <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">2. Downstream Surgery in TinyLlama Layer 10</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Translated direction vector applied to TinyLlama's <code>down_proj.weight</code> ($2048 	imes 5632$) via LEACE: achieves <strong>100.0000% concept erasure in student</strong> with microscopic delta (<code>max |&Delta;W| = 0.0055</code>).</p>
+            <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">2. Rank-1 Projection in TinyLlama Layer 10</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">The translated vector is projected out of TinyLlama's <code>down_proj.weight</code> ($2048 	imes 5632$), <code>max |&Delta;W| = 0.0055</code>. The reported "100 % erasure" means ||u<sup>T</sup>W|| goes to ~0, which is true by construction of the projection; no data, probe or behaviour was tested. The source vector (<code>u_loop_L14</code>) itself has no statistical basis (results.md &sect;15.4).</p>
           </div>
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
@@ -527,18 +537,18 @@
     <section>
       <div class="card" style="border-color: var(--accent-emerald); background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem; margin-bottom: 2rem;">
         <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.25); border: 1px solid var(--accent-emerald); color: #A7F3D0; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW IN WSP-LANG 0.6 · CROSS-MODEL PROCRUSTES & LATENT SURGERY</div>
-        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">⚡ Closed-Form Weight Surgery: 100.0% Erasure & Covariance Inversion</h2>
+        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">⚡ Closed-Form Weight Edits: Rank-1 Projection & Covariance Inversion</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
-          Integrating state-of-the-art breakthroughs from ArXiv: <strong>LEACE</strong> (Belrose et al., NeurIPS 2023), <strong>MEMIT / EMMET</strong> (Meng et al. 2023, Gupta et al. 2024), <strong>Gated DeltaNet-2</strong> (Yang et al. 2025, NVIDIA 2026), and <strong>Titans</strong> (Google 2025).
+          Closed-form methods taken from the literature: <strong>LEACE</strong> (Belrose et al., NeurIPS 2023), <strong>MEMIT / EMMET</strong> (Meng et al. 2023, Gupta et al. 2024), <strong>Gated DeltaNet-2</strong> (Yang et al. 2025, NVIDIA 2026), and <strong>Titans</strong> (Google 2025).
         </p>
         <div class="grid-2" style="margin-bottom: 1rem;">
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
-            <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">1. LEACE Empirical Verification on MiMo-9B (4096 &times; 12288)</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Exact closed-form projection <code>P = I - (&Sigma; u u<sup>T</sup>)/(u<sup>T</sup> &Sigma; u)</code> tested on Layer 14 down_proj: concept energy reduced from <strong>1.399061 to 6.315 &times; 10<sup>-7</sup></strong> (100.0000% erased) in <strong>47 ms</strong> on CPU, with orthogonal probe preservation (mean &Delta; = 0.000048).</p>
+            <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">1. LEACE-style Projection on MiMo-9B (4096 &times; 12288)</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Rank-1 closed-form projection <code>P = I - (&Sigma; u u<sup>T</sup>)/(u<sup>T</sup> &Sigma; u)</code> on Layer 14 down_proj: ||u<sup>T</sup>W|| goes from 1.399061 to 6.315 &times; 10<sup>-7</sup> in <strong>47 ms</strong> on CPU (<code>rig_runs/leace_verification_report.json</code>). This is true by algebra: &Sigma; is built from W itself, so no data, probe or behaviour was tested, and "erasure" here does not mean a concept was removed from the model's behaviour.</p>
           </div>
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">2. MEMIT Regularization & Decoupled DeltaNet</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Prevents condition number explosion under mass memory insertion via <code>(K<sup>T</sup> K + &lambda; C<sub>0</sub>)<sup>-1</sup></code>. Decoupled erase/write channels with orthogonal projection (<code>v<sub>w</sub> &perp; u<sub>e</sub></code>) guarantee zero re-contamination of erased attractors.</p>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Prevents condition number explosion under mass memory insertion via <code>(K<sup>T</sup> K + &lambda; C<sub>0</sub>)<sup>-1</sup></code>. Decoupled erase/write channels with orthogonal projection (<code>v<sub>w</sub> &perp; u<sub>e</sub></code>) keep the write direction orthogonal to the erased one (an algebraic property, not a behavioural test).</p>
           </div>
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
@@ -595,10 +605,10 @@
     <!-- REAL LLM CERTIFICATION & QA CARD -->
     <section>
       <div class="card" style="border-color: var(--accent-cyan); background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem; margin-bottom: 2rem;">
-        <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(56, 189, 248, 0.25); border: 1px solid var(--accent-cyan); color: #BAE6FD; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">EMPIRICAL AUDIT · REAL LLM BEHAVIOR CERTIFIED</div>
-        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🔬 NanoWSP-3 Real LLM Verification: 14.7x SNR & Canonical Q&A Table</h2>
+        <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(56, 189, 248, 0.25); border: 1px solid var(--accent-cyan); color: #BAE6FD; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">MEASURED · lab/runs/real_llm_verification.json</div>
+        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🔬 NanoWSP-3 Character-Level LM Variant: Perplexity & Sample Continuations</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
-          Rigorous mechanical evaluation of NanoWSP-3 (4 layers, d=256, active causal RoPE attention). Demonstrates <strong>PPL 3.35 (natural) vs 49.1 (uniform noise)</strong> (14.7x signal-to-noise ratio), 80.0% valid English vocabulary under greedy decoding, and exact factual entity retrieval in blind testing:
+          Measurements of a 4-layer NanoWSP-3 variant (d=256, causal RoPE attention), distinct from the 6-layer lookup testbed below: <strong>PPL 3.35 (natural) vs 49.1 (uniform noise)</strong>, 80.0% valid English words under greedy decoding. The examples are continuations of lines from <em>Alice in Wonderland</em>: they show memory of the corpus, not question answering:
         </p>
 
         <div style="overflow-x: auto; margin-bottom: 1.25rem;">
@@ -614,7 +624,7 @@
               <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                 <td style="padding: 0.6rem; font-family: monospace; color: #BAE6FD;">Question: Who stole the tarts? Answer: The Knave of</td>
                 <td style="padding: 0.6rem; font-family: monospace; color: #34D399;">Hearts, Alice hastily replied; only one doesn</td>
-                <td style="padding: 0.6rem;"><strong>Identificación canónica exacta</strong> del Cap. XI de Lewis Carroll.</td>
+                <td style="padding: 0.6rem;">Continuación de una frase del Cap. XI de Lewis Carroll (memoria del corpus).</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                 <td style="padding: 0.6rem; font-family: monospace; color: #BAE6FD;">Twinkle, twinkle, little</td>
@@ -650,7 +660,7 @@ minute, with her arms</td>
         <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(56, 189, 248, 0.25); border: 1px solid var(--accent-cyan); color: #BAE6FD; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW · PROJECT NANOWSP-3 (3.28M PARAMETERS)</div>
         <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🤖 NanoWSP-3: 6-Layer Linear Associative Memory in Weight Space</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
-          A standalone <strong>6-layer autoregressive Transformer (3,280,128 parameters, 12.51 MB SafeTensors)</strong> with 8 attention heads and full 256-byte ASCII vocabulary. Validates closed-form linear associative memory storage across 5 thematic benchmarks with <strong>100.0% recall across all 23 facts in 154 ms on CPU</strong> via Gram-matrix pseudo-inverse without cross-talk (associative testbed; not a generalized language model).
+          A standalone <strong>6-layer autoregressive Transformer (3,280,128 parameters, 12.51 MB SafeTensors)</strong> with 8 attention heads and full 256-byte ASCII vocabulary. Stores key&rarr;value pairs in 5 themes in closed form. Recalls all <strong>23/23 stored associations</strong>, written in 154 ms on CPU via a Gram-matrix pseudo-inverse. This is a lookup testbed, not a language model: recall is measured on the stored items only, and no generalization is tested.
         </p>
         <div class="grid-2" style="margin-bottom: 1rem;">
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
@@ -658,8 +668,8 @@ minute, with her arms</td>
             <p style="font-size: 0.9rem; color: #CBD5E1;">Modular knowledge banks: <strong>Química & Física</strong> (Z79=Au, Z47=Ag), <strong>Geografía</strong> (Paris, Tokyo, Ouagadougou), <strong>Computación</strong> (Torvalds, Rossum, Berners-Lee), <strong>Literatura</strong> (Shakespeare, Cervantes, Tolkien), and <strong>Cálculo Agéntico</strong>.</p>
           </div>
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
-            <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">2. Zero Cross-Talk & Instant Synthesis</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Full Gram diagonalization <code>(K<sup>T</sup> K + &lambda; I)<sup>-1</sup></code> guarantees <strong>0.0% cross-domain interference</strong> with 97–99% confidence per token. Synthesized in <strong>154 ms</strong> without gradient descent.</p>
+            <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">2. No Cross-Talk Among the Stored Items & No Training</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">The regularized inverse <code>(K<sup>T</sup> K + &lambda; I)<sup>-1</sup></code> removes interference among the 23 stored keys, with 97–99% confidence per token on those keys. Written in <strong>154 ms</strong> without gradient descent.</p>
           </div>
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
@@ -673,18 +683,18 @@ minute, with her arms</td>
     <section>
       <div class="card" style="border-color: var(--accent-emerald); background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem; margin-bottom: 2rem;">
         <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.25); border: 1px solid var(--accent-emerald); color: #A7F3D0; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW · PROJECT NANOWSP-2 (600K PARAMETERS)</div>
-        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🤖 NanoWSP-2: Advanced 4-Layer Micro-LLM Synthesized in Weight Space</h2>
+        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🤖 NanoWSP-2: 4-Layer Lookup Testbed Written in Weight Space</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
-          A standalone <strong>4-layer autoregressive Transformer (599,168 parameters)</strong> with 4 attention heads and full 256-byte vocabulary. Imprints symbolic arithmetic, relational knowledge graphs, and nested delimiter parsing via WSP-Lang 0.5 primitives with <strong>100.0% recall in 21 ms on CPU</strong>.
+          A standalone <strong>4-layer autoregressive Transformer (599,168 parameters)</strong> with 4 attention heads and full 256-byte vocabulary. Imprints arithmetic, relation and delimiter pairs via WSP-Lang 0.5 primitives and recalls <strong>11/11 imprinted pairs</strong> (written in 21 ms on CPU). This is memorization of the stored items, not generalization, and NanoWSP-2 is not a language model.
         </p>
         <div class="grid-2" style="margin-bottom: 1rem;">
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">1. Multi-Task Closed-Form Recall</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">MEMIT covariance regularization stabilizes the condition number (<code>&kappa; = 549.89</code>), delivering <strong>100.0% simultaneous accuracy</strong> on arithmetic (<code>CALC:3+4=7</code>), geography (<code>REL:ESP:CAP=MAD</code>), and syntax (<code>CODE:[{}]</code>).</p>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">MEMIT covariance regularization stabilizes the condition number (<code>&kappa; = 549.89</code>), and all 11 stored pairs are recalled together: arithmetic (<code>CALC:3+4=7</code>), geography (<code>REL:ESP:CAP=MAD</code>), and syntax (<code>CODE:[{}]</code>). Only the stored items were tested.</p>
           </div>
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
-            <h4 style="color: var(--accent-amber); margin-bottom: 0.5rem;">2. Titans Surprisal Test-Time Self-Healing</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Surprisal monitor detects runaway loops in real time and synthesizes a transient fast-weight overlay <code>&Delta;W = -&eta; (v_rep &otimes; k) + &eta; (v_eos &otimes; k)</code> to break infinite cycles automatically.</p>
+            <h4 style="color: var(--accent-amber); margin-bottom: 0.5rem;">2. Titans-style Surprisal Loop Stop (demo only)</h4>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Idea: a surprisal monitor detects a loop and writes a transient fast-weight overlay <code>&Delta;W = -&eta; (v_rep &otimes; k) + &eta; (v_eos &otimes; k)</code>. The demo is one prompt with a hardcoded print; it is not a measured loop fix.</p>
           </div>
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
@@ -698,18 +708,18 @@ minute, with her arms</td>
     <section>
       <div class="card" style="border-color: var(--accent-purple); background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem; margin-bottom: 2rem;">
         <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(168, 85, 247, 0.25); border: 1px solid var(--accent-purple); color: #E9D5FF; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW · EXPERIMENTAL ZERO-BACKPROPAGATION TRANSFORMER</div>
-        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🤖 Project NanoWSP: Small LLM Synthesized & Programmed from Scratch</h2>
+        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🤖 Project NanoWSP: Small Transformer Written from Scratch (Lookup Testbed)</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
           A standalone <strong>2-layer autoregressive Transformer (80,704 parameters)</strong> built to test the fundamental limits of Weight-Space Programming without stochastic gradient descent. Imprints multi-token words, boolean logic gates, and delimiter matching directly in weight space.
         </p>
         <div class="grid-2" style="margin-bottom: 1rem;">
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-purple); margin-bottom: 0.5rem;">1. Moore-Penrose Projection vs Hebbian Cross-Talk</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Activations suffer <code>cos = 0.894</code> overlap. While naive outer products fail, the Moore-Penrose inverse Gram projection <code>&Delta;W = Y (X^T X)^-1 X^T</code> delivers <strong>100.0% recall</strong> across multi-pair factual datasets.</p>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Activations suffer <code>cos = 0.894</code> overlap. While naive outer products fail, the Moore-Penrose inverse Gram projection <code>&Delta;W = Y (X^T X)^-1 X^T</code> recalls all stored pairs (memorization of the stored items; no generalization tested).</p>
           </div>
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">2. Empirical Capacity & Spectral Conditioning Bound</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Empirical tests reveal pristine memory retention up to <code>M &le; 20</code> associations before condition number explosion (<code>&kappa;(X) &gt; 1000</code>). Proves WSP is optimal for localized surgery and unlearning.</p>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">In this toy model, unrelated prompts stay intact up to about <code>M &le; 20</code> associations; beyond that the edit norm grows and unrelated text collapses (<a href="nanowsp_findings.md" style="color: var(--accent-cyan);">nanowsp_findings.md</a>). This is a capacity limit of one small testbed, not a proof about large models.</p>
           </div>
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
@@ -723,9 +733,9 @@ minute, with her arms</td>
     <section>
       <div class="card" style="border-color: var(--accent-cyan); background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 2rem;">
         <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(56, 189, 248, 0.2); border: 1px solid var(--accent-cyan); color: #BAE6FD; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">NEW IN WSP-LANG 0.4 · MATRIX PERTURBATION THEORY</div>
-        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🔬 Mathematical Proof of General Capability Preservation</h2>
+        <h2 style="font-size: 1.6rem; color: #FFFFFF; margin-bottom: 0.75rem;">🔬 Perturbation Bounds for Small Weight Edits</h2>
         <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 1.05rem;">
-          Grounding weight surgery in <strong>Matrix Perturbation Theory</strong> and <strong>RandNLA</strong> (Weyl's Inequality, Davis-Kahan sin &Theta; Theorem, Statistical Leverage Scores; Yu-Xiang Wang et al.). Explains why targeted surgical edits fix deep bugs without degrading general reasoning benchmarks.
+          Using <strong>Matrix Perturbation Theory</strong> and <strong>RandNLA</strong> (Weyl's Inequality, Davis-Kahan sin &Theta; Theorem, Statistical Leverage Scores; Yu-Xiang Wang et al.) to bound how far a small edit moves a matrix's singular values and subspaces. These bounds are about the matrix, not about behaviour: they do not show that benchmarks are preserved, which needs forward-pass tests (and for the LEACE edit on layer 14 the Davis-Kahan bound is vacuous, 90&deg;, <code>rig_runs/leace_verification_report.json</code>).
         </p>
         <div class="grid-2" style="margin-bottom: 1rem;">
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
@@ -734,7 +744,7 @@ minute, with her arms</td>
           </div>
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">2. RandNLA Leverage Score Efficiency</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Statistical leverage scores <code>&ell;<sub>j</sub> = &sum; V<sub>ji</sub><sup>2</sup></code> guide column selection to target behavioral channels with <strong>-77.11% lower footprint</strong> on the model's core representation manifold.</p>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Statistical leverage scores <code>&ell;<sub>j</sub> = &sum; V<sub>ji</sub><sup>2</sup></code> guide column selection; the reported footprint reduction (-77.11 %) is a matrix measure, not a behavioural one.</p>
           </div>
         </div>
         <a href="wsplang.html" class="btn btn-primary" style="font-size: 0.9rem;">Explore WSP-Lang 0.6 Specification & Empirical Rig &rarr;</a>
@@ -765,12 +775,12 @@ minute, with her arms</td>
 
     <section>
       <h2 class="section-title">⚡ What is Weight-Space Programming?</h2>
-      <p class="section-desc">Based on MIT CSAIL's <em>Sparks of Weight-Space Programming</em> (Takahashi & Agrawal, 2026), WSP treats neural network weights as human-readable, editable code rather than black-box floating point matrices.</p>
+      <p class="section-desc">Starting point: the MIT CSAIL blog post <a href="https://rikiyat.github.io/blog/weight-space-programming/" style="color: var(--accent-cyan);"><em>Sparks of Weight-Space Programming</em></a> (Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab, 2 Nov 2026; a blog post, not peer-reviewed). WSP treats neural network weights as something you can read and edit like code rather than as black-box floating point matrices.</p>
 
       <div class="grid-2">
         <div class="card">
-          <h3>🧮 1. Zero-Cost Sub-Weight Decompilation</h3>
-          <p>Read 32-byte quantization blocks (Q6_K) directly from disk on the fly. Project any individual weight, attention head, or FFN neuron onto differential semantic centroids in $\mathbb{R}^{4096}$ without executing forward passes or loading gigabytes into RAM.</p>
+          <h3>🧮 1. Sub-Weight Reading Without a Forward Pass</h3>
+          <p>Read quantization blocks (Q6_K) directly from disk on the fly. Project any individual weight, attention head, or FFN neuron onto differential semantic centroids in $\mathbb{R}^{4096}$ without executing forward passes or loading the whole model into RAM. The centroid labels are a lexical heuristic, not a measured function of the weight.</p>
         </div>
 
         <div class="card">
@@ -780,7 +790,7 @@ minute, with her arms</td>
             C'_a = C_a - (1/A) Σ C_k<br>
             score(w, a) = cos(w, C'_a) ∈ [-1.0, +1.0]
           </div>
-          <p>Expands dynamic contrast by <strong>+2.4x</strong> and cancels background baseline noise.</p>
+          <p>Centring is meant to remove the shared baseline and widen the contrast between areas; the size of that gain has not been measured.</p>
         </div>
       </div>
     </section>
@@ -834,17 +844,17 @@ minute, with her arms</td>
 
     <section>
       <h2 class="section-title">🎭 Behavioral Steering: From "Evil Qwen" to Permanent Weights</h2>
-      <p class="section-desc">Connecting the viral mechanistic interpretability discoveries (Lyra @lyraaaa, ChiefofAutism) and FiveTechSoft/dreaming.</p>
+      <p class="section-desc">Connecting community mechanistic-interpretability posts (Lyra @lyraaaa, ChiefofAutism; discussed, not verified here) and FiveTechSoft/dreaming.</p>
 
       <div class="grid-2">
         <div class="card">
           <h3>The Embedding Fallacy</h3>
-          <p>In <code>FiveTechSoft/dreaming</code> (<code>AGGRESSION_DIRECTION_SUMMARY.md</code>), steering only <code>token_embd.weight</code> failed because the 22+ internal attention and FFN layers dilute the signal. <strong>Behavior is determined by intermediate FFN and attention layers, not lexical embeddings.</strong></p>
+          <p>In <code>FiveTechSoft/dreaming</code> (<code>AGGRESSION_DIRECTION_SUMMARY.md</code>), steering only <code>token_embd.weight</code> failed because the 22+ internal attention and FFN layers dilute the signal. The working hypothesis is that behaviour lives in intermediate FFN and attention layers rather than in lexical embeddings.</p>
         </div>
 
         <div class="card">
           <h3>Permanent Weight-Space Steering</h3>
-          <p>Instead of temporary inference hooks in Python, WSP-Lang scales the column of the hostility neuron in $W_{down}$ by $2.5\times$ (Neuron 4258 in Layer 14) and suppresses the empathy neuron (Neuron 10739). <strong>Surgically modifying only 0.00018% of weights.</strong></p>
+          <p>Instead of temporary inference hooks in Python, <code>edits/evil_mimo.json</code> scales 4 columns of layer 14 $W_{down}$: neurons 4258 and 7714 by $2.5\times$, neurons 10739 and 993 by $0.25\times$ (16,384 weights). <strong>No behavioural evaluation of hostility was run</strong>, so the "hostility" and "empathy" labels are hypotheses, and the edited GGUF is not in the repo.</p>
         </div>
       </div>
     </section>

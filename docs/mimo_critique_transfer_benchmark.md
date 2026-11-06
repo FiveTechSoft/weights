@@ -2,6 +2,15 @@
 
 Este informe documenta la investigación empírica sobre la extracción, verificación causal y migración del **Circuito de Autocrítica y Reflexión ($u_{\text{critic}}$)** desde trayectorias de modelos superiores hacia **MiMo-2.6-Distill-9B**, evaluando el impacto antes/después, la invariancia de tamaño de modelo y la comparativa de costes/tiempos frente a un entrenamiento convencional.
 
+> [!WARNING]
+> **RETIRADO (auditoría 2026-11-06).** Este informe no es evidencia de que el vector $u_{\text{critic}}$ cambie el razonamiento de MiMo. Se conserva como registro de lo que se afirmó.
+> - **El "contrato causal" (§5) es un proxy sintético.** `rig/exp_mimo_self_critique_v1.py` nunca ejecuta el modelo: su `eval_fn` puntúa $W \cdot \sin(\text{hash del prompt})$ proyectado sobre $u$, y el "placebo" es la $W$ sin cambios. Por eso salen 50 % en los cuatro brazos. No es un test de comportamiento.
+> - **$u_{\text{critic}}$ no se extrajo de activaciones**, sino de token embeddings de pares escritos a mano (results.md §15.4).
+> - **Las tablas antes/después (§4, 12 preguntas; §8, 5 preguntas) no tienen fichero de resultados guardado.** Las respuestas "después" de `rig/test_reflection_prompt.py` vienen de prompts que ya piden verificar paso a paso, y las respuestas "antes" de `rig/live_comparison_showcase.py` son cadenas fijas en el código (`pre_mimo_answer`), no salidas del modelo.
+> - **La tabla de costes (§3)** compara el coste de calcular un vector con el de entrenar; como el efecto no está demostrado, no muestra ninguna ventaja. La "garantía anti-olvido" no existe: las regresiones se miden con forward passes.
+>
+> Estado verificado de todos los resultados: tabla "Status of the results" del [README](../README.md).
+
 ---
 
 ## 1. El Problema: El "Compromiso Patológico" en Modelos de 9B y 1B
@@ -38,7 +47,7 @@ Ejecutado con [`rig/extract_critic_vector.py`](../rig/extract_critic_vector.py):
 
 ## 3. Comparativa: Entrenamiento Convencional (Fine-Tuning / RL) vs Weight-Space Programming (WSP)
 
-¿Cuánto se tardaría y qué costaría hacer esto mediante entrenamiento clásico?
+¿Cuánto se tardaría y qué costaría hacer esto mediante entrenamiento clásico? *(Tabla original, retirada como argumento: el efecto que compara no está demostrado; la columna de fine-tuning es una estimación, no una medición.)*
 
 | Dimensión | Fine-Tuning Convencional (SFT / DPO / RL) | Weight-Space Programming (WSP-Lang 0.7) | Diferencia / Factor |
 |---|---|---|---|
@@ -47,13 +56,13 @@ Ejecutado con [`rig/extract_critic_vector.py`](../rig/extract_critic_vector.py):
 | **VRAM Necesaria** | **130 – 140 GB VRAM** (pesos + optimizador AdamW + gradientes + activación) | **0 GB adicionales** | Sin requerimiento de VRAM para edición |
 | **Coste Económico Estimado** | **$150 – $800+ USD** (alquiler de GPUs + generación de 50.000 tokens sintéticos) | **$0.00 USD** | Gratuito |
 | **Tamaño de Dataset Necesario** | **5.000 a 50.000 pares** de entrenamiento | **20 a 30 pares contrastivos** | **1.000x menos datos requeridos** |
-| **Garantía Anti-Olvido Catastrófico** | Nula (la optimización estocástica altera miles de pesos globalmente) | **Garantizada matemáticamente** (Límite espectral Weyl/Davis-Kahan, norma Frobenius $< 5\%$) | Preservación estricta de capacidades base |
-| **Reversibilidad** | Compleja (requiere restaurar checkpoints de 18 GB) | **Inmediata en sub-milisegundos** ($W = W_{\text{new}} - \Delta W$) | Reversible al 100% |
-| **Impacto en Tamaño de Modelo** | Checkpoint nuevo de 18 GB o archivos LoRA de 100-500 MB | **0 bytes añadidos** ($W_{\text{new}} = W + \Delta W$) | Invariancia exacta de tamaño |
+| **Garantía Anti-Olvido Catastrófico** | Nula (la optimización estocástica altera miles de pesos globalmente) | **Tampoco hay garantía**: una cota de norma (Weyl/Davis-Kahan, Frobenius $< 5\%$) acota la matriz, no el comportamiento | Hay que medir regresiones con forward passes |
+| **Reversibilidad** | Compleja (requiere restaurar checkpoints de 18 GB) | Restando $\Delta W$ ($W = W_{\text{new}} - \Delta W$), si se guarda $\Delta W$ | Reversible si se conserva el delta |
+| **Impacto en Tamaño de Modelo** | Checkpoint nuevo de 18 GB o archivos LoRA de 100-500 MB | El fichero editado mide lo mismo ($W_{\text{new}} = W + \Delta W$ en el sitio); sigue siendo una copia completa del modelo | Mismo tamaño, no "0 MB" |
 
 ---
 
-## 4. Medición Empírica de MiMo-2.6: Antes vs Después
+## 4. Medición de MiMo-2.6 Antes vs Después (RETIRADA: sin fichero de resultados)
 
 Ejecutado con [`rig/eval_reasoning_suite.py`](../rig/eval_reasoning_suite.py) y [`rig/test_reflection_prompt.py`](../rig/test_reflection_prompt.py) en `llama-server.exe` sobre `mimo-v2.6-distill-qwen-9b-Q6_K.gguf`:
 
@@ -78,13 +87,15 @@ Ejecutado con [`rig/eval_reasoning_suite.py`](../rig/eval_reasoning_suite.py) y 
 
 - **MiMo-2.6 Línea Base (Modo Acrítico Rápido):** **9 / 12 (75.0%)**
 - **MiMo-2.6 con Circuito de Reflexión Activo ($u_{\text{critic}}$):** **12 / 12 (100.0%)**
-- **Mejora Neta:** **+25.0 puntos porcentuales (33.3% de incremento relativo)** sin alterar la latencia de generación (39 tokens/segundo).
+- **Mejora Neta afirmada:** +25.0 puntos porcentuales. **No soportada**: no hay fichero de resultados, n=12, y las respuestas "después" proceden de prompts que piden verificación explícita (ver nota al principio).
 
 ---
 
-## 5. Verificación Causal de WSP-Lang 0.7: Por qué la Protección de Contratos Evitó un Falso Positivo
+## 5. "Verificación Causal" de WSP-Lang 0.7 (RETIRADA: proxy sintético, no ejecuta el modelo)
 
-Siguiendo la especificación de **WSP-Lang 0.7**, sometimos la intervención sobre la Capa 16 (`down_proj.weight`, $4096 \times 12288$) al protocolo pareado de 4 vías ([`rig/exp_mimo_self_critique_v1.py`](../rig/exp_mimo_self_critique_v1.py)):
+> **Retirado.** [`rig/exp_mimo_self_critique_v1.py`](../rig/exp_mimo_self_critique_v1.py) no ejecuta el modelo: puntúa $W \cdot \sin(\text{hash del prompt})$ proyectado sobre $u$, y el "placebo" es la $W$ sin cambios. Los porcentajes de abajo no miden comportamiento; que salga 50 % en los cuatro brazos es lo esperable de ese proxy. Se conservan como registro.
+
+Se sometió la intervención sobre la Capa 16 (`down_proj.weight`, $4096 \times 12288$) al protocolo pareado de 4 vías:
 
 1. **Línea Base (Original):** Dev 60.0%, Holdout 50.0%, Regresión 100.0%.
 2. **Candidato WSP (Imprint Rank-1 estático en Capa 16):** Dev 60.0%, Holdout 50.0%, Regresión 100.0%.
@@ -95,13 +106,11 @@ Siguiendo la especificación de **WSP-Lang 0.7**, sometimos la intervención sob
 
 - Aunque la perturbación de Frobenius fue infinitesimal (**0.0631%**, muy por debajo del límite de 5.0%) y no hubo regresión en tareas factuales (**0.0%**), la ganancia en el conjunto *holdout* sobre el control aleatorio fue de **0.0%**.
 - Criterio de Aceptación: `is_statistically_superior: False`.
-- **Acción Ejecutada:** El motor WSP-Lang 0.7 **revertió inmediatamente los pesos a la línea base original** (`status: ROLLED_BACK`).
+- **Acción Ejecutada:** el motor marcó `status: ROLLED_BACK`. Como la evaluación era sintética, este rollback no es evidencia ni a favor ni en contra de un efecto en el comportamiento.
 
 ### Conclusión Científica
 
-Este experimento valida el principio fundamental propuesto para **WSP-Lang 0.7**:
-> *Una modificación matemática elegante en una sola capa no demuestra causalidad conductual en inferencia libre.* 
-> Para alterar de forma permanente el razonamiento del modelo sin prompts de verificación, el subespacio $u_{\text{critic}}$ debe modularse de forma coordinada a lo largo de las capas 10 a 22 (como realiza el vector GGUF `u_critic_control_vector.gguf` o un MEMIT multicapa regularizado), no como una simple proyección aislada. El contrato causal actuó como cortafuegos impidiendo la promoción de una edición incompleta.
+El principio sigue siendo razonable: *una modificación matemática en una sola capa no demuestra causalidad conductual en inferencia libre.* Pero este experimento **no lo valida**, porque su evaluación no ejecutaba el modelo. La hipótesis de que $u_{\text{critic}}$ deba repartirse sobre las capas 10 a 22 no está probada.
 
 ---
 
@@ -145,7 +154,7 @@ experiment mimo_reflection_envelope:
         step layer_envelope 10..22 peak=16 bandwidth=2.5 envelope=gaussian vector=data/u_critic_L16.npz out_gguf=data/u_critic_control_vector.gguf n_layers=32
 ```
 
-Se evaluaron y validaron empíricamente ambos caminos de despliegue:
+Se implementaron ambos caminos de despliegue (ninguno tiene guardada una evaluación de comportamiento válida):
 
 ### Camino 1: Vector de Control GGUF Dinámico (Sin Modificar Pesos)
 - **Fichero generado:** [`data/u_critic_control_vector.gguf`](../data/u_critic_control_vector.gguf) (513.5 KB).
@@ -155,7 +164,7 @@ Se evaluaron y validaron empíricamente ambos caminos de despliegue:
   llama-server.exe -m mimo-v2.6-distill-qwen-9b-Q6_K.gguf --control-vector data/u_critic_control_vector.gguf -ngl 99 -c 32768 -np 2 --port 8081
   ```
 
-### Camino 2: Checkpoint Permanente SafeTensors (Invarianza Estricta de 0 Bytes)
+### Camino 2: Checkpoint Permanente SafeTensors (mismo tamaño de fichero)
 - **Ejecutado con:** [`rig/migrate_critic_to_mimo.py`](../rig/migrate_critic_to_mimo.py) en **35.61 segundos en CPU**.
 - **Capas modificadas:** 13 capas (Capas 10 a 22), actualizando $W_{\text{down}}$ ($4096 \times 12288$).
 - **Parámetros modificados:** 654.311.424 parámetros.
@@ -167,9 +176,11 @@ Se evaluaron y validaron empíricamente ambos caminos de despliegue:
 
 ---
 
-## 8. Resultados Empíricos A/B en Vivo (Inferencia GPU)
+## 8. A/B en Vivo (RETIRADO: línea base fija en el código, n=5)
 
-Evaluación comparativa directa ejecutada en [`rig/eval_both_paths_comparison.py`](../rig/eval_both_paths_comparison.py) y [`rig/live_comparison_showcase.py`](../rig/live_comparison_showcase.py) sobre `llama-server` (RTX 3060, ~39 tokens/segundo):
+> **Retirado.** En [`rig/live_comparison_showcase.py`](../rig/live_comparison_showcase.py) solo se consulta el modelo con el vector; las respuestas del "Modo A" son cadenas fijas (`pre_mimo_answer`), no salidas del modelo base. No hay fichero de resultados guardado y n=5. Se conserva la tabla como registro.
+
+Comparación afirmada con [`rig/eval_both_paths_comparison.py`](../rig/eval_both_paths_comparison.py) y [`rig/live_comparison_showcase.py`](../rig/live_comparison_showcase.py) sobre `llama-server` (RTX 3060, ~39 tokens/segundo):
 
 | Acertijo / Caso de Prueba | Clave Deductiva | Modo A: Modelo Base (Respuesta Precipitado) | Modo B: Con Envolvente $u_{\text{critic}}$ | Resultado |
 |---|---|---|---|:---:|
@@ -184,7 +195,7 @@ Evaluación comparativa directa ejecutada en [`rig/eval_both_paths_comparison.py
 
 ## 9. Publicación Comunitaria en Hugging Face y Reproducibilidad
 
-Se ha redactado y publicado la propuesta técnica completa en el repositorio de modelos de Hugging Face para que el equipo de desarrollo de Xiaomi MiMo y la comunidad puedan verificar y utilizar este avance:
+Se redactó una propuesta para el repositorio de Hugging Face. Tras la auditoría, sus afirmaciones de mejora quedan retiradas:
 - **Discusión Hugging Face:** [`docs/post_huggingface_mimo_critic_transfer.md`](post_huggingface_mimo_critic_transfer.md)
 - **Ficha del Modelo Objetivo:** [`XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B`](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B)
 - **Repositorio Oficial:** [https://github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)
