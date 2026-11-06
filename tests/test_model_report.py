@@ -131,6 +131,56 @@ class TestClassify(Synthetic):
         self.assertEqual(mr.classify(self.fp("same"))["method"], "identical")
 
 
+NEOX = [("model.embed_tokens.", "gpt_neox.embed_in."), ("lm_head.", "embed_out."),
+        ("model.norm.", "gpt_neox.final_layer_norm."), ("self_attn.o_proj.", "attention.dense."),
+        ("linear_attn.out_proj.", "attention.dense."), ("mlp.down_proj.", "mlp.dense_4h_to_h."),
+        ("mlp.up_proj.", "mlp.dense_h_to_4h."), ("model.layers.", "gpt_neox.layers.")]
+
+
+def to_neox(name):
+    for a, b in NEOX:
+        name = name.replace(a, b)
+    return name
+
+
+class TestOtherArchitecture(unittest.TestCase):
+    """The same recipes saved with GPT-NeoX names (no Qwen-style names on disk) must classify the same way."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        d = Path(cls.tmp.name)
+        g = torch.Generator().manual_seed(0)
+        base = {k: v for k, v in base_model(g).items() if "linear_attn" not in k and "gate_proj" not in k}
+        cls.paths = {}
+        for name in ("base", "ablation", "lora"):
+            t = base if name == "base" else recipe(name, base, g)
+            p = d / name
+            p.mkdir()
+            save_file({to_neox(k): v.to(torch.bfloat16) for k, v in t.items()}, str(p / "model.safetensors"))
+            cls.paths[name] = p
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def fp(self, name):
+        reader = lambda p: wd.Renamed(wd.LocalSafetensors(p), wd.text_model_name)
+        return mr.fingerprint(reader(self.paths["base"]), reader(self.paths[name]), rows=16)
+
+    def test_names_on_disk_are_neox(self):
+        self.assertIn("gpt_neox.layers.3.attention.dense.weight", wd.LocalSafetensors(self.paths["base"]).keys())
+
+    def test_neox_ablation(self):
+        c = mr.classify(self.fp("ablation"))
+        self.assertEqual(c["method"], "directional_ablation", c)
+        self.assertEqual(c["layers"], [2, 5])
+        self.assertEqual(c["ablation_directions"], "global")
+
+    def test_neox_lora(self):
+        self.assertEqual(mr.classify(self.fp("lora"))["method"], "lora_like")
+
+
 class TestParallelReads(Synthetic):
     """Remote reads are latency-bound (validation: 773 s for ~500 MB in series); blocks are fetched concurrently."""
 

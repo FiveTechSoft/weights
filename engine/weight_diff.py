@@ -130,15 +130,54 @@ class Renamed:
         return self._reader.get_rows(self._map[name], start, count)
 
 
-def text_model_name(name: str) -> Optional[str]:
-    """Common names for the text model of multimodal and text-only checkpoints (Qwen3.5 layout).
+_HIDDEN_PREFIXES = ("visual.", "mtp.", "vision_tower.", "vision_model.", "multi_modal_projector.", "audio_tower.",
+                    "vision_encoder.", "mm_projector.")
+# (whole-name prefix or exact name) -> canonical; applied first, longest first.
+_PREFIX_ALIASES = (
+    ("model.language_model.", "model."),            # Qwen3.5-VL, newer Gemma 3 / Mistral 3
+    ("language_model.model.", "model."),            # Llava, older Gemma 3
+    ("language_model.lm_head.", "lm_head."),
+    ("gpt_neox.layers.", "model.layers."),          # GPT-NeoX, Pythia
+    ("gpt_neox.embed_in.", "model.embed_tokens."),
+    ("gpt_neox.final_layer_norm.", "model.norm."),
+    ("embed_out.", "lm_head."),
+    ("transformer.h.", "model.layers."),            # Falcon
+    ("transformer.word_embeddings.", "model.embed_tokens."),
+    ("transformer.ln_f.", "model.norm."),
+    ("model.final_layernorm.", "model.norm."),      # Phi-2
+)
+# Inside a layer: other names for the Llama/Qwen modules. Fused names (qkv_proj, gate_up_proj) are kept as they are.
+_MODULE_ALIASES = (
+    (r"\.(?:attention|self_attention)\.query_key_value\.", ".self_attn.qkv_proj."),   # NeoX, Falcon
+    (r"\.(?:attention|self_attention|self_attn)\.dense\.", ".self_attn.o_proj."),       # NeoX, Falcon, Phi-2
+    (r"\.mlp\.dense_h_to_4h\.", ".mlp.up_proj."),
+    (r"\.mlp\.dense_4h_to_h\.", ".mlp.down_proj."),
+    (r"\.mlp\.fc1\.", ".mlp.up_proj."),                                                  # Phi-2
+    (r"\.mlp\.fc2\.", ".mlp.down_proj."),
+    (r"\.block_sparse_moe\.experts\.(\d+)\.w1\.", r".mlp.experts.\1.gate_proj."),       # Mixtral
+    (r"\.block_sparse_moe\.experts\.(\d+)\.w2\.", r".mlp.experts.\1.down_proj."),
+    (r"\.block_sparse_moe\.experts\.(\d+)\.w3\.", r".mlp.experts.\1.up_proj."),
+    (r"\.block_sparse_moe\.gate\.", ".mlp.gate."),
+)
 
-    model.language_model.X -> model.X; vision tower (model.visual.*) and multi-token-prediction head (mtp.*) hidden.
+
+def text_model_name(name: str) -> Optional[str]:
+    """Canonical (Llama/Qwen layout) name of a text-model tensor; None for vision/audio towers, projectors, MTP heads.
+
+    Lines up multimodal wrappers (model.language_model.X, language_model.model.X -> model.X) and other architectures'
+    names (GPT-NeoX, Falcon, Phi-2, Mixtral experts), so family(), tensor_kind(), layer_of() and the residual-writer
+    lists (o_proj, out_proj, down_proj) work unchanged. Llama, Mistral, Qwen, Gemma, Granite and Phi-3 names are
+    already canonical. Not handled: GPT-2 style Conv1D (c_attn, c_proj), stored transposed as (in, out).
     """
-    if name.startswith(("model.visual.", "visual.", "mtp.")):
+    bare = name[len("model."):] if name.startswith("model.") else name
+    if bare.startswith(_HIDDEN_PREFIXES):
         return None
-    if name.startswith("model.language_model."):
-        return "model." + name[len("model.language_model."):]
+    for old, new in _PREFIX_ALIASES:
+        if name.startswith(old):
+            name = new + name[len(old):]
+            break
+    for pat, rep in _MODULE_ALIASES:
+        name = re.sub(pat, rep, name)
     return name
 
 

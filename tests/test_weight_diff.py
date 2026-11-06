@@ -340,6 +340,66 @@ class TestRenamed(Fixture):
         self.assertIsNone(wd.text_model_name("mtp.layers.0.mlp.up_proj.weight"))
 
 
+class TestCanonicalNames(unittest.TestCase):
+    """Other architectures' names map to the Llama/Qwen layout, so family/tensor_kind/RESIDUAL_WRITERS work as is."""
+
+    CASES = {
+        # Qwen3.5 / Llama / Mistral / Granite: unchanged
+        "model.layers.3.self_attn.o_proj.weight": "model.layers.3.self_attn.o_proj.weight",
+        "model.layers.3.linear_attn.out_proj.weight": "model.layers.3.linear_attn.out_proj.weight",
+        "model.layers.3.mlp.down_proj.weight": "model.layers.3.mlp.down_proj.weight",
+        # GPT-NeoX / Pythia
+        "gpt_neox.embed_in.weight": "model.embed_tokens.weight",
+        "gpt_neox.layers.5.attention.query_key_value.weight": "model.layers.5.self_attn.qkv_proj.weight",
+        "gpt_neox.layers.5.attention.dense.weight": "model.layers.5.self_attn.o_proj.weight",
+        "gpt_neox.layers.5.mlp.dense_h_to_4h.weight": "model.layers.5.mlp.up_proj.weight",
+        "gpt_neox.layers.5.mlp.dense_4h_to_h.weight": "model.layers.5.mlp.down_proj.weight",
+        "gpt_neox.layers.5.input_layernorm.weight": "model.layers.5.input_layernorm.weight",
+        "gpt_neox.final_layer_norm.weight": "model.norm.weight",
+        "embed_out.weight": "lm_head.weight",
+        # Falcon
+        "transformer.word_embeddings.weight": "model.embed_tokens.weight",
+        "transformer.h.7.self_attention.query_key_value.weight": "model.layers.7.self_attn.qkv_proj.weight",
+        "transformer.h.7.self_attention.dense.weight": "model.layers.7.self_attn.o_proj.weight",
+        "transformer.h.7.mlp.dense_4h_to_h.weight": "model.layers.7.mlp.down_proj.weight",
+        "transformer.ln_f.weight": "model.norm.weight",
+        # Phi-2 (Phi-3 keeps its fused qkv_proj / gate_up_proj names, already canonical)
+        "model.layers.2.self_attn.dense.weight": "model.layers.2.self_attn.o_proj.weight",
+        "model.layers.2.mlp.fc1.weight": "model.layers.2.mlp.up_proj.weight",
+        "model.layers.2.mlp.fc2.weight": "model.layers.2.mlp.down_proj.weight",
+        "model.final_layernorm.weight": "model.norm.weight",
+        "model.layers.2.self_attn.qkv_proj.weight": "model.layers.2.self_attn.qkv_proj.weight",
+        "model.layers.2.mlp.gate_up_proj.weight": "model.layers.2.mlp.gate_up_proj.weight",
+        # Mixtral experts
+        "model.layers.1.block_sparse_moe.experts.3.w1.weight": "model.layers.1.mlp.experts.3.gate_proj.weight",
+        "model.layers.1.block_sparse_moe.experts.3.w2.weight": "model.layers.1.mlp.experts.3.down_proj.weight",
+        "model.layers.1.block_sparse_moe.experts.3.w3.weight": "model.layers.1.mlp.experts.3.up_proj.weight",
+        "model.layers.1.block_sparse_moe.gate.weight": "model.layers.1.mlp.gate.weight",
+        # multimodal wrappers (Llava, Gemma 3, Mistral 3): text model kept, the rest hidden
+        "language_model.model.layers.4.mlp.down_proj.weight": "model.layers.4.mlp.down_proj.weight",
+        "language_model.lm_head.weight": "lm_head.weight",
+        "model.language_model.embed_tokens.weight": "model.embed_tokens.weight",
+    }
+    HIDDEN = ("vision_tower.vision_model.encoder.layers.0.mlp.fc1.weight",
+              "model.vision_tower.blocks.0.attn.qkv.weight", "multi_modal_projector.linear_1.weight",
+              "model.multi_modal_projector.linear_1.weight", "vision_model.encoder.layers.0.mlp.fc1.weight",
+              "model.audio_tower.layers.0.fc1.weight", "model.visual.merger.fc.weight", "mtp.fc.weight")
+
+    def test_mapping(self):
+        for src, want in self.CASES.items():
+            self.assertEqual(wd.text_model_name(src), want, src)
+
+    def test_hidden(self):
+        for n in self.HIDDEN:
+            self.assertIsNone(wd.text_model_name(n), n)
+
+    def test_canonical_names_feed_the_type_helpers(self):
+        n = wd.text_model_name("gpt_neox.layers.5.attention.dense.weight")
+        self.assertEqual((wd.family(n), wd.layer_of(n), wd.tensor_kind(n)), ("attn", 5, "self_attn.o_proj.weight"))
+        n = wd.text_model_name("model.layers.1.block_sparse_moe.experts.3.w2.weight")
+        self.assertEqual((wd.family(n), wd.layer_of(n)), ("mlp", 1))
+
+
 class TestWSPLangDiffOp(Fixture):
     def test_diff_sees_tensors_in_every_shard(self):
         import engine.wsplang as wsplang
