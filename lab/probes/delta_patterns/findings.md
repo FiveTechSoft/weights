@@ -154,3 +154,19 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   in every model: they all change it a lot, in unrelated ways.
 - Reading: a common core of shared directions, plus a tighter "agent" family in the matrices that write to the
   residual stream. Still to rule out with the role-play control: that this is the mark of chat fine-tuning.
+
+## F15. Role-play control: H1 passes both pre-registered rules, but the control is a merged LoRA (confounded). (verified)
+- `stats_nyx_rp.json` (Indexnusrefather/Nyx-RP-9B-Instruct-2608-v1): relative change 0.69 %, 48 % of weights. Second
+  method agrees (`check_nyx_rp.json`).
+- It touches only attention q/k/v/o and MLP gate/up/down (0.68-1.19 %); every DeltaNet tensor, the embeddings,
+  `lm_head` and all norms are exactly unchanged. Its changes are low rank: 16 directions hold 66-88 % of the energy
+  (improvements: 2-19 %). That is the fingerprint of a merged LoRA on the usual target modules.
+- H1 by the plan: improvement-improvement type-profile rho 0.70-0.985 (min 0.702); improvement-control rho 0.42-0.47,
+  all below 0.702 → "shared where" true and "improvement-specific" true.
+- Caveat, recorded as such: the control differs from the improvements both in goal (role-play) and in method
+  (LoRA vs full fine-tune). The H1 specificity result may come from the method. A full-fine-tune control that is
+  not aimed at reasoning or agents is needed before calling the "where" pattern a mark of improvement.
+- Still useful for H3: in the 7 matrix types it touched, if the control does not share the improvements' directions
+  while the improvements share them with each other, that points to specificity independent of method.
+- WSPLang / method lesson: a control model must be checked for its training method from its weights before it is
+  used as a control; the weight fingerprint (which modules, which rank) reveals LoRA vs full fine-tune.
