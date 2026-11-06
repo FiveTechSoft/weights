@@ -1320,3 +1320,10 @@ Script `lab/probes/delta_patterns/run.py`; datos en `lab/runs/delta_patterns/sta
   - Hipótesis: H1 dónde, H2 forma, H3 dirección compartida, H4 trasplante causal.
   - Nulos: azar k/d, mismo tipo de tensor en otra capa, y alineación con las direcciones principales del propio W.
 - **Nota:** el base, la abliteración y Nyx-RP guardan 48 tensores (`A_log`, `dt_bias`…) en F32; MiMo, Fara y tmax en BF16. El "escalón bf16" de `A_log`/`dt_bias` en MiMo es solo ese cast: no se entrenaron.
+- **NeoHorse (2026-11-06), datos en `lab/runs/delta_patterns/stats_neohorse.json` y `overlap_mimo_neohorse.json`:**
+  - Cambio global 0.5 % (18 veces menos que MiMo), 61 % de los pesos cambian (el resto queda bajo la resolución de bf16), perfil plano por capas (0.4-0.6 %); normas, `A_log` y `dt_bias` intactos.
+  - Forma: más concentrado que MiMo (16 direcciones = 6-19 % de la energía en matrices grandes), sin ser de rango bajo.
+  - H1 con MiMo: Spearman del perfil por tipo de tensor 0.93 (0.86 solo matrices); por capa 0.51.
+  - Solapamiento de subespacios top-16 con MiMo, por encima del azar k/d: embeddings ×182, `lm_head` ×85, `q_proj` ×49, MLP gate/up ×40, `down_proj` ×23; `in_proj_a/b` ×1.1-1.2. Coseno de los Δ pequeño y positivo en todos los tipos (+0.008 a +0.011; `lm_head` +0.08).
+  - Pendiente antes de concluir H3: el nulo entre capas distintas y la alineación con las direcciones de W. Un solapamiento así también lo daría que ambos refuercen las mismas dimensiones *outlier* del estado oculto.
+- **Cuaderno de hallazgos:** `lab/probes/delta_patterns/findings.md` recoge cada hallazgo (F1-F8), su fuente, su estado (verificado, medido, abierto) y lo que enseña para WSPLang, más las lecciones de herramienta. Se actualiza con cada modelo.
