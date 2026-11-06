@@ -135,3 +135,11 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   control (Nyx-RP), still running.
 - Tool lesson: the WSPLang CLI has a second list of implemented ops (`check_feasibility`); unit tests that call
   `execute_plan_v4` bypass it. The new ops failed the CLI until added there. A test now covers the gate.
+
+## F13. Fara (computer-use agent) repeats the core; H1 now holds for all six improvement pairs. (verified)
+- `stats_fara.json`: relative change 3.9 %, 86 % of weights. Second method agrees (`check_fara.json`).
+- Most changed: DeltaNet β 5.5 %, MLP down/up/gate 4.5-4.9 %, `lm_head` 4.3 % (top-16 energy 0.56: concentrated),
+  attention q/k 3.9 %; DeltaNet `A_log`, `dt_bias` untouched. Bell over depth, peak at layers 13-19.
+- Per-tensor-type Spearman with Fara: MiMo 0.95, NeoHorse 0.985, tmax 0.76; per layer 0.70, 0.92, 0.60.
+- All six pairs of the four improvements have type-profile rho >= 0.70 (pre-registered H1 threshold). Specificity
+  (vs the role-play control) still open.
