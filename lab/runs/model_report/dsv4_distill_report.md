@@ -3,12 +3,12 @@
 Base: unsloth/Qwen3.5-9B  
 Blocks of 128 rows per tensor.
 
-## Card
+## Card (what the model page says; not verified)
 
 - repo: Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B
 - base_model: unsloth/Qwen3.5-9B
 - license: apache-2.0
-- flags: ['distillation', 'merge', 'rl', 'sft']
+- words the page mentions: distillation, rl, sft
 
 ## Compatibility
 
@@ -60,8 +60,20 @@ Blocks of 128 rows per tensor.
 - tmax (agent RL, full): 0.52
 - mimo (reasoning distillation, full): 0.50
 
+## Shared directions with studied improvements (512 rows per block, column side)
+
+| type | fara | mimo | neohorse | tmax |
+|---|---|---|---|---|
+| mlp.gate_proj.weight | x1.3 | x1.7 | x1.9 | x1.6 |
+| mlp.up_proj.weight | x1.2 | x1.5 | x1.6 | x1.5 |
+| self_attn.q_proj.weight | x1.3 | x1.5 | x1.4 | x1.3 |
+
+x = same-layer overlap / same type at other layers; shared = >= 3x that and >= 3x chance.
+
 ## What is usable, and how
 
 - Adapter-like update (rank about 39) on: linear_attn.out_proj.weight, mlp.down_proj.weight, mlp.gate_proj.weight, mlp.up_proj.weight, self_attn.k_proj.weight, self_attn.o_proj.weight, self_attn.q_proj.weight, self_attn.v_proj.weight. Small and self-contained: it can be applied to the base as a low-rank delta; its effect is whatever the adapter was trained for, nothing more.
+- No column-side tensor type shares directions with the studied improvements (H3 rule).
+- Residual-writing matrices (linear_attn.out_proj.weight, mlp.down_proj.weight, self_attn.o_proj.weight) cannot be judged from blocks of rows: run `delta_signature` + `delta_compare` for them.
 - Closest studied model by where it changes: nyx_rp (role-play LoRA (control)), Spearman 0.95.
 

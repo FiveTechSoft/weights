@@ -226,3 +226,16 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Caveat: "untouched" means untouched in the sampled block. NeoHorse's `linear_attn.norm` is untouched in the block
   and changed (tiny) in the full statistics. Reports must say "in the sampled rows".
 - WSPLang: a 9B model can be fingerprinted in under a minute from Hugging Face without downloading it.
+
+## F20. "What can be transferred" from blocks of rows: needs 512 rows; a LoRA distillation shares none of the core
+- `transfer_candidates` (engine/model_report.py) compares the column-side (residual) directions of a block of the
+  model's delta with the atlas signatures of the same tensor, with the H3 rule (>= 3x the other-layer null and chance).
+- Second method: MiMo's blocks against the full signatures of NeoHorse, tmax and Fara, verdicts compared with the full
+  pair analyses, same rule, only the block size changed:
+  128 rows → 12/21 agree (0 false positives, 9 false negatives); 256 → 17/21 (0, 4); 512 → 21/21 (0, 0).
+  The report keeps 128-row blocks for the method (validated in F19) and reads 512-row blocks for transfer, only for
+  column-side, non-residual-writing types. Residual-writing matrices are reported as needing a full signature.
+- New: Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B (LoRA-like reasoning distillation, F17) shares no column-side direction
+  with the four full-fine-tune improvements: gate ×1.3-1.9, up ×1.2-1.6, q ×1.3-1.5 (threshold ×3). 78 s, remote.
+- Reading, open: the shared core may go with the method (full fine-tune) more than with "improvement". The
+  full-fine-tune control with another goal (WeMM-Embedding, queued) decides between the two.

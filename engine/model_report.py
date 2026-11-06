@@ -46,11 +46,12 @@ def _block(reader, name, shape, rows):
     return reader.get_rows(name, start, rows).reshape(rows, -1), start
 
 
-def fingerprint(base, model, rows: int = 128, progress=None, workers: int = 16) -> Dict:
-    """workers: blocks fetched concurrently (remote reads are latency-bound: one HTTP range per block)."""
+def fingerprint(base, model, rows: int = 128, progress=None, workers: int = 16, k: int = 16, only=None) -> Dict:
+    """workers: blocks fetched concurrently (remote reads are latency-bound: one HTTP range per block).
+    k: column-side directions kept per block, for transfer_candidates."""
     import concurrent.futures
     kb, km = set(base.keys()), set(model.keys())
-    names = sorted(kb & km)
+    names = sorted(n for n in kb & km if only is None or only(n))
     out = {"rows": rows, "only_in_base": sorted(kb - km), "only_in_model": sorted(km - kb),
            "shape_mismatch": [], "dtype_differs": [], "tensors": []}
     shapes = {n: (tuple(base.shape(n)), tuple(model.shape(n))) for n in names}
@@ -65,13 +66,13 @@ def fingerprint(base, model, rows: int = 128, progress=None, workers: int = 16) 
     with concurrent.futures.ThreadPoolExecutor(max(1, workers)) as ex:
         fetched = ex.map(fetch, names)  # in order; up to `workers` blocks in flight
         for i, (n, sa, a, start, b) in enumerate(fetched):
-            out["tensors"].append(_block_stats(n, sa, a, start, b, out))
+            out["tensors"].append(_block_stats(n, sa, a, start, b, out, k))
             if progress:
                 progress(i + 1, len(names), n)
     return out
 
 
-def _block_stats(n, sa, a, start, b, out) -> Dict:
+def _block_stats(n, sa, a, start, b, out, k=16) -> Dict:
     if a.dtype != b.dtype:
         out["dtype_differs"].append(n)
     a, b = _common_dtype(a, b)
@@ -83,12 +84,14 @@ def _block_stats(n, sa, a, start, b, out) -> Dict:
            "block_start": start, "block_rows": int(a.shape[0]), "changed": changed,
            "changed_fraction": changed / max(a.numel(), 1), "rel_delta": nd / na if na > 0 else float(nd > 0)}
     if len(sa) == 2 and changed and min(Dl.shape) > 1:
-        U, S, _ = torch.linalg.svd(Dl, full_matrices=False)
+        U, S, Vh = torch.linalg.svd(Dl, full_matrices=False)
         e = S ** 2
         cum = torch.cumsum(e, 0) / e.sum()
         row["rank90"] = int((cum < 0.9).sum()) + 1
         row["energy16"] = float(cum[min(15, len(cum) - 1)])
         row["_u1"] = U[:, 0]
+        if sa[1] <= sa[0] and not n.endswith(RESIDUAL_WRITERS):  # columns = smaller side = residual stream
+            row["_v"] = Vh[:k].T.float()
     return row
 
 
@@ -128,6 +131,46 @@ def classify(fp: Dict) -> Dict:
     return res
 
 
+def transfer_candidates(fp: Dict, atlas_sigs: Dict, k: int = 16, factor: float = 3.0) -> Dict:
+    """Which tensor types share column-side (residual) directions with studied improvements.
+
+    For each sampled tensor whose columns are its smaller side, the block's top-k right singular vectors are compared
+    with the same tensor's signature basis in each atlas model: overlap ||Vs^T Vb||^2 / k, against the same type at
+    other layers (null) and chance k/d. shared = same >= factor * null and >= factor * chance (the H3 rule).
+    Residual-writing matrices (rows = residual) cannot be judged from a block of rows: listed as needing a full
+    delta_signature.
+    """
+    rows = [r for r in fp["tensors"] if "_v" in r]
+    kinds: Dict[str, List[Dict]] = {}
+    for r in rows:
+        kinds.setdefault(r["kind"], []).append(r)
+    by_kind: Dict[str, Dict] = {}
+    for kind, rs in kinds.items():
+        for model, sig in atlas_sigs.items():
+            same, null = [], []
+            for r in rs:
+                s = sig.get(r["tensor"])
+                if not s or "basis" not in s or s["basis"].shape[0] != r["_v"].shape[0]:
+                    continue
+                kk = min(k, s["basis"].shape[1], r["_v"].shape[1])
+                Vb, Vs = s["basis"][:, :kk].double(), r["_v"][:, :kk].double()
+                same.append(float((Vs.T @ Vb).pow(2).sum()) / kk)
+                for r2 in rs:
+                    s2 = sig.get(r2["tensor"])
+                    if r2 is r or not s2 or "basis" not in s2 or s2["basis"].shape[0] != Vs.shape[0]:
+                        continue
+                    null.append(float((Vs.T @ s2["basis"][:, :kk].double()).pow(2).sum()) / kk)
+            if not same:
+                continue
+            m, nl, chance = st.median(same), (st.median(null) if null else None), kk / Vs.shape[0]
+            by_kind.setdefault(kind, {})[model] = {
+                "same": m, "null_other_layer": nl, "chance": chance, "x_null": m / nl if nl else None,
+                "shared": bool(nl is not None and m >= factor * nl and m >= factor * chance)}
+    candidates = sorted(k_ for k_, v in by_kind.items() if sum(x["shared"] for x in v.values()) >= 1)
+    writers = sorted({r["kind"] for r in fp["tensors"] if r["kind"].endswith(RESIDUAL_WRITERS) and r["changed"]})
+    return {"by_kind": by_kind, "candidates": candidates, "needs_full_signature": writers}
+
+
 def profile(fp: Dict) -> Dict:
     kinds: Dict[str, List[Dict]] = {}
     for r in fp["tensors"]:
@@ -141,15 +184,28 @@ def profile(fp: Dict) -> Dict:
     return out
 
 
+TRANSFER_ROWS = 512   # 128 rows: 12/21 verdicts as the full analysis; 256: 17/21; 512: 21/21 (findings F20)
+
+
 def build_report(base, model, rows: int = 128, model_name: str = "", base_name: str = "", card: Optional[Dict] = None,
-                 progress=None, atlas: Optional[Dict] = None) -> Dict:
+                 progress=None, atlas: Optional[Dict] = None, atlas_sigs: Optional[Dict] = None,
+                 transfer_rows: int = TRANSFER_ROWS) -> Dict:
     fp = fingerprint(base, model, rows=rows, progress=progress)
     c, prof = classify(fp), profile(fp)
     near = atlas_similarity(prof, atlas) if atlas else []
+    transfer = None
+    if atlas_sigs and c["method"] != "identical":
+        col_side = {r["tensor"] for r in fp["tensors"] if len(r["shape"]) == 2 and r["shape"][1] <= r["shape"][0]
+                    and not r["tensor"].endswith(RESIDUAL_WRITERS) and r["changed"]}
+        fp2 = fingerprint(base, model, rows=transfer_rows, only=lambda n: n in col_side)
+        transfer = transfer_candidates(fp2, atlas_sigs)
+        transfer["needs_full_signature"] = sorted({r["kind"] for r in fp["tensors"]
+                                                   if r["kind"].endswith(RESIDUAL_WRITERS) and r["changed"]})
+        transfer["rows"] = transfer_rows
     return {"model": model_name, "base": base_name, "card": card or {}, "rows_per_block": rows,
             "headers": {k: fp[k] for k in ("only_in_base", "only_in_model", "shape_mismatch", "dtype_differs")},
             "classification": {k: v for k, v in c.items()}, "profile": prof, "atlas": near,
-            "usable": usable(c, card or {}, near),
+            "transfer": transfer, "usable": usable(c, card or {}, near, transfer),
             "tensors": [{k: v for k, v in r.items() if not k.startswith("_")} for r in fp["tensors"]]}
 
 
@@ -236,7 +292,20 @@ def load_atlas(stats_dir) -> Dict:
     return atlas
 
 
-def usable(c: Dict, card: Dict, near: List[Dict]) -> List[str]:
+IMPROVEMENTS = ("mimo", "neohorse", "tmax", "fara")
+
+
+def load_atlas_sigs(sig_dir, names=IMPROVEMENTS) -> Dict:
+    from pathlib import Path
+    out = {}
+    for n in names:
+        p = Path(sig_dir) / f"sig_{n}.pt"
+        if p.exists():
+            out[n] = torch.load(p)
+    return out
+
+
+def usable(c: Dict, card: Dict, near: List[Dict], transfer: Optional[Dict] = None) -> List[str]:
     """What can be reused and how, stated with the evidence level it has today."""
     tips = []
     m = c.get("method")
@@ -256,6 +325,19 @@ def usable(c: Dict, card: Dict, near: List[Dict]) -> List[str]:
         tips.append("Diffuse full fine-tune: rank-one ops cannot reproduce it. Candidate for `subspace_transfer` "
                     "along the residual directions that improved models share (findings F7, F12, F14); a transfer "
                     "must beat a random subspace of the same size before it counts (plan H4, not yet run).")
+    if transfer and transfer.get("candidates"):
+        lines = []
+        for kind in transfer["candidates"]:
+            who = [f"{m} x{v['x_null']:.1f}" for m, v in transfer["by_kind"][kind].items() if v["shared"]]
+            lines.append(f"{kind} ({', '.join(who)})")
+        tips.append("Shares residual directions with studied improvements (same layer, >= 3x the other-layer null), "
+                    "so a `subspace_transfer` along them is a candidate: " + "; ".join(lines) + ". A candidate is not "
+                    "a result: the transfer must beat a random subspace of the same size on a benchmark (plan H4).")
+    elif transfer is not None:
+        tips.append("No column-side tensor type shares directions with the studied improvements (H3 rule).")
+    if transfer and transfer.get("needs_full_signature"):
+        tips.append("Residual-writing matrices (" + ", ".join(transfer["needs_full_signature"]) + ") cannot be judged "
+                    "from blocks of rows: run `delta_signature` + `delta_compare` for them.")
     if near:
         top = near[0]
         tips.append(f"Closest studied model by where it changes: {top['model']} ({top['family']}), "
@@ -298,6 +380,17 @@ def render_markdown(rep: Dict) -> str:
     if rep.get("atlas"):
         lines += ["## Closest studied models (Spearman of where they change)", ""]
         lines += [f"- {r['model']} ({r['family']}): {r['spearman']:.2f}" for r in rep["atlas"][:5]] + [""]
+    if rep.get("transfer"):
+        t = rep["transfer"]
+        lines += [f"## Shared directions with studied improvements ({t['rows']} rows per block, column side)", "",
+                  "| type | " + " | ".join(sorted({m for v in t["by_kind"].values() for m in v})) + " |",
+                  "|---|" + "---|" * len({m for v in t["by_kind"].values() for m in v})]
+        models = sorted({m for v in t["by_kind"].values() for m in v})
+        for kind, v in sorted(t["by_kind"].items()):
+            cells = [(f"x{v[m]['x_null']:.1f}" + (" **shared**" if v[m]["shared"] else "")) if m in v and v[m]["x_null"]
+                     else "-" for m in models]
+            lines.append(f"| {kind} | " + " | ".join(cells) + " |")
+        lines += ["", "x = same-layer overlap / same type at other layers; shared = >= 3x that and >= 3x chance.", ""]
     if rep.get("usable"):
         lines += ["## What is usable, and how", ""] + [f"- {t}" for t in rep["usable"]] + [""]
     return "\n".join(lines) + "\n"

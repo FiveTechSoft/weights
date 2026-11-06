@@ -7,7 +7,6 @@
   "license": "apache-2.0",
   "flags": [
    "distillation",
-   "merge",
    "rl",
    "sft"
   ]
@@ -449,8 +448,111 @@
    "spearman": 0.4762845849802372
   }
  ],
+ "transfer": {
+  "by_kind": {
+   "mlp.gate_proj.weight": {
+    "mimo": {
+     "same": 0.007321142379960219,
+     "null_other_layer": 0.004381131802623874,
+     "chance": 0.00390625,
+     "x_null": 1.671061887609855,
+     "shared": false
+    },
+    "neohorse": {
+     "same": 0.008744263240417861,
+     "null_other_layer": 0.004578682197961889,
+     "chance": 0.00390625,
+     "x_null": 1.909777281399919,
+     "shared": false
+    },
+    "tmax": {
+     "same": 0.00727007366540725,
+     "null_other_layer": 0.004547549944479687,
+     "chance": 0.00390625,
+     "x_null": 1.598679234789375,
+     "shared": false
+    },
+    "fara": {
+     "same": 0.0055035288931234464,
+     "null_other_layer": 0.004150605452973666,
+     "chance": 0.00390625,
+     "x_null": 1.3259580934585073,
+     "shared": false
+    }
+   },
+   "mlp.up_proj.weight": {
+    "mimo": {
+     "same": 0.006289478094645735,
+     "null_other_layer": 0.0042527580787175764,
+     "chance": 0.00390625,
+     "x_null": 1.4789174409239694,
+     "shared": false
+    },
+    "neohorse": {
+     "same": 0.006729777743908797,
+     "null_other_layer": 0.0042121820787879285,
+     "chance": 0.00390625,
+     "x_null": 1.5976939310860265,
+     "shared": false
+    },
+    "tmax": {
+     "same": 0.006258716134770111,
+     "null_other_layer": 0.004218161585459693,
+     "chance": 0.00390625,
+     "x_null": 1.4837544764392994,
+     "shared": false
+    },
+    "fara": {
+     "same": 0.004878431640386396,
+     "null_other_layer": 0.004082347119146606,
+     "chance": 0.00390625,
+     "x_null": 1.1950065729359651,
+     "shared": false
+    }
+   },
+   "self_attn.q_proj.weight": {
+    "mimo": {
+     "same": 0.006645344455889993,
+     "null_other_layer": 0.004307691489608665,
+     "chance": 0.00390625,
+     "x_null": 1.5426695416606295,
+     "shared": false
+    },
+    "neohorse": {
+     "same": 0.005974132503611266,
+     "null_other_layer": 0.004190033878425768,
+     "chance": 0.00390625,
+     "x_null": 1.4257957517650905,
+     "shared": false
+    },
+    "tmax": {
+     "same": 0.005296199926027335,
+     "null_other_layer": 0.004148328062349295,
+     "chance": 0.00390625,
+     "x_null": 1.2767071086050927,
+     "shared": false
+    },
+    "fara": {
+     "same": 0.0052389999420851,
+     "null_other_layer": 0.003958759566872918,
+     "chance": 0.00390625,
+     "x_null": 1.3233943243043333,
+     "shared": false
+    }
+   }
+  },
+  "candidates": [],
+  "needs_full_signature": [
+   "linear_attn.out_proj.weight",
+   "mlp.down_proj.weight",
+   "self_attn.o_proj.weight"
+  ],
+  "rows": 512
+ },
  "usable": [
   "Adapter-like update (rank about 39) on: linear_attn.out_proj.weight, mlp.down_proj.weight, mlp.gate_proj.weight, mlp.up_proj.weight, self_attn.k_proj.weight, self_attn.o_proj.weight, self_attn.q_proj.weight, self_attn.v_proj.weight. Small and self-contained: it can be applied to the base as a low-rank delta; its effect is whatever the adapter was trained for, nothing more.",
+  "No column-side tensor type shares directions with the studied improvements (H3 rule).",
+  "Residual-writing matrices (linear_attn.out_proj.weight, mlp.down_proj.weight, self_attn.o_proj.weight) cannot be judged from blocks of rows: run `delta_signature` + `delta_compare` for them.",
   "Closest studied model by where it changes: nyx_rp (role-play LoRA (control)), Spearman 0.95."
  ],
  "tensors": [
