@@ -1281,8 +1281,20 @@ Estado y siguiente paso en roadmap §4.0quater.
   - Dos jueces: `rig/math500.equivalent` y uno independiente. Los desacuerdos se revisan a mano.
   - TwIL-8B (Q4_K_M, variante balanced): GSM8K 96/100, MATH-500 44/50 (88 %); 4 respuestas cortadas en el tope; 983 y 1811 tokens de media; ~47 tok/s.
     - Los 6 desacuerdos entre jueces son de formato (5 a favor del juez principal, p. ej. `\frac43` frente a `\frac{4}{3}`; 1 a favor del independiente, "60\%").
-  - MiMo-9B (Q6_K): en curso. Su plantilla no fuerza el thinking y en problemas fáciles no piensa; se evalúa así, por defecto, como TwIL.
-  - Sesgos conocidos: TwIL va en Q4 y MiMo en Q6; TwIL recomienda temperatura 1.0 y 32k tokens.
+  - MiMo-9B (Q6_K): GSM8K 93/100, MATH-500 34/50 (68 %); 19 respuestas cortadas en el tope (4 + 15); 659 y 3254 tokens de media; ~37 tok/s. Su plantilla no fuerza el thinking: pensó en 136 de 150 problemas.
+    - Desacuerdos entre jueces, revisados a mano: los mismos casos de formato que en TwIL ("60\%" correcto; `\frac43`, `\frac 59`, `.35625` correctos según el juez principal).
+    - Los cortes no son bucles: solo 1 de 19 colas cortadas es periódica. MiMo razona más largo y el tope de 8192 lo penaliza.
+
+    | Tope 8192, greedy | TwIL-8B Q4_K_M | MiMo-9B Q6_K |
+    |---|---|---|
+    | GSM8K (100) | **96 %** | 93 % |
+    | MATH-500 (50) | **88 %** | 68 % |
+    | Cortadas en el tope | 4 | 19 |
+    | Tokens medios GSM8K / MATH | 983 / 1811 | 659 / 3254 |
+    | Velocidad (RTX 3060) | 47 tok/s | 37 tok/s |
+
+  - Lectura: con un presupuesto de 8k tokens, TwIL es claramente mejor en MATH-500 (+20 puntos), sobre todo porque termina: su variante balanced viene de un RL que premia trazas cortas. En GSM8K la diferencia (3 puntos con n = 100) no es significativa.
+  - Sesgos conocidos: TwIL va en Q4 y MiMo en Q6 (favorece a MiMo); los dos recomiendan muestrear y presupuestos de 32k, que aquí no se usan. Con 32k tokens la distancia en MATH-500 probablemente se reduciría.
 - **TwIL-8B, según su ficha:** Granite 4.2 8B (que ya es un fine-tune de granite-4.1-8b-base) + SFT completo de trazas + GRPO/DAPO (variante verbose) + RL que premia trazas cortas (variante balanced). Licencia no comercial.
 - **Herramienta de diff** (`engine/weight_diff.py`, 14 tests): compara dos checkpoints tensor a tensor sin cargar ninguno entero, en local o por rangos HTTP desde Hugging Face.
   - La op `diff` de WSPLang ahora la usa. Antes solo leía el primer shard: en un modelo de 4 shards se saltaba en silencio unos tres cuartos de los tensores (test que falla con el código antiguo).

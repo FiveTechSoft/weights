@@ -79,6 +79,39 @@ class RangeSafetensors:
         return torch.frombuffer(bytearray(data), dtype=DTYPES[dtype]).reshape(shape)
 
 
+class Renamed:
+    """A reader seen through rename(name) -> new name or None (None hides the tensor)."""
+
+    def __init__(self, reader, rename: Callable[[str], Optional[str]]):
+        self._reader = reader
+        self._map = {}
+        for k in reader.keys():
+            new = rename(k)
+            if new is None:
+                continue
+            if new in self._map:
+                raise ValueError(f"two tensors renamed to {new}: {self._map[new]}, {k}")
+            self._map[new] = k
+
+    def keys(self) -> List[str]:
+        return sorted(self._map)
+
+    def get(self, name: str) -> torch.Tensor:
+        return self._reader.get(self._map[name])
+
+
+def text_model_name(name: str) -> Optional[str]:
+    """Common names for the text model of multimodal and text-only checkpoints (Qwen3.5 layout).
+
+    model.language_model.X -> model.X; vision tower (model.visual.*) and multi-token-prediction head (mtp.*) hidden.
+    """
+    if name.startswith(("model.visual.", "visual.", "mtp.")):
+        return None
+    if name.startswith("model.language_model."):
+        return "model." + name[len("model.language_model."):]
+    return name
+
+
 def hf_fetch(repo: str, revision: str = "main", retries: int = 5) -> Callable[[str, int, int], bytes]:
     """fetch(file, start, end_inclusive) over HTTP range requests to huggingface.co (public repos)."""
 
@@ -132,41 +165,102 @@ def layer_of(name: str) -> Optional[int]:
     return int(m.group(1)) if m else None
 
 
-def tensor_delta_stats(name: str, a: torch.Tensor, b: torch.Tensor, k: int = 16, top_rows: int = 20) -> Dict:
-    changed = int((a != b).sum())
-    A, B = a.float(), b.float()
-    D = B - A
-    nb, nd, nt = float(A.norm()), float(D.norm()), float(B.norm())
+def _blocks(a: torch.Tensor, chunk_rows: int):
+    for i in range(0, a.shape[0], chunk_rows):
+        yield i, slice(i, min(i + chunk_rows, a.shape[0]))
+
+
+def _gram(a: torch.Tensor, b: torch.Tensor, chunk_rows: int, device="cpu") -> torch.Tensor:
+    """Gram matrix of D = b - a on its smaller side, accumulated in row blocks (float64)."""
+    rows, cols = a.shape
+    if cols <= rows:
+        G = torch.zeros(cols, cols, dtype=torch.float64, device=device)
+        for _, sl in _blocks(a, chunk_rows):
+            Dc = (b[sl].to(device, torch.float32) - a[sl].to(device, torch.float32)).double()
+            G += Dc.T @ Dc
+    else:
+        G = torch.zeros(rows, rows, dtype=torch.float64, device=device)
+        for j in range(0, cols, chunk_rows):
+            sl = slice(j, min(j + chunk_rows, cols))
+            Dc = (b[:, sl].to(device, torch.float32) - a[:, sl].to(device, torch.float32)).double()
+            G += Dc @ Dc.T
+    return G
+
+
+def delta_basis(a: torch.Tensor, b: torch.Tensor, k: int, chunk_rows: int = 4096, device="cpu"):
+    """Squared singular values (descending) and top-k singular vectors of D = b - a on its smaller side."""
+    ev, vec = torch.linalg.eigh(_gram(a, b, chunk_rows, device))
+    ev, vec = ev.flip(0).clamp(min=0), vec.flip(1)
+    return ev.cpu(), vec[:, :k].cpu()
+
+
+def tensor_delta_stats(name: str, a: torch.Tensor, b: torch.Tensor, k: int = 16, top_rows: int = 20,
+                       chunk_rows: int = 4096, device="cpu") -> Dict:
+    """Statistics of W' = W + D, read in row blocks so a large matrix never exists twice in float32."""
+    if a.dim() < 2:
+        a2, b2 = a.reshape(1, -1), b.reshape(1, -1)
+    else:
+        a2, b2 = a.reshape(a.shape[0], -1), b.reshape(b.shape[0], -1)
+    changed, nb2, nd2, nt2, dot, mx = 0, 0.0, 0.0, 0.0, 0.0, 0.0
+    row_d, row_b = [], []
+    for _, sl in _blocks(a2, chunk_rows):
+        ac, bc = a2[sl], b2[sl]
+        changed += int((ac != bc).sum())
+        A, B = ac.to(device, torch.float32).double(), bc.to(device, torch.float32).double()
+        D = B - A
+        nb2 += float((A * A).sum()); nd2 += float((D * D).sum()); nt2 += float((B * B).sum())
+        dot += float((A * B).sum())
+        if D.numel():
+            mx = max(mx, float(D.abs().max()))
+        row_d.append(D.norm(dim=1).cpu()); row_b.append(A.norm(dim=1).cpu())
+    nb, nd, nt = nb2 ** 0.5, nd2 ** 0.5, nt2 ** 0.5
     s = {"tensor": name, "family": family(name), "layer": layer_of(name), "shape": list(a.shape),
          "numel": a.numel(), "norm_base": nb, "norm_delta": nd,
          "rel_delta": nd / nb if nb > 0 else (0.0 if nd == 0 else float("inf")),
-         "cosine": float((A * B).sum()) / (nb * nt) if nb > 0 and nt > 0 else 1.0,
-         "changed_fraction": changed / max(a.numel(), 1), "changed": changed,
-         "max_abs_delta": float(D.abs().max()) if D.numel() else 0.0}
-    if D.dim() != 2:
+         "cosine": dot / (nb * nt) if nb > 0 and nt > 0 else 1.0,
+         "changed_fraction": changed / max(a.numel(), 1), "changed": changed, "max_abs_delta": mx}
+    if a.dim() != 2:
         return s
     if nd == 0:
         s.update(energy_top1=0.0, energy_topk=0.0, stable_rank=0.0, top_singular_values=[])
     else:
-        small = min(D.shape)
-        if small <= 4 * k:
-            sv = torch.linalg.svdvals(D)[:k]
-        else:
-            with torch.random.fork_rng(devices=[]):
-                torch.manual_seed(0)
-                sv = torch.svd_lowrank(D, q=min(k + 8, small), niter=4)[1][:k]
-        e = nd ** 2
-        s.update(energy_top1=float(sv[0] ** 2) / e, energy_topk=float((sv ** 2).sum()) / e,
-                 stable_rank=e / float(sv[0] ** 2), top_singular_values=[round(float(x), 6) for x in sv])
+        ev, _ = delta_basis(a, b, k, chunk_rows, device)
+        e = float(ev.sum())  # = ||D||^2, computed independently of nd2
+        s.update(energy_top1=float(ev[0]) / e, energy_topk=float(ev[:k].sum()) / e,
+                 stable_rank=e / float(ev[0]), top_singular_values=[round(float(x) ** 0.5, 6) for x in ev[:k]])
     if any(t in name.lower() for t in ROW_TENSORS):
-        rn = D.norm(dim=1)
-        base_rows = A.norm(dim=1)
+        rn, base_rows = torch.cat(row_d), torch.cat(row_b)
         s["rows_changed"] = int((rn > 0).sum())
         idx = torch.argsort(rn, descending=True)[:top_rows]
         s["top_rows"] = [{"row": int(i), "delta_norm": float(rn[i]),
                           "rel": float(rn[i] / base_rows[i]) if base_rows[i] > 0 else None}
                          for i in idx if rn[i] > 0]
     return s
+
+
+def delta_overlap(a: torch.Tensor, b1: torch.Tensor, b2: torch.Tensor, k: int = 16, chunk_rows: int = 4096,
+                  device="cpu") -> Dict:
+    """How alike two updates of the same base are: D1 = b1 - a, D2 = b2 - a.
+
+    cosine: of the flattened deltas (sign matters). subspace_overlap: ||V1^T V2||_F^2 / k for their top-k singular
+    vectors on the smaller side (1 = same directions, sign-blind; about k/d for unrelated deltas).
+    """
+    a2 = a.reshape(a.shape[0], -1) if a.dim() >= 2 else a.reshape(1, -1)
+    b1, b2 = b1.reshape(a2.shape), b2.reshape(a2.shape)
+    n1, n2, dot = 0.0, 0.0, 0.0
+    for _, sl in _blocks(a2, chunk_rows):
+        A = a2[sl].to(device, torch.float32).double()
+        D1, D2 = b1[sl].to(device, torch.float32).double() - A, b2[sl].to(device, torch.float32).double() - A
+        n1 += float((D1 * D1).sum()); n2 += float((D2 * D2).sum()); dot += float((D1 * D2).sum())
+    out = {"cosine": dot / (n1 * n2) ** 0.5 if n1 > 0 and n2 > 0 else 0.0,
+           "norm_ratio": (n2 / n1) ** 0.5 if n1 > 0 else None}
+    if a.dim() == 2 and n1 > 0 and n2 > 0:
+        kk = min(k, min(a.shape))
+        _, V1 = delta_basis(a, b1, kk, chunk_rows, device)
+        _, V2 = delta_basis(a, b2, kk, chunk_rows, device)
+        out["subspace_overlap"] = float((V1.T @ V2).pow(2).sum()) / kk
+        out["random_overlap"] = kk / min(a.shape)
+    return out
 
 
 def _totals(rows: List[Dict]) -> Dict:

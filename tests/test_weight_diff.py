@@ -146,6 +146,44 @@ class TestTensorStats(unittest.TestCase):
         self.assertNotIn("stable_rank", s)
 
 
+class TestChunkedAndOverlap(unittest.TestCase):
+    def test_chunked_equals_whole(self):
+        """Big tensors are processed in row blocks; the numbers must not depend on the block size."""
+        g = torch.Generator().manual_seed(3)
+        a = torch.randn(300, 40, generator=g)
+        b = a + 0.05 * torch.randn(300, 40, generator=g)
+        b[5] += 2.0
+        whole = wd.tensor_delta_stats("model.embed_tokens.weight", a, b, chunk_rows=10_000)
+        parts = wd.tensor_delta_stats("model.embed_tokens.weight", a, b, chunk_rows=7)
+        for key in ("rel_delta", "cosine", "changed_fraction", "energy_top1", "stable_rank", "max_abs_delta"):
+            self.assertAlmostEqual(whole[key], parts[key], places=4, msg=key)
+        self.assertEqual(whole["top_rows"][0]["row"], 5)
+        self.assertEqual(parts["top_rows"][0]["row"], 5)
+
+    def test_wide_matrix(self):
+        """Fewer rows than columns: the spectrum comes from the row side."""
+        g = torch.Generator().manual_seed(4)
+        a = torch.randn(16, 200, generator=g)
+        delta = torch.randn(16, 1, generator=g) @ torch.randn(1, 200, generator=g)
+        s = wd.tensor_delta_stats("w", a, a + delta, chunk_rows=5)
+        self.assertGreater(s["energy_top1"], 0.99)
+
+    def test_overlap_of_two_deltas(self):
+        g = torch.Generator().manual_seed(5)
+        a = torch.randn(256, 64, generator=g)
+        u = torch.randn(256, 4, generator=g) @ torch.randn(4, 64, generator=g)
+        same = wd.delta_overlap(a, a + u, a + 2 * u, k=4)
+        self.assertAlmostEqual(same["cosine"], 1.0, places=4)
+        self.assertGreater(same["subspace_overlap"], 0.99)
+        other = torch.randn(256, 4, generator=g) @ torch.randn(4, 64, generator=g)
+        diff = wd.delta_overlap(a, a + u, a + other, k=4)
+        self.assertLess(abs(diff["cosine"]), 0.2)
+        self.assertLess(diff["subspace_overlap"], 0.35)  # random 4-dim subspaces of R^64: about 4/64
+        opposite = wd.delta_overlap(a, a + u, a - u, k=4)
+        self.assertAlmostEqual(opposite["cosine"], -1.0, places=4)
+        self.assertGreater(opposite["subspace_overlap"], 0.99)
+
+
 class TestDiffModels(Fixture):
     def test_finds_the_changes_and_only_them(self):
         rep = wd.diff_models(wd.LocalSafetensors(self.base_dir), wd.LocalSafetensors(self.tuned_dir))
@@ -177,6 +215,32 @@ class TestDiffModels(Fixture):
                              pattern="*mlp*")
         self.assertEqual({t["tensor"] for t in rep["tensors"]},
                          {"model.layers.0.mlp.down_proj.weight", "model.layers.1.mlp.down_proj.weight"})
+
+
+class TestRenamed(Fixture):
+    """Multimodal Qwen3.5 checkpoints prefix text tensors with model.language_model.; text-only ones do not."""
+
+    def test_multimodal_and_text_only_names_meet(self):
+        mm = self.dir / "mm.safetensors"
+        save_file({**{k.replace("model.", "model.language_model.", 1): v.to(torch.bfloat16)
+                      for k, v in self.base.items()},
+                   "model.visual.blocks.0.attn.qkv.weight": torch.zeros(3, 3),
+                   "mtp.fc.weight": torch.zeros(2, 2)}, str(mm))
+        base = wd.Renamed(wd.LocalSafetensors(mm), wd.text_model_name)
+        self.assertEqual(set(base.keys()), set(self.base))
+        self.assertTrue(torch.equal(base.get("model.norm.weight"), self.base["model.norm.weight"].to(torch.bfloat16)))
+        rep = wd.diff_models(base, wd.Renamed(wd.LocalSafetensors(self.tuned_dir), wd.text_model_name))
+        self.assertEqual(rep["only_in_base"], [])
+        self.assertEqual({t["tensor"] for t in rep["tensors"] if t["changed_fraction"] > 0},
+                         {"model.layers.1.mlp.down_proj.weight", "model.embed_tokens.weight"})
+
+    def test_text_model_name(self):
+        self.assertEqual(wd.text_model_name("model.language_model.layers.3.mlp.up_proj.weight"),
+                         "model.layers.3.mlp.up_proj.weight")
+        self.assertEqual(wd.text_model_name("model.layers.3.mlp.up_proj.weight"), "model.layers.3.mlp.up_proj.weight")
+        self.assertEqual(wd.text_model_name("lm_head.weight"), "lm_head.weight")
+        self.assertIsNone(wd.text_model_name("model.visual.merger.fc.weight"))
+        self.assertIsNone(wd.text_model_name("mtp.layers.0.mlp.up_proj.weight"))
 
 
 class TestWSPLangDiffOp(Fixture):
