@@ -202,6 +202,7 @@ step delta_signature base=<model> model=<model> out=<sig.pt> [k=16] [sketch=4096
 step delta_compare a=<sig.pt> b=<sig.pt> [factor=3] [out=<report.json>]
 step evaluate_benchmark endpoint=<port|URL> name=<label> [gsm8k=100] [math500=50] [max_tokens=8192] [out=<report.json>]
 step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<a.pt>,<b.pt>|random k=16 alpha=1.0 [seed=0] out=<dir>
+step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true] out=<report.md>
 ```
 
 * `delta_stats`: per tensor, ||ΔW||/||W||, cosine, changed fraction, spectrum of ΔW (top-1 energy, stable rank),
@@ -212,6 +213,12 @@ step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<
   null) and against chance k/d; `H3` true when both ratios are >= `factor`.
 * `evaluate_benchmark`: GSM8K / MATH-500 with one fixed protocol (greedy, the model's chat template, the boxed
   answer graded by two independent graders) against a server that is already running (e.g. llama-server).
+* `model_report`: how a model differs from its base and what is usable, in under a minute for a 9B model read from
+  Hugging Face without downloading it. Reads one block of rows per tensor (16 HTTP ranges in flight), classifies
+  the change (`identical`, `directional_ablation` with layer range and global or per-layer directions, `lora_like`
+  with modules and rank, `full_fine_tune`), shows the card's declared base, license and method words (not trusted),
+  the closest studied models of the delta atlas, and what can be reused and how. `base` defaults to the card's
+  base_model. Validated on 6 models whose change is known (lab/runs/model_report/validation.json).
 * `subspace_transfer`: W' = W + α · P_S(W_source − W_base), the projection on the smaller side. Writes a complete
   model to `out=` (unchanged shards copied, configs copied); every changed shard goes through the write guard with a
   total budget; protected tensors need `unlock_tensors`; on failure the partial output is removed. Provenance

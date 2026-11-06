@@ -20,6 +20,7 @@ classify() turns that into a method:
 Rules come from lab/probes/delta_patterns/findings.md (F5, F9, F11, F15, F17) and are tested on synthetic models
 with exact recipes (tests/test_model_report.py).
 """
+import re
 import statistics as st
 from typing import Dict, List, Optional
 
@@ -141,19 +142,139 @@ def profile(fp: Dict) -> Dict:
 
 
 def build_report(base, model, rows: int = 128, model_name: str = "", base_name: str = "", card: Optional[Dict] = None,
-                 progress=None) -> Dict:
+                 progress=None, atlas: Optional[Dict] = None) -> Dict:
     fp = fingerprint(base, model, rows=rows, progress=progress)
+    c, prof = classify(fp), profile(fp)
+    near = atlas_similarity(prof, atlas) if atlas else []
     return {"model": model_name, "base": base_name, "card": card or {}, "rows_per_block": rows,
             "headers": {k: fp[k] for k in ("only_in_base", "only_in_model", "shape_mismatch", "dtype_differs")},
-            "classification": classify(fp), "profile": profile(fp),
+            "classification": {k: v for k, v in c.items()}, "profile": prof, "atlas": near,
+            "usable": usable(c, card or {}, near),
             "tensors": [{k: v for k, v in r.items() if not k.startswith("_")} for r in fp["tensors"]]}
+
+
+def reader_for(spec: str, root=None):
+    """A local directory/file of safetensors, or a Hugging Face repo id read by HTTP ranges."""
+    from pathlib import Path
+    p = Path(spec)
+    if not p.exists() and root is not None and (Path(root) / spec).exists():
+        p = Path(root) / spec
+    if p.exists():
+        return wd.Renamed(wd.LocalSafetensors(p), wd.text_model_name)
+    return wd.Renamed(wd.RangeSafetensors(wd.hf_files(spec), wd.hf_fetch(spec)), wd.text_model_name)
+
+
+FLAG_WORDS = {
+    # regular expressions, matched on whole words ("ties" must not match "properties")
+    "heretic": (r"heretic",), "abliteration": (r"abliterat\w*", r"refusal direction", r"orthogonali[sz]\w*"),
+    "lora": (r"q?lora", r"peft", r"adapters?"), "merge": (r"merged? models?", r"mergekit", r"slerp", r"ties-merg\w*",
+                                                          r"dare-ties", r"model merg\w*"),
+    "distillation": (r"distill\w*",), "rl": (r"grpo", r"dapo", r"dppo", r"ppo", r"reinforcement[- ]learning", r"rl"),
+    "sft": (r"sft", r"supervised fine-?tun\w*"), "uncensored": (r"uncensored", r"decensor\w*"),
+    "non_commercial": (r"non-?commercial", r"non commercial", r"cc-by-nc\S*"),
+}
+
+
+def card_info(repo: str, fetch_json=None, fetch_text=None) -> Dict:
+    """What the Hugging Face card says: declared base, license, and words that name a method (not trusted, shown)."""
+    import json
+    import urllib.request
+    fetch_json = fetch_json or (lambda u: json.loads(urllib.request.urlopen(u, timeout=60).read()))
+    fetch_text = fetch_text or (lambda u: urllib.request.urlopen(u, timeout=60).read().decode("utf-8", "replace"))
+    api = fetch_json(f"https://huggingface.co/api/models/{repo}?cardData=true")
+    cd = api.get("cardData") or {}
+    try:
+        readme = fetch_text(f"https://huggingface.co/{repo}/raw/main/README.md")
+    except Exception:
+        readme = ""
+    text = (readme + " " + " ".join(api.get("tags", [])) + " " + str(cd.get("license_name", ""))).lower()
+    base = cd.get("base_model")
+    return {"repo": repo, "base_model": base[0] if isinstance(base, list) and base else base,
+            "license": cd.get("license_name") or cd.get("license"),
+            "flags": sorted(f for f, words in FLAG_WORDS.items()
+                            if any(re.search(rf"(?<![\w-]){w}(?![\w])", text) for w in words))}
+
+
+def atlas_similarity(prof: Dict, atlas: Dict) -> List[Dict]:
+    """Spearman of the per-type profile with each studied model's; atlas: name -> {family, profile{kind: rel}}."""
+    mine = {k: v["rel_median"] for k, v in prof.items()}
+    out = []
+    for name, entry in atlas.items():
+        ks = sorted(set(mine) & set(entry["profile"]))
+        if len(ks) < 3:
+            continue
+        rk = lambda d: {k: i for i, k in enumerate(sorted(ks, key=lambda k: d[k]))}
+        a, b = rk(mine), rk(entry["profile"])
+        n = len(ks)
+        out.append({"model": name, "family": entry["family"],
+                    "spearman": 1 - 6 * sum((a[k] - b[k]) ** 2 for k in ks) / (n * (n * n - 1))})
+    return sorted(out, key=lambda r: -r["spearman"])
+
+
+# Families of the models studied in lab/probes/delta_patterns (findings F1-F17).
+ATLAS_FAMILIES = {"mimo": "reasoning distillation, full", "neohorse": "agent, full", "fara": "agent, full",
+                  "tmax": "agent RL, full", "nyx_rp": "role-play LoRA (control)",
+                  "abliterated": "abliteration", "wemm_embed": "embedding model (control)",
+                  "angry_claudius": "degradation (control)", "dsv4_distill": "reasoning distillation, LoRA-like",
+                  "official_post": "official post-training (Base -> instruct)"}
+
+
+def load_atlas(stats_dir) -> Dict:
+    """Per-type median relative change of every studied model with full statistics (stats_<name>.jsonl)."""
+    import json
+    from pathlib import Path
+    atlas = {}
+    for name, fam in ATLAS_FAMILIES.items():
+        p = Path(stats_dir) / f"stats_{name}.jsonl"
+        if not p.exists():
+            continue
+        g: Dict[str, List[float]] = {}
+        for line in p.read_text(encoding="utf-8").splitlines():
+            r = json.loads(line)
+            g.setdefault(wd.tensor_kind(r["tensor"]), []).append(r["rel_delta"])
+        atlas[name] = {"family": fam, "profile": {k: st.median(v) for k, v in g.items()}}
+    return atlas
+
+
+def usable(c: Dict, card: Dict, near: List[Dict]) -> List[str]:
+    """What can be reused and how, stated with the evidence level it has today."""
+    tips = []
+    m = c.get("method")
+    if m == "identical":
+        return ["Nothing to take: the weights equal the base."]
+    if m == "directional_ablation":
+        lay = c.get("layers") or ["?", "?"]
+        tips.append(f"Decensoring component: rank {c.get('rank_estimate')} per tensor, "
+                    f"{c.get('ablation_directions', '?')} directions, layers {lay[0]}-{lay[1]}, residual-writing "
+                    "matrices only. Reproducible with WSPLang `project_out` per layer (directions taken from the "
+                    "model's own delta). It removes safety behaviour: use only where that is acceptable.")
+    elif m == "lora_like":
+        tips.append(f"Adapter-like update (rank about {c.get('rank_estimate')}) on: {', '.join(c.get('touched', []))}. "
+                    "Small and self-contained: it can be applied to the base as a low-rank delta; its effect is "
+                    "whatever the adapter was trained for, nothing more.")
+    elif m == "full_fine_tune":
+        tips.append("Diffuse full fine-tune: rank-one ops cannot reproduce it. Candidate for `subspace_transfer` "
+                    "along the residual directions that improved models share (findings F7, F12, F14); a transfer "
+                    "must beat a random subspace of the same size before it counts (plan H4, not yet run).")
+    if near:
+        top = near[0]
+        tips.append(f"Closest studied model by where it changes: {top['model']} ({top['family']}), "
+                    f"Spearman {top['spearman']:.2f}.")
+    flags = set(card.get("flags", []))
+    if "non_commercial" in flags:
+        tips.append("The card mentions a non-commercial license: check before any reuse.")
+    if {"heretic", "abliteration", "uncensored"} & flags and m != "directional_ablation":
+        tips.append("The card mentions decensoring, but no separate ablation component was found in the sampled rows.")
+    return tips
 
 
 def render_markdown(rep: Dict) -> str:
     c, h = rep["classification"], rep["headers"]
     lines = [f"# Model report: {rep['model']}", "", f"Base: {rep['base']}  ", f"Blocks of {rep['rows_per_block']} rows per tensor.", ""]
     if rep.get("card"):
-        lines += ["## Card", ""] + [f"- {k}: {v}" for k, v in rep["card"].items()] + [""]
+        lines += ["## Card (what the model page says; not verified)", ""]
+        lines += [f"- {k}: {v}" for k, v in rep["card"].items() if k != "flags"]
+        lines += [f"- words the page mentions: {', '.join(rep['card'].get('flags', [])) or '-'}", ""]
     lines += ["## Compatibility", "",
               f"- only in base: {len(h['only_in_base'])}; only in model: {len(h['only_in_model'])}; "
               f"shape mismatch: {len(h['shape_mismatch'])}; stored dtype differs: {len(h['dtype_differs'])} "
@@ -173,4 +294,10 @@ def render_markdown(rep: Dict) -> str:
     for k, p in sorted(rep["profile"].items(), key=lambda kv: -kv[1]["rel_median"]):
         lay = f"{p['layers'][0]}-{p['layers'][-1]}" if p["layers"] else "-"
         lines.append(f"| {k} | {p['touched']}/{p['tensors']} | {p['rel_median']:.4%} | {p['rank90_median'] or '-'} | {lay} |")
+    lines += ["", "\"Untouched\" means unchanged in the sampled rows; a full `delta_stats` settles it.", ""]
+    if rep.get("atlas"):
+        lines += ["## Closest studied models (Spearman of where they change)", ""]
+        lines += [f"- {r['model']} ({r['family']}): {r['spearman']:.2f}" for r in rep["atlas"][:5]] + [""]
+    if rep.get("usable"):
+        lines += ["## What is usable, and how", ""] + [f"- {t}" for t in rep["usable"]] + [""]
     return "\n".join(lines) + "\n"

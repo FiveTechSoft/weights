@@ -62,7 +62,7 @@ OPS_ALLOWED = {
     "project_out", "project_in", "export_control_vector", "audit", "assert_budget",
     "subspace_transfer",  # move along a subspace of another model's update (engine/subspace_ops.py)
     # Studying improved models (engine/weight_diff.py, engine/bench_runner.py); none writes weights
-    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark",
+    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -238,7 +238,7 @@ READ_ONLY_OPS = {
     "diff", "compare", "evaluate",
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     "assert_behavioral_drift", "vicreg_preserve",
-    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark",  # write reports, never weights
+    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",  # reports, never weights
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -2189,6 +2189,35 @@ def execute_plan_v4(
                     out_p = check_report_path(named["out"], [])
                     out_p.parent.mkdir(parents=True, exist_ok=True)
                     out_p.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+                    res["result"]["output"] = str(out_p)
+                res["execution_state"] = "executed"
+
+            elif op == "model_report":
+                # How a model differs from its base, and what is usable (engine/model_report.py). model= and base= are
+                # local safetensors or Hugging Face repo ids (read by HTTP ranges, nothing downloaded). base defaults
+                # to the card's base_model. Writes a markdown report (and .json next to it); no weights.
+                from engine import model_report as mr
+                if not named.get("model"):
+                    raise ValueError("model_report needs model=<dir or repo id>")
+                model_spec = str(named["model"])
+                is_local = Path(model_spec).exists() or (ROOT / model_spec).exists()
+                card = {} if is_local or str(named.get("card", "true")).lower() == "false" else mr.card_info(model_spec)
+                base_spec = str(named.get("base") or card.get("base_model") or "")
+                if not base_spec:
+                    raise ValueError("model_report needs base=<dir or repo id> (the card names no base_model)")
+                rep = mr.build_report(mr.reader_for(base_spec, ROOT), mr.reader_for(model_spec, ROOT),
+                                      rows=int(named.get("rows", 128)), model_name=model_spec, base_name=base_spec,
+                                      card=card, atlas=mr.load_atlas(ROOT / "lab" / "runs" / "delta_patterns"))
+                res["result"] = {"method": rep["classification"]["method"],
+                                 "classification": rep["classification"], "usable": rep["usable"],
+                                 "closest": rep["atlas"][:3]}
+                if named.get("out"):
+                    inputs = [p for p in (ROOT / model_spec, ROOT / base_spec, Path(model_spec), Path(base_spec))
+                              if p.exists()]
+                    out_p = check_report_path(named["out"], inputs)
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_text(mr.render_markdown(rep), encoding="utf-8")
+                    out_p.with_suffix(".json").write_text(json.dumps(rep, indent=1), encoding="utf-8")
                     res["result"]["output"] = str(out_p)
                 res["execution_state"] = "executed"
 

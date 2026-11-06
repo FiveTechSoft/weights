@@ -174,6 +174,60 @@ class TestParallelReads(Synthetic):
         self.assertEqual(strip(fp), strip(serial))
 
 
+class TestCardAtlasUsable(unittest.TestCase):
+    def test_card_flags(self):
+        api = {"cardData": {"base_model": "Qwen/Qwen3.5-9B", "license": "other", "license_name": "webai-nc-1.0"},
+               "tags": ["lora", "text-generation"]}
+        readme = "Made with Heretic using Arbitrary-Rank Ablation. Non-commercial use only. Distilled from X."
+        c = mr.card_info("someone/model", fetch_json=lambda url: api, fetch_text=lambda url: readme)
+        self.assertEqual(c["base_model"], "Qwen/Qwen3.5-9B")
+        self.assertIn("heretic", c["flags"])
+        self.assertIn("distillation", c["flags"])
+        self.assertIn("non_commercial", c["flags"])
+
+    def test_card_words_need_word_boundaries(self):
+        """'properties' contains 'ties', 'prompt' contains 'rl'-free text... flags match whole words only."""
+        c = mr.card_info("x/y", fetch_json=lambda u: {"cardData": {}, "tags": []},
+                         fetch_text=lambda u: "Model properties and capabilities; world knowledge; unparalleled.")
+        self.assertEqual(c["flags"], [])
+
+    def test_atlas_nearest(self):
+        prof = {"a.w": {"rel_median": 0.3}, "b.w": {"rel_median": 0.2}, "c.w": {"rel_median": 0.1},
+                "d.w": {"rel_median": 0.0}}
+        atlas = {"m1": {"family": "agent", "profile": {"a.w": 3.0, "b.w": 2.0, "c.w": 1.0, "d.w": 0.5}},
+                 "m2": {"family": "control", "profile": {"a.w": 0.1, "b.w": 0.2, "c.w": 0.3, "d.w": 0.4}}}
+        near = mr.atlas_similarity(prof, atlas)
+        self.assertEqual(near[0]["model"], "m1")
+        self.assertAlmostEqual(near[0]["spearman"], 1.0)
+        self.assertEqual(near[-1]["model"], "m2")
+
+    def test_usable_mentions_method_specific_advice(self):
+        ab = mr.usable({"method": "directional_ablation", "layers": [9, 23], "ablation_directions": "per_layer",
+                        "rank_estimate": 1, "touched": ["mlp.down_proj.weight"]}, {"flags": ["non_commercial"]}, [])
+        text = " ".join(ab)
+        self.assertIn("project_out", text)
+        self.assertIn("non-commercial", text)
+        ft = mr.usable({"method": "full_fine_tune", "touched": ["mlp.gate_proj.weight"]}, {}, [])
+        self.assertIn("subspace_transfer", " ".join(ft))
+
+
+class TestWSPLangOp(Synthetic):
+    def test_model_report_step(self):
+        import engine.wsplang as wsplang
+        out = Path(self.tmp.name) / "report_lora.md"
+        code = (f"experiment r:\nsteps:\n    step model_report model={self.paths['lora'].as_posix()} "
+                f"base={self.paths['base'].as_posix()} rows=16 out={out.as_posix()}\n")
+        prog = wsplang.parse_args_lines(code)
+        steps, errors = wsplang.validate(prog)
+        self.assertFalse(errors, errors)
+        feas = wsplang.check_feasibility(prog, steps)
+        self.assertFalse([e for e in feas[0] if "NO implementada" in e], feas)
+        r = wsplang.execute_plan_v4(wsplang.plan_run(prog, steps), prog)[0]
+        self.assertEqual(r["status"], "ok", r)
+        self.assertEqual(r["result"]["method"], "lora_like")
+        self.assertIn("lora_like", out.read_text(encoding="utf-8"))
+
+
 class TestReport(Synthetic):
     def test_markdown_report(self):
         reader = lambda p: wd.Renamed(wd.LocalSafetensors(p), wd.text_model_name)
