@@ -187,8 +187,16 @@ def build_report(base, model, rows: int = 128, model_name: str = "", base_name: 
     fp = fingerprint(base, model, rows=rows, progress=progress)
     c, prof = classify(fp), profile(fp)
     near = atlas_similarity(prof, atlas) if atlas else []
+    same_base = atlas_matches(fp, atlas_sigs) if atlas_sigs else None
+    if same_base is False:
+        for r in near:
+            r["cross_base"] = True
+    hidden = hidden_diff(base, model)
     transfer = None
-    if atlas_sigs and c["method"] != "identical":
+    if same_base is False and c["method"] != "identical":
+        transfer = {"applicable": False, "by_kind": {}, "candidates": [], "needs_full_signature": [],
+                    "reason": "the studied models' signatures have other tensor shapes (another base)"}
+    elif atlas_sigs and c["method"] != "identical":
         col_side = {r["tensor"] for r in fp["tensors"] if len(r["shape"]) == 2 and r["shape"][1] <= r["shape"][0]
                     and not r["tensor"].endswith(RESIDUAL_WRITERS) and r["changed"]}
         fp2 = fingerprint(base, model, rows=transfer_rows, only=lambda n: n in col_side)
@@ -196,12 +204,59 @@ def build_report(base, model, rows: int = 128, model_name: str = "", base_name: 
         transfer["needs_full_signature"] = sorted({r["kind"] for r in fp["tensors"]
                                                    if r["kind"].endswith(RESIDUAL_WRITERS) and r["changed"]})
         transfer["rows"] = transfer_rows
+        transfer["applicable"] = True
+    headers = {k: fp[k] for k in ("only_in_base", "only_in_model", "shape_mismatch", "dtype_differs")}
+    headers.update(hidden)
     return {"model": model_name, "base": base_name, "card": card or {}, "rows_per_block": rows,
-            "headers": {k: fp[k] for k in ("only_in_base", "only_in_model", "shape_mismatch", "dtype_differs")},
+            "headers": headers,
             "classification": {k: v for k, v in c.items()}, "profile": prof, "atlas": near,
             "transfer": transfer, "nonweights": nonweights,
-            "usable": usable(c, card or {}, near, transfer) + _nonweight_tips(nonweights),
+            "usable": usable(c, card or {}, near, transfer) + _hidden_tips(hidden) + _nonweight_tips(nonweights),
             "tensors": [{k: v for k, v in r.items() if not k.startswith("_")} for r in fp["tensors"]]}
+
+
+def atlas_matches(fp: Dict, atlas_sigs: Dict) -> bool:
+    """True if the studied models share this model's base shapes: some sampled tensor has a signature of the same
+    shape. The atlas is Qwen3.5-9B; a model on another base (e.g. Qwen3.8-27B) cannot be compared by direction."""
+    for r in fp["tensors"]:
+        if len(r["shape"]) != 2:   # 1-D norms (head_dim, DeltaNet norm) keep their shape across model scales
+            continue
+        for sig in atlas_sigs.values():
+            s = sig.get(r["tensor"])
+            if s and list(s.get("shape", [])) == list(r["shape"]):
+                return True
+    return False
+
+
+def hidden_diff(base, model) -> Dict:
+    """Hidden parts (MTP head, vision tower, ...) present on one side only, as {group: tensor count}."""
+    if not (hasattr(base, "hidden") and hasattr(model, "hidden")):
+        return {"hidden_only_in_base": {}, "hidden_only_in_model": {}}
+    hb, hm = set(base.hidden()), set(model.hidden())
+
+    def groups(names):
+        out: Dict[str, int] = {}
+        for n in sorted(names):
+            g = wd.hidden_group(n) or "other"
+            out[g] = out.get(g, 0) + 1
+        return out
+    return {"hidden_only_in_base": groups(hb - hm), "hidden_only_in_model": groups(hm - hb)}
+
+
+def _hidden_tips(hidden: Dict) -> List[str]:
+    tips = []
+    gone, new = hidden.get("hidden_only_in_base", {}), hidden.get("hidden_only_in_model", {})
+    if "mtp" in gone:
+        tips.append("The model drops the base's MTP (multi-token prediction) head: speculative decoding with the "
+                    "model's own MTP layer is not available, and it cannot be restored from the base (it was trained "
+                    "with the base's trunk).")
+    other = {g: n for g, n in gone.items() if g != "mtp"}
+    if other:
+        tips.append("Parts of the base missing in the model: " + ", ".join(f"{g} ({n})" for g, n in other.items())
+                    + ". Check the model still does what those parts did (e.g. image input).")
+    if new:
+        tips.append("Parts only in the model: " + ", ".join(f"{g} ({n})" for g, n in new.items()) + ".")
+    return tips
 
 
 def reader_for(spec: str, root=None):
@@ -514,15 +569,19 @@ def usable(c: Dict, card: Dict, near: List[Dict], transfer: Optional[Dict] = Non
         tips.append("Shares residual directions with studied improvements (same layer, >= 3x the other-layer null), "
                     "so a `subspace_transfer` along them is a candidate: " + "; ".join(lines) + ". A candidate is not "
                     "a result: the transfer must beat a random subspace of the same size on a benchmark (plan H4).")
-    elif transfer is not None:
+    elif transfer is not None and transfer.get("applicable", True):
         tips.append("No column-side tensor type shares directions with the studied improvements (H3 rule).")
+    elif transfer is not None:
+        tips.append("Shared directions not tested: the studied models are on another base. Direction comparisons "
+                    "need models fine-tuned from this model's base.")
     if transfer and transfer.get("needs_full_signature"):
         tips.append("Residual-writing matrices (" + ", ".join(transfer["needs_full_signature"]) + ") cannot be judged "
                     "from blocks of rows: run `delta_signature` + `delta_compare` for them.")
     if near:
         top = near[0]
         tips.append(f"Closest studied model by where it changes: {top['model']} ({top['family']}), "
-                    f"Spearman {top['spearman']:.2f}.")
+                    f"Spearman {top['spearman']:.2f}" + (" (studied models are on another base: only the per-type "
+                                                        "profile is compared)." if top.get("cross_base") else "."))
     flags = set(card.get("flags", []))
     if "non_commercial" in flags:
         tips.append("The card mentions a non-commercial license: check before any reuse.")
@@ -559,7 +618,12 @@ def render_markdown(rep: Dict) -> str:
     lines += ["## Compatibility", "",
               f"- only in base: {len(h['only_in_base'])}; only in model: {len(h['only_in_model'])}; "
               f"shape mismatch: {len(h['shape_mismatch'])}; stored dtype differs: {len(h['dtype_differs'])} "
-              "(compared after rounding to the lower precision)", ""]
+              "(compared after rounding to the lower precision)"]
+    for side, key in (("base", "hidden_only_in_base"), ("model", "hidden_only_in_model")):
+        if h.get(key):
+            lines.append(f"- not in the text model, only in {side}: "
+                         + ", ".join(f"{g} ({n} tensors)" for g, n in h[key].items()))
+    lines.append("")
     lines += ["## How it was changed", "", f"- method: **{c['method']}**"]
     if c.get("layers"):
         lines.append(f"- layers {c['layers'][0]}-{c['layers'][1]} ({len(c['layers_touched'])} touched)")
@@ -577,9 +641,16 @@ def render_markdown(rep: Dict) -> str:
         lines.append(f"| {k} | {p['touched']}/{p['tensors']} | {p['rel_median']:.4%} | {p['rank90_median'] or '-'} | {lay} |")
     lines += ["", "\"Untouched\" means unchanged in the sampled rows; a full `delta_stats` settles it.", ""]
     if rep.get("atlas"):
+        cross = any(r.get("cross_base") for r in rep["atlas"])
         lines += ["## Closest studied models (Spearman of where they change)", ""]
+        if cross:
+            lines += ["The studied models are on another base (other tensor shapes): only the per-type profile is "
+                      "compared.", ""]
         lines += [f"- {r['model']} ({r['family']}): {r['spearman']:.2f}" for r in rep["atlas"][:5]] + [""]
-    if rep.get("transfer"):
+    if rep.get("transfer") and not rep["transfer"].get("applicable", True):
+        lines += ["## Shared directions with studied improvements", "",
+                  f"- not applicable: {rep['transfer']['reason']}.", ""]
+    elif rep.get("transfer"):
         t = rep["transfer"]
         lines += [f"## Shared directions with studied improvements ({t['rows']} rows per block, column side)", "",
                   "| type | " + " | ".join(sorted({m for v in t["by_kind"].values() for m in v})) + " |",

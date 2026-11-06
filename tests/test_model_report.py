@@ -322,6 +322,78 @@ class TestReport(Synthetic):
         self.assertEqual(rep["headers"]["shape_mismatch"], [])
 
 
+class TestHiddenParts(Synthetic):
+    """Tensors the text report hides (MTP head, vision tower) still count when one side lacks them (Arete-27B
+    dropped Qwen3.8-27B's MTP head; the first report did not say so)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from safetensors.torch import load_file
+        d = Path(cls.tmp.name)
+        for name, extra in (("base_mtp", {"mtp.fc.weight": torch.randn(D, 2 * D), "mtp.norm.weight": torch.ones(D),
+                                          "model.visual.blocks.0.attn.qkv.weight": torch.randn(3 * D, D)}),
+                            ("full_no_mtp", {"model.visual.blocks.0.attn.qkv.weight": torch.randn(3 * D, D)})):
+            src = cls.paths["base"] if name == "base_mtp" else cls.paths["full"]
+            t = load_file(str(src / "model.safetensors"))
+            t.update({k: v.to(torch.bfloat16) for k, v in extra.items()})
+            (d / name).mkdir()
+            save_file(t, str(d / name / "model.safetensors"))
+            cls.paths[name] = d / name
+
+    def report(self):
+        reader = lambda p: wd.Renamed(wd.LocalSafetensors(p), wd.text_model_name)
+        return mr.build_report(reader(self.paths["base_mtp"]), reader(self.paths["full_no_mtp"]), rows=16,
+                               model_name="m", base_name="b")
+
+    def test_hidden_groups_only_in_one_side(self):
+        h = self.report()["headers"]
+        self.assertEqual(h["hidden_only_in_base"], {"mtp": 2})
+        self.assertEqual(h["hidden_only_in_model"], {})
+
+    def test_markdown_and_usable_name_the_missing_mtp_head(self):
+        rep = self.report()
+        md = mr.render_markdown(rep)
+        self.assertIn("mtp (2 tensors)", md)
+        self.assertIn("MTP", " ".join(rep["usable"]))
+
+
+class TestAtlasFromAnotherBase(Synthetic):
+    """The atlas is Qwen3.5-9B. For a model on another base (other shapes) the direction comparison does not apply,
+    and the report must say so instead of printing an empty table and 'no shared directions' (Arete-27B)."""
+
+    def sigs(self, dim):
+        g = torch.Generator().manual_seed(3)
+        n, norm = "model.layers.0.mlp.gate_proj.weight", "model.layers.0.input_layernorm.weight"
+        a, w = torch.randn(I, dim, generator=g), torch.ones(D)
+        # 1-D norms keep their shape across scales (head_dim 256, DeltaNet norm 128 in Qwen3.5-9B and 3.8-27B):
+        # they must not make another base look like the atlas base.
+        return {"improved": {n: wd.delta_signature(n, a, a + 0.1 * torch.randn(I, dim, generator=g), k=4,
+                                                   sketch_dim=32),
+                             norm: wd.delta_signature(norm, w, w + 0.01, k=4, sketch_dim=32)}}
+
+    def report(self, sigs):
+        reader = lambda p: wd.Renamed(wd.LocalSafetensors(p), wd.text_model_name)
+        atlas = {"x": {"family": "f", "profile": {"mlp.gate_proj.weight": 0.1, "mlp.up_proj.weight": 0.2,
+                                                  "mlp.down_proj.weight": 0.3}}}
+        return mr.build_report(reader(self.paths["base"]), reader(self.paths["full"]), rows=16, model_name="m",
+                               base_name="b", atlas=atlas, atlas_sigs=sigs, transfer_rows=32)
+
+    def test_other_base_is_labelled_not_applicable(self):
+        rep = self.report(self.sigs(D + 16))
+        self.assertFalse(rep["transfer"]["applicable"])
+        md = mr.render_markdown(rep)
+        self.assertIn("not applicable", md)
+        self.assertNotIn("| type |  |", md)
+        self.assertIn("another base", md)
+        self.assertNotIn("No column-side tensor type shares", " ".join(rep["usable"]))
+
+    def test_same_base_still_compared(self):
+        rep = self.report(self.sigs(D))
+        self.assertTrue(rep["transfer"]["applicable"])
+        self.assertNotIn("another base", mr.render_markdown(rep))
+
+
 BASE_SPLIT = r"[\p{L}\p{M}]+|\p{N}|\s+|[^\s\p{L}\p{M}\p{N}]+"   # Qwen3.5: letters keep their combining marks
 OLD_SPLIT = r"\p{L}+|\p{N}|\s+|[^\s\p{L}\p{N}]+"                # Qwen2-era: marks split off (F25)
 

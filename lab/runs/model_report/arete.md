@@ -13,6 +13,7 @@ Blocks of 128 rows per tensor.
 ## Compatibility
 
 - only in base: 0; only in model: 0; shape mismatch: 0; stored dtype differs: 0 (compared after rounding to the lower precision)
+- not in the text model, only in base: mtp (15 tensors)
 
 ## How it was changed
 
@@ -54,18 +55,17 @@ Blocks of 128 rows per tensor.
 
 ## Closest studied models (Spearman of where they change)
 
+The studied models are on another base (other tensor shapes): only the per-type profile is compared.
+
 - tmax (agent RL, full): 0.91
 - neohorse (agent, full): 0.83
 - fara (agent, full): 0.82
 - official_post (official post-training (Base -> instruct)): 0.81
 - mimo (reasoning distillation, full): 0.79
 
-## Shared directions with studied improvements (512 rows per block, column side)
+## Shared directions with studied improvements
 
-| type |  |
-|---|
-
-x = same-layer overlap / same type at other layers; shared = >= 3x that and >= 3x chance.
+- not applicable: the studied models' signatures have other tensor shapes (another base).
 
 ## Outside the weights (config, tokenizer, chat template)
 
@@ -98,8 +98,8 @@ x = same-layer overlap / same type at other layers; shared = >= 3x that and >= 3
 ## What is usable, and how
 
 - Diffuse full fine-tune: rank-one ops cannot reproduce it. Candidate for `subspace_transfer` along the residual directions that improved models share (findings F7, F12, F14); a transfer must beat a random subspace of the same size before it counts (plan H4, not yet run).
-- No column-side tensor type shares directions with the studied improvements (H3 rule).
-- Residual-writing matrices (linear_attn.out_proj.weight, mlp.down_proj.weight, self_attn.o_proj.weight) cannot be judged from blocks of rows: run `delta_signature` + `delta_compare` for them.
-- Closest studied model by where it changes: tmax (agent RL, full), Spearman 0.91.
+- Shared directions not tested: the studied models are on another base. Direction comparisons need models fine-tuned from this model's base.
+- Closest studied model by where it changes: tmax (agent RL, full), Spearman 0.91 (studied models are on another base: only the per-type profile is compared).
+- The model drops the base's MTP (multi-token prediction) head: speculative decoding with the model's own MTP layer is not available, and it cannot be restored from the base (it was trained with the base's trunk).
 - Text encodes differently from the base in hindi, bengali, thai, arabic_diacritics. Use one tokenizer for both models when comparing or transferring, and check which one the model was trained with (perplexity under each) before trusting results in those scripts.
 

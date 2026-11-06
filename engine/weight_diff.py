@@ -95,9 +95,11 @@ class Renamed:
     def __init__(self, reader, rename: Callable[[str], Optional[str]]):
         self._reader = reader
         self._map = {}
+        self._hidden: List[str] = []
         for k in reader.keys():
             new = rename(k)
             if new is None:
+                self._hidden.append(k)
                 continue
             if new in self._map:
                 raise ValueError(f"two tensors renamed to {new}: {self._map[new]}, {k}")
@@ -105,6 +107,10 @@ class Renamed:
 
     def keys(self) -> List[str]:
         return sorted(self._map)
+
+    def hidden(self) -> List[str]:
+        """Original names that rename() hid (vision tower, MTP head, ...)."""
+        return sorted(self._hidden)
 
     def get(self, name: str) -> torch.Tensor:
         return self._reader.get(self._map[name])
@@ -145,6 +151,15 @@ _MODULE_ALIASES = (
     (r"\.block_sparse_moe\.experts\.(\d+)\.w3\.", r".mlp.experts.\1.up_proj."),
     (r"\.block_sparse_moe\.gate\.", ".mlp.gate."),
 )
+
+
+def hidden_group(name: str) -> Optional[str]:
+    """The part a hidden (non-text-model) tensor belongs to: 'mtp', 'visual', 'vision_tower', ...; None otherwise."""
+    bare = name[len("model."):] if name.startswith("model.") else name
+    for p in _HIDDEN_PREFIXES:
+        if bare.startswith(p):
+            return p.rstrip(".")
+    return None
 
 
 def text_model_name(name: str) -> Optional[str]:

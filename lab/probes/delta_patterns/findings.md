@@ -378,3 +378,17 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - **Workaround:** load `Qwen3_5Tokenizer` explicitly, or `PreTrainedTokenizerFast(tokenizer_file=...)`.
   A GitHub search found no existing issue on huggingface/transformers.
 - F25's reading ("MiMo ships an older regex") was right about the effect and wrong about the cause.
+
+## F28. Every trained derivative drops the base's MTP head; file-level edits keep it (measured, 2026-11-07)
+- Qwen3.5-9B and Qwen3.8-27B ship a multi-token-prediction head (`mtp.*`, 15 tensors, `mtp_num_hidden_layers` 1),
+  usable for speculative decoding. Count of `mtp.*` tensors per derivative, read from the safetensors headers:
+  - 0 in MiMo (transformers 5.12.1), tmax (4.57), Fara (5.6.2), WeMM (5.2), Angry-Claudius (5.15) and Arete-27B
+    (5.12.1): every model that went through a training framework;
+  - 15 in Huihui abliterated (a weight edit) and Nyx-RP (a merged LoRA): edits made on the files.
+- Reading: the transformers model class does not load `mtp.*`, so `save_pretrained` after training writes a model
+  without it. This happens with every version seen (4.57 to 5.15), unlike F27, which depends on the version.
+  Consequence: these derivatives lose MTP speculative decoding, and the base's head cannot simply be put back,
+  because it was trained against the base trunk.
+- Tooling: `model_report` hid `mtp.*` on both sides and did not report the loss. It now lists hidden parts present
+  on one side only, and tells a model on another base (Arete-27B on Qwen3.8-27B) that the Qwen3.5-9B atlas does not
+  apply by direction. Tests: `TestHiddenParts`, `TestAtlasFromAnotherBase`.
