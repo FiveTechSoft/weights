@@ -81,3 +81,14 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Tensor names differ between multimodal (`model.language_model.*`) and text-only (`model.*`) checkpoints of the
   same base; `Renamed(reader, text_model_name)` lines them up. Without it a diff silently compares nothing.
 - Dtype differences (F32 vs BF16) show up as tiny "changes"; check the stored dtypes before reading small deltas.
+
+## F9. Method check passes: the abliteration is rank one, in the residual-writing matrices only. (verified)
+- `stats_abliterated.json`: 1.2 % relative change over the model, 18.5 % of weights. Touched: only `mlp.down_proj`
+  (31/32 layers), `self_attn.o_proj` (8/8), DeltaNet `out_proj` (23/24), layers 1-31; nothing else.
+- Top-1 energy 0.991-0.997 in every touched tensor (pre-registered threshold > 0.9). Second method agrees
+  (`check_abliterated.json`).
+- So the spectral measures see a low-rank update when there is one: MiMo's and NeoHorse's diffuse updates (F3, F5)
+  are real.
+- WSPLang: abliteration is exactly the kind of edit WSPLang's `project_out` already expresses (one direction removed
+  from the matrices that write to the residual stream). It is the one known "improvement" in this set that is
+  compact.
