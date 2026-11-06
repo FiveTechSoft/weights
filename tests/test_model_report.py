@@ -322,5 +322,105 @@ class TestReport(Synthetic):
         self.assertEqual(rep["headers"]["shape_mismatch"], [])
 
 
+BASE_SPLIT = r"[\p{L}\p{M}]+|\p{N}|\s+|[^\s\p{L}\p{M}\p{N}]+"   # Qwen3.5: letters keep their combining marks
+OLD_SPLIT = r"\p{L}+|\p{N}|\s+|[^\s\p{L}\p{N}]+"                # Qwen2-era: marks split off (F25)
+
+
+def write_side_files(d: Path, split: str, extra_tokens=(), template="{{ messages }}", config=None):
+    """config/tokenizer/template of a tiny model; WordLevel vocab, so a different split gives different ids."""
+    import json
+    from tokenizers import Regex, Tokenizer, models, pre_tokenizers
+    words = ["hello", "world", " ", "नमस्ते", "न", "म", "स", "त", "ते", "्", "े", "1", "2", "!", ","]
+    tok = Tokenizer(models.WordLevel({w: i for i, w in enumerate(["<unk>"] + words)}, unk_token="<unk>"))
+    tok.pre_tokenizer = pre_tokenizers.Split(Regex(split), behavior="isolated")
+    if extra_tokens:
+        tok.add_special_tokens(list(extra_tokens))
+    d.mkdir(parents=True, exist_ok=True)
+    tok.save(str(d / "tokenizer.json"))
+    (d / "chat_template.jinja").write_text(template, encoding="utf-8")
+    cfg = config or {"model_type": "qwen3_5", "text_config": {"hidden_size": 48, "rope_parameters":
+                                                                  {"rope_theta": 1e7, "partial_rotary_factor": 0.25}},
+                     "transformers_version": "4.57.0"}
+    (d / "config.json").write_text(json.dumps(cfg), encoding="utf-8")
+
+
+class TestNonWeights(unittest.TestCase):
+    """Config, tokenizer and chat template: what a hash cannot tell, an encode test across scripts does (F25)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        d = Path(cls.tmp.name)
+        write_side_files(d / "base", BASE_SPLIT)
+        write_side_files(d / "same", BASE_SPLIT)
+        # MiMo-like: old split, two added tokens, same config content saved by a newer library in another layout
+        write_side_files(d / "mimo", OLD_SPLIT, extra_tokens=["<|audio_start|>", "<|audio_end|>"],
+                         config={"model_type": "qwen3_5",
+                                 "text_config": {"hidden_size": 48, "partial_rotary_factor": 0.25,
+                                                 "rope_parameters": {"rope_theta": 1e7}, "pad_token_id": None},
+                                 "transformers_version": "5.12.1"})
+        write_side_files(d / "arch", BASE_SPLIT, template="{{ messages }}{% if tools %}tools{% endif %}",
+                         config={"model_type": "qwen3_5", "text_config": {"hidden_size": 64},
+                                 "transformers_version": "4.57.0"})
+        cls.d = d
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def nw(self, name):
+        return mr.nonweight_diff(mr.side_files(str(self.d / "base")), mr.side_files(str(self.d / name)))
+
+    def test_identical(self):
+        r = self.nw("same")
+        self.assertEqual(r["config"]["changed"], [])
+        self.assertTrue(r["tokenizer"]["pre_tokenizer_same"])
+        self.assertEqual(r["encode"]["differs"], [])
+        self.assertEqual(r["template"]["status"], "same")
+        self.assertEqual(r["verdict"], [])
+
+    def test_serialization_only_config_changes_are_not_changes(self):
+        r = self.nw("mimo")
+        self.assertEqual(r["config"]["changed"], [], r["config"])
+        cosmetic = " ".join(r["config"]["cosmetic"])
+        self.assertIn("transformers_version", cosmetic)
+        self.assertIn("partial_rotary_factor", cosmetic)        # moved, same value
+
+    def test_real_config_change(self):
+        r = self.nw("arch")
+        self.assertIn("text_config.hidden_size", [c["key"] for c in r["config"]["changed"]])
+        self.assertEqual(r["template"]["status"], "different")
+
+    def test_pre_tokenizer_and_added_tokens(self):
+        r = self.nw("mimo")
+        t = r["tokenizer"]
+        self.assertTrue(t["vocab_same"])
+        self.assertFalse(t["pre_tokenizer_same"])
+        self.assertEqual(sorted(t["added_only_in_model"]), ["<|audio_end|>", "<|audio_start|>"])
+
+    def test_encode_test_names_the_scripts_that_change(self):
+        r = self.nw("mimo")
+        self.assertIn("hindi", r["encode"]["differs"])
+        self.assertNotIn("english", r["encode"]["differs"])
+        self.assertTrue(any("hindi" in v for v in r["verdict"]), r["verdict"])
+
+    def test_report_section(self):
+        nw = self.nw("mimo")
+        md = mr.render_markdown({"model": "m", "base": "b", "rows_per_block": 16, "headers": {
+            "only_in_base": [], "only_in_model": [], "shape_mismatch": [], "dtype_differs": []},
+            "classification": {"method": "identical", "touched": [], "untouched": []}, "profile": {},
+            "nonweights": nw, "usable": []})
+        self.assertIn("## Outside the weights", md)
+        self.assertIn("pre-tokenizer", md)
+        self.assertIn("hindi", md)
+
+    def test_missing_files_are_reported_not_fatal(self):
+        empty = Path(self.tmp.name) / "empty"
+        empty.mkdir(exist_ok=True)
+        r = mr.nonweight_diff(mr.side_files(str(self.d / "base")), mr.side_files(str(empty)))
+        self.assertIn("tokenizer.json", r["files"]["only_in_base"])
+        self.assertIsNone(r["encode"])
+
+
 if __name__ == "__main__":
     unittest.main()

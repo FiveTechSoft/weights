@@ -202,7 +202,7 @@ step delta_signature base=<model> model=<model> out=<sig.pt> [k=16] [sketch=4096
 step delta_compare a=<sig.pt> b=<sig.pt> [factor=3] [out=<report.json>]
 step evaluate_benchmark endpoint=<port|URL> name=<label> [gsm8k=100] [math500=50] [max_tokens=8192] [out=<report.json>]
 step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<a.pt>,<b.pt>|random k=16 alpha=1.0 [seed=0] out=<dir>
-step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true] out=<report.md>
+step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true] [nonweights=true] out=<report.md>
 ```
 
 * `delta_stats`: per tensor, ||ΔW||/||W||, cosine, changed fraction, spectrum of ΔW (top-1 energy, stable rank),
@@ -219,6 +219,9 @@ step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true
   with modules and rank, `full_fine_tune`), shows the card's declared base, license and method words (not trusted),
   the closest studied models of the delta atlas, and what can be reused and how. `base` defaults to the card's
   base_model. Validated on 6 models whose change is known (lab/runs/model_report/validation.json).
+  Outside the weights (`nonweights=true`): config (real changes vs cosmetic: library version, moved keys, absent
+  vs None), tokenizer (vocab, merges, added tokens, normalizer, pre-tokenizer, decoder), chat template, and an
+  encode test on 14 scripts that names where text tokenizes differently from the base (findings F25).
 * `subspace_transfer`: W' = W + α · P_S(W_source − W_base), the projection on the smaller side. Writes a complete
   model to `out=` (unchanged shards copied, configs copied); every changed shard goes through the write guard with a
   total budget; protected tensors need `unlock_tensors`; on failure the partial output is removed. Provenance

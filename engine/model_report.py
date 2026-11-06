@@ -189,7 +189,8 @@ TRANSFER_ROWS = 512   # 128 rows: 12/21 verdicts as the full analysis; 256: 17/2
 
 def build_report(base, model, rows: int = 128, model_name: str = "", base_name: str = "", card: Optional[Dict] = None,
                  progress=None, atlas: Optional[Dict] = None, atlas_sigs: Optional[Dict] = None,
-                 transfer_rows: int = TRANSFER_ROWS) -> Dict:
+                 transfer_rows: int = TRANSFER_ROWS, nonweights: Optional[Dict] = None) -> Dict:
+    """nonweights: the result of nonweight_diff (config, tokenizer, template), shown in its own section."""
     fp = fingerprint(base, model, rows=rows, progress=progress)
     c, prof = classify(fp), profile(fp)
     near = atlas_similarity(prof, atlas) if atlas else []
@@ -205,7 +206,8 @@ def build_report(base, model, rows: int = 128, model_name: str = "", base_name: 
     return {"model": model_name, "base": base_name, "card": card or {}, "rows_per_block": rows,
             "headers": {k: fp[k] for k in ("only_in_base", "only_in_model", "shape_mismatch", "dtype_differs")},
             "classification": {k: v for k, v in c.items()}, "profile": prof, "atlas": near,
-            "transfer": transfer, "usable": usable(c, card or {}, near, transfer),
+            "transfer": transfer, "nonweights": nonweights,
+            "usable": usable(c, card or {}, near, transfer) + _nonweight_tips(nonweights),
             "tensors": [{k: v for k, v in r.items() if not k.startswith("_")} for r in fp["tensors"]]}
 
 
@@ -249,6 +251,192 @@ def card_info(repo: str, fetch_json=None, fetch_text=None) -> Dict:
             "license": cd.get("license_name") or cd.get("license"),
             "flags": sorted(f for f, words in FLAG_WORDS.items()
                             if any(re.search(rf"(?<![\w-]){w}(?![\w])", text) for w in words))}
+
+
+SIDE_FILES = ("config.json", "generation_config.json", "tokenizer.json", "tokenizer_config.json", "vocab.json",
+              "merges.txt", "special_tokens_map.json", "chat_template.jinja")
+# One short text per script; letters with combining marks (Indic, Thai, Arabic diacritics) are where pre-tokenizer
+# regexes disagree (findings F25).
+PROBE_TEXTS = {
+    "english": "The quick brown fox jumps over the lazy dog. hello world!",
+    "spanish": "El pingüino comió una canción: ¿qué más? Ñandú, acción.",
+    "code": "def f(x):\n    return x**2  # square\n\tprint(f(3))",
+    "math": "∫ x² dx = x³/3 + C, and 3.14159 × 2 = 6.28318",
+    "chinese": "我们今天去北京看长城。",
+    "japanese": "東京へ行きます。カタカナとひらがな。",
+    "korean": "안녕하세요, 만나서 반갑습니다.",
+    "russian": "Съешь же ещё этих мягких французских булок.",
+    "vietnamese": "Tiếng Việt có dấu rất đẹp.",
+    "hindi": "नमस्ते दुनिया, आप कैसे हैं?",
+    "bengali": "আমি বাংলায় কথা বলি।",
+    "thai": "สวัสดีครับ ยินดีต้อนรับ",
+    "arabic_diacritics": "مَرْحَبًا بِكُمْ فِي البَيْتِ",
+    "emoji": "Nice 🙂👍🏽 done ✅",
+}
+_CONFIG_NOISE = ("transformers_version", "_name_or_path", "_commit_hash")
+
+
+def side_files(spec: str, root=None):
+    """get(filename) -> bytes or None, for the small non-weight files of a local folder or a public HF repo."""
+    import urllib.error
+    import urllib.request
+    from pathlib import Path
+    p = Path(spec)
+    if not p.exists() and root is not None and (Path(root) / spec).exists():
+        p = Path(root) / spec
+    if p.exists():
+        d = p if p.is_dir() else p.parent
+        return lambda f: (d / f).read_bytes() if (d / f).exists() else None
+
+    def get(f):
+        try:
+            with urllib.request.urlopen(f"https://huggingface.co/{spec}/resolve/main/{f}", timeout=120) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403, 404):
+                return None
+            raise
+    return get
+
+
+def _flat(d, prefix=""):
+    out = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            out.update(_flat(v, prefix + k + "."))
+        else:
+            out[prefix + k] = v
+    return out
+
+
+def _config_diff(a: Dict, b: Dict) -> Dict:
+    """changed: real differences; cosmetic: library version, absent-vs-None, a key moved with the same value."""
+    absent = object()
+    fa, fb = _flat(a), _flat(b)
+    leaves = lambda f: {(k.rsplit(".", 1)[-1], repr(v)) for k, v in f.items()}  # noqa: E731
+    la, lb = leaves(fa), leaves(fb)
+    changed, cosmetic = [], []
+    for k in sorted(set(fa) | set(fb)):
+        va, vb = fa.get(k, absent), fb.get(k, absent)
+        if va == vb:
+            continue
+        name = k.rsplit(".", 1)[-1]
+        if name in _CONFIG_NOISE:
+            cosmetic.append(f"{k}: {va} -> {vb}")
+        elif (va is absent and vb is None) or (vb is absent and va is None):
+            cosmetic.append(f"{k}: absent vs None")
+        elif va is absent and (name, repr(vb)) in la:
+            cosmetic.append(f"{k}: moved, same value {vb}")
+        elif vb is absent and (name, repr(va)) in lb:
+            cosmetic.append(f"{k}: moved, same value {va}")
+        else:
+            changed.append({"key": k, "base": "<absent>" if va is absent else va,
+                            "model": "<absent>" if vb is absent else vb})
+    return {"changed": changed, "cosmetic": cosmetic}
+
+
+def _json(get, f):
+    import json
+    raw = get(f)
+    return json.loads(raw.decode("utf-8")) if raw else None
+
+
+def _merges(tj, get):
+    m = (tj or {}).get("model", {}).get("merges")
+    if m is None:
+        raw = get("merges.txt")
+        m = [l for l in raw.decode("utf-8").splitlines() if l and not l.startswith("#version")] if raw else None
+    return None if m is None else [" ".join(x) if isinstance(x, list) else x for x in m]
+
+
+def _template(get):
+    raw = get("chat_template.jinja")
+    if raw:
+        return raw.decode("utf-8")
+    tc = _json(get, "tokenizer_config.json") or {}
+    t = tc.get("chat_template")
+    if isinstance(t, list):   # named templates
+        t = next((x.get("template") for x in t if x.get("name") == "default"), None) or (t[0].get("template") if t else None)
+    return t
+
+
+def nonweight_diff(get_base, get_model, probes: Dict[str, str] = PROBE_TEXTS) -> Dict:
+    """What differs outside the weights: files, config, tokenizer (vocab, merges, added tokens, normalizer,
+    pre-tokenizer, decoder), chat template, and an encode test per script (same ids or not, token counts)."""
+    import difflib
+    have_b = {f: get_base(f) for f in SIDE_FILES}
+    have_m = {f: get_model(f) for f in SIDE_FILES}
+    gb, gm = (lambda f: have_b.get(f)), (lambda f: have_m.get(f))
+    files = {"only_in_base": [f for f in SIDE_FILES if have_b[f] and not have_m[f]],
+             "only_in_model": [f for f in SIDE_FILES if have_m[f] and not have_b[f]],
+             "identical": [f for f in SIDE_FILES if have_b[f] and have_b[f] == have_m[f]]}
+    out = {"files": files, "verdict": []}
+    cb, cm = _json(gb, "config.json"), _json(gm, "config.json")
+    out["config"] = _config_diff(cb, cm) if cb is not None and cm is not None else None
+    gcb, gcm = _json(gb, "generation_config.json"), _json(gm, "generation_config.json")
+    out["generation_config"] = _config_diff(gcb, gcm) if gcb is not None and gcm is not None else None
+
+    tb, tm = _json(gb, "tokenizer.json"), _json(gm, "tokenizer.json")
+    tok = {}
+    if tb is not None or tm is not None or have_b["vocab.json"] or have_m["vocab.json"]:
+        vb = (tb or {}).get("model", {}).get("vocab") or _json(gb, "vocab.json")
+        vm = (tm or {}).get("model", {}).get("vocab") or _json(gm, "vocab.json")
+        ab = {t["content"]: t["id"] for t in (tb or {}).get("added_tokens", [])}
+        am = {t["content"]: t["id"] for t in (tm or {}).get("added_tokens", [])}
+        tok = {"vocab_same": vb == vm, "vocab_size": [len(vb or {}), len(vm or {})],
+               "merges_same": _merges(tb, gb) == _merges(tm, gm),
+               "added_only_in_base": sorted(set(ab) - set(am)), "added_only_in_model": sorted(set(am) - set(ab)),
+               "added_id_changed": sorted(k for k in set(ab) & set(am) if ab[k] != am[k])}
+        if tb is not None and tm is not None:
+            for part in ("normalizer", "pre_tokenizer", "decoder", "post_processor"):
+                tok[f"{part}_same"] = tb.get(part) == tm.get(part)
+    out["tokenizer"] = tok
+
+    enc = None
+    if tb is not None and tm is not None:
+        from tokenizers import Tokenizer
+        a = Tokenizer.from_str(have_b["tokenizer.json"].decode("utf-8"))
+        b = Tokenizer.from_str(have_m["tokenizer.json"].decode("utf-8"))
+        per = {}
+        for k, t in probes.items():
+            ia, ib = a.encode(t, add_special_tokens=False).ids, b.encode(t, add_special_tokens=False).ids
+            per[k] = {"same": ia == ib, "tokens": [len(ia), len(ib)]}
+        enc = {"per_script": per, "differs": [k for k, v in per.items() if not v["same"]]}
+    out["encode"] = enc
+
+    ta, tt = _template(gb), _template(gm)
+    if ta is None and tt is None:
+        tpl = {"status": "missing"}
+    elif ta is None or tt is None:
+        tpl = {"status": "missing_in_base" if ta is None else "missing_in_model"}
+    elif ta == tt:
+        tpl = {"status": "same"}
+    else:
+        d = [l for l in difflib.unified_diff(ta.splitlines(), tt.splitlines(), lineterm="", n=0)
+             if l[:1] in "+-" and not l.startswith(("+++", "---"))]
+        tpl = {"status": "different", "lines_changed": len(d), "diff_head": d[:20]}
+    out["template"] = tpl
+
+    v = out["verdict"]
+    if out["config"] and out["config"]["changed"]:
+        v.append("config changes: " + ", ".join(c["key"] for c in out["config"]["changed"][:8]))
+    if tok and not tok.get("vocab_same", True):
+        v.append("different vocabulary: token ids do not line up with the base")
+    if tok.get("added_only_in_model"):
+        v.append(f"{len(tok['added_only_in_model'])} added tokens not in the base: "
+                 + ", ".join(tok["added_only_in_model"][:6]))
+    for part in ("normalizer", "pre_tokenizer"):
+        if tok.get(f"{part}_same") is False:
+            v.append(f"{part.replace('_', '-')} differs from the base")
+    if enc and enc["differs"]:
+        v.append("text encodes differently in: " + ", ".join(
+            f"{k} ({enc['per_script'][k]['tokens'][0]} -> {enc['per_script'][k]['tokens'][1]} tokens)"
+            for k in enc["differs"]))
+    if tpl["status"] == "different":
+        v.append(f"chat template differs ({tpl['lines_changed']} lines)")
+    elif tpl["status"].startswith("missing_in"):
+        v.append(f"chat template {tpl['status'].replace('_', ' ')} (may ship inside a GGUF instead)")
+    return out
 
 
 def atlas_similarity(prof: Dict, atlas: Dict) -> List[Dict]:
@@ -350,6 +538,24 @@ def usable(c: Dict, card: Dict, near: List[Dict], transfer: Optional[Dict] = Non
     return tips
 
 
+def _nonweight_tips(nw: Optional[Dict]) -> List[str]:
+    if not nw:
+        return []
+    tips = []
+    t, enc = nw.get("tokenizer") or {}, nw.get("encode") or {}
+    if t and not t.get("vocab_same", True):
+        tips.append("The vocabulary differs from the base: weight deltas of embed_tokens/lm_head do not line up "
+                    "row by row, and nothing can be transferred there without a token map.")
+    if enc.get("differs"):
+        tips.append("Text encodes differently from the base in " + ", ".join(enc["differs"]) + ". Use one "
+                    "tokenizer for both models when comparing or transferring, and check which one the model was "
+                    "trained with (perplexity under each) before trusting results in those scripts.")
+    if nw.get("template", {}).get("status") == "different":
+        tips.append("The chat template differs: benchmark each model with its own template, and a transferred delta "
+                    "may need the donor's template to show its behaviour.")
+    return tips
+
+
 def render_markdown(rep: Dict) -> str:
     c, h = rep["classification"], rep["headers"]
     lines = [f"# Model report: {rep['model']}", "", f"Base: {rep['base']}  ", f"Blocks of {rep['rows_per_block']} rows per tensor.", ""]
@@ -391,6 +597,27 @@ def render_markdown(rep: Dict) -> str:
                      else "-" for m in models]
             lines.append(f"| {kind} | " + " | ".join(cells) + " |")
         lines += ["", "x = same-layer overlap / same type at other layers; shared = >= 3x that and >= 3x chance.", ""]
+    nw = rep.get("nonweights")
+    if nw:
+        lines += ["## Outside the weights (config, tokenizer, chat template)", ""]
+        lines += [f"- {v}" for v in nw["verdict"]] or ["- nothing that changes behaviour"]
+        f = nw["files"]
+        lines.append(f"- files only in base: {', '.join(f['only_in_base']) or '-'}; only in model: "
+                     f"{', '.join(f['only_in_model']) or '-'}; byte-identical: {', '.join(f['identical']) or '-'}")
+        if nw.get("config"):
+            lines.append(f"- config: {len(nw['config']['changed'])} real changes, "
+                         f"{len(nw['config']['cosmetic'])} cosmetic (library version, moved keys, absent vs None)")
+        t = nw.get("tokenizer") or {}
+        if t:
+            parts = [f"{p.replace('_', '-')} {'same' if t[p + '_same'] else '**differs**'}"
+                     for p in ("normalizer", "pre_tokenizer", "decoder") if p + "_same" in t]
+            lines.append(f"- tokenizer: vocab {'same' if t['vocab_same'] else '**differs**'}, merges "
+                         f"{'same' if t['merges_same'] else '**differs**'}, " + ", ".join(parts))
+        if nw.get("encode"):
+            lines += ["", "| script | same ids | tokens base -> model |", "|---|---|---|"]
+            for k, v in nw["encode"]["per_script"].items():
+                lines.append(f"| {k} | {'yes' if v['same'] else '**no**'} | {v['tokens'][0]} -> {v['tokens'][1]} |")
+        lines += ["", f"- chat template: {nw['template']['status'].replace('_', ' ')}", ""]
     if rep.get("usable"):
         lines += ["## What is usable, and how", ""] + [f"- {t}" for t in rep["usable"]] + [""]
     return "\n".join(lines) + "\n"

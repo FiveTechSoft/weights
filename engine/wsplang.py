@@ -2210,11 +2210,16 @@ def execute_plan_v4(
                                       card=card, atlas=mr.load_atlas(ROOT / "lab" / "runs" / "delta_patterns"),
                                       atlas_sigs=(mr.load_atlas_sigs(ROOT / "lab" / "runs" / "delta_patterns")
                                                   if str(named.get("transfer", "true")).lower() != "false" else None),
-                                      transfer_rows=int(named.get("transfer_rows", mr.TRANSFER_ROWS)))
+                                      transfer_rows=int(named.get("transfer_rows", mr.TRANSFER_ROWS)),
+                                      nonweights=(mr.nonweight_diff(mr.side_files(base_spec, ROOT),
+                                                                    mr.side_files(model_spec, ROOT))
+                                                  if str(named.get("nonweights", "true")).lower() != "false"
+                                                  else None))
                 res["result"] = {"method": rep["classification"]["method"],
                                  "classification": rep["classification"], "usable": rep["usable"],
                                  "closest": rep["atlas"][:3],
-                                 "transfer_candidates": (rep["transfer"] or {}).get("candidates")}
+                                 "transfer_candidates": (rep["transfer"] or {}).get("candidates"),
+                                 "outside_weights": (rep["nonweights"] or {}).get("verdict")}
                 if named.get("out"):
                     inputs = [p for p in (ROOT / model_spec, ROOT / base_spec, Path(model_spec), Path(base_spec))
                               if p.exists()]
