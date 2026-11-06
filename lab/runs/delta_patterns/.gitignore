@@ -1,2 +1,4 @@
 sig_*.pt
 *.done
+turbo27b/**/*.pt
+turbo27b/done
