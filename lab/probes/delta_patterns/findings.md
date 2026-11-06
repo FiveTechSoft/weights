@@ -300,3 +300,25 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Side note: the marginal `k_proj`/`v_proj` agreement appears with every LoRA and with WeMM's ×2-2.5. The small
   attention K/V spaces may make the H3 bar easier to cross there. For K/V, use a stricter bar or a permutation null
   before reading anything into a pass.
+
+## F25. MiMo ships an older pre-tokenizer regex than its base; harmless in GGUF, wrong in transformers/vLLM (measured, 2026-11-06)
+- Non-weight diff, MiMo (`hf_cache/mimo-distill-hf`) against Qwen/Qwen3.5-9B (config, tokenizer and template
+  downloaded to `hf_cache/qwen35-9b-hf`):
+  - **config:** same architecture. The differences are serialization only (transformers 5.12 vs 4.57;
+    `partial_rotary_factor` 0.25 moved out of `rope_parameters`).
+  - **vocabulary:** vocab and merges identical (merges equal after normalizing list vs string format).
+  - **added tokens:** 7 audio/TTS special tokens added (`<|audio_start|>`, `<tts_pad>`, ...; ids 248070-248076).
+  - **chat template:** none in the HF folder. It ships in the GGUF.
+- **The pre-tokenizer split regex differs.** Base Qwen3.5: letters with combining marks `[\p{L}\p{M}]+`. MiMo:
+  the Qwen2-era `\p{L}+`. Same ids on English, Spanish, code, CJK, Korean, Vietnamese and 290/290 500-character
+  chunks of `corpus_n4.txt`. Different on scripts with combining marks: Hindi 11 -> 19 tokens, Thai 7 -> 15,
+  Bengali 8 -> 15, Arabic with diacritics 7 -> 9. MiMo's segmentation there is one the base was not trained on.
+- **Second check: the GGUF.** The MiMo GGUF (ollama blob `sha256-ef96...`) has `tokenizer.ggml.pre = qwen35`, so
+  llama.cpp uses the base regex. Our benchmarks (§37) are not affected. Users of the HF tokenizer
+  (transformers, vLLM) get the old split.
+- Unknown from the weights: which tokenizer MiMo was trained with. If it was this one, the model has seen the
+  old split on those scripts, and GGUF users get the mismatch instead. Test: perplexity on Hindi/Thai text under
+  both tokenizations.
+- Point for model_report: a full report needs a "non-weight" section (config, vocab, merges, added tokens,
+  pre-tokenizer, template) and an encode test on several scripts. A hash says "different". The encode test says
+  where it matters.
