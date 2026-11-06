@@ -212,3 +212,17 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Speed: remote report 773 s for ~500 MB = 0.7 MB/s while the link gives ~20 MB/s. The cost was the latency of ~860
   sequential HTTP requests, not Python nor the maths. Fix: blocks fetched concurrently (16 in flight). Rewriting
   WSPLang in Rust would not change this; fewer bytes and parallel requests do.
+
+## F19. model_report validated: 6/6 known cases, 21-42 s per 9B model without downloading it (verified)
+- `lab/runs/model_report/validation.json` (blocks of 128 rows, 16 concurrent reads):
+  - Heretic ARA (DeepSeek-V4 9B): directional_ablation, layers 9-23 (= card with exclusive end), rank 1,
+    per-layer directions (median |cos| 0.069). 42 s, both models remote (773 s before parallel reads).
+  - huihui abliteration: directional_ablation, layers 1-31, rank 1, one global direction (|cos| 1.000). 22 s.
+  - Nyx-RP: lora_like, block rank 33-41 (a LoRA of rank 32-64). 24 s.
+  - tmax (RL): full_fine_tune. 22 s. MiMo: full_fine_tune, profile Spearman 0.999 vs full statistics. 27 s.
+  - NeoHorse: full_fine_tune, profile Spearman 0.957 vs full statistics. 21 s.
+- The abliteration and Nyx-RP, tmax, NeoHorse did not inspire the corrected rule (F18); the global vs per-layer
+  distinction comes out right on the abliteration.
+- Caveat: "untouched" means untouched in the sampled block. NeoHorse's `linear_attn.norm` is untouched in the block
+  and changed (tiny) in the full statistics. Reports must say "in the sampled rows".
+- WSPLang: a 9B model can be fingerprinted in under a minute from Hugging Face without downloading it.

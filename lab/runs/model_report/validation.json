@@ -1,0 +1,122 @@
+{
+ "dsv4_heretic": {
+  "expected": {
+   "method": "directional_ablation",
+   "layers": [
+    9,
+    23
+   ]
+  },
+  "got": {
+   "method": "directional_ablation",
+   "layers": [
+    9,
+    23
+   ],
+   "rank_median": 1.0,
+   "rank_estimate": 2,
+   "direction_consistency": 0.0693603481925622
+  },
+  "pass": true,
+  "seconds": 42
+ },
+ "mimo": {
+  "expected": {
+   "method": "full_fine_tune",
+   "stats": "mimo"
+  },
+  "got": {
+   "method": "full_fine_tune",
+   "layers": [
+    0,
+    31
+   ],
+   "rank_median": 104.0,
+   "rank_estimate": 111,
+   "direction_consistency": null
+  },
+  "pass": true,
+  "seconds": 27,
+  "profile_spearman_vs_full": 0.999,
+  "untouched_full": [],
+  "untouched_fast": []
+ },
+ "abliterated": {
+  "expected": {
+   "method": "directional_ablation",
+   "layers": [
+    1,
+    31
+   ]
+  },
+  "got": {
+   "method": "directional_ablation",
+   "layers": [
+    1,
+    31
+   ],
+   "rank_median": 1.0,
+   "rank_estimate": 1,
+   "direction_consistency": 0.9999967761077972
+  },
+  "pass": true,
+  "seconds": 22
+ },
+ "nyx_rp": {
+  "expected": {
+   "method": "lora_like"
+  },
+  "got": {
+   "method": "lora_like",
+   "layers": [
+    0,
+    31
+   ],
+   "rank_median": 33.0,
+   "rank_estimate": 41,
+   "direction_consistency": null
+  },
+  "pass": true,
+  "seconds": 24
+ },
+ "tmax": {
+  "expected": {
+   "method": "full_fine_tune"
+  },
+  "got": {
+   "method": "full_fine_tune",
+   "layers": [
+    0,
+    31
+   ],
+   "rank_median": 104.0,
+   "rank_estimate": 111,
+   "direction_consistency": null
+  },
+  "pass": true,
+  "seconds": 22
+ },
+ "neohorse": {
+  "expected": {
+   "method": "full_fine_tune",
+   "stats": "neohorse"
+  },
+  "got": {
+   "method": "full_fine_tune",
+   "layers": [
+    0,
+    31
+   ],
+   "rank_median": 106.0,
+   "rank_estimate": 111,
+   "direction_consistency": null
+  },
+  "pass": true,
+  "seconds": 21,
+  "profile_spearman_vs_full": 0.957,
+  "untouched_full": [],
+  "untouched_fast": [
+   "linear_attn.norm.weight"
+  ]
+ }
+}
