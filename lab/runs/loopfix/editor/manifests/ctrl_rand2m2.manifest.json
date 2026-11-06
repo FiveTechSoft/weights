@@ -1,0 +1,130 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "ctrl_rand2m2",
+  "archivo": "lab\\runs\\loopfix\\editor\\cands\\ctrl_rand2m2.wspl",
+  "steps_count": 4,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 107000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d0.npz alpha=3 top_rows=64 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d0.npz alpha=3 top_rows=64 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d1.npz alpha=3 top_rows=64 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d1.npz alpha=3 top_rows=64 top_cols=1.0"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 2,
+      "steps": 2
+    },
+    "pasos": [
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d0.npz alpha=3 top_rows=64 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d1.npz alpha=3 top_rows=64 top_cols=1.0"
+      }
+    ],
+    "pasos_mapeo": {
+      "project_out": "low-rank directional subtraction W <- W - alpha * u(u^T W)"
+    },
+    "budgets": {
+      "max_modified_weights": 107000,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": true,
+      "allow_training": false,
+      "unlock_tensors": []
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-06T00:02:46",
+  "ejecucion": [
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d0.npz alpha=3 top_rows=64 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 24576,
+        "max_abs_delta": 0.08108551194891334,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 24576,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "5.5556%",
+        "max_delta_norm": 0.08108551055192947,
+        "directional_energy_before": 0.5209433436393738,
+        "directional_energy_after": 1.0418866872787476,
+        "energy_reduction_pct": "-100.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 1e-08,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\ctrl_rand2m2\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/ctrl_rand2m2_L5H3_d1.npz alpha=3 top_rows=64 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 24576,
+        "max_abs_delta": 0.088155223056674,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 24576,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "5.5556%",
+        "max_delta_norm": 0.08815522491931915,
+        "directional_energy_before": 0.5215702056884766,
+        "directional_energy_after": 1.0431404113769531,
+        "energy_reduction_pct": "-100.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\ctrl_rand2m2\\model.safetensors"
+      }
+    }
+  ]
+}

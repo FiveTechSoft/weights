@@ -1,0 +1,152 @@
+{
+  "criterion": "lab/probes/loopfix/criterion.md",
+  "test_prompts": 256,
+  "seed": 2,
+  "base": {
+    "loop_rate": 0.43359375,
+    "loops": 111,
+    "distinct4": 0.0204,
+    "examples": [
+      "\nI would they were a soldier than they are a strange.\n\nCAMILLO:\nI would they were a soldier than the",
+      "the strength of the state of the state,\nThat the strength of the state of the state,\nThat the streng"
+    ],
+    "val_nll": 1.44229
+  },
+  "editor": {
+    "loop_rate": 0.1015625,
+    "loops": 26,
+    "distinct4": 0.0222,
+    "examples": [
+      "f the strength of the world's son,\nThat the seas with the seas of the strength of the world,\nThat th",
+      "\nWhy, then?\n\nDUKE VINCENTIO:\nWhy, then?\n\nDUKE VINCENTIO:\nWhy, then?\n\nProvost:\nI would they were not "
+    ],
+    "val_nll": 1.44629
+  },
+  "random_edits": [
+    {
+      "loop_rate": 0.41015625,
+      "loops": 105,
+      "distinct4": 0.0206,
+      "examples": [
+        "KING RICHARD III:\nWhy, then then the strong of the streets,\nThat the strength of the state of the st",
+        "the strength of the state of the state,\nThat the strength of the state of the state,\nThat the strang"
+      ],
+      "val_nll": 1.44272,
+      "changed": {
+        "transformer.h.5.attn.c_attn.weight": 24576
+      }
+    },
+    {
+      "loop_rate": 0.421875,
+      "loops": 108,
+      "distinct4": 0.0199,
+      "examples": [
+        "\nI would they were a soldier than they are not they\nThat they have the senators of the streets,\nThat",
+        "e state of the state,\nThat the strength of the state of the state,\nThat the strength of the state of"
+      ],
+      "val_nll": 1.44293,
+      "changed": {
+        "transformer.h.5.attn.c_attn.weight": 24576
+      }
+    },
+    {
+      "loop_rate": 0.1015625,
+      "loops": 26,
+      "distinct4": 0.0199,
+      "examples": [
+        " the prince of the prince.\n\nServant:\nHere is the prince of the prince.\n\nServant:\nHe hath not some so",
+        "the state of the state,\nThat the strength of the state of the state,\nThat the strength of the state "
+      ],
+      "val_nll": 1.4429,
+      "changed": {
+        "transformer.h.5.attn.c_attn.weight": 24576
+      }
+    }
+  ],
+  "no_repeat_ngram_20": {
+    "loop_rate": 0.0,
+    "loops": 0,
+    "distinct4": 0.0295,
+    "examples": [
+      "bunes, the strange of their proper than their\nproved their professes than their soldier shame to the",
+      "range of their soldiers and their states,\nAnd then the state of the soldiers and their\nThat they wil"
+    ],
+    "val_nll": 1.44229
+  },
+  "temperature_0.5": {
+    "loop_rate": 0.0,
+    "loops": 0,
+    "distinct4": 0.0848,
+    "examples": [
+      "me of the silk of the poor thing,\nAnd never let me not.\n\nSecond Lady:\nGod save your grace,\nAnd have ",
+      "ith the tears of the seater and make me in the prayers.\n\nGLOUCESTER:\nI will not swear the warlike tw"
+    ]
+  },
+  "unlikelihood_finetune": {
+    "loop_rate": 0.0,
+    "loops": 0,
+    "distinct4": 0.1035,
+    "examples": [
+      "qwlvbwlvbwlvbwllwflmbjllwfllwftmwwsmruillwfllwfllwfllwfllwfllwfllwftmwwllwfllwfllwfllwftmlinslrvbllw",
+      "wftmwjtvlwfllwfllwfllwftclwfllwfllwfllwftclwfllwfllwftclinslrvbllwflcwflcwflcwflcwflmwjtslowlmrowlmr"
+    ],
+    "val_nll": 1.48541
+  },
+  "verdict": {
+    "loop_rate_halved": true,
+    "val_nll_increase": 0.004,
+    "val_nll_ok": true,
+    "random_reductions": [
+      0.0234375,
+      0.01171875,
+      0.33203125
+    ],
+    "beats_random": false,
+    "passes": false
+  },
+  "posthoc_random_edits": [
+    {
+      "seed": 3,
+      "loop_rate": 0.44921875,
+      "loops": 115,
+      "val_nll": 1.44231
+    },
+    {
+      "seed": 4,
+      "loop_rate": 0.44921875,
+      "loops": 115,
+      "val_nll": 1.44293
+    },
+    {
+      "seed": 5,
+      "loop_rate": 0.40234375,
+      "loops": 103,
+      "val_nll": 1.44053
+    },
+    {
+      "seed": 6,
+      "loop_rate": 0.421875,
+      "loops": 108,
+      "val_nll": 1.44213
+    },
+    {
+      "seed": 7,
+      "loop_rate": 0.25,
+      "loops": 64,
+      "val_nll": 1.43996
+    },
+    {
+      "seed": 8,
+      "loop_rate": 0.3984375,
+      "loops": 102,
+      "val_nll": 1.44184
+    },
+    {
+      "seed": 9,
+      "loop_rate": 0.3515625,
+      "loops": 90,
+      "val_nll": 1.44217
+    }
+  ],
+  "seconds": 4238
+}

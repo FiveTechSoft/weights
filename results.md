@@ -1256,3 +1256,19 @@ Se edita una línea `unit` del programa descompilado del nanoGPT (orden 5, forma
 - **E2, intercambiar king/kind en `unit "kin"`: falla** (25/39). "kin" también termina making/taking/lacking, cuyas líneas hijas pesan más que el cambio. **E2b**, en `unit " kin"` y registrado después del fallo y antes de medir, **pasa**: 32/32, con efecto 0.0 en making/taking y en el resto.
 - **Lectura:** la edición es exacta y local porque el programa es una tabla con compuertas. El precio es el modelo: conserva el 83 % de la ganancia (1.77 frente a 1.44) y no usa contexto largo. Lo difícil es elegir el contexto, y una medición lo detectó.
 - **Comprobación:** cada cifra clave se repitió con `log_prob` sobre el programa editado, sin compilar, y coincide.
+
+## 36. Arreglar bucles editando pesos, réplica pequeña del exp. 8 de "Sparks of WSP": falla (2026-11-06)
+Criterio fijado antes de editar, tabla y lectura en `lab/probes/loopfix/criterion.md`; datos en `lab/runs/loopfix/final_test.json`.
+
+- **Defecto:** el nanoGPT entrenado entra en bucle con decodificación greedy, en el 43 % de 256 prompts de test.
+- **Edición:** la hizo un subagente sin gradientes y con presupuesto de 50 llamadas (usó 18). Son dos `project_out` en `h.5.attn.c_attn`, 24.576 pesos, aplicados por la CLI de WSPLang con el guard.
+- **Resultado:** bucles 111 → 26 de 256, con val +0.004. Pasa los criterios 1-3 y **falla el 4**: una de las 3 ediciones aleatorias (mismas posiciones, misma norma) también da 26.
+  - El empate es casualidad: solo 3 prompts en común.
+  - A posteriori, fuera del criterio, con 7 semillas más: 10 ediciones aleatorias dan 105, 108, 26, 115, 115, 103, 108, 64, 102 y 90 bucles.
+  - La edición queda la mejor o empatada de 11, evidencia débil de que su dirección importa más que "perturbar esa cabeza".
+- **Referencias:**
+  - No-repeat-ngram 20 al decodificar: 0 bucles, NLL intacta, sin tocar pesos.
+  - Temperatura 0.5: 0 bucles.
+  - Unlikelihood con gradiente: 0 bucles, a cambio de val +0.043.
+- **Lectura:** en este modelo, editar pesos no es el mejor arreglo de los bucles; una regla de decodificación lo hace gratis. Esto no refuta el exp. 8 en Qwen, pero sí exige allí el control de edición aleatoria, que el artículo no publica.
+- **Comprobación:** los conteos de bucles se repitieron regenerando el texto y usando un detector de periodicidad independiente. Coinciden.
