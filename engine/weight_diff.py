@@ -29,37 +29,10 @@ DTYPES = {"F64": torch.float64, "F32": torch.float32, "F16": torch.float16, "BF1
 ROW_TENSORS = ("embed", "wte", "lm_head", "output.weight", "token_embd")
 
 
-class LocalSafetensors:
-    """Every shard of a local checkpoint; a tensor is read only when asked for."""
-
-    def __init__(self, path):
-        from safetensors import safe_open
-        path = Path(path)
-        files = [path] if path.is_file() else sorted(path.glob("*.safetensors"))
-        if not files:
-            raise FileNotFoundError(f"no .safetensors in {path}")
-        # One handle per file for the reader's lifetime: reopening (re-mapping) an 18 GB single-file checkpoint
-        # for every tensor crashed natively on Windows (allenai/tmax-9b).
-        self._handles = {str(f): safe_open(str(f), "pt") for f in files}
-        self._where: Dict[str, str] = {}
-        for f, h in self._handles.items():
-            for k in h.keys():
-                self._where[k] = f
-
-    def keys(self) -> List[str]:
-        return sorted(self._where)
-
-    def get(self, name: str) -> torch.Tensor:
-        return self._handles[self._where[name]].get_tensor(name)
-
-    def shape(self, name: str) -> tuple:
-        return tuple(self._handles[self._where[name]].get_slice(name).get_shape())
-
-    def get_rows(self, name: str, start: int, count: int) -> torch.Tensor:
-        """Rows start .. start+count-1 (clipped to the tensor), without reading the rest."""
-        sl = self._handles[self._where[name]].get_slice(name)
-        n = sl.get_shape()[0]
-        return sl[max(0, start):min(n, start + count)]
+def _read_range(file: str, start: int, end: int) -> bytes:
+    with open(file, "rb") as fh:
+        fh.seek(start)
+        return fh.read(end - start + 1)
 
 
 class RangeSafetensors:
@@ -101,6 +74,19 @@ class RangeSafetensors:
             return torch.empty(sub, dtype=DTYPES[dtype])
         data = self._fetch(f, off + start * row_bytes, off + stop * row_bytes - 1)
         return torch.frombuffer(bytearray(data), dtype=DTYPES[dtype]).reshape(sub)
+
+
+class LocalSafetensors(RangeSafetensors):
+    """Every shard of a local checkpoint; a tensor is read only when asked for, by plain reads of its byte range.
+    Not safe_open: mapping two 18 GB checkpoints for a whole pass got the process reaped for low memory, and
+    re-mapping per tensor crashed natively on Windows (allenai/tmax-9b)."""
+
+    def __init__(self, path):
+        path = Path(path)
+        files = [path] if path.is_file() else sorted(path.glob("*.safetensors"))
+        if not files:
+            raise FileNotFoundError(f"no .safetensors in {path}")
+        super().__init__([str(f) for f in files], _read_range)
 
 
 class Renamed:

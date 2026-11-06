@@ -64,24 +64,29 @@ class TestLocalReader(Fixture):
         self.assertEqual(got.dtype, torch.bfloat16)
         self.assertTrue(torch.equal(got, self.base["model.layers.1.mlp.down_proj.weight"].to(torch.bfloat16)))
 
-    def test_each_file_opened_once(self):
-        """Reopening an 18 GB single-file checkpoint for every tensor crashed natively on Windows (tmax-9b);
-        the reader keeps one handle per file."""
+    def test_same_values_as_safe_open(self):
+        from safetensors import safe_open
+        r = wd.LocalSafetensors(self.base_dir)
+        for f in sorted(self.base_dir.glob("*.safetensors")):
+            with safe_open(str(f), "pt") as h:
+                for k in h.keys():
+                    a, b = h.get_tensor(k), r.get(k)
+                    self.assertEqual(a.dtype, b.dtype)
+                    self.assertTrue(torch.equal(a, b), k)
+
+    def test_does_not_memory_map(self):
+        """Mapping two 18 GB checkpoints (safe_open) for a whole signature pass got the process reaped for low
+        memory (2026-11-06); the reader reads each tensor's byte range with plain file reads instead."""
         from unittest import mock
-        import safetensors
-        real = safetensors.safe_open
-        calls = []
 
-        def counting(path, *a, **kw):
-            calls.append(path)
-            return real(path, *a, **kw)
-
-        with mock.patch("safetensors.safe_open", counting):
+        def refuse(*a, **kw):
+            raise AssertionError("safe_open (mmap) used")
+        with mock.patch("safetensors.safe_open", refuse), mock.patch("mmap.mmap", refuse):
             r = wd.LocalSafetensors(self.base_dir)
-            for _ in range(3):
-                for k in r.keys():
-                    r.get(k)
-        self.assertEqual(len(calls), len(set(calls)), f"files reopened: {calls}")
+            for k in r.keys():
+                r.get(k)
+            r.get_rows("model.layers.1.mlp.down_proj.weight", 0, 1)
+            r.shape("model.layers.1.mlp.down_proj.weight")
 
     def test_single_file(self):
         f = self.dir / "one.safetensors"
