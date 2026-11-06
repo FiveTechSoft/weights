@@ -45,16 +45,25 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Meets the pre-registered H1 threshold (>= 0.7) for this pair. Whether it is a mark of improvement or of any
   fine-tune waits for the role-play control (Nyx-RP).
 
-## F7. Their top subspaces overlap far above chance; their deltas are nearly orthogonal. (open)
+## F7. MiMo and NeoHorse share layer-specific directions of change. (measured; specificity open)
 - Same-tensor top-16 subspace overlap (`overlap_mimo_neohorse.json`): embedding 0.71 (×182 chance), `lm_head` 0.33
   (×85), `q_proj` 0.19 (×49), MLP gate/up 0.15-0.16 (×40), DeltaNet `in_proj_z/qkv` 0.15 (×39), `down_proj` 0.09
   (×23), `o_proj` ×15, `v_proj` ×10, DeltaNet `out_proj` ×8, `k_proj` ×6; DeltaNet β/α ×1.1-1.2.
 - Cosine of the two deltas: +0.008 to +0.011 in every type, +0.08 in `lm_head`. Small, but with millions of entries
   far above the noise (~0.0002), and the same sign everywhere.
-- Open: the structured null (same tensor type, different layer) and F4's base alignment decide whether this is a
-  shared direction of improvement or shared geometry of the hidden state (outlier dimensions). F4 already suggests
-  the embedding overlap is mostly "both grow the embedding's dominant directions"; the MLP overlap is not explained
-  by W's top subspace (alignment ~0.04 against overlap ~0.15).
+- Structured null (`pairs_mimo_neohorse.json`, `pairs.py`): same-layer overlap / overlap with the same tensor type
+  at other layers = `down_proj` ×14.5, `q_proj` ×13.3, `v_proj` ×9.9, DeltaNet `in_proj_qkv` ×9.8 and `in_proj_z`
+  ×9.4, `up_proj` ×8.7, `gate_proj` ×8.0, DeltaNet `out_proj` ×7.9, `o_proj` ×6.4, `k_proj` ×4.9: H3 holds for 10
+  matrix types. DeltaNet β/α: ×1.1, nothing shared beyond chance.
+- Not explained by the base weight: base alignment 0.003-0.08 in those types, against overlaps of 0.03-0.19.
+- The embedding overlap (0.71) is: alignment with the embedding's own top subspace is 0.56 (MiMo) / 0.54 (NeoHorse).
+  No cross-layer null exists for embedding / `lm_head` (one tensor each).
+- The shared subspace is on the smaller side, which for every one of these matrices is the 4096-dim residual stream:
+  both fine-tunes re-weight the same residual directions, layer by layer.
+- Open: both were trained on chat data with reasoning, so the shared directions may be chat/format directions, not
+  improvement. The role-play control (also chat SFT) decides this.
+- Method note: the count-sketch cosine has an error of about ±0.016 (sketch size 4096); the exact cosines here are
+  ~0.01, so sketch cosines for later pairs only resolve |cos| > ~0.05. Use the exact `overlap` job when needed.
 
 ## F8. Same task, measured behaviour: TwIL-8B vs MiMo-9B. (verified by two graders + manual check)
 - At an 8192-token cap, greedy: GSM8K 96 vs 93 %, MATH-500 88 vs 68 %; MiMo's 19 cut answers are long reasoning,
