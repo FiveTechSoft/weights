@@ -253,3 +253,16 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   top subspace (`subspace_transfer` with source = official instruct, base = Base, α > 0), against a random subspace
   of the same size (plan H4). Alternative reading still open: generic "instruction-tuning" directions; the
   full-fine-tune control with another goal (WeMM-Embedding) tests it.
+
+## F22. The "where" pattern is the mark of any full fine-tune, not of improvement (H1 specificity rejected) (verified)
+- `stats_wemm_embed.json` (tencent/WeMM-Embedding-9B, turned into an embedding model; 425 text tensors, the output
+  head is gone): 13.7 % relative change, 99 % of weights. Most changed: DeltaNet β 21 %, MLP gate 18 %, DeltaNet
+  z 16 %, α 16 %, up 15 %; untouched: all norms, conv1d, `A_log`, `dt_bias`. Second method agrees.
+- Type-profile Spearman with the improvements: MiMo 0.897, NeoHorse 0.861, Fara 0.858, tmax 0.705; with the official
+  post-training 0.862. The smallest improvement-improvement rho is 0.702: by the pre-registered rule, H1's
+  "improvement-specific" is false. F15's pass came from the method (the role-play control is a LoRA).
+- Conclusion: "MLP and DeltaNet β change most, norms and DeltaNet decay dynamics stay" is how full fine-tuning of this
+  architecture moves the weights, whatever the goal. For WSPLang: a map of where training acts (protect lists,
+  per-type budgets), not a recipe for improvement.
+- Still open and now the key question: H3 (shared directions). If WeMM shares the improvements' layer-specific
+  directions too, that core is generic as well; if not, the directions carry what the "where" does not.
