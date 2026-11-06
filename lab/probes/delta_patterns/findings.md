@@ -351,3 +351,30 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - H3 (directions) is unaffected: signatures use only matrices, and none of the cast tensors is a matrix.
 - Lesson (same class as the viral WSP posts we audited): a storage format difference read as a weight change. Every
   diff now rounds to the common dtype before comparing.
+
+## F27. The "older pre-tokenizer" of F25 is a transformers 5.12+ bug, not a choice of the model authors (verified, 2026-11-07)
+- **Pattern** over 8 Qwen3.5/3.8 derivatives (`transformers_version` in config.json and the regex in tokenizer.json):
+  - saved with 4.57-5.6.2 (tmax, abliterated, Fara, WeMM, Qwen3.5-9B itself): new regex `[\p{L}\p{M}]+`;
+  - saved with 5.12.1-5.15.0 (MiMo, Angry-Claudius, Arete-27B): old Qwen2 regex `\p{L}+`, and a changed
+    ByteLevel decoder.
+- **Cause, reproduced locally** with transformers 5.12.1:
+  - Qwen ships `tokenizer_config.json` with `tokenizer_class: Qwen2Tokenizer`, both for Qwen3.5-9B and for
+    Qwen3.8-27B.
+  - In 5.12 that class rebuilds the pre-tokenizer from its hard-coded `PRETOKENIZE_REGEX`
+    (`models/qwen2/tokenization_qwen2.py:33`) and ignores the one in `tokenizer.json`.
+  - `Qwen3_5Tokenizer` (`models/qwen3_5/tokenization_qwen3_5.py:25`) has the right regex but is not the declared
+    class.
+- **It is not only a save problem.** Loading the original Qwen3.5-9B tokenizer with `AutoTokenizer` in 5.12.1
+  already splits text the old way:
+  - a Hindi sentence gives 20 tokens with `AutoTokenizer`, 13 with the `tokenizers` library, and 13 with
+    `Qwen3_5Tokenizer` loaded explicitly;
+  - `save_pretrained` then writes the old regex and decoder to disk (Hindi test: 6 → 10 tokens).
+- **Consequences.**
+  - Anyone running or fine-tuning these models with transformers ≥ 5.12 gets the old split on Hindi, Thai,
+    Bengali and Arabic with diacritics.
+  - Models fine-tuned that way (MiMo, Angry-Claudius, Arete-27B) were likely trained on the old split there, and
+    ship it.
+  - GGUF/llama.cpp uses its own `qwen35` pre-tokenizer and is not affected (F25).
+- **Workaround:** load `Qwen3_5Tokenizer` explicitly, or `PreTrainedTokenizerFast(tokenizer_file=...)`.
+  A GitHub search found no existing issue on huggingface/transformers.
+- F25's reading ("MiMo ships an older regex") was right about the effect and wrong about the cause.

@@ -20,3 +20,29 @@ Predictions, fixed before running `report_arete.wspl`:
    prediction (they ship `chat_template.jinja`; 50/50).
 
 A wrong prediction is recorded as wrong, not re-explained.
+
+## Outcome (report `lab/runs/model_report/arete.md`, run right after committing the above)
+
+1. Method `full_fine_tune`: **right**.
+2. Size: **right** for what block mode measures. Per-type median change of the matrices is 0.32-0.84 %. The global
+   figure needs a full `delta_stats`, which was not run.
+3. Where: **partly wrong**.
+   - Right: DeltaNet β is the most changed type (0.84 %), MLP down/up/gate are high (0.59-0.73 %), and embeddings
+     and `lm_head` are the least changed matrices (0.05-0.08 %).
+   - Wrong: the layer norms were trained. `input_layernorm` and `post_attention_layernorm` are touched in 63-64 of
+     64 layers (0.06 %), and `A_log` / `dt_bias` in 21 and 10 of 48 (tiny). Only `linear_attn.norm` is unchanged.
+     This differs from the WeMM full fine-tune, where all norms were untouched (F22).
+   - Not predicted: `conv1d` is third (0.70 %).
+4. Vision tower: not checked; the report hides it. Not predicted: the **MTP head was removed**
+   (`mtp_num_hidden_layers` 1 → 0, 15 tensors gone). The report missed this, because `text_model_name` hides
+   `mtp.*` on both sides.
+5. Outside the weights:
+   - Right: vocab and merges are identical, and the chat template is byte-identical.
+   - **Wrong** on the config: it has 2 real changes, MTP removed and `vision_config.model_type` renamed.
+   - Not predicted: the pre-tokenizer and decoder differ, the same as MiMo (F25). Cause found in findings F27.
+
+Report defects to fix:
+- (a) It must list hidden tensors that exist only in the base (the MTP head).
+- (b) The atlas sections ("closest studied models", "shared directions") compare against the Qwen3.5-9B atlas.
+  For another base they should be skipped or labelled as cross-base. Here the "shared directions" table is empty
+  and malformed.
