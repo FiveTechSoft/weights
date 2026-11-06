@@ -239,3 +239,17 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   with the four full-fine-tune improvements: gate ×1.3-1.9, up ×1.2-1.6, q ×1.3-1.5 (threshold ×3). 78 s, remote.
 - Reading, open: the shared core may go with the method (full fine-tune) more than with "improvement". The
   full-fine-tune control with another goal (WeMM-Embedding, queued) decides between the two.
+
+## F21. Qwen's own post-training moves the same layer-specific directions as the four community improvements (measured)
+- `stats_official_post.json` (Qwen/Qwen3.5-9B-Base -> Qwen/Qwen3.5-9B, Qwen's SFT + RL): 5.0 % relative change, 96 %
+  of weights; most changed DeltaNet β 7.1 %, MLP 5.8-6.0 %; `A_log`, `dt_bias` untouched. Second method agrees.
+- Type-profile Spearman with MiMo 0.983, Fara 0.976, NeoHorse 0.958, tmax 0.713; with the role-play LoRA 0.428.
+- `compare_official.wspl`: H3 in all 10 matrix types against each of MiMo, NeoHorse, tmax, Fara; strongest
+  `down_proj` ×28.7 (MiMo), ×12-14 (others), `v_proj` ×8-16, `q_proj` ×9-13, `out_proj` ×9-11.
+- Every community improvement starts from Qwen3.5-9B, i.e. after this post-training. Their updates keep moving the
+  model along the directions Qwen's post-training already moved: one training trajectory continued, not new
+  directions.
+- Candidate for "mejora sintética": move Qwen3.5-9B further along the official post-training delta projected on its
+  top subspace (`subspace_transfer` with source = official instruct, base = Base, α > 0), against a random subspace
+  of the same size (plan H4). Alternative reading still open: generic "instruction-tuning" directions; the
+  full-fine-tune control with another goal (WeMM-Embedding) tests it.
