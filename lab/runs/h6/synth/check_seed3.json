@@ -1,0 +1,7 @@
+{
+ "seed": 3,
+ "check": "chunk10 rebuilt = trained",
+ "acc": 0.514,
+ "acc_logged": 0.514,
+ "identical_items": true
+}
