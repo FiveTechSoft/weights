@@ -352,32 +352,41 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Lesson (same class as the viral WSP posts we audited): a storage format difference read as a weight change. Every
   diff now rounds to the common dtype before comparing.
 
-## F27. The "older pre-tokenizer" of F25 is a transformers 5.12+ bug, not a choice of the model authors (verified, 2026-11-07)
-- **Pattern** over 8 Qwen3.5/3.8 derivatives (`transformers_version` in config.json and the regex in tokenizer.json):
-  - saved with 4.57-5.6.2 (tmax, abliterated, Fara, WeMM, Qwen3.5-9B itself): new regex `[\p{L}\p{M}]+`;
-  - saved with 5.12.1-5.15.0 (MiMo, Angry-Claudius, Arete-27B): old Qwen2 regex `\p{L}+`, and a changed
-    ByteLevel decoder.
-- **Cause, reproduced locally** with transformers 5.12.1:
+## F27. The "older pre-tokenizer" of F25 comes from transformers 5.6.0-5.17.0, fixed in 5.18.0 (verified, 2026-11-07)
+- **Mechanism, read in the code** (`models/qwen2/tokenization_qwen2.py`):
   - Qwen ships `tokenizer_config.json` with `tokenizer_class: Qwen2Tokenizer`, both for Qwen3.5-9B and for
     Qwen3.8-27B.
-  - In 5.12 that class rebuilds the pre-tokenizer from its hard-coded `PRETOKENIZE_REGEX`
-    (`models/qwen2/tokenization_qwen2.py:33`) and ignores the one in `tokenizer.json`.
-  - `Qwen3_5Tokenizer` (`models/qwen3_5/tokenization_qwen3_5.py:25`) has the right regex but is not the declared
-    class.
-- **It is not only a save problem.** Loading the original Qwen3.5-9B tokenizer with `AutoTokenizer` in 5.12.1
-  already splits text the old way:
-  - a Hindi sentence gives 20 tokens with `AutoTokenizer`, 13 with the `tokenizers` library, and 13 with
-    `Qwen3_5Tokenizer` loaded explicitly;
-  - `save_pretrained` then writes the old regex and decoder to disk (Hindi test: 6 → 10 tokens).
-- **Consequences.**
-  - Anyone running or fine-tuning these models with transformers ≥ 5.12 gets the old split on Hindi, Thai,
-    Bengali and Arabic with diacritics.
-  - Models fine-tuned that way (MiMo, Angry-Claudius, Arete-27B) were likely trained on the old split there, and
-    ship it.
-  - GGUF/llama.cpp uses its own `qwen35` pre-tokenizer and is not affected (F25).
-- **Workaround:** load `Qwen3_5Tokenizer` explicitly, or `PreTrainedTokenizerFast(tokenizer_file=...)`.
-  A GitHub search found no existing issue on huggingface/transformers.
-- F25's reading ("MiMo ships an older regex") was right about the effect and wrong about the cause.
+  - In the affected versions `AutoTokenizer` builds that class. Its `__init__` builds the pre-tokenizer and decoder
+    in code, using the Qwen2 regex `\p{L}+`; it takes only vocab and merges from `tokenizer.json`.
+  - Qwen3.5's regex `[\p{L}\p{M}]+` is lost, and `save_pretrained` writes the Qwen2 one to disk.
+- **Two methods agree.** On a Hindi sentence, `AutoTokenizer` (5.12.1) gives 20 tokens, against 13 with the
+  `tokenizers` library. Applying the Qwen2 regex by hand to `tokenizer.json` gives the same 20 ids.
+- **Which versions** (minimal repro on Qwen/Qwen3.5-9B from the Hub, run in clean venvs):
+
+  | transformers | tokenizer class used | tokens |
+  |---|---|---|
+  | 4.57.6, 5.0.0 – 5.5.0 | `Qwen2TokenizerFast` / `TokenizersBackend` (reads tokenizer.json) | 13 (right) |
+  | 5.6.0, 5.6.2, 5.12.1, 5.15.1, 5.16.0, 5.16.1, 5.17.0 | `Qwen2Tokenizer` (pipeline from code) | 20 (wrong) |
+  | 5.18.0, 5.20.2, 5.21.1, 5.22.0, 5.22.2 | `Qwen3_5Tokenizer` | 13 (right) |
+
+  It is already fixed upstream: no issue to file.
+- **Effect.** It changes the split only where combining marks occur: Hindi, Bengali, Thai, and Arabic with
+  diacritics. English, code, CJK and Russian are unchanged. The ByteLevel decoder options also change, but the
+  decode round trip was identical on 6 samples (English, spaces, Hindi, Thai, code, emoji), so no visible effect.
+- **Published models.** MiMo (saved with 5.12.1), Arete-27B (5.12.1) and Angry-Claudius (5.15.0) were saved
+  inside the affected range and carry the Qwen2 regex.
+  - Fara was saved with 5.6.2, also in the range, but kept the right regex. So `transformers_version` alone does
+    not tell whether the tokenizer went through `save_pretrained`; it may have been copied.
+  - Whether those models were also *trained* with the wrong split is not known.
+- **Fix for users:** transformers >= 5.18, or load `Qwen3_5Tokenizer` explicitly. For models already published
+  with the Qwen2 regex, the regex is in their own `tokenizer.json`, so every version reproduces it. Only
+  replacing the file restores the base split.
+- **Correction (same day):** a first version of this finding said "transformers 5.12+", inferred from the saved
+  models, and treated 5.6.2 as safe. Testing the versions directly showed 5.6.0 is the first bad version and
+  5.18.0 the first good one.
+- **This repo:** the local environment has 5.12.1, which is affected. Our benchmarks use llama.cpp/GGUF (own
+  `qwen35` pre-tokenizer) and the math sets are in English, so no result here depends on it. Code that tokenizes
+  Qwen3.5 text with `AutoTokenizer` in Hindi/Thai/Bengali/Arabic would be affected.
 
 ## F28. Every trained derivative drops the base's MTP head; file-level edits keep it (measured, 2026-11-07)
 - Qwen3.5-9B and Qwen3.8-27B ship a multi-token-prediction head (`mtp.*`, 15 tensors, `mtp_num_hidden_layers` 1),
