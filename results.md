@@ -1419,3 +1419,21 @@ de 8 o más caracteres repetida 3 veces o más.
   ellos.
 - **Objetivo para la mejora sintética:** reducir los cortes y bucles de la base sin gradiente, con MiMo como
   referencia. Plan en `lab/probes/delta_patterns/h4_plan.md`.
+
+### 39.6 Corrección: el resultado de la base depende mucho de cómo se cuantiza (2026-11-07, del brazo A0 de H4)
+La misma base Qwen3.5-9B en Q6_K, por dos caminos:
+- bartowski, con imatrix: GSM8K **59/100**, 36 cortadas (§39.1, sin revisión de formato);
+- convertida por nosotros sin imatrix (`h4_A0`): **72/100**, 24 cortadas.
+
+Ítem a ítem, 20 se cortan solo en la de bartowski y 8 solo en la nuestra (McNemar p = 0.036). Cuando las dos
+terminan, coinciden en 53 de 56 respuestas: la diferencia está casi toda en entrar o no en bucle. El GGUF de MiMo usado
+en §37 también lleva imatrix, con otra calibración.
+
+Lectura:
+- Los bucles de la base son **muy sensibles a perturbaciones pequeñas de los pesos**: la cuantización mueve unos
+  12 cortes.
+- La ventaja de MiMo en §39.1 (93 frente a 60) sigue siendo grande, pero frente a la base de nuestro camino es menor
+  (93 frente a 72), y en parte depende de la receta de cuantización.
+- Una comparación justa del todo cuantizaría MiMo por el mismo camino que A0.
+- Para H4, cualquier perturbación puede mover el número de cortes. Por eso el criterio que cuenta es A1 frente a
+  A2, el control aleatorio del mismo tamaño.
