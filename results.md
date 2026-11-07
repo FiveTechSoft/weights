@@ -1504,3 +1504,29 @@ frente a 1.366) pero no da la magnitud.
 - Lo común entre semillas es la habilidad; lo propio de cada una es sobre todo ruido.
 - Siguiente: H6f, coeficientes dentro del carril (addendum d del plan).
 - Límites: una tarea, un modelo de 0.8B, G2 no cumplido.
+
+### 40.6 H6f: los "cuánto" dentro del carril (addendum d) (2026-11-07)
+**H6f-a, un paso con forma (sin optimizador):** gradiente o signo proyectado en el carril (r = 20, otras dos
+semillas), norma por matriz tomada de las otras semillas. Ya no rompe el modelo, pero no enseña:
+GXm (α 0.01-0.02) 28.3-29.2 %, R 0.00-0.04; SXm (α 0.1) 30.8-31.8 %, R 0.11-0.15. **Falla** (umbral 0.5).
+Comparado con H6e: lo que rompía era la escala global, no el carril.
+
+**H6f-b, entrenar solo los coeficientes del carril** (ΔW = U·C, 10.4 M parámetros = 2.1 % de los 497.6 M; lr 1e-5
+elegida en dev de la semilla 1 entre {3e-6, 1e-5, 3e-5, 1e-4}). Control: lo mismo en una base aleatoria de 20.
+
+| Pasos | carril s1 / s2 / s3 | R medio | aleatoria s1 / s2 / s3 | R medio | McNemar carril vs aleatoria |
+|---|---|---|---|---|---|
+| 50 | 40.0 / 36.6 / 37.8 | 0.43 | 37.8 / 35.2 / 36.6 | 0.36 | 0.11 / 0.35 / 0.40 |
+| 100 | 42.2 / 39.5 / 42.2 | 0.57 | 41.6 / 38.7 / 40.0 | 0.51 | 0.72 / 0.61 / 0.13 |
+| 200 | 45.9 / 45.5 / 45.9 | 0.76 | 43.1 / 41.8 / 43.7 | 0.63 | 0.030 / 0.009 / 0.099 |
+
+- **Falla** en los dos criterios: R 0.57 a 100 pasos (umbral 0.9) y no gana a la base aleatoria en cada semilla.
+- La base aleatoria aprende casi igual: entrenar **cualquier** subespacio de rango 20 por matriz basta para
+  aprender gran parte de la habilidad. El carril da una ventaja pequeña que crece con los pasos (+0.13 de R a 200).
+- Ninguna de las dos daña: 3×2 sube a 78-86 % (base 74 %, entrenamiento completo 55-60 %); NLL de GSM8K 1.315-1.317
+  (base 1.321).
+- Lectura junto con §40.3: el carril importa para **trasladar** un cambio ya hecho (proyectar ΔW en direcciones
+  aleatorias pierde mucho), no para **aprender** (el optimizador encuentra la habilidad en casi cualquier subespacio
+  pequeño). Restringir el rango, por sí solo, quita la interferencia.
+- No comparable directamente con el entrenamiento completo a igual número de pasos: otra lr (1e-5 frente a 3e-6) y
+  otra programación.

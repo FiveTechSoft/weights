@@ -1,0 +1,16 @@
+{
+ "seed": 1,
+ "part": "b",
+ "basis": "lane",
+ "r": 20,
+ "lr": 3e-05,
+ "steps": 50,
+ "probe": true,
+ "n_coef": 10420224,
+ "n_trained_full": 497614848,
+ "evals": {
+  "50": {
+   "dev": 0.31
+  }
+ }
+}

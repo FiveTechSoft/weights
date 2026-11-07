@@ -429,3 +429,13 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - The lane gives where; the per-direction amounts come from the optimizer over the whole training. Likely cause: a
   raw gradient puts its norm in few matrices/directions, Adam equalises per coordinate. Tested next in H6f.
   Results §40.4.
+
+## F33. Training only 20 directions per matrix learns most of the skill, and a random 20-dim basis does almost as well as the lane (measured, 2026-11-07, H6f)
+- ΔW = U·C with U fixed (rank 20 per matrix, 2.1 % of the parameters), AdamW on C, 200 steps: lane of the other seeds
+  R 0.76, random orthonormal basis R 0.63; lane vs random McNemar p 0.03 / 0.009 / 0.10 per seed, so the pre-registered
+  "beats random in each seed" fails. At 100 steps: 0.57 vs 0.51.
+- Neither interferes: 3×2 accuracy rises to 78-86 % (base 74 %, full training 55-60 %); GSM8K NLL unchanged.
+- A one-shot shaped update (gradient or sign in the lane, per-matrix norms from other seeds) no longer breaks the
+  model, unlike H6e, but teaches little (R ≤ 0.15).
+- Reading with F31: the lane matters to carry an existing change, not to learn one; low rank alone removes the
+  interference. Results §40.6.
