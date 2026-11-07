@@ -1328,3 +1328,75 @@ Script `lab/probes/delta_patterns/run.py`; datos en `lab/runs/delta_patterns/sta
   - Solapamiento de subespacios top-16 con MiMo, por encima del azar k/d: embeddings ×182, `lm_head` ×85, `q_proj` ×49, MLP gate/up ×40, `down_proj` ×23; `in_proj_a/b` ×1.1-1.2. Coseno de los Δ pequeño y positivo en todos los tipos (+0.008 a +0.011; `lm_head` +0.08).
   - Pendiente antes de concluir H3: el nulo entre capas distintas y la alineación con las direcciones de W. Un solapamiento así también lo daría que ambos refuercen las mismas dimensiones *outlier* del estado oculto.
 - **Cuaderno de hallazgos:** `lab/probes/delta_patterns/findings.md` recoge cada hallazgo (F1-F8), su fuente, su estado (verificado, medido, abierto) y lo que enseña para WSPLang, más las lecciones de herramienta. Se actualiza con cada modelo.
+
+## 39. Informe completo: MiMo-V2.6-Distill-Qwen-9B frente a su base Qwen3.5-9B (2026-11-07)
+Reúne el benchmark de la base (nuevo) con lo medido en pesos y fuera de ellos (findings F1-F3, F21-F28).
+
+### 39.1 Comportamiento: mismo protocolo que §37
+Condiciones comunes:
+- llama-server CUDA, Q6_K de bartowski para los dos, greedy, tope de 8192 tokens nuevos, plantilla de cada modelo;
+- GSM8K = los 100 primeros de test; MATH-500 = 50 con `select_indices(2026, 50)`.
+
+Datos en `lab/runs/model_compare/{qwen35_9b_q6k,mimo9b_q6k}.json`. Los desacuerdos entre jueces se revisaron a mano y
+eran todos de formato (`60\%`, `\frac43` frente a `\frac{4}{3}`, `.35625`), con la respuesta correcta en todos. Una
+ejecución anterior de la base quedó contaminada por dos evals simultáneos y se descartó
+(`qwen35_9b_q6k.dup_aborted.jsonl`).
+
+| Tope 8192, greedy | Qwen3.5-9B (base) | MiMo-9B | pares discordantes (solo base / solo MiMo) |
+|---|---|---|---|
+| GSM8K (n=100) | **60** | **93** | 2 / 35, McNemar p ≈ 1e-8 |
+| MATH-500 (n=50) | **24** | **34** | 4 / 14, p ≈ 0.03 |
+| Cortadas en el tope | 36 + 25 | 4 + 15 | |
+| Tokens, mediana GSM8K / MATH | 3266 / 8034 | 294 / 1226 | |
+
+**Lectura: casi toda la ventaja de MiMo es terminar dentro del tope, no acertar más cuando ambos terminan.**
+- **Cuando los dos terminan**, la diferencia es mínima:
+  - GSM8K n=62: base 58, MiMo 60;
+  - MATH n=21: 20 y 20.
+- **Cuando la base termina**, acierta igual que MiMo: 59 de 64 en GSM8K y 24 de 25 en MATH. Los dos recuentos son
+  sin revisión de formato.
+- **De los ítems en que la base se corta**, MiMo acierta 32 de 36 en GSM8K y 14 de 25 en MATH.
+- **La base piensa unas 6-11 veces más** (medianas de tokens).
+
+Límites:
+- Con un tope mayor la base recuperaría parte de los cortes. Lo que se mide aquí es "acierto bajo un presupuesto de
+  8192 tokens", no capacidad sin límite.
+- Seleccionar "ambos terminan" sesga hacia ítems fáciles, así que solo indica que no hay una ventaja grande ahí.
+- Un solo arnés, greedy, solo matemáticas, n pequeño (MATH n=50).
+
+Prueba que zanjaría la cuestión: repetir los ítems cortados de la base con tope de 32k.
+
+### 39.2 Pesos (findings F1-F3, F21-F23, F26)
+- **Tipo de cambio:** fine-tune completo. Cambia el 97 % de los pesos, con ‖ΔW‖/‖W‖ = 9.2 %, y el cambio es difuso
+  (rango estable 200-500). Una edición pequeña no lo reproduce.
+- **Dónde cambia:** más en la β de DeltaNet y en el MLP; menos en las normas.
+  - Es el mismo perfil que cualquier fine-tune completo de esta arquitectura (F22), así que no es una marca de
+    "mejora".
+  - Corrección F26: `A_log` sí cambia un poco (1-8 escalones bf16 en 3-7 de 32 entradas en algunas capas).
+- **Direcciones:** las capa a capa son compartidas con NeoHorse, tmax, Fara y con el post-entrenamiento oficial de
+  Qwen (H3 en 10 de 10 tipos de matriz), y no con un fine-tune completo de otro objetivo (WeMM, F23).
+  - MiMo sigue moviendo el modelo en las direcciones que ya movió el post-entrenamiento oficial (F21).
+  - Que esto sea "mejora" o "seguir entrenando como asistente" sigue abierto: el control LoRA no lo separa (F24).
+
+### 39.3 Fuera de los pesos (F25, F27, F28)
+- **Tokenizer:** vocab y merges iguales; 7 tokens especiales de audio/TTS añadidos.
+  - El pre-tokenizer es el regex de Qwen2. Viene de guardar con transformers 5.12.1, que está en el rango con el
+    fallo, 5.6.0-5.17.0 (F27).
+  - Tokeniza distinto hindi, tailandés, bengalí y árabe con diacríticos.
+  - El GGUF usa `qwen35`, así que este benchmark no se ve afectado.
+- **Cabeza MTP eliminada:** 15 tensores (F28). No hay decodificación especulativa con MTP propio.
+- **Config:** solo diferencias de serialización. No hay plantilla de chat en la carpeta HF; va en el GGUF.
+
+### 39.4 Qué aporta frente a la ficha de HF
+La ficha dice "distill" y da benchmarks propios. Este informe añade:
+- **Que la ganancia medida en matemáticas viene sobre todo de razonar más corto** dentro de un presupuesto de tokens.
+- Que es un fine-tune completo difuso, en las direcciones del post-entrenamiento oficial.
+- Tres cosas que la ficha no menciona:
+  - el pre-tokenizer cambiado, por un fallo de herramienta;
+  - la cabeza MTP perdida;
+  - el cambio pequeño de `A_log`.
+
+Abierto:
+- tope de 32k para los ítems cortados;
+- pruebas causales (H4, transferir subespacios);
+- benchmarks fuera de matemáticas.
