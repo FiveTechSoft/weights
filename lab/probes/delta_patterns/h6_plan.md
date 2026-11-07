@@ -210,3 +210,21 @@ to compute on M0. It runs on the same seeds and test sets.
 - Composition and interference, S(ΔW_A + ΔW_B), with a second skill.
 - Choosing directions by activations or gradients instead of energy.
 - Applying what works back to MiMo (H5).
+
+## Addendum 2026-11-07 (before any code ran on the GPU; nothing trained)
+**Inside one frame (user, 2026-11-07: "es posible que incluso tengamos que revisar paso a paso lo que llega a
+formar un único fotograma").** Each chunk is made of optimizer steps, so every step is logged too.
+- **Every step, every chunk** (scalars, small): loss; per matrix |g| (gradient), |u| (the applied update),
+  cos(g, u) (how much AdamW bends the gradient) and cos(u_t, u_{t-1}) (does the step keep its heading).
+- **Chunks 1 and 10:** a fixed random sketch of each step's update, u · R with R a Gaussian matrix of shape
+  (larger side × 8), kept per step in fp16. This allows, afterwards, the overlap of each step with the chunk's final
+  increment and with its top-r subspace (inner products preserved approximately, Johnson-Lindenstrauss). The sketch is
+  checked against exact values in a test.
+- To measure u exactly without keeping a 2 GB copy, AdamW is implemented in the script, one parameter at a time. A
+  test checks it against `torch.optim.AdamW`.
+
+**Batch:** 40 instead of 32, so a chunk of 2 000 examples is exactly 50 steps (500 in total). One cosine schedule
+runs over the whole 500 steps: chunks are observation points, not restarts.
+
+**Model as loaded:** transformers builds `Qwen3_5ForCausalLM` (text only): 320 tensors, 497.6 M parameters in the
+2-D layer matrices (the trained set), 752.4 M in total.
