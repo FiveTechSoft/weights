@@ -135,6 +135,24 @@ class TestWSPLangOp(unittest.TestCase):
         self.assertEqual(r["status"], "ok", r)
         self.assertIn("delta_norm_applied", r["result"])
 
+    def test_norm_like_rescales_random_update_to_the_reference_norm(self):
+        """H4 control (lab/probes/delta_patterns/h4_plan.md): random directions, but each tensor's update has the
+        norm the reference basis would give, so the control moves the model as much as the arm it controls."""
+        r = self.run_op(f"tensors=*down_proj* source={self.src_dir.as_posix()} basis=random k=4 seed=0 "
+                        f"norm_like=sig:{self.sig.as_posix()} alpha=1.0 out={self.out.as_posix()}")
+        self.assertEqual(r["status"], "ok", r)
+        got, sigs = self.out_tensors(), torch.load(self.sig)
+        for k in self.base:
+            if "down_proj" not in k:
+                continue
+            D = self.src[k] - self.base[k]
+            ref = so.project_delta(D, sigs[k]["basis"]).norm()
+            V = so.basis_for("random", k, tuple(D.shape), 4, 0, {})
+            want = so.project_delta(D, V)
+            want = want * (ref / want.norm())
+            self.assertAlmostEqual(float((got[k] - self.base[k]).norm()), float(ref), places=3)
+            self.assertTrue(torch.allclose(got[k], self.base[k] + want, atol=1e-5), k)
+
     def test_protected_tensor_needs_unlock(self):
         r = self.run_op(f"tensors=*embed* source={self.src_dir.as_posix()} basis=sig:{self.sig.as_posix()} "
                         f"k=4 alpha=1.0 out={self.out.as_posix()}")

@@ -2263,6 +2263,7 @@ def execute_plan_v4(
                 src_p = src_p if src_p.is_absolute() else ROOT / src_p
                 spec = str(named.get("basis", "random"))
                 k, alpha, seed = int(named.get("k", 16)), float(named.get("alpha", 1.0)), int(named.get("seed", 0))
+                norm_like = str(named["norm_like"]) if named.get("norm_like") else None
                 out_arg = named.get("out") or out_dir
                 if not out_arg:
                     raise WriteGuardError("subspace_transfer writes a model: give out=<dir> or --out-dir; "
@@ -2280,7 +2281,7 @@ def execute_plan_v4(
                 created = allow_write and not out_p.exists()
                 metadata = {"provenance": "synthetic_transfer", "backward_calls": "0",
                             "sources": json.dumps({"source": src_p.name, "basis": spec, "k": k, "alpha": alpha,
-                                                   "seed": seed, "tensors": pattern}),
+                                                   "seed": seed, "tensors": pattern, "norm_like": norm_like}),
                             "note": "update taken from a trained model; this op itself runs no gradient"}
                 try:
                     for shard in shards:
@@ -2298,7 +2299,15 @@ def execute_plan_v4(
                             if tuple(Ws.shape) != tuple(W.shape):
                                 raise ValueError(f"{name}: source shape {tuple(Ws.shape)} != {tuple(W.shape)}")
                             V = basis_for(spec, norm, tuple(W.shape), k, seed, cache)
-                            P = project_delta(Ws.float() - W.float(), V)
+                            D = Ws.float() - W.float()
+                            P = project_delta(D, V)
+                            if norm_like:
+                                # control of equal size: rescale to the norm the reference basis would move this
+                                # tensor (h4_plan.md); a random k-dim slice alone carries only about k/d of D
+                                ref = float(project_delta(D, basis_for(norm_like, norm, tuple(W.shape), k, seed,
+                                                                       cache)).norm())
+                                pn = float(P.norm())
+                                P = P * (ref / pn) if pn > 0 else P
                             applied += float(P.norm()) ** 2
                             cand[name] = (W.float() + alpha * P).to(W.dtype)
                             tensors_done.append(name)

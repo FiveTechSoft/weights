@@ -18,6 +18,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SUFFIX = "\nPlease reason step by step, and put your final answer within \\boxed{}."
+TAIL_CHARS = 2000   # saved end of reasoning + answer; 300 until 2026-11-07 (too short to see long loop periods)
+
+
+def loop_tail(text: str, min_len: int = 8, reps: int = 3) -> bool:
+    """True if some line of at least min_len characters (stripped) occurs reps or more times: the end-of-answer
+    indecision loops of results.md §39.5 ("Wait, I'll check if I should use \\boxed{64}. I'll use ...")."""
+    from collections import Counter
+    c = Counter(line.strip() for line in text.splitlines() if len(line.strip()) >= min_len)
+    return any(v >= reps for v in c.values())
 
 
 def _m5():
@@ -93,9 +102,10 @@ def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_d
         ok1 = bool(pred) and m5.equivalent(pred, gold)
         ok2 = grade_gsm_independent(r["content"], gold) if bench == "gsm8k" else (
             bool(pred) and simple_norm(pred) == simple_norm(gold))
+        tail = (r["reasoning"] + r["content"])[-TAIL_CHARS:]
         return {"bench": bench, "i": i, "gold": gold, "pred": pred, "ok": ok1, "ok_independent": ok2,
                 "finish": r["finish"], "tokens": r["tokens"], "tok_s": r["tok_s"],
-                "reasoning_chars": len(r["reasoning"]), "tail": (r["reasoning"] + r["content"])[-300:]}
+                "reasoning_chars": len(r["reasoning"]), "tail": tail, "loop": loop_tail(tail)}
 
     with concurrent.futures.ThreadPoolExecutor(parallel) as ex:
         for k, row in enumerate(ex.map(one, jobs), 1):
@@ -113,6 +123,7 @@ def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_d
                           "acc_independent": round(sum(r["ok_independent"] for r in rs) / len(rs), 3),
                           "graders_disagree": sum(r["ok"] != r["ok_independent"] for r in rs),
                           "cut_at_max": sum(r["finish"] == "length" for r in rs),
+                          "loop_tails": sum(bool(r.get("loop")) for r in rs),
                           "mean_tokens": round(sum(r["tokens"] for r in rs) / len(rs)),
                           "mean_tok_s": round(sum(r["tok_s"] for r in rs) / len(rs), 1)}
     report = {"model": name, "endpoint": url, "max_tokens": max_tokens, "seconds": round(time.time() - t0),
