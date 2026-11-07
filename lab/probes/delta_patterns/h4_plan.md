@@ -1,6 +1,6 @@
-# H4: can a subspace of MiMo's update cut the base's end-of-answer loops? (pre-registration, PROPOSAL 2026-11-07)
+# H4: can a subspace of MiMo's update cut the base's end-of-answer loops? (pre-registration, approved 2026-11-07)
 
-Status: **proposal, not approved, nothing run.** Thresholds below are fixed before any edited model is evaluated.
+Status: **APPROVED by the user 2026-11-07; nothing run yet.** Thresholds below are fixed before any edited model is evaluated.
 Once approved, this file is committed and is not edited after the first result. Changes go in a dated addendum.
 
 ## Why
