@@ -1400,3 +1400,22 @@ Abierto:
 - tope de 32k para los ítems cortados;
 - pruebas causales (H4, transferir subespacios);
 - benchmarks fuera de matemáticas.
+
+### 39.5 Las respuestas cortadas de la base son, en buena parte, bucles (análisis de las colas, 2026-11-07)
+Sobre los últimos 300 caracteres guardados de cada respuesta cortada. Se cuenta como bucle una cola con alguna línea
+de 8 o más caracteres repetida 3 veces o más.
+
+| | Cortadas | Colas en bucle | …con la respuesta correcta ya en `\boxed{}` |
+|---|---|---|---|
+| Base Qwen3.5-9B | 61 (36 GSM8K + 25 MATH) | **21** (16 + 5) | **11** |
+| MiMo | 19 | 2 | 1 |
+
+- **El bucle típico es indecisión al final.** Por ejemplo (GSM8K #5): "Wait, I'll check if I should use \boxed{64}.
+  I'll use \boxed{\$64}. Okay. Wait, …". El modelo ya tiene la respuesta y no consigue cerrar. Es la patología que
+  arregla el Exp 8 de MIT en Qwen3.5-0.8B, ahora en el 9B.
+- **21 es un mínimo.** Con 300 caracteres no se ven bucles de periodo más largo, ni se sabe si las otras 40 colas
+  seguían avanzando.
+- **Consecuencia práctica:** un tope de 32k no rescataría los bucles. Parte de la ventaja de MiMo es no entrar en
+  ellos.
+- **Objetivo para la mejora sintética:** reducir los cortes y bucles de la base sin gradiente, con MiMo como
+  referencia. Plan en `lab/probes/delta_patterns/h4_plan.md`.
