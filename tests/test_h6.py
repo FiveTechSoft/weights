@@ -36,8 +36,9 @@ class TestSplits(unittest.TestCase):
     def test_digit_counts(self):
         def ok(items, da, db):
             return all(len(str(a)) == da and len(str(b)) == db for a, b in items)
-        self.assertTrue(ok(self.s["train"], 3, 2) and ok(self.s["test_id"], 3, 2) and ok(self.s["dev"], 3, 2))
-        self.assertTrue(ok(self.s["ood_easy"], 2, 2) and ok(self.s["ood_hard"], 3, 3))
+        self.assertTrue(ok(self.s["train"], 3, 3) and ok(self.s["test_id"], 3, 3) and ok(self.s["dev"], 3, 3))
+        self.assertTrue(ok(self.s["ood_easy"], 3, 2) and ok(self.s["ood_hard"], 4, 3))
+        self.assertTrue(all(len(str(a)) == 3 and len(str(b)) == 3 for a, b in md.SHOTS))
 
     def test_prompt_and_target(self):
         p = md.prompt(123, 45)
@@ -127,6 +128,24 @@ class TestAdamW(unittest.TestCase):
             self.assertTrue(torch.allclose(p1, p2, atol=1e-6))
             self.assertAlmostEqual(stats[0]["u_norm"], float((p1.detach() - before).norm()), places=5)
             self.assertAlmostEqual(stats[0]["g_norm"], float(grad.norm()), places=4)
+
+
+class TestSchedule(unittest.TestCase):
+    def test_warmup_then_cosine(self):
+        import train
+        self.assertAlmostEqual(train.lr_at(0, 500), train.LR / train.WARMUP)
+        self.assertAlmostEqual(train.lr_at(train.WARMUP - 1, 500), train.LR)
+        self.assertAlmostEqual(train.lr_at(train.WARMUP, 500), train.LR)
+        self.assertLess(train.lr_at(499, 500), train.LR * 0.01)
+        self.assertEqual(train.LR, 3e-6)
+
+
+class TestFingerprintDevice(unittest.TestCase):
+    def test_same_result_in_float32(self):
+        g = torch.Generator().manual_seed(5)
+        D = torch.randn(40, 100, generator=g)
+        self.assertGreater(fp.overlap(fp.top_subspace(D, 4), fp.top_subspace(D, 4, device="cpu", dtype=torch.float32)),
+                           0.999)
 
 
 class TestBatchAndSketch(unittest.TestCase):

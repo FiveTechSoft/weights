@@ -48,8 +48,9 @@ def eval_split(model, tok, rows, batch=100, max_new=8, device="cuda"):
         res = [None] * len(chunk)
         for L, idx in groups.items():
             x = torch.tensor([enc[j] for j in idx], device=device)
-            y = model.generate(input_ids=x, attention_mask=torch.ones_like(x), max_new_tokens=max_new,
-                               do_sample=False, pad_token_id=0)
+            with torch.autocast("cuda", dtype=torch.bfloat16):    # same numerics as training (bf16 embedding)
+                y = model.generate(input_ids=x, attention_mask=torch.ones_like(x), max_new_tokens=max_new,
+                                   do_sample=False, pad_token_id=0, use_cache=True)
             for j, row in zip(idx, y[:, L:].tolist()):
                 res[j] = tok.decode(row)
         outs += res

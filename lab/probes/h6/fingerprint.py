@@ -38,15 +38,16 @@ def eff_rank(S: torch.Tensor) -> float:
     return float(math.exp(-(p * p.log()).sum()))
 
 
-def _svd(D: torch.Tensor):
-    """Singular values and the left singular vectors on the smaller side."""
-    M = D.double() if small_side(D.shape) == 0 else D.double().T     # rows = smaller side
+def _svd(D: torch.Tensor, device=None, dtype=torch.float64):
+    """Singular values and the left singular vectors on the smaller side (computed on `device`, returned on CPU)."""
+    M = D.to(device or D.device, dtype)
+    M = M if small_side(D.shape) == 0 else M.T                     # rows = smaller side
     U, S, _ = torch.linalg.svd(M, full_matrices=False)
-    return U, S
+    return U.cpu().double(), S.cpu().double()
 
 
-def top_subspace(D: torch.Tensor, r: int) -> torch.Tensor:
-    return _svd(D)[0][:, :r].float()
+def top_subspace(D: torch.Tensor, r: int, device=None, dtype=torch.float64) -> torch.Tensor:
+    return _svd(D, device, dtype)[0][:, :r].float()
 
 
 def top_energy(D: torch.Tensor, k: int) -> float:
@@ -58,15 +59,17 @@ def overlap(A: torch.Tensor, B: torch.Tensor) -> float:
     return float((A.double().T @ B.double()).pow(2).sum()) / min(A.shape[1], B.shape[1])
 
 
-def chunk_fingerprint(base: Dict, prev: Dict, cur: Dict, r: int = 16, prev_prev: Optional[Dict] = None) -> Dict:
+def chunk_fingerprint(base: Dict, prev: Dict, cur: Dict, r: int = 16, prev_prev: Optional[Dict] = None,
+                      device=None) -> Dict:
     """prev_prev: checkpoint before prev, needed for overlap_prev_inc; if None and prev is not base, the previous
-    increment is taken as prev - base (exact for the second chunk)."""
+    increment is taken as prev - base (exact for the second chunk). device="cuda": SVDs in float32 on the GPU."""
+    dt = torch.float32 if device else torch.float64
     first = all(torch.equal(prev[n], base[n]) for n in base)
     tot = sum(float((cur[n].double() - prev[n].double()).pow(2).sum()) for n in base)
     rows = []
     for n in sorted(base):
         inc = cur[n].float() - prev[n].float()
-        U, S = _svd(inc)
+        U, S = _svd(inc, device, dt)
         S2 = S.pow(2)
         d = min(inc.shape)
         row = {"tensor": n, "layer": layer(n), "kind": kind(n),
@@ -79,8 +82,8 @@ def chunk_fingerprint(base: Dict, prev: Dict, cur: Dict, r: int = 16, prev_prev:
         if not first:
             Ui = U[:, :r].float()
             pinc = prev[n].float() - (prev_prev[n].float() if prev_prev is not None else base[n].float())
-            row["overlap_prev_inc"] = overlap(Ui, top_subspace(pinc, r))
-            row["overlap_cum"] = overlap(Ui, top_subspace(prev[n].float() - base[n].float(), r))
+            row["overlap_prev_inc"] = overlap(Ui, top_subspace(pinc, r, device, dt))
+            row["overlap_cum"] = overlap(Ui, top_subspace(prev[n].float() - base[n].float(), r, device, dt))
         rows.append(row)
     return {"r": r, "total_sq_norm": tot, "tensors": rows}
 

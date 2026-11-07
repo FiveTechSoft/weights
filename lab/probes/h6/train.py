@@ -29,11 +29,20 @@ ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
 import make_data as md  # noqa: E402
 
-BATCH, STEPS_PER_CHUNK, LR, WD, BETAS, EPS = 40, 50, 1e-5, 0.0, (0.9, 0.95), 1e-8
+MICRO = 10
+BATCH, STEPS_PER_CHUNK, LR, WD, BETAS, EPS = 40, 50, 3e-6, 0.0, (0.9, 0.95), 1e-8
+WARMUP = 25   # addendum: AdamW's first step is sign-like; at 1e-5 one step took the batch loss 0.34 -> 1.20
 SKETCH_K, SKETCH_CHUNKS, KEEP_CHUNKS = 8, (1, 10), (1, 2, 10)
 
 
 # ---------- pieces with tests ----------
+
+def lr_at(step, total):
+    """Linear warmup over WARMUP steps, then cosine decay to 0 at `total`."""
+    if step < WARMUP:
+        return LR * (step + 1) / WARMUP
+    return LR * 0.5 * (1 + math.cos(math.pi * (step - WARMUP) / max(1, total - WARMUP)))
+
 
 class AdamW:
     """Decoupled AdamW. step(lr) applies the update and returns per-parameter stats incl. the update u itself."""
@@ -111,6 +120,11 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(str(ea.BASE), dtype=torch.float32).cuda()
     for p in model.parameters():
         p.requires_grad_(False)
+    # memory (smoke run 1 spilled past 12 GB): the frozen tied embedding/lm_head (254 M) in bf16 saves 0.5 GB;
+    # gradient checkpointing drops the stored activations. Trained matrices stay fp32 (master weights).
+    model.model.embed_tokens.to(torch.bfloat16)
+    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+    model.config.use_cache = False
     named = trained_params(model)
     for _, p in named:
         p.requires_grad_(True)
@@ -155,15 +169,24 @@ def main():
             sketches = [] if c in SKETCH_CHUNKS or a.smoke else None
             for _ in range(steps_per_chunk):
                 idx = order[(step * BATCH) % len(order):(step * BATCH) % len(order) + BATCH]
-                lr = LR * 0.5 * (1 + math.cos(math.pi * step / total))
+                lr = lr_at(step, total)
                 model.train()
                 ids, lab = batch_for(idx)
-                with torch.autocast("cuda", dtype=torch.bfloat16):
-                    logits = model(input_ids=ids).logits
-                loss = torch.nn.functional.cross_entropy(logits[:, :-1].float().reshape(-1, logits.shape[-1]),
-                                                         lab[:, 1:].reshape(-1), ignore_index=-100)
-                loss.backward()
-                del logits
+                # logits only where the loss is (target tokens): the full (40 x L x 248k) logits do not fit 12 GB.
+                # MICRO examples per pass, gradients accumulated: same update as one batch of 40.
+                ntgt = int((lab[:, 1:] != -100).sum())
+                loss_sum = 0.0
+                for k0 in range(0, len(idx), MICRO):
+                    ids_k, lab_k = ids[k0:k0 + MICRO], lab[k0:k0 + MICRO]
+                    with torch.autocast("cuda", dtype=torch.bfloat16):
+                        hidden = model.model(input_ids=ids_k).last_hidden_state[:, :-1]
+                        mask = lab_k[:, 1:] != -100
+                        logits = model.lm_head(hidden[mask])
+                    l_k = torch.nn.functional.cross_entropy(logits.float(), lab_k[:, 1:][mask], reduction="sum")
+                    (l_k / ntgt).backward()
+                    loss_sum += float(l_k.detach())
+                    del logits, hidden
+                loss = torch.tensor(loss_sum / ntgt)
                 st = opt.step(lr, keep_update=True)
                 sk_now, rows = {}, {}
                 for (n, _), s in zip(named, st):
@@ -177,12 +200,12 @@ def main():
                     sketches.append({n: v.half().cpu() for n, v in sk_now.items()})
                 prev_sk = sk_now
                 step += 1
-                log.write(json.dumps({"chunk": c, "step": step, "lr": lr, "loss": float(loss),
+                log.write(json.dumps({"chunk": c, "step": step, "lr": lr, "loss": float(loss), "t": round(time.time() - t0, 2),
                                       "batch": idx, "tensors": rows}) + "\n")
                 log.flush()
             cur = snapshot(named)
             ev = run_eval()
-            fpr = fp.chunk_fingerprint(base, prev, cur, r=16, prev_prev=prev_prev)
+            fpr = fp.chunk_fingerprint(base, prev, cur, r=16, prev_prev=prev_prev, device="cuda")
             rec = {"chunk": c, "step": step, "seconds": round(time.time() - t0), "eval": ev,
                    "fingerprint": fpr, "summary": fp.summarize(fpr)}
             (out / f"chunk{c}.json").write_text(json.dumps(rec, indent=1), encoding="utf-8")

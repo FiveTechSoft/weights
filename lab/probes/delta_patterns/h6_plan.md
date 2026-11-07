@@ -228,3 +228,29 @@ runs over the whole 500 steps: chunks are observation points, not restarts.
 
 **Model as loaded:** transformers builds `Qwen3_5ForCausalLM` (text only): 320 tensors, 497.6 M parameters in the
 2-D layer matrices (the trained set), 752.4 M in total.
+
+## Addendum 2026-11-07 b (gates G1/G2, before any trained result; H4 A2 stopped at 36/100 by the user)
+**G1, task changed.** M0 (3-shot, greedy) on 100 random items per size:
+
+| Size | M0 accuracy |
+|---|---|
+| 3×2 | 80 % |
+| 3×3 | 28 % |
+| 4×2 | 66 % |
+| 4×3 | 9 % |
+| 5×2 | 54 % |
+
+3×2 is above the 50 % ceiling, so the task is now **3×3**: shots, train, dev and test_id are 3×3, ood_easy is 3×2
+and ood_hard is 4×3. With 3×3 shots, M0 gets 28 % in fp32 and 26 % with the bf16 embedding used for training.
+
+**Training settings changed:**
+- One AdamW step at lr 1e-5 took a fixed batch's loss from 0.34 to 1.20, and 1.14 on another batch. The first
+  Adam step is close to sign descent over 498 M coordinates.
+- The gradient is correct: a small SGD step along it lowers the loss, 0.338 → 0.319.
+- With lr 3e-6 the loss goes 0.34 → 0.28, and 0.42 → 0.45 on another batch.
+- So: **peak lr 3e-6, 25-step linear warmup, then cosine** over the 500 steps.
+
+**Memory:** the frozen tied embedding is kept in bf16, gradient checkpointing is on, and each step accumulates
+4 micro-batches of 10 (same update as a batch of 40). Peak 8.9 GB.
+
+**Fingerprint SVDs** run on the GPU in float32 (tested against float64 on the CPU).
