@@ -68,19 +68,12 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 Rama `feat/wsp-synthesis` = `main` = 8649b8e, todo subido (GitHub Pages publica desde `main:/docs`). Detalle y cifras en results.md §36-§38 y `lab/probes/delta_patterns/findings.md` (F1-F26).
 
-**Punto de reanudación (2026-11-07 ~00:15):**
-1. **En marcha:** benchmark de la base Qwen3.5-9B Q6_K con el protocolo §37 (`bash lab/probes/model_compare/run_base_q6k.sh`: llama-server en el puerto 8093 y `eval.py qwen35_9b_q6k 8093`). Iba por ~89/150.
-   - Progreso: `lab/runs/model_compare/qwen35_9b_q6k.partial.jsonl`.
-   - Resultado final: `qwen35_9b_q6k.json`.
-   - Si se cortó: `eval.py` reanuda desde el parcial. Relanzar **una sola instancia** y solo si el usuario lo pide.
-   - `qwen35_9b_q6k.dup_aborted.jsonl` está contaminado (dos evals a la vez) y no se usa.
-2. **Siguiente:** informe completo MiMo vs base.
-   - Pesos: F1-F3, F21-F23, F26.
-   - `lab/runs/model_report/mimo.md`.
-   - Lo que no son pesos: F25.
-   - Benchmark base vs MiMo (93/100, 34/50).
-   - Límites: n pequeño, solo matemáticas, sin tests causales.
-   - Va a results.md §37.
+**Punto de reanudación (2026-11-07, actualizado tras terminar el benchmark):**
+1. **Nada en marcha.** El benchmark de la base Qwen3.5-9B Q6_K terminó: GSM8K 60/100 y MATH 24/50, frente a MiMo
+   93 y 34.
+2. **Informe MiMo vs base: hecho** (results.md §39). La ventaja de MiMo es sobre todo terminar dentro del tope de
+   8192 tokens: cuando los dos terminan, 58 frente a 60 y 20 frente a 20. Siguiente prueba: los ítems cortados de
+   la base con tope de 32k.
 3. **Hecho 2026-11-06/07:**
    - lector local sin mmap (a719b01);
    - firma dsv4_heretic;
