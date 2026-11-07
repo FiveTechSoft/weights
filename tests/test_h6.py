@@ -177,5 +177,53 @@ class TestGraders(unittest.TestCase):
         self.assertEqual(ea.grade("", 5535), (False, False))
 
 
+class TestSynth(unittest.TestCase):
+    """E_k = W0 + alpha * C_k and its norm-matched random control (h6_plan.md, synthetic continuation)."""
+
+    def setUp(self):
+        g = torch.Generator().manual_seed(7)
+        self.base = {"a": torch.randn(8, 4, generator=g), "b": torch.randn(3, 5, generator=g)}
+        self.ck = {n: w + 0.1 * torch.randn(w.shape, generator=g) for n, w in self.base.items()}
+
+    def test_extrapolate(self):
+        import synth
+        e = synth.extrapolate(self.base, self.ck, 3.0)
+        for n in self.base:
+            self.assertTrue(torch.allclose(e[n] - self.base[n], 3.0 * (self.ck[n] - self.base[n]), atol=1e-6))
+        one = synth.extrapolate(self.base, self.ck, 1.0)
+        self.assertTrue(all(torch.allclose(one[n], self.ck[n], atol=1e-6) for n in self.base))
+
+    def test_random_control_matches_norm_per_tensor_and_is_not_the_delta(self):
+        import synth
+        r = synth.random_like(self.base, self.ck, 3.0, seed=1)
+        for n in self.base:
+            d = self.ck[n] - self.base[n]
+            self.assertAlmostEqual(float((r[n] - self.base[n]).norm()), float(3.0 * d.norm()), places=4)
+            cos = float(((r[n] - self.base[n]) * d).sum() / ((r[n] - self.base[n]).norm() * d.norm()))
+            self.assertLess(abs(cos), 0.8)
+        r2 = synth.random_like(self.base, self.ck, 3.0, seed=1)
+        self.assertTrue(all(torch.equal(r[n], r2[n]) for n in self.base))
+
+    def test_mcnemar_exact(self):
+        import synth
+        self.assertEqual(synth.mcnemar([True] * 5, [True] * 5), 1.0)
+        # 10 discordant, all favouring a: two-sided exact p = 2 * 0.5**10
+        a = [True] * 10 + [False] * 3
+        b = [False] * 10 + [False] * 3
+        self.assertAlmostEqual(synth.mcnemar(a, b), 2 * 0.5 ** 10, places=10)
+        # 6 vs 4 discordant: p = 2 * P(X <= 4 | n=10) = 0.7539
+        a = [True] * 6 + [False] * 4
+        self.assertAlmostEqual(synth.mcnemar(a, [not x for x in a]), 0.75390625, places=6)
+
+    def test_recovery(self):
+        import synth
+        self.assertAlmostEqual(synth.recovery(0.40, 0.28, 0.52), 0.5)
+        self.assertAlmostEqual(synth.recovery(0.28, 0.28, 0.52), 0.0)
+
+    def test_pick_alpha_prefers_smaller_on_tie(self):
+        import synth
+        self.assertEqual(synth.pick_alpha({1: 0.3, 2: 0.5, 3: 0.5, 5: 0.1}), 2)
+
+
 if __name__ == "__main__":
     unittest.main()
