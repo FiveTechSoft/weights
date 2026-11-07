@@ -2,7 +2,7 @@
 # One H4 arm (lab/probes/delta_patterns/h4_plan.md): build -> GGUF bf16 -> Q6_K -> llama-server -> GSM8K 100.
 # usage: bash lab/probes/delta_patterns/h4/arm.sh A0|A1|A2      (from the repo root; one arm at a time)
 set -u
-cd "$(dirname "$0")/../../../.."
+cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel 2>/dev/null || echo /c/weights)"
 ARM=$1
 PY="$HOME/.venvs/weights-cuda/Scripts/python.exe"
 CONV_PY="$HOME/.venvs/llama-convert/Scripts/python.exe"   # transformers 4.57.6 pinned by llama.cpp (findings F27)
