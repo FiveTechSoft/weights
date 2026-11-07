@@ -401,3 +401,31 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Tooling: `model_report` hid `mtp.*` on both sides and did not report the loss. It now lists hidden parts present
   on one side only, and tells a model on another base (Arete-27B on Qwen3.8-27B) that the Qwen3.5-9B atlas does not
   apply by direction. Tests: `TestHiddenParts`, `TestAtlasFromAnotherBase`.
+
+## F29. A small training moves along a narrow lane set by task and data, not by the seed (measured, 2026-11-07, H6)
+- Qwen3.5-0.8B, 3×3 products, 500 AdamW steps in 10 chunks, 3 seeds (data orders). Per chunk, ~89-93 % of the
+  increment's energy is in 5 % of its directions; consecutive increments overlap ~0.68 (top-16).
+- Cumulative change, cross-seed overlap (top-16, median over matrices): 0.72-0.74 at chunk 1, 0.79-0.80 at chunk 10;
+  chance 0.016. Read-side matrices (in_proj_qkv, gate, in_proj_z, q, up) overlap more than write-side (out_proj, down,
+  o, k, v).
+- Weights move most in chunks 1-3, when accuracy does not move; accuracy rises in chunks 4-10 with ever smaller
+  increments. Results §40.1.
+
+## F30. Extrapolating the first frames does not continue the training (measured, 2026-11-07, H6 E_k)
+- W0 + α·C_k, k ∈ {1, 2}: dev picks α = 1 in all 6 runs; α ≥ 2 collapses accuracy. Recovery −0.05..0.07, no better
+  than a norm-matched random change. The early change is in the lane but does not carry the skill. Results §40.2.
+
+## F31. The lane of OTHER runs carries the skill: projecting one seed's change on it keeps all of it (measured, 2026-11-07, H6 stage 1)
+- Rank 20 per matrix (2 %) recovers 0.91 of the skill (own SVD) and 0.92 (lane of the other two seeds); rank 51: ~1.0.
+- From r = 20 up, the other seeds' lane does as well as or better than the seed's own SVD, with less energy, less
+  interference and less forgetting; at r = 102 it beats the full training (R 1.06). What the seeds share is the
+  skill; what is seed-specific is mostly noise.
+- The norm-matched random control is hard (it projects ΔW itself): M2 beats it by 12-14 points, p < 1e-13, short of
+  the pre-registered 20-point margin (H6b fails). Caveat: G2 missed (+23 points, not 30). Results §40.3.
+
+## F32. One gradient cannot replace the training, even inside the lane (measured, 2026-11-07, H6e)
+- Summed gradient over 512 examples at M0, rescaled globally to a fraction of a real training's norm: at the smallest
+  scale tried every arm is below M0 (0-1.6 %); sign-of-gradient projected on the lane is least bad (12-14 %).
+- The lane gives where; the per-direction amounts come from the optimizer over the whole training. Likely cause: a
+  raw gradient puts its norm in few matrices/directions, Adam equalises per coordinate. Tested next in H6f.
+  Results §40.4.

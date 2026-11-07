@@ -1437,3 +1437,70 @@ Lectura:
 - Una comparación justa del todo cuantizaría MiMo por el mismo camino que A0.
 - Para H4, cualquier perturbación puede mover el número de cortes. Por eso el criterio que cuenta es A1 frente a
   A2, el control aleatorio del mismo tamaño.
+
+### 39.7 H4 cerrado: el carril compartido no corta más bucles que el control (2026-11-07)
+- A0 (base, nuestra Q6_K): 24 cortadas de 100. A1 (direcciones compartidas, k=8): 18. Criterio 1 pedía ≤ 14:
+  **falla**.
+- A2 (control aleatorio del mismo tamaño) parado por el usuario en 36/100 para pasar a H6; el parcial se conserva en
+  `lab/runs/h4/`. Sin A2 completo no hay comparación A1 frente a A2.
+- Con §39.6 (la cuantización sola mueve ~12 cortes), una diferencia de 6 no se puede atribuir a las direcciones.
+
+## 40. H6: un entrenamiento pequeño fotograma a fotograma, y cuánto de él se puede reutilizar (2026-11-07)
+Plan y addenda: `lab/probes/delta_patterns/h6_plan.md`. Código: `lab/probes/h6/` (30 tests en `tests/test_h6.py`).
+Qwen3.5-0.8B, multiplicación 3×3 con 3 ejemplos en el prompt, 500 pasos AdamW (10 tramos de 50, batch 40, lr 3e-6
+con warmup y coseno), solo las matrices 2-D de las capas (497.6 M). Tres semillas = tres órdenes de datos.
+**Aviso: G2 no se cumple** (+23 puntos, se pedían 30); se siguió por decisión del usuario (addendum c).
+
+### 40.1 La película (fase 0)
+| Tramo | test_id s1 / s2 / s3 | norma del incremento | rango efectivo (mediana) |
+|---|---|---|---|
+| 0 | 28.3 / 28.3 / 28.3 | | |
+| 1 | 29.1 / 29.8 / 28.2 | 0.30 | 30 |
+| 5 | 37.1 / 33.8 / 36.5 | 0.18 | 32 |
+| 10 | 51.2 / 51.2 / 51.4 | 0.005 | 18 |
+
+- Los primeros tramos mueven más los pesos y no enseñan nada; la precisión sube en los tramos 4-10.
+- Cada incremento: ~89-93 % de su energía en el 5 % de sus direcciones; solapa ~0.68 con el anterior.
+- Mismo subespacio en las tres semillas (top-16, mediana): 0.72-0.74 en el tramo 1, 0.79-0.80 en el 10; azar 0.016.
+- Problema a problema: de ~280 nuevos aciertos por semilla, 181 en común entre s1 y s2 (independientes: ~107).
+- Interferencia: 3×2 baja de 74 % a 55-60 %; NLL de GSM8K sube 1.321 → 1.327-1.331.
+- Dentro de un fotograma (sketches, semilla 1): en el tramo 1 los primeros 10 pasos cubren 0.40 de la dirección final;
+  en el tramo 10, 0.82.
+
+### 40.2 Brazo 1: prolongar los primeros fotogramas (E_k = W0 + α·C_k): falla
+- En las 6 corridas (k = 1, 2; 3 semillas) dev elige α = 1. α = 2 deja dev en 4-7 %; α ≥ 3, en 0-1.5 %.
+- Recuperación −0.05 a 0.07 (umbral 0.7); ninguna semilla gana al control aleatorio de la misma norma (p 0.07-0.69).
+
+### 40.3 Brazo 2: ¿cuánto del cambio hace falta, y sirve el carril de otras semillas? (fase 1)
+Recuperación media de 3 semillas (R = 1: el entrenamiento completo):
+
+| r | M2 (SVD propia) | X (carril de las otras dos) | M3 (aleatorio, misma norma) |
+|---|---|---|---|
+| 10 | 0.71 | 0.72 | 0.24 |
+| 20 | 0.91 | 0.92 | 0.35 |
+| 51 | 0.99 | 1.01 | 0.48 |
+| 102 | 1.01 | 1.06 | 0.64 |
+| 256 | 0.97 | 1.02 | 0.82 |
+
+- **H6a:** r90 = 20 (0.907, en el borde). Se predijo 51-102.
+- **H6b, falla:** M2_20 gana a M3_20 por 12-14 puntos (p < 1e-13), no por los 20 pedidos. M3 proyecta el propio ΔW
+  en direcciones aleatorias y lo reescala, así que conserva parte de la señal.
+- **H6c, pasa:** X_20 recupera 1.02 × M2_20 (umbral 0.8) y gana a M3_20 con p < 1e-13 en cada semilla.
+- X gana a M2 con menos energía, menos interferencia en 3×2 (59-62 % frente a 55-60 %) y menos olvido de GSM8K.
+  X_102 supera al entrenamiento completo (52.8 / 53.1 / 52.1 %).
+- Comprobaciones: el modelo reconstruido = el entrenado, ítem a ítem (3 semillas); los dos correctores coinciden en
+  todos los brazos.
+
+### 40.4 Brazo 3: un gradiente en lugar del entrenamiento (H6e): falla
+Gradiente de 512 ejemplos en M0, reescalado a α × la norma de un entrenamiento real (de las otras semillas).
+Con la escala más pequeña (α = 0.25) todo queda por debajo de M0: G_full y G_20 en 0-0.1 %, GX_20 en 1.1-1.6 %,
+SX_20 (signo, en el carril) en 12-14 %. Recuperación −1.23 a −0.62. El carril reduce el daño (NLL de GSM8K 1.317
+frente a 1.366) pero no da la magnitud.
+
+### 40.5 Lectura
+- Un entrenamiento pequeño sigue un carril estrecho que fijan la tarea y los datos, no la semilla.
+- El carril dice **dónde**; el cuánto por dirección lo construye el optimizador a lo largo de todo el entrenamiento.
+  Ni el primer fotograma ni un gradiente lo dan.
+- Lo común entre semillas es la habilidad; lo propio de cada una es sobre todo ruido.
+- Siguiente: H6f, coeficientes dentro del carril (addendum d del plan).
+- Límites: una tarea, un modelo de 0.8B, G2 no cumplido.

@@ -295,3 +295,31 @@ X_r as registered, r ∈ {10, 20, 51, 102, 256}). 3. Synthetic update (H6e, belo
 - **Pass (H6e, as registered):** recovery of G_r ≥ 0.5 averaged over seeds and G_r beats M3_r* with McNemar p < 0.01
   in each seed. Same criteria applied separately to G^X_r (reported as H6e-X).
 - **Prediction:** G_r fails (0.1-0.3). G^X_r does better than G_r but stays below 0.5 (0.2-0.45). Confidence: low.
+
+## Addendum 2026-11-07 d: H6f, the amounts inside the lane (after E_k, stage 1 and H6e results; before any H6f code ran)
+**Why.** Stage 1: the lane of the other two seeds (X basis, r = 20) holds the skill (H6c passes, R 0.92). H6e: a
+raw gradient rescaled globally breaks the model even inside the lane. Open question: how to get the per-direction
+amounts without the full training. Lane everywhere below = X basis, r = 20, from the two seeds other than s.
+
+**H6f-a, a shaped one-shot update (no optimizer steps; same 512-example gradient G as H6e, already on disk).**
+- Per matrix n: d_n = −G_n (or sign(−G_n)) projected on the lane, then rescaled to α × ν_n, ν_n = mean over the other
+  two seeds of |ΔW_t,n projected on the lane|. Per-matrix norms come from other runs, never from seed s.
+- Arms: GXm_20 (gradient, per-matrix norm), SXm_20 (sign, per-matrix norm).
+- α ∈ {0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1}, chosen on dev.
+- **Pass:** recovery ≥ 0.5 averaged over seeds, and beats M3_20 with McNemar p < 0.01 in each seed.
+- **Prediction:** both fail, recovery 0.0-0.3, but neither falls below M0 at the chosen α. Confidence: low.
+
+**H6f-b, train only the amounts (coefficients) inside the lane.**
+- ΔW_n = U_n C_n on the smaller side (U_n: lane basis, fixed; C_n: 20 × larger side, init 0). Trainable: the C_n,
+  ~2 % of the 497.6 M trained parameters.
+- Same loop as train.py (data order of seed s, batch 40, bf16 autocast, fp32 master). The full-weight gradient is
+  projected: ∂L/∂C_n = U_nᵀ ∂L/∂W_n (on the matching side); AdamW on C; W_n = W0_n + U_n C_n copied after each step.
+- Budgets: 50, 100, 200 steps (one cosine schedule over 200 steps, 10 % warmup; evaluated at 50 and 100 on the way).
+- lr: chosen once on seed 1 dev at 50 steps from {3e-6, 1e-5, 3e-5, 1e-4}, then fixed for all seeds and budgets.
+- Control R: the same procedure with a random orthonormal 20-dim basis per matrix (seed fixed).
+- **Pass:** at 100 steps (1/5 of the training's steps), recovery ≥ 0.9 averaged over seeds, and beats R with
+  McNemar p < 0.01 in each seed. Also reported: 50 and 200 steps, ood, retention NLL, time per step.
+- **Prediction:** passes at 200 steps, borderline at 100 (0.7-1.0); R at 0.2-0.5. Confidence: low.
+
+**Caveat carried over:** G2 missed (+23 points). Recovery within ±0.1 of a threshold is reported as inconclusive.
+**Order:** H6f-a (≈15 min/seed), then the lr probe, then H6f-b (≈30-40 min per seed per arm).
