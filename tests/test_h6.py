@@ -225,5 +225,59 @@ class TestSynth(unittest.TestCase):
         self.assertEqual(synth.pick_alpha({1: 0.3, 2: 0.5, 3: 0.5, 5: 0.1}), 2)
 
 
+class TestTransfer(unittest.TestCase):
+    """Stage 1 arms (h6_plan.md + addendum c): M2_r svd, M3_r random rescaled, X_r lane of the other seeds."""
+
+    def setUp(self):
+        self.g = torch.Generator().manual_seed(11)
+
+    def test_project_with_top_svd_is_eckart_young(self):
+        import transfer as tr
+        for shape in ((30, 12), (12, 30)):
+            D = torch.randn(shape, generator=self.g)
+            U = tr.top_basis(D, 4)
+            P = tr.project(D, U)
+            Uf, S, Vh = torch.linalg.svd(D, full_matrices=False)
+            ref = Uf[:, :4] @ torch.diag(S[:4]) @ Vh[:4]
+            self.assertTrue(torch.allclose(P, ref, atol=1e-4), shape)
+            self.assertEqual(U.shape, (12, 4))
+
+    def test_full_basis_is_identity(self):
+        import transfer as tr
+        D = torch.randn(20, 8, generator=self.g)
+        self.assertTrue(torch.allclose(tr.project(D, tr.top_basis(D, 8)), D, atol=1e-4))
+
+    def test_random_basis_orthonormal_and_deterministic(self):
+        import transfer as tr
+        Q = tr.random_basis(16, 5, seed=3)
+        self.assertTrue(torch.allclose(Q.T @ Q, torch.eye(5), atol=1e-5))
+        self.assertTrue(torch.equal(Q, tr.random_basis(16, 5, seed=3)))
+
+    def test_lane_basis_finds_shared_directions_of_other_runs(self):
+        import transfer as tr
+        shared = torch.linalg.qr(torch.randn(16, 3, generator=self.g))[0]
+        mk = lambda: shared @ torch.randn(3, 50, generator=self.g) + 0.01 * torch.randn(16, 50, generator=self.g)
+        Da, Db = mk(), mk()                       # (16 x 50): small side = rows
+        L = tr.lane_basis(Da, Db, 3)
+        self.assertGreater(fp.overlap(L, shared), 0.99)
+        self.assertEqual(tr.lane_basis(Da.T, Db.T, 3).shape, (16, 3))
+        own = mk()
+        self.assertGreater(float(tr.project(own, L).norm() / own.norm()), 0.99)
+
+    def test_rescale_to(self):
+        import transfer as tr
+        A = torch.randn(5, 5, generator=self.g)
+        self.assertAlmostEqual(float(tr.rescale_to(A, 2.5).norm()), 2.5, places=5)
+
+
+class TestGradOnce(unittest.TestCase):
+    def test_global_rescale(self):
+        import grad_once as go
+        d = {"a": torch.ones(2, 2), "b": 2 * torch.ones(1, 3)}
+        out = go.global_rescale(d, 10.0)
+        self.assertAlmostEqual(sum(float(v.pow(2).sum()) for v in out.values()) ** 0.5, 10.0, places=4)
+        self.assertAlmostEqual(float(out["b"][0, 0] / out["a"][0, 0]), 2.0, places=5)
+
+
 if __name__ == "__main__":
     unittest.main()
