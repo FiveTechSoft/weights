@@ -1,0 +1,7 @@
+experiment h4_A1_shared:
+objective: H4 arm A1 (h4_plan.md). Base + projection of the MiMo delta on the 16 residual directions MiMo shares with NeoHorse, alpha 1, all layer matrices.
+budgets:
+    allow_write = true
+    max_modified_weights = 9000000000
+steps:
+    step subspace_transfer tensors=model.layers.* source=hf_cache/mimo-distill-hf basis=shared:lab/runs/delta_patterns/sig_mimo.pt,lab/runs/delta_patterns/sig_neohorse.pt k=16 alpha=1.0 out=hf_cache/h4/A1-hf
