@@ -126,3 +126,12 @@ task after k of its own steps, k ∈ {10, 25, 50}.
 - **mod3_1:** b ∈ {3, ..., 19} instead of {3, ..., 9}. The old space (6 300 questions) cannot hold 8 703 distinct
   items. The precheck's 16 % no longer applies; G1 on the test set decides.
 - **Basis:** U_n = random_basis(d, 20, seed = 70 000 + index of the matrix in sorted order). Identical for every task.
+
+## Addendum 2026-11-08 b (code details fixed before any H7 trajectory finished)
+- C_k/2 uses the nearest stored snapshot: k = 10 → 5, k = 25 → 10, k = 50 → 25 (25 is k, so the "half" is 10 → 25
+  would repeat; the mapping is fixed as listed).
+- P_mlp training: 200 000 random coordinates per training task. Features 1-4 are divided by their std over those
+  rows, and the target by its std. Adam lr 1e-3, 2 000 steps of batch 4 096, seed 0.
+- B_k: for k = 25 and 50 the test evaluation logged during training (fp32 C). For k = 10, the fp16 snapshot C_10
+  evaluated afterwards. Predictions are built from the fp16 snapshots and moments.
+- The McNemar comparison for the pass rule counts only wins (predictor better than B_25 with p < 0.01).

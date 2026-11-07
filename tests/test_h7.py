@@ -87,5 +87,70 @@ class TestRunPieces(unittest.TestCase):
             self.assertEqual(U1[n].shape[0], min(shapes[n]))
 
 
+class TestPredict(unittest.TestCase):
+    def setUp(self):
+        self.g = torch.Generator().manual_seed(5)
+
+    def test_features_shape_and_adam_ratio(self):
+        import predict as pr
+        Ck, Ch, m, v = (torch.randn(4, 3, generator=self.g) for _ in range(4))
+        v = v.abs()
+        X = pr.features(Ck, Ch, m, v)
+        self.assertEqual(tuple(X.shape), (12, 5))
+        self.assertTrue(torch.allclose(X[:, 3], (m / (v.sqrt() + 1e-8)).flatten()))
+        self.assertTrue(torch.all(X[:, 4] == 1))
+
+    def test_fit_lin_recovers_planted_rule(self):
+        import predict as pr
+        w = torch.tensor([3.0, -1.0, 0.5, 0.0, 0.2], dtype=torch.float64)
+        acc = pr.LinAcc()
+        for _ in range(3):
+            X = torch.randn(1000, 5, generator=self.g, dtype=torch.float64)
+            X[:, 4] = 1
+            acc.add(X, X @ w)
+        self.assertTrue(torch.allclose(acc.solve(), w, atol=1e-6))
+
+    def test_alpha_scale(self):
+        import predict as pr
+        Ck = {"a": torch.ones(2, 2)}
+        self.assertAlmostEqual(pr.alpha_scale(Ck, {"a": 3 * torch.ones(2, 2)}), 3.0, places=6)
+
+    def test_k_half(self):
+        import predict as pr
+        import run_task as rt
+        snaps = set(rt.snapshot_steps(200))
+        for k in pr.KS:
+            self.assertIn(pr.K_HALF[k], snaps)
+            self.assertIn(k, snaps)
+
+    def test_r_traj(self):
+        import predict as pr
+        self.assertAlmostEqual(pr.r_traj(0.4, 0.2, 0.6), 0.5)
+
+
+class TestGeometry(unittest.TestCase):
+    def test_temporal_shares_of_a_straight_path_is_one_mode(self):
+        import geometry as ge
+        d = torch.randn(50, generator=torch.Generator().manual_seed(0))
+        traj = [t * d for t in (0.1, 0.3, 0.7, 1.0)]
+        sh = ge.temporal_shares(traj)
+        self.assertAlmostEqual(sh[0], 1.0, places=5)
+
+    def test_temporal_shares_of_a_turn_needs_two_modes(self):
+        import geometry as ge
+        a, b = torch.eye(4)[0], torch.eye(4)[1]
+        sh = ge.temporal_shares([a, a + b, b * 2])
+        self.assertLess(sh[0], 0.95)
+        self.assertAlmostEqual(sh[1], 1.0, places=5)
+
+    def test_cos_matrix(self):
+        import geometry as ge
+        A = {"x": torch.tensor([1.0, 0.0])}
+        B = {"x": torch.tensor([0.0, 2.0])}
+        M = ge.cos_matrix({"a": A, "b": B, "c": A})
+        self.assertAlmostEqual(M["a"]["b"], 0.0)
+        self.assertAlmostEqual(M["a"]["c"], 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()
