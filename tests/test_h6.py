@@ -286,5 +286,68 @@ class TestGradOnce(unittest.TestCase):
         self.assertAlmostEqual(float(out["b"][0, 0] / out["a"][0, 0]), 2.0, places=5)
 
 
+class TestH6f(unittest.TestCase):
+    """H6f (h6_plan.md addendum d): shaped one-shot update and lane-coefficient training."""
+
+    def setUp(self):
+        self.g = torch.Generator().manual_seed(21)
+
+    def test_shaped_update_has_per_matrix_norm_and_lies_in_lane(self):
+        import h6f
+        import transfer as tr
+        G = {"a": torch.randn(30, 12, generator=self.g), "b": torch.randn(12, 40, generator=self.g)}
+        lane = {n: tr.random_basis(12, 4, seed=i) for i, n in enumerate(G)}
+        nu = {"a": 0.3, "b": 2.0}
+        for use_sign in (False, True):
+            d = h6f.shaped_update(G, lane, nu, alpha=0.5, use_sign=use_sign)
+            for n in G:
+                self.assertAlmostEqual(float(d[n].norm()), 0.5 * nu[n], places=5)
+                self.assertTrue(torch.allclose(tr.project(d[n], lane[n]), d[n], atol=1e-5))
+        d = h6f.shaped_update(G, lane, nu, alpha=1.0, use_sign=False)
+        cos = float((d["a"] * -G["a"]).sum() / (d["a"].norm() * G["a"].norm()))
+        self.assertGreater(cos, 0)                          # a descent direction
+
+    def test_lane_norm(self):
+        import h6f
+        import transfer as tr
+        U = tr.random_basis(12, 3, seed=0)
+        D1 = U @ torch.randn(3, 20, generator=self.g)      # fully in the lane
+        D2 = torch.randn(12, 20, generator=self.g)
+        nu = h6f.lane_norm([D1, D2], U)
+        ref = (float(D1.norm()) + float(tr.project(D2, U).norm())) / 2
+        self.assertAlmostEqual(nu, ref, places=5)
+
+    def test_coefficient_gradient_is_the_chain_rule(self):
+        import h6f
+        import transfer as tr
+        for shape in ((30, 12), (12, 30)):
+            d = min(shape)
+            U = tr.random_basis(d, 4, seed=1)
+            W0 = torch.randn(shape, generator=self.g)
+            X = torch.randn(7, shape[1], generator=self.g)
+            C = torch.zeros(h6f.coef_shape(shape, 4), requires_grad=True)
+            loss = ((W0 + h6f.coef_apply(U, C, shape)) @ X.T).sin().sum()
+            loss.backward()
+            W = (W0 + h6f.coef_apply(U, C, shape)).detach().requires_grad_(True)
+            (W @ X.T).sin().sum().backward()
+            self.assertTrue(torch.allclose(h6f.coef_grad(W.grad, U, shape), C.grad, atol=1e-5), shape)
+
+    def test_coef_apply_lies_in_lane(self):
+        import h6f
+        import transfer as tr
+        for shape in ((30, 12), (12, 30)):
+            U = tr.random_basis(12, 4, seed=2)
+            C = torch.randn(h6f.coef_shape(shape, 4), generator=self.g)
+            D = h6f.coef_apply(U, C, shape)
+            self.assertEqual(tuple(D.shape), shape)
+            self.assertTrue(torch.allclose(tr.project(D, U), D, atol=1e-5))
+
+    def test_schedule_warmup_ten_percent_then_cosine(self):
+        import h6f
+        self.assertAlmostEqual(h6f.lr_at(0, 200, 1e-4), 1e-4 / 20)
+        self.assertAlmostEqual(h6f.lr_at(19, 200, 1e-4), 1e-4)
+        self.assertLess(h6f.lr_at(199, 200, 1e-4), 1e-6)
+
+
 if __name__ == "__main__":
     unittest.main()
