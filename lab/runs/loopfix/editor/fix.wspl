@@ -1,0 +1,21 @@
+experiment loopfix_L5H3_anticopy:
+
+    theoretical_foundation:
+        Greedy loops are locked in by a long-range copying head (layer 5, head 3) that attends to what followed
+        the matching context in earlier cycles and pushes the same next character. Flip its two loop-carrying
+        value directions so it suppresses, instead of reinforces, verbatim repetition.
+
+    objective:
+        halve_greedy_loop_rate_with_val_nll_cost_below_0.01
+
+    budgets:
+        max_modified_weights = 107000
+        allow_write = true
+
+    steps:
+        # u = unit vector supported on the 64 V rows of head 3 (rows 960..1023 of c_attn, 1152 x 384).
+        # project_out with alpha=3: W <- W - 3 u (u^T W) on those 64 rows, all 384 columns, i.e. the head's
+        # value output along u is scaled by 1 - 3 = -2. Directions u0 and u1 are orthonormal, so the two steps
+        # compose to a rank-2 sign flip (x -2). 64 x 384 = 24,576 weights change in total.
+        step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/fix_L5H3_V_loopdir0.npz alpha=3 top_rows=64 top_cols=1.0
+        step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/fix_L5H3_V_loopdir1.npz alpha=3 top_rows=64 top_cols=1.0

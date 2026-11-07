@@ -143,6 +143,21 @@ class TestLanguageChecks(unittest.TestCase):
         self.assertGreater(res["ci95_low"], 0.0)
         self.assertEqual(res["verdict"], "PASSES")
 
+    def test_tiny_gain_is_not_long_context(self):
+        """A real but negligible effect, like float32 noise, must not count as using long context."""
+        rng = random.Random(9)
+        period = "".join(rng.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(64))
+
+        class Faint(lm.ByteCodec):
+            def logits(self, x):
+                out = torch.zeros(x.shape[0], x.shape[1], 256)
+                out[torch.arange(x.shape[0]), -1, x[:, 0]] = 0.005
+                return out
+
+        res = lm.check_long_context(Faint(), period * 20, short=8, long=64, n=200)
+        self.assertGreater(res["ci95_low"], 0.0)
+        self.assertEqual(res["verdict"], "FAILS")
+
     def test_position_only_model_has_no_long_context_gain(self):
         """Position embeddings alone must not look like use of long context."""
 
@@ -184,6 +199,19 @@ class TestLanguageChecks(unittest.TestCase):
         model = lm.NGramModel(self.train, order=5)
         res = lm.check_generation(model, prompt=self.test_text[:50], train_text=self.train, n_new=200)
         self.assertGreaterEqual(res["known_word_rate"], 0.5)
+
+
+class TestCorpusSplit(unittest.TestCase):
+    TEXT = "".join(chr(97 + i % 26) for i in range(1000))
+
+    def test_baseline_excludes_whole_holdout_not_just_eval_slice(self):
+        train, test = lm.split_corpus(self.TEXT, holdout_frac=0.2, eval_chars=50)
+        self.assertEqual(train, self.TEXT[:800])
+        self.assertEqual(test, self.TEXT[-50:])
+
+    def test_eval_slice_must_fit_inside_holdout(self):
+        with self.assertRaises(ValueError):
+            lm.split_corpus(self.TEXT, holdout_frac=0.01, eval_chars=50)
 
 
 class TestICL(unittest.TestCase):

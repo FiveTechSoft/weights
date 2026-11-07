@@ -14,7 +14,7 @@
 
 $$\mathcal{W} \in \mathbb{R}^{D_{\text{model}} \times D_{\text{out}}} \quad \text{encodes a structured, decomposable computer program.}$$
 
-**WSP-Lang** is the domain-specific declarative programming language designed to query, decompile, steer, and surgically mutate neural network weights in quantized formats (such as GGUF `Q6_K` and `BF16`) with:
+**WSP-Lang** is the domain-specific declarative programming language designed to query, decompile, steer, and edit neural network weights in quantized formats (such as GGUF `Q6_K` and `BF16`) with:
 1. **Zero forward passes** required for weight inspection and semantic decompilation.
 2. **Deterministic, falsifiable hypothesis definitions** (every program declares its hypothesis, budget, and validation threshold).
 3. **Hardware safety & physical barriers** (`FORBIDDEN_TENSORS` and pre-execution validation gates).
@@ -190,6 +190,46 @@ Applies Covariance-Aligned Steering (Dreaming Technique 16) by adding or subtrac
 
 ---
 
+### 5.6. Studying improved models (added 2026-11-06)
+Ops to learn what a fine-tune changed and to move another model along it. Model arguments are directories or files
+of safetensors; multimodal (`model.language_model.*`) and text-only (`model.*`) Qwen3.5 names are lined up. Tensors
+are read one at a time (a 9B model never sits in memory twice). Reports and signatures are never weight files and
+never land inside an input model.
+
+```wspl
+step delta_stats base=<model> model=<model> [tensors=<glob>] [out=<report.json>]
+step delta_signature base=<model> model=<model> out=<sig.pt> [k=16] [sketch=4096] [tensors=<glob>]
+step delta_compare a=<sig.pt> b=<sig.pt> [factor=3] [out=<report.json>]
+step evaluate_benchmark endpoint=<port|URL> name=<label> [gsm8k=100] [math500=50] [max_tokens=8192] [out=<report.json>]
+step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<a.pt>,<b.pt>|random k=16 alpha=1.0 [seed=0] out=<dir>
+step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true] [nonweights=true] out=<report.md>
+```
+
+* `delta_stats`: per tensor, ||ΔW||/||W||, cosine, changed fraction, spectrum of ΔW (top-1 energy, stable rank),
+  moved embedding rows; totals per tensor family and per layer.
+* `delta_signature`: per tensor, the top-k singular vectors of ΔW on its smaller side, its alignment with the base
+  weight's own top-k subspace, and a count-sketch of ΔW, so pairs can be compared after the weights are deleted.
+* `delta_compare`: per tensor type, same-layer subspace overlap against the same type at other layers (structured
+  null) and against chance k/d; `H3` true when both ratios are >= `factor`.
+* `evaluate_benchmark`: GSM8K / MATH-500 with one fixed protocol (greedy, the model's chat template, the boxed
+  answer graded by two independent graders) against a server that is already running (e.g. llama-server).
+* `model_report`: how a model differs from its base and what is usable, in under a minute for a 9B model read from
+  Hugging Face without downloading it. Reads one block of rows per tensor (16 HTTP ranges in flight), classifies
+  the change (`identical`, `directional_ablation` with layer range and global or per-layer directions, `lora_like`
+  with modules and rank, `full_fine_tune`), shows the card's declared base, license and method words (not trusted),
+  the closest studied models of the delta atlas, and what can be reused and how. `base` defaults to the card's
+  base_model. Validated on 6 models whose change is known (lab/runs/model_report/validation.json).
+  Outside the weights (`nonweights=true`): config (real changes vs cosmetic: library version, moved keys, absent
+  vs None), tokenizer (vocab, merges, added tokens, normalizer, pre-tokenizer, decoder), chat template, and an
+  encode test on 14 scripts that names where text tokenizes differently from the base (findings F25).
+* `subspace_transfer`: W' = W + α · P_S(W_source − W_base), the projection on the smaller side. Writes a complete
+  model to `out=` (unchanged shards copied, configs copied); every changed shard goes through the write guard with a
+  total budget; protected tensors need `unlock_tensors`; on failure the partial output is removed. Provenance
+  `synthetic_transfer`, with the source, basis, k and α, is stored in each shard: the op runs no gradient, but the
+  update it moves along came from a trained model.
+
+---
+
 ## 6. Security Model & Runtime Guardrails
 
 WSP-Lang enforces a multi-layer defense-in-depth model to prevent accidental model corruption:
@@ -208,6 +248,23 @@ Any step attempting a `poke` or `scale` on a protected tensor is immediately blo
   "error": "SECURITY POLICY REJECTION: Tensor 'output.weight' is protected from direct edit."
 }
 ```
+
+### 6.1b. Write guard (enforced since 2026-11-05)
+Every op that writes weights goes through one check, `guard_model_write` in `engine/wsplang.py`
+(tests: `tests/test_wsp_write_guard.py`). Before this, only `project_out`, `project_in` and `delta_unlearn`
+applied budgets and protected tensors, and several ops overwrote the model they read
+(`lab/audit/README.md`).
+* An edit never overwrites the model it read. It writes to `out=<file>` or `--out-dir`; without either it
+  is an error. A file written earlier by the same run may be edited in place.
+* The edited file keeps the source's tensor names, shapes and dtypes. Added, dropped or reshaped tensors
+  are refused.
+* Changed elements must be `<= max_modified_weights`, and max |delta| must be `<= max_delta_norm`. Both are
+  measured on the file about to be written. Simulations (`allow_write = false`) run the same check.
+* Protected tensors (the list above, plus names containing `embed`, `lm_head`, `wte`, `ln_f`, `norm.weight`)
+  change only when the program lists them: `unlock_tensors = lm_head.weight, output.weight` under `budgets:`.
+* `export_control_vector` writes only with `allow_write = true`.
+* A failed assertion gets status `assertion_failed`. The CLI exits with code 1 when any step has status
+  `error`, `security_rejection` or `assertion_failed`.
 
 ### 6.2. Strict Validation Gate
 The runtime validates all AST nodes before passing the plan to the execution engine. If `errors > 0`:
@@ -247,7 +304,7 @@ sequenceDiagram
 1. `execute_wsplang_code(code, gguf)`: In-memory declarative execution.
 2. `run_wsplang(program_path, execute, gguf)`: File-based declarative execution.
 3. `peek_weight(gguf, tensor, row, col, top)`: Read-only anatomical inspection.
-4. `poke_weight(gguf, tensor, row, col, value, out)`: Safe surgical weight modification.
+4. `poke_weight(gguf, tensor, row, col, value, out)`: Guarded single-weight modification.
 5. `get_semantic_areas(gguf, tensor, row, col)`: Centroid map and projection.
 6. `run_agent_loop_probe(endpoint, alias, n, ...)`: Agentic tool-call loop benchmarking.
 7. `run_logic_probe(endpoint, n, seed)`: Deterministic synthetic Horn-logic verification.

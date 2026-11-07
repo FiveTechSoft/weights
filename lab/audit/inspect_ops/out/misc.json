@@ -1,0 +1,90 @@
+{
+  "behav_rand_1337": {
+    "measured_perplexity": 314.67,
+    "verdict": "VIOLATION",
+    "status": "ok",
+    "state": "simulated"
+  },
+  "behav_rand_7": {
+    "measured_perplexity": 314.67,
+    "verdict": "VIOLATION",
+    "status": "ok",
+    "state": "simulated"
+  },
+  "behav_als_adam_trained": {
+    "measured_perplexity": 314.67,
+    "verdict": "VIOLATION",
+    "status": "ok",
+    "state": "simulated"
+  },
+  "behav_nanowsp3_pretrained": {
+    "measured_perplexity": 12.48,
+    "verdict": "PASSES",
+    "status": "ok",
+    "state": "simulated"
+  },
+  "behav_nanowsp3_ratio_1e-7": {
+    "verdict": "PASSES",
+    "ppl": 12.48
+  },
+  "cli_dk_max_angle_fail": {
+    "exit_code": 0,
+    "stdout_tail": [
+      "",
+      "> Step: assert_davis_kahan transformer.h.0.mlp.c_proj.weight vector=C:/weights/lab/audit/inspect_ops/out/u64.npz alpha=1.0 max_angle_deg=0.001 [status: error]",
+      "  Error: MAX ROTATION ANGLE EXCEEDED: empirical rotation 26.4527 deg > max allowed 0.0010 deg"
+    ]
+  },
+  "cli_behav_violation": {
+    "exit_code": 0,
+    "stdout_tail": [
+      "=== WSP-Lang 0.7.0 EXECUTION RESULTS: audit_cli_behav_violation ===",
+      "",
+      "> Step: assert_behavioral_drift corpus=lab/data/shakespeare_char/input.txt max_ppl_increase=1.0 [status: ok]"
+    ]
+  },
+  "cli_missing_tensor": {
+    "exit_code": 0,
+    "stdout_tail": [
+      "=== WSP-Lang 0.7.0 EXECUTION RESULTS: audit_cli_missing_tensor ===",
+      "",
+      "> Step: audit no.such.tensor [status: error]"
+    ]
+  },
+  "gguf_spectral_audit_blk.3.ffn_down.weight": {
+    "feas_err": [
+      "op 'spectral_audit' requiere backend safetensors+torch; backend detectado='gguf'. Para GGUF usar wsp.py (subtract-direction/edit con requant)."
+    ],
+    "status": "ok",
+    "result": {
+      "status": "Spectral audit verified in GGUF block projection space"
+    }
+  },
+  "gguf_assert_weyl_blk.3.ffn_down.weight": {
+    "feas_err": [
+      "op 'assert_weyl' requiere backend safetensors+torch; backend detectado='gguf'. Para GGUF usar wsp.py (subtract-direction/edit con requant)."
+    ],
+    "status": "ok",
+    "result": {
+      "status": "Weyl inequality checked in GGUF block projection space"
+    }
+  },
+  "gguf_assert_davis_kahan_blk.3.ffn_down.weight": {
+    "feas_err": [
+      "op 'assert_davis_kahan' requiere backend safetensors+torch; backend detectado='gguf'. Para GGUF usar wsp.py (subtract-direction/edit con requant)."
+    ],
+    "status": "ok",
+    "result": {
+      "status": "Davis-Kahan theorem checked in GGUF block projection space"
+    }
+  },
+  "gguf_spectral_audit_no.such.tensor": {
+    "feas_err": [
+      "op 'spectral_audit' requiere backend safetensors+torch; backend detectado='gguf'. Para GGUF usar wsp.py (subtract-direction/edit con requant)."
+    ],
+    "status": "ok",
+    "result": {
+      "status": "Spectral audit verified in GGUF block projection space"
+    }
+  }
+}

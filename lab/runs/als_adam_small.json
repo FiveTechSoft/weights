@@ -1,0 +1,56 @@
+{
+  "val_nll_full": 1.7156,
+  "parameters": 106880,
+  "synthesis": null,
+  "gate": {
+    "L1": {
+      "nll": 1.9295,
+      "ppl": 6.886,
+      "unigram_entropy": 3.3685,
+      "baseline_order": 3,
+      "baseline_nll": 2.388,
+      "verdict": "PASSES",
+      "ngram_ladder_nll": {}
+    },
+    "L2_long_context": {
+      "short": 8,
+      "long": 64,
+      "n": 2000,
+      "mean_gain_nats": 0.0857,
+      "ci95_low": 0.0617,
+      "ci95_high": 0.11,
+      "verdict": "PASSES"
+    },
+    "GEN": {
+      "sample": "t My more king selled our a earency is I the can\nThou would for bear change. Romeo!\n\nCome of him; that's your walk a all this discorted\nThe father we would for my his head.\n\nPERTRY MORF:\nThere never a",
+      "distinct_3grams_ratio": 0.779,
+      "letters_space_share": 0.973,
+      "known_word_rate": 0.879,
+      "n_words": 58,
+      "verdict": "PASSES"
+    },
+    "L3_icl": {
+      "n": 200,
+      "acc_with_binding": 0.065,
+      "acc_without_binding": 0.055,
+      "delta": 0.01,
+      "sign_test_p": 0.625,
+      "verdict": "FAILS"
+    },
+    "verdict": "LANGUAGE_MODEL"
+  },
+  "l2_seeds_passed": 5,
+  "l2_seeds_total": 5,
+  "l2_gains": [
+    0.0857,
+    0.0817,
+    0.0894,
+    0.0829,
+    0.0973
+  ],
+  "train": {
+    "backward_calls": 5000,
+    "seconds": 51.3,
+    "tokens_seen": 20480000
+  }
+}

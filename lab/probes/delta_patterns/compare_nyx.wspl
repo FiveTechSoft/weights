@@ -1,0 +1,8 @@
+experiment compare_nyx:
+objective: Method control for F24. Does another LoRA (Nyx-RP role-play, not a degradation) share the improvements' layer-specific directions?
+steps:
+    step delta_compare a=lab/runs/delta_patterns/sig_nyx_rp.pt b=lab/runs/delta_patterns/sig_mimo.pt out=lab/runs/delta_patterns/pairs_nyx_rp_mimo.json
+    step delta_compare a=lab/runs/delta_patterns/sig_nyx_rp.pt b=lab/runs/delta_patterns/sig_neohorse.pt out=lab/runs/delta_patterns/pairs_nyx_rp_neohorse.json
+    step delta_compare a=lab/runs/delta_patterns/sig_nyx_rp.pt b=lab/runs/delta_patterns/sig_tmax.pt out=lab/runs/delta_patterns/pairs_nyx_rp_tmax.json
+    step delta_compare a=lab/runs/delta_patterns/sig_nyx_rp.pt b=lab/runs/delta_patterns/sig_fara.pt out=lab/runs/delta_patterns/pairs_nyx_rp_fara.json
+    step delta_compare a=lab/runs/delta_patterns/sig_nyx_rp.pt b=lab/runs/delta_patterns/sig_official_post.pt out=lab/runs/delta_patterns/pairs_nyx_rp_official_post.json

@@ -104,6 +104,8 @@ class TestWSPLangV7JepaWSL(unittest.TestCase):
     def test_program_validation_and_execution(self):
         code = """experiment test_v7_suite:
 model: nanowsp3
+budgets:
+    unlock_tensors = output.weight, out.weight
 steps:
     step vicreg_preserve layers.3.mlp_out.weight var_floor=0.05
     step assert_behavioral_drift max_ppl_increase=1.40
@@ -111,7 +113,7 @@ steps:
 """
         prog = parse_args_lines(code)
         steps, warnings = validate(prog)
-        self.assertEqual(len(steps), 3)
+        self.assertEqual(len([s for s in steps if "op" in s]), 3)
 
         plan = plan_run(prog, steps)
         self.assertEqual(len(plan["pasos"]), 3)
@@ -120,8 +122,12 @@ steps:
         results = execute_plan_v4(plan, prog, dry_run=True)
         self.assertEqual(len(results), 3)
         for r in results:
-            expected = "stub_result" if r["op"] == "compile_synthetic" else "ok"
-            self.assertEqual(r["status"], expected, f"Step failed: {r}")
+            if r["op"] == "assert_behavioral_drift":
+                # Its own verdict decides the status: a VIOLATION is a failed assertion, never "ok".
+                expected = "ok" if r["result"]["behavioral_drift_pass"] else "assertion_failed"
+                self.assertEqual(r["status"], expected, r)
+            else:
+                self.assertEqual(r["status"], "ok", f"Step failed: {r}")
 
 
 if __name__ == "__main__":

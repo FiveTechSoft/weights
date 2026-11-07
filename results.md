@@ -1128,3 +1128,275 @@ Límites:
 - En GPU no hay paridad bit a bit comprobada: la paridad exacta es solo en CPU. La cifra de Karpathy es de otro hardware y se compara por valor.
 - Sin `torch.compile` ni entrenamiento distribuido.
 - Datos: un archivo de texto codificado por carácter.
+
+## 30. Síntesis en forma cerrada: tabla n-grama dentro de nanoGPT (2026-11-05)
+`step synthesize` (`engine/wsp_synth.py`) calcula todos los pesos sin gradiente: la atención recupera tokens anteriores con códigos de posición Fourier, cada neurona del MLP es una entrada de tabla y `wte`/`lm_head` atados leen log-probabilidades. Cualquier cálculo de gradiente durante la compilación es un error. Los pesos reproducen la tabla Witten-Bell con error máximo de 0.0058 en log-probabilidad (orden 4, tests).
+
+Medido en val completa de Shakespeare char, con tabla ajustada solo con train. El orden se eligió en la cola de train (`lab/runs/wsp_synth_verification.json`):
+
+| Modelo | `backward` | Parámetros | NLL val | Gate |
+|---|---|---|---|---|
+| nanoGPT entrenado (§29) | 1750 | 10 745 088 | 1.4573 | LANGUAGE_MODEL |
+| Tabla compilada, MLP ancho (61 213 unidades, orden 5) | 0 | 47 725 824 | **1.6776** | FAILS (L2 = 0) |
+| Tabla compilada, forma exacta 6L/384/1536 (9216 unidades) | 0 | 10 745 088 | 1.7941 | FAILS (L2 = 0) |
+| Tabla Witten-Bell orden 5, sin compilar | 0 | - | 1.6688 | - |
+| Mejor n-grama add-k (listón) | 0 | - | 1.7463 | - |
+
+La forma exacta se carga en el `model.py` de Karpathy y da logits idénticos a los del modelo compilado (tests con 2 capas).
+
+**Lectura:** se supera el listón numérico (1.6776 < 1.7463) sin gradiente, pero **esto no es un LLM sintético real**. Es una tabla n-grama ejecutándose dentro de un transformer: no usa contexto más allá de 4 tokens, el gate la rechaza por L2 y necesita 4.4 veces los parámetros del modelo entrenado para quedar 0.22 nats peor. Con los mismos parámetros que el modelo entrenado, tampoco alcanza el listón (1.7941). El listón se fijó antes de saber que Witten-Bell lo batía por sí solo, de modo que era más fácil de lo que parecía.
+
+**Gate corregido.** El sesgo señalado en §29 queda resuelto: las líneas base se ajustan antes de todo el holdout (`lm.split_corpus`). Recalibrado: todos los controles caen donde deben, y el nanoGPT oficial 4L/128 (1.9781) ahora gana al 5-grama (2.0918) en el mismo slice. Los valores n-grama de §27 quedan obsoletos; las cifras vigentes están en `lab/runs/llmness_*.json`.
+
+**`compile_synthetic`** ahora escribe `out.weight` con `model=` y `out=`. Sobre `nanowsp3_pretrained` y `wspx_recall`: train de 1.4 % a 52.1 % (`lambda_base=30`) y a 100 % (`lambda_base=1`); holdout 10.7 %, igual al azar con 10 valores posibles. Memoriza pares y no generaliza; además parte de una base entrenada con gradiente.
+
+Límites:
+- Las primeras posiciones de cada ventana tienen contexto incompleto o erróneo, porque la atención no distingue "sin token anterior". Es una causa plausible de la diferencia entre 1.6776 y 1.6688, no cuantificada.
+- Solo orden ≤ 5 con 6 cabezas y d=384: faltan dimensiones para más posiciones de contexto.
+- Una sola corrida determinista por configuración y un solo corpus.
+
+## 31. Contexto largo sin backprop: resultado negativo (2026-11-05)
+Camino probado (`wsp_synth.compile_long_context`): tabla Witten-Bell de orden 4 en los primeros bloques, cabezas de atención que promedian clases de caracteres en ventanas antiguas, y últimos bloques con características aleatorias cuyo `c_proj` se resuelve por mínimos cuadrados sobre el residuo del softmax. Cero `backward`; el residuo se ajusta en la cola de train con una tabla ciega a ella. Forma exacta 6L/384/1536, 10 745 088 parámetros (`lab/runs/wsp_synth_long_verification.json`):
+
+| Modelo | NLL val | L2 ganancia (10 semillas) | L2 pasa | Gate |
+|---|---|---|---|---|
+| Tabla orden 5 (§30) | 1.7941 | 0 | - | FAILS |
+| Tabla orden 4 | 1.8005 | 0 | 0/10 | FAILS |
+| + 1 bloque ajustado | 1.8085 | -0.0013 a +0.0159 | 0/10 | FAILS |
+| + 2 bloques ajustados | 1.8188 | +0.0026 a +0.0206 | 0/10 | FAILS |
+| nanoGPT entrenado (referencia) | 1.4573 | +0.1110 | sí | LANGUAGE_MODEL |
+
+Conclusión: **no se alcanzó el objetivo**. Las características fijas mejoran su propia cola de train (1.9956 a 1.9880) pero empeoran val frente a la tabla, porque ocupan unidades que la tabla usaba mejor. No hay ningún modelo sin gradiente que pase el gate. La diferencia hasta 1.4573 parece requerir características aprendidas, no histogramas fijos.
+
+**Fallo del gate corregido.** Con `n=400` y `ci_low > 0`, estos modelos dieron `LANGUAGE_MODEL` en una semilla, y la tabla pura pasó L2 en 2/10 semillas por ruido float32. Regla nueva: `n=2000` y `ci_low > 0.01`, fijada solo con modelos de gradiente y controles, antes de medir síntesis: los modelos entrenados dan `ci_low` mínimo de 0.0345 y los controles una ganancia media máxima de 0.0017, en 5 semillas. Recalibrado con los resultados esperados. Vale para las cifras de L2 actuales en `lab/runs/llmness_*.json`; las de §27 y §30 quedan sustituidas.
+
+Un prototipo sin compilar sugería 1.7763 para la tabla de orden 4 con 9216 unidades, usando contexto completo. Compilada da 1.8005, así que aquella cifra no era alcanzable en estos pesos y 1.7941 sigue siendo la mejor a este tamaño. La causa de la diferencia no está cuantificada.
+
+**Corrección a §26.1.** El SHA-256 de `model.py` publicado ahí (`63d46bc...`) es del checkout de Windows con CRLF. El de upstream es `7c01703...`, comprobado contra `raw.githubusercontent.com`. Este error hizo fallar la CI en Ubuntu; el verificador ahora normaliza finales de línea. Los resultados numéricos de paridad no cambian.
+
+Límites: una configuración de características, una semilla de ajuste y un corpus. Esto descarta esta receta, no la síntesis sin gradiente en general.
+
+## 32. Representaciones en forma cerrada: resultado negativo en prototipo (2026-11-05)
+Pregunta: ¿características aprendidas de los datos sin gradiente, como SVD de coocurrencias, llegan donde no llegaron los histogramas fijos de §31? Prototipos sin compilar a pesos, en `lab/probes/`; val completa, Shakespeare char, residuos con tablas ciegas por fold.
+
+Sobre una tabla Witten-Bell de orden 4 sin límite de unidades (val 1.7738), dos bloques de 3072 unidades aleatorias ajustadas por mínimos cuadrados:
+
+| Características | NLL val |
+|---|---|
+| Clases fijas, 5 ventanas | 1.7635 |
+| SVD de caracteres r=12, 5 ventanas | 1.7647 |
+| SVD de caracteres r=32, 5 ventanas | 1.7626 |
+| SVD de caracteres en posiciones 3 a 11 | 1.7671 |
+| Dos palabras anteriores, SVD (cota superior, puede no ser calculable por nanoGPT) | 1.7509 |
+
+Tabla blanda sin tabla base (9216 plantillas de contextos reales, coincidencia parcial sobre 18 posiciones, regresión softmax convexa): val 2.2115 tras 14 iteraciones. No convergió y mejoraba unos 0.006 por iteración.
+
+Lectura:
+- SVD de caracteres no supera a las clases fijas: las diferencias son del orden del ruido entre variantes.
+- Incluso la cota superior con palabras gana solo 0.023 nats, frente a 0.32 entre la tabla y nanoGPT entrenado (1.4573).
+- Por eso no se compilaron pesos: no aportarían evidencia nueva, y la opción 1 queda sin resolver el objetivo.
+
+Límites: prototipos, no un barrido exhaustivo; una semilla; la tabla blanda no llegó a converger. No demuestra que sea imposible sintetizar en forma cerrada.
+
+## 33. Mínimos cuadrados alternados sin backprop: descartado (2026-11-05)
+Pregunta: ¿adaptar cada capa con soluciones lineales sobre objetivos calculados desde el error final, sin `backward`, se acerca a AdamW? Criterio fijado antes de medir en `lab/probes/als_criterion.md`: gate `LANGUAGE_MODEL` con L2 en ≥ 4/5 semillas y cierre ≥ 50 % de la distancia entre un control sin adaptación y AdamW. Forma pequeña: 2 capas, d=64, block 64, 4 cabezas, ff 256, Shakespeare char, val completa. Código en `lab/probes/als_*.py`; resultados en `lab/runs/als_*_small.json`.
+
+| Brazo | NLL val | Gate | L2 |
+|---|---|---|---|
+| AdamW, 5000 iteraciones, `lm_head` atado | 1.7156 | LANGUAGE_MODEL | 5/5 |
+| ALS, atado | 2.9250 | FAILS | 0/5 |
+| Control (solo matrices de salida), atado | 2.9947 | FAILS | 0/5 |
+| ALS, `lm_head` desatado (diagnóstico) | 2.5783 | FAILS | 0/5 |
+| Control, desatado (diagnóstico) | 2.6159 | FAILS | 0/5 |
+
+Cierre en el caso más favorable: (2.6159 - 2.5783) / (2.6159 - 1.7156) = 4 %. **Camino descartado.** Ninguno llega al bigrama (2.48).
+
+Lectura:
+- Con `wte` atado, el paso de lectura también cambia el embedding de entrada y deja de ser dirección de descenso. Desatar mejora, pero cambia la forma de nanoGPT.
+- La búsqueda de paso rechaza casi todas las actualizaciones de capas ocultas: los objetivos por pseudo-inversa y gelu linealizada no son direcciones de descenso. Hacerlo bien exige la transpuesta exacta del Jacobiano, es decir, backprop escrito a mano.
+- Dos arreglos probados, iguales en ambos brazos: rejilla de pasos 2^-12 a 2^6 y desatar `lm_head`.
+
+Límites: una semilla, una forma, un corpus; objetivos aproximados por diseño. Procedencia de estos pesos: `iterative_no_backprop`.
+
+## 34. Descompilador de pesos a programas WSPLang y ciclo de ida y vuelta (2026-11-05)
+Nuevo: `engine/wsp_decompile.py`, formato `.wspngram` (`docs/wspngram.md`), `step decompile` y `step synthesize table=`. Tests en `tests/test_wsp_decompile.py`.
+
+Dos descompiladores:
+- **Estructural** (`method=structural`): lee pesos escritos por `synthesize` y recupera cada entrada de la tabla solo de los pesos, sin semilla, tabla ni datos. Recompilar el programa con la misma semilla da los mismos pesos con error ≤ 1e-6 (medido 3e-8; logits 9e-5). Con otra semilla coincide con compilar la tabla original con esa semilla (< 1e-3); entre semillas el propio compilador difiere 4.8e-3 por float32. Rechaza cualquier modelo entrenado (`token embeddings are not an orthonormal readout basis`).
+- **De comportamiento** (`method=behavior`): para cualquier nanoGPT, la predicción media del modelo tras cada contexto de menos de `order` caracteres, sobre train. Pierde todo lo que el modelo calcula con contexto más antiguo.
+
+Ciclo entrenado → programa → recompilado sin gradiente (`lab/verify_wsp_decompile.py`, `lab/runs/wsp_decompile_round_trip.json`). Val completa; conservado = fracción de la ganancia del maestro sobre unigrama (entropía 3.3373). `exacta` = 6L/384/1536, 10.7 M; `ancha` = una MLP con todas las unidades.
+
+| Maestro (val) | orden 4 exacta | orden 5 exacta | orden 5 ancha | Gate |
+|---|---|---|---|---|
+| nanoGPT 10.7 M (1.4573) | 1.8064 (81 %) | 1.7810 (83 %) | 1.6347 (91 %), 47.6 M | FAILS, L2 0/3 |
+| AdamW 2L/d64, 0.1 M (1.7153) | 1.8178 (94 %) | 1.7936 (95 %) | 1.7149 (100 %), 47.2 M | FAILS, L2 0/3 |
+| Witten-Bell de los datos (control) | 1.8005 | 1.7941 | 1.6776 | FAILS |
+
+Comprobación independiente: NLL de los programas de orden 5 calculada directamente con `log_prob`, sin compilar: 1.6288 y 1.7117, frente a 1.6347 y 1.7149 compilados. La diferencia (≤ 0.006) es del orden del ruido float del compilador.
+
+Lectura:
+- Programa descompilado del nanoGPT, orden 5 ancho: 1.6347, mejor que la tabla de los datos (1.6776). El maestro suaviza mejor que Witten-Bell. Pero en la forma exacta de 10.7 M solo caben 9216 unidades y queda en 1.7810, casi igual que la tabla de datos (1.7941).
+- El 9-17 % que se pierde es justo el contexto largo: todos los recompilados dan L2 = 0 y fallan el gate, y los maestros lo pasan (ganancia L2 0.11-0.14 y 0.08-0.09).
+- El modelo pequeño cabe casi entero en un programa de orden 5 (100 % ancho), pese a que pasa L2: su uso de contexto largo aporta poco a la NLL media.
+- **Procedencia.** Un programa sacado de un modelo entrenado no es síntesis sin gradiente. El programa guarda `provenance distilled_from:gradient_descent` y el checkpoint recompilado `closed_form_compile_of:distilled_from:gradient_descent`, con `method=wspngram_program`. Una primera versión escribía `closed_form`; se corrigió antes de publicar, con test.
+
+Límites: un corpus, programas grandes (orden 5: 49 MB de texto), solo n-gramas; no hay forma de expresar atención a contexto largo en `.wspngram`.
+
+## 35. Programación de pesos a nivel de código fuente: editar un `.wspngram` (2026-11-05)
+Criterio fijado antes de medir, resultados y lectura en `lab/probes/wspngram_edit_criterion.md`; scripts `lab/probes/wspngram_edit.py` y `wspngram_edit_e2b.py`; datos en `lab/runs/wspngram_edit.json`.
+
+Se edita una línea `unit` del programa descompilado del nanoGPT (orden 5, forma exacta de 10.7 M) y se recompila sin gradiente.
+- **E1, olvidar "lord"** (`unit "lor"`, d −12): P(d | lor) 0.999 → 0.0086; cambio fuera de ese contexto exactamente 0; en muestras `lord` 15 → 0 y `Lord` intacto. **Pasa.**
+- **C4:** la línea editada es una sola columna `c_proj` (384 pesos). Editarla a mano da lo mismo que recompilar (1.9e-6).
+- **Controles:**
+  - C1 (el mismo cambio en 5 líneas al azar): no toca "lor".
+  - C2 (−12 a `d` al decodificar): consigue el objetivo pero cuesta 0.285 nats/carácter fuera.
+  - C3 (fine-tuning con gradiente del modelo entrenado, 300 pasos): P(d | lor) 0.0142, con un cambio medio de 0.32 nats por posición en todo el texto (+0.03 val).
+- **E2, intercambiar king/kind en `unit "kin"`: falla** (25/39). "kin" también termina making/taking/lacking, cuyas líneas hijas pesan más que el cambio. **E2b**, en `unit " kin"` y registrado después del fallo y antes de medir, **pasa**: 32/32, con efecto 0.0 en making/taking y en el resto.
+- **Lectura:** la edición es exacta y local porque el programa es una tabla con compuertas. El precio es el modelo: conserva el 83 % de la ganancia (1.77 frente a 1.44) y no usa contexto largo. Lo difícil es elegir el contexto, y una medición lo detectó.
+- **Comprobación:** cada cifra clave se repitió con `log_prob` sobre el programa editado, sin compilar, y coincide.
+
+## 36. Arreglar bucles editando pesos, réplica pequeña del exp. 8 de "Sparks of WSP": falla (2026-11-06)
+Criterio fijado antes de editar, tabla y lectura en `lab/probes/loopfix/criterion.md`; datos en `lab/runs/loopfix/final_test.json`.
+
+- **Defecto:** el nanoGPT entrenado entra en bucle con decodificación greedy, en el 43 % de 256 prompts de test.
+- **Edición:** la hizo un subagente sin gradientes y con presupuesto de 50 llamadas (usó 18). Son dos `project_out` en `h.5.attn.c_attn`, 24.576 pesos, aplicados por la CLI de WSPLang con el guard.
+- **Resultado:** bucles 111 → 26 de 256, con val +0.004. Pasa los criterios 1-3 y **falla el 4**: una de las 3 ediciones aleatorias (mismas posiciones, misma norma) también da 26.
+  - El empate es casualidad: solo 3 prompts en común.
+  - A posteriori, fuera del criterio, con 7 semillas más: 10 ediciones aleatorias dan 105, 108, 26, 115, 115, 103, 108, 64, 102 y 90 bucles.
+  - La edición queda la mejor o empatada de 11, evidencia débil de que su dirección importa más que "perturbar esa cabeza".
+- **Referencias:**
+  - No-repeat-ngram 20 al decodificar: 0 bucles, NLL intacta, sin tocar pesos.
+  - Temperatura 0.5: 0 bucles.
+  - Unlikelihood con gradiente: 0 bucles, a cambio de val +0.043.
+- **Lectura:** en este modelo, editar pesos no es el mejor arreglo de los bucles; una regla de decodificación lo hace gratis. Esto no refuta el exp. 8 en Qwen, pero sí exige allí el control de edición aleatoria, que el artículo no publica.
+- **Comprobación:** los conteos de bucles se repitieron regenerando el texto y usando un detector de periodicidad independiente. Coinciden.
+
+## 37. En curso: TwIL-8B frente a MiMo-9B, y diff de pesos de modelos mejorados (2026-11-06)
+Estado y siguiente paso en roadmap §4.0quater.
+
+- **Comparación de modelos** (`lab/probes/model_compare/eval.py`, datos en `lab/runs/model_compare/`).
+  - Protocolo igual para los dos: llama-server CUDA, greedy, tope de 8192 tokens nuevos, plantilla de chat de cada modelo; GSM8K = 100 primeros de test, MATH-500 = 50 con `select_indices(2026, 50)`.
+  - Dos jueces: `rig/math500.equivalent` y uno independiente. Los desacuerdos se revisan a mano.
+  - TwIL-8B (Q4_K_M, variante balanced): GSM8K 96/100, MATH-500 44/50 (88 %); 4 respuestas cortadas en el tope; 983 y 1811 tokens de media; ~47 tok/s.
+    - Los 6 desacuerdos entre jueces son de formato (5 a favor del juez principal, p. ej. `\frac43` frente a `\frac{4}{3}`; 1 a favor del independiente, "60\%").
+  - MiMo-9B (Q6_K): GSM8K 93/100, MATH-500 34/50 (68 %); 19 respuestas cortadas en el tope (4 + 15); 659 y 3254 tokens de media; ~37 tok/s. Su plantilla no fuerza el thinking: pensó en 136 de 150 problemas.
+    - Desacuerdos entre jueces, revisados a mano: los mismos casos de formato que en TwIL ("60\%" correcto; `\frac43`, `\frac 59`, `.35625` correctos según el juez principal).
+    - Los cortes no son bucles: solo 1 de 19 colas cortadas es periódica. MiMo razona más largo y el tope de 8192 lo penaliza.
+
+    | Tope 8192, greedy | TwIL-8B Q4_K_M | MiMo-9B Q6_K |
+    |---|---|---|
+    | GSM8K (100) | **96 %** | 93 % |
+    | MATH-500 (50) | **88 %** | 68 % |
+    | Cortadas en el tope | 4 | 19 |
+    | Tokens medios GSM8K / MATH | 983 / 1811 | 659 / 3254 |
+    | Velocidad (RTX 3060) | 47 tok/s | 37 tok/s |
+
+  - Lectura: con un presupuesto de 8k tokens, TwIL es claramente mejor en MATH-500 (+20 puntos), sobre todo porque termina: su variante balanced viene de un RL que premia trazas cortas. En GSM8K la diferencia (3 puntos con n = 100) no es significativa.
+  - Sesgos conocidos: TwIL va en Q4 y MiMo en Q6 (favorece a MiMo); los dos recomiendan muestrear y presupuestos de 32k, que aquí no se usan. Con 32k tokens la distancia en MATH-500 probablemente se reduciría.
+- **TwIL-8B, según su ficha:** Granite 4.2 8B (que ya es un fine-tune de granite-4.1-8b-base) + SFT completo de trazas + GRPO/DAPO (variante verbose) + RL que premia trazas cortas (variante balanced). Licencia no comercial.
+- **Herramienta de diff** (`engine/weight_diff.py`, 14 tests): compara dos checkpoints tensor a tensor sin cargar ninguno entero, en local o por rangos HTTP desde Hugging Face.
+  - La op `diff` de WSPLang ahora la usa. Antes solo leía el primer shard: en un modelo de 4 shards se saltaba en silencio unos tres cuartos de los tensores (test que falla con el código antiguo).
+
+## 38. Qué cambia un post-entrenamiento: Qwen3.5-9B → MiMo-V2.6-Distill (y NeoHorse, en curso) (2026-11-06)
+Script `lab/probes/delta_patterns/run.py`; datos en `lab/runs/delta_patterns/stats_mimo.json(l)`. Base = `Qwen/Qwen3.5-9B` en bf16 (el padre declarado de MiMo y de NeoHorse), solo el modelo de texto; 427 tensores, los mismos nombres y formas en los dos.
+
+- **Es un fine-tune completo, no una LoRA:** cambia el 97 % de los pesos, con un cambio relativo global ‖ΔW‖/‖W‖ = 9.2 %.
+- **Dónde, por tipo de tensor** (mediana sobre capas del cambio relativo):
+  - Más: `linear_attn.in_proj_b` (la β de Gated DeltaNet, cuánto escribe en memoria) 12.7 %, `mlp.gate_proj` 12.5 %, `up_proj` 11.3 %, `down_proj` 10.8 %.
+  - Medio: q/k de atención y `in_proj_z/qkv/a` de DeltaNet, 8-10 %; embeddings y `lm_head` 6.5-6.9 %.
+  - Menos: `v_proj` 4.9 % y `o_proj` 5.6 % de la atención completa; `conv1d` 1.4 %; normas < 1.3 %.
+  - Intactos: `A_log` y `dt_bias` de DeltaNet. Solo difieren en un escalón de redondeo bf16 (máx. 0.0078); `dt_bias` no cambia en ninguna capa.
+    - **Corregido (findings F26):** `A_log` no es solo el cast. MiMo mueve 3-7 de 32 entradas en algunas capas, 1-8 escalones bf16 (|Δ| ≤ 0.004). Es poco, pero es un cambio real.
+- **Por profundidad:** forma de campana. 8.5 % en la capa 0, máximo ~11 % en las capas 17-23, 7.5 % en la última.
+- **Forma del cambio: difuso, no de rango bajo.**
+  - En las matrices grandes el rango estable es de 200-500 (6-12 % de la dimensión menor) y las 16 primeras direcciones llevan solo el 2-4 % de la energía.
+  - Excepción: `in_proj_b` (32 × 4096) concentra el 63 % en 16 direcciones, pero solo tiene 32 filas.
+- **Comparación con la anatomía anterior (roadmap §4.0ter.4, GGUF Q6_K):** se confirma que las compuertas (β de DeltaNet, `gate_proj`) son lo que más cambia. Las cifras eran más altas (14-19 % y 15-17 %) y las normas más bajas (0.14 %): aquella medida era sobre cuantizado y no se puede reproducir, porque `compute_architectural_drift` devuelve un JSON cacheado.
+- **Comprobación independiente:** cambio relativo y rango estable de 3 tensores (`layers.10.in_proj_b`, `layers.17.gate_proj`, `layers.3.v_proj`) recalculados con numpy float64 y SVD completa. Coinciden en todas las cifras mostradas.
+- **Lectura para WSPLang:** las operaciones compactas actuales (rango 1, `project_out`) no pueden expresar una mejora así. Lo que sí da es un mapa de dónde actúa el post-entrenamiento (compuertas, MLP, capas centrales) y qué no toca (dinámica de DeltaNet, normas). Que sea un patrón y no algo propio de MiMo lo dirá NeoHorse.
+- **Ampliación, en curso:** el plan del estudio completo quedó fijado antes de mirar los demás modelos, en `lab/probes/delta_patterns/plan.md`.
+  - Modelos: NeoHorse, Fara (agentes), tmax (solo RL), el post-entrenamiento oficial Base → 9B, Nyx-RP (rol, control negativo) y una abliteración (control positivo del método).
+  - Hipótesis: H1 dónde, H2 forma, H3 dirección compartida, H4 trasplante causal.
+  - Nulos: azar k/d, mismo tipo de tensor en otra capa, y alineación con las direcciones principales del propio W.
+- **Nota:** el base, la abliteración y Nyx-RP guardan 48 tensores (`A_log`, `dt_bias`…) en F32; MiMo, Fara y tmax en BF16. El "escalón bf16" de `A_log`/`dt_bias` en MiMo es solo ese cast: no se entrenaron.
+- **NeoHorse (2026-11-06), datos en `lab/runs/delta_patterns/stats_neohorse.json` y `overlap_mimo_neohorse.json`:**
+  - Cambio global 0.5 % (18 veces menos que MiMo), 61 % de los pesos cambian (el resto queda bajo la resolución de bf16), perfil plano por capas (0.4-0.6 %); normas, `A_log` y `dt_bias` intactos.
+  - Forma: más concentrado que MiMo (16 direcciones = 6-19 % de la energía en matrices grandes), sin ser de rango bajo.
+  - H1 con MiMo: Spearman del perfil por tipo de tensor 0.93 (0.86 solo matrices); por capa 0.51.
+  - Solapamiento de subespacios top-16 con MiMo, por encima del azar k/d: embeddings ×182, `lm_head` ×85, `q_proj` ×49, MLP gate/up ×40, `down_proj` ×23; `in_proj_a/b` ×1.1-1.2. Coseno de los Δ pequeño y positivo en todos los tipos (+0.008 a +0.011; `lm_head` +0.08).
+  - Pendiente antes de concluir H3: el nulo entre capas distintas y la alineación con las direcciones de W. Un solapamiento así también lo daría que ambos refuercen las mismas dimensiones *outlier* del estado oculto.
+- **Cuaderno de hallazgos:** `lab/probes/delta_patterns/findings.md` recoge cada hallazgo (F1-F8), su fuente, su estado (verificado, medido, abierto) y lo que enseña para WSPLang, más las lecciones de herramienta. Se actualiza con cada modelo.
+
+## 39. Informe completo: MiMo-V2.6-Distill-Qwen-9B frente a su base Qwen3.5-9B (2026-11-07)
+Reúne el benchmark de la base (nuevo) con lo medido en pesos y fuera de ellos (findings F1-F3, F21-F28).
+
+### 39.1 Comportamiento: mismo protocolo que §37
+Condiciones comunes:
+- llama-server CUDA, Q6_K de bartowski para los dos, greedy, tope de 8192 tokens nuevos, plantilla de cada modelo;
+- GSM8K = los 100 primeros de test; MATH-500 = 50 con `select_indices(2026, 50)`.
+
+Datos en `lab/runs/model_compare/{qwen35_9b_q6k,mimo9b_q6k}.json`. Los desacuerdos entre jueces se revisaron a mano y
+eran todos de formato (`60\%`, `\frac43` frente a `\frac{4}{3}`, `.35625`), con la respuesta correcta en todos. Una
+ejecución anterior de la base quedó contaminada por dos evals simultáneos y se descartó
+(`qwen35_9b_q6k.dup_aborted.jsonl`).
+
+| Tope 8192, greedy | Qwen3.5-9B (base) | MiMo-9B | pares discordantes (solo base / solo MiMo) |
+|---|---|---|---|
+| GSM8K (n=100) | **60** | **93** | 2 / 35, McNemar p ≈ 1e-8 |
+| MATH-500 (n=50) | **24** | **34** | 4 / 14, p ≈ 0.03 |
+| Cortadas en el tope | 36 + 25 | 4 + 15 | |
+| Tokens, mediana GSM8K / MATH | 3266 / 8034 | 294 / 1226 | |
+
+**Lectura: casi toda la ventaja de MiMo es terminar dentro del tope, no acertar más cuando ambos terminan.**
+- **Cuando los dos terminan**, la diferencia es mínima:
+  - GSM8K n=62: base 58, MiMo 60;
+  - MATH n=21: 20 y 20.
+- **Cuando la base termina**, acierta igual que MiMo: 59 de 64 en GSM8K y 24 de 25 en MATH. Los dos recuentos son
+  sin revisión de formato.
+- **De los ítems en que la base se corta**, MiMo acierta 32 de 36 en GSM8K y 14 de 25 en MATH.
+- **La base piensa unas 6-11 veces más** (medianas de tokens).
+
+Límites:
+- Con un tope mayor la base recuperaría parte de los cortes. Lo que se mide aquí es "acierto bajo un presupuesto de
+  8192 tokens", no capacidad sin límite.
+- Seleccionar "ambos terminan" sesga hacia ítems fáciles, así que solo indica que no hay una ventaja grande ahí.
+- Un solo arnés, greedy, solo matemáticas, n pequeño (MATH n=50).
+
+Prueba que zanjaría la cuestión: repetir los ítems cortados de la base con tope de 32k.
+
+### 39.2 Pesos (findings F1-F3, F21-F23, F26)
+- **Tipo de cambio:** fine-tune completo. Cambia el 97 % de los pesos, con ‖ΔW‖/‖W‖ = 9.2 %, y el cambio es difuso
+  (rango estable 200-500). Una edición pequeña no lo reproduce.
+- **Dónde cambia:** más en la β de DeltaNet y en el MLP; menos en las normas.
+  - Es el mismo perfil que cualquier fine-tune completo de esta arquitectura (F22), así que no es una marca de
+    "mejora".
+  - Corrección F26: `A_log` sí cambia un poco (1-8 escalones bf16 en 3-7 de 32 entradas en algunas capas).
+- **Direcciones:** las capa a capa son compartidas con NeoHorse, tmax, Fara y con el post-entrenamiento oficial de
+  Qwen (H3 en 10 de 10 tipos de matriz), y no con un fine-tune completo de otro objetivo (WeMM, F23).
+  - MiMo sigue moviendo el modelo en las direcciones que ya movió el post-entrenamiento oficial (F21).
+  - Que esto sea "mejora" o "seguir entrenando como asistente" sigue abierto: el control LoRA no lo separa (F24).
+
+### 39.3 Fuera de los pesos (F25, F27, F28)
+- **Tokenizer:** vocab y merges iguales; 7 tokens especiales de audio/TTS añadidos.
+  - El pre-tokenizer es el regex de Qwen2. Viene de guardar con transformers 5.12.1, que está en el rango con el
+    fallo, 5.6.0-5.17.0 (F27).
+  - Tokeniza distinto hindi, tailandés, bengalí y árabe con diacríticos.
+  - El GGUF usa `qwen35`, así que este benchmark no se ve afectado.
+- **Cabeza MTP eliminada:** 15 tensores (F28). No hay decodificación especulativa con MTP propio.
+- **Config:** solo diferencias de serialización. No hay plantilla de chat en la carpeta HF; va en el GGUF.
+
+### 39.4 Qué aporta frente a la ficha de HF
+La ficha dice "distill" y da benchmarks propios. Este informe añade:
+- **Que la ganancia medida en matemáticas viene sobre todo de razonar más corto** dentro de un presupuesto de tokens.
+- Que es un fine-tune completo difuso, en las direcciones del post-entrenamiento oficial.
+- Tres cosas que la ficha no menciona:
+  - el pre-tokenizer cambiado, por un fallo de herramienta;
+  - la cabeza MTP perdida;
+  - el cambio pequeño de `A_log`.
+
+Abierto:
+- tope de 32k para los ítems cortados;
+- pruebas causales (H4, transferir subespacios);
+- benchmarks fuera de matemáticas.

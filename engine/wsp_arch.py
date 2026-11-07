@@ -459,7 +459,11 @@ class CompiledArch(nn.Module):
     def _layer_params(self, name, bias):
         return self._tensors[f"{name}.weight"], self._tensors[f"{name}.bias"] if bias else None
 
-    def _execute(self, idx, last_only):
+    def input_of(self, tensor_scope, idx):
+        """Value entering the linear layer named `tensor_scope`, stopping execution there."""
+        return self._execute(idx, last_only=False, stop_before=tensor_scope)
+
+    def _execute(self, idx, last_only, stop_before=None):
         env = {self._input: idx}
         tensors = self._tensors
         for instr in self._code:
@@ -481,6 +485,8 @@ class CompiledArch(nn.Module):
                 weight, bias = self._layer_params(*extra)
                 env[outs[0]] = F.layer_norm(env[inputs[0]], weight.shape, weight, bias, 1e-5)
             elif op == "linear":
+                if extra[0] == stop_before:
+                    return env[inputs[0]]
                 weight, bias = self._layer_params(*extra)
                 x = env[inputs[0]]
                 if last_only and outs[0] == self._output and instr is self._code[-1]:

@@ -1,4 +1,4 @@
-# NanoWSP-3: Tabla de Asociaciones Clave-Valor Verificadas (Memoria Asociativa Lineal)
+# NanoWSP-3: Tabla de Asociaciones Clave-Valor Almacenadas (Memoria Asociativa Lineal)
 
 NanoWSP-3 es una arquitectura experimental de **6 capas y 3.280.128 parámetros** (12,51 MB SafeTensors) con pesos base ortogonales sintéticos, diseñada como banco de pruebas de memoria asociativa lineal mediante la fórmula de inversión de Gram / mínimos cuadrados regularizados.
 

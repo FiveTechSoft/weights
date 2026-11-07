@@ -60,6 +60,9 @@ OPS_ALLOWED = {
     "record", "select_candidate", "semantic_map", "semantic-map",
     "semantic_areas", "semantic-areas",
     "project_out", "project_in", "export_control_vector", "audit", "assert_budget",
+    "subspace_transfer",  # move along a subspace of another model's update (engine/subspace_ops.py)
+    # Studying improved models (engine/weight_diff.py, engine/bench_runner.py); none writes weights
+    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -71,7 +74,7 @@ OPS_ALLOWED = {
     "layer_envelope", "multi_layer_envelope", "distributed_memit",
     # WSP-Lang 0.7: JEPA (LeCun) & Weight Space Learning (Damian Borth) Operators
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift", "tie_weights",
-    "train",
+    "train", "synthesize", "decompile",
     # Experimental / stubs
     "leace_erase",   # Exact LEACE when covariance is supplied; falls back to weight-Gram proxy
     "surprise_fwp",  # STUB: word-frequency repetition heuristic, not neural Titans surprisal
@@ -106,7 +109,120 @@ FORBIDDEN_TENSORS = {
     "token_embd.weight", "output.weight", "output_norm.weight",
     "model.embed_tokens.weight", "lm_head.weight", "model.norm.weight"
 }
-FORBIDDEN_PATTERNS = ["embed", "lm_head", "norm.weight", "output_norm"]
+FORBIDDEN_PATTERNS = ["embed", "lm_head", "norm.weight", "output_norm", "wte", "ln_f"]
+
+
+class WriteGuardError(ValueError):
+    """A write would break a WSPLang safety rule; nothing was written."""
+
+
+def is_protected_tensor(name: str, unlock=()) -> bool:
+    """Embeddings, readout and final norms change only when a program unlocks them by name."""
+    if name in unlock:
+        return False
+    return name in FORBIDDEN_TENSORS or any(pat in name for pat in FORBIDDEN_PATTERNS)
+
+
+def guard_model_write(candidate, out_path, source_path, budgets, written) -> Dict[str, Any]:
+    """The single check every weight write goes through. Raises WriteGuardError; returns what changed.
+
+    - out_path must not be the model that was read (source_path), unless this run wrote that file itself;
+    - the candidate keeps the source's tensor names, shapes and dtypes: no added, removed or reshaped tensors;
+    - protected tensors change only if listed in budgets unlock_tensors;
+    - changed elements <= max_modified_weights and max |delta| <= max_delta_norm.
+    out_path=None checks the edit without a destination (simulation).
+    """
+    if out_path is not None and source_path is not None:
+        src = Path(source_path).resolve()
+        if Path(out_path).resolve() == src and src not in written:
+            raise WriteGuardError(f"refusing to overwrite the input model {source_path}; "
+                                  "write the edit elsewhere with out=<file> or --out-dir")
+    report = {"modified_parameters": 0, "max_abs_delta": 0.0, "tensors_changed": []}
+    if source_path is None:
+        return report
+    import torch
+    from safetensors.torch import load_file
+
+    original = load_file(str(source_path))
+    name = Path(source_path).name
+    added, removed = sorted(set(candidate) - set(original)), sorted(set(original) - set(candidate))
+    if added:
+        raise WriteGuardError(f"write adds tensors that {name} does not have: {added[:5]}")
+    if removed:
+        raise WriteGuardError(f"write drops tensors of {name}: {removed[:5]}")
+    unlock = set(budgets.get("unlock_tensors") or [])
+    for key in sorted(original):
+        before, after = original[key], candidate[key]
+        if tuple(before.shape) != tuple(after.shape):
+            raise WriteGuardError(f"tensor {key} would change shape {tuple(before.shape)} -> {tuple(after.shape)}")
+        if before.dtype != after.dtype:
+            raise WriteGuardError(f"tensor {key} would change dtype {before.dtype} -> {after.dtype}")
+        if torch.equal(before, after.to(before.device)):
+            continue
+        if is_protected_tensor(key, unlock):
+            raise WriteGuardError(f"tensor {key} is protected; list it in budgets unlock_tensors to change it")
+        delta = after.double() - before.double()
+        report["modified_parameters"] += int((delta != 0).sum().item())
+        report["max_abs_delta"] = max(report["max_abs_delta"], float(delta.abs().max().item()))
+        report["tensors_changed"].append(key)
+    limit = budgets.get("max_modified_weights")
+    if limit is not None and report["modified_parameters"] > limit:
+        raise WriteGuardError(f"{report['modified_parameters']:,} changed parameters exceed "
+                              f"max_modified_weights={limit:,}")
+    limit = budgets.get("max_delta_norm")
+    if limit is not None and report["max_abs_delta"] > limit:
+        raise WriteGuardError(f"max |delta| {report['max_abs_delta']:.6g} exceeds max_delta_norm={limit}")
+    return report
+
+
+def guarded_save(candidate, out_path, source_path, budgets, written, metadata=None) -> Dict[str, Any]:
+    """guard_model_write, then save; records out_path as written by this run."""
+    from safetensors.torch import save_file
+
+    report = guard_model_write(candidate, out_path, source_path, budgets, written)
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    save_file({k: v.contiguous() for k, v in candidate.items()}, str(out_path), metadata=metadata)
+    written.add(out_path.resolve())
+    return report
+
+
+def check_new_file(out_path, protected, written) -> None:
+    """Ops that create a model or program never write over the model they read."""
+    out = Path(out_path).resolve()
+    for p in protected:
+        if p is None:
+            continue
+        p = Path(p)
+        p = p / "model.safetensors" if p.is_dir() else p
+        if out == p.resolve() and out not in written:
+            raise WriteGuardError(f"refusing to overwrite the input model {p}; choose another out=")
+
+
+def check_report_path(out_path, inputs) -> Path:
+    """Reports and signatures never land inside an input model, and are never weight files."""
+    out = Path(out_path)
+    out = out if out.is_absolute() else ROOT / out
+    if out.suffix.lower() in (".safetensors", ".gguf", ".bin"):
+        raise WriteGuardError(f"{out.name}: a report or signature is not a weight file; choose another out=")
+    o = out.resolve()
+    for p in inputs:
+        p = Path(p).resolve()
+        root = p if p.is_dir() else p.parent
+        if o == p or root in o.parents:
+            raise WriteGuardError(f"refusing to write {out} inside the input model {p}")
+    return out
+
+
+def _model_path(arg) -> Path:
+    p = Path(str(arg))
+    return p if p.is_absolute() else ROOT / p
+
+
+def run_exit_code(results) -> int:
+    """0 when every step ran; 1 when any step failed, was rejected or failed an assertion."""
+    bad = {"error", "security_rejection", "assertion_failed"}
+    return 1 if any(r.get("status") in bad for r in results) else 0
 
 # ==============================================================================
 # AUDIT 2026-11-04: politicas de ejecucion real (falsable, no decorativa)
@@ -122,6 +238,7 @@ READ_ONLY_OPS = {
     "diff", "compare", "evaluate",
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     "assert_behavioral_drift", "vicreg_preserve",
+    "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",  # reports, never weights
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -130,9 +247,10 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "multi_layer_envelope", "distributed_memit", "spectral_decay",
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
-    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train",
+    "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train", "synthesize", "decompile",
+    "subspace_transfer",
 }
-STUB_OPS = {"leace_erase", "surprise_fwp", "compile_synthetic"}
+STUB_OPS = {"leace_erase", "surprise_fwp"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
 
 
@@ -193,6 +311,7 @@ def extract_budgets(prog: Dict[str, Any]) -> Dict[str, Any]:
         "max_delta_norm": None,
         "allow_write": False,
         "allow_training": False,
+        "unlock_tensors": [],
     }
     raw_lines = prog.get("budgets", [])
     for _, line in raw_lines:
@@ -204,6 +323,8 @@ def extract_budgets(prog: Dict[str, Any]) -> Dict[str, Any]:
                 budgets[k] = float(v)
             elif k in ("allow_write", "allow_training"):
                 budgets[k] = v.lower() in ("true", "1", "yes")
+            elif k == "unlock_tensors":
+                budgets[k] = [name.strip() for name in v.split(",") if name.strip()]
     return budgets
 
 
@@ -286,7 +407,7 @@ def check_feasibility(prog, steps, model_arg=None):
         op = st.get("op")
         if not op:
             continue
-        if op in ("init_architecture", "train"):
+        if op in ("init_architecture", "train", "synthesize", "decompile"):
             model_kind = "safetensors"
         if op not in IMPLEMENTED_OPS:
             errors.append(
@@ -841,6 +962,35 @@ def execute_plan_v4(
     max_modified_weights = budgets.get("max_modified_weights")
     max_delta_norm = budgets.get("max_delta_norm")
     allow_write = budgets.get("allow_write", False) and not dry_run
+    written_paths = set()  # files this run wrote; later steps may edit them in place
+
+    def edit_destination(op_name, named_args, source_file):
+        if named_args.get("out"):
+            dest = Path(str(named_args["out"]))
+            return dest if dest.is_absolute() else ROOT / dest
+        if out_dir:
+            return Path(out_dir) / Path(source_file).name
+        if Path(source_file).resolve() in written_paths:
+            return Path(source_file)
+        raise WriteGuardError(f"{op_name} writes weights: give out=<file> or --out-dir; "
+                              f"the input model {source_file} is never overwritten")
+
+    def write_edit(op_name, named_args, candidate, source_file, metadata=None):
+        """Every edit of an existing model goes through here. Returns (written path or None, guard report)."""
+        nonlocal target_path
+        if not allow_write:
+            return None, guard_model_write(candidate, None, source_file, budgets, written_paths)
+        dest = edit_destination(op_name, named_args, source_file)
+        report = guarded_save(candidate, dest, source_file, budgets, written_paths, metadata=metadata)
+        # Later steps edit what this step wrote. Only for single-file models: a sharded directory would
+        # otherwise lose its other shards.
+        shards = list(target_path.glob("*.safetensors")) if target_path.is_dir() else [target_path]
+        if len(shards) == 1 and shards[0].resolve() == Path(source_file).resolve():
+            target_path = dest
+        return dest, report
+
+    def runtime_candidate(runtime):
+        return {k: v.detach().contiguous().float() for k, v in runtime.weights.items()}
 
     executed_steps = []
     step_list = plan.get("pasos", [])
@@ -936,15 +1086,9 @@ def execute_plan_v4(
                     energy_after = float(torch.norm(torch.matmul(u_t, W_erased)).item())
                     norm_after = float(torch.norm(W_erased).item())
 
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_erased.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_erased.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -1023,10 +1167,12 @@ def execute_plan_v4(
                     cond_after = float(torch.linalg.cond(K.t() @ K + reg_lambda * torch.eye(K.shape[1])).item())
                     delta_norm = float(torch.norm(delta).item())
 
-                    saved = False
-                    if allow_write and ckpt_path.exists():
-                        nanowsp.save_checkpoint(ckpt_path)
-                        saved = True
+                    if not ckpt_path.exists():
+                        raise FileNotFoundError(f"{op} needs a model checkpoint, none at {ckpt_path}")
+                    dest, res["write_guard"] = write_edit(op, named, runtime_candidate(nanowsp), ckpt_path)
+                    saved = dest is not None
+                    if saved:
+                        target_path = dest
 
                     res["execution_state"] = "executed" if saved else "simulated"
                     res["result"] = {
@@ -1078,15 +1224,9 @@ def execute_plan_v4(
                     W_new = apply_decoupled_delta(W, u_e_t, beta_erase, k_w_t, v_w_t, beta_write)
                     energy_erase_after = float(torch.norm(torch.matmul(u_e_t, W_new)).item())
 
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_new.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_new.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -1253,7 +1393,9 @@ def execute_plan_v4(
                     out_p = ROOT / out_p
                 saved = False
                 if allow_write:
+                    check_new_file(out_p, [model_path], written_paths)
                     compiled.save(out_p)
+                    written_paths.add(out_p.resolve())
                     saved = True
                     target_path = out_p
                     is_safetensors = True
@@ -1268,6 +1410,128 @@ def execute_plan_v4(
                     "output_file": str(out_p),
                     "written_to_disk": saved
                 }
+
+            # ------------------------------------------------------------------
+            # OP: synthesize: closed-form weights, no gradient (see engine/wsp_synth.py)
+            # ------------------------------------------------------------------
+            elif op == "synthesize":
+                from engine import wsp_arch, wsp_synth, wsp_train
+
+                from engine import wsp_decompile
+
+                if named.get("method") != "ngram":
+                    raise ValueError(f"synthesize supports method=ngram, got {named.get('method')}")
+                source_args = ("table",) if "table" in named else ("data", "order")
+                for required in ("arch", "out") + source_args:
+                    if required not in named:
+                        raise ValueError(f"synthesize requires {required}=")
+                if "table" in named and ("data" in named or "order" in named):
+                    raise ValueError("synthesize takes either table= or data= with order=, not both")
+
+                def _rooted(value):
+                    path = Path(str(value))
+                    return path if path.is_absolute() else ROOT / path
+
+                arch_path = _rooted(named["arch"])
+                out_p = _rooted(named["out"])
+                if "table" in named:
+                    table = wsp_decompile.parse_program(_rooted(named["table"]).read_text(encoding="utf-8"))
+                    chars = table.chars
+                else:
+                    dataset = wsp_train.char_dataset(_rooted(named["data"]).read_text(encoding="utf-8"))
+                    chars = dataset.chars
+                    table = wsp_synth.WittenBellTable(dataset.train, len(chars), int(named["order"]))
+                overrides = {key: wsp_arch.parse_config_value(value) for key, value in named.items()
+                             if key not in ("method", "arch", "data", "out", "order", "seed", "model", "format", "table")}
+                if not allow_write:
+                    res["execution_state"] = "simulated"
+                    res["result"] = {"units_available": table.num_units(), "written_to_disk": False}
+                else:
+                    compiled = wsp_synth.compile_ngram(arch_path, table, overrides=overrides,
+                                                       seed=int(named.get("seed", 1337)))
+                    total = sum(p.numel() for p in compiled.parameters())
+                    if max_modified_weights is not None and total > max_modified_weights:
+                        raise ValueError(f"{total} parameters exceed budget max_modified_weights={max_modified_weights}")
+                    info = compiled.synthesis_info
+                    if "table" in named:
+                        source = getattr(table, "provenance", "unknown")
+                        info["method"] = "wspngram_program"
+                        info["provenance"] = ("closed_form" if source == "closed_form"
+                                              else f"closed_form_compile_of:{source}")
+                    check_new_file(out_p, [model_path], written_paths)
+                    compiled.save(out_p, metadata={"provenance": info["provenance"], "backward_calls": "0",
+                                                   "method": info["method"], "order": str(info["order"]),
+                                                   "vocab_chars": json.dumps(chars)})
+                    written_paths.add(out_p.resolve())
+                    target_path = out_p
+                    is_safetensors = True
+                    res["execution_state"] = "executed"
+                    res["result"] = {**info, "total_parameters": total, "output_file": str(out_p)}
+
+            # ------------------------------------------------------------------
+            # OP: decompile: nanoGPT weights -> WSPLang n-gram program (.wspngram)
+            # ------------------------------------------------------------------
+            elif op == "decompile":
+                from safetensors import safe_open
+
+                from engine import wsp_arch, wsp_decompile, wsp_train
+
+                method = named.get("method")
+                if method not in ("structural", "behavior"):
+                    raise ValueError(f"decompile supports method=structural or method=behavior, got {method}")
+                required = ("arch", "model", "out") + (("data", "order") if method == "behavior" else ())
+                for key in required:
+                    if key not in named:
+                        raise ValueError(f"decompile method={method} requires {key}=")
+
+                def _rooted(value):
+                    path = Path(str(value))
+                    return path if path.is_absolute() else ROOT / path
+
+                model_p, out_p = _rooted(named["model"]), _rooted(named["out"])
+                with safe_open(str(model_p), framework="pt") as f:
+                    meta = f.metadata() or {}
+                dataset = None
+                if method == "behavior":
+                    dataset = wsp_train.char_dataset(_rooted(named["data"]).read_text(encoding="utf-8"))
+                if "vocab_chars" in meta:
+                    chars = json.loads(meta["vocab_chars"])
+                elif dataset is not None:
+                    chars = dataset.chars
+                else:
+                    raise ValueError("checkpoint has no vocab_chars metadata; structural decompile needs it")
+                if dataset is not None and dataset.chars != chars:
+                    raise ValueError("data= vocabulary differs from the checkpoint's vocab_chars")
+                skip = ("method", "arch", "model", "out", "data", "order", "limit_tokens", "seed", "format")
+                overrides = {key: wsp_arch.parse_config_value(value) for key, value in named.items() if key not in skip}
+                model = wsp_arch.load_arch_file(_rooted(named["arch"]), overrides=dict(overrides, vocab=len(chars)))
+                model.load(model_p)
+                model.eval()
+
+                if method == "structural":
+                    table = wsp_decompile.decompile_ngram(model, chars)
+                    table.provenance = meta.get("provenance", "unknown")
+                    note = "exact: recovered from the weights' layout, no data used"
+                else:
+                    ids = dataset.train[:int(named["limit_tokens"])] if "limit_tokens" in named else dataset.train
+                    table = wsp_decompile.behavioral_table(model, ids, chars, order=int(named["order"]))
+                    table.provenance = "distilled_from:" + meta.get("provenance", "unknown")
+                    note = ("approximate: the model's average prediction per context over the train split; "
+                            "long-range context is dropped")
+                result = {"method": method, "order": table.order, "units": table.num_units(), "note": note,
+                          "program_provenance": table.provenance,
+                          "source_provenance": meta.get("provenance", "unknown")}
+                if not allow_write:
+                    res["execution_state"] = "simulated"
+                    result["written_to_disk"] = False
+                else:
+                    check_new_file(out_p, [model_p, model_path], written_paths)
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_text(wsp_decompile.format_program(table, source=f"{method} decompile of {model_p.name}"),
+                                     encoding="utf-8")
+                    res["execution_state"] = "executed"
+                    result["output_file"] = str(out_p)
+                res["result"] = result
 
             # ------------------------------------------------------------------
             # OP: train: gradient descent on a compiled architecture (control, not synthesis)
@@ -1302,7 +1566,9 @@ def execute_plan_v4(
                     raise ValueError(f"{total} parameters exceed budget max_modified_weights={max_modified_weights}")
 
                 if allow_write:
+                    check_new_file(out_p, [model_path], written_paths)
                     summary = wsp_train.train(compiled, dataset, train_cfg, out_p)
+                    written_paths.add(out_p.resolve())
                     target_path = out_p
                     is_safetensors = True
                     res["execution_state"] = "executed"
@@ -1376,8 +1642,10 @@ def execute_plan_v4(
 
                 saved = False
                 if allow_write:
+                    check_new_file(out_p, [model_path], written_paths)
                     out_p.parent.mkdir(parents=True, exist_ok=True)
                     nanowsp.save_checkpoint(out_p)
+                    written_paths.add(out_p.resolve())
                     saved = True
                     target_path = out_p
                     is_safetensors = True
@@ -1437,11 +1705,12 @@ def execute_plan_v4(
                         curr += ch
                     imprint_res = nanowsp.imprint_associative_batch(pairs, layer_idx=layer_idx, eta=eta)
 
-                saved = False
-                if allow_write and ckpt_path.exists():
-                    nanowsp.save_checkpoint(ckpt_path)
-                    saved = True
-                    target_path = ckpt_path
+                if not ckpt_path.exists():
+                    raise FileNotFoundError(f"{op} needs a model checkpoint, none at {ckpt_path}")
+                dest, res["write_guard"] = write_edit(op, named, runtime_candidate(nanowsp), ckpt_path)
+                saved = dest is not None
+                if saved:
+                    target_path = dest
                     is_safetensors = True
 
                 res["execution_state"] = "executed" if saved else "simulated"
@@ -1502,11 +1771,12 @@ def execute_plan_v4(
 
                 batch_res = nanowsp.imprint_associative_batch(pairs, layer_idx=layer_idx, eta=eta)
 
-                saved = False
-                if allow_write and ckpt_path.exists():
-                    nanowsp.save_checkpoint(ckpt_path)
-                    saved = True
-                    target_path = ckpt_path
+                if not ckpt_path.exists():
+                    raise FileNotFoundError(f"{op} needs a model checkpoint, none at {ckpt_path}")
+                dest, res["write_guard"] = write_edit(op, named, runtime_candidate(nanowsp), ckpt_path)
+                saved = dest is not None
+                if saved:
+                    target_path = dest
                     is_safetensors = True
 
                 res["execution_state"] = "executed" if saved else "simulated"
@@ -1634,15 +1904,9 @@ def execute_plan_v4(
                     after_y_proj = torch.matmul(k_t, W)
                     after_energy = float(torch.norm(after_y_proj).item())
 
-                    saved_path = None
-                    if allow_write and out_dir:
-                        out_p = Path(out_dir)
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W.to(orig_dtype)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
                     res["execution_state"] = exec_state
@@ -1818,15 +2082,9 @@ def execute_plan_v4(
                     W *= decay_factor
                     norm_after = float(torch.norm(W).item())
 
-                    saved_path = None
-                    if allow_write and out_dir:
-                        out_p = Path(out_dir)
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W.to(orig_dtype)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
                     res["execution_state"] = exec_state
@@ -1876,6 +2134,204 @@ def execute_plan_v4(
             # ------------------------------------------------------------------
             # OP: project_out / project_in (WSP-Lang 0.2)
             # ------------------------------------------------------------------
+            elif op in ("delta_stats", "delta_signature"):
+                # What a fine-tune changed: base= model= (directories or files of safetensors; multimodal and
+                # text-only Qwen3.5 names lined up). Reads one tensor at a time; writes no weights.
+                import fnmatch
+                from engine import weight_diff as wd
+                if not named.get("base") or not named.get("model"):
+                    raise ValueError(f"{op} needs base=<model> and model=<model>")
+                base_p, model_p = _model_path(named["base"]), _model_path(named["model"])
+                pattern = str(named.get("tensors", "*"))
+                base_r = wd.Renamed(wd.LocalSafetensors(base_p), wd.text_model_name)
+                model_r = wd.Renamed(wd.LocalSafetensors(model_p), wd.text_model_name)
+                if op == "delta_stats":
+                    rep = wd.diff_models(base_r, model_r, pattern=pattern, k=int(named.get("k", 16)))
+                    top = sorted(rep["tensors"], key=lambda r: -r["rel_delta"])[:int(named.get("top", 10))]
+                    res["result"] = {"overall": rep["overall"], "by_family": rep["by_family"],
+                                     "by_layer": rep["by_layer"], "only_in_base": rep["only_in_base"],
+                                     "only_in_model": rep["only_in_target"], "shape_mismatch": rep["shape_mismatch"],
+                                     "top_tensors": [{k2: r[k2] for k2 in ("tensor", "rel_delta", "energy_top1",
+                                                                           "stable_rank") if k2 in r} for r in top]}
+                    if named.get("out"):
+                        out_p = check_report_path(named["out"], [base_p, model_p])
+                        out_p.parent.mkdir(parents=True, exist_ok=True)
+                        out_p.write_text(json.dumps(rep, indent=1), encoding="utf-8")
+                        res["result"]["output"] = str(out_p)
+                else:
+                    if not named.get("out"):
+                        raise ValueError("delta_signature needs out=<file.pt>")
+                    out_p = check_report_path(named["out"], [base_p, model_p])
+                    k, m = int(named.get("k", 16)), int(named.get("sketch", 4096))
+                    sigs = {}
+                    for n in sorted(set(base_r.keys()) & set(model_r.keys())):
+                        if not fnmatch.fnmatch(n, pattern):
+                            continue
+                        a, b = base_r.get(n), model_r.get(n)
+                        if tuple(a.shape) == tuple(b.shape):
+                            sigs[n] = wd.delta_signature(n, a, b, k=k, sketch_dim=m)
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    torch.save(sigs, out_p)
+                    res["result"] = {"output": str(out_p), "tensors": len(sigs), "k": k, "sketch": m}
+                res["execution_state"] = "executed"
+
+            elif op == "delta_compare":
+                # Two delta signatures, per tensor type, with the nulls of lab/probes/delta_patterns/plan.md.
+                from engine import weight_diff as wd
+                if not named.get("a") or not named.get("b"):
+                    raise ValueError("delta_compare needs a=<signature.pt> and b=<signature.pt>")
+                rows = wd.compare_signatures(torch.load(_model_path(named["a"])), torch.load(_model_path(named["b"])),
+                                             factor=float(named.get("factor", 3.0)))
+                res["result"] = {"by_type": rows,
+                                 "H3_types": sorted(t for t, r in rows.items() if r["H3"]),
+                                 "rule": "same-layer overlap >= factor x other-layer null and >= factor x chance"}
+                if named.get("out"):
+                    out_p = check_report_path(named["out"], [])
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+                    res["result"]["output"] = str(out_p)
+                res["execution_state"] = "executed"
+
+            elif op == "model_report":
+                # How a model differs from its base, and what is usable (engine/model_report.py). model= and base= are
+                # local safetensors or Hugging Face repo ids (read by HTTP ranges, nothing downloaded). base defaults
+                # to the card's base_model. Writes a markdown report (and .json next to it); no weights.
+                from engine import model_report as mr
+                if not named.get("model"):
+                    raise ValueError("model_report needs model=<dir or repo id>")
+                model_spec = str(named["model"])
+                is_local = Path(model_spec).exists() or (ROOT / model_spec).exists()
+                card = {} if is_local or str(named.get("card", "true")).lower() == "false" else mr.card_info(model_spec)
+                base_spec = str(named.get("base") or card.get("base_model") or "")
+                if not base_spec:
+                    raise ValueError("model_report needs base=<dir or repo id> (the card names no base_model)")
+                rep = mr.build_report(mr.reader_for(base_spec, ROOT), mr.reader_for(model_spec, ROOT),
+                                      rows=int(named.get("rows", 128)), model_name=model_spec, base_name=base_spec,
+                                      card=card, atlas=mr.load_atlas(ROOT / "lab" / "runs" / "delta_patterns"),
+                                      atlas_sigs=(mr.load_atlas_sigs(ROOT / "lab" / "runs" / "delta_patterns")
+                                                  if str(named.get("transfer", "true")).lower() != "false" else None),
+                                      transfer_rows=int(named.get("transfer_rows", mr.TRANSFER_ROWS)),
+                                      nonweights=(mr.nonweight_diff(mr.side_files(base_spec, ROOT),
+                                                                    mr.side_files(model_spec, ROOT))
+                                                  if str(named.get("nonweights", "true")).lower() != "false"
+                                                  else None))
+                res["result"] = {"method": rep["classification"]["method"],
+                                 "classification": rep["classification"], "usable": rep["usable"],
+                                 "closest": rep["atlas"][:3],
+                                 "transfer_candidates": (rep["transfer"] or {}).get("candidates"),
+                                 "outside_weights": (rep["nonweights"] or {}).get("verdict")}
+                if named.get("out"):
+                    inputs = [p for p in (ROOT / model_spec, ROOT / base_spec, Path(model_spec), Path(base_spec))
+                              if p.exists()]
+                    out_p = check_report_path(named["out"], inputs)
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_text(mr.render_markdown(rep), encoding="utf-8")
+                    out_p.with_suffix(".json").write_text(json.dumps(rep, indent=1), encoding="utf-8")
+                    res["result"]["output"] = str(out_p)
+                res["execution_state"] = "executed"
+
+            elif op == "evaluate_benchmark":
+                # GSM8K / MATH-500 against an already running chat server (engine/bench_runner.py protocol).
+                from engine import bench_runner as benchmarks
+                if not named.get("endpoint") or not named.get("name"):
+                    raise ValueError("evaluate_benchmark needs endpoint=<port or URL> and name=<label>")
+                out_dir = None
+                if named.get("out"):
+                    out_p = check_report_path(named["out"], [])
+                    out_dir = out_p.parent
+                rep = benchmarks.run(str(named["name"]), named["endpoint"], gsm_n=int(named.get("gsm8k", 100)),
+                                     math_n=int(named.get("math500", 50)), parallel=int(named.get("parallel", 2)),
+                                     max_tokens=int(named.get("max_tokens", 8192)), out_dir=out_dir,
+                                     log=lambda s: None)
+                if named.get("out"):
+                    out_p.write_text(json.dumps(rep, indent=1, ensure_ascii=False), encoding="utf-8")
+                res["result"] = {"summary": rep["summary"], "max_tokens": rep["max_tokens"],
+                                 "output": str(out_p) if named.get("out") else None}
+                res["execution_state"] = "executed"
+
+            elif op == "subspace_transfer":
+                # W' = W + alpha * P_S(W_source - W_base) per matching tensor (engine/subspace_ops.py).
+                import fnmatch
+                from safetensors.torch import load_file
+                from engine.subspace_ops import basis_for, project_delta
+                from engine.weight_diff import LocalSafetensors, text_model_name
+
+                pattern = named.get("tensors") or (positional[0] if positional else None)
+                if not pattern or not named.get("source"):
+                    raise ValueError("subspace_transfer needs tensors=<glob> and source=<model dir>")
+                src_p = Path(str(named["source"]))
+                src_p = src_p if src_p.is_absolute() else ROOT / src_p
+                spec = str(named.get("basis", "random"))
+                k, alpha, seed = int(named.get("k", 16)), float(named.get("alpha", 1.0)), int(named.get("seed", 0))
+                out_arg = named.get("out") or out_dir
+                if not out_arg:
+                    raise WriteGuardError("subspace_transfer writes a model: give out=<dir> or --out-dir; "
+                                          f"the input model {target_path} is never overwritten")
+                out_p = Path(str(out_arg))
+                out_p = out_p if out_p.is_absolute() else ROOT / out_p
+                base_dir = target_path if target_path.is_dir() else target_path.parent
+                if out_p.resolve() in (base_dir.resolve(), src_p.resolve()):
+                    raise WriteGuardError(f"subspace_transfer: out={out_p} is an input model")
+                src = LocalSafetensors(src_p)
+                src_by_name = {text_model_name(n): n for n in src.keys() if text_model_name(n)}
+                shards = sorted(base_dir.glob("*.safetensors")) if target_path.is_dir() else [target_path]
+                remaining = budgets.get("max_modified_weights")
+                cache, applied, tensors_done, skipped = {}, 0.0, [], []
+                created = allow_write and not out_p.exists()
+                metadata = {"provenance": "synthetic_transfer", "backward_calls": "0",
+                            "sources": json.dumps({"source": src_p.name, "basis": spec, "k": k, "alpha": alpha,
+                                                   "seed": seed, "tensors": pattern}),
+                            "note": "update taken from a trained model; this op itself runs no gradient"}
+                try:
+                    for shard in shards:
+                        cand = load_file(str(shard))
+                        changed = False
+                        for name in sorted(cand):
+                            norm = text_model_name(name)
+                            if norm is None or not (fnmatch.fnmatch(norm, pattern) or fnmatch.fnmatch(name, pattern)):
+                                continue
+                            W = cand[name]
+                            if W.dim() != 2 or norm not in src_by_name:
+                                skipped.append(name)
+                                continue
+                            Ws = src.get(src_by_name[norm])
+                            if tuple(Ws.shape) != tuple(W.shape):
+                                raise ValueError(f"{name}: source shape {tuple(Ws.shape)} != {tuple(W.shape)}")
+                            V = basis_for(spec, norm, tuple(W.shape), k, seed, cache)
+                            P = project_delta(Ws.float() - W.float(), V)
+                            applied += float(P.norm()) ** 2
+                            cand[name] = (W.float() + alpha * P).to(W.dtype)
+                            tensors_done.append(name)
+                            changed = True
+                        if changed:
+                            shard_budgets = dict(budgets)
+                            if remaining is not None:
+                                shard_budgets["max_modified_weights"] = remaining
+                            if allow_write:
+                                dest = out_p / shard.name
+                                rep = guarded_save(cand, dest, shard, shard_budgets, written_paths, metadata=metadata)
+                            else:
+                                rep = guard_model_write(cand, None, shard, shard_budgets, written_paths)
+                            if remaining is not None:
+                                remaining -= rep["modified_parameters"]
+                        elif allow_write:
+                            out_p.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(shard, out_p / shard.name)
+                except Exception:
+                    if created and out_p.exists():
+                        shutil.rmtree(out_p)  # never leave half a model behind
+                    raise
+                if allow_write:
+                    for extra in list(base_dir.glob("*.json")) + list(base_dir.glob("*.jinja")):
+                        shutil.copy2(extra, out_p / extra.name)
+                    written_paths.add(out_p.resolve())
+                if not tensors_done:
+                    raise ValueError(f"subspace_transfer: no 2-D tensor matched {pattern}")
+                res["execution_state"] = "executed" if allow_write else "simulated"
+                res["result"] = {"output": str(out_p) if allow_write else None, "tensors": len(tensors_done),
+                                 "skipped_not_2d_or_missing": skipped[:20], "basis": spec, "k": k, "alpha": alpha,
+                                 "delta_norm_applied": alpha * applied ** 0.5, "provenance": "synthetic_transfer"}
+
             elif op in ("project_out", "project_in"):
                 tensor_name = positional[0] if positional else named.get("tensor")
                 if not tensor_name:
@@ -1980,15 +2436,9 @@ def execute_plan_v4(
                     after_u_proj = torch.matmul(u_t, W)
                     after_energy = float(torch.norm(after_u_proj).item())
 
-                    saved_path = None
-                    if allow_write and out_dir:
-                        out_p = Path(out_dir)
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W.to(orig_dtype)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     exec_state = "executed" if (allow_write and saved_path is not None) else "simulated"
                     res["execution_state"] = exec_state
@@ -2030,30 +2480,30 @@ def execute_plan_v4(
                 if not src or not tgt:
                     raise ValueError("tie_weights requires source and target tensors")
 
-                target_file = target_path or Path(named.get("model", str(ROOT / "models" / "nanogpt" / "model.safetensors")))
+                target_file = Path(str(named["model"])) if "model" in named else target_path
                 if not target_file.is_absolute():
                     target_file = ROOT / target_file
+                if target_file.is_dir():
+                    target_file = target_file / "model.safetensors"
 
-                if not allow_write:
-                    res["execution_state"] = "simulated"
-                    res["result"] = {"status": "simulated", "source": src, "target": tgt}
-                else:
-                    from safetensors.torch import load_file, save_file
-                    sd = load_file(str(target_file))
-                    if src not in sd:
-                        raise ValueError(f"Source tensor {src} not found in {target_file}")
-                    sd[tgt] = sd[src].clone()
-                    save_file(sd, str(target_file))
-                    diff_norm = float((sd[src] - sd[tgt]).norm().item())
-                    res["execution_state"] = "executed"
-                    res["result"] = {
-                        "status": "ok",
-                        "source": src,
-                        "target": tgt,
-                        "shape": list(sd[src].shape),
-                        "parity_frobenius_norm": diff_norm,
-                        "tied": True
-                    }
+                from safetensors.torch import load_file
+                sd = load_file(str(target_file))
+                for name in (src, tgt):
+                    if name not in sd:
+                        raise ValueError(f"tensor {name} not found in {target_file}")
+                if sd[src].shape != sd[tgt].shape or sd[src].dtype != sd[tgt].dtype:
+                    raise ValueError(f"tie_weights needs equal shape and dtype: {src} {tuple(sd[src].shape)} "
+                                     f"{sd[src].dtype}, {tgt} {tuple(sd[tgt].shape)} {sd[tgt].dtype}")
+                sd[tgt] = sd[src].clone()
+                saved, res["write_guard"] = write_edit(op, named, sd, target_file)
+                res["execution_state"] = "executed" if saved else "simulated"
+                res["result"] = {
+                    "source": src,
+                    "target": tgt,
+                    "shape": list(sd[src].shape),
+                    "output_file": str(saved) if saved else None,
+                    "written_to_disk": saved is not None,
+                }
 
             # ------------------------------------------------------------------
             # OP: audit (Tensor Health & Energy)
@@ -2113,6 +2563,12 @@ def execute_plan_v4(
                 out_p = Path(out_file)
                 if not out_p.is_absolute():
                     out_p = ROOT / out_p
+                if not allow_write:
+                    res["execution_state"] = "simulated"
+                    res["result"] = {"source_vector": str(vec_p), "output_gguf": str(out_p),
+                                     "vector_dimension": len(u_vec), "written_to_disk": False}
+                    executed_steps.append(res)
+                    continue
                 out_p.parent.mkdir(parents=True, exist_ok=True)
 
                 scale = float(named.get("scale", 1.0))
@@ -2261,7 +2717,7 @@ def execute_plan_v4(
                         "relative_principal_shift": f"{(shifts[0].item() / max(S_before[0].item(), 1e-12)):.6%}"
                     }
                 else:
-                    res["result"] = {"status": "Weyl inequality checked in GGUF block projection space"}
+                    raise NotImplementedError("assert_weyl is not implemented for GGUF; nothing was checked")
 
             # ------------------------------------------------------------------
             # OP: assert_davis_kahan (WSP-Lang 0.4: Subspace Stability Bound)
@@ -2336,7 +2792,7 @@ def execute_plan_v4(
                         "davis_kahan_satisfied": True
                     }
                 else:
-                    res["result"] = {"status": "Davis-Kahan theorem checked in GGUF block projection space"}
+                    raise NotImplementedError("assert_davis_kahan is not implemented for GGUF; nothing was checked")
 
             # ------------------------------------------------------------------
             # OP: peek / semantic_map / diff / compare (WSP-Lang 0.1 Legacy)
@@ -2404,31 +2860,30 @@ def execute_plan_v4(
                     raise FileNotFoundError(f"Base model not found: {base_path_arg}")
 
                 diffs = {}
+                diff_extra = {}
                 tot_n = 0
                 tot_chg = 0
 
                 if base_path_arg.suffix == ".safetensors" or is_safetensors:
-                    import torch
-                    from safetensors.torch import load_file
-                    base_p = base_path_arg if base_path_arg.is_file() else list(base_path_arg.glob("*.safetensors"))[0]
-                    tgt_p = target_path if target_path.is_file() else list(target_path.glob("*.safetensors"))[0]
-                    ta = load_file(str(base_p))
-                    tb = load_file(str(tgt_p))
-                    for nm in sorted(tb):
-                        if not fnmatch.fnmatch(nm, tensor) or nm not in ta:
-                            continue
-                        D1 = ta[nm].float().numpy()
-                        D2 = tb[nm].float().numpy()
-                        chg = int((np.abs(D1 - D2) > 1e-4 * (np.abs(D1) + 1e-30)).sum())
-                        tot_n += D2.size
+                    # Every shard, one tensor in memory at a time (engine.weight_diff).
+                    from engine.weight_diff import LocalSafetensors, diff_models
+                    rep = diff_models(LocalSafetensors(base_path_arg), LocalSafetensors(target_path),
+                                      pattern=tensor, k=int(named.get("k", 16)))
+                    for row in rep["tensors"]:
+                        chg = row["changed"]
+                        tot_n += row["numel"]
                         tot_chg += chg
-                        diffs[nm] = {
+                        diffs[row["tensor"]] = {
                             "changed_weights": chg,
-                            "total_weights": int(D2.size),
-                            "fraction": float(chg / max(D2.size, 1)),
-                            "percentage": f"{(chg / max(D2.size, 1)):.4%}",
-                            "frobenius_delta": float(np.linalg.norm(D2 - D1))
+                            "total_weights": row["numel"],
+                            "fraction": chg / max(row["numel"], 1),
+                            "percentage": f"{(chg / max(row['numel'], 1)):.4%}",
+                            "frobenius_delta": row["norm_delta"],
+                            **{k2: row[k2] for k2 in ("rel_delta", "cosine", "family", "layer", "energy_top1",
+                                                       "stable_rank", "rows_changed", "top_rows") if k2 in row},
                         }
+                    diff_extra = {k2: rep[k2] for k2 in ("by_family", "by_layer", "only_in_base",
+                                                          "only_in_target", "shape_mismatch")}
                 else:
                     import wsp
                     ta = {t.name: t for t in wsp.reader_of(base_path_arg).tensors}
@@ -2453,7 +2908,8 @@ def execute_plan_v4(
                     "tensors": diffs,
                     "total_changed": tot_chg,
                     "total_weights": tot_n,
-                    "overall_percentage": f"{(tot_chg / max(tot_n, 1)):.4%}" if tot_n else "0.0%"
+                    "overall_percentage": f"{(tot_chg / max(tot_n, 1)):.4%}" if tot_n else "0.0%",
+                    **diff_extra,
                 }
 
             elif op in ("compare", "evaluate"):
@@ -2579,15 +3035,9 @@ def execute_plan_v4(
                     )
 
                     W_steered = W + delta
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_steered.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_steered.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -2662,15 +3112,9 @@ def execute_plan_v4(
                     W_aligned, perm_idx, sim_before, sim_after = compute_permute_align(W_s, W_t, mode=mode)
                     gain = round(sim_after - sim_before, 4)
 
-                    saved_path = None
-                    if allow_write:
-                        orig_dtype = tensors[tensor_name].dtype
-                        tensors[tensor_name] = W_aligned.to(orig_dtype)
-                        out_p = Path(out_dir) if out_dir else shard_to_edit.parent
-                        out_p.mkdir(parents=True, exist_ok=True)
-                        out_shard = out_p / shard_to_edit.name
-                        save_file(tensors, str(out_shard))
-                        saved_path = str(out_shard)
+                    tensors[tensor_name] = W_aligned.to(tensors[tensor_name].dtype)
+                    saved, res["write_guard"] = write_edit(op, named, tensors, shard_to_edit)
+                    saved_path = str(saved) if saved else None
 
                     res["execution_state"] = "executed" if saved_path else "simulated"
                     res["result"] = {
@@ -2741,9 +3185,13 @@ def execute_plan_v4(
 
                 from engine.nanowsp3_runtime import NanoWSP3
                 surg_model = NanoWSP3()
-                ckpt_p = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
-                if not ckpt_p.exists():
-                    ckpt_p = ROOT / "lab" / "runs" / "nanowsp3_pretrained.safetensors"
+                if "model" in named:
+                    ckpt_p = Path(str(named["model"]))
+                    ckpt_p = ckpt_p if ckpt_p.is_absolute() else ROOT / ckpt_p
+                else:
+                    ckpt_p = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
+                    if not ckpt_p.exists():
+                        ckpt_p = ROOT / "lab" / "runs" / "nanowsp3_pretrained.safetensors"
                 if not ckpt_p.exists():
                     raise FileNotFoundError(f"compile_synthetic needs a NanoWSP-3 checkpoint, none at {ckpt_p}")
                 surg_model.load_checkpoint(ckpt_p)
@@ -2775,30 +3223,67 @@ def execute_plan_v4(
                 gram = Hn.T @ Hn + lambda_base * np.eye(256)
                 delta_w = np.linalg.solve(gram, Hn.T @ Rn)
                 delta_norm = float(np.linalg.norm(delta_w))
+                W1_out = W0_out + torch.from_numpy(delta_w).to(W0_out.dtype).t()
 
-                res["execution_state"] = "simulated"
+                def recall_accuracy(rows, readout):
+                    hits = 0
+                    for row in rows:
+                        with torch.no_grad():
+                            _, trace = surg_model.forward([ord(c) for c in row["prompt"]], return_hidden=True)
+                        hits += int((trace["final_hidden"][0, -1, :] @ readout.t()).argmax()) == ord(row["target"])
+                    return hits / max(len(rows), 1)
+
+                from safetensors.torch import load_file
+                edited = load_file(str(ckpt_p))
+                readout = "out.weight" if "out.weight" in edited else "output.weight"
+                edited[readout] = W1_out.to(edited[readout].dtype)
+                if allow_write and "out" not in named:
+                    raise WriteGuardError("compile_synthetic writes weights only to an explicit out=<file>")
+                dest, res["write_guard"] = write_edit(op, named, edited, ckpt_p, metadata={
+                    "format": "pt", "provenance": "closed_form_surgery_on_gradient_base", "backward_calls": "0"})
+                written = dest is not None
+
+                res["execution_state"] = "executed" if written else "simulated"
                 res["result"] = {
-                    "rule": "Multi-Layer Synthetic Training Compiler (Lab M-3)",
+                    "rule": "Dual ridge readout surgery on a NanoWSP-3 checkpoint",
                     "dataset": dataset_name,
                     "pairs_compiled": len(train_pairs),
                     "lambda_base": lambda_base,
                     "delta_frobenius": round(delta_norm, 4),
-                    "weights_written": False,
-                    "status": "delta_computed_and_discarded"
+                    "weights_written": written,
+                    "provenance": "closed_form_surgery_on_gradient_base",
+                    "base_checkpoint": str(ckpt_p),
+                    "train_accuracy_before": recall_accuracy(train_pairs, W0_out),
+                    "train_accuracy_after": recall_accuracy(train_pairs, W1_out),
+                    "holdout_accuracy_before": recall_accuracy(ds["holdout"], W0_out),
+                    "holdout_accuracy_after": recall_accuracy(ds["holdout"], W1_out),
+                    "status": "delta_written" if written else "delta_computed_not_written"
                 }
 
             else:
                 res["status"] = "skipped (non-interactive op)"
 
+        except AssertionError as e:
+            res["status"] = "assertion_failed"
+            res["error"] = str(e)
         except Exception as e:
             res["status"] = "error"
             res["error"] = str(e)
 
         executed_steps.append(res)
 
+    # An assert whose own verdict is negative fails the run, whether or not it raised.
+    verdicts = {"assert_orthogonal_preservation": "orthogonal_preservation_verified",
+                "assert_behavioral_drift": "behavioral_drift_pass"}
+    for r in executed_steps:
+        key = verdicts.get(r.get("op"))
+        if key and r.get("status") == "ok" and r.get("result", {}).get(key) is False:
+            r["status"] = "assertion_failed"
+            r["error"] = f"{r['op']}: {key} is false"
+
     # AUDIT 2026-11-04: ops STUB nunca publican claims causales
     for r in executed_steps:
-        if r.get("op") in STUB_OPS and r.get("status") not in ("security_rejection", "error"):
+        if r.get("op") in STUB_OPS and r.get("status") not in ("security_rejection", "error", "assertion_failed"):
             r["status"] = "stub_result"
 
     return executed_steps
@@ -3064,6 +3549,13 @@ def main():
                 print(f"  Error: {step['error']}")
     else:
         print(json.dumps(out, ensure_ascii=False, indent=2))
+
+    if execution_results is not None:
+        code = run_exit_code(execution_results)
+        if code:
+            failed = [s["op"] for s in execution_results if run_exit_code([s])]
+            print(f"\n[FAIL] {len(failed)} step(s) failed: {', '.join(failed)}", file=sys.stderr)
+        sys.exit(code)
 
 
 if __name__ == "__main__":

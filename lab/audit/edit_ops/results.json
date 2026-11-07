@@ -1,0 +1,712 @@
+{
+ "_baseline": {
+  "als_loss": {
+   "loss": 1.6879
+  },
+  "tmp": "C:\\Users\\Anto\\AppData\\Local\\Temp\\wsp_edit_audit_hkyyslxo",
+  "energy_u_top": 0.808198
+ },
+ "unimplemented_ops": {
+  "poke": {
+   "status": "skipped (non-interactive op)",
+   "feasibility_errors": [
+    "op 'poke' NO implementada en el runtime (antes se ejecutaba como 'skipped' silencioso y no"
+   ]
+  },
+  "poke-weight": {
+   "status": "skipped (non-interactive op)",
+   "feasibility_errors": [
+    "op 'poke-weight' NO implementada en el runtime (antes se ejecutaba como 'skipped' silencio"
+   ]
+  },
+  "intervene": {
+   "status": "skipped (non-interactive op)",
+   "feasibility_errors": [
+    "op 'intervene' NO implementada en el runtime (antes se ejecutaba como 'skipped' silencioso"
+   ]
+  },
+  "rollback": {
+   "status": "skipped (non-interactive op)",
+   "feasibility_errors": [
+    "op 'rollback' NO implementada en el runtime (antes se ejecutaba como 'skipped' silencioso "
+   ]
+  },
+  "distributed_memit": {
+   "status": "skipped (non-interactive op)",
+   "feasibility_errors": []
+  },
+  "intervene_section": {
+   "validate_errors": [],
+   "parsed_steps": 2,
+   "executed_steps": 0
+  },
+  "model_unchanged": true,
+  "out_dir_files": []
+ },
+ "project_out": {
+  "full_rank1": {
+   "reported": {
+    "modified_parameters": 16384,
+    "directional_energy_before": 0.8081983923912048,
+    "directional_energy_after": 1.0042955977951351e-07,
+    "written_to_disk": true
+   },
+   "status": "ok",
+   "feas": [],
+   "measured_energy_after": 0.0,
+   "diff": {
+    "transformer.h.0.mlp.c_proj.weight": {
+     "changed": 16384,
+     "of": 16384,
+     "max_abs": 0.04906280338764191
+    }
+   },
+   "loss": {
+    "loss": 1.9619
+   }
+  },
+  "defaults": {
+   "reported_mod": 1600,
+   "reported_red": "2.50%",
+   "measured_energy_before": 0.808198,
+   "measured_energy_after": 0.787965,
+   "diff": {
+    "transformer.h.0.mlp.c_proj.weight": {
+     "changed": 1600,
+     "of": 16384,
+     "max_abs": 0.002453140914440155
+    }
+   }
+  },
+  "budget_100": {
+   "status": "error",
+   "error": "BUDGET EXCEEDED: Modified weights 16,384 > budget 100",
+   "file_written": false
+  },
+  "allow_write_false": {
+   "state": "simulated",
+   "file": false
+  },
+  "dry_run": {
+   "state": "simulated",
+   "file": false
+  },
+  "no_out_dir": {
+   "status": "ok",
+   "state": "simulated",
+   "input_unchanged": true
+  },
+  "forbidden_lm_head": {
+   "status": "security_rejection"
+  },
+  "tied_embedding_wte": {
+   "status": "ok",
+   "written": true,
+   "diff": {
+    "transformer.wte.weight": {
+     "changed": 4160,
+     "of": 4160,
+     "max_abs": 0.11813268810510635
+    }
+   },
+   "loss": {
+    "load_error": "checkpoint breaks declared tie: transformer.wte.weight != lm_head.weight",
+    "loss_ignoring_tie": 1.6879
+   }
+  },
+  "norm_ln_f": {
+   "status": "error",
+   "error": "tuple index out of range"
+  },
+  "project_in_alpha0.5": {
+   "status": "ok",
+   "energy_before": 0.808198,
+   "energy_after": 1.212298,
+   "loss": {
+    "loss": 1.7563
+   }
+  }
+ },
+ "delta_unlearn": {
+  "eta1": {
+   "status": "ok",
+   "reported_after": 1.0042955977951351e-07,
+   "measured_before": 0.808198,
+   "measured_after": 0.0,
+   "diff": {
+    "transformer.h.0.mlp.c_proj.weight": {
+     "changed": 16384,
+     "of": 16384,
+     "max_abs": 0.04906280338764191
+    }
+   },
+   "loss": {
+    "loss": 1.9619
+   }
+  },
+  "budget_10": {
+   "status": "error",
+   "error": "BUDGET EXCEEDED: Modified weights 16,384 > budget 10",
+   "file": false
+  },
+  "forbidden": "security_rejection",
+  "target_0.5": {
+   "measured_kTW_mean": 0.5,
+   "measured_kTW_std": 0.0
+  }
+ },
+ "leace_erase": {
+  "no_out_dir_budget1": {
+   "status": "stub_result",
+   "state": "executed",
+   "INPUT_FILE_OVERWRITTEN": true,
+   "measured_energy_after": 0.0,
+   "diff": {
+    "transformer.h.0.mlp.c_proj.weight": {
+     "changed": 16384,
+     "of": 16384,
+     "max_abs": 0.04906279221177101
+    }
+   },
+   "loss": {
+    "loss": 1.9619
+   },
+   "feas_warn": [
+    "op 'leace_erase' es STUB declarado: resultado 'stub_result', no afirmacion causal"
+   ]
+  },
+  "forbidden_lm_head": {
+   "status": "stub_result",
+   "written": true,
+   "diff": {
+    "lm_head.weight": {
+     "changed": 4160,
+     "of": 4160,
+     "max_abs": 0.11813268810510635
+    }
+   },
+   "loss": {
+    "load_error": "checkpoint breaks declared tie: transformer.wte.weight != lm_head.weight",
+    "loss_ignoring_tie": 2.0375
+   }
+  }
+ },
+ "spectral_decay": {
+  "decay0.9_budget10": {
+   "status": "ok",
+   "written": true,
+   "max_ratio_err": 0.0,
+   "diff": {
+    "transformer.h.0.mlp.c_proj.weight": {
+     "changed": 16384,
+     "of": 16384,
+     "max_abs": 0.012804791331291199
+    }
+   },
+   "loss": {
+    "loss": 1.7183
+   }
+  },
+  "forbidden_lm_head": {
+   "status": "ok",
+   "written": true,
+   "diff": {
+    "lm_head.weight": {
+     "changed": 4160,
+     "of": 4160,
+     "max_abs": 0.34510207176208496
+    }
+   }
+  }
+ },
+ "decoupled_delta": {
+  "status": "ok",
+  "reported": {
+   "rule": "Gated DeltaNet-2 Decoupled Erase & Write",
+   "tensor": "transformer.h.0.mlp.c_proj.weight",
+   "beta_erase": 1.0,
+   "beta_write": 1.0,
+   "attractor_energy_before": 0.8081983923912048,
+   "attractor_energy_after": 1.0048862719713725e-07,
+   "reduction_pct": "100.00%",
+   "written_to_disk": true
+  },
+  "measured_energy_after": 0.0,
+  "max_err_vs_formula": 1.4901161193847656e-08,
+  "write_readback_cos(W1 k, v_ortho)": 0.9781,
+  "diff": {
+   "transformer.h.0.mlp.c_proj.weight": {
+    "changed": 16384,
+    "of": 16384,
+    "max_abs": 0.05817055329680443
+   }
+  },
+  "loss": {
+   "loss": 2.038
+  }
+ },
+ "jepa_steer": {
+  "status": "ok",
+  "reported_cos": 1.0,
+  "real_activation_cos_before": 0.002,
+  "real_activation_cos_after": 0.01,
+  "diff": {
+   "transformer.h.0.mlp.c_proj.weight": {
+    "changed": 16384,
+    "of": 16384,
+    "max_abs": 0.04180865362286568
+   }
+  },
+  "loss": {
+   "loss": 1.7668
+  }
+ },
+ "permute_align": {
+  "status": "ok",
+  "reported": {
+   "similarity_before_permutation": 0.0759,
+   "similarity_after_permutation": 1.0
+  },
+  "measured_rows_matching_reference": 1,
+  "measured_mean_rowcos_aligned_vs_ref": 0.0586,
+  "rows_unchanged_vs_source": 1,
+  "diff": {
+   "transformer.h.0.mlp.c_fc.weight": {
+    "changed": 16320,
+    "of": 16384,
+    "max_abs": 0.2672034204006195
+   }
+  },
+  "loss_after_single_tensor_permute": {
+   "loss": 4.3757
+  }
+ },
+ "tie_weights": {
+  "out_dir_ignored": {
+   "status": "ok",
+   "INPUT_FILE_OVERWRITTEN": true,
+   "out_dir_written": false,
+   "diff": {
+    "transformer.h.1.attn.c_proj.weight": {
+     "changed": 4096,
+     "of": 4096,
+     "max_abs": 0.19488197565078735
+    }
+   },
+   "loss": {
+    "loss": 2.6438
+   }
+  },
+  "forbidden_target_lm_head": {
+   "status": "ok",
+   "error": "",
+   "diff": {
+    "lm_head.weight": "shape (65, 64)->(64, 256)"
+   }
+  },
+  "creates_new_tensor": {
+   "status": "ok",
+   "diff": {
+    "new.tensor": "added"
+   }
+  },
+  "allow_write_false": {
+   "state": "simulated",
+   "unchanged": true
+  }
+ },
+ "imprint_association": {
+  "single_char": {
+   "status": "ok",
+   "INPUT_FILE_OVERWRITTEN": true,
+   "out_dir_written": false,
+   "before": [
+    {
+     "prompt": "Paris is in",
+     "target": "Q",
+     "p_target": 0.01078,
+     "argmax_is_target": false,
+     "argmax": "A"
+    }
+   ],
+   "after": [
+    {
+     "prompt": "Paris is in",
+     "target": "Q",
+     "p_target": 0.02125,
+     "argmax_is_target": false,
+     "argmax": "A"
+    }
+   ],
+   "diff": {
+    "layers.1.mlp_out.weight": {
+     "changed": 8192,
+     "of": 8192,
+     "max_abs": 0.5837043523788452
+    }
+   },
+   "collateral_argmax_changed": 3,
+   "of": 10
+  },
+  "multi_char": {
+   "status": "ok",
+   "before": [
+    {
+     "prompt": "capital:",
+     "target": "R",
+     "p_target": 0.00932,
+     "argmax_is_target": false,
+     "argmax": "P"
+    },
+    {
+     "prompt": "capital:R",
+     "target": "o",
+     "p_target": 0.00763,
+     "argmax_is_target": false,
+     "argmax": "O"
+    },
+    {
+     "prompt": "capital:Ro",
+     "target": "m",
+     "p_target": 0.00977,
+     "argmax_is_target": false,
+     "argmax": "O"
+    },
+    {
+     "prompt": "capital:Rom",
+     "target": "e",
+     "p_target": 0.00902,
+     "argmax_is_target": false,
+     "argmax": "O"
+    }
+   ],
+   "after": [
+    {
+     "prompt": "capital:",
+     "target": "R",
+     "p_target": 0.02166,
+     "argmax_is_target": true,
+     "argmax": "R"
+    },
+    {
+     "prompt": "capital:R",
+     "target": "o",
+     "p_target": 0.01808,
+     "argmax_is_target": false,
+     "argmax": "O"
+    },
+    {
+     "prompt": "capital:Ro",
+     "target": "m",
+     "p_target": 0.02164,
+     "argmax_is_target": true,
+     "argmax": "m"
+    },
+    {
+     "prompt": "capital:Rom",
+     "target": "e",
+     "p_target": 0.01803,
+     "argmax_is_target": false,
+     "argmax": "O"
+    }
+   ]
+  },
+  "on_nanogpt_checkpoint": {
+   "status": "error",
+   "error": "'token_embd.weight'",
+   "unchanged": true
+  }
+ },
+ "imprint_batch": {
+  "status": "ok",
+  "reported": {
+   "operation": "imprint_batch",
+   "pairs_count": 5,
+   "condition_number": 6.038423538208008,
+   "delta_frobenius": 22.023632049560547,
+   "written_to_disk": true
+  },
+  "recall_before": 0,
+  "recall_after": 5,
+  "p_before": [
+   0.01037,
+   0.0111,
+   0.0119,
+   0.009,
+   0.01203
+  ],
+  "p_after": [
+   0.02009,
+   0.02345,
+   0.02259,
+   0.02378,
+   0.02593
+  ],
+  "collateral_argmax_changed": 4,
+  "diff": {
+   "layers.1.mlp_out.weight": {
+    "changed": 8192,
+    "of": 8192,
+    "max_abs": 1.5029609203338623
+   }
+  }
+ },
+ "cov_imprint": {
+  "cov_imprint": {
+   "status": "ok",
+   "error": null,
+   "out_dir_written": false,
+   "before": [
+    {
+     "prompt": "Paris is in",
+     "target": "Q",
+     "p_target": 0.01078,
+     "argmax_is_target": false,
+     "argmax": "A"
+    }
+   ],
+   "after": [
+    {
+     "prompt": "Paris is in",
+     "target": "Q",
+     "p_target": 0.02745,
+     "argmax_is_target": true,
+     "argmax": "Q"
+    }
+   ],
+   "diff": {
+    "layers.1.mlp_out.weight": {
+     "changed": 8192,
+     "of": 8192,
+     "max_abs": 0.7571436166763306
+    }
+   }
+  },
+  "memit_imprint": {
+   "status": "ok",
+   "error": null,
+   "out_dir_written": false,
+   "before": [
+    {
+     "prompt": "Paris is in",
+     "target": "Q",
+     "p_target": 0.01078,
+     "argmax_is_target": false,
+     "argmax": "A"
+    }
+   ],
+   "after": [
+    {
+     "prompt": "Paris is in",
+     "target": "Q",
+     "p_target": 0.02745,
+     "argmax_is_target": true,
+     "argmax": "Q"
+    }
+   ],
+   "diff": {
+    "layers.1.mlp_out.weight": {
+     "changed": 8192,
+     "of": 8192,
+     "max_abs": 0.7571436166763306
+    }
+   }
+  },
+  "batch5": {
+   "status": "ok",
+   "recall_before": 0,
+   "recall_after": 5,
+   "p_before": [
+    0.01037,
+    0.0111,
+    0.0119,
+    0.009,
+    0.01203
+   ],
+   "p_after": [
+    0.02246,
+    0.02107,
+    0.02497,
+    0.02776,
+    0.02161
+   ]
+  },
+  "on_nanogpt_checkpoint": {
+   "status": "ok",
+   "error": "",
+   "tensors_added": [
+    "final_norm.weight",
+    "layers.0.attn_k.weight",
+    "layers.0.attn_norm.weight",
+    "layers.0.attn_out.weight",
+    "layers.0.attn_q.weight",
+    "layers.0.attn_v.weight",
+    "layers.0.mlp_in.weight",
+    "layers.0.mlp_norm.weight",
+    "layers.0.mlp_out.weight",
+    "layers.1.attn_k.weight",
+    "layers.1.attn_norm.weight",
+    "layers.1.attn_out.weight",
+    "layers.1.attn_q.weight",
+    "layers.1.attn_v.weight",
+    "layers.1.mlp_in.weight",
+    "layers.1.mlp_norm.weight",
+    "layers.1.mlp_out.weight",
+    "output.weight",
+    "pos_embd.weight",
+    "token_embd.weight"
+   ],
+   "n_changed_entries": 20,
+   "loss": {
+    "load_error": "Error(s) in loading state_dict for CompiledArch:\n\tUnexpected key(s) in state_dict: \"final_norm.weight\", \"layers.0.attn_k.weight\", \"layers.0.attn_norm.weight\", \"",
+    "loss_ignoring_tie": 1.6879
+   }
+  }
+ },
+ "compile_synthetic": {
+  "status": "ok",
+  "error": null,
+  "input_unchanged": true,
+  "reported": {
+   "train_accuracy_before": 0.013888888888888888,
+   "train_accuracy_after": 0.5208333333333334,
+   "holdout_accuracy_before": 0.0,
+   "holdout_accuracy_after": 0.05357142857142857,
+   "weights_written": true
+  },
+  "diff": {
+   "out.weight": {
+    "changed": 2560,
+    "of": 65536,
+    "max_abs": 0.3525644838809967
+   }
+  },
+  "measured_train_before": 0.013888888888888888,
+  "measured_train_after": 0.5208333333333334,
+  "measured_holdout_after": 0.05357142857142857
+ },
+ "rosetta_cross_project": {
+  "rosetta_status": "ok",
+  "feas": [
+   "op 'rosetta_align' de escritura requiere --model safetensors explicito (no GGUF)."
+  ],
+  "reported_cos": 1.0,
+  "max_abs_T_minus_Q": 3.2219324802573723e-07,
+  "cross_status": "ok",
+  "cos_translated_vs_truth": 1.0000000129354438,
+  "allow_write_false_file": false,
+  "modifies_weights": false
+ },
+ "export_control_vector": {
+  "status": "ok",
+  "written_despite_allow_write_false_and_dry_run": true,
+  "n_tensors": 32,
+  "first_last": [
+   "direction.0",
+   "direction.31"
+  ],
+  "values_ok": true,
+  "llama_common_dll_string": "invalid (zero) direction tensor layer index in %s"
+ },
+ "layer_envelope": {
+  "alpha_0.04": {
+   "status": "ok",
+   "feas": [
+    "op 'layer_envelope' de escritura requiere --model safetensors explicito (no GGUF)."
+   ],
+   "written": true,
+   "weights": {
+    "0": 0.13534,
+    "1": 0.60653,
+    "2": 1.0,
+    "3": 0.60653
+   }
+  },
+  "alpha_4.0": {
+   "status": "ok",
+   "feas": [
+    "op 'layer_envelope' de escritura requiere --model safetensors explicito (no GGUF)."
+   ],
+   "written": true,
+   "weights": {
+    "0": 0.13534,
+    "1": 0.60653,
+    "2": 1.0,
+    "3": 0.60653
+   }
+  },
+  "alpha_changes_output": false,
+  "tensor_names": [
+   "direction.1",
+   "direction.2",
+   "direction.3",
+   "direction.4"
+  ],
+  "norms": {
+   "direction.1": 0.1353,
+   "direction.2": 0.6065,
+   "direction.3": 1.0,
+   "direction.4": 0.6065
+  },
+  "writer_failure_path": {
+   "status": "error",
+   "error": "'warnings'"
+  },
+  "repo_artifact_loop_control_vector.gguf": [
+   "direction.0",
+   "direction.1"
+  ],
+  "repo_artifact_u_critic_control_vector.gguf": [
+   "direction.1",
+   "direction.2"
+  ]
+ },
+ "fwp_overlay": {
+  "status": "ok",
+  "written_despite_dry_run": true,
+  "npz_keys": [
+   "alpha",
+   "created_at",
+   "target_tensor",
+   "type",
+   "u_key"
+  ],
+  "model_unchanged": true,
+  "is_active_inference_hook": false,
+  "grep_consumers": "no reader of FastWeightOverlay npz in engine/ (see report)"
+ },
+ "surprise_fwp": {
+  "status": "stub_result",
+  "result": {
+   "rule": "Titans Surprisal Monitor [STUB: Lexical Repetition Heuristic]",
+   "status": "heuristic_trigger_only",
+   "note": "Lexical word-ratio trigger stub; does not compute neural perplexity or synthesize live runtime overlay.",
+   "metric": "perplexity_surprise",
+   "repetition_score": 0.75,
+   "unique_ratio": 0.25,
+   "threshold": 0.3,
+   "memory_update_triggered": true,
+   "action": "flag_repetition_detected"
+  },
+  "feas_warn": [
+   "op 'surprise_fwp' es STUB declarado: resultado 'stub_result', no afirmacion causal"
+  ]
+ },
+ "vicreg_preserve": {
+  "status": "ok",
+  "model_unchanged": true,
+  "result": {
+   "effective_rank": 58.39,
+   "vicreg_certified": false
+  }
+ },
+ "_originals_unchanged": {
+  "C:\\weights\\lab\\runs\\als_adam_small.pt": true,
+  "C:\\weights\\models\\nanowsp\\model.safetensors": true,
+  "C:\\weights\\lab\\runs\\nanowsp3_pretrained.safetensors": true,
+  "C:\\weights\\models\\nanowsp\\model_baseline.safetensors": true,
+  "C:\\weights\\models\\nanowsp2\\model.safetensors": true,
+  "C:\\weights\\data\\nanowsp3_weights.safetensors": true,
+  "C:\\weights\\data\\nanowsp2_weights.safetensors": true
+ }
+}

@@ -1,0 +1,50 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "audit_cli_missing_tensor",
+  "archivo": "C:\\weights\\lab\\audit\\inspect_ops\\out\\cli_missing_tensor.wspl",
+  "steps_count": 1,
+  "steps": [
+    {
+      "sec": "steps",
+      "expr": "step audit no.such.tensor",
+      "op": "audit",
+      "args": "no.such.tensor"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "audit",
+        "args": "no.such.tensor"
+      }
+    ],
+    "pasos_mapeo": {
+      "audit": "audit tensor energy, norm delta, and semantic alignment"
+    },
+    "budgets": {
+      "max_modified_weights": null,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-05T20:20:30",
+  "ejecucion": [
+    {
+      "op": "audit",
+      "args": "no.such.tensor",
+      "status": "error",
+      "error": "Tensor no.such.tensor not found in C:\\weights\\lab\\audit\\inspect_ops\\models\\rand_1337.safetensors"
+    }
+  ]
+}

@@ -60,7 +60,7 @@ def main():
     text = Path(a.corpus).read_text(encoding="utf-8")
     chars = sorted(set(text))
     split = int(len(text) * 0.9)  # same split as nanoGPT prepare.py: the control never sees the tail
-    baseline_train, test_text = text[:-a.eval_chars], text[-a.eval_chars:]
+    baseline_train, test_text = lm.split_corpus(text, 0.1, a.eval_chars)
 
     results = {}
     torch.manual_seed(a.seed)

@@ -1,0 +1,319 @@
+{
+  "program": "lab\\runs\\decompiled\\nanogpt_10.7M_order5.wspngram",
+  "units": 61039,
+  "capacity": 9216,
+  "rank_lor": 728,
+  "rank_kin": 618,
+  "delta_nats": 12.0,
+  "C0": {
+    "val_nll": 1.7721,
+    "samples": {
+      "lord": 15,
+      "Lord": 5,
+      "LORD": 0,
+      "king": 8,
+      "kind": 2,
+      "King": 1,
+      "KING": 8
+    }
+  },
+  "E1": {
+    "val_nll": 1.77222,
+    "val_nll_base": 1.7721,
+    "outside_mean_abs_dnll": 0.0,
+    "outside_mean_dnll": -0.0,
+    "outside_max_abs_dlogp_row": 0.0,
+    "outside_positions": 111442,
+    "lor": {
+      "positions": 34,
+      "next_d": 13,
+      "next_g": 0,
+      "mean_p_d_when_next_d": 0.00857014860957861,
+      "mean_p_d_when_next_d_base": 0.9992892742156982,
+      "frac_pd_gt_pg_when_next_g": null,
+      "frac_pg_gt_pd_when_next_d": 1.0,
+      "frac_pd_gt_pg_when_next_g_base": null,
+      "frac_pg_gt_pd_when_next_d_base": 0.0,
+      "mean_dnll": 0.41679999232292175
+    },
+    "kin": {
+      "positions": 63,
+      "next_d": 20,
+      "next_g": 39,
+      "mean_p_d_when_next_d": 0.14806100726127625,
+      "mean_p_d_when_next_d_base": 0.14806100726127625,
+      "frac_pd_gt_pg_when_next_g": 0.0,
+      "frac_pg_gt_pd_when_next_d": 1.0,
+      "frac_pd_gt_pg_when_next_g_base": 0.0,
+      "frac_pg_gt_pd_when_next_d_base": 1.0,
+      "mean_dnll": -0.0
+    },
+    "samples": {
+      "lord": 0,
+      "Lord": 7,
+      "LORD": 0,
+      "king": 8,
+      "kind": 2,
+      "King": 1,
+      "KING": 7
+    }
+  },
+  "C4": {
+    "changed_tensors": {
+      "transformer.h.0.mlp.c_proj.weight": 384
+    },
+    "changed_columns": {
+      "transformer.h.0.mlp.c_proj.weight": [
+        728
+      ]
+    },
+    "expected": [
+      "transformer.h.0.mlp.c_proj.weight",
+      728
+    ],
+    "max_abs_logprob_diff_direct_vs_recompiled": 1.9073486328125e-06
+  },
+  "E2": {
+    "val_nll": 1.77227,
+    "val_nll_base": 1.7721,
+    "outside_mean_abs_dnll": 0.0,
+    "outside_mean_dnll": -0.0,
+    "outside_max_abs_dlogp_row": 0.0,
+    "outside_positions": 111442,
+    "lor": {
+      "positions": 34,
+      "next_d": 13,
+      "next_g": 0,
+      "mean_p_d_when_next_d": 0.9992892742156982,
+      "mean_p_d_when_next_d_base": 0.9992892742156982,
+      "frac_pd_gt_pg_when_next_g": null,
+      "frac_pg_gt_pd_when_next_d": 0.0,
+      "frac_pd_gt_pg_when_next_g_base": null,
+      "frac_pg_gt_pd_when_next_d_base": 0.0,
+      "mean_dnll": -0.0
+    },
+    "kin": {
+      "positions": 63,
+      "next_d": 20,
+      "next_g": 39,
+      "mean_p_d_when_next_d": 0.8466488122940063,
+      "mean_p_d_when_next_d_base": 0.14806100726127625,
+      "frac_pd_gt_pg_when_next_g": 0.6410256624221802,
+      "frac_pg_gt_pd_when_next_d": 0.0,
+      "frac_pd_gt_pg_when_next_g_base": 0.0,
+      "frac_pg_gt_pd_when_next_d_base": 1.0,
+      "mean_dnll": 0.3001956045627594
+    },
+    "samples": {
+      "lord": 15,
+      "Lord": 5,
+      "LORD": 0,
+      "king": 4,
+      "kind": 6,
+      "King": 1,
+      "KING": 8
+    },
+    "swap_nats": -1.8520741569999994
+  },
+  "C1": [
+    {
+      "context": " ye",
+      "count": 448,
+      "lor_mean_p_d_change": 0.0,
+      "own_mean_dnll": -0.000614953285548836,
+      "own_positions": 33,
+      "outside_mean_abs_dnll": 0.0
+    },
+    {
+      "context": "n,\n",
+      "count": 417,
+      "lor_mean_p_d_change": 0.0,
+      "own_mean_dnll": -0.00042298634070903063,
+      "own_positions": 30,
+      "outside_mean_abs_dnll": 0.0
+    },
+    {
+      "context": "uld",
+      "count": 1098,
+      "lor_mean_p_d_change": 0.0,
+      "own_mean_dnll": -1.3992681488161907e-05,
+      "own_positions": 91,
+      "outside_mean_abs_dnll": 0.0
+    },
+    {
+      "context": "y m",
+      "count": 613,
+      "lor_mean_p_d_change": 0.0,
+      "own_mean_dnll": -5.287140083964914e-06,
+      "own_positions": 86,
+      "outside_mean_abs_dnll": 0.0
+    },
+    {
+      "context": "on,",
+      "count": 366,
+      "lor_mean_p_d_change": 0.0,
+      "own_mean_dnll": -1.4551754929925664e-06,
+      "own_positions": 29,
+      "outside_mean_abs_dnll": 0.0
+    }
+  ],
+  "C2": {
+    "val_nll": 2.02644,
+    "val_nll_base": 1.7721,
+    "outside_mean_abs_dnll": 0.2853320240974426,
+    "outside_mean_dnll": 0.2523512542247772,
+    "outside_max_abs_dlogp_row": 12.00000286102295,
+    "outside_positions": 111442,
+    "lor": {
+      "positions": 34,
+      "next_d": 13,
+      "next_g": 0,
+      "mean_p_d_when_next_d": 0.008563973009586334,
+      "mean_p_d_when_next_d_base": 0.9992892742156982,
+      "frac_pd_gt_pg_when_next_g": null,
+      "frac_pg_gt_pd_when_next_d": 1.0,
+      "frac_pd_gt_pg_when_next_g_base": null,
+      "frac_pg_gt_pd_when_next_d_base": 0.0,
+      "mean_dnll": 0.4170784652233124
+    },
+    "kin": {
+      "positions": 63,
+      "next_d": 20,
+      "next_g": 39,
+      "mean_p_d_when_next_d": 1.0686294444894884e-06,
+      "mean_p_d_when_next_d_base": 0.14806100726127625,
+      "frac_pd_gt_pg_when_next_g": 0.0,
+      "frac_pg_gt_pd_when_next_d": 1.0,
+      "frac_pd_gt_pg_when_next_g_base": 0.0,
+      "frac_pg_gt_pd_when_next_d_base": 1.0,
+      "mean_dnll": 3.6853439807891846
+    },
+    "samples": {
+      "lord": 0,
+      "Lord": 0,
+      "LORD": 0,
+      "king": 13,
+      "kind": 0,
+      "King": 1,
+      "KING": 5
+    }
+  },
+  "C3_teacher_base": {
+    "val_nll": 1.44229,
+    "samples": {
+      "lord": 19,
+      "Lord": 5,
+      "LORD": 0,
+      "king": 4,
+      "kind": 0,
+      "King": 1,
+      "KING": 8
+    }
+  },
+  "C3_unlearn": {
+    "val_nll": 1.47274,
+    "val_nll_base": 1.44229,
+    "outside_mean_abs_dnll": 0.3193981945514679,
+    "outside_mean_dnll": 0.029659824445843697,
+    "outside_max_abs_dlogp_row": 12.477888107299805,
+    "outside_positions": 111442,
+    "lor": {
+      "positions": 34,
+      "next_d": 13,
+      "next_g": 0,
+      "mean_p_d_when_next_d": 0.014248763211071491,
+      "mean_p_d_when_next_d_base": 0.9995035529136658,
+      "frac_pd_gt_pg_when_next_g": null,
+      "frac_pg_gt_pd_when_next_d": 0.38461539149284363,
+      "frac_pd_gt_pg_when_next_g_base": null,
+      "frac_pg_gt_pd_when_next_d_base": 0.0,
+      "mean_dnll": 2.564146041870117
+    },
+    "kin": {
+      "positions": 63,
+      "next_d": 20,
+      "next_g": 39,
+      "mean_p_d_when_next_d": 0.35675859451293945,
+      "mean_p_d_when_next_d_base": 0.36117303371429443,
+      "frac_pd_gt_pg_when_next_g": 0.0,
+      "frac_pg_gt_pd_when_next_d": 0.550000011920929,
+      "frac_pd_gt_pg_when_next_g_base": 0.0,
+      "frac_pg_gt_pd_when_next_d_base": 0.699999988079071,
+      "mean_dnll": 0.06674157083034515
+    },
+    "samples": {
+      "lord": 0,
+      "Lord": 3,
+      "LORD": 1,
+      "king": 8,
+      "kind": 0,
+      "King": 0,
+      "KING": 12
+    }
+  },
+  "C3_swap": {
+    "val_nll": 1.47313,
+    "val_nll_base": 1.44229,
+    "outside_mean_abs_dnll": 0.31978389620780945,
+    "outside_mean_dnll": 0.029858345165848732,
+    "outside_max_abs_dlogp_row": 12.427391052246094,
+    "outside_positions": 111442,
+    "lor": {
+      "positions": 34,
+      "next_d": 13,
+      "next_g": 0,
+      "mean_p_d_when_next_d": 0.9999020099639893,
+      "mean_p_d_when_next_d_base": 0.9995035529136658,
+      "frac_pd_gt_pg_when_next_g": null,
+      "frac_pg_gt_pd_when_next_d": 0.0,
+      "frac_pd_gt_pg_when_next_g_base": null,
+      "frac_pg_gt_pd_when_next_d_base": 0.0,
+      "mean_dnll": 0.09231077134609222
+    },
+    "kin": {
+      "positions": 63,
+      "next_d": 20,
+      "next_g": 39,
+      "mean_p_d_when_next_d": 0.7305484414100647,
+      "mean_p_d_when_next_d_base": 0.36117303371429443,
+      "frac_pd_gt_pg_when_next_g": 0.9743589758872986,
+      "frac_pg_gt_pd_when_next_d": 0.0,
+      "frac_pd_gt_pg_when_next_g_base": 0.0,
+      "frac_pg_gt_pd_when_next_d_base": 0.699999988079071,
+      "mean_dnll": 1.7375658750534058
+    },
+    "samples": {
+      "lord": 6,
+      "Lord": 4,
+      "LORD": 0,
+      "king": 2,
+      "kind": 12,
+      "King": 2,
+      "KING": 12
+    }
+  },
+  "seconds": 244.6,
+  "E2b": {
+    "unit_rank": 843,
+    "swap_nats": -1.6614320685999995,
+    "space_kin_positions": 32,
+    "base_prefers_g": 32,
+    "flipped_fraction": 1.0,
+    "other_kin_positions": 31,
+    "other_kin_max_abs_dlogp": 0.0,
+    "rest_mean_abs_dnll": 0.0,
+    "rest_max_abs_dlogp_row": 0.0,
+    "val_nll": 1.7720974683761597,
+    "val_nll_base": 1.7720973491668701,
+    "samples": {
+      "lord": 15,
+      "Lord": 5,
+      "LORD": 0,
+      "king": 4,
+      "kind": 6,
+      "King": 1,
+      "KING": 8
+    },
+    "passes": true
+  }
+}
