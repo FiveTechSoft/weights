@@ -13,6 +13,7 @@ PORT=8094
 mkdir -p "$H4" "$OUT"
 export PYTHONUTF8=1 GIT_TERMINAL_PROMPT=0
 log() { echo "[h4 $ARM] $* ($(date +%H:%M:%S))"; }
+[ -f "$OUT/HOLD" ] && { log "HOLD file present ($OUT/HOLD): not starting"; exit 1; }
 
 if [ "$ARM" = "A0" ]; then
   HF=hf_cache/qwen35-9b-hf

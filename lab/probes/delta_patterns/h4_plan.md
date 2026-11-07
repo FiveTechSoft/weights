@@ -74,3 +74,26 @@ after quantization.
 - A1 reduces cuts versus A0 by fewer than 10 items: H4 most likely fails on criterion 1.
 - Reason: a 16-dimensional slice of a diffuse update (F3) carries little of MiMo's behaviour.
 - Confidence: low; the direction of the effect is uncertain.
+
+## Addendum 2026-11-07 (before any edited arm was built; A0 running)
+**Design flaw found.**
+- The signatures store 16 directions per tensor. `shared_basis(sig_mimo, sig_neohorse, k=16)` therefore returns the
+  whole 16-dim span of MiMo's signature, rotated (checked: span(S) = span(A) to 1.0 on
+  `layers.20.mlp.down_proj`).
+- So the original A1 was "MiMo's top-16 directions", not "directions shared with NeoHorse", and stage 2 (A3)
+  would have been identical to it.
+- The principal-angle cosines between the two subspaces fall quickly (0.61, 0.57, 0.46, 0.41, 0.29, 0.28, 0.22,
+  0.21, then below 0.2), so only the first ~8 are actually shared.
+
+**Change chosen by the user (option 2):**
+- **A1:** shared directions with **k=8**.
+- **A2:** random k=8, norm-matched to A1 (`norm_like` with the same shared spec and k=8).
+- **Stage 2, only if A1 passes:** A3 = MiMo's own top-16 (`sig:sig_mimo.pt`, k=16) against A4 = random k=16
+  norm-matched to A3, with the same decision rule.
+- Metrics, thresholds, protocol and A0 are unchanged.
+- Expected effect: the A1 update is now smaller (at most about half of the top-16 energy), so a null result is
+  more likely than in the original prediction.
+
+**Exploratory context (logit lens, `lens_shared.py`, not part of the decision rule):** loop-related tokens (Wait,
+Okay, Hmm, check, Alternatively, `</think>`, ...) lie in MiMo's top-16 directions 4.2× more than random tokens in
+layers 24-31 and 2.0× in 16-23, against 1.0 in layers 0-15. A random subspace gives 1.04.
