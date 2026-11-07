@@ -105,7 +105,7 @@ def main():
     r = a.r
 
     def proj(M, U):
-        return M if U is None else tr.project(M, U[:, :r])
+        return M if min(M.shape) <= r else tr.project(M, U[:, :r])
 
     upd = {
         "G_full": {n: -G[n] for n in names},

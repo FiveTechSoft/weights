@@ -34,6 +34,11 @@ def top_basis(D, r, device=None):
     return fp.top_subspace(D, r, device, torch.float32 if device else torch.float64)
 
 
+def basis_upto(D, rmax, device=None):
+    """Top-min(rmax, d) basis on the smaller side, so every r <= rmax can be sliced (narrow matrices included)."""
+    return top_basis(D, min(rmax, min(D.shape)), device)
+
+
 def project(D, U):
     """Project D on span(U), U lying on D's smaller side."""
     U = U.to(D.device, D.dtype)
@@ -71,8 +76,7 @@ def lane_bases(base, seed, rmax, device="cuda"):
         b = base[n].to(device)
         Da, Db = wa[n].to(device) - b, wb[n].to(device) - b
         norms.append((float(Da.pow(2).sum()), float(Db.pow(2).sum())))
-        d = min(Da.shape)
-        out[n] = lane_basis(Da, Db, min(rmax, d), device) if d > rmax else None
+        out[n] = lane_basis(Da, Db, min(rmax, min(Da.shape)), device)
     del wa, wb
     N = (sum(x for x, _ in norms) ** 0.5 + sum(y for _, y in norms) ** 0.5) / 2
     return out, N
@@ -107,16 +111,16 @@ def main():
     U_own, U_rnd = {}, {}
     for i, n in enumerate(names):
         d = min(D[n].shape)
-        U_own[n] = top_basis(D[n], rmax, "cuda") if d > rmax else None
-        U_rnd[n] = random_basis(d, rmax, seed=10_000 * a.seed + i) if d > rmax else None
+        U_own[n] = basis_upto(D[n], rmax, "cuda")
+        U_rnd[n] = random_basis(d, min(rmax, d), seed=10_000 * a.seed + i)
     print(f"bases {time.time() - t0:.0f}s", flush=True)
     tot = sum(float(D[n].pow(2).sum()) for n in names)
     m0 = json.loads((RUNS / f"seed{a.seed}" / "chunk0.json").read_text(encoding="utf-8"))["eval"]
     m1 = json.loads((RUNS / f"seed{a.seed}" / "chunk10.json").read_text(encoding="utf-8"))["eval"]
     a0, a1 = m0["test_id"]["acc"], m1["test_id"]["acc"]
-    rec = {"seed": a.seed, "ranks": list(RANKS), "M0": m0["test_id"]["acc"], "M1": a1,
-           "whole_share": sum(float(D[n].pow(2).sum()) for n in names if min(D[n].shape) <= min(RANKS)) / tot,
-           "arms": {}}
+    rec = {"seed": a.seed, "ranks": list(RANKS), "M0": m0["test_id"]["acc"], "M1": a1, "arms": {},
+           "whole_share": {r: sum(float(D[n].pow(2).sum()) for n in names if min(D[n].shape) <= r) / tot
+                           for r in RANKS}}
 
     @torch.no_grad()
     def build(r, arm):

@@ -264,6 +264,13 @@ class TestTransfer(unittest.TestCase):
         own = mk()
         self.assertGreater(float(tr.project(own, L).norm() / own.norm()), 0.99)
 
+    def test_bases_exist_for_narrow_matrices_below_rmax(self):
+        import transfer as tr
+        D = torch.randn(40, 16, generator=self.g)          # like in_proj_a/b: smaller side 16 < rmax
+        U = tr.basis_upto(D, 256)
+        self.assertEqual(U.shape, (16, 16))
+        self.assertTrue(torch.allclose(tr.project(D, U[:, :10]), tr.project(D, tr.top_basis(D, 10)), atol=1e-4))
+
     def test_rescale_to(self):
         import transfer as tr
         A = torch.randn(5, 5, generator=self.g)
