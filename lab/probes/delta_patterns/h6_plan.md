@@ -1,0 +1,212 @@
+# H6: in a training we control, how small a slice of ΔW carries the learned skill, and do the directions recur across seeds? (pre-registration, approved 2026-11-07)
+
+Status: **APPROVED by the user 2026-11-07 ("exacto, así cada fotograma del proceso nos irá contando cómo el modelo se va transformando"); nothing run.** Runs **before H5** (user decision 2026-11-07). Order: stage 0
+(trajectory of small trainings), then the rank/transfer arms, then stage 2 (synthetic). Thresholds below are fixed
+before any transfer arm is evaluated. Once approved, this file is committed and is not edited after the first
+transfer result. Changes go in a dated addendum. Gates G1/G2 may change the task or training settings in an addendum,
+because they run before any transfer result exists.
+
+## Why
+- H4 used MiMo, which has three problems as a test bed:
+  - its training data is unknown;
+  - the metric is noisy (24 vs 36 base cuts depending on quantization, only 16 shared);
+  - each arm costs 80 min.
+- **A pair we train ourselves fixes all three.** We know the skill. A short-answer test takes minutes, so whole rank
+  sweeps are cheap. Several seeds separate what the data teaches from optimizer and data-order noise.
+- **The question that matters for WSPLang** is not only "can ΔW be compressed". That is already known for fine-tune
+  deltas (LoRA extraction, DARE, TIES, BitDelta). It is:
+  1. how small a slice of ΔW keeps the skill, measured against a random slice of the same size;
+  2. whether energy (singular values) and function line up;
+  3. whether the directions that carry the skill are found again by independent trainings. If they are, they can be
+     looked up once and reused, which is the first step toward building such updates without training.
+
+## Models and training
+- **M0:** `hf_cache/qwen35-08b-hf` (Qwen3.5-0.8B, open, local).
+  - 24 layers (18 Gated DeltaNet + 6 full attention), hidden 1024, tied embeddings.
+  - Largest matrix rank: 1024.
+- **What trains:** only the 2-D matrices in `model.layers.*`. Frozen: embeddings/lm_head (tied), all 1-D tensors
+  (norms, A_log, dt_bias), conv1d. So ΔW lives exactly where `subspace_transfer` acts, and "transfer everything"
+  equals M1 by construction (a check, not a result).
+- **Full fine-tune, no LoRA.** A LoRA ΔW is low-rank by construction and would make the rank result trivial.
+- **fp32 master weights** for the trained matrices. bf16 weights would round away updates smaller than one bf16 step,
+  and the rounding pattern would show up as fake structure in ΔW.
+- **Optimizer:** AdamW, lr 1e-5, cosine decay, 1 epoch, batch 32.
+  - Memory estimate: ~0.55 B trainable × 16 bytes ≈ 9 GB plus the frozen embedding; it should fit 12 GB with short
+    sequences.
+  - A smoke run checks this. Fallback (addendum): Adafactor.
+- **Tokenizer:** `tokenizers.Tokenizer.from_file(tokenizer.json)`, not AutoTokenizer. transformers 5.12.1 in the
+  venv has the wrong Qwen pre-tokenizer (findings F27).
+- **Seeds:** 3 trainings (s = 1, 2, 3), same data, different data order (and dropout if any), giving ΔW_1, ΔW_2,
+  ΔW_3.
+
+## Stage 0 (first, the core of H6): the effect of each small training, one after another
+User direction 2026-11-07: understand the change made by one small training, then apply a second small training and
+analyse again, and so on. The run is therefore cut into **10 chunks of 2 000 examples**; chunk t continues from
+checkpoint W_{t-1}. Everything below is measured at each boundary, for each seed. Increment ΔW_t = W_t − W_{t-1};
+cumulative C_t = W_t − W_0.
+
+**Fingerprint of each small training** (computed during training, online; snapshots are kept on the CPU; analysis
+code `lab/probes/h6/fingerprint.py`, later a WSPLang op):
+1. **Effect:** test_id accuracy, both OOD sets and retention NLL after each chunk (about 3 min).
+2. **Where:** ‖ΔW_t‖/‖W‖ per layer and matrix kind, and each one's share of the chunk's total change.
+3. **How many dimensions:** effective rank of ΔW_t (entropy of the singular values), and the energy in the top 1/5/10 %.
+4. **Which directions:**
+   - principal-angle overlap of the top-r subspace of ΔW_t with that of ΔW_{t-1} (does each small training push
+     the same way?);
+   - overlap with C_{t-1} (is it still in the subspace that earlier chunks opened, or new?);
+   - overlap with the same chunk of the other seeds.
+5. **Readable meaning:** for down_proj / out_proj, the logit lens of the top directions of ΔW_t (exploratory, as in
+   `semantic_change.py`).
+
+**Questions stage 0 answers (descriptive, reported as curves, no threshold):**
+- Does the update settle into a fixed subspace after a few chunks (overlap of ΔW_t with C_{t-1} → 1), or does it
+  keep opening new directions?
+- Does the accuracy gain per chunk follow the size of the change, or do some chunks move a lot and teach little?
+- Is the first chunk's change the same across seeds (a property of the data) or different (noise)?
+
+**Synthetic continuation (pass/fail, fixed now):** if the subspace settles, the rest of the training is moving inside a
+known subspace, and can be imitated without training it.
+- Arm E_k: W_0 + α · C_k, the first k chunks extrapolated, k ∈ {1, 2}. α is chosen on the dev split (200 items),
+  α ∈ {1, 2, 3, 5, 8, 10}. Zero further backward passes.
+- **Passes** if E_k reaches recovery ≥ 0.7 against the full 10-chunk M1, averaged over seeds, with the cost of k/10
+  of the training. It must also beat M3 at the same norm (p < 0.01 in each seed).
+- **Prediction:** E_2 recovers about 0.4-0.7, so it fails at 0.7. Overlap of ΔW_t with C_{t-1} rises to about 0.6-0.8
+  by chunk 3. Confidence: low.
+
+**After stage 0, a second skill (stage 0b, written as an addendum before it runs):** continue M1 with 10 chunks of
+a different small task, for example 4-digit addition, and fingerprint again.
+- Does it use new directions, or reuse the multiplication subspace?
+- What does it do to multiplication accuracy (interference)?
+
+**Storage:** fp32 snapshots of the trained matrices (~2.2 GB each). Kept: chunks 1, 2 and 10 of each seed
+(~20 GB in total). The other boundaries are analysed online and dropped.
+
+## Task and data (`lab/probes/h6/make_data.py`, deterministic)
+- **Skill:** multiplication of a 3-digit by a 2-digit number, answer only. Prompt `"{a}*{b}="`, target the product
+  digits, then a newline.
+- **Prompt for evaluating every model:** the same 3 fixed solved examples before the item (3-shot). Then M0 knows the
+  format, and the measured gain is arithmetic, not format learning.
+- **Splits:** train 20 000 pairs; test_id 1 000 unseen 3×2 pairs; test_ood_easy 500 pairs 2×2; test_ood_hard 500
+  pairs 3×3. No (a, b) pair is shared across splits.
+- **Retention:** mean token NLL on 300 fixed GSM8K-train solutions (`data/gsm8k_train.jsonl`, first 300). Lower is
+  better; reported for every arm.
+- **Graders:** exact string match of the generated digits, and an independent one (first integer parsed from the
+  output). Disagreements are listed.
+- **Decoding:** greedy, max 8 new tokens, in-process with HF transformers on the GPU (no GGUF; the evaluation
+  harness differs from H4 on purpose).
+
+## Arms (per seed s; ΔW = ΔW_s, all 2-D layer matrices, α = 1 unless said)
+- Grid of ranks, as % of the largest rank 1024: **r ∈ {10, 20, 51, 102, 256}** (1, 2, 5, 10, 25 %).
+- `basis=svd` with rank r gives exactly the rank-r truncation of ΔW (Eckart-Young). Projecting on either side gives the
+  same result.
+
+| Arm | Weights | Purpose |
+|---|---|---|
+| M0 | base | reference |
+| M1 | base + ΔW_s (`basis=full`) | full skill; must equal the trained model (check) |
+| M2_r | base + rank-r SVD of ΔW_s (`basis=svd`, k=r) | how small a slice keeps the skill |
+| M3_r | base + ΔW_s on r random directions, rescaled per tensor to M2_r's norm (`basis=random norm_like=svd`) | control: same source, same size, random directions |
+| X_r | base + ΔW_s projected on the top-r directions of the **other two seeds'** deltas (`basis=deltas:<M1_t>,<M1_u>`) | do independent trainings find the same directions? |
+| α sweep | M2_r at r = r90, α ∈ {0.5, 1.5, 2} | stability |
+
+- **Recovery:** R(X) = (acc(X) − acc(M0)) / (acc(M1) − acc(M0)) on test_id.
+- **Energy share:** E_r = ‖P(ΔW)‖² / ‖ΔW‖², reported next to R so energy and function can be compared directly.
+
+## Code needed before running (tests first)
+1. `subspace_transfer basis=svd` (top-k singular directions of D itself) and `basis=full`. These are shared with H5.
+   `norm_like=svd` must work, so `basis_for` receives D.
+2. `subspace_transfer basis=deltas:<dirA>,<dirB>`: the top-k directions, on D's smaller side, of the concatenated
+   deltas of models A and B against the same base.
+3. `subspace_transfer basis=acts:<file>` (stage 2): stored activation principal directions for each matrix.
+4. `lab/probes/h6/`:
+   - `make_data.py`;
+   - `train.py` (trains only the 2-D layer matrices, fp32 master, saves an HF folder with provenance);
+   - `eval_arith.py` (3-shot, both graders, retention NLL);
+   - `sweep.py`: builds the arms in memory with `engine.subspace_ops` (the same functions as the op), writes
+     `lab/runs/h6/seed{s}.json`.
+   Stage 2 adds `acts.py` (activation principal directions on M0, forward only) and `grad_once.py` (the summed
+   gradient at M0, no optimizer step).
+5. Headline arms are also built once through the WSPLang op and checked equal to the in-memory build. Two methods.
+
+## Gates (before any transfer arm; may trigger an addendum)
+- **G1, headroom:** M0 3-shot accuracy on test_id must be between 5 % and 50 %. If not, change the digit counts
+  first (more digits if too high), before training.
+- **G2, the skill is learned:** acc(M1) − acc(M0) ≥ 30 points on test_id for each seed, and M1 equals the trained
+  model on 50 items. If not, change lr/epochs (addendum) before any transfer arm.
+- **G3, the evaluation is deterministic:** running M0 twice gives identical outputs on test_id.
+
+## Decision rules (fixed now)
+- **H6a, size (a measurement, not pass/fail):** r90 = the smallest r in the grid whose recovery, averaged over the 3
+  seeds, is ≥ 0.9. Reported with the per-seed values and E_r. If no r reaches 0.9, r90 = "> 256".
+- **H6b, specificity:** at r* = r90 (or 102 if r90 > 256), M2_r* beats M3_r* by ≥ 20 points on test_id in **each**
+  seed, with exact McNemar p < 0.01 in each. Pass/fail.
+- **H6c, recurrence across seeds (the WSPLang question):** at r*, both must hold:
+  1. the recovery of X_r* is ≥ 0.8 × that of M2_r*, averaged over seeds;
+  2. X_r* beats M3_r* with McNemar p < 0.01 in each seed.
+
+  Pass/fail.
+- **Also reported, no threshold:**
+  - recovery on test_ood_easy and test_ood_hard;
+  - retention NLL for every arm;
+  - the α sweep;
+  - energy against recovery, as a curve.
+- If M3 does about as well as M2 at some r, that rank is "any perturbation of this size", the failure mode of
+  results §36.
+- Whatever the result, it is written up in results.md and findings.md.
+
+## Cost and order
+- GPU, one job at a time: H6 starts after the H4 A2 run ends.
+- Code and tests: a few hours.
+- Each training: estimated 30-60 min (the DeltaNet layers use the slow torch path, because fla and causal_conv1d are
+  not installed; sequences are short).
+- Each evaluated arm: about 2-3 min.
+- Per seed: about 18 arms, about 1 h.
+- Total: about 5-6 h of GPU.
+- Disk: about 3.2 GB per fp32 model folder (3 seeds); arms are built in memory.
+
+## Prediction (written before running)
+- **H6a:** r90 between 51 and 102 (5-10 %). Confidence: medium; a narrow skill should be fairly low-rank.
+- **H6b:** passes. A norm-matched random slice should do little or harm. Confidence: medium.
+- **H6c:** fails on criterion 1. Seeds share the leading directions but not enough: recovery of X at about 0.5-0.8 of
+  M2. Confidence: low. This is the most informative outcome either way.
+- **Energy and recovery:** recovery rises faster than energy, so the first directions carry more function than their
+  energy share. Confidence: low.
+
+## Stage 2: from "what changed" to a synthetic update (the user's original goal)
+The aim: analyse what a small training changed, then build that change ourselves without running the training.
+Stage 1 above says *how much* of ΔW is needed. Stage 2 asks whether ΔW can be *predicted* from things that are cheap
+to compute on M0. It runs on the same seeds and test sets.
+
+**What changed (analysis, reported, no threshold):**
+- per layer and matrix kind: ‖ΔW‖/‖W‖, effective rank, and the share of the total change;
+- per seed, whether the same layers and matrix kinds carry the change.
+
+**H6d, predictability without training (forward passes only).** For each matrix whose smaller side is its input
+(q/k/v, gate/up, DeltaNet in_proj), let K be the top-r principal directions of that matrix's input activations on
+512 training prompts, run through M0 (no backward pass).
+- Overlap: share of ΔW_s's energy whose input side lies in span(K), against a random r-dim subspace.
+- Arm P_r: ΔW_s projected on span(K) (`basis=acts:<file>`). This still uses ΔW. It tests whether the directions
+  can be predicted, not a synthesis.
+- **Passes** if, at r*, the recovery of P_r ≥ 0.8 × that of M2_r, averaged over seeds, and P_r beats M3_r with
+  McNemar p < 0.01 in each seed.
+
+**H6e, synthetic update (no optimizer run).**
+- G_r: the gradient of the training loss at M0, summed over the same 512 prompts (one backward pass each, no
+  weight step), rank-r per matrix. A single scale α is chosen by accuracy on a 200-item dev split (separate from
+  test_id): α ∈ {0.5, 1, 2, 5, 10, 20, 50} × lr·steps.
+- Provenance is written honestly: `backward_calls = 512`, no optimizer steps. It is cheaper than training (about
+  1 pass over 2.5 % of the data), not gradient-free.
+- **Passes** if, at r*, the recovery of G_r ≥ 0.5 averaged over seeds and G_r beats M3_r with McNemar p < 0.01 in
+  each seed.
+- If H6d passes, G_r is also tried restricted to span(K): synthesis guided by the analysis.
+
+**Prediction:**
+- H6d passes partly. The input side of ΔW is pulled toward the task's activation directions, so the overlap is well
+  above chance; recovery is about 0.5-0.8 × M2. Confidence: low.
+- H6e fails the 0.5 threshold, landing around 0.2-0.4. One gradient step does not reach where 600 steps went.
+  Confidence: low.
+
+## Later (not part of H6)
+- Composition and interference, S(ΔW_A + ΔW_B), with a second skill.
+- Choosing directions by activations or gradients instead of energy.
+- Applying what works back to MiMo (H5).
