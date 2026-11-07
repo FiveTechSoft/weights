@@ -254,3 +254,44 @@ and ood_hard is 4×3. With 3×3 shots, M0 gets 28 % in fp32 and 26 % with the bf
 4 micro-batches of 10 (same update as a batch of 40). Peak 8.9 GB.
 
 **Fingerprint SVDs** run on the GPU in float32 (tested against float64 on the CPU).
+
+## Addendum 2026-11-07 c (after stage-0 training, before any E_k, transfer or synthetic result)
+**Stage 0 training done.** test_id M0 28.3 % in all seeds (G3: identical); M1 51.2 / 51.2 / 51.4 % (seeds 1/2/3).
+
+**G2 not met:** gain +22.9 / +22.9 / +23.1 points, the gate asks ≥ 30. The rule says retrain (lr/epochs). Deviation,
+stated openly: the user asked to go on with the synthetic arms (2026-11-07, "adelante con 1 → 2 → 3"), so the
+existing M1 is kept. Consequences: recovery has a denominator of ~230 items out of 1 000, so a recovery step of 0.1 is
+~23 items; McNemar tests are unaffected. All results below are labelled "G2 missed (+23 pts)". If a result hinges on
+recovery near a threshold (within ±0.1), it is reported as inconclusive, not pass/fail.
+
+**Order (user):** 1. E_k (stage 0, as registered). 2. Transfer of the lane across seeds (stage 1 arms M2_r, M3_r,
+X_r as registered, r ∈ {10, 20, 51, 102, 256}). 3. Synthetic update (H6e, below).
+
+**Stage 1 implementation choices (fixed now):**
+- Built in memory by `lab/probes/h6/transfer.py`; the WSPLang-op cross-check (two methods) is done for the headline
+  arm X_r* of one seed.
+- `basis=svd` side: rank-r truncation of ΔW_s (Eckart-Young). M3_r: ΔW_s projected on r random orthonormal
+  directions on the smaller side (seed fixed), rescaled per matrix to the norm of M2_r.
+- X_r: ΔW_s projected, on the smaller side, on the top-r left singular vectors of [ΔW_t | ΔW_u] (the other two seeds,
+  concatenated along the larger side). Not rescaled.
+- Matrices whose smaller side is ≤ r (in_proj_a/b, 16 wide) are kept whole in all arms (projection is the identity);
+  their share of ‖ΔW‖² is reported.
+
+**H6e (step 3), made concrete (fixed now):**
+- Gradient G = sum of the per-example training-loss gradients at M0 over the first 512 training examples of the seed's
+  order (the same examples its first ~13 steps saw), exact (micro-batches, fp32 master, bf16 autocast as in training).
+  backward_calls = 512 examples (13 micro-batch passes of 40).
+- Scale: the update is −G rescaled to a total norm (all matrices together) of α × N, where N = mean of the other two
+  seeds' ‖ΔW‖ (the size of a real training, taken from runs that are not this seed). α ∈ {0.25, 0.5, 1, 2, 4}, chosen
+  on dev. This replaces "α × lr·steps" of the original text, which has no meaning for a raw gradient against Adam's
+  sign-like steps.
+- Arms at r* (r90 from stage 1, or 102 if > 256):
+  - G_r: rank-r truncation of −G per matrix, then the global rescale.
+  - G^X_r ("the lane from other runs gives the where, the gradient gives the how much"): −G projected on the X_r
+    basis (other two seeds), then the global rescale.
+  - G_full: −G unprojected (reported, no threshold).
+  - Adam-like variant, reported, no threshold: sign(−G) restricted to the same projection — tells whether the
+    Adam geometry matters.
+- **Pass (H6e, as registered):** recovery of G_r ≥ 0.5 averaged over seeds and G_r beats M3_r* with McNemar p < 0.01
+  in each seed. Same criteria applied separately to G^X_r (reported as H6e-X).
+- **Prediction:** G_r fails (0.1-0.3). G^X_r does better than G_r but stays below 0.5 (0.2-0.45). Confidence: low.
