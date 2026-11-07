@@ -1,4 +1,4 @@
-# H7: a dataset of training steps, to learn to learn (DRAFT, not approved)
+# H7: a dataset of training steps, to learn to learn (APPROVED by the user 2026-11-08)
 
 Date: 2026-11-07. Follows H6 (results §40, findings F29-F33). Thresholds below are fixed before any H7 result;
 changes go in dated addenda.
@@ -118,3 +118,11 @@ task after k of its own steps, k ∈ {10, 25, 50}.
 - About 30 min per task: about 4.5 h for 9 tasks, plus the 9 × 9 interference evaluations (about 1 h).
 - Predictor fitting is on CPU, minutes.
 - Every predicted model evaluated: about 1 min per task × predictors × k.
+
+## Addendum 2026-11-08 a (before any H7 code ran)
+- **Train split = 8 000 per task** (not 20 000). 200 steps × batch 40 use exactly 8 000 examples, one pass with no
+  repeats. Several tasks have small item spaces (rev4 and sq4: 9 000 distinct questions). Dev 200 and test 500 are
+  unchanged.
+- **mod3_1:** b ∈ {3, ..., 19} instead of {3, ..., 9}. The old space (6 300 questions) cannot hold 8 703 distinct
+  items. The precheck's 16 % no longer applies; G1 on the test set decides.
+- **Basis:** U_n = random_basis(d, 20, seed = 70 000 + index of the matrix in sorted order). Identical for every task.
