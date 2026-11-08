@@ -142,3 +142,29 @@ would prefer a non-relative encoding (from the training tasks) did not hold on h
 not need different encodings here, so this benchmark cannot show a benefit of selection. Open: a family where a
 designed encoding is actually wrong (needs a mechanism-level difference, not a scoring change), or generated rather
 than listed candidates.
+
+## Balance v1 to v5 (what was learned, what was designed)
+
+| protocol | held-out | headline | verdict |
+|---|---|---|---|
+| recall testbed | 1 family | all policies reach 1.00 trials | not testable: one config fits every task |
+| v1 interference | 6 tasks, seen layers | contextual first pick best 6/6 | interpolation between seen layers; metric added post hoc |
+| v2 (budget 15, unseen layers) | 10 | first-proposal 0.035 on unseen layers vs static 0.268 | NEGATIVE: absolute encoding does not transfer |
+| v3 relative encoding | 10 fresh | 0.731 (unseen 0.643) | works, but encoding is our design; task similarity adds nothing |
+| v4 selection among designed encodings | 10 fresh | selected = best designed control | no additional utility |
+| v5 two families | 20 fresh | selected = best fixed in both families | no additional utility; v5 did NOT implement candidate generation, only the two families |
+
+Post hoc analysis (all cached scores, families A and B; not a test): mean score by offset (layer minus old layer)
+is flat except a small bump at offset 0, but at offset 0 the eta knob dominates: eta 1.0 gives 0.76 (A) / 0.87 (B),
+every other eta at most 0.25. So what experience mainly transmits is "use eta about 1.0 and write at the old layer",
+a nearly constant setting in a 50-config grid. Learned by the system: which eta works (from the score tables) and
+that a relative layer encoding beats an absolute one. Supplied by us: the config space, the relative encoding, the
+candidate encodings, the families, the threshold and the scoring.
+
+Best-founded next step (not started): within-task adaptation. Instead of ranking configurations once from past tasks,
+use the scores of the first trials on the NEW task (sequential search with a meta-learned prior from past tasks, e.g.
+a kernel over eta on a finer grid) and compare it against the same search with a flat prior, which is the honest
+control for "experience helps". It needs no new encodings and no new families. Validation cost locally: a finer eta grid
+(about 15 values) costs ~5 s per config-task pair, ~20 fresh held-out tasks about 25 to 30 minutes of compute, plus the
+pre-registration commit before scoring. A failure mode to report in advance: the knob is one-dimensional, so a
+flat-prior search may already find eta 1.0 in few trials.
