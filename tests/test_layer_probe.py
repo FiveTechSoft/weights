@@ -23,6 +23,17 @@ class Metrics(unittest.TestCase):
         self.assertAlmostEqual(lp.metrics(mimo / 2, base, mimo)["captured"], 0.5)
         self.assertLess(lp.metrics(-mimo, base, mimo)["captured"], 0)
 
+    def test_cosine_and_identity(self):
+        base, mimo = torch.zeros(6), torch.tensor([1.0, 2, 3, 0, 0, 0])
+        m = lp.metrics(mimo * 2, base, mimo)
+        self.assertAlmostEqual(m["cos"], 1.0, places=5)
+        self.assertAlmostEqual(m["captured"], 2.0, places=5)
+        self.assertAlmostEqual(m["resid"] ** 2, 1 - 2 * m["captured"] + m["norm_ratio"] ** 2, places=4)
+
+    def test_prompts_are_disjoint(self):
+        self.assertEqual(len(set(lp.PROMPTS)), len(lp.PROMPTS))
+        self.assertEqual(lp.N_DEV, 4)
+
     def test_orthogonal_change_captures_nothing(self):
         base = torch.zeros(4)
         shift = torch.tensor([1.0, 0, 0, 0])

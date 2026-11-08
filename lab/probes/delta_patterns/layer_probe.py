@@ -1,7 +1,7 @@
 """layer_probe.py - a local, functional probe of one layer: which parts of MiMo's delta reproduce its output change.
 
 Scope and limits (read before quoting any number):
-  * ONE layer (layer 0, a Gated DeltaNet layer) of 32, run in float32 on CPU with the transformers implementation.
+  * ONE layer at a time (layer 0 is a Gated DeltaNet layer) of 32, run in float32 on CPU with the transformers implementation.
     It says nothing about the full model or about behaviour (no generation, no benchmark).
   * Input: real token embeddings of the shared prompts, taken from the BASE model's embedding table, so the input
     that reaches layer 0 is exactly what the model sees there (layer 0 has no earlier layer). Later layers would
@@ -14,8 +14,8 @@ Scope and limits (read before quoting any number):
     tensor, same tensors. A structured part is only interesting if it beats its random control.
   * Per-tensor streaming keeps memory under the 2 GB limit of this machine.
 
-  python lab/probes/delta_patterns/layer_probe.py fetch   BASE@rev MODEL@rev CACHE_DIR
-  python lab/probes/delta_patterns/layer_probe.py run     CACHE_DIR out.json
+  python lab/probes/delta_patterns/layer_probe.py fetch   BASE@rev MODEL@rev CACHE_DIR LAYER
+  python lab/probes/delta_patterns/layer_probe.py run     CACHE_DIR out.json LAYER   (layers in order: 0 first, each saves the next layer's input)
 """
 import json
 import sys
@@ -25,15 +25,28 @@ import torch
 
 from engine import weight_diff as wd
 
-LAYER = 0
 PROMPTS = [
     "The capital of France is Paris, and the capital of Spain is Madrid.",
     "def fib(n):\n    return n if n < 2 else fib(n - 1) + fib(n - 2)\n",
     "<|im_start|>user\nWrite a function that reverses a string.<|im_end|>\n<|im_start|>assistant\n",
     "If 3x + 5 = 20, then x = 5. Let us check: 3 * 5 + 5 = 20.",
 ]
-MATS = ("mlp.gate_proj", "mlp.up_proj", "mlp.down_proj", "linear_attn.in_proj_qkv", "linear_attn.in_proj_z",
-        "linear_attn.out_proj", "linear_attn.in_proj_a", "linear_attn.in_proj_b")
+# Held out: written after the first layer-0 numbers on the four prompts above were seen, before any number on these was
+# computed. The delta bases (rank k, entry thresholds) come from the weights only, never from any prompt.
+HELD_OUT = [
+    "El rey de España vive en Madrid y el río Ebro desemboca en el mar Mediterráneo.",
+    '{"name": "get_weather", "arguments": {"city": "Tokyo", "unit": "celsius"}}',
+    "A train leaves at 9:15 going 80 km/h. How far has it gone after 2 hours and 30 minutes?",
+    "SELECT name, COUNT(*) FROM orders WHERE created_at > '2025-01-01' GROUP BY name ORDER BY 2 DESC;",
+    "<|im_start|>system\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nSummarise the plot of Hamlet.<|im_end|>\n",
+    "The committee met on Tuesday to review the budget, and after a long discussion it agreed to postpone the vote.",
+    "1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233",
+    "$ git log --oneline | head -5 && ls -la /var/log",
+]
+N_DEV = len(PROMPTS)
+PROMPTS = PROMPTS + HELD_OUT
+def is_matrix(s):
+    return s.endswith(".weight") and not any(w in s for w in ("norm", "conv1d"))
 
 
 def _reader(spec):
@@ -42,17 +55,21 @@ def _reader(spec):
     return wd.Renamed(wd.RangeSafetensors(wd.hf_files(repo, rev), wd.hf_fetch(repo, rev)), wd.text_model_name)
 
 
-def fetch(base, model, cache):
+def fetch(base, model, cache, layer):
     from safetensors.torch import save_file
     import urllib.request, pathlib
     pathlib.Path(cache).mkdir(parents=True, exist_ok=True)
     for tag, spec in (("base", base), ("mimo", model)):
+        if pathlib.Path(f"{cache}/{tag}_layer{layer}.safetensors").exists():
+            continue
         r = _reader(spec)
-        keep = {k: r.get(k).contiguous() for k in r.keys() if k.startswith(f"model.layers.{LAYER}.")}
+        keep = {k: r.get(k).contiguous() for k in r.keys() if k.startswith(f"model.layers.{layer}.")}
         keep["embed_rows_all"] = torch.zeros(1)  # placeholder so the file is never empty
         del keep["embed_rows_all"]
-        save_file(keep, f"{cache}/{tag}_layer{LAYER}.safetensors")
+        save_file(keep, f"{cache}/{tag}_layer{layer}.safetensors")
         print(tag, len(keep), "tensors", sum(v.numel() * v.element_size() for v in keep.values()) // 2**20, "MiB", flush=True)
+    if layer > 0:
+        return  # tokenizer, config and the layer-0 input already exist
     repo, _, rev = base.partition("@")
     for f in ("tokenizer.json", "config.json"):
         urllib.request.urlretrieve(f"https://huggingface.co/{repo}/resolve/{rev or 'main'}/{f}", f"{cache}/{f}")
@@ -77,7 +94,7 @@ def _chunks(n, step=2048):
 class Probe:
     BIG = 5_000_000  # tensors above this many entries are processed in row chunks (2 GB RAM limit)
 
-    def __init__(self, cache):
+    def __init__(self, cache, layer):
         from safetensors import safe_open
         from safetensors.torch import load_file
         from transformers.models.qwen3_5 import modeling_qwen3_5 as m
@@ -85,22 +102,28 @@ class Probe:
         cfg = json.load(open(f"{cache}/config.json"))["text_config"]
         self.cfg = Qwen3_5TextConfig(**cfg)
         self.cfg._attn_implementation = "eager"
-        self.fb = safe_open(f"{cache}/base_layer{LAYER}.safetensors", "pt")
-        self.fm = safe_open(f"{cache}/mimo_layer{LAYER}.safetensors", "pt")
+        self.fb = safe_open(f"{cache}/base_layer{layer}.safetensors", "pt")
+        self.fm = safe_open(f"{cache}/mimo_layer{layer}.safetensors", "pt")
         with torch.device("meta"):
-            self.layer = m.Qwen3_5DecoderLayer(self.cfg, LAYER)
+            self.layer = m.Qwen3_5DecoderLayer(self.cfg, layer)
         self.layer = self.layer.to_empty(device="cpu").float().eval()  # uninitialised; every tensor is overwritten
         self.params = dict(self.layer.named_parameters())
         self.params.update(dict(self.layer.named_buffers()))
         self.names = list(self.fb.keys())
-        self.pre = f"model.layers.{LAYER}."
+        self.pre = f"model.layers.{layer}."
+        self.full = self.cfg.layer_types[layer] == "full_attention"
         inp = load_file(f"{cache}/inputs.safetensors")
-        tbl = {int(u): inp["table"][i].float() for i, u in enumerate(inp["uniq"].tolist())}
-        ids = inp["ids"].tolist()
-        self.seqs, o = [], 0
-        for n in inp["lens"].tolist():
-            self.seqs.append(torch.stack([tbl[i] for i in ids[o:o + n]])[None])
-            o += n
+        lens = inp["lens"].tolist()
+        self.seqs = []
+        if layer == 0:  # real embeddings of the prompts, from the base table
+            tbl = {int(u): inp["table"][i].float() for i, u in enumerate(inp["uniq"].tolist())}
+            ids, o = inp["ids"].tolist(), 0
+            for n in lens:
+                self.seqs.append(torch.stack([tbl[i] for i in ids[o:o + n]])[None])
+                o += n
+        else:  # hidden states that the BASE model's earlier layers really produce (saved by the previous run)
+            h = load_file(f"{cache}/hidden_in_{layer}.safetensors")
+            self.seqs = [h[f"p{i}"][None].float() for i in range(len(lens))]
         self.rot = m.Qwen3_5TextRotaryEmbedding(self.cfg)
         self.norm = {n: self._dnorm(n) for n in self.names}
         self.basis = {}
@@ -122,7 +145,12 @@ class Probe:
         with torch.no_grad():
             for x in self.seqs:
                 pos = torch.arange(x.shape[1])[None]
-                outs.append(self.layer(x, position_embeddings=self.rot(x, pos), position_ids=pos).reshape(-1))
+                mask = None
+                if self.full:  # eager attention needs an explicit causal mask
+                    t = x.shape[1]
+                    mask = torch.full((t, t), float("-inf")).triu(1)[None, None]
+                outs.append(self.layer(x, position_embeddings=self.rot(x, pos), attention_mask=mask,
+                                       position_ids=pos).reshape(-1))
         return torch.cat(outs)
 
     def delta_basis(self, n, kmax=1024):
@@ -208,44 +236,62 @@ SETS = {
     "mlp_all": lambda s: s.startswith("mlp."),
     "mlp_gate_up": lambda s: s.startswith("mlp.gate") or s.startswith("mlp.up"),
     "mlp_down": lambda s: s.startswith("mlp.down"),
-    "deltanet_all": lambda s: s.startswith("linear_attn."),
-    "deltanet_qkv": lambda s: s.startswith("linear_attn.in_proj_qkv"),
-    "deltanet_out": lambda s: s.startswith("linear_attn.out_proj"),
+    "attn_all": lambda s: s.startswith("linear_attn.") or s.startswith("self_attn."),
     "norms": lambda s: s.endswith("layernorm.weight"),
 }
 
 
 def metrics(o, o_base, o_mimo):
+    """All inner products and norms are over the flattened concatenation of every token and hidden dimension of the
+    prompts in the group (one pooled number per group, not an average of per-prompt ratios).
+      shift = o_mimo - o_base, d = o - o_base
+      captured = <d, shift> / <shift, shift>   projection coefficient of the variant's change on MiMo's change.
+                 1 = same size along it, 0 = none, <0 = opposite; it can exceed 1; it is NOT 1 - relative error.
+      resid = ||o - o_mimo|| / ||shift||       relative error against MiMo's layer output (0 exact, 1 = the base layer)
+      cos = <d, shift> / (||d|| ||shift||)     direction agreement, independent of size
+      norm_ratio = ||d|| / ||shift||
+    resid^2 = 1 - 2 captured + norm_ratio^2."""
     shift = o_mimo - o_base
     d = o - o_base
-    return {"captured": float((d * shift).sum() / (shift * shift).sum()),
-            "resid": float((o - o_mimo).norm() / shift.norm()),
-            "norm_ratio": float(d.norm() / shift.norm())}
+    ip = float((d * shift).sum())
+    ns, nd = float(shift.norm()), float(d.norm())
+    return {"captured": ip / ns ** 2, "resid": float((o - o_mimo).norm()) / ns,
+            "cos": ip / (ns * nd) if nd > 0 else 0.0, "norm_ratio": nd / ns}
 
 
-def run(cache, out):
+def run(cache, out, layer):
     t0 = time.time()
-    pr = Probe(cache)
+    pr = Probe(cache, layer)
     o_base = pr.run_variant(lambda s: False, "none")
     o_mimo = pr.run_variant(lambda s: True, "full")
-    res = {"layer": LAYER, "tokens": int(sum(x.shape[1] for x in pr.seqs)),
+    res = {"input": "real base embeddings" if layer == 0 else "hidden states of the BASE model at this depth (not MiMo's own trajectory)", "n_dev_prompts": N_DEV, "layer": layer, "layer_type": pr.cfg.layer_types[layer], "tokens": int(sum(x.shape[1] for x in pr.seqs)),
            "shift_rel_to_output": float((o_mimo - o_base).norm() / o_base.norm()), "variants": {}}
     print("shift/output", res["shift_rel_to_output"], flush=True)
+    from safetensors.torch import save_file
+    hid0 = pr.cfg.hidden_size
+    nxt, i = {}, 0
+    for k, x in enumerate(pr.seqs):  # input of the next layer = what the base model really produces here
+        c = int(x.shape[1]) * hid0
+        nxt[f"p{k}"] = o_base[i:i + c].reshape(x.shape[1], hid0).contiguous()
+        i += c
+    save_file(nxt, f"{cache}/hidden_in_{layer + 1}.safetensors")
 
     hid = pr.cfg.hidden_size
     cut = [int(x.shape[1]) * hid for x in pr.seqs]
-
-    def per_prompt(o):
-        out, i = [], 0
-        for c in cut:
-            out.append(round(metrics(o[i:i + c], o_base[i:i + c], o_mimo[i:i + c])["captured"], 3))
-            i += c
-        return out
+    edge = [0]
+    for c in cut:
+        edge.append(edge[-1] + c)
+    groups = {"dev": (0, edge[N_DEV]), "heldout": (edge[N_DEV], edge[-1])}
 
     def add(name, o):
-        res["variants"][name] = metrics(o, o_base, o_mimo)
-        res["variants"][name]["captured_per_prompt"] = per_prompt(o)
-        print(f"{time.time() - t0:6.0f}s {name:34s}", {k: (round(v, 3) if not isinstance(v, list) else v) for k, v in res["variants"][name].items()}, flush=True)
+        v = {}
+        for g, (i, j) in groups.items():
+            v[g] = metrics(o[i:j], o_base[i:j], o_mimo[i:j])
+        v["captured_per_prompt"] = [round(metrics(o[edge[k]:edge[k + 1]], o_base[edge[k]:edge[k + 1]],
+                                                  o_mimo[edge[k]:edge[k + 1]])["captured"], 3) for k in range(len(cut))]
+        res["variants"][name] = v
+        r = lambda d: {k: round(x, 3) for k, x in d.items()}
+        print(f"{time.time() - t0:6.0f}s {name:34s} dev", r(v["dev"]), "heldout", r(v["heldout"]), flush=True)
         json.dump(res, open(out, "w"), indent=1)
 
     add("sanity_full_delta", o_mimo)
@@ -255,7 +301,7 @@ def run(cache, out):
             continue
         add(f"{name}:true", pr.run_variant(sel, "full"))
         add(f"{name}:random", pr.run_variant(sel, "random", seed=1))
-    mats = lambda s: any(s.startswith(p) for p in MATS)
+    mats = is_matrix
     for k in (16, 256, 1024):
         add(f"matrices_rank{k}:true", pr.run_variant(mats, "rank", k))
     add("matrices_rank256:random", pr.run_variant(mats, "random", seed=2))
@@ -270,6 +316,6 @@ def run(cache, out):
 
 if __name__ == "__main__":
     if sys.argv[1] == "fetch":
-        fetch(sys.argv[2], sys.argv[3], sys.argv[4])
+        fetch(sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]))
     elif sys.argv[1] == "run":
-        run(sys.argv[2], sys.argv[3])
+        run(sys.argv[2], sys.argv[3], int(sys.argv[4]))

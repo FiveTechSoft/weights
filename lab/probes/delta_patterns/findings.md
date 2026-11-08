@@ -428,3 +428,24 @@ base+full delta = exactly the MiMo layer (captured 1.0, resid 0.0), base alone =
 - Next, bounded by memory (2 GB RAM): layers 1-3 need exact activations from the layers before, which means running those layers of the base
   (one layer is about 0.4 GB per model in bf16, run one at a time and keep only the hidden states): a depth-wise chain is possible without ever loading
   the full model.
+
+## F30. Layers 0-2, 12 prompts (4 dev + 8 held out), cosine added: the rank-k effect holds on held-out prompts and weakens after layer 0 (measured, 2026-11-08)
+Same probe as F29 (data `layer_probe_L{0,1,2}_mimo.json`, pinned revisions). Changes since F29: (1) 8 held-out prompts, written after the dev numbers
+of F29 were seen and before any number on them existed, reported apart from the 4 dev prompts; the delta bases come from weights only; (2) cosine and norm
+ratio added; (3) layer 0 re-run (the dev numbers reproduce exactly); (4) layers 1 and 2 use the hidden states the BASE model produces on the same
+tokens (saved layer by layer), NOT MiMo's own trajectory: both models receive the base model's activations at that depth. Layer 0 receives the base embedding table's rows, also not MiMo's own embeddings.
+Metric (pooled over all tokens and dims of the group): captured = <d, shift>/<shift, shift> (projection coefficient, can be < 0 or > 1; not 1 - error), cos = direction agreement, d = variant output - base output, shift = MiMo output - base output.
+captured (cos in brackets), dev | held out; "rand sub." = random subspace of the same size on the same side of the same 8 matrices (seed 1):
+| layer | rank 16 | rand sub. 16 | rank 256 | rand sub. 256 | rank 1024 | MLP only | attention only |
+|---|---|---|---|---|---|---|---|
+| 0 | .26 (.59) \| .24 (.55) | .00 \| .00 | .61 \| .57 | .05 \| .06 | .83 \| .82 | .44 \| .47 | .58 \| .55 |
+| 1 | .11 (.33) \| .14 (.39) | .00 \| .00 | .45 \| .48 | .06 \| .06 | .76 \| .78 | .64 \| .59 | .35 \| .41 |
+| 2 | .11 (.34) \| .20 (.49) | .00 \| .00 | .38 \| .50 | .07 \| .06 | .64 \| .74 | .52 \| .51 | .46 \| .48 |
+- Held out holds: rank 16 gives .24 / .14 / .20 against .00 for the random subspace, and rank 256 gives .57 / .48 / .50 against .05-.06. The effect is not an artefact of the 4 prompts used to design the probe.
+- It is weaker than in layer 0 (rank 16: .26 -> .11-.20) and depends on the prompt: per prompt in layer 2, rank 16 goes .06 to .37 and rank 256 .28 to .69. Three layers say nothing about the other 29.
+- A random subspace of rank 256 still gets cos .2-.3 against .0 for rank 16; direction agreement is not zero for noise projected on the weights' own subspace, so cos is read next to the control, not alone.
+- The MLP delta carries more of the change than the attention delta from layer 1 on (.64 vs .35 in layer 1, dev).
+- What this is: a partial reproduction of a LOCAL output difference, on inputs that are the base model's own activations. What it is not: a benefit. MiMo's change on these tokens might be neutral or harmful
+  for a given task, and a part that reproduces it would then reproduce that. No generation, no benchmark, no behavioural claim. The earlier statement that the full-delta layer equals the MiMo layer
+  only shows the code rebuilds the weights.
+- Not done: layer 3 and beyond (layer 3 is full attention and needs the causal-mask path, implemented but not run), MiMo's native trajectory, other prompt domains at scale (12 short prompts), any task.
