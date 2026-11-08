@@ -32,7 +32,7 @@ def paired_ci(a, b, reps=2000, seed=0):
     return m(d), ms[int(0.025 * reps)], ms[int(0.975 * reps) - 1]
 
 
-def main():
+def compute_rows():
     tasks = ev.load(HERE / "interference_v6_scores.json")
     configs = sorted(next(iter(tasks.values()))["scores"])
     train = [(t["features"], t["scores"]) for t in tasks.values() if t["split"] == "train"]
@@ -62,6 +62,18 @@ def main():
         r["_fam"], r["_solv"] = f[3] > 5 and "B" or "A", any(v >= TH for v in s.values())
         r["_unseen"] = "_L2_" in n or "_L4_" in n
         rows[n] = r
+    return rows
+
+
+def criteria(rows):
+    """Paired bootstrap results of j, k, l: {name: (mean diff, lo, hi)}."""
+    allr = list(rows.values())
+    return {name: paired_ci([r["adaptive"][0] for r in allr], [r[other][0] for r in allr])
+            for name, other in (("j", "flat_adaptive"), ("k", "prior_only"), ("l", "fixed_recipe"))}
+
+
+def main():
+    rows = compute_rows()
     pol = ["random", "fixed_recipe", "prior_only", "flat_adaptive", "shuffled_adaptive", "adaptive", "oracle"]
     print("== Protocol v6 report ==")
 

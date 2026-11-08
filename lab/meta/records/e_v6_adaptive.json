@@ -1,0 +1,75 @@
+{
+  "experiment_id": "e_v6_adaptive",
+  "model_id": "NanoWSP-3",
+  "objective": "within-task adaptation helps beyond the fixed recipe (pre-registered in 6ba876c)",
+  "baseline": {
+    "nombre": "fixed_recipe",
+    "modelo": "NanoWSP-3",
+    "version": "lab/meta/interference_v6.py"
+  },
+  "edicion": {
+    "program": "lab/meta/evaluate_v6.py",
+    "operaciones": [
+      "imprint_thematic_corpus"
+    ],
+    "ruta": "lab/meta/interference_v6_scores.json"
+  },
+  "ejecucion": {
+    "estado": "executed",
+    "aplicada": true,
+    "errores": []
+  },
+  "resultados": {
+    "capacidad_edicion": 1.0,
+    "capacidad_mejro": 0.0,
+    "objetivo": "mean trials-to-success, censored at 16",
+    "datos": {
+      "random": 9.635,
+      "fixed_recipe": 7.05,
+      "prior_only": 5.55,
+      "flat_adaptive": 10.238,
+      "shuffled_adaptive": 7.845,
+      "adaptive": 5.55,
+      "oracle": 5.5
+    },
+    "metricas": {
+      "j": {
+        "mean_diff": -4.688,
+        "ci95": [
+          -6.649,
+          -2.853
+        ],
+        "holds": true
+      },
+      "k": {
+        "mean_diff": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "holds": false
+      },
+      "l": {
+        "mean_diff": -1.5,
+        "ci95": [
+          -3.75,
+          0.0
+        ],
+        "holds": false
+      }
+    }
+  },
+  "hypothesis": "Updating a meta-learned prior with the new task's own trials beats the fixed recipe.",
+  "evidence": {
+    "metric": "trials_to_success",
+    "n": 20,
+    "ruta": "lab/meta/interference_v6_results.txt",
+    "delta": -1.5
+  },
+  "placebo": "shuffled-experience prior (wrong task labels), 100 shuffles",
+  "holdout": "20 fresh tasks scored after the pre-registration commit 6ba876c",
+  "conclusion": "INCONCLUSIVE",
+  "veredicto": "sin_verificar",
+  "claim_class": "causal_learn",
+  "placebo_required": true
+}
