@@ -473,3 +473,11 @@ about 6 min of CPU for the stack. Still: base embeddings in, a short stack, no g
   The difference between full matrices (.13) and everything (0) lies in the norms, A_log/dt_bias and conv1d, whose delta is small but not zero.
 - The gap to the control is the evidence; the absolute level (rank 16 closes 6-9 % of the distance) is small, and rank 256 closes 30-34 %, about a quarter of the full delta's size per matrix (256 of 4096).
 - Still NOT shown: any benefit on a task, MiMo's native trajectory (embeddings differ), layers 4-31, long contexts, that the closer output is a better output.
+
+## F32 - delta_pack reproduces the probe's rank mode (layer 0, rank 16, 6 matrices)
+
+`demo_pack_layer0.py` builds a pack (manifest + factors, factors kept under /tmp, not committed) for the six large layer-0 matrices and compares `apply_pack` with
+the probe's own "rank" formula (basis files from `layer_probe.py`). Max abs difference 2e-8 to 6e-8, relative to |delta| 7e-7 to 2.4e-6 (float32 rounding and
+eigenvector sign choice do not matter for a projection). `verify_tensors` on the base returned no mismatches. Energy kept at rank 16: 3.1% to 6.9%.
+Manifest (hashes only, no weights): `lab/runs/delta_patterns/pack_manifest_layer0_rank16.json`; it states `behavioural_benefit: "not shown"`.
+This checks the packaging against the probe, one layer. It says nothing about benefit. Redistribution of factors is not decided (both licences apply).
