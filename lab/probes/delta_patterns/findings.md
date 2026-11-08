@@ -391,3 +391,17 @@ Goal stated by the user: compare the Qwen base with MiMo-V2.6 Qwen, see what cha
   make a shallow or deep layer a compact patch. Reference used: Qwen3.5-9B (the declared parent), an exploratory choice, not
   the user's confirmed "base". Sources: HF repos `Qwen/Qwen3.5-9B` and `XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B` at `main`
   as read on 2026-11-08 (revisions not pinned; pin them before any behavioural run).
+
+## F28. MiMo's delta is not sparse either: no neuron, channel or entry patch (measured, 2026-11-08)
+Second axis besides rank (F27): can a pruned delta (TIES/DARE-style entries, or a set of neurons or hidden channels)
+carry most of the change? Same 4 tensors as F27, revisions pinned: base `Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a`,
+model `XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B@1f09ddcc1a0ea45751ae0dfe2af20d533168c46f` (the third repo, `Qwen/Qwen3.5-9B-Base@68c46c4b3498877f3ef123c856ecfde50c39f404`, is not used).
+Data: `lab/runs/delta_patterns/reuse_sparsity_mimo.json` (reuse_curve.py, entry thresholds from a 1M-entry sample).
+- Largest 1 % / 10 % / 30 % of entries keep 9.5-10.8 % / 46-50 % / 80-82 % of the energy. A Gaussian keeps about 8 % / 46 % / 79 %,
+  so the tails are only slightly heavier than noise.
+- Largest 1 % / 10 % of rows keep 1.2-1.8 % / 12-16 %; of columns 1.2-2.2 % / 12-18 %. Uniform would be 1 % / 10 %.
+  No neuron-level or channel-level (outlier dimension) concentration in these tensors.
+- Reading: not low rank (F27), not sparse (F28). Whatever MiMo's SFT adds is spread over most weights. A small reusable
+  patch, if it exists, is defined by function and not by size, so only a behavioural test can find it. Not tested here.
+- Same limits: 4 of 427 tensors. A first run of the sparsity code was killed by the memory limit (sorting 50M entries),
+  and was replaced by the chunked version; no number from the killed run is used.

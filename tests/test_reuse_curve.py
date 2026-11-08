@@ -24,6 +24,20 @@ class ReuseCurve(unittest.TestCase):
         self.assertGreater(c["rank_for_90pct"], 30)
         self.assertLess(c["energy_rank_16"], 0.8)  # a square Gaussian keeps about 0.62 in 16 of 64 ranks
 
+    def test_sparsity_of_a_single_row_delta(self):
+        d = torch.zeros(100, 50)
+        d[7] = torch.randn(50, generator=torch.Generator().manual_seed(3))
+        c = rc.sparsity(d)
+        self.assertAlmostEqual(c["energy_top1pct_rows"], 1.0, places=5)
+        self.assertLess(c["energy_top1pct_cols"], 0.25)  # one entry of 50 holds its own share only
+        self.assertEqual(rc.curve(d)["rank_for_90pct"], 1)
+
+    def test_uniform_delta_has_no_sparsity(self):
+        d = torch.randn(200, 200, generator=torch.Generator().manual_seed(4))
+        c = rc.sparsity(d)
+        self.assertLess(c["energy_top10pct_rows"], 0.2)
+        self.assertLess(c["energy_top1pct_entries"], 0.12)  # Gaussian tail: about 0.08, not 0.01
+
     def test_orientation_does_not_matter(self):
         d = torch.randn(20, 50, generator=torch.Generator().manual_seed(2))
         a, b = rc.curve(d), rc.curve(d.T.contiguous())
