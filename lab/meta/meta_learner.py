@@ -81,3 +81,26 @@ def random_expected_trials(scores: Dict[Config, float], threshold: float, budget
             break
     expected += (budget + 1) * p_none_before
     return expected
+
+
+def relative_contextual_order(experience: Experience, features: Features,
+                              configs: Sequence[Config], k: int = 3) -> List[Config]:
+    """Like contextual_order, but a configuration is encoded relative to the task:
+    (layer - old_layer, eta, reg). `features[0] * 2` is the task's old layer (interference benchmarks).
+    Scores of the k most similar past tasks are pooled per relative configuration, then mapped back to
+    absolute layers for the new task, so a rule such as "write at the old layer" (offset 0) transfers to
+    old layers the experience never contained. Configurations with no relative evidence go last."""
+    if not experience:
+        return list(configs)
+    old_new = round(features[0] * 2)
+    near = sorted(experience, key=lambda e: _distance(e[0], features))[:k]
+    pooled: Dict[Tuple[int, float, float], List[float]] = {}
+    for f, scores in near:
+        old = round(f[0] * 2)
+        for (layer, eta, reg), v in scores.items():
+            pooled.setdefault((layer - old, eta, reg), []).append(v)
+    def key(c):
+        rel = (c[0] - old_new, c[1], c[2])
+        vals = pooled.get(rel)
+        return -(sum(vals) / len(vals)) if vals else 1.0
+    return sorted(configs, key=lambda c: (key(c), list(configs).index(c)))

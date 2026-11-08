@@ -47,3 +47,23 @@ class TestMetaLearner(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRelativeEncoding(unittest.TestCase):
+    def test_relative_rule_transfers_to_an_unseen_old_layer(self):
+        from lab.meta.meta_learner import relative_contextual_order
+        cfgs = [(l, 1.0, 0.01) for l in (1, 2, 3, 4, 5)]
+        # Rule in the experience: the good layer equals the old layer (offset 0).
+        def tab(old):
+            return {c: (1.0 if c[0] == old else 0.0) for c in cfgs}
+        exp = [((1 / 2, 5.0, 5.0), tab(1)), ((3 / 2, 5.0, 5.0), tab(3)), ((5 / 2, 5.0, 5.0), tab(5))]
+        # Old layer 2 and 4 never appear in the experience.
+        self.assertEqual(relative_contextual_order(exp, (2 / 2, 5.0, 5.0), cfgs)[0], (2, 1.0, 0.01))
+        self.assertEqual(relative_contextual_order(exp, (4 / 2, 5.0, 5.0), cfgs)[0], (4, 1.0, 0.01))
+        # The absolute proposer cannot express it: it proposes a layer from a neighbouring task.
+        self.assertNotEqual(contextual_order(exp, (2 / 2, 5.0, 5.0), cfgs, k=1)[0], (2, 1.0, 0.01))
+
+    def test_relative_without_experience_keeps_input_order(self):
+        from lab.meta.meta_learner import relative_contextual_order
+        cfgs = [(1, 1.0, 0.01), (2, 1.0, 0.01)]
+        self.assertEqual(relative_contextual_order([], (0.5, 1.0, 1.0), cfgs), cfgs)
