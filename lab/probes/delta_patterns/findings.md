@@ -482,11 +482,15 @@ eigenvector sign choice do not matter for a projection). `verify_tensors` on the
 Manifest (hashes only, no weights): `lab/runs/delta_patterns/pack_manifest_layer0_rank16.json`; it states `behavioural_benefit: "not shown"`.
 This checks the packaging against the probe, one layer. It says nothing about benefit. Redistribution of factors is not decided (both licences apply).
 
-## F33 - direct route: select-and-apply the delta (engine/delta_apply.py); the delta is dense, so there is nothing smaller to carry
+## F33 - select-and-apply the delta (engine/delta_apply.py): mechanics only
 
-Layer-0 cache, both models: 98.0% of the 218.4 M elements of the 10 comparable tensors differ between Qwen3.5-9B and MiMo (full fine-tune, no untouched
-region), and F27 found no low-rank structure. So the honest "extraction" is the delta itself (same size as the layer), not a compact patch.
-What can be chosen cheaply: which tensors/layers, a scale alpha, or rank k (lossy). `apply_selected(base, model, select, alpha, rank)` does exactly that per
-tensor, leaves unselected tensors as the base, skips (and reports) shape/dtype mismatches instead of casting, never modifies its inputs, and records sha256 of
-base, model and output. alpha=1, full delta reproduces the model up to float32 rounding (layer 0: 2-27 elements per matrix, abs error <= 1.2e-10): a tautology.
-This is the tool for building "base + chosen MiMo changes". Whether any choice improves behaviour is not measured and cannot be on this machine without model runs.
+Layer-0 cache, both models: 98.0% of the 218.4 M elements of the 10 comparable tensors differ between Qwen3.5-9B and MiMo, and F27 measured diffuse,
+not low-rank structure (rank 16 keeps 3-7% of the delta energy). That rules out a compact EXACT reconstruction of the delta from what was measured
+(12/427 tensors). It does not rule out a compact functional component: F29-F31 show rank-16/256 parts reproduce part of the layer output shift
+(a local measure, not benefit). Which subsets are useful is open.
+`apply_selected(base, model, select, alpha, rank)` is an in-memory function over tensor readers, covered by 4 unit tests on tiny tensors. It is NOT a
+ready 9B patch on disk and has no CLI; it has not been run on the full checkpoints. Per tensor it leaves unselected tensors as the base, skips and reports
+shape/dtype mismatches instead of casting, never modifies its inputs, and records sha256 of base, model and output. alpha=1 with the full delta reproduces
+the model up to float32 rounding (layer 0: 2-27 elements per matrix, abs error <= 1.2e-10): a tautology, not a result.
+No behavioural test of any selection was run. The streaming scoring protocol (behavioural_plan.md) exists but was not run, because the user asked
+for short checks; that is a scope decision, not an inability.
