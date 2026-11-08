@@ -2,6 +2,10 @@
 # WSP-Lang: train nanoGPT on Shakespeare char, with the config of karpathy/nanoGPT
 # config/train_shakespeare_char.py. Control run: gradient descent, not synthesis.
 # Upstream reports a best validation loss of 1.4697 with this configuration.
+# Hardware (measured 2026-11-08 on 2 CPU cores, about 1 GB RAM): with device=cpu and batch_size=4 three
+# iterations take about 5 s and peak at 928 MB of resident memory, so the upstream batch_size=64 does not fit in
+# that memory and 5000 iterations would take many hours even if it did. device=cuda is the intended setting; the
+# engine refuses it when CUDA is absent instead of falling back to CPU silently.
 # ==============================================================================
 
 experiment train_nanogpt_shakespeare_char:
