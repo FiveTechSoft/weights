@@ -77,3 +77,17 @@ k = 10 and k = 50 are descriptive.
 - `add_coefs([C...], lam)`, with a test of the per-matrix sum and scale;
 - `pick_lambda(dev_sums)`: largest dev sum wins, and a tie goes to the smaller λ (as in `synth.pick_alpha`);
 - main `--part a|b|all`.
+
+## Addendum a (2026-11-08, after B2 failed; before any TIES result): B3, TIES merge of the 7 task C
+User asked for a TIES arm (the Delta League leader on Qwen3.5-0.8B uses TIES).
+- TIES (Yadav et al. 2023) on the 7 flattened task vectors C_i (global over all matrices):
+  1. trim: keep in each C_i its top-d fraction of entries by |value|, zero the rest;
+  2. elect: per coordinate, sign of the sum of the trimmed values;
+  3. disjoint mean: per coordinate, mean of the trimmed values whose sign agrees with the elected one (0 if none);
+  4. W = W0 + U·(λ·merged).
+- Grid chosen on the sum of dev accuracies over the 7 tasks: d ∈ {0.2, 0.5, 1.0}, λ ∈ {1, 2, 3, 5}. Ties go to the
+  smaller d, then the smaller λ. Disjoint mean averages, so λ up to the number of tasks is in range.
+- Then: test of every task, retention NLL.
+- **HB3:** mean r ≥ 0.7 **and** retention NLL ≤ base + 0.02 (same as HB2).
+- Descriptive: per-task r against B2. Paired McNemar per task against B2's test masks is not available (B2 kept
+  only accuracies), so the comparison is by r only.

@@ -4,7 +4,7 @@ Part A: C_200 = P + O with P = <C_200, d> d, d = C_k / |C_k| (k in 10, 25, 50); 
 Part B: W0 + U (C_i + C_j) for the 21 pairs of the 7 G2 tasks; W0 + U lambda sum(C) for all 7, lambda chosen on dev.
 Writes lab/runs/h8/decompose.json and lab/runs/h8/library.json after every evaluation.
 
-usage: python lab/probes/h8/h8.py [--part a|b|all]
+usage: python lab/probes/h8/h8.py [--part a|b|all|c]  (c = TIES, addendum a)
 """
 import itertools
 import json
@@ -59,6 +59,36 @@ def pick_lambda(dev_sum):
 
 def pairs(names):
     return list(itertools.combinations(names, 2))
+
+
+def ties_merge(Cs, density=1.0):
+    """TIES: per task keep the top-density entries by |value| (global over matrices), elect the sign of the summed
+    trimmed values per coordinate, average the trimmed values that agree with it (addendum a)."""
+    names = sorted(Cs[0])
+    X = torch.stack([torch.cat([C[n].float().flatten() for n in names]) for C in Cs])
+    if density < 1.0:
+        keep = max(1, int(round(density * X.shape[1])))
+        for i in range(len(X)):
+            idx = X[i].abs().topk(keep).indices
+            mask = torch.zeros_like(X[i], dtype=torch.bool)
+            mask[idx] = True
+            X[i] = torch.where(mask, X[i], torch.zeros_like(X[i]))
+    sign = torch.sign(X.sum(0))
+    agree = (torch.sign(X) == sign) & (X != 0)
+    num = (X * agree).sum(0)
+    cnt = agree.sum(0)
+    merged = torch.where(cnt > 0, num / cnt.clamp_min(1), torch.zeros_like(num))
+    out, i = {}, 0
+    for n in names:
+        k = Cs[0][n].numel()
+        out[n] = merged[i:i + k].reshape(Cs[0][n].shape)
+        i += k
+    return out
+
+
+def pick_grid(dev_sum):
+    best = max(dev_sum.values())
+    return min(k for k, v in dev_sum.items() if v == best)
 
 
 # ---------- run ----------
@@ -182,6 +212,35 @@ def main():
         out["B2"] = b2
         p.write_text(json.dumps(out, indent=1), encoding="utf-8")
         say("B2", json.dumps({k: b2[k] for k in ("lambda", "mean_r", "retention_nll", "pass")}))
+
+    if part == "c":
+        p = OUT / "ties.json"
+        b2 = json.loads((OUT / "library.json").read_text(encoding="utf-8"))["B2"]
+        out = {"held": held, "acc0": acc0, "accT": accT, "accT_recheck": check, "dev": {}}
+        merged = {}
+        dev_sum = {}
+        for d in (0.2, 0.5, 1.0):
+            merged[d] = ties_merge([CT[n] for n in held], d)
+            for lam in (1, 2, 3, 5):
+                set_C({m: lam * x for m, x in merged[d].items()})
+                dv = {n: tk.eval_task(model, tok, n, tk.make_splits(n)["dev"])["acc"] for n in held}
+                dev_sum[(d, lam)] = sum(dv.values())
+                out["dev"][f"d{d}_l{lam}"] = dv
+                p.write_text(json.dumps(out, indent=1), encoding="utf-8")
+                say("B3 dev", d, lam, round(dev_sum[(d, lam)], 3), dv)
+        d, lam = pick_grid(dev_sum)
+        set_C({m: lam * x for m, x in merged[d].items()})
+        b3 = {"density": d, "lambda": lam, "test": {}}
+        for n in held:
+            acc = test(n)["acc"]
+            b3["test"][n] = {"acc": acc, "r": retention(acc, acc0[n], accT[n]), "r_B2": b2["test"][n]["r"]}
+        b3["retention_nll"] = ea.retention_nll(model, tok)
+        b3["mean_r"] = stt.mean(v["r"] for v in b3["test"].values())
+        b3["base_nll"] = b2["base_nll"]
+        b3["pass"] = b3["mean_r"] >= 0.7 and b3["retention_nll"] <= b2["base_nll"] + 0.02
+        out["B3"] = b3
+        p.write_text(json.dumps(out, indent=1), encoding="utf-8")
+        say("B3", json.dumps({k: b3[k] for k in ("density", "lambda", "mean_r", "retention_nll", "pass")}))
 
 
 if __name__ == "__main__":

@@ -57,6 +57,33 @@ class TestLibrary(unittest.TestCase):
         self.assertEqual(h8.pick_lambda({0.5: 3.0, 0.75: 3.0, 1: 2.0}), 0.5)
         self.assertEqual(h8.pick_lambda({0.5: 1.0, 0.75: 3.0, 1: 2.0}), 0.75)
 
+    def test_ties_merge_trim_elect_disjoint_mean(self):
+        import h8
+        A = {"m": torch.tensor([4.0, -1.0, 2.0, 0.1])}
+        B = {"m": torch.tensor([2.0, 3.0, -6.0, 0.2])}
+        C = {"m": torch.tensor([-1.0, 1.0, -2.0, 0.3])}
+        # no trim: coord0 sum +5 -> mean(4,2)=3; coord1 sum +3 -> mean(3,1)=2; coord2 sum -6 -> mean(-6,-2)=-4;
+        # coord3 all positive -> 0.2
+        M = h8.ties_merge([A, B, C], density=1.0)
+        self.assertTrue(torch.allclose(M["m"], torch.tensor([3.0, 2.0, -4.0, 0.2])))
+        # density 0.5 keeps top 2 of 4 per task: A {4,2}, B {-6,3}, C {-2,-1 or 1 tie}
+        M = h8.ties_merge([A, B, C], density=0.5)
+        self.assertAlmostEqual(float(M["m"][3]), 0.0)
+        self.assertAlmostEqual(float(M["m"][0]), 4.0)
+        self.assertAlmostEqual(float(M["m"][2]), -4.0)
+
+    def test_ties_merge_is_global_over_matrices(self):
+        import h8
+        A = {"a": torch.tensor([10.0, 0.0]), "b": torch.tensor([0.1, 0.2])}
+        M = h8.ties_merge([A], density=0.25)
+        self.assertTrue(torch.allclose(M["a"], torch.tensor([10.0, 0.0])))
+        self.assertTrue(torch.allclose(M["b"], torch.zeros(2)))
+
+    def test_pick_grid_ties_to_smaller(self):
+        import h8
+        self.assertEqual(h8.pick_grid({(0.5, 2): 5.0, (0.2, 3): 5.0, (0.2, 1): 4.0}), (0.2, 3))
+        self.assertEqual(h8.pick_grid({(0.2, 3): 5.0, (0.2, 2): 5.0}), (0.2, 2))
+
     def test_pairs_are_21(self):
         import h8
         self.assertEqual(len(h8.pairs(["t%d" % i for i in range(7)])), 21)
