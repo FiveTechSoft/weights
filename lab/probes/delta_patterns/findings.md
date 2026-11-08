@@ -474,8 +474,12 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Second grader 35/50, every difference a fraction written another way (checked by hand).
 
 ## F39. A fine-tune's useful change can be cut out and reused as a small LoRA at half scale (measured, 2026-11-08, results §43.4)
-- Jackrong's delta as a rank-64 LoRA keeps 99.97 % of it; on the base at scale 0.5 it closes 14/16 "has the answer,
-  cannot close" MATH items and keeps 19/20 already-solved ones (base 1 + 20; the full Jackrong 10-11 + 14).
+- Jackrong's delta as a rank-64 LoRA keeps 99.97 % of it; on the base at scale 0.5, 2 048 tokens, it scores 14/16
+  "has the answer, cannot close" MATH items + 19/20 items the base solves at 8 192 (base at 2 048: 1 + 5).
 - Rank 16 or MLP-only at ×0.5 does as well (14 + 18); either half of the layers or attention-only fails and damages.
 - MiMo's delta is not low-rank (r64 keeps 29 %) and its r64 LoRA does not transfer closing (3/16).
 - Prompting ("be concise") or a +4 logit bias on `</think>` does not replace it (3/16, 1/16).
+- Rank-16 ×0.5 on GSM8K (2 048 tokens): 18/28 base failures + 20/20 base solves, base 3 + 6. On MiMo it makes MiMo
+  close every time without losing answers. The heretic edit (heretic − Jackrong) is a rank-4 LoRA on 30 residual
+  writers; stacked on the closing LoRA it costs little (results §43.5). A mean-activation control vector from MiMo
+  helps far less (6 → 15 of 36).

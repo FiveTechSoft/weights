@@ -1679,6 +1679,28 @@ Recortes a ×0.5 (`slice_lora.py`, segundos, sin tocar el modelo):
 | capas 16-31 | 5 | 10 | 15 |
 | **solo MLP** | **14** | **18** | **32** |
 | solo atención (lineal + completa) | 4 | 5 | 9 |
+**Corrección (medida después):** la base con el mismo tope de 2 048 saca 5/20 en el grupo "ok" (A 1/16), así que
+"ok" no mide daño frente a la base sino frente a la base con 8 192 tokens. Comparación justa a 2 048: base 6/36,
+base + Jackrong r64 ×0.5 33/36.
 **Lectura:** la mejora de cierre de Jackrong vive en los 16 primeros componentes de sus MLP, repartida por toda la
-profundidad; media escala conserva el cierre y quita casi todo el daño del modelo completo. Trozos parciales
+profundidad; media escala rinde más que la escala completa (33 frente a 25 de 36). Trozos parciales
 (media red, solo atención) dañan más de lo que ayudan. Cada variante: 3-11 min de medida, sin entrenar.
+
+### 43.5 Más vías, misma medida (tope 2 048; base a 2 048: MATH A 1/16 + ok 5/20 = 6/36)
+| variante | MATH A /16 | MATH ok /20 | GSM8K falladas /28 | GSM8K ok /20 |
+|---|---|---|---|---|
+| base | 1 | 5 | 3 | 6 |
+| base + Jackrong r16 ×0.5 | 14 | 18 | **18** | **20** |
+| base + Jackrong r16 ×0.5 + heretic r4 ×1 | 13 | 16 | 19 | 18 |
+| MiMo (modelo completo) | 12 | 19 | — | — |
+| MiMo + Jackrong r16 ×0.5 | 12 | 20 (cierra 16/16 y 20/20) | — | — |
+| base + vector de control MiMo ×1 | 5 | 10 | — | — |
+| base + vector de control MiMo ×0.5 | 3 | 6 | — | — |
+GSM8K: las 28 que la base (H4 A0, 8 192) falla y sus 20 primeras resueltas.
+- heretic − Jackrong (descargado 2026-11-08): 30 matrices (down_proj, o_proj, out_proj), LoRA rango 4 conserva
+  99.9 %. Sumado al cierre: MATH −3, GSM8K +1 −2; dentro de lo que el ruido (±1-2) y n permiten, coste pequeño.
+- El LoRA de cierre de Jackrong sobre MiMo hace que MiMo cierre siempre (16/16) sin perder aciertos y en 2/3 del
+  tiempo: la diferencia de un modelo se aplica a otro derivado de la misma base.
+- Vector de control (media de h_MiMo − h_base por capa sobre los mismos textos, como incrementos por capa): ayuda
+  algo (6 → 15 de 36) pero lejos del LoRA. Primer intento escribió la diferencia acumulada: se sumaba ~30 veces y
+  rompía el modelo (corregido con `cvec_increments.py`).

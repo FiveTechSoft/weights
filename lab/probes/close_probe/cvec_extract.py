@@ -5,7 +5,7 @@ Written as a llama.cpp control vector GGUF: direction.N (N >= 1) is added to the
 transformers hidden_states[N + 1].
 
 No accelerate: the model sits on the CPU in bf16 and each decoder layer is moved to the GPU only for its own forward
-(pre/post hooks), the whole batch at once. Run with llama-server stopped (RAM, F-note in REPRO).
+(pre/post hooks), 8 texts per forward (right padding). Run with llama-server stopped (RAM, F-note in REPRO).
 
 usage: python lab/probes/close_probe/cvec_extract.py <base_hf> <improved_hf> <improved_runs_json> <out.gguf>
 """
@@ -72,13 +72,17 @@ def layer_means(path, data):
     layers = core.layers if hasattr(core, "layers") else core.language_model.layers
     stream_layers(layers)
     sums, count = None, 0
-    for pi, ti in data:   # one text at a time: no padding questions with the linear-attention layers
-        ids = torch.tensor([pi + ti])
+    B = int(__import__("os").environ.get("CVEC_B", 8))   # right padding: causal model, so real positions never see the pads after them
+    for k in range(0, len(data), B):
+        chunk = data[k:k + B]
+        L = max(len(pi) + len(ti) for pi, ti in chunk)
+        ids = torch.tensor([pi + ti + [0] * (L - len(pi) - len(ti)) for pi, ti in chunk])
         hs = core(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states
-        sl = slice(len(pi), len(pi) + len(ti))
-        v = torch.stack([h[0, sl].float().cpu().sum(0) for h in hs])     # (n_layers + 1, d)
-        sums = v if sums is None else sums + v
-        count += len(ti)
+        for b, (pi, ti) in enumerate(chunk):
+            sl = slice(len(pi), len(pi) + len(ti))
+            v = torch.stack([h[b, sl].float().cpu().sum(0) for h in hs])     # (n_layers + 1, d)
+            sums = v if sums is None else sums + v
+            count += len(ti)
     del model
     return sums / count
 

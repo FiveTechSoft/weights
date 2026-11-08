@@ -36,15 +36,29 @@ def main():
     ap.add_argument("--bias_think", type=float, default=0.0)
     ap.add_argument("--parallel", type=int, default=4)
     ap.add_argument("--lora", default="", help="id:scale,... of adapters loaded with --lora-init-without-apply")
+    ap.add_argument("--bench", default="math500", choices=("math500", "gsm8k"))
     a = ap.parse_args()
     import math500 as m5
     base = f"http://127.0.0.1:{a.port}"
-    rev = json.loads((ROOT / "lab/runs/model_compare/base_cut_review.json").read_text())["classes"]
-    ids = [("A", i) for i in rev["answer_found_cannot_close"]]
-    if a.guard:
-        own = json.loads((ROOT / "lab/runs/model_compare/own_base.json").read_text(encoding="utf-8"))["items"]
-        ids += [("ok", r["i"]) for r in own if r["bench"] == "math500" and r["ok"]]
-    items = m5.load_items()
+    if a.bench == "gsm8k":
+        # base GSM8K run of H4 (A0, same GGUF, 8192 tokens): its 28 failures (24 cut) as "A", first 20 solved as guard
+        own = [r for r in json.loads((ROOT / "lab/runs/h4/h4_A0.json").read_text(encoding="utf-8"))["items"]
+               if r["bench"] == "gsm8k"]
+        ids = [("A", r["i"]) for r in own if not r["ok"]]
+        if a.guard:
+            ids += [("ok", r["i"]) for r in own if r["ok"]][:20]
+        lines = (ROOT / "data" / "gsm8k_test.jsonl").read_text(encoding="utf-8").splitlines()
+        items = {}
+        for i in {i for _, i in ids}:
+            q = json.loads(lines[i])
+            items[i] = {"problem": q["question"], "answer": q["answer"].split("####")[-1].strip().replace(",", "")}
+    else:
+        rev = json.loads((ROOT / "lab/runs/model_compare/base_cut_review.json").read_text())["classes"]
+        ids = [("A", i) for i in rev["answer_found_cannot_close"]]
+        if a.guard:
+            own = json.loads((ROOT / "lab/runs/model_compare/own_base.json").read_text(encoding="utf-8"))["items"]
+            ids += [("ok", r["i"]) for r in own if r["bench"] == "math500" and r["ok"]]
+        items = m5.load_items()
     think = post(base + "/tokenize", {"content": "</think>"})["tokens"]
     if a.bias_think and len(think) != 1:
         raise SystemExit(f"</think> is not one token: {think}")
@@ -69,7 +83,7 @@ def main():
     t0 = time.time()
     with concurrent.futures.ThreadPoolExecutor(a.parallel) as ex:
         rows = list(ex.map(one, ids))
-    summ = {"name": a.name, "cap": a.cap, "system": a.system, "bias_think": a.bias_think, "lora": a.lora,
+    summ = {"name": a.name, "bench": a.bench, "cap": a.cap, "system": a.system, "bias_think": a.bias_think, "lora": a.lora,
             "seconds": round(time.time() - t0)}
     for g in sorted({r["grp"] for r in rows}):
         rs = [r for r in rows if r["grp"] == g]

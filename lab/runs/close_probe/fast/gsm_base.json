@@ -1,0 +1,457 @@
+{
+ "summary": {
+  "name": "gsm_base",
+  "bench": "gsm8k",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "0:0",
+  "seconds": 789,
+  "A": {
+   "n": 28,
+   "closed": 4,
+   "ok": 3,
+   "median_tokens": 2048
+  },
+  "ok": {
+   "n": 20,
+   "closed": 6,
+   "ok": 6,
+   "median_tokens": 2048
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 0,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 2,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 7,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 10,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 12,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 13,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 14,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 26,
+   "closed": true,
+   "ok": true,
+   "tokens": 1969,
+   "pred": "243",
+   "content_tail": "$$\n\nThen, add the cost of the shoes:\n$$\\$117.00 + \\$126.00 = \\$243.00$$\n\nAlternatively, you can sum the price of one set of each item and multiply by 3:\n$$(\\$16.50 + \\$22.50 + \\$42.00) \\times 3 = (\\$39.00 + \\$42.00) \\times 3 = \\$81.00 \\times 3 = \\$243.00$$\n\nMishka spent a total of $243.\n\n\\boxed{243}"
+  },
+  {
+   "grp": "A",
+   "i": 36,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 37,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": false,
+   "tokens": 1313,
+   "pred": "10 \\text{ miles per hour}",
+   "content_tail": " hours}$$\n\n**Step 3: Calculate the speed.**\nSpeed is calculated by dividing the total distance by the total time.\n*   **Total Distance:** 60 miles\n*   **Total Time:** 6 hours\n\n$$ \\text{Speed} = \\frac{60 \\text{ miles}}{6 \\text{ hours}} = 10 \\text{ miles per hour} $$\n\n\\boxed{10 \\text{ miles per hour}}"
+  },
+  {
+   "grp": "A",
+   "i": 43,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "1",
+   "content_tail": "Here is the step-by-step reasoning to solve the problem:\n\n**Step 1: Calculate the remaining calories"
+  },
+  {
+   "grp": "A",
+   "i": 45,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 47,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 50,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 51,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 58,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 62,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 69,
+   "closed": true,
+   "ok": true,
+   "tokens": 1194,
+   "pred": "60",
+   "content_tail": "t{Starting Amount} + \\text{Total Allowance} = \\text{Final Total} $$\n    $$ x + 40 = 100 $$\n\n3.  **Solve for the starting amount ($x$):**\n    Subtract the total allowance from the final total to find the starting amount.\n    $$ x = 100 - 40 $$\n    $$ x = 60 $$\n\nBailey started with $\\$60$.\n\n\\boxed{60}"
+  },
+  {
+   "grp": "A",
+   "i": 70,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 72,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 85,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 87,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 89,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 92,
+   "closed": true,
+   "ok": true,
+   "tokens": 1717,
+   "pred": "4",
+   "content_tail": "= 9 $$\n    So, Amy is 9 years old.\n\n3.  **Find Jackson's age:**\n    We are told that Amy is 5 years older than Jackson. This means Jackson is 5 years younger than Amy.\n    $$ \\text{Jackson's Age} = \\text{Amy's Age} - 5 $$\n    $$ \\text{Jackson's Age} = 9 - 5 = 4 $$\n\nJackson is 4 years old.\n\n\\boxed{4}"
+  },
+  {
+   "grp": "A",
+   "i": 93,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 98,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 1,
+   "closed": true,
+   "ok": true,
+   "tokens": 898,
+   "pred": "3",
+   "content_tail": "e robe takes **2 bolts** of blue fiber.\n2.  **Determine the amount of white fiber:** The problem states that it takes \"half that much\" white fiber. Half of 2 bolts is $2 \\div 2 = 1$ bolt.\n3.  **Calculate the total:** Add the bolts of blue fiber and white fiber together: $2 + 1 = 3$ bolts.\n\n\\boxed{3}"
+  },
+  {
+   "grp": "ok",
+   "i": 3,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 4,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 5,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "2.",
+   "content_tail": "Here is the step-by-step reasoning to solve the problem:\n\n1.  **Determine the price of the first type of glass:**\n    The problem states that the first glass costs **$5**.\n\n2.  **Determine the price of"
+  },
+  {
+   "grp": "ok",
+   "i": 6,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 8,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 9,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 11,
+   "closed": true,
+   "ok": true,
+   "tokens": 1312,
+   "pred": "694",
+   "content_tail": "es \\$80 = \\$160$$\n\n**3. Calculate the cost of the mini cheesecakes:**\nToula bought 6 dozen mini cheesecakes at $55 per dozen.\n$$6 \\times \\$55 = \\$330$$\n\n**4. Calculate the total cost:**\nAdd the cost of all three items together.\n$$\\$204 + \\$160 + \\$330 = \\$694$$\n\nThe total cost was $694.\n\n\\boxed{694}"
+  },
+  {
+   "grp": "ok",
+   "i": 15,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 16,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 17,
+   "closed": true,
+   "ok": true,
+   "tokens": 1631,
+   "pred": "57500",
+   "content_tail": "lculate total weekly earnings.**\nAdd the earnings from both jobs together.\n$$\\$700 + \\$450 = \\$1,150$$\n\n**Step 4: Calculate total annual earnings.**\nMultiply the total weekly earnings by the number of weeks she works in a year (50 weeks).\n$$\\$1,150 \\times 50 \\text{ weeks} = \\$57,500$$\n\n\\boxed{57500}"
+  },
+  {
+   "grp": "ok",
+   "i": 18,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "1",
+   "content_tail": "Here is the step-by-step reasoning to solve the problem:\n\n**Step 1"
+  },
+  {
+   "grp": "ok",
+   "i": 19,
+   "closed": true,
+   "ok": true,
+   "tokens": 1770,
+   "pred": "6",
+   "content_tail": "ate the required speed for the remaining distance.**\nShe needs to cover the remaining 6 miles in the remaining 1 hour.\n$$ \\text{Required Speed} = \\frac{\\text{Remaining Distance}}{\\text{Time Remaining}} $$\n$$ \\text{Required Speed} = \\frac{6 \\text{ miles}}{1 \\text{ hour}} = 6 \\text{ mph} $$\n\n\\boxed{6}"
+  },
+  {
+   "grp": "ok",
+   "i": 20,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 21,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 22,
+   "closed": true,
+   "ok": true,
+   "tokens": 736,
+   "pred": "7",
+   "content_tail": " DVDs}$$\n\n3.  **Third group of customers:** There are 3 customers who buy 0 DVDs.\n    $$3 \\text{ customers} \\times 0 \\text{ DVDs} = 0 \\text{ DVDs}$$\n\n4.  **Total sales:** Add the DVDs sold to each group together.\n    $$3 + 4 + 0 = 7 \\text{ DVDs}$$\n\nBilly sold a total of 7 DVDs on Tuesday.\n\n\\boxed{7}"
+  },
+  {
+   "grp": "ok",
+   "i": 23,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 24,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 25,
+   "closed": true,
+   "ok": true,
+   "tokens": 1078,
+   "pred": "2",
+   "content_tail": "the amount spent on pizza:**\n    Subtract the cost of the known items from the total amount paid.\n    $\\$50 - \\$33 = \\$17$\n\n6.  **Calculate the number of pizza boxes:**\n    Divide the total cost of the pizza by the price per box.\n    $\\$17 \\div \\$8.50 = 2$\n\nMarie ordered 2 boxes of pizza.\n\n\\boxed{2}"
+  },
+  {
+   "grp": "ok",
+   "i": 27,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  }
+ ]
+}
