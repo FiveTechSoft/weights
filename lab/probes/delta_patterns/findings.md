@@ -516,3 +516,25 @@ prospective only for data not yet seen. A failure on other layers would show onl
 Limits: layers 0-3 only (not 4-31), 4 dev + 8 held-out short prompts, MiMo's own trajectory not used (base trajectory in), distance to MiMo's output is not task quality.
 Tool link: `apply_selected(rank=k)` agrees with the probe's rank formula on two layer-0 matrices (rank 16 and 256): |difference| <= 3.9e-4 of |delta|, which is the
 bf16 rounding of the output tensor (the probe works in float32).
+
+## F35 - choosing the rank-r subspace with activations instead of weights alone (idea taken from areu01or00/qwen0.8B-wsp; layer 0, one matrix, cache only)
+
+Source reviewed (read only, not run): the X post by @TensorSlay (2026-11-08) and the repo it links, github.com/areu01or00/qwen0.8B-wsp (no licence file declared in the
+GitHub API; created 2026-11-08). It writes FACTS into Qwen3.5-0.8B `mlp.down_proj` of layers 17-21 by a closed-form MEMIT-style solve from the activations entering
+down_proj ("keys"); there is no donor model and no delta transfer, so it is not a method for moving MiMo's changes onto Qwen. Its results are the author's own (2 of 5
+unseen wordings word-perfect, others drift or loop; reported in its README); I did not reproduce them.
+What transfers to our question: its subspace comes from real activations. Test (`data_aware_rank.py`, data `data_aware_rank_L0_down_proj.json`): for layer 0 `mlp.down_proj`,
+patch = U U^T delta with U from (a) the left singular vectors of delta (weights only, our current choice), (b) those of delta @ K_dev^T with K_dev = keys of the 4 dev
+prompts (95 tokens, so rank <= 95), (c) random. Scored on the 8 held-out prompts (217 tokens), base trajectory:
+
+| rank | captured weights-only | captured data-aware | random | rel. error weights-only / data-aware |
+|---|---|---|---|---|
+| 8 | 0.032 | 0.080 | 0.002 | 0.984 / 0.959 |
+| 16 | 0.057 | 0.096 | 0.004 | 0.971 / 0.951 |
+| 32 | 0.087 | 0.126 | 0.008 | 0.956 / 0.935 |
+| 64 | 0.131 | 0.156 | 0.015 | 0.932 / 0.919 |
+
+(captured = <patch K, delta K>/<delta K, delta K> on the held-out keys; local reproduction of the matrix's output difference, not benefit.)
+Reading: with the same size, picking U from activations beats picking it from weights on held-out tokens at every rank tried (2.5x at rank 8, shrinking to 1.2x at rank 64);
+both are far above random. Limits: one matrix, one layer, 95 fit tokens, our own prompts, base trajectory, no task metric; the gap may change with more fit data,
+other matrices or deeper layers, and the dev set cannot support ranks above 95 (rank 256 untested). Not applied to the F34 recommendation.
