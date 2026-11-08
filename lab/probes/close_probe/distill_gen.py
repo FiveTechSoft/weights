@@ -1,0 +1,68 @@
+"""Behaviour distillation, step 1: a teacher's (MiMo's) own answers on MATH-500 items that are NOT in the eval set
+(own_base.json n=50), §39 prompt, greedy, raw text from llama-server /apply-template + /completion. Kept for training
+only when the teacher closed its reasoning (</think>) and the answer after it is right (rig/math500 grader).
+
+usage: python lab/probes/close_probe/distill_gen.py <out.jsonl> <port> [n=160] [cap=2048] [parallel=8]
+"""
+import concurrent.futures
+import json
+import random
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "rig"))
+SUFFIX = "\nPlease reason step by step, and put your final answer within \\boxed{}."
+
+
+def select(n, total, exclude):
+    pool = [i for i in range(total) if i not in exclude]
+    return sorted(random.Random(0).sample(pool, n))
+
+
+def grade(text, answer):
+    """(closed, ok): closed = the reasoning ended with </think>; ok = the answer after it is right."""
+    import math500 as m5
+    if "</think>" not in text:
+        return False, False
+    pred = m5.extract_pred(text.split("</think>", 1)[1])
+    return True, bool(pred) and m5.equivalent(pred, answer)
+
+
+def post(url, body):
+    req = urllib.request.Request(url, json.dumps(body).encode(), {"Content-Type": "application/json"})
+    return json.loads(urllib.request.urlopen(req, timeout=7200).read())
+
+
+def main():
+    import math500 as m5
+    out, port = Path(sys.argv[1]), int(sys.argv[2])
+    n, cap, par = (int(sys.argv[k]) if len(sys.argv) > k else d for k, d in ((3, 160), (4, 2048), (5, 8)))
+    items = m5.load_items()
+    own = json.loads((ROOT / "lab/runs/model_compare/own_base.json").read_text(encoding="utf-8"))["items"]
+    ev = {r["i"] for r in own if r["bench"] == "math500"}
+    ids = select(n, len(items), ev)
+    base = f"http://127.0.0.1:{port}"
+
+    def one(i):
+        prompt = post(base + "/apply-template",
+                      {"messages": [{"role": "user", "content": items[i]["problem"] + SUFFIX}]})["prompt"]
+        r = post(base + "/completion", {"prompt": prompt, "n_predict": cap, "temperature": 0, "seed": 0,
+                                        "cache_prompt": False})
+        closed, ok = grade(r["content"], items[i]["answer"])
+        return {"i": i, "prompt": prompt, "completion": r["content"], "closed": closed, "ok": ok,
+                "eos": r.get("stop_type") == "eos", "tokens": r.get("tokens_predicted")}
+
+    t0 = time.time()
+    with concurrent.futures.ThreadPoolExecutor(par) as ex:
+        rows = list(ex.map(one, ids))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    print(json.dumps({"n": len(rows), "closed": sum(r["closed"] for r in rows), "ok": sum(r["ok"] for r in rows),
+                      "eos": sum(r["eos"] for r in rows), "seconds": round(time.time() - t0)}), flush=True)
+
+
+if __name__ == "__main__":
+    main()

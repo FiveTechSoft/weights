@@ -490,3 +490,8 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   99.97 %): r16 ×0.5 14/16, vs base p = 0.0002. Below r8 it is lost (r4: 11/36 vs r16 32/36).
 - Correction to F39: "r64 keeps 29 %" for MiMo was an unweighted mean; weighted it is 11 %.
 - WSPLang op `delta_to_lora` writes the adapter and the energy curve (ranks 1..1024) in one pass.
+## F41. A full fine-tune's behaviour can be distilled into a LoRA when its weights cannot (measured, 2026-11-08, results §43.7)
+- 93 of MiMo's own closed, correct MATH answers, 1 epoch, r16 MLP LoRA on the frozen 9B base (22 min on a 12 GB GPU
+  by layer streaming with a hand-written backward): MATH probe 6 → 16/36 (p = 0.013), GSM8K 9 → 34/48 (p < 0.0001,
+  not trained on GSM8K). MiMo's weight-delta LoRAs got ≤ 4/16 on the stuck items; this one 5/16 there, 11/20 on the
+  rest. Still below MiMo (31/36) and Jackrong's weight LoRA (32/36) on MATH; on GSM8K not distinguishable from it.

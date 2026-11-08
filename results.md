@@ -1729,3 +1729,25 @@ Nueva operación `step delta_to_lora base= model= rank= [kinds=] out= [gguf=]` (
 - Conclusión: la mejora de MiMo (fine-tune completo) no cabe en un LoRA ni a rango 512 en MLP ni escalando; ninguna
   variante se distingue de la base y todas quedan por debajo de MiMo (p ≤ 0.008). La de Jackrong sí (p = 0.0002).
   `energy.json` lo predice antes de evaluar.
+
+### 43.7 Destilar la conducta de MiMo en un LoRA (2026-11-08)
+Los pesos de MiMo no caben en un LoRA (§43.6), así que se entrena uno sobre su conducta.
+- Datos (`distill_gen.py`): MiMo, §39, voraz, 2 048 tokens, sobre 160 ítems de MATH-500 fuera del n=50 evaluado;
+  cierra 100, acierta 93 → 93 secuencias, 69 476 tokens de respuesta. Sesgo: son los que MiMo resuelve breve.
+- Entrenamiento (`distill_train.py`): LoRA r16 en gate/up/down de las 32 capas (25.2 M parámetros), base congelada
+  en CPU, capas por la GPU de una en una con backward manual; 1 época, 4 secuencias por paso, AdamW 2e-4; 22 min.
+  Tests (0.8B real): gradiente en streaming = gradiente directo, CPU = GPU, pesos congelados vuelven a CPU.
+  Fallos encontrados y corregidos por los tests: `p.data` movía tensores que autograd había guardado; la copia
+  GPU→CPU de vuelta provocaba segfault (ahora se reapunta al maestro en CPU, sin copia).
+- Evaluación (tope 2 048, ×1), McNemar pareado:
+
+| | MATH /36 | GSM8K /48 |
+|---|---|---|
+| base | 6 | 9 |
+| **LoRA destilado de MiMo** | **16** (vs base 12/2, p = 0.013; vs MiMo 0/15, p = 0.0001) | **34** (vs base 26/1, p < 0.0001) |
+| MiMo completo | 31 | — |
+| LoRA Jackrong r16 ×0.5 (de pesos) | 32 (vs destilado 16/0) | 38 (vs destilado 6/2, p = 0.29) |
+
+- Lectura: destilar conducta sí transfiere algo que copiar pesos no transfería (los LoRA de pesos de MiMo ≤ 4/16 en
+  A); entrenado solo con MATH, mejora GSM8K casi como el LoRA de Jackrong. En MATH queda a mitad (16 vs 31-32).
+  Una sola época con 93 ejemplos fáciles: no se probó más datos, más épocas ni escala; no generalizar.
