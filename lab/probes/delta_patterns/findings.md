@@ -351,3 +351,36 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - H3 (directions) is unaffected: signatures use only matrices, and none of the cast tensors is a matrix.
 - Lesson (same class as the viral WSP posts we audited): a storage format difference read as a weight change. Every
   diff now rounds to the common dtype before comparing.
+
+## F27. Reusing MiMo's change on Qwen3.5-9B: the full delta is trivial, rank-k parts carry little (measured, 2026-11-08)
+Goal stated by the user: compare the Qwen base with MiMo-V2.6 Qwen, see what changed, and see how to reuse it on the base.
+- **Pair (verified from primary sources today):** the model card of `XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B` says it is
+  supervised fine-tuning of Qwen3.5-9B on MiMo-generated data (77.4B tokens). Text configs match field for field with
+  `Qwen/Qwen3.5-9B` and `Qwen/Qwen3.5-9B-Base`. Read live by header: 427 text tensors with identical names and shapes in
+  MiMo and Qwen3.5-9B. "Base" is ambiguous: the SFT parent is Qwen3.5-9B (post-trained), not `-Base`; the existing
+  analysis uses Qwen3.5-9B. Using `-Base` instead would mix Qwen's own post-training into the delta.
+- **Three different claims, only the first two are made here:**
+  1. structural comparison (what changed, where): F1-F3, F26. Done.
+  2. delta extraction and how much a part carries (this entry). Done for a sample.
+  3. behavioural proof that applying a part to the base helps: NOT done. Needs inference on a 9B model, which this
+     environment cannot run (2 CPUs, about 2 GB RAM).
+- **Full delta:** base + (MiMo - base) is MiMo exactly. That is a copy, not reuse, so it proves nothing.
+- **Energy by family** (from `stats_mimo.jsonl`, squared delta norm): mlp 60.3 % (54.0 % of parameters), ssm/DeltaNet
+  20.6 % (18.1 %), head 8.1 % (11.4 %), attn 5.5 % (5.2 %), embed 5.5 % (11.4 %), norms about 0. Delta energy follows
+  parameter share closely; the MLP is not unusually concentrated. Top-16 directions per tensor keep 4.4 % in total.
+- **Rank needed** (`reuse_curve.py`, full tensors by HTTP range, 4 tensors, `lab/runs/delta_patterns/reuse_curve_mimo.json`):
+  | tensor | min dim | rank for 50 % / 80 % / 90 % | energy kept at rank 16 / 64 / 256 / 1024 |
+  |---|---|---|---|
+  | L3 v_proj | 1024 | 191 / 476 / 651 | 9 % / 25 % / 59 % / 100 % |
+  | L17 gate_proj | 4096 | 657 / 1688 / 2369 | 4 % / 10 % / 27 % / 64 % |
+  | L17 down_proj | 4096 | 708 / 1748 / 2425 | 3 % / 8 % / 25 % / 62 % |
+  | L17 in_proj_qkv | 4096 | 516 / 1363 / 1979 | 4 % / 12 % / 32 % / 71 % |
+  A rank-k transplant is cheap only for tiny k, and there it carries a few percent of the change. Reaching 80 % of
+  one MLP matrix's delta takes about 40 % of its rank, i.e. a large part of the full cost. Energy is not function:
+  a small-energy part could still matter, and a large-energy part could be mostly noise. Only the behavioural test
+  can say, and it has not been run.
+- **Reading for reuse:** the update is diffuse in magnitude. A compact, transferable "patch" is not visible in the
+  spectrum. Candidates that remain open are tensor-type subsets (for example MLP only, or layers 14-23 where the
+  change peaks), compared with a random subset of equal delta norm, as pre-registered in plan.md H4. They need a
+  behavioural evaluation and therefore an inference machine.
+- Limits: 4 tensors of 427, one layer mostly; the families' rank curves were not all measured.
