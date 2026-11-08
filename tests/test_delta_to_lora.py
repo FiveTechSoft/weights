@@ -26,6 +26,16 @@ class TestLowrank(unittest.TestCase):
         self.assertEqual(a, "base_model.model.model.language_model.layers.3.mlp.down_proj.lora_A.weight")
         self.assertEqual(b, "base_model.model.model.language_model.layers.3.mlp.down_proj.lora_B.weight")
 
+    def test_wanted_filters_by_kind(self):
+        import delta_to_lora as dl
+        mlp = "model.language_model.layers.3.mlp.down_proj.weight"
+        att = "model.language_model.layers.3.linear_attn.out_proj.weight"
+        norm = "model.language_model.layers.3.input_layernorm.weight"
+        self.assertTrue(dl.wanted(mlp, None) and dl.wanted(att, None))
+        self.assertFalse(dl.wanted(norm, None))
+        self.assertTrue(dl.wanted(mlp, {"mlp"}))
+        self.assertFalse(dl.wanted(att, {"mlp"}))
+
 
 if __name__ == "__main__":
     unittest.main()

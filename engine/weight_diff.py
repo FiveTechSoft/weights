@@ -112,6 +112,10 @@ class Renamed:
         """Original names that rename() hid (vision tower, MTP head, ...)."""
         return sorted(self._hidden)
 
+    def original(self, name: str) -> str:
+        """The stored name behind a renamed one."""
+        return self._map[name]
+
     def get(self, name: str) -> torch.Tensor:
         return self._reader.get(self._map[name])
 

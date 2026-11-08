@@ -63,6 +63,7 @@ OPS_ALLOWED = {
     "subspace_transfer",  # move along a subspace of another model's update (engine/subspace_ops.py)
     # Studying improved models (engine/weight_diff.py, engine/bench_runner.py); none writes weights
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",
+    "delta_to_lora",  # a fine-tune's change as a LoRA adapter beside the models (engine/lora_export.py)
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -239,6 +240,7 @@ READ_ONLY_OPS = {
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     "assert_behavioral_drift", "vicreg_preserve",
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",  # reports, never weights
+    "delta_to_lora",  # writes a new adapter dir, never inside or over an input model
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -2190,6 +2192,47 @@ def execute_plan_v4(
                     out_p.parent.mkdir(parents=True, exist_ok=True)
                     out_p.write_text(json.dumps(rows, indent=1), encoding="utf-8")
                     res["result"]["output"] = str(out_p)
+                res["execution_state"] = "executed"
+
+            elif op == "delta_to_lora":
+                # model - base per linear decoder matrix, truncated SVD to rank=, as a PEFT adapter (+ energy.json:
+                # share of the change each matrix keeps). kinds=mlp,self_attn,linear_attn limits the matrices.
+                # gguf=<file> also converts it with llama.cpp's convert_lora_to_gguf.py (env WSP_LORA_CONVERTER,
+                # python from WSP_CONVERT_PYTHON); base= must then be a Hugging Face dir with its config.
+                import subprocess
+                from engine import lora_export as le
+                from engine import weight_diff as wd
+                if not named.get("base") or not named.get("model") or not named.get("out"):
+                    raise ValueError("delta_to_lora needs base=<model> model=<model> out=<adapter dir> [rank=16]")
+                base_p, model_p = _model_path(named["base"]), _model_path(named["model"])
+                out_p = check_report_path(named["out"], [base_p, model_p])
+                if out_p.exists():
+                    raise WriteGuardError(f"delta_to_lora: {out_p} exists; adapters are never overwritten")
+                gguf_p = None
+                if named.get("gguf"):
+                    gguf_p = _model_path(named["gguf"])
+                    check_report_path(gguf_p.with_suffix(".json"), [base_p, model_p])
+                    if gguf_p.exists():
+                        raise WriteGuardError(f"delta_to_lora: {gguf_p} exists")
+                kinds = set(str(named["kinds"]).split(",")) if named.get("kinds") else None
+                if kinds and not kinds <= set(le.KINDS):
+                    raise ValueError(f"delta_to_lora: kinds must be among {le.KINDS}")
+                base_r = wd.Renamed(wd.LocalSafetensors(base_p), wd.text_model_name)
+                model_r = wd.Renamed(wd.LocalSafetensors(model_p), wd.text_model_name)
+                res["result"] = le.export_lora(base_r, model_r, int(named.get("rank", 16)), out_p, kinds=kinds,
+                                               base_label=str(base_p))
+                if gguf_p:
+                    conv = os.environ.get("WSP_LORA_CONVERTER")
+                    if not conv:
+                        raise ValueError("gguf= needs env WSP_LORA_CONVERTER=<llama.cpp convert_lora_to_gguf.py>")
+                    cmd = [os.environ.get("WSP_CONVERT_PYTHON", sys.executable), conv, str(out_p), "--base",
+                           str(base_p), "--outtype", "f16", "--outfile", str(gguf_p)]
+                    cp = subprocess.run(cmd, capture_output=True, text=True)
+                    if cp.returncode != 0:
+                        raise RuntimeError(f"convert_lora_to_gguf failed: {cp.stderr[-500:]}")
+                    res["result"]["gguf"] = str(gguf_p)
+                res["result"]["use"] = ("llama-server -m <base.gguf> --lora <adapter.gguf> --lora-init-without-apply; "
+                                        "per request \"lora\": [{\"id\": 0, \"scale\": s}]")
                 res["execution_state"] = "executed"
 
             elif op == "model_report":

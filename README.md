@@ -118,7 +118,7 @@ NLL near ln 65. For language-model behaviour use `lab/verify_llmness.py`, calibr
 A declarative language for weight-space experiments. Steps cover:
 - inspection: `peek`, `semantic_map`;
 - edits under a guard: `project_out`, `scale-cols`, closed-form imprints;
-- weight diffs: `delta_stats`, `delta_signature`, `delta_compare`, `model_report`;
+- weight diffs: `delta_stats`, `delta_signature`, `delta_compare`, `model_report`, `delta_to_lora` (a fine-tune's change as a reusable LoRA adapter);
 - behavioural evaluation: `evaluate_benchmark` against a running server.
 
 Spec: [`docs/wsplang_specification.md`](docs/wsplang_specification.md).

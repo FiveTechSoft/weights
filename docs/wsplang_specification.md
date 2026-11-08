@@ -203,6 +203,7 @@ step delta_compare a=<sig.pt> b=<sig.pt> [factor=3] [out=<report.json>]
 step evaluate_benchmark endpoint=<port|URL> name=<label> [gsm8k=100] [math500=50] [max_tokens=8192] [out=<report.json>]
 step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<a.pt>,<b.pt>|random k=16 alpha=1.0 [seed=0] out=<dir>
 step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true] [nonweights=true] out=<report.md>
+step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds=mlp,self_attn,linear_attn] [gguf=<file.gguf>]
 ```
 
 * `delta_stats`: per tensor, ||ΔW||/||W||, cosine, changed fraction, spectrum of ΔW (top-1 energy, stable rank),
@@ -213,6 +214,15 @@ step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true
   null) and against chance k/d; `H3` true when both ratios are >= `factor`.
 * `evaluate_benchmark`: GSM8K / MATH-500 with one fixed protocol (greedy, the model's chat template, the boxed
   answer graded by two independent graders) against a server that is already running (e.g. llama-server).
+* `delta_to_lora`: the change (model - base) of every linear decoder matrix as a PEFT LoRA adapter, by exact SVD
+  truncated to `rank` (lora_alpha = rank, so scale 1 = the rank-r part of the whole change). `energy.json` gives per
+  matrix the share of ||ΔW||² kept at ranks 1, 4, 16, 64, 256, 512, 1024, and the result its ||ΔW||²-weighted mean:
+  read it before evaluating (a change that a small rank keeps is one a small adapter can carry). `gguf=` also runs
+  llama.cpp's convert_lora_to_gguf.py (env `WSP_LORA_CONVERTER`, python `WSP_CONVERT_PYTHON`; `base` must be a Hugging
+  Face dir). llama-server then applies it on the base GGUF with a per-request scale (`--lora-init-without-apply`,
+  `"lora": [{"id": 0, "scale": s}]`). Writes a new adapter dir; refuses one inside an input model or one that exists.
+  Measured use (results.md §43): Jackrong's DeepSeek-V4 distill of Qwen3.5-9B as a rank-16 adapter (87 MB) at
+  scale 0.5 takes the base from 6/36 to 32/36 on the short-budget MATH probe and from 9/48 to 38/48 on GSM8K.
 * `model_report`: how a model differs from its base and what is usable, in under a minute for a 9B model read from
   Hugging Face without downloading it. Reads one block of rows per tensor (16 HTTP ranges in flight), classifies
   the change (`identical`, `directional_ablation` with layer range and global or per-layer directions, `lora_like`
