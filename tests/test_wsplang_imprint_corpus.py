@@ -1,5 +1,6 @@
 """Contract for the `imprint_corpus` op: the .wspl run must reproduce the direct Python measurement
 (lab.meta.interference.score_config) on a real NanoWSP-3, and must stay `simulated` when nothing is written."""
+import hashlib
 import json
 import sys
 import tempfile
@@ -80,6 +81,44 @@ class TestImprintCorpusContract(unittest.TestCase):
         self.assertEqual(res[0]["execution_state"], "simulated")
         self.assertIs(res[0]["result"]["weights_written"], False)
         self.assertFalse((self.d / "mid.safetensors").exists())
+
+    @staticmethod
+    def _sha(path):
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+    def test_without_allow_write_the_source_checkpoint_is_untouched_but_the_measurement_is_real(self):
+        before = self._sha(self.d / "base.safetensors")
+        res = run(self._code("false"), dry_run=False)
+        r = res[0]["result"]
+        self.assertEqual(self._sha(self.d / "base.safetensors"), before)
+        self.assertEqual(sorted(p.name for p in self.d.iterdir()), ["base.safetensors", "new.json", "old.json"])
+        self.assertIs(r["persisted"], False)
+        self.assertEqual((r["recall_facts_before"], r["recall_facts_after"]), (0.0, 1.0))   # real forward passes
+        self.assertIn("real forward passes", r["measurement"])
+
+    def test_dry_run_never_writes(self):
+        before = self._sha(self.d / "base.safetensors")
+        res = run(self._code("true"), dry_run=True)
+        self.assertEqual(res[0]["execution_state"], "simulated")
+        self.assertEqual(self._sha(self.d / "base.safetensors"), before)
+        self.assertFalse((self.d / "mid.safetensors").exists())
+
+    def test_out_equal_to_the_source_does_not_overwrite_it(self):
+        base = self.d / "base.safetensors"
+        before = self._sha(base)
+        code = self._code("true").replace(f"out={(self.d / 'mid.safetensors').as_posix()}", f"out={base.as_posix()}", 1)
+        res = run(code, dry_run=False)
+        self.assertEqual(self._sha(base), before)
+        self.assertEqual(res[0]["status"], "error", res[0])
+
+    def test_chaining_with_explicit_model_uses_distinct_checkpoints(self):
+        res = run(self._code("true"), dry_run=False)
+        base, mid, fin = (self.d / n for n in ("base.safetensors", "mid.safetensors", "fin.safetensors"))
+        self.assertEqual(Path(res[0]["result"]["base_checkpoint"]), base)
+        self.assertEqual(Path(res[1]["result"]["base_checkpoint"]), mid)
+        self.assertEqual(len({self._sha(base), self._sha(mid), self._sha(fin)}), 3)
+        # step 2 started from step 1's memory: the old facts were recalled before it edited anything
+        self.assertEqual(res[1]["result"]["recall_probe_before"], 1.0)
 
     def test_bad_facts_file_is_an_error_not_a_pass(self):
         (self.d / "old.json").write_text(json.dumps([["only-one"]]))

@@ -3231,7 +3231,9 @@ def execute_plan_v4(
                     "delta_frobenius": stats["delta_frobenius"],
                     "base_checkpoint": str(ckpt_p),
                     "weights_written": saved,
-                    "measured": "forward passes on this checkpoint; nothing typed in",
+                    "persisted": saved,
+                    "measurement": "real forward passes on the edited in-memory model; "
+                                   "execution_state 'simulated' only means the edit was not saved to disk",
                 }
 
             # ------------------------------------------------------------------
