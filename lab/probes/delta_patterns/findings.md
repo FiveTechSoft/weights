@@ -481,3 +481,12 @@ the probe's own "rank" formula (basis files from `layer_probe.py`). Max abs diff
 eigenvector sign choice do not matter for a projection). `verify_tensors` on the base returned no mismatches. Energy kept at rank 16: 3.1% to 6.9%.
 Manifest (hashes only, no weights): `lab/runs/delta_patterns/pack_manifest_layer0_rank16.json`; it states `behavioural_benefit: "not shown"`.
 This checks the packaging against the probe, one layer. It says nothing about benefit. Redistribution of factors is not decided (both licences apply).
+
+## F33 - direct route: select-and-apply the delta (engine/delta_apply.py); the delta is dense, so there is nothing smaller to carry
+
+Layer-0 cache, both models: 98.0% of the 218.4 M elements of the 10 comparable tensors differ between Qwen3.5-9B and MiMo (full fine-tune, no untouched
+region), and F27 found no low-rank structure. So the honest "extraction" is the delta itself (same size as the layer), not a compact patch.
+What can be chosen cheaply: which tensors/layers, a scale alpha, or rank k (lossy). `apply_selected(base, model, select, alpha, rank)` does exactly that per
+tensor, leaves unselected tensors as the base, skips (and reports) shape/dtype mismatches instead of casting, never modifies its inputs, and records sha256 of
+base, model and output. alpha=1, full delta reproduces the model up to float32 rounding (layer 0: 2-27 elements per matrix, abs error <= 1.2e-10): a tautology.
+This is the tool for building "base + chosen MiMo changes". Whether any choice improves behaviour is not measured and cannot be on this machine without model runs.
