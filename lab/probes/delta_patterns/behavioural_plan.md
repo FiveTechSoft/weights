@@ -71,3 +71,14 @@ kind of act, so it is not started. Preparation that needs no large read (harness
   tensor list; rank; method and library versions; sha256 of every output file; the parameter alpha.
 - Apply = add alpha * (left @ right) to each listed base tensor, only after the base tensor's hash matches the manifest. Rollback is by source: apply never modifies its input, so the original stays; to go back, discard the patched copy or re-read the original tensor from its source file and check its hash. Subtracting the factors is only a diagnostic (floating point does not reproduce the original bytes). Corruption is detected by hash comparison, not prevented.
 - Claim carried by the package: "extraction reproducible"; no benefit is claimed until the gates above pass.
+
+## Guards: what they cover and what they do not (best effort, not a guarantee)
+
+- Bytes: `ByteBudget.reserve` is the `meter` of `hf_fetch` and is charged BEFORE every attempt, so each retry counts again. A reply that is not 206 is dropped
+  without reading its body, and a body is read at most (requested length + 1). Not counted: HTTP headers, TLS overhead, redirects, the safetensors header
+  reads (a few KB per file). The counter is an upper bound on payload bytes requested, not a measurement of the network interface.
+- Rate: checked once per layer (`ByteBudget.check`), so a stall inside one range read (timeout 600 s per attempt) is not cut short.
+- Memory: `MemoryGuard` samples RssAnon every 0.2 s in a thread and the main thread raises `MemoryExceeded` at the next `check()` (start of each layer and of the
+  head pass). A spike inside one operation, or between two samples, is not caught and the kernel may still kill the process. Hidden states of prompts live in
+  `spill_dir` (one prompt in memory at a time); the caller owns that directory and should create it with `tempfile.TemporaryDirectory` so an abort removes it.
+- Measured with 3 datasets, 2 real layers, local files: peak sampled anon 1534 MB, bytes counted equal to the two layer files.

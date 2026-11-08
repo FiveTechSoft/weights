@@ -26,14 +26,18 @@ class ByteBudget:
         self.bytes, self.calls, self._clock, self._t0 = 0, 0, clock, clock()
         self._lock = threading.Lock()
 
+    def reserve(self, n: int) -> None:
+        """Charge n bytes BEFORE an attempt that may download up to n (use as hf_fetch's meter: every retry is charged again)."""
+        with self._lock:
+            if self.bytes + n > self.max_bytes:
+                raise BudgetExceeded(f"read of {n} bytes would pass the cap of {self.max_bytes} (already {self.bytes})")
+            self.bytes += n
+            self.calls += 1
+
     def wrap(self, fetch: Callable) -> Callable:
+        """For a fetch that does not meter itself (local files, tests). Not for hf_fetch: pass meter=budget.reserve to it."""
         def counted(f, start, end):
-            n = end - start + 1
-            with self._lock:
-                if self.bytes + n > self.max_bytes:
-                    raise BudgetExceeded(f"read of {n} bytes would pass the cap of {self.max_bytes} (already {self.bytes})")
-                self.bytes += n
-                self.calls += 1
+            self.reserve(end - start + 1)
             return fetch(f, start, end)
         return counted
 
