@@ -219,3 +219,13 @@ scores). Still only in Python: choosing configurations, the prior, the search lo
   recall on family B training tasks (Spearman -0.13 and -0.06, n = 45, many cells at ceiling).
 Reading: on this testbed most of what a search could "learn" is fixed by the algebra of the write rule; the remaining
 unsolved tasks are limited by how well the layer's keys separate the new facts, which these measures did not explain.
+
+## Closure of the NanoWSP-3 line
+
+Verdict after v1 to v6 and the mechanism notes: insufficient evidence of learning to learn. What transferred is a prior
+over configurations in a representation we designed, and most of what it encoded (eta about 1) follows from the
+closed-form write rule. Negative and null results are kept as they were obtained (v2 unseen layers, v4, v5, v6 k and l).
+Running the same cycle on a real model (the Exp 8 loop edit) is not possible with the resources in this environment:
+2 CPU cores, about 1 GB of RAM, no GPU, no llama.cpp, no `transformers`, and no base-model weights in the repo (only the
+edit itself, `exp8_control/p50c_edit/edit.npz`, 0.4 MB). It would need the Qwen3.5-0.8B weights (about 1.6 GB in bf16)
+and a runtime, i.e. a download and a machine with more memory, which is outside the current authorization.
