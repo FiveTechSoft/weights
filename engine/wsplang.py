@@ -38,6 +38,11 @@ sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 __version__ = "0.7.0"
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Default model files of the original Windows setup. Override with WSP_MODELO_GGUF / WSP_BASE_GGUF (same
+# variables engine/challenge.py reads); with neither set the historical path is used, as before.
+DEFAULT_MIMO_GGUF = Path(os.environ.get("WSP_MODELO_GGUF", r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf"))
+DEFAULT_QWEN_BASE_GGUF = Path(os.environ.get("WSP_BASE_GGUF", r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf"))
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(ROOT / "engine") not in sys.path:
@@ -996,7 +1001,7 @@ def execute_plan_v4(
     executed_steps = []
     step_list = plan.get("pasos", [])
 
-    default_gguf = Path(r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf")
+    default_gguf = DEFAULT_MIMO_GGUF
     default_safetensors = ROOT / "hf_cache" / "mimo-distill-hf"
 
     model_name = ""
@@ -2932,7 +2937,7 @@ def execute_plan_v4(
             # ------------------------------------------------------------------
             elif op in ("architectural_drift", "drift_profile"):
                 base_arg = named.get("base", positional[0] if positional else None)
-                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                base_p = Path(base_arg) if base_arg else DEFAULT_QWEN_BASE_GGUF
                 if not base_p.is_absolute():
                     base_p = ROOT / base_p
                 fam_filter = named.get("family", named.get("filter"))
@@ -2948,7 +2953,7 @@ def execute_plan_v4(
                 if not tensor_name:
                     raise ValueError("Tensor name required in spectral_delta")
                 base_arg = named.get("base")
-                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                base_p = Path(base_arg) if base_arg else DEFAULT_QWEN_BASE_GGUF
                 if not base_p.is_absolute():
                     base_p = ROOT / base_p
                 k_rank = int(named.get("k", 5))
@@ -2965,7 +2970,7 @@ def execute_plan_v4(
                 if not tensor_name:
                     raise ValueError("Tensor name required in semantic_delta")
                 base_arg = named.get("base")
-                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                base_p = Path(base_arg) if base_arg else DEFAULT_QWEN_BASE_GGUF
                 if not base_p.is_absolute():
                     base_p = ROOT / base_p
                 top_k = int(named.get("top", 5))
@@ -2979,7 +2984,7 @@ def execute_plan_v4(
                 layer_arg = named.get("layer", positional[0] if positional and positional[0].isdigit() else "1")
                 layer_idx = int(layer_arg)
                 base_arg = named.get("base")
-                base_p = Path(base_arg) if base_arg else Path(r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf")
+                base_p = Path(base_arg) if base_arg else DEFAULT_QWEN_BASE_GGUF
                 if not base_p.is_absolute():
                     base_p = ROOT / base_p
                 ssm_res = compute_ssm_dynamics_diff(target_path, base_p, layer_idx=layer_idx)
