@@ -67,3 +67,15 @@ class TestRelativeEncoding(unittest.TestCase):
         from lab.meta.meta_learner import relative_contextual_order
         cfgs = [(1, 1.0, 0.01), (2, 1.0, 0.01)]
         self.assertEqual(relative_contextual_order([], (0.5, 1.0, 1.0), cfgs), cfgs)
+
+
+class TestEncodingSelection(unittest.TestCase):
+    def test_selection_prefers_the_relative_encoding_when_the_rule_is_relative(self):
+        from lab.meta.select_encoding import select
+        cfgs = [(l, 1.0, 0.01) for l in (1, 2, 3, 4, 5)]
+        def mk(old, n):
+            return ((old / 2, 5.0, float(n)), {c: (1.0 if c[0] == old else 0.0) for c in cfgs})
+        exp = [mk(o, n) for o in (1, 3, 5) for n in (5, 5.5)]
+        name, v = select(exp, cfgs)
+        self.assertEqual(name, "rel_old")
+        self.assertGreater(v["rel_old"], v["absolute"])
