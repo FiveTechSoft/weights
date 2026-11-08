@@ -439,3 +439,18 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   model, unlike H6e, but teaches little (R ≤ 0.15).
 - Reading with F31: the lane matters to carry an existing change, not to learn one; low rank alone removes the
   interference. Results §40.6.
+
+## F34. Coefficient trajectories are nearly straight, yet stretching them does not finish the training (measured, 2026-11-08, H7)
+- 9 digit tasks in one shared random rank-20 basis: the first temporal mode holds 94.8-98.8 % of each trajectory's
+  energy and cos(C_25, C_200) is 0.66-0.92.
+- Learned jumps from step k to 200 (scale, per-kind linear on C_k, C_k/2, Adam m and m/√v, MLP; leave one task out)
+  never beat stopping at k: mean R at k = 25 is 0.38 / 0.23 / 0.13 against 0.50 for C_25 itself, and 0/7 wins.
+  The dev-chosen extra scale is 0.5-0.75: predictions overshoot.
+- Reading: direction is right early, but the accuracy lives in the small part of C_200 off that line; the
+  optimizer's late steps are not predictable from the early ones with these features. Results §41.3.
+
+## F35. Different tasks use almost orthogonal coefficients in the same basis (measured, 2026-11-08, H7)
+- Cosine between final C of different tasks 0.03-0.19 (mul3x3/mul4x3 0.53); the share per matrix kind is the same in
+  all tasks (linear-attention qkv ~24 %, MLP ~47 %).
+- Cross-application changes other tasks by −14 to +44 points; the large gains (into rev4, add3x3) look like output
+  format, not shared arithmetic. Results §41.2.

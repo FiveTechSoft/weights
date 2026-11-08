@@ -1530,3 +1530,49 @@ elegida en dev de la semilla 1 entre {3e-6, 1e-5, 3e-5, 1e-4}). Control: lo mism
   pequeño). Restringir el rango, por sí solo, quita la interferencia.
 - No comparable directamente con el entrenamiento completo a igual número de pasos: otra lr (1e-5 frente a 3e-6) y
   otra programación.
+
+## 41. H7: dataset de pasos de 9 tareas y salto aprendido del paso k al 200 (2026-11-08)
+Plan `lab/probes/delta_patterns/h7_plan.md` (aprobado, addenda a y b). Qwen3.5-0.8B, ΔW = U·C con U aleatoria de
+rango 20 por matriz **compartida** por todas las tareas (semilla 70 000 + índice), AdamW sobre C, lr 1e-5, 200 pasos
+de 40, 3-shot. Se guardan C en 48 pasos y los momentos de Adam a 10/25/50. G3 (reproducibilidad): C_10 idéntico bit a
+bit en dos corridas.
+
+### 41.1 El dataset (test 500, acierto en los pasos 0 / 25 / 50 / 100 / 200)
+| tarea | 0 | 25 | 50 | 100 | 200 | G2 (≥ +10 pts) |
+|---|---|---|---|---|---|---|
+| mul3x3 | 30.4 | 32.4 | 38.2 | 41.0 | 45.2 | sí |
+| mul4x3 | 10.2 | 13.0 | 13.8 | 13.4 | 13.8 | no |
+| sq4 | 14.0 | 15.4 | 17.6 | 20.2 | 19.8 | no |
+| mul2x2x1 | 26.4 | 36.6 | 43.2 | 47.2 | 50.2 | sí |
+| muladd1 | 16.6 | 28.2 | 38.2 | 51.2 | 59.2 | sí |
+| div6_2 | 23.6 | 26.2 | 32.2 | 33.6 | 33.8 | sí |
+| mod3_1 | 6.4 | 34.2 | 40.4 | 43.0 | 41.6 | sí |
+| add3x3 | 11.2 | 69.0 | 84.6 | 88.4 | 92.0 | sí |
+| rev4 | 44.2 | 95.8 | 99.4 | 100 | 100 | sí |
+
+G1 pasa en las 9. NLL de retención 1.321 → 1.302-1.324. Comprobado dos veces (acc guardada y recuento de ok_mask).
+
+### 41.2 Geometría (descriptiva)
+- Trayectorias casi rectas: el primer modo temporal lleva el 94.8-98.8 % de la energía, los tres primeros ≥ 99.2 %.
+  cos(C_25, C_200) = 0.66-0.92 (más alto cuanto más fácil la tarea).
+- Entre tareas los C finales son casi ortogonales: coseno 0.03-0.19, salvo mul3x3/mul4x3 0.53.
+- Reparto de |C|² parecido en todas: qkv de la atención lineal 24 %, MLP up/gate/down 16/16/14 %, atención completa
+  < 10 % en total; capas repartidas (cuartos 0.29 / 0.26 / 0.22 / 0.22 en mul3x3).
+- Interferencia 9×9 (C de una tarea evaluado en las demás, puntos sobre M0): la diagonal reproduce 41.1; fuera de
+  ella de −13.8 (mod3_1 → div6_2) a +44.0 (mul2x2x1 → add3x3). rev4 sube con casi cualquier C (+9 a +24) y add3x3
+  con mul2x2x1/muladd1 (+44 / +32): probablemente formato de salida, no aritmética.
+
+### 41.3 El salto aprendido: falla
+Dejar una tarea fuera (entrena con las otras 8, evalúa en las 7 que pasan G2). R = (acc − acc0)/(acc(C_200) − acc0).
+
+| k | B_k (parar en k) | P_scale | P_lin | P_mlp | P_scale +dev γ | P_lin +dev | P_mlp +dev |
+|---|---|---|---|---|---|---|---|
+| 10 | 0.21 | −0.25 | −0.28 | −0.26 | 0.23 | 0.23 | 0.25 |
+| 25 | **0.50** | 0.38 | 0.23 | 0.13 | 0.46 | 0.39 | 0.36 |
+| 50 | **0.78** | 0.70 | 0.59 | 0.59 | 0.71 | 0.61 | 0.61 |
+
+- Regla registrada: elegido P_mlp (mejor de lin/mlp a k = 10); R medio a k = 25 **0.13** (umbral 0.7), gana a B_25
+  en **0/7** tareas. **H7 falla.** Ningún predictor supera a simplemente parar en k, en ningún k.
+- γ elegido en dev casi siempre 0.5-0.75: las predicciones se pasan; alargar la dirección de C_k, que apunta bien
+  (coseno alto), empeora. La parte de C_200 que da el acierto no está en la prolongación de la recta.
+- Única excepción: rev4 a k = 25 con P_scale 0.96 frente a 0.92 (p 0.02, no llega a 0.01).
