@@ -405,3 +405,26 @@ Data: `lab/runs/delta_patterns/reuse_sparsity_mimo.json` (reuse_curve.py, entry 
   patch, if it exists, is defined by function and not by size, so only a behavioural test can find it. Not tested here.
 - Same limits: 4 of 427 tensors. A first run of the sparsity code was killed by the memory limit (sorting 50M entries),
   and was replaced by the chunked version; no number from the killed run is used.
+
+## F29. One layer, real embeddings: a rank-16 part of MiMo's delta reproduces 26 % of the layer's output change (measured, 2026-11-08)
+Script `layer_probe.py`, data `lab/runs/delta_patterns/layer_probe_L0_mimo.json`, pinned revisions as in F28. Definitions
+(`captured`, `resid`, random controls) are in the script docstring and were written before the first run.
+**Scope: layer 0 of 32 (a Gated DeltaNet layer), float32 CPU, 4 prompts / 95 tokens. Input = real token embeddings from
+the base table (what layer 0 receives; no earlier layer exists). It is NOT behaviour and NOT the full model. Deeper layers need real
+activations from the layers before them, not done.** The MiMo shift of the layer output is 4.7 % of the output norm. Sanity rows:
+base+full delta = exactly the MiMo layer (captured 1.0, resid 0.0), base alone = 0.0, 1.0.
+- Parts of the delta added to the base layer (captured; same-norm Gaussian control on the same tensors in brackets):
+  MLP all 0.44 [0.00], DeltaNet all 0.58 [0.03], gate+up 0.26 [0.00], down 0.17 [0.00], in_proj_qkv 0.22 [-0.01], out_proj 0.16 [0.03],
+  norms 0.003 [0.00] (they barely move this layer).
+- Truncated to rank k in all 8 matrices: rank 16 0.26, rank 256 0.61, rank 1024 0.83 (per prompt 0.16-0.32, 0.40-0.73, 0.70-0.91).
+  Energy-fair control, a random subspace of the same size on the same side, 2 seeds: rank 16 gives 0.00 and 0.00, rank 256 gives 0.05 and 0.05.
+- Largest 10 % / 30 % of entries: 0.29 / 0.61.
+- Reading: rank-16 parts hold 4-7 % of the weight energy (F27) but reproduce 26 % of this layer's output change; the same size in a random
+  subspace reproduces none. So in this layer the delta's function is more concentrated than its energy, consistent with it acting along the
+  directions where the input carries most of its variance. This undoes the earlier weights-only
+  impression that nothing small is reusable: weights alone cannot decide that, and this probe is evidence in the other direction.
+- NOT shown: that it holds beyond layer 0, on other inputs (4 short prompts, one of them a chat template), through the stack of layers, or in generation;
+  that transplanting the part into the base improves any task. The first-layer input is also the least processed one.
+- Next, bounded by memory (2 GB RAM): layers 1-3 need exact activations from the layers before, which means running those layers of the base
+  (one layer is about 0.4 GB per model in bf16, run one at a time and keep only the hidden states): a depth-wise chain is possible without ever loading
+  the full model.

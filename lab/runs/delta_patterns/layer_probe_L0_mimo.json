@@ -1,0 +1,304 @@
+{
+ "layer": 0,
+ "tokens": 95,
+ "shift_rel_to_output": 0.04692628234624863,
+ "variants": {
+  "sanity_full_delta": {
+   "captured": 1.0,
+   "resid": 0.0,
+   "norm_ratio": 1.0,
+   "captured_per_prompt": [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "sanity_base": {
+   "captured": 0.0,
+   "resid": 1.0,
+   "norm_ratio": 0.0,
+   "captured_per_prompt": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "mlp_all:true": {
+   "captured": 0.43662089109420776,
+   "resid": 0.7142337560653687,
+   "norm_ratio": 0.6191708445549011,
+   "captured_per_prompt": [
+    0.522,
+    0.466,
+    0.451,
+    0.333
+   ]
+  },
+  "mlp_all:random": {
+   "captured": 0.0009101371397264302,
+   "resid": 1.0691807270050049,
+   "norm_ratio": 0.38074207305908203,
+   "captured_per_prompt": [
+    -0.0,
+    -0.005,
+    0.002,
+    0.006
+   ]
+  },
+  "mlp_gate_up:true": {
+   "captured": 0.2638394832611084,
+   "resid": 0.8113483786582947,
+   "norm_ratio": 0.43123674392700195,
+   "captured_per_prompt": [
+    0.219,
+    0.266,
+    0.295,
+    0.21
+   ]
+  },
+  "mlp_gate_up:random": {
+   "captured": -0.0012095411075279117,
+   "resid": 1.0247817039489746,
+   "norm_ratio": 0.218534454703331,
+   "captured_per_prompt": [
+    0.002,
+    -0.006,
+    -0.002,
+    0.006
+   ]
+  },
+  "mlp_down:true": {
+   "captured": 0.17090417444705963,
+   "resid": 0.8866628408432007,
+   "norm_ratio": 0.35774341225624084,
+   "captured_per_prompt": [
+    0.305,
+    0.199,
+    0.154,
+    0.121
+   ]
+  },
+  "mlp_down:random": {
+   "captured": 0.0020685994531959295,
+   "resid": 1.0451527833938599,
+   "norm_ratio": 0.3106140196323395,
+   "captured_per_prompt": [
+    -0.002,
+    0.001,
+    0.004,
+    -0.0
+   ]
+  },
+  "deltanet_all:true": {
+   "captured": 0.5756078958511353,
+   "resid": 0.59727942943573,
+   "norm_ratio": 0.7127119302749634,
+   "captured_per_prompt": [
+    0.479,
+    0.545,
+    0.561,
+    0.685
+   ]
+  },
+  "deltanet_all:random": {
+   "captured": 0.026645198464393616,
+   "resid": 1.4471076726913452,
+   "norm_ratio": 1.0711686611175537,
+   "captured_per_prompt": [
+    -0.024,
+    0.041,
+    0.047,
+    -0.016
+   ]
+  },
+  "deltanet_qkv:true": {
+   "captured": 0.2238846719264984,
+   "resid": 0.8395652770996094,
+   "norm_ratio": 0.3906892240047455,
+   "captured_per_prompt": [
+    0.125,
+    0.19,
+    0.26,
+    0.223
+   ]
+  },
+  "deltanet_qkv:random": {
+   "captured": -0.0095363799482584,
+   "resid": 1.0160235166549683,
+   "norm_ratio": 0.11502585560083389,
+   "captured_per_prompt": [
+    -0.005,
+    -0.011,
+    -0.01,
+    -0.009
+   ]
+  },
+  "deltanet_out:true": {
+   "captured": 0.16357943415641785,
+   "resid": 0.8799029588699341,
+   "norm_ratio": 0.318418949842453,
+   "captured_per_prompt": [
+    0.202,
+    0.189,
+    0.144,
+    0.161
+   ]
+  },
+  "deltanet_out:random": {
+   "captured": 0.029482176527380943,
+   "resid": 1.4165151119232178,
+   "norm_ratio": 1.0322186946868896,
+   "captured_per_prompt": [
+    0.012,
+    0.016,
+    0.043,
+    0.022
+   ]
+  },
+  "norms:true": {
+   "captured": 0.00266261026263237,
+   "resid": 0.9974836707115173,
+   "norm_ratio": 0.017300190404057503,
+   "captured_per_prompt": [
+    0.004,
+    0.004,
+    0.003,
+    0.001
+   ]
+  },
+  "norms:random": {
+   "captured": -0.0006627743714489043,
+   "resid": 1.0006839036941528,
+   "norm_ratio": 0.006627551279962063,
+   "captured_per_prompt": [
+    -0.0,
+    -0.0,
+    -0.001,
+    -0.0
+   ]
+  },
+  "matrices_rank16:true": {
+   "captured": 0.2566083073616028,
+   "resid": 0.8202391266822815,
+   "norm_ratio": 0.43128833174705505,
+   "captured_per_prompt": [
+    0.16,
+    0.301,
+    0.225,
+    0.315
+   ]
+  },
+  "matrices_rank256:true": {
+   "captured": 0.611544668674469,
+   "resid": 0.5576549768447876,
+   "norm_ratio": 0.7308008074760437,
+   "captured_per_prompt": [
+    0.403,
+    0.591,
+    0.61,
+    0.725
+   ]
+  },
+  "matrices_rank1024:true": {
+   "captured": 0.8332143425941467,
+   "resid": 0.3596816062927246,
+   "norm_ratio": 0.8920753002166748,
+   "captured_per_prompt": [
+    0.698,
+    0.83,
+    0.827,
+    0.906
+   ]
+  },
+  "matrices_rank256:random": {
+   "captured": 0.02277299389243126,
+   "resid": 1.4805777072906494,
+   "norm_ratio": 1.1124980449676514,
+   "captured_per_prompt": [
+    -0.039,
+    0.026,
+    0.031,
+    0.026
+   ]
+  },
+  "matrices_rank16:random_subspace_s1": {
+   "captured": -0.0002916493103839457,
+   "resid": 1.0060001611709595,
+   "norm_ratio": 0.10702791064977646,
+   "captured_per_prompt": [
+    0.013,
+    0.008,
+    -0.008,
+    0.004
+   ]
+  },
+  "matrices_rank16:random_subspace_s2": {
+   "captured": 0.0005879037780687213,
+   "resid": 1.0063459873199463,
+   "norm_ratio": 0.11792171001434326,
+   "captured_per_prompt": [
+    0.01,
+    0.01,
+    -0.007,
+    0.004
+   ]
+  },
+  "matrices_rank256:random_subspace_s1": {
+   "captured": 0.05060260742902756,
+   "resid": 0.9983755350112915,
+   "norm_ratio": 0.3129844069480896,
+   "captured_per_prompt": [
+    0.076,
+    0.055,
+    0.036,
+    0.069
+   ]
+  },
+  "matrices_rank256:random_subspace_s2": {
+   "captured": 0.045817781239748,
+   "resid": 1.0042873620986938,
+   "norm_ratio": 0.316585510969162,
+   "captured_per_prompt": [
+    0.071,
+    0.058,
+    0.041,
+    0.033
+   ]
+  },
+  "matrices_top10pct_entries:true": {
+   "captured": 0.2907952666282654,
+   "resid": 0.7515589594841003,
+   "norm_ratio": 0.3826608657836914,
+   "captured_per_prompt": [
+    0.336,
+    0.307,
+    0.304,
+    0.223
+   ]
+  },
+  "matrices_top30pct_entries:true": {
+   "captured": 0.61053466796875,
+   "resid": 0.48427465558052063,
+   "norm_ratio": 0.6749749183654785,
+   "captured_per_prompt": [
+    0.652,
+    0.629,
+    0.639,
+    0.507
+   ]
+  },
+  "matrices_all:random": {
+   "captured": 0.027033401653170586,
+   "resid": 1.478663682937622,
+   "norm_ratio": 1.113781452178955,
+   "captured_per_prompt": [
+    0.033,
+    0.027,
+    -0.004,
+    0.094
+   ]
+  }
+ }
+}
