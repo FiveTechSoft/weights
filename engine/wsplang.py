@@ -2102,6 +2102,10 @@ def execute_plan_v4(
                     res["execution_state"] = "unsupported_backend"
                     res["result"] = {
                         "status": "unsupported_backend",
+                        "tensor": tensor_name,
+                        "decay_factor_lambda": decay_factor,
+                        "dissipation_pct": f"{(1.0 - decay_factor):.2%}",
+                        "written_to_disk": False,
                         "message": "spectral_decay in-place quantization not implemented for GGUF; use SafeTensors backend."
                     }
 
