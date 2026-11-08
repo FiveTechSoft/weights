@@ -93,3 +93,27 @@ Result: mixed, and negative where it matters.
 - Next, as a new protocol (v3) with fresh held-out tasks: encode a configuration relative to the task
   (layer minus old layer) so the experience can transfer across layers. That idea comes from reading the v2
   failure; it must not be scored on the v2 held-out tasks.
+
+## Protocol v3: task-relative configuration encoding (fresh held-out tasks)
+
+Pre-registered in 5a920d7 (before any v3 held-out task was scored). Results: `interference_v3_results.txt`
+(`python lab/meta/evaluate_v3.py`). Held-out tasks use new seeds and sizes; v2 held-out tasks are not reused.
+
+| policy (first-proposal score, 10 held-out / 4 unseen layers) | all | unseen layers |
+|---|---|---|
+| random | 0.184 | 0.160 |
+| static (absolute) | 0.360 | 0.293 |
+| absolute contextual (v2 proposer) | 0.544 | 0.175 |
+| **relative contextual** | **0.731** | **0.643** |
+| relative, shuffled experience | 0.351 | 0.322 |
+| relative static (pooled, no task similarity) | 0.731 | 0.643 |
+| fixed rule (layer = old layer, ties in grid order, no experience) | 0.115 | 0.079 |
+| oracle | 0.750 | 0.690 |
+
+Criteria d, e, f hold nominally. Honest reading:
+- The relative encoding and the offset-0 idea are OUR design decision, not discovered by the system. It came from reading the v2 failure.
+- Within that representation, experience supplies the rest (which eta/reg work at offset 0): the experience-free fixed rule scores 0.115 on its first proposal.
+- Task similarity adds nothing: relative static equals relative contextual. Learning here is pooled experience in a hand-designed representation, not task-conditioned meta-learning.
+- Trials-to-success is capped by the 5/10 held-out tasks that no policy (oracle included) solves; solvable-only: relative contextual 1.00, fixed rule 3.00, static 5.80, absolute contextual 4.40, random 10.30.
+- The fixed-rule baseline is weak in its eta/reg tie-break (grid order); a stronger hand rule was not pre-registered and was not added post hoc.
+- Next honest step: let the system discover the encoding itself (e.g. choose among candidate encodings by leave-one-task-out), with a new held-out set.
