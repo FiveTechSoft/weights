@@ -1,0 +1,348 @@
+{
+ "summary": {
+  "name": "slice_L16_31",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "0:0,1:0,2:0,3:0,4:0.5,5:0,6:0",
+  "seconds": 521,
+  "A": {
+   "n": 16,
+   "closed": 5,
+   "ok": 5,
+   "median_tokens": 2048
+  },
+  "ok": {
+   "n": 20,
+   "closed": 10,
+   "ok": 10,
+   "median_tokens": 2048
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": true,
+   "tokens": 352,
+   "pred": "2000",
+   "content_tail": "aily caloric requirement. We can set up the equation:\n\n\\[\n40 = 0.02 \\times D\n\\]\n\nTo solve for \\( D \\), divide both sides by 0.02:\n\n\\[\nD = \\frac{40}{0.02} = \\frac{40}{\\frac{2}{100}} = 40 \\times \\frac{100}{2} = 40 \\times 50 = 2000\n\\]\n\nThus, the daily caloric requirement is 2000 calories.\n\n\\boxed{2000}"
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 106,
+   "closed": true,
+   "ok": true,
+   "tokens": 696,
+   "pred": "\\frac{4}{3}",
+   "content_tail": " degree 3 and leading coefficient 4.\nThe denominator \\(Q(x) = 3x^3 - 2x^2 + 5x - 1\\) has degree 3 and leading coefficient 3.\n\nSince the degrees are equal, the horizontal asymptote is:\n\\[\ny = \\frac{4}{3}\n\\]\n\nThus, the value of \\(y\\) at the horizontal asymptote is \\(\\frac{4}{3}\\).\n\n\\boxed{\\frac{4}{3}}"
+  },
+  {
+   "grp": "A",
+   "i": 185,
+   "closed": true,
+   "ok": true,
+   "tokens": 1143,
+   "pred": "1",
+   "content_tail": "e the bases on both sides of the equation are the same (base 3), their exponents must be equal. Therefore, we can set the exponents equal to each other:\n$$6k = 6$$\n\n**Step 4: Isolate $k$.**\nDivide both sides of the equation by 6:\n$$k = \\frac{6}{6}$$\n$$k = 1$$\n\nThus, the value of $k$ is 1.\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 208,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 214,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 247,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 249,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 283,
+   "closed": true,
+   "ok": true,
+   "tokens": 1157,
+   "pred": "1",
+   "content_tail": "\\frac{37}{8} \\cdot \\frac{8}{37} \\right)^{55} $$\n\nNext, we multiply the fractions inside the parentheses:\n$$ \\frac{37}{8} \\cdot \\frac{8}{37} = \\frac{37 \\cdot 8}{8 \\cdot 37} = 1 $$\n\nSo the expression simplifies to:\n$$ 1^{55} $$\n\nSince 1 raised to any power is 1, the final result is:\n$$ 1 $$\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 289,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 298,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 320,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 344,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 375,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 419,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 433,
+   "closed": true,
+   "ok": true,
+   "tokens": 1123,
+   "pred": "0.35625",
+   "content_tail": " 2: Multiplying to a Power of 10**\nThe denominator 160 = \\(2^5 \\times 5\\). To make it a power of 10, multiply numerator and denominator by \\(5^4 = 625\\):\n\\[\n\\frac{57}{160} = \\frac{57 \\times 625}{160 \\times 625} = \\frac{35625}{100000} = 0.35625.\n\\]\n\nBoth methods give the same result.\n\n\\boxed{0.35625}"
+  },
+  {
+   "grp": "ok",
+   "i": 29,
+   "closed": true,
+   "ok": true,
+   "tokens": 685,
+   "pred": "225",
+   "content_tail": "\\times 1} = 45\\)\n\n3. **Total Number of Different Battalions:**\n   - Multiply the number of ways to choose the upper class soldiers by the number of ways to choose the lower class soldiers:\n   \\[\n   5 \\times 45 = 225\n   \\]\n\nThus, the number of different battalions that can be sent is \\(\\boxed{225}\\)."
+  },
+  {
+   "grp": "ok",
+   "i": 47,
+   "closed": true,
+   "ok": true,
+   "tokens": 744,
+   "pred": "5",
+   "content_tail": "ined by the degrees of the numerator and denominator. The numerator has degree 1, and the denominator has degree 2. Since the degree of the numerator is less than the degree of the denominator, the horizontal asymptote is \\(y = 0\\). Hence, \\(c = 0\\).\n\nTherefore, \\(a + b + c = 5 + 0 = 5\\).\n\n\\boxed{5}"
+  },
+  {
+   "grp": "ok",
+   "i": 116,
+   "closed": true,
+   "ok": true,
+   "tokens": 846,
+   "pred": "2",
+   "content_tail": "iginal equation with the simplified right-hand side.**\n    $$2^{2x} = 2^4$$\n\n4.  **Equate the exponents.**\n    Since the bases are the same (both are 2), their exponents must be equal:\n    $$2x = 4$$\n\n5.  **Solve for $x$.**\n    Divide both sides by 2:\n    $$x = \\frac{4}{2}$$\n    $$x = 2$$\n\n\\boxed{2}"
+  },
+  {
+   "grp": "ok",
+   "i": 124,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 141,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "3",
+   "content_tail": " place the same number of pencils in each bag, and he wants to maximize that number. This means he will distribute as many pencils as possible equally among the three bags.\n\nLet \\( N \\) be the total number of pencils. The maximum number of pencils he can put in each bag is \\( \\left\\lfloor \\frac{N}{3"
+  },
+  {
+   "grp": "ok",
+   "i": 157,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 191,
+   "closed": true,
+   "ok": true,
+   "tokens": 312,
+   "pred": "0",
+   "content_tail": "The point $(a, b)$ lies on the line $3x + 2y = 12$. Substituting $x = a = 4$ and $y = b$ into the equation gives:\n\\[\n3(4) + 2b = 12\n\\]\n\\[\n12 + 2b = 12\n\\]\nSubtracting 12 from both sides:\n\\[\n2b = 0\n\\]\nDividing by 2:\n\\[\nb = 0\n\\]\n\n\\boxed{0}"
+  },
+  {
+   "grp": "ok",
+   "i": 196,
+   "closed": true,
+   "ok": true,
+   "tokens": 1034,
+   "pred": "1600",
+   "content_tail": " 19 = 40$$\n\nThen, we square the result:\n$$x = 40^2$$\n$$x = 1600$$\n\nAlternatively, we can compute the value of each term individually:\n1. $441$\n2. $2(21)(19) = 42 \\times 19 = 798$\n3. $361$\n\nAdding them together:\n$$441 + 798 + 361 = 1239 + 361 = 1600$$\n\nBoth methods give the same result.\n\n\\boxed{1600}"
+  },
+  {
+   "grp": "ok",
+   "i": 223,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 246,
+   "closed": true,
+   "ok": true,
+   "tokens": 835,
+   "pred": "8",
+   "content_tail": "The total food from 12 meals is enough for 18 people, meaning each meal provides food for \\( \\frac{18}{12} = 1.5 \\) people. To have just enough food for 12 people, the number of meals needed is \\( \\frac{12}{1.5} = 8 \\).\n\n\\boxed{8}"
+  },
+  {
+   "grp": "ok",
+   "i": 253,
+   "closed": true,
+   "ok": true,
+   "tokens": 283,
+   "pred": "\\frac{1}{8}",
+   "content_tail": "The fraction is \\(\\frac{3 \\text{ inches}}{2 \\text{ feet}}\\). Since 1 foot = 12 inches, 2 feet = 24 inches. So the fraction is \\(\\frac{3}{24} = \\frac{1}{8}\\).\n\n\\boxed{\\frac{1}{8}}"
+  },
+  {
+   "grp": "ok",
+   "i": 256,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 346,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 384,
+   "closed": true,
+   "ok": true,
+   "tokens": 733,
+   "pred": "15x - 80",
+   "content_tail": "$-81$.\n\n2.  **Group the like terms together:**\n    $$ (19x - 4x) + (1 - 81) $$\n\n3.  **Combine the coefficients of the $x$ terms:**\n    $$ 19x - 4x = 15x $$\n\n4.  **Combine the constant terms:**\n    $$ 1 - 81 = -80 $$\n\n5.  **Write the final simplified expression:**\n    $$ 15x - 80 $$\n\n\\boxed{15x - 80}"
+  },
+  {
+   "grp": "ok",
+   "i": 387,
+   "closed": true,
+   "ok": true,
+   "tokens": 638,
+   "pred": "18",
+   "content_tail": ") = 5(4) + 3(-2) + 4$$\n\n3.  Perform the multiplications:\n    $$5 \\times 4 = 20$$\n    $$3 \\times (-2) = -6$$\n    So the expression becomes:\n    $$f(-2) = 20 - 6 + 4$$\n\n4.  Perform the addition and subtraction from left to right:\n    $$20 - 6 = 14$$\n    $$14 + 4 = 18$$\n\nThus, $f(-2) = 18$.\n\n\\boxed{18}"
+  },
+  {
+   "grp": "ok",
+   "i": 446,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 447,
+   "closed": true,
+   "ok": true,
+   "tokens": 554,
+   "pred": "9",
+   "content_tail": ".\nSubstituting \\(B = 35 - G\\), we get:\n\\[ G > 35 - G \\implies 2G > 35 \\implies G > 17.5 \\]\nAmong the possible values for \\(G\\) (13 and 26), only 26 satisfies \\(G > 17.5\\).\nThus, \\(G = 26\\).\nThen the number of boys is:\n\\[ B = 35 - 26 = 9 \\]\nCheck: \\(26 > 9\\), which satisfies the condition.\n\n\\boxed{9}"
+  },
+  {
+   "grp": "ok",
+   "i": 464,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 489,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 496,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  }
+ ]
+}

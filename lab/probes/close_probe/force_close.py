@@ -7,7 +7,7 @@ closed, non-empty \\boxed{...} inside it (or at </think>, or at the token cap). 
     box (<= 40 tokens); that box is graded.
 Both graded with rig/math500.equivalent. Uses llama-server /apply-template + /completion (raw prompt).
 
-usage: python lab/probes/close_probe/force_close.py <name> <port> [math_n=50] [cap=8192]
+usage: python lab/probes/close_probe/force_close.py <name> <port> [n=50] [cap=8192] [math500|gsm8k]
 """
 import concurrent.futures
 import json
@@ -87,9 +87,16 @@ def main():
     name, port = sys.argv[1], int(sys.argv[2])
     math_n = int(sys.argv[3]) if len(sys.argv) > 3 else 50
     cap = int(sys.argv[4]) if len(sys.argv) > 4 else 8192
+    bench = sys.argv[5] if len(sys.argv) > 5 else "math500"
     m5 = _m5()
-    items = m5.load_items()
-    idx = m5.select_indices(2026, math_n, len(items))
+    if bench == "gsm8k":   # first n test problems, gold after '####' (engine/bench_runner.py)
+        lines = (ROOT / "data" / "gsm8k_test.jsonl").read_text(encoding="utf-8").splitlines()[:math_n]
+        items = [{"problem": (q := json.loads(s))["question"],
+                  "answer": q["answer"].split("####")[-1].strip().replace(",", "")} for s in lines]
+        idx = list(range(len(items)))
+    else:
+        items = m5.load_items()
+        idx = m5.select_indices(2026, math_n, len(items))
     base = f"http://127.0.0.1:{port}"
     out = ROOT / "lab" / "runs" / "close_probe"
     out.mkdir(parents=True, exist_ok=True)

@@ -472,3 +472,10 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   looped on "I will write the response" or format doubts). Forcing `</think>` + "Final answer: \boxed{" gives 27 / 35 /
   41 / 43 of 50 at 512 / 1 024 / 2 048 / 4 096 tokens; MiMo 41/50 at 8 192 (McNemar p 0.69), Jackrong 31/50.
 - Second grader 35/50, every difference a fraction written another way (checked by hand).
+
+## F39. A fine-tune's useful change can be cut out and reused as a small LoRA at half scale (measured, 2026-11-08, results §43.4)
+- Jackrong's delta as a rank-64 LoRA keeps 99.97 % of it; on the base at scale 0.5 it closes 14/16 "has the answer,
+  cannot close" MATH items and keeps 19/20 already-solved ones (base 1 + 20; the full Jackrong 10-11 + 14).
+- Rank 16 or MLP-only at ×0.5 does as well (14 + 18); either half of the layers or attention-only fails and damages.
+- MiMo's delta is not low-rank (r64 keeps 29 %) and its r64 LoRA does not transfer closing (3/16).
+- Prompting ("be concise") or a +4 logit bias on `</think>` does not replace it (3/16, 1/16).

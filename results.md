@@ -1652,3 +1652,33 @@ contra 2, p 0.004. De las 16 "tiene la respuesta y no cierra", 13 pasan a aciert
 
 **Lectura:** en MATH la base ya sabe; lo que aporta MiMo es cerrar a tiempo. Copiar la mejora es copiar una conducta
 de cierre, no conocimiento. Límites: n 50, un par, tope 4 096 elegido sin dev.
+
+### 43.4 Reutilizar la diferencia sin reconstruir el modelo: LoRA extraído del delta (2026-11-08)
+Medida rápida (`lab/probes/close_probe/fast_eval.py`): las 16 de MATH donde la base tiene la respuesta y no cierra
+(A) + las 20 que la base ya acierta (daño), tope 2 048, voraz, extractor de `bench_runner`. Referencias a 2 048 sacadas
+de las tandas de 8 192: A base 0, MiMo 11, Jackrong 10. Ruido entre repeticiones ±1 (lotes de llama-server).
+
+Sin pesos: base 1/16; instrucción de sistema "sé conciso" 3/16; sesgo +4 en `</think>` 1/16.
+
+Delta → LoRA (`delta_to_lora.py`: SVD por matriz lineal de las capas de texto, rango 64; 3 min de CPU): Jackrong
+conserva 99.97 % de ‖D‖² (334 MB), MiMo solo 29 % (difuso, F3). Servido sobre la base con escala por petición:
+| adaptador | A /16 | daño: ok /20 | total /36 |
+|---|---|---|---|
+| MiMo r64 ×1 | 3 | — | — |
+| Jackrong r64 ×0.25 | 9 | 16 | 25 |
+| **Jackrong r64 ×0.5** | **14** | **19** | **33** |
+| Jackrong r64 ×0.75 | 12 | 15 | 27 |
+| Jackrong r64 ×1 (≈ modelo Jackrong) | 11 | 14 | 25 |
+Recortes a ×0.5 (`slice_lora.py`, segundos, sin tocar el modelo):
+| recorte | A /16 | ok /20 | total |
+|---|---|---|---|
+| rango 8 (43 MB) | 10 | 17 | 27 |
+| **rango 16 (87 MB)** | **14** | **18** | **32** |
+| rango 32 | 13 | 18 | 31 |
+| capas 0-15 | 4 | 10 | 14 |
+| capas 16-31 | 5 | 10 | 15 |
+| **solo MLP** | **14** | **18** | **32** |
+| solo atención (lineal + completa) | 4 | 5 | 9 |
+**Lectura:** la mejora de cierre de Jackrong vive en los 16 primeros componentes de sus MLP, repartida por toda la
+profundidad; media escala conserva el cierre y quita casi todo el daño del modelo completo. Trozos parciales
+(media red, solo atención) dañan más de lo que ayudan. Cada variante: 3-11 min de medida, sin entrenar.
