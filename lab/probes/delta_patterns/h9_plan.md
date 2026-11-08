@@ -1,4 +1,4 @@
-# H9: warm start — does starting from other tasks' learned changes shorten the training of a new one? (DRAFT)
+# H9: warm start — does starting from other tasks' learned changes shorten the training of a new one? (APPROVED by the user 2026-11-08)
 
 Date: 2026-11-08. Follows H7 and H8 (results §41-42, findings F34-F37). Thresholds below are fixed before any H9
 result; changes go in dated addenda.
