@@ -494,3 +494,23 @@ shape/dtype mismatches instead of casting, never modifies its inputs, and record
 the model up to float32 rounding (layer 0: 2-27 elements per matrix, abs error <= 1.2e-10): a tautology, not a result.
 No behavioural test of any selection was run. The streaming scoring protocol (behavioural_plan.md) exists but was not run, because the user asked
 for short checks; that is a scope decision, not an inability.
+
+## F34 - closing reading of F31 for a concrete patch choice (no new compute except a cost count and a tool-vs-probe check)
+
+Question: does a reduced patch bring the output of layers 0-3 closer to MiMo than a random patch of the same size? Data: stack_L0-3_mimo.json, base embeddings in,
+each layer fed by the patched stack's own output, dev prompts and 8 held-out prompts, resid = distance to MiMo's output relative to the unpatched base (1.0 = no change).
+
+| patch on the matrices of layers 0-3 | params (of 864.0 M matrix params) | resid dev / held-out | random subspace, same size |
+|---|---|---|---|
+| rank 16 | 5.0 M (0.6%, ~10 MB bf16) | 0.94 / 0.91 | 0.995 / 0.995 |
+| rank 256 | 80.2 M (9.3%, ~160 MB bf16) | 0.70 / 0.66 | 0.945-0.947 / 0.950-0.951 |
+| top 10% entries by size | 86.4 M values + indices (~518 MB with int32 indices) | 0.72 / 0.68 | not run |
+| all matrices, full delta | 864.0 M (1.7 GB bf16) | 0.13 / 0.12 | - |
+
+Reading: yes, for these four layers, a rank-256 patch gets residual 0.66-0.70 where a random patch of the same size gets 0.95; the effect repeats on held-out prompts.
+Entry-thresholding reaches a similar residual at ~3x the stored size. Rank 16 is the most size-efficient but moves the output little.
+Recommended patch: rank 256 on the matrices (the 0-3 stack), alpha 1. Success criterion for that recommendation, stated before using it elsewhere: held-out resid <= 0.80 AND at
+least 3x lower (1 - resid) gap than the random control; met here (0.66 vs 0.95).
+Limits: layers 0-3 only (not 4-31), 12 + 8 short prompts, MiMo's own trajectory not used (base trajectory in), distance to MiMo's output is not task quality.
+Tool link: `apply_selected(rank=k)` agrees with the probe's rank formula on two layer-0 matrices (rank 16 and 256): |difference| <= 3.9e-4 of |delta|, which is the
+bf16 rounding of the output tensor (the probe works in float32).
