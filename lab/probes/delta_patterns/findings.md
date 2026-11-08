@@ -454,3 +454,13 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   all tasks (linear-attention qkv ~24 %, MLP ~47 %).
 - Cross-application changes other tasks by −14 to +44 points; the large gains (into rev4, add3x3) look like output
   format, not shared arithmetic. Results §41.2.
+
+## F36. The learned change works only as a whole: neither its early-direction part nor the rest works alone (measured, 2026-11-08, H8-A)
+- C_200 split into P (along C_k, oracle scale) and O (off it). At k = 25: R(P) 0.38, R(O) −0.43 (alone it hurts),
+  together R = 1. The oracle scale of C_25 equals H7's P_scale (0.38): no rescaling of early coefficients can do
+  better. Results §42.1.
+
+## F37. Two learned changes add up; seven do not (measured, 2026-11-08, H8-B)
+- Summing the C of two tasks keeps median 0.89 of each one's gain (42 cells); summing seven (λ 0.5 on dev) keeps 0.60,
+  with long arithmetic losing most (div6_2 0.12, mul3x3 0.26) and format-like tasks keeping ~1.0. Cosine between
+  the C does not predict the loss. No general damage (GSM8K NLL 1.319 vs 1.321). Results §42.2.

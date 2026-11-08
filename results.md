@@ -1576,3 +1576,37 @@ Dejar una tarea fuera (entrena con las otras 8, evalúa en las 7 que pasan G2). 
 - γ elegido en dev casi siempre 0.5-0.75: las predicciones se pasan; alargar la dirección de C_k, que apunta bien
   (coseno alto), empeora. La parte de C_200 que da el acierto no está en la prolongación de la recta.
 - Única excepción: rev4 a k = 25 con P_scale 0.96 frente a 0.92 (p 0.02, no llega a 0.01).
+
+## 42. H8: dónde está el acierto en C_200, y si los cambios aprendidos se suman (2026-11-08)
+Plan `lab/probes/delta_patterns/h8_plan.md` (aprobado). Solo evaluación, con los C de H7, en las 7 tareas que pasan
+G2 (test 500). Re-evaluar C_200 da exactamente el acierto de H7 en las 7 (segunda comprobación).
+
+### 42.1 Parte A: C_200 = P (a lo largo de C_k, escala óptima) + O (fuera de la recta)
+| k | R(P) medio | R(O) medio | |O|²/|C_200|² medio |
+|---|---|---|---|
+| 10 | −0.25 | −0.32 | 0.66 |
+| 25 | **0.38** | **−0.43** | 0.43 |
+| 50 | 0.73 | −0.24 | 0.20 |
+
+- **Ni HA ni HA'** (resultado mixto): ninguna de las dos partes basta sola. La parte fuera de la recta, sola,
+  **empeora** la tarea (R negativo en 6 de 7 a k = 25); la parte paralela, con la escala óptima (oráculo), da 0.38,
+  lo mismo que P_scale en H7 (0.38). Ningún reescalado de C_25 puede pasar de ahí.
+- Las dos partes juntas dan R = 1: el acierto sale de la **combinación**, no de una de ellas (efecto no aditivo).
+- Por tarea a k = 25: rev4 0.96 y mod3_1 0.78 con P solo; las de multiplicar y dividir −0.05 a 0.23.
+
+### 42.2 Parte B: biblioteca de cambios (sumar C de tareas distintas)
+**B1, 21 parejas (42 casillas): pasa.** Retención mediana 0.89 (umbral 0.8), media 0.78. Peor casilla: div6_2 con
+mod3_1, r −0.22. Las tareas fáciles o de formato (rev4, add3x3, mod3_1) conservan ~1.0 con cualquier pareja; las de
+aritmética larga pierden más (mul3x3 0.34-0.61). El coseno entre los C (0.03-0.19) no predice la pérdida. La
+predicción aditiva de la matriz de interferencia falla por 8.2 puntos de media.
+
+**B2, las 7 sumadas: falla.** λ elegido en dev 0.5 (dev empeora al subir λ). Retención media 0.60 (umbral 0.7);
+por tarea: mul3x3 0.26, mul2x2x1 0.63, muladd1 0.38, div6_2 0.12, mod3_1 0.95, add3x3 0.87, rev4 0.99. NLL de retención
+1.319 (base 1.321): no daña el modelo.
+
+### 42.3 Lectura
+- El cambio aprendido no se puede partir en "dirección que se ve pronto" + "resto"; las dos piezas solo funcionan
+  juntas. Explica el fallo de H7: prolongar la recta nunca llega.
+- Reutilizar sí funciona de dos en dos (B1), pero con siete cambios la suma simple pierde las habilidades de
+  aritmética larga. Siguiente candidato natural: fusión con recorte y elección de signo (TIES), que en Delta League
+  sobre este mismo modelo es la técnica del líder.
