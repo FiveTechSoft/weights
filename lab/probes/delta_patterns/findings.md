@@ -538,3 +538,22 @@ prompts (95 tokens, so rank <= 95), (c) random. Scored on the 8 held-out prompts
 Reading: with the same size, picking U from activations beats picking it from weights on held-out tokens at every rank tried (2.5x at rank 8, shrinking to 1.2x at rank 64);
 both are far above random. Limits: one matrix, one layer, 95 fit tokens, our own prompts, base trajectory, no task metric; the gap may change with more fit data,
 other matrices or deeper layers, and the dev set cannot support ranks above 95 (rank 256 untested). Not applied to the F34 recommendation.
+
+## F36 - pre-registered test of F35 on all large matrices of layers 0-3: criterion NOT met (25 matrices, ranks 16 and 64, cache only)
+
+Criterion fixed and committed before the first run (d4e911d; `data_aware_stack.py` docstring): data-aware beats weights-only if, at BOTH ranks, it has lower resid in >= 75% of matrices,
+the mean resid is lower by >= 0.01, and it beats the random control in >= 90%. Fit on the 4 dev prompts (95 tokens), score on the 8 held-out prompts' keys, base trajectory, per matrix.
+After that commit the script only changed in how it computes (resumable per matrix, no patch matrix materialised for memory); the criterion and the metrics were not touched.
+Data: `lab/runs/delta_patterns/data_aware_stack_L0-3.json`.
+
+| rank | win rate vs weights-only | mean resid weights / data-aware / random | mean cos weights / data-aware / random | mean norm_ratio weights / data-aware / random | beats random | passes |
+|---|---|---|---|---|---|---|
+| 16 | 72% (18/25) | 0.905 / 0.853 / 0.998 | 0.395 / 0.469 / 0.055 | 0.395 / 0.469 / 0.055 | 100% | no (win rate 72% < 75%) |
+| 64 | 48% (12/25) | 0.809 / 0.802 / 0.992 | 0.564 / 0.557 / 0.113 | 0.564 / 0.557 / 0.113 | 100% | no (win rate 48%, mean gain 0.007 < 0.01) |
+
+Result: not shown. F35's gain on layer 0 down_proj does not generalise as a rule to these matrices at rank 64, and at rank 16 it misses the win-rate bar by 3 points (the mean gain, 0.052, is above 0.01).
+Post hoc (looked at after the verdict, not a result of the criterion): by matrix type, data-aware wins in every attention / linear-attention matrix at rank 16 (in_proj_qkv, in_proj_z, out_proj, q/k/v/o: 13/13) and in
+10/13 of them at rank 64, while it loses on MLP gate/up at rank 64 (0/8) and is neutral on down_proj. Possible reasons (not tested): 95 fit tokens against 12288 input dimensions, and for gate/up
+the weights-only basis is on the input side while the data-aware one is on the output side, so the comparison mixes two parametrisations. A follow-up would have to be a new pre-registered test on fresh prompts.
+Both subspace choices beat the random control in every matrix. This is per-matrix reproduction of an output difference, not the composed stack and not task benefit.
+Also: the X post's replies beyond the 2 visible without a login (of 16) were not recoverable: the vault has no X login, so that limit stays.

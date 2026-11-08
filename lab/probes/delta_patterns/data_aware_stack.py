@@ -11,13 +11,15 @@ PRE-REGISTERED (written and committed locally before the first run of this scrip
  matrices is lower by >= 0.01, AND data-aware beats the random control in >= 90% of the matrices. Otherwise: not shown (one failure at either rank is enough).
  Everything is local reproduction of an output difference of single matrices, not task benefit and not the composed stack.
 """
-import json, sys
+import json, os, sys
 import torch
 from lab.probes.delta_patterns import layer_probe as lp
 
 cache = "/tmp/probe_cache"
 RANKS = (16, 64)
-rows = []
+ROWS = "/tmp/das_rows.jsonl"  # resumable: one line per (layer, tensor, rank); a finished matrix is not recomputed
+rows = [json.loads(x) for x in open(ROWS)] if os.path.exists(ROWS) else []
+done = {(x["layer"], x["tensor"]) for x in rows}
 for L in range(4):
     pr = lp.Probe(cache, L)
     for n in pr.names:
@@ -31,10 +33,14 @@ for L in range(4):
     pr.forward()
     for h in hooks:
         h.remove()
+    pr.layer, pr.params = None, {}  # the 0.9 GB float32 layer is not needed after the keys are recorded (2 GB machine)
+    import gc; gc.collect()
     edge = [0]
     for s in pr.seqs:
         edge.append(edge[-1] + s.shape[1])
     for m in mats:
+        if (L, m) in done:
+            continue
         n = pr.pre + m
         K = torch.cat(store[m]); store[m] = None
         Kd, Kh = K[:edge[lp.N_DEV]], K[edge[lp.N_DEV]:]
@@ -43,20 +49,19 @@ for L in range(4):
         del a, b
         t = d @ Kh.T
         tn = t.norm()
-        def sc(P):
-            y = P @ Kh.T
+        def sc(y):  # y = patch @ K_h^T, computed without ever forming the patch matrix (memory)
             return {"resid": float((t - y).norm() / tn), "cos": float((y * t).sum() / (y.norm() * tn)),
                     "norm_ratio": float(y.norm() / tn), "captured": float((y * t).sum() / (tn ** 2))}
         Ud = torch.linalg.svd(d @ Kd.T, full_matrices=False)[0]
         side, v = pr.delta_basis(n)
         g = torch.Generator().manual_seed(7)
         for r in RANKS:
-            Pw = d @ (v[:, :r] @ v[:, :r].T) if side == "right" else v[:, :r] @ (v[:, :r].T @ d)
+            yw = d @ (v[:, :r] @ (v[:, :r].T @ Kh.T)) if side == "right" else v[:, :r] @ (v[:, :r].T @ t)
             R = torch.linalg.qr(torch.randn(d.shape[0], r, generator=g)).Q
             row = {"layer": L, "tensor": m, "rank": r, "side_weights": side,
-                   "weights_only": sc(Pw), "data_aware": sc(Ud[:, :r] @ (Ud[:, :r].T @ d)), "random": sc(R @ (R.T @ d))}
-            del Pw
+                   "weights_only": sc(yw), "data_aware": sc(Ud[:, :r] @ (Ud[:, :r].T @ t)), "random": sc(R @ (R.T @ t))}
             rows.append(row)
+            open(ROWS, "a").write(json.dumps(row) + "\n")
         print(L, m, [(r["rank"], round(r["weights_only"]["resid"], 3), round(r["data_aware"]["resid"], 3), round(r["random"]["resid"], 3)) for r in rows[-2:]], flush=True)
     del pr
 verdict = {}

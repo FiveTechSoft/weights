@@ -1,0 +1,1249 @@
+{
+ "verdict": {
+  "16": {
+   "n_matrices": 25,
+   "win_rate_vs_weights": 0.72,
+   "mean_resid": {
+    "weights_only": 0.9050863790512085,
+    "data_aware": 0.853171808719635,
+    "random": 0.9982417011260987
+   },
+   "mean_cos": {
+    "weights_only": 0.3950782877206802,
+    "data_aware": 0.4688154166936874,
+    "random": 0.05544464007019997
+   },
+   "mean_norm_ratio": {
+    "weights_only": 0.3950550174713135,
+    "data_aware": 0.46879051089286805,
+    "random": 0.05544224306941033
+   },
+   "beats_random_rate": 1.0,
+   "passes": false
+  },
+  "64": {
+   "n_matrices": 25,
+   "win_rate_vs_weights": 0.48,
+   "mean_resid": {
+    "weights_only": 0.8089893651008606,
+    "data_aware": 0.8021330583095551,
+    "random": 0.9924533557891846
+   },
+   "mean_cos": {
+    "weights_only": 0.5637823271751404,
+    "data_aware": 0.5573789536952972,
+    "random": 0.11276649355888367
+   },
+   "mean_norm_ratio": {
+    "weights_only": 0.5637492215633393,
+    "data_aware": 0.5573493731021881,
+    "random": 0.11276189804077148
+   },
+   "beats_random_rate": 1.0,
+   "passes": false
+  },
+  "success_both_ranks": false
+ },
+ "rows": [
+  {
+   "layer": 0,
+   "tensor": "linear_attn.in_proj_qkv.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7653560042381287,
+    "cos": 0.6436569094657898,
+    "norm_ratio": 0.6436106562614441,
+    "captured": 0.4142645001411438
+   },
+   "data_aware": {
+    "resid": 0.635795533657074,
+    "cos": 0.7719189524650574,
+    "norm_ratio": 0.7718380689620972,
+    "captured": 0.5957964658737183
+   },
+   "random": {
+    "resid": 0.9989772439002991,
+    "cos": 0.045167647302150726,
+    "norm_ratio": 0.04516483470797539,
+    "captured": 0.0020399894565343857
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "linear_attn.in_proj_qkv.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.5768110156059265,
+    "cos": 0.8169513940811157,
+    "norm_ratio": 0.8168706297874451,
+    "captured": 0.6673436164855957
+   },
+   "data_aware": {
+    "resid": 0.5517637729644775,
+    "cos": 0.8340746760368347,
+    "norm_ratio": 0.8340059518814087,
+    "captured": 0.6956232786178589
+   },
+   "random": {
+    "resid": 0.9963279962539673,
+    "cos": 0.08563879132270813,
+    "norm_ratio": 0.0856335312128067,
+    "captured": 0.007333552464842796
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "linear_attn.in_proj_z.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7743860483169556,
+    "cos": 0.6327273845672607,
+    "norm_ratio": 0.6327112913131714,
+    "captured": 0.4003337621688843
+   },
+   "data_aware": {
+    "resid": 0.631193995475769,
+    "cos": 0.7756365537643433,
+    "norm_ratio": 0.7756184339523315,
+    "captured": 0.6015980243682861
+   },
+   "random": {
+    "resid": 0.9976733326911926,
+    "cos": 0.06820458918809891,
+    "norm_ratio": 0.06820324808359146,
+    "captured": 0.004651774652302265
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "linear_attn.in_proj_z.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.655715823173523,
+    "cos": 0.7550203800201416,
+    "norm_ratio": 0.7550045251846313,
+    "captured": 0.5700438022613525
+   },
+   "data_aware": {
+    "resid": 0.5654975771903992,
+    "cos": 0.8247708082199097,
+    "norm_ratio": 0.8247461915016174,
+    "captured": 0.6802265644073486
+   },
+   "random": {
+    "resid": 0.9930211305618286,
+    "cos": 0.11790970712900162,
+    "norm_ratio": 0.11790729314088821,
+    "captured": 0.013902414590120316
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "linear_attn.out_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8973121643066406,
+    "cos": 0.4414052665233612,
+    "norm_ratio": 0.4413948655128479,
+    "captured": 0.19483402371406555
+   },
+   "data_aware": {
+    "resid": 0.7011012434959412,
+    "cos": 0.7130762934684753,
+    "norm_ratio": 0.7130618691444397,
+    "captured": 0.5084674954414368
+   },
+   "random": {
+    "resid": 0.9984040856361389,
+    "cos": 0.0564851388335228,
+    "norm_ratio": 0.0564836822450161,
+    "captured": 0.0031904885545372963
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "linear_attn.out_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8430352807044983,
+    "cos": 0.5378706455230713,
+    "norm_ratio": 0.5378602147102356,
+    "captured": 0.2892991900444031
+   },
+   "data_aware": {
+    "resid": 0.6512471437454224,
+    "cos": 0.7588796615600586,
+    "norm_ratio": 0.7588632106781006,
+    "captured": 0.5758858323097229
+   },
+   "random": {
+    "resid": 0.9929725527763367,
+    "cos": 0.11834358423948288,
+    "norm_ratio": 0.1183408796787262,
+    "captured": 0.014004884287714958
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 16,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9712949395179749,
+    "cos": 0.23788124322891235,
+    "norm_ratio": 0.2378734052181244,
+    "captured": 0.05658562108874321
+   },
+   "data_aware": {
+    "resid": 0.9505571126937866,
+    "cos": 0.3105544149875641,
+    "norm_ratio": 0.3105394244194031,
+    "captured": 0.09643938392400742
+   },
+   "random": {
+    "resid": 0.9980304837226868,
+    "cos": 0.06271672993898392,
+    "norm_ratio": 0.06271494925022125,
+    "captured": 0.003933276981115341
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 64,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9321619868278503,
+    "cos": 0.36204591393470764,
+    "norm_ratio": 0.36203572154045105,
+    "captured": 0.13107354938983917
+   },
+   "data_aware": {
+    "resid": 0.9189594388008118,
+    "cos": 0.39435455203056335,
+    "norm_ratio": 0.39434319734573364,
+    "captured": 0.1555110514163971
+   },
+   "random": {
+    "resid": 0.992007851600647,
+    "cos": 0.12615664303302765,
+    "norm_ratio": 0.12615324556827545,
+    "captured": 0.015915069729089737
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9153531789779663,
+    "cos": 0.40272173285484314,
+    "norm_ratio": 0.4026687741279602,
+    "captured": 0.16216346621513367
+   },
+   "data_aware": {
+    "resid": 0.9179434180259705,
+    "cos": 0.39677196741104126,
+    "norm_ratio": 0.3967262804508209,
+    "captured": 0.1574098765850067
+   },
+   "random": {
+    "resid": 0.9993409514427185,
+    "cos": 0.03636886179447174,
+    "norm_ratio": 0.036364734172821045,
+    "captured": 0.0013225439470261335
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7981310486793518,
+    "cos": 0.6025525331497192,
+    "norm_ratio": 0.6024854183197021,
+    "captured": 0.3630291223526001
+   },
+   "data_aware": {
+    "resid": 0.8442201614379883,
+    "cos": 0.5360475778579712,
+    "norm_ratio": 0.5359845757484436,
+    "captured": 0.2873132526874542
+   },
+   "random": {
+    "resid": 0.9974018931388855,
+    "cos": 0.07204678654670715,
+    "norm_ratio": 0.07203909009695053,
+    "captured": 0.005190184805542231
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9237514734268188,
+    "cos": 0.38305720686912537,
+    "norm_ratio": 0.38300201296806335,
+    "captured": 0.14671167731285095
+   },
+   "data_aware": {
+    "resid": 0.922404408454895,
+    "cos": 0.38628992438316345,
+    "norm_ratio": 0.38624072074890137,
+    "captured": 0.149200901389122
+   },
+   "random": {
+    "resid": 0.999306857585907,
+    "cos": 0.03727709501981735,
+    "norm_ratio": 0.03727290779352188,
+    "captured": 0.001389425597153604
+   }
+  },
+  {
+   "layer": 0,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8072071671485901,
+    "cos": 0.5903382301330566,
+    "norm_ratio": 0.590271532535553,
+    "captured": 0.3484598398208618
+   },
+   "data_aware": {
+    "resid": 0.8489644527435303,
+    "cos": 0.5284991264343262,
+    "norm_ratio": 0.5284388661384583,
+    "captured": 0.2792794406414032
+   },
+   "random": {
+    "resid": 0.997340202331543,
+    "cos": 0.07291582971811295,
+    "norm_ratio": 0.07290808856487274,
+    "captured": 0.005316153634339571
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "linear_attn.in_proj_qkv.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8828288912773132,
+    "cos": 0.46973466873168945,
+    "norm_ratio": 0.46969354152679443,
+    "captured": 0.22063133120536804
+   },
+   "data_aware": {
+    "resid": 0.8487264513969421,
+    "cos": 0.5288654565811157,
+    "norm_ratio": 0.5288308262825012,
+    "captured": 0.27968037128448486
+   },
+   "random": {
+    "resid": 0.9990555644035339,
+    "cos": 0.04345841705799103,
+    "norm_ratio": 0.04345594346523285,
+    "captured": 0.0018885264871641994
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "linear_attn.in_proj_qkv.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7660278677940369,
+    "cos": 0.6428635120391846,
+    "norm_ratio": 0.6428093314170837,
+    "captured": 0.41323864459991455
+   },
+   "data_aware": {
+    "resid": 0.7681630253791809,
+    "cos": 0.6402978897094727,
+    "norm_ratio": 0.6402499675750732,
+    "captured": 0.40995073318481445
+   },
+   "random": {
+    "resid": 0.9959966540336609,
+    "cos": 0.0893930122256279,
+    "norm_ratio": 0.0893879160284996,
+    "captured": 0.007990654557943344
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "linear_attn.in_proj_z.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8543505072593689,
+    "cos": 0.519705593585968,
+    "norm_ratio": 0.5196934342384338,
+    "captured": 0.2700875997543335
+   },
+   "data_aware": {
+    "resid": 0.831600546836853,
+    "cos": 0.5553793907165527,
+    "norm_ratio": 0.5553706288337708,
+    "captured": 0.3084414005279541
+   },
+   "random": {
+    "resid": 0.9981826543807983,
+    "cos": 0.06023886799812317,
+    "norm_ratio": 0.06023775413632393,
+    "captured": 0.0036286544054746628
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "linear_attn.in_proj_z.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7455314993858337,
+    "cos": 0.6664841771125793,
+    "norm_ratio": 0.6664696931838989,
+    "captured": 0.44419151544570923
+   },
+   "data_aware": {
+    "resid": 0.7536717057228088,
+    "cos": 0.6572605967521667,
+    "norm_ratio": 0.65724778175354,
+    "captured": 0.4319830536842346
+   },
+   "random": {
+    "resid": 0.9918456077575684,
+    "cos": 0.12745149433612823,
+    "norm_ratio": 0.12744896113872528,
+    "captured": 0.01624356210231781
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "linear_attn.out_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9682169556617737,
+    "cos": 0.25010910630226135,
+    "norm_ratio": 0.25010451674461365,
+    "captured": 0.06255341321229935
+   },
+   "data_aware": {
+    "resid": 0.9153593182563782,
+    "cos": 0.40264612436294556,
+    "norm_ratio": 0.4026384651660919,
+    "captured": 0.16212081909179688
+   },
+   "random": {
+    "resid": 0.9982485771179199,
+    "cos": 0.05917057767510414,
+    "norm_ratio": 0.05916915833950043,
+    "captured": 0.0035010729916393757
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "linear_attn.out_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8829171657562256,
+    "cos": 0.46953824162483215,
+    "norm_ratio": 0.46952933073043823,
+    "captured": 0.22046197950839996
+   },
+   "data_aware": {
+    "resid": 0.8715245723724365,
+    "cos": 0.4903562366962433,
+    "norm_ratio": 0.4903452694416046,
+    "captured": 0.2404438704252243
+   },
+   "random": {
+    "resid": 0.9920361042022705,
+    "cos": 0.12594649195671082,
+    "norm_ratio": 0.12594382464885712,
+    "captured": 0.01586218550801277
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 16,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9801755547523499,
+    "cos": 0.19812901318073273,
+    "norm_ratio": 0.19812460243701935,
+    "captured": 0.03925422579050064
+   },
+   "data_aware": {
+    "resid": 0.9822089672088623,
+    "cos": 0.18778486549854279,
+    "norm_ratio": 0.18778081238269806,
+    "captured": 0.03526239097118378
+   },
+   "random": {
+    "resid": 0.9981030225753784,
+    "cos": 0.061562612652778625,
+    "norm_ratio": 0.061561085283756256,
+    "captured": 0.0037898607552051544
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 64,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.942570149898529,
+    "cos": 0.3340074121952057,
+    "norm_ratio": 0.33399972319602966,
+    "captured": 0.11155837774276733
+   },
+   "data_aware": {
+    "resid": 0.9502289891242981,
+    "cos": 0.31155064702033997,
+    "norm_ratio": 0.31154316663742065,
+    "captured": 0.09706147015094757
+   },
+   "random": {
+    "resid": 0.991929292678833,
+    "cos": 0.12679032981395721,
+    "norm_ratio": 0.12678739428520203,
+    "captured": 0.016075413674116135
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.941852331161499,
+    "cos": 0.3360716700553894,
+    "norm_ratio": 0.33603426814079285,
+    "captured": 0.11293159425258636
+   },
+   "data_aware": {
+    "resid": 0.9497312307357788,
+    "cos": 0.3131067156791687,
+    "norm_ratio": 0.313070148229599,
+    "captured": 0.09802436083555222
+   },
+   "random": {
+    "resid": 0.9993270039558411,
+    "cos": 0.03669710457324982,
+    "norm_ratio": 0.03669299557805061,
+    "captured": 0.0013465266674757004
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8413617610931396,
+    "cos": 0.540529727935791,
+    "norm_ratio": 0.5404626727104187,
+    "captured": 0.29213613271713257
+   },
+   "data_aware": {
+    "resid": 0.898650050163269,
+    "cos": 0.4387034773826599,
+    "norm_ratio": 0.43865644931793213,
+    "captured": 0.19244012236595154
+   },
+   "random": {
+    "resid": 0.9973745942115784,
+    "cos": 0.07242003828287125,
+    "norm_ratio": 0.07241187244653702,
+    "captured": 0.00524406973272562
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9469066858291626,
+    "cos": 0.32153671979904175,
+    "norm_ratio": 0.3214936852455139,
+    "captured": 0.10337203741073608
+   },
+   "data_aware": {
+    "resid": 0.9547447562217712,
+    "cos": 0.29745060205459595,
+    "norm_ratio": 0.2974141240119934,
+    "captured": 0.08846601098775864
+   },
+   "random": {
+    "resid": 0.9993981122970581,
+    "cos": 0.03476757928729057,
+    "norm_ratio": 0.034763459116220474,
+    "captured": 0.0012086413335055113
+   }
+  },
+  {
+   "layer": 1,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8532176613807678,
+    "cos": 0.521598219871521,
+    "norm_ratio": 0.5215393900871277,
+    "captured": 0.27203401923179626
+   },
+   "data_aware": {
+    "resid": 0.9053239226341248,
+    "cos": 0.42475226521492004,
+    "norm_ratio": 0.4247024357318878,
+    "captured": 0.18039332330226898
+   },
+   "random": {
+    "resid": 0.9974330067634583,
+    "cos": 0.07162512838840485,
+    "norm_ratio": 0.07161698490381241,
+    "captured": 0.0051295761950314045
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "linear_attn.in_proj_qkv.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9119975566864014,
+    "cos": 0.4102398157119751,
+    "norm_ratio": 0.4102095365524292,
+    "captured": 0.16828428208827972
+   },
+   "data_aware": {
+    "resid": 0.8269398212432861,
+    "cos": 0.5623307228088379,
+    "norm_ratio": 0.5622932314872742,
+    "captured": 0.3161947727203369
+   },
+   "random": {
+    "resid": 0.9990093111991882,
+    "cos": 0.04446212947368622,
+    "norm_ratio": 0.04445921629667282,
+    "captured": 0.0019767512567341328
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "linear_attn.in_proj_qkv.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7851812243461609,
+    "cos": 0.6193135976791382,
+    "norm_ratio": 0.6192715764045715,
+    "captured": 0.38352328538894653
+   },
+   "data_aware": {
+    "resid": 0.7702621817588806,
+    "cos": 0.637763261795044,
+    "norm_ratio": 0.6377288699150085,
+    "captured": 0.40672004222869873
+   },
+   "random": {
+    "resid": 0.9958906769752502,
+    "cos": 0.09057198464870453,
+    "norm_ratio": 0.09056687355041504,
+    "captured": 0.008202821016311646
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "linear_attn.in_proj_z.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.873219907283783,
+    "cos": 0.4873431324958801,
+    "norm_ratio": 0.48733091354370117,
+    "captured": 0.23749738931655884
+   },
+   "data_aware": {
+    "resid": 0.8003084063529968,
+    "cos": 0.599601149559021,
+    "norm_ratio": 0.5995912551879883,
+    "captured": 0.35951560735702515
+   },
+   "random": {
+    "resid": 0.9980608224868774,
+    "cos": 0.062260083854198456,
+    "norm_ratio": 0.06225864216685295,
+    "captured": 0.003876228118315339
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "linear_attn.in_proj_z.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7612888813018799,
+    "cos": 0.6484289765357971,
+    "norm_ratio": 0.6484142541885376,
+    "captured": 0.4204505980014801
+   },
+   "data_aware": {
+    "resid": 0.7460609674453735,
+    "cos": 0.6658921837806702,
+    "norm_ratio": 0.6658785343170166,
+    "captured": 0.44340333342552185
+   },
+   "random": {
+    "resid": 0.9924424886703491,
+    "cos": 0.12272492051124573,
+    "norm_ratio": 0.12272243946790695,
+    "captured": 0.015061101876199245
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "linear_attn.out_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9683610796928406,
+    "cos": 0.24955683946609497,
+    "norm_ratio": 0.24955157935619354,
+    "captured": 0.06227730214595795
+   },
+   "data_aware": {
+    "resid": 0.9139267206192017,
+    "cos": 0.4058830738067627,
+    "norm_ratio": 0.4058765172958374,
+    "captured": 0.16473841667175293
+   },
+   "random": {
+    "resid": 0.9980241060256958,
+    "cos": 0.06279933452606201,
+    "norm_ratio": 0.06279806792736053,
+    "captured": 0.0039436775259673595
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "linear_attn.out_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9051805138587952,
+    "cos": 0.42503464221954346,
+    "norm_ratio": 0.42502614855766296,
+    "captured": 0.18065084517002106
+   },
+   "data_aware": {
+    "resid": 0.8654860854148865,
+    "cos": 0.5009412169456482,
+    "norm_ratio": 0.5009320974349976,
+    "captured": 0.2509375512599945
+   },
+   "random": {
+    "resid": 0.9923915863037109,
+    "cos": 0.12311454117298126,
+    "norm_ratio": 0.12311218678951263,
+    "captured": 0.015156900510191917
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 16,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9730640649795532,
+    "cos": 0.2305389642715454,
+    "norm_ratio": 0.23053285479545593,
+    "captured": 0.05314680561423302
+   },
+   "data_aware": {
+    "resid": 0.9445770978927612,
+    "cos": 0.32829099893569946,
+    "norm_ratio": 0.32828277349472046,
+    "captured": 0.10777227580547333
+   },
+   "random": {
+    "resid": 0.9981377124786377,
+    "cos": 0.06097324565052986,
+    "norm_ratio": 0.06097196415066719,
+    "captured": 0.0037176585756242275
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 64,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9232955574989319,
+    "cos": 0.38409414887428284,
+    "norm_ratio": 0.38408559560775757,
+    "captured": 0.14752502739429474
+   },
+   "data_aware": {
+    "resid": 0.9217212200164795,
+    "cos": 0.3878547251224518,
+    "norm_ratio": 0.3878442645072937,
+    "captured": 0.1504272222518921
+   },
+   "random": {
+    "resid": 0.9917977452278137,
+    "cos": 0.12780368328094482,
+    "norm_ratio": 0.12780119478702545,
+    "captured": 0.01633346453309059
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9441445469856262,
+    "cos": 0.3295423984527588,
+    "norm_ratio": 0.3295058608055115,
+    "captured": 0.1085861548781395
+   },
+   "data_aware": {
+    "resid": 0.9496041536331177,
+    "cos": 0.31346437335014343,
+    "norm_ratio": 0.31342753767967224,
+    "captured": 0.09824837744235992
+   },
+   "random": {
+    "resid": 0.9993274211883545,
+    "cos": 0.03660587593913078,
+    "norm_ratio": 0.03660179674625397,
+    "captured": 0.0013398408191278577
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8486767411231995,
+    "cos": 0.528950572013855,
+    "norm_ratio": 0.5288980007171631,
+    "captured": 0.2797609269618988
+   },
+   "data_aware": {
+    "resid": 0.9052962064743042,
+    "cos": 0.42480191588401794,
+    "norm_ratio": 0.42475515604019165,
+    "captured": 0.18043681979179382
+   },
+   "random": {
+    "resid": 0.9971688985824585,
+    "cos": 0.07516805082559586,
+    "norm_ratio": 0.07515925914049149,
+    "captured": 0.005649575497955084
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.952212929725647,
+    "cos": 0.305463045835495,
+    "norm_ratio": 0.30542656779289246,
+    "captured": 0.09329652786254883
+   },
+   "data_aware": {
+    "resid": 0.9554200172424316,
+    "cos": 0.29527801275253296,
+    "norm_ratio": 0.29524487257003784,
+    "captured": 0.08717931807041168
+   },
+   "random": {
+    "resid": 0.9993336200714111,
+    "cos": 0.03650088235735893,
+    "norm_ratio": 0.03649727627635002,
+    "captured": 0.0013321826700121164
+   }
+  },
+  {
+   "layer": 2,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8646971583366394,
+    "cos": 0.5023409724235535,
+    "norm_ratio": 0.5022876858711243,
+    "captured": 0.25231966376304626
+   },
+   "data_aware": {
+    "resid": 0.9125369191169739,
+    "cos": 0.40903031826019287,
+    "norm_ratio": 0.40898841619491577,
+    "captured": 0.1672886610031128
+   },
+   "random": {
+    "resid": 0.9973219037055969,
+    "cos": 0.0731673389673233,
+    "norm_ratio": 0.07316023111343384,
+    "captured": 0.0053529394790530205
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 16,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9776933193206787,
+    "cos": 0.21004840731620789,
+    "norm_ratio": 0.21004357933998108,
+    "captured": 0.044119320809841156
+   },
+   "data_aware": {
+    "resid": 0.9767424464225769,
+    "cos": 0.2144262194633484,
+    "norm_ratio": 0.2144208699464798,
+    "captured": 0.045977458357810974
+   },
+   "random": {
+    "resid": 0.9978805780410767,
+    "cos": 0.06509551405906677,
+    "norm_ratio": 0.06509401649236679,
+    "captured": 0.004237328190356493
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "mlp.down_proj.weight",
+   "rank": 64,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9408945441246033,
+    "cos": 0.33870890736579895,
+    "norm_ratio": 0.33869898319244385,
+    "captured": 0.11472036689519882
+   },
+   "data_aware": {
+    "resid": 0.9516105651855469,
+    "cos": 0.30730944871902466,
+    "norm_ratio": 0.30730199813842773,
+    "captured": 0.09443680197000504
+   },
+   "random": {
+    "resid": 0.9921268820762634,
+    "cos": 0.12525278329849243,
+    "norm_ratio": 0.12524956464767456,
+    "captured": 0.0156878549605608
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9545315504074097,
+    "cos": 0.2981693148612976,
+    "norm_ratio": 0.2981303632259369,
+    "captured": 0.08889332413673401
+   },
+   "data_aware": {
+    "resid": 0.9558975100517273,
+    "cos": 0.2937472462654114,
+    "norm_ratio": 0.2937105596065521,
+    "captured": 0.08627666532993317
+   },
+   "random": {
+    "resid": 0.9993447661399841,
+    "cos": 0.0361575148999691,
+    "norm_ratio": 0.036153435707092285,
+    "captured": 0.0013072184519842267
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "mlp.gate_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8691895604133606,
+    "cos": 0.494535356760025,
+    "norm_ratio": 0.49447619915008545,
+    "captured": 0.24453598260879517
+   },
+   "data_aware": {
+    "resid": 0.9196878671646118,
+    "cos": 0.3927060067653656,
+    "norm_ratio": 0.3926590085029602,
+    "captured": 0.15419955551624298
+   },
+   "random": {
+    "resid": 0.9973779320716858,
+    "cos": 0.07240168750286102,
+    "norm_ratio": 0.07239367067813873,
+    "captured": 0.005241423845291138
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.9624200463294983,
+    "cos": 0.27158576250076294,
+    "norm_ratio": 0.2715499997138977,
+    "captured": 0.0737491175532341
+   },
+   "data_aware": {
+    "resid": 0.9596890211105347,
+    "cos": 0.2810724973678589,
+    "norm_ratio": 0.28103360533714294,
+    "captured": 0.07899081707000732
+   },
+   "random": {
+    "resid": 0.9993583559989929,
+    "cos": 0.03583076596260071,
+    "norm_ratio": 0.03582644835114479,
+    "captured": 0.001283689052797854
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "mlp.up_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8836001753807068,
+    "cos": 0.4682729244232178,
+    "norm_ratio": 0.46821683645248413,
+    "captured": 0.21925325691699982
+   },
+   "data_aware": {
+    "resid": 0.9237867593765259,
+    "cos": 0.38292253017425537,
+    "norm_ratio": 0.38287708163261414,
+    "captured": 0.1466122567653656
+   },
+   "random": {
+    "resid": 0.9973304271697998,
+    "cos": 0.07299560308456421,
+    "norm_ratio": 0.07298737019300461,
+    "captured": 0.005327756982296705
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.k_proj.weight",
+   "rank": 16,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.7805651426315308,
+    "cos": 0.6250766515731812,
+    "norm_ratio": 0.6250734925270081,
+    "captured": 0.39071884751319885
+   },
+   "data_aware": {
+    "resid": 0.5425276160240173,
+    "cos": 0.8400413990020752,
+    "norm_ratio": 0.8400357961654663,
+    "captured": 0.705664873123169
+   },
+   "random": {
+    "resid": 0.994827926158905,
+    "cos": 0.10156521946191788,
+    "norm_ratio": 0.10156496614217758,
+    "captured": 0.010315468534827232
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.k_proj.weight",
+   "rank": 64,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.6388415098190308,
+    "cos": 0.7693400979042053,
+    "norm_ratio": 0.7693380117416382,
+    "captured": 0.591882586479187
+   },
+   "data_aware": {
+    "resid": 0.49846938252449036,
+    "cos": 0.8669103980064392,
+    "norm_ratio": 0.8669058084487915,
+    "captured": 0.7515296936035156
+   },
+   "random": {
+    "resid": 0.9663040041923523,
+    "cos": 0.25740301609039307,
+    "norm_ratio": 0.25740280747413635,
+    "captured": 0.06625626236200333
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.o_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.8104766011238098,
+    "cos": 0.5857788920402527,
+    "norm_ratio": 0.5857695937156677,
+    "captured": 0.343131422996521
+   },
+   "data_aware": {
+    "resid": 0.769917905330658,
+    "cos": 0.6381515264511108,
+    "norm_ratio": 0.6381407976150513,
+    "captured": 0.40723052620887756
+   },
+   "random": {
+    "resid": 0.9975283741950989,
+    "cos": 0.07026758790016174,
+    "norm_ratio": 0.07026597857475281,
+    "captured": 0.004937420599162579
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.o_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7130315899848938,
+    "cos": 0.7011436820030212,
+    "norm_ratio": 0.7011319398880005,
+    "captured": 0.49159419536590576
+   },
+   "data_aware": {
+    "resid": 0.7206335663795471,
+    "cos": 0.693325936794281,
+    "norm_ratio": 0.6933140754699707,
+    "captured": 0.480692595243454
+   },
+   "random": {
+    "resid": 0.9916425347328186,
+    "cos": 0.1290169060230255,
+    "norm_ratio": 0.12901467084884644,
+    "captured": 0.016645073890686035
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.q_proj.weight",
+   "rank": 16,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.7922988533973694,
+    "cos": 0.6101700663566589,
+    "norm_ratio": 0.6101394891738892,
+    "captured": 0.37228885293006897
+   },
+   "data_aware": {
+    "resid": 0.6651462316513062,
+    "cos": 0.7467551827430725,
+    "norm_ratio": 0.7467136979103088,
+    "captured": 0.5576122999191284
+   },
+   "random": {
+    "resid": 0.9988667368888855,
+    "cos": 0.047579411417245865,
+    "norm_ratio": 0.047576673328876495,
+    "captured": 0.002263670088723302
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.q_proj.weight",
+   "rank": 64,
+   "side_weights": "right",
+   "weights_only": {
+    "resid": 0.6753383874893188,
+    "cos": 0.7375518679618835,
+    "norm_ratio": 0.7375060319900513,
+    "captured": 0.5439489483833313
+   },
+   "data_aware": {
+    "resid": 0.625635027885437,
+    "cos": 0.7801626920700073,
+    "norm_ratio": 0.780117392539978,
+    "captured": 0.6086184978485107
+   },
+   "random": {
+    "resid": 0.9957143664360046,
+    "cos": 0.09248380362987518,
+    "norm_ratio": 0.09247839450836182,
+    "captured": 0.008552753366529942
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.v_proj.weight",
+   "rank": 16,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.9043891429901123,
+    "cos": 0.42670738697052,
+    "norm_ratio": 0.42670655250549316,
+    "captured": 0.18207883834838867
+   },
+   "data_aware": {
+    "resid": 0.8272312879562378,
+    "cos": 0.5618617534637451,
+    "norm_ratio": 0.5618614554405212,
+    "captured": 0.31568843126296997
+   },
+   "random": {
+    "resid": 0.9922949075698853,
+    "cos": 0.12390321493148804,
+    "norm_ratio": 0.12390284240245819,
+    "captured": 0.015351961366832256
+   }
+  },
+  {
+   "layer": 3,
+   "tensor": "self_attn.v_proj.weight",
+   "rank": 64,
+   "side_weights": "left",
+   "weights_only": {
+    "resid": 0.7708298563957214,
+    "cos": 0.6370420455932617,
+    "norm_ratio": 0.6370410919189453,
+    "captured": 0.40582194924354553
+   },
+   "data_aware": {
+    "resid": 0.7639248967170715,
+    "cos": 0.6453056931495667,
+    "norm_ratio": 0.6453045606613159,
+    "captured": 0.4164186716079712
+   },
+   "random": {
+    "resid": 0.9681375622749329,
+    "cos": 0.2504201829433441,
+    "norm_ratio": 0.2504197061061859,
+    "captured": 0.06271014362573624
+   }
+  }
+ ]
+}
