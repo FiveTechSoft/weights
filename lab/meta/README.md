@@ -168,3 +168,18 @@ control for "experience helps". It needs no new encodings and no new families. V
 (about 15 values) costs ~5 s per config-task pair, ~20 fresh held-out tasks about 25 to 30 minutes of compute, plus the
 pre-registration commit before scoring. A failure mode to report in advance: the knob is one-dimensional, so a
 flat-prior search may already find eta 1.0 in few trials.
+
+## Protocol v6: within-task adaptation (fresh held-out, mostly null)
+
+Pre-registered in 6ba876c before any v6 task was scored; results in `interference_v6_results.txt`
+(`python lab/meta/evaluate_v6.py`). 60 configs (5 layers x 12 etas), 18 experience tasks, 20 new held-out tasks
+(10 per family, 8 unseen-layer, 6/20 unsolvable for every policy). Mean trials (censored at 16): oracle 5.50,
+adaptive 5.55, prior-only 5.55, fixed recipe 7.05, shuffled prior 7.85, random 9.64, flat-prior adaptive 10.24.
+- j (transfer of the prior) HOLDS: adaptive vs flat-prior adaptive -4.69 trials, 95% CI [-6.65, -2.85].
+- k (use of the new task's own observations) NOT shown: adaptive and prior-only are identical (diff 0.00). In this
+  benchmark the prior's first proposal either succeeds or the task is unsolvable, so updating never changes the outcome.
+  There is no evidence here that the system learns from observations within a task.
+- l (beyond the fixed recipe) NOT shown: -1.50 trials, CI [-3.75, 0.00]. The point estimate favours the learned prior
+  (it uses a finer eta than the recipe's eta about 1), but the interval touches 0 and the claim is not made.
+Reading: what transfers is a prior from past tasks in our relative encoding; that is the same finding as v3 to v5. The
+sequential-update part, which was the new idea, adds nothing measurable on this one-knob benchmark.
