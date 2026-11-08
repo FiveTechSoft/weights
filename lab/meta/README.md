@@ -183,3 +183,11 @@ adaptive 5.55, prior-only 5.55, fixed recipe 7.05, shuffled prior 7.85, random 9
   (it uses a finer eta than the recipe's eta about 1), but the interval touches 0 and the claim is not made.
 Reading: what transfers is a prior from past tasks in our relative encoding; that is the same finding as v3 to v5. The
 sequential-update part, which was the new idea, adds nothing measurable on this one-knob benchmark.
+
+## What is language and what is script
+
+`lab/meta` (proposers, encoding selection, adaptive search, evaluators) are experimental Python scripts; no `.wspl`
+program calls them. The measurement primitive they all rely on is now available from the language as
+`step imprint_corpus` (see `docs/wsplang_0.7_spec.md` section 11): a two-step `.wspl` program reproduces
+`interference.score_config` exactly (`tests/test_wsplang_imprint_corpus.py`, three configurations with different
+scores). Still only in Python: choosing configurations, the prior, the search loop, the pre-registered evaluation.

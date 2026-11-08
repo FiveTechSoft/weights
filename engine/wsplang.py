@@ -68,7 +68,7 @@ OPS_ALLOWED = {
     # Synthesis, perturbation bounds, and envelope operators
     "delta_unlearn", "fwp_overlay", "spectral_decay", "assert_orthogonal_preservation",
     "spectral_audit", "assert_weyl", "assert_davis_kahan",
-    "init_architecture", "imprint_association", "imprint_batch",
+    "init_architecture", "imprint_association", "imprint_batch", "imprint_corpus",
     "cov_imprint", "memit_imprint", "decoupled_delta",
     "rosetta_align", "cross_project",
     "layer_envelope", "multi_layer_envelope", "distributed_memit",
@@ -91,7 +91,7 @@ INT_OPS = {
     "project_out", "project_in", "delta_unlearn", "fwp_overlay", "spectral_decay",
     "activation_projection", "poke-weight", "scale", "ablate", "scale-rows",
     "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association",
-    "imprint_batch", "cov_imprint", "memit_imprint", "decoupled_delta",
+    "imprint_batch", "imprint_corpus", "cov_imprint", "memit_imprint", "decoupled_delta",
     "rosetta_align", "cross_project",
     "layer_envelope", "multi_layer_envelope", "distributed_memit",
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift",
@@ -243,7 +243,7 @@ READ_ONLY_OPS = {
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
     "rosetta_align", "cross_project", "init_architecture", "imprint_association",
-    "imprint_batch", "delta_unlearn", "fwp_overlay", "layer_envelope",
+    "imprint_batch", "imprint_corpus", "delta_unlearn", "fwp_overlay", "layer_envelope",
     "multi_layer_envelope", "distributed_memit", "spectral_decay",
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
@@ -491,6 +491,7 @@ def plan_run(prog: Dict[str, Any], steps: List[Dict[str, Any]]) -> Dict[str, Any
         # WSP-Lang 0.5 Architecture Synthesis & Programming
         "init_architecture": "synthesize and initialize micro-transformer architecture from scratch in weight space",
         "imprint_association": "declarative factual/behavioral memory imprinting via outer product",
+        "imprint_corpus": "NanoWSP-3 closed-form corpus imprint at layer/eta/reg_lambda; reports measured recall of the imprinted facts and of an optional probe set before and after",
         "imprint_batch": "Moore-Penrose closed-form multi-associative weight synthesis without backpropagation",
         "cov_imprint": "MEMIT/EMMET covariance-regularized mass memory editing Delta W = (V - W_0 K)(K^T K + lambda C_0)^-1 K^T",
         "memit_imprint": "MEMIT/EMMET covariance-regularized mass memory editing",
@@ -3172,6 +3173,65 @@ def execute_plan_v4(
                     "max_allowed_ppl_ratio": max_drift,
                     "behavioral_drift_pass": pass_drift,
                     "verdict": "PASSES" if pass_drift else "VIOLATION"
+                }
+
+            # ------------------------------------------------------------------
+            # OP: imprint_corpus (NanoWSP-3 thematic corpus imprint, measured recall / retention)
+            # ------------------------------------------------------------------
+            elif op == "imprint_corpus":
+                from engine.nanowsp3_runtime import NanoWSP3
+
+                def _pairs(key, required):
+                    if key not in named:
+                        if required:
+                            raise ValueError(f"imprint_corpus needs {key}=<json file of [prompt, target] pairs>")
+                        return None
+                    fp = Path(str(named[key]))
+                    fp = fp if fp.is_absolute() else ROOT / fp
+                    raw = json.loads(fp.read_text(encoding="utf-8"))
+                    if not isinstance(raw, list) or not raw or not all(
+                            isinstance(x, (list, tuple)) and len(x) == 2 and all(isinstance(y, str) for y in x) for x in raw):
+                        raise ValueError(f"imprint_corpus {key}= must be a non-empty JSON list of [prompt, target] strings")
+                    return [(a, b) for a, b in raw]
+
+                facts = _pairs("facts", True)
+                probe = _pairs("probe", False)
+                layer_idx = int(named.get("layer", 3))
+                eta = float(named.get("eta", 3.5))
+                reg_lambda = float(named.get("reg_lambda", 0.01))
+                if "model" in named:
+                    ckpt_p = Path(str(named["model"]))
+                    ckpt_p = ckpt_p if ckpt_p.is_absolute() else ROOT / ckpt_p
+                else:
+                    ckpt_p = target_path if (target_path.exists() and target_path.is_file()) else (target_path / "model.safetensors")
+                if not ckpt_p.exists():
+                    raise FileNotFoundError(f"imprint_corpus needs a NanoWSP-3 checkpoint, none at {ckpt_p}")
+                cm = NanoWSP3()
+                cm.load_checkpoint(ckpt_p)
+
+                def _acc(pairs):
+                    return sum(1 for a, b in pairs if cm.evaluate_recall(a, b)[0]) / len(pairs)
+
+                facts_before = _acc(facts)
+                probe_before = _acc(probe) if probe else None
+                stats = cm.imprint_thematic_corpus([{"name": str(named.get("domain", "corpus")), "facts": facts}],
+                                                   target_layer=layer_idx, eta=eta, reg_lambda=reg_lambda)
+                facts_after = _acc(facts)
+                probe_after = _acc(probe) if probe else None
+                dest, res["write_guard"] = write_edit(op, named, runtime_candidate(cm), ckpt_p)
+                saved = dest is not None
+                res["execution_state"] = "executed" if saved else "simulated"
+                res["result"] = {
+                    "operation": "imprint_corpus",
+                    "layer": layer_idx, "eta": eta, "reg_lambda": reg_lambda,
+                    "facts": len(facts),
+                    "recall_facts_before": facts_before, "recall_facts_after": facts_after,
+                    "probe_pairs": len(probe) if probe else 0,
+                    "recall_probe_before": probe_before, "recall_probe_after": probe_after,
+                    "delta_frobenius": stats["delta_frobenius"],
+                    "base_checkpoint": str(ckpt_p),
+                    "weights_written": saved,
+                    "measured": "forward passes on this checkpoint; nothing typed in",
                 }
 
             # ------------------------------------------------------------------
