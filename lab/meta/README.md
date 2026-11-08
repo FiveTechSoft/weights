@@ -117,3 +117,15 @@ Criteria d, e, f hold nominally. Honest reading:
 - Trials-to-success is capped by the 5/10 held-out tasks that no policy (oracle included) solves; solvable-only: relative contextual 1.00, fixed rule 3.00, static 5.80, absolute contextual 4.40, random 10.30.
 - The fixed-rule baseline is weak in its eta/reg tie-break (grid order); a stronger hand rule was not pre-registered and was not added post hoc.
 - Next honest step: let the system discover the encoding itself (e.g. choose among candidate encodings by leave-one-task-out), with a new held-out set.
+
+## Protocol v4: automatic choice among designed encodings (fresh held-out, negative on the key criterion)
+
+Pre-registered in 4c66efe before scoring; results in `interference_v4_results.txt` (`python lab/meta/evaluate_v4.py`).
+Leave-one-old-layer-out validation picked `rel_old` (0.750 vs absolute 0.119 vs distractor rel_size 0.152), the
+selection is sound. On 10 new held-out tasks (4 with unseen layers) the selected policy scores 0.724 first-proposal
+(unseen: 0.693), versus 0.468 / 0.053 for the absolute contextual proposer and 0.302 for static, but it is identical to
+control A (best designed encoding, learned static ranking) and control B, by construction. Criterion g (additional
+utility over control A) is FALSE. Reading: selection among candidates we wrote recovers our own best design; it shows
+that validation can reject bad encodings, not that the system invents representations. 5/10 held-out tasks are
+unsolvable for every policy (oracle included). Open: candidate encodings that are generated, not listed, and a benchmark
+where the best designed encoding differs between task families, so that selection has something to add.
