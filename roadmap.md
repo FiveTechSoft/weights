@@ -64,6 +64,41 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 ## 4. Pendiente (priorizado)
 
+### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
+
+Dirección del driver (2026-11-08): partir del par base → mejorado, buscar diferencias reutilizables, solo pruebas de
+minutos, y llegar a algo **concreto y demostrable** (comparado con `areu01or00/qwen0.8B-wsp`, que sí lo tiene).
+Detalle y cifras: results.md §43, findings F39-F41. Métrica única nueva: **reward IWIBench = gain × retention**
+(`lab/probes/close_probe/reward.py --all`; no-op = 0).
+
+**Lo que funciona (resultado concreto):**
+- Jackrong (fine-tune de rango bajo) → `delta_to_lora` r16 ×0.5, 87 MB, sobre la base sin tocar: MATH atascados 1→14/16
+  (reward 0.867, más que MiMo completo 0.733), GSM8K 3→18/28 (0.600), HumanEval 20→19/20. **No borrar
+  `hf_cache/dp_keep_dsv4_distill`: es el donante de la demo.**
+- Demo `demos/math_transplant/` (README, `demo.py`, `programs/transplant_jackrong_math.wspl`): cifras del adaptador de
+  laboratorio; **confirmación con la salida exacta del op PENDIENTE** (chain_demo).
+
+**Lo que no:** MiMo (fine-tune completo, Δ difuso: r512 guarda 45 % de energía) no cabe en ningún LoRA (≤4/16).
+Destilación de conducta de MiMo r16 (1 pasada, 93 respuestas): reward 0.213 MATH / 0.467 GSM8K.
+
+**En cola (un trabajo de GPU a la vez; logs en `lab/runs/close_probe/distill/`):**
+
+| # | Cadena | Qué mide | Estado |
+|---|---|---|---|
+| 1 | `chain3.sh` | Destilación MiMo ronda 2: 171 respuestas (78 nuevas), r16 MLP, 1 pasada | entrenando |
+| 2 | `chain_cf.sh` | Ajuste en forma cerrada (idea WSP/MEMIT, sin gradientes): `down_proj` de cada capa sigue el residual de MiMo → LoRA r256 (`cf_distill.py`, test 0.8B OK) | en cola |
+| 3 | `chain_demo.sh` | Op `delta_to_lora` exacto sobre Jackrong → demo 3 ítems + eval completa ×0.5 (confirma o corrige el README) | en cola |
+| 4 | `chain_self.sh` | **Sin donante** (STaR / iteración experta, 1 ronda): la base responde 300 ítems de entrenamiento, se guardan solo los cerrados y correctos, LoRA r16 → reward. Si se acerca a Jackrong, quita el límite "hace falta un donante" | en cola |
+
+**Siguiente según resultados:** si (4) funciona, 2ª ronda de autodestilación con el modelo mejorado (¿se estanca?);
+si (2) supera a (1) en reward, forma cerrada como op de WSPLang (`behaviour_fit`). Después: README de la demo
+definitivo. Opcional: correr un editor en IWIBench (necesita que el driver acepte la licencia de Gemma 3 1B y una API key).
+
+**Revisado y descartado (2026-11-08):** `areu01or00/qwen0.8B-wsp` (MEMIT de hechos; útil solo la resolución en forma
+cerrada; su resultado cae a 0/5 al comprobar con pesos bf16 guardados); thePM_001/AEP (promocional, sin código de
+pesos); "MIT 90 % de pesos sobra" (lottery ticket 2018, no aplica a LLMs a ese nivel); AbridgeKV (comprime caché, no
+acorta el razonamiento); Terminal-RSI de Tencent (iteración experta → origen de la cadena 4).
+
 ### 4.0quater ESTADO 2026-11-07 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
 Rama `feat/wsp-synthesis` = `main` = 8649b8e, todo subido (GitHub Pages publica desde `main:/docs`). Detalle y cifras en results.md §36-§38 y `lab/probes/delta_patterns/findings.md` (F1-F26).
