@@ -71,3 +71,25 @@ Limits, stated plainly:
 - Still one model (NanoWSP-3) and one intervention family (closed-form imprint). This shows that a
   proposer can learn a task-dependent rule from past experiments there; it does not show it for LLM-scale
   weight edits.
+
+## Protocol v2: unseen old layers (`interference_v2.py`, 2026-11-08)
+
+New protocol, not a re-run of v1: grid over layers 1 to 5 (50 configurations), budget 15 (30% of the grid),
+10 held-out tasks including 4 with old layers 2 and 4 that never appear in the experience. The extra
+criterion d (threshold-free score of the first proposal) and the reporting rules were committed in
+`ca08974` before any v2 held-out task was scored. Full output: `interference_v2_results.txt`.
+
+Result: mixed, and negative where it matters.
+- Nominal criteria a, b, c hold on all 10 held-out tasks (contextual 11.5 trials vs random 13.9, static 12.3,
+  shuffled 12.9), but the confidence intervals overlap almost completely ([7.0, 16.0] for contextual) and
+  5 of the 10 tasks are unsolvable for every policy.
+- Criterion d holds on all held-out tasks (first-proposal score 0.454 vs static 0.312, shuffled 0.233), but
+  fails on the unseen-layer tasks: **0.035 for contextual, below static (0.268), shuffled (0.106) and random
+  (0.156)**. The oracle reaches 0.787 there.
+- Reading: the nearest-task proposer does not generalise to old layers it has not seen. It averages the
+  scores of absolute configurations of neighbouring tasks, so it cannot express the rule it should learn
+  ("write at the old layer"), which is relative to the task. The v1 result (6/6 first proposals) was
+  therefore interpolation between old layers seen in training, not an abstract rule.
+- Next, as a new protocol (v3) with fresh held-out tasks: encode a configuration relative to the task
+  (layer minus old layer) so the experience can transfer across layers. That idea comes from reading the v2
+  failure; it must not be scored on the v2 held-out tasks.

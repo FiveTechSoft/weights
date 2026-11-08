@@ -1,0 +1,40 @@
+Benchmark: interference_v2
+Held-out tasks: 10  threshold=0.8  budget=15/50 (censored at 16)
+Mean trials-to-success on held-out tasks (lower is better), 95% bootstrap CI over tasks:
+  random         13.93  [12.34, 15.33]   not solved in budget: 5/10
+  paper_default  13.20  [ 9.80, 15.80]   not solved in budget: 6/10
+  static         12.30  [ 8.50, 16.00]   not solved in budget: 7/10
+  contextual     11.50  [ 7.00, 16.00]   not solved in budget: 7/10
+  shuffled       12.90  [ 9.66, 16.00]   not solved in budget: 7/10
+  oracle          8.50  [ 4.00, 13.00]   not solved in budget: 5/10
+Pre-registered criteria: {'a_contextual_beats_random': True, 'b_contextual_beats_shuffled': True, 'c_contextual_beats_static': True}
+CLAIM 'learned to learn' supported: True
+Score of the first configuration proposed, mean over held-out tasks (higher is better):
+  random         0.152
+  static         0.312
+  contextual     0.454
+  shuffled       0.235
+  oracle         0.766
+== Protocol v2 report ==
+[all held-out] n=10  trials-to-success (censored at 16 for unsolved) | first-proposal score
+   random       13.93 | 0.152
+   static       12.30 | 0.312
+   contextual   11.50 | 0.454
+   oracle        8.50 | 0.766
+   shuffled     12.87 | 0.233
+[solvable held-out only] n=5  trials-to-success (censored at 16 for unsolved) | first-proposal score
+   random       11.86 | 0.169
+   static        8.60 | 0.402
+   contextual    7.00 | 0.516
+   oracle        1.00 | 0.858
+   shuffled      9.74 | 0.286
+[unseen old layers (2, 4)] n=4  trials-to-success (censored at 16 for unsolved) | first-proposal score
+   random       14.31 | 0.156
+   static       16.00 | 0.268
+   contextual   16.00 | 0.035
+   oracle        8.50 | 0.787
+   shuffled     16.00 | 0.106
+Criterion d (first-proposal score, contextual > static and > shuffled): all held-out True, unseen layers False
+Online stream, 19 tasks, 200 random orders:
+  first third  : proposer 12.85 vs random 13.72
+  last third   : proposer 10.44 vs random 13.64

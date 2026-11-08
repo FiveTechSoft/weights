@@ -109,10 +109,60 @@ def online(tasks, rng, orders=200):
     return by_pos
 
 
+def protocol_v2(tasks):
+    """Pre-registered v2 extras: criterion d, solvable-only and unseen-layer reporting."""
+    configs = sorted(next(iter(tasks.values()))["scores"])
+    train = [(t["features"], t["scores"]) for t in tasks.values() if t["split"] == "train"]
+    test = {n: t for n, t in tasks.items() if t["split"] == "test"}
+    solvable = {n: t for n, t in test.items() if any(v >= THRESHOLD for v in t["scores"].values())}
+    unseen = {n: t for n, t in test.items() if "_L2_" in n or "_L4_" in n}
+
+    def table(ts, label):
+        out = {"random": [], "static": [], "contextual": [], "oracle": [], "shuffled": []}
+        first = {"random": [], "static": [], "contextual": [], "oracle": [], "shuffled": []}
+        outer_t, outer_f = [], []
+        for seed in range(20):
+            r = random.Random(seed)
+            tt, ff = [], []
+            for t in ts.values():
+                s, f = t["scores"], t["features"]
+                sh = [contextual_order(shuffled_experience(train, r), f, configs) for _ in range(50)]
+                tt.append(statistics.fmean(trials_to_success(o, s, THRESHOLD, BUDGET) for o in sh))
+                ff.append(statistics.fmean(s[o[0]] for o in sh))
+            outer_t.append(statistics.fmean(tt))
+            outer_f.append(statistics.fmean(ff))
+        for t in ts.values():
+            s, f = t["scores"], t["features"]
+            out["random"].append(random_expected_trials(s, THRESHOLD, BUDGET))
+            first["random"].append(statistics.fmean(s.values()))
+            so, co = static_order(train, configs), contextual_order(train, f, configs)
+            ora = sorted(configs, key=lambda c: -s[c])
+            for k, o in (("static", so), ("contextual", co), ("oracle", ora)):
+                out[k].append(trials_to_success(o, s, THRESHOLD, BUDGET))
+                first[k].append(s[o[0]])
+        out["shuffled"] = outer_t
+        first["shuffled"] = outer_f
+        print(f"[{label}] n={len(ts)}  trials-to-success (censored at {BUDGET + 1} for unsolved) | first-proposal score")
+        for k in out:
+            print(f"   {k:11s} {statistics.fmean(out[k]):6.2f} | {statistics.fmean(first[k]):.3f}")
+        return first
+
+    print("== Protocol v2 report ==")
+    first_all = table(test, "all held-out")
+    table(solvable, "solvable held-out only")
+    first_unseen = table(unseen, "unseen old layers (2, 4)")
+    d_all = statistics.fmean(first_all["contextual"]) > max(statistics.fmean(first_all["static"]), statistics.fmean(first_all["shuffled"]))
+    d_unseen = statistics.fmean(first_unseen["contextual"]) > max(statistics.fmean(first_unseen["static"]), statistics.fmean(first_unseen["shuffled"]))
+    print(f"Criterion d (first-proposal score, contextual > static and > shuffled): all held-out {d_all}, unseen layers {d_unseen}")
+
+
 def main():
     global THRESHOLD, BUDGET
     bench = sys.argv[1] if len(sys.argv) > 1 else "recall"
-    if bench == "interference":
+    if bench == "interference_v2":
+        from lab.meta import interference_v2 as v2
+        path, THRESHOLD, BUDGET, default = HERE / "interference_v2_scores.json", v2.THRESHOLD, v2.BUDGET, v2.PAPER_DEFAULT
+    elif bench == "interference":
         from lab.meta import interference as itf
         path, THRESHOLD, BUDGET, default = HERE / "interference_scores.json", itf.THRESHOLD, itf.BUDGET, itf.PAPER_DEFAULT
     else:
@@ -140,6 +190,9 @@ def main():
     print("Score of the first configuration proposed, mean over held-out tasks (higher is better):")
     for k, xs in fp.items():
         print(f"  {k:14s} {statistics.fmean(xs):.3f}")
+
+    if bench == "interference_v2":
+        protocol_v2(tasks)
 
     by_pos = online(tasks, rng)
     pos = sorted(by_pos)
