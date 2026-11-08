@@ -129,3 +129,16 @@ utility over control A) is FALSE. Reading: selection among candidates we wrote r
 that validation can reject bad encodings, not that the system invents representations. 5/10 held-out tasks are
 unsolvable for every policy (oracle included). Open: candidate encodings that are generated, not listed, and a benchmark
 where the best designed encoding differs between task families, so that selection has something to add.
+
+## Protocol v5: two task families (fresh held-out, negative on criterion g)
+
+Pre-registered in add366e before any held-out task was scored; results in `interference_v5_results.txt`
+(`python lab/meta/evaluate_v5.py`). 20 new held-out tasks (10 per family, 8 with unseen layers, 7/20 unsolvable by
+every policy). The selector picked `rel_old` in both families, and `rel_old` was also the best fixed encoding in
+hindsight in both (first-proposal 0.876 overall, 0.905 on unseen layers; absolute 0.635 / 0.301; static 0.449;
+shuffled-experience selection 0.386). Selected = best fixed control, so criterion g (additional utility) is FALSE;
+h and i hold (the selector matched the hindsight best in each family). The pre-registered expectation that family B
+would prefer a non-relative encoding (from the training tasks) did not hold on held-out tasks: the two families do
+not need different encodings here, so this benchmark cannot show a benefit of selection. Open: a family where a
+designed encoding is actually wrong (needs a mechanism-level difference, not a scoring change), or generated rather
+than listed candidates.
