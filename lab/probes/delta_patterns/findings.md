@@ -498,7 +498,7 @@ for short checks; that is a scope decision, not an inability.
 ## F34 - closing reading of F31 for a concrete patch choice (no new compute except a cost count and a tool-vs-probe check)
 
 Question: does a reduced patch bring the output of layers 0-3 closer to MiMo than a random patch of the same size? Data: stack_L0-3_mimo.json, base embeddings in,
-each layer fed by the patched stack's own output, dev prompts and 8 held-out prompts, resid = distance to MiMo's output relative to the unpatched base (1.0 = no change).
+each layer fed by the patched stack's own output, 4 dev prompts and 8 separate held-out prompts, resid = distance to MiMo's output relative to the unpatched base (1.0 = no change).
 
 | patch on the matrices of layers 0-3 | params (of 864.0 M matrix params) | resid dev / held-out | random subspace, same size |
 |---|---|---|---|
@@ -509,8 +509,10 @@ each layer fed by the patched stack's own output, dev prompts and 8 held-out pro
 
 Reading: yes, for these four layers, a rank-256 patch gets residual 0.66-0.70 where a random patch of the same size gets 0.95; the effect repeats on held-out prompts.
 Entry-thresholding reaches a similar residual at ~3x the stored size. Rank 16 is the most size-efficient but moves the output little.
-Recommended patch: rank 256 on the matrices (the 0-3 stack), alpha 1. Success criterion for that recommendation, stated before using it elsewhere: held-out resid <= 0.80 AND at
-least 3x lower (1 - resid) gap than the random control; met here (0.66 vs 0.95).
-Limits: layers 0-3 only (not 4-31), 12 + 8 short prompts, MiMo's own trajectory not used (base trajectory in), distance to MiMo's output is not task quality.
+Recommended patch (local candidate, not a generated file; the ~160 MB of factors is a size estimate from tensor shapes): rank 256 on the matrices, alpha 1.
+Criterion: held-out resid <= 0.80 AND at least 3x the (1 - resid) gap of the random control. These thresholds were chosen AFTER seeing the layers 0-3 numbers,
+so for layers 0-3 the result is post hoc, not a pre-registered success (0.66 and 0.34 vs 0.05 only show it clears a bar set with the data in view). The criterion is
+prospective only for data not yet seen. A failure on other layers would show only that this protocol fails there, not that the patch serves only early layers in general.
+Limits: layers 0-3 only (not 4-31), 4 dev + 8 held-out short prompts, MiMo's own trajectory not used (base trajectory in), distance to MiMo's output is not task quality.
 Tool link: `apply_selected(rank=k)` agrees with the probe's rank formula on two layer-0 matrices (rank 16 and 256): |difference| <= 3.9e-4 of |delta|, which is the
 bf16 rounding of the output tensor (the probe works in float32).
