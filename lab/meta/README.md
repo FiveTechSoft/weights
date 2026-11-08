@@ -191,3 +191,15 @@ program calls them. The measurement primitive they all rely on is now available 
 `step imprint_corpus` (see `docs/wsplang_0.7_spec.md` section 11): a two-step `.wspl` program reproduces
 `interference.score_config` exactly (`tests/test_wsplang_imprint_corpus.py`, three configurations with different
 scores). Still only in Python: choosing configurations, the prior, the search loop, the pre-registered evaluation.
+
+## Guard and provenance: what they do and do not show
+
+- `prereg_guard.assert_preregistered` checks that the protocol file is versioned and clean. It is a guard, not a
+  seal: it does not enforce development/evaluation separation, does not hide the held-out set, and a spec edited and
+  re-committed after seeing results would also pass.
+- `provenance.py` writes hashes of the protocol (at its pre-registration commit and now), the data, the code and the
+  results into the record (`records/e_v6_adaptive.json`). In v6 the protocol hash at 6ba876c differs from the current
+  file because 4 guard lines were added later (36cf136); the criteria were not changed. A reviewer can verify that with
+  `git diff 6ba876c -- lab/meta/interference_v6.py`.
+- Better practice for future protocols (not yet applied): keep the protocol as an immutable data file (criteria, task
+  specs, seeds), separate from executable code that reads it, and record both hashes with each evaluation.

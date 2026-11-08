@@ -17,6 +17,7 @@ sys.path.insert(0, str(HERE.parents[1]))
 
 from engine import record as rec  # noqa: E402
 from lab.meta import evaluate_v6 as ev6  # noqa: E402
+from lab.meta.provenance import provenance  # noqa: E402
 
 
 def build_record():
@@ -41,7 +42,12 @@ def build_record():
                                     for k, v in crit.items()}},
         "hypothesis": "Updating a meta-learned prior with the new task's own trials beats the fixed recipe.",
         "evidence": {"metric": "trials_to_success", "n": len(rows), "ruta": "lab/meta/interference_v6_results.txt",
-                     "delta": round(crit["l"][0], 3)},
+                     "delta": round(crit["l"][0], 3),
+                     "provenance": provenance(
+                         HERE.parents[1], "lab/meta/interference_v6.py", "6ba876c",
+                         ["lab/meta/interference_v6_scores.json"],
+                         ["lab/meta/evaluate_v6.py", "lab/meta/adaptive_search.py", "lab/meta/meta_learner.py"],
+                         ["lab/meta/interference_v6_results.txt"])},
         "placebo": "shuffled-experience prior (wrong task labels), 100 shuffles",
         "holdout": "20 fresh tasks scored after the pre-registration commit 6ba876c",
         "conclusion": "SUPPORTED" if claim else "INCONCLUSIVE",

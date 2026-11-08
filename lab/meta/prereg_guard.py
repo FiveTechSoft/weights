@@ -1,9 +1,11 @@
-"""Code-enforced separation of development and evaluation.
+"""Check that a pre-registration file is versioned and clean before held-out scoring (a guard, NOT a seal).
 
 `assert_preregistered(spec_file)` refuses to continue unless the pre-registration file is tracked by git, has no
 uncommitted changes, and is already part of a commit. Benchmarks call it before scoring held-out tasks, so the
 criteria cannot be edited after seeing a held-out score without leaving a commit that shows it.
-It does not prove the criteria were not changed in an earlier commit; the commit history is the evidence.
+What it does NOT do: it does not enforce the separation of development and evaluation, does not seal the held-out
+set, and does not detect a spec that was edited and re-committed after seeing results (that commit also passes).
+The commit history, and the hashes recorded by lab/meta/provenance.py, are the evidence; reviewers must read them.
 """
 from __future__ import annotations
 
