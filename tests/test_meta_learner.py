@@ -100,3 +100,22 @@ class TestAdaptiveSearch(unittest.TestCase):
         prior = {cfgs[0]: 0.1, cfgs[1]: 0.9, cfgs[2]: 0.5}.get
         t = search(prior, (1.0, 5.0, 5.0, 0.0), cfgs, lambda c: 0.0, budget=3, update=False)
         self.assertEqual([c for c, _ in t], [cfgs[1], cfgs[2], cfgs[0]])
+
+
+class TestRetentionAwareImprint(unittest.TestCase):
+    def test_keep_keys_remove_the_cross_talk_that_the_plain_write_causes(self):
+        import torch
+        from engine.nanowsp3_runtime import NanoWSP3
+        from lab.meta.grid import make_task
+        from lab.meta.retention_aware import imprint_keep, keys_values
+        new = [(p.replace("MEM", "NEW"), t) for p, t in make_task(15, 0, 11)]
+        keep = make_task(15, 0, 12)
+        key = "layers.3.mlp_out.weight"
+        def cross_talk(use_keep):
+            torch.manual_seed(0)
+            m = NanoWSP3()
+            Kk, _ = keys_values(m, keep, 3)
+            w0 = m.weights[key].clone()
+            imprint_keep(m, new, 3, 1.0, 1e-6, keep if use_keep else None)
+            return float(torch.norm((m.weights[key] - w0) @ Kk))
+        self.assertLess(cross_talk(True), 0.05 * cross_talk(False))

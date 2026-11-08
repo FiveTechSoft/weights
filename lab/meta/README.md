@@ -203,3 +203,19 @@ scores). Still only in Python: choosing configurations, the prior, the search lo
   `git diff 6ba876c -- lab/meta/interference_v6.py`.
 - Better practice for future protocols (not yet applied): keep the protocol as an immutable data file (criteria, task
   specs, seeds), separate from executable code that reads it, and record both hashes with each evaluation.
+
+## Mechanism notes (development evidence only, training tasks, not a pre-registered test)
+
+`lab/meta/retention_aware.py` (algebra and a test in `tests/test_meta_learner.py`):
+- `imprint_thematic_corpus` writes `delta = eta (V - W0 K)(K^T K + lam I)^-1 K^T` from the NEW keys only. eta = 1 is the
+  exact least-squares write, so the "eta about 1" that every protocol found is what the formula implies, not an
+  empirical discovery. On the 9 family A training tasks, eta 1 at the old layer with no search scores 0.749 against
+  0.750 for the best of the 50-config grid.
+- Old facts are disturbed because their keys are not orthogonal to the new ones. Adding the old keys to the solve with
+  zero residual removes the cross-talk (retention 1.00 on all 9 training tasks). The task score then rises only to
+  0.818 because new-fact recall becomes the limit (0.50 to 0.95, worst at layer 5). Using keys of unrelated facts as
+  the keep set gives 0.767.
+- A key-separability measure (mean off-diagonal cosine, smallest Gram eigenvalue) per layer does not predict the best
+  recall on family B training tasks (Spearman -0.13 and -0.06, n = 45, many cells at ceiling).
+Reading: on this testbed most of what a search could "learn" is fixed by the algebra of the write rule; the remaining
+unsolved tasks are limited by how well the layer's keys separate the new facts, which these measures did not explain.
