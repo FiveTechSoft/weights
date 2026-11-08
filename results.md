@@ -1704,3 +1704,28 @@ GSM8K: las 28 que la base (H4 A0, 8 192) falla y sus 20 primeras resueltas.
 - Vector de control (media de h_MiMo − h_base por capa sobre los mismos textos, como incrementos por capa): ayuda
   algo (6 → 15 de 36) pero lejos del LoRA. Primer intento escribió la diferencia acumulada: se sumaba ~30 veces y
   rompía el modelo (corregido con `cvec_increments.py`).
+
+### 43.6 Extraer como operación WSPLang (`delta_to_lora`), con rigor (2026-11-08)
+Nueva operación `step delta_to_lora base= model= rank= [kinds=] out= [gguf=]` (`engine/lora_export.py`, 9 tests).
+- **Error encontrado:** la SVD aleatoria con q = r + 8 (`torch.svd_lowrank`) se alejaba 11-16 % de la truncación exacta
+  a rango 16 en matrices de atención reales (espectro plano); q = 48 → 0.06 %. Ahora SVD exacta. Jackrong r16 (recortado
+  de r64) estaba bien: 0.2 %. `energy.json` da ahora la parte de ||ΔW||² conservada en rangos 1…1024.
+- **Corrección:** el "29 % a r64" de MiMo era media sin ponderar (matrices diminutas enteras); ponderado por ||ΔW||²: 11 %.
+- MiMo exacto, ponderado: r16 3.8 %, r64 11 %, r256 29 %, r512 45 % (Jackrong r64: 99.97 %).
+- MATH A (16 atascadas, tope 2 048), McNemar exacto pareado:
+
+| variante (sobre la base) | A /16 | vs base (1/16) | vs MiMo completo (12/16) |
+|---|---|---|---|
+| MiMo r64 exacto ×1 | 3 | p = 0.5 | 0 vs 9, p = 0.004 |
+| MiMo r64 exacto ×1.5 | 4 | p = 0.25 | p = 0.008 |
+| MiMo r64 exacto ×2 | 4 | p = 0.25 | p = 0.008 |
+| MiMo solo MLP r256 ×1 (805 MB) | 2 | p = 1.0 | p = 0.002 |
+| MiMo solo MLP r512 ×1 (1.6 GB) | 4 | p = 0.25 | p = 0.008 |
+| Jackrong r16 ×0.5 (87 MB) | 14 | 13 vs 0, p = 0.0002 | 2 vs 0, p = 0.5 |
+
+- Jackrong mínimo: r4 (completo 22 MB o solo MLP 12 MB) ×0.5 → 11/36 (A + ok); r8 27; r16 32; r32 31.
+- HumanEval 20 primeros (tope 2 048, ejecución de tests): base 20/20; + Jackrong r16 ×0.5 19/20 (HumanEval/1 no
+  cierra en 2 048). Base en techo: no muestra mejora; coste ≤ 1/20, indistinguible de ruido.
+- Conclusión: la mejora de MiMo (fine-tune completo) no cabe en un LoRA ni a rango 512 en MLP ni escalando; ninguna
+  variante se distingue de la base y todas quedan por debajo de MiMo (p ≤ 0.008). La de Jackrong sí (p = 0.0002).
+  `energy.json` lo predice antes de evaluar.

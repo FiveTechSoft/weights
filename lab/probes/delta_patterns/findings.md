@@ -483,3 +483,10 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   close every time without losing answers. The heretic edit (heretic − Jackrong) is a rank-4 LoRA on 30 residual
   writers; stacked on the closing LoRA it costs little (results §43.5). A mean-activation control vector from MiMo
   helps far less (6 → 15 of 36).
+## F40. Whether a change is reusable as a LoRA is read off its exact spectrum (measured, 2026-11-08, results §43.6)
+- Exact SVD matters: randomized SVD with q = r + 8 missed the rank-16 truncation by 11-16 % on flat-spectrum deltas.
+- MiMo (full fine-tune), ||ΔW||²-weighted share kept: r64 11 %, r512 45 %. No LoRA of it (r64 at ×1/1.5/2, MLP r256,
+  MLP r512) beats the base on the 16 stuck items (≤ 4/16, base 1, MiMo 12; vs MiMo p ≤ 0.008). Jackrong (r64 keeps
+  99.97 %): r16 ×0.5 14/16, vs base p = 0.0002. Below r8 it is lost (r4: 11/36 vs r16 32/36).
+- Correction to F39: "r64 keeps 29 %" for MiMo was an unweighted mean; weighted it is 11 %.
+- WSPLang op `delta_to_lora` writes the adapter and the energy curve (ranks 1..1024) in one pass.
