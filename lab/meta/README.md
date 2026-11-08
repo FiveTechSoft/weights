@@ -37,3 +37,37 @@ NanoWSP-3, any intervention other than the closed-form imprint.
 
 Reproduce: `python lab/meta/grid.py` (about 7 minutes on CPU, resumes from the cache) then
 `python lab/meta/evaluate.py`.
+
+## Second testbed: interference (`interference.py`, 2026-11-08)
+
+The first testbed was too easy. Here a NanoWSP-3 already stores `n_old` facts (at `old_layer`) and a
+new batch is imprinted with a chosen (layer, eta, regularisation). Score = min(recall of new facts,
+retention of old facts), so writing over the old memory is penalised. 30 configurations x 15 tasks
+(9 train, 6 held out with new seeds and sizes), real runs again. Threshold 0.8 and budget 10 were fixed
+on development runs, before any held-out task was scored. Same criteria a, b, c as above.
+
+Held-out results (`python lab/meta/evaluate.py interference`):
+
+| policy | mean trials (censored at 11) | score of first proposal |
+| :--- | :--- | :--- |
+| random | 9.60 | 0.159 |
+| paper default first | 8.67 | n/a |
+| static ranking | 6.50 | 0.357 |
+| nearest-task ranking | 6.00 | 0.733 |
+| shuffled-experience control | 7.87 | 0.303 |
+| oracle | 6.00 | 0.733 |
+
+The three pre-registered criteria hold. The nearest-task proposer proposed the oracle-best configuration
+first on 6 of 6 held-out tasks; the static ranking did on 2 of 6. What it picked up from the experience:
+best results come from writing the new facts at the same layer as the old memory, with eta 1.0 and a
+small regularisation. That is a task-dependent rule (it follows `old_layer`), not a global default.
+
+Limits, stated plainly:
+- Only 3 of the 6 held-out tasks have any configuration reaching 0.8, so the trials-to-success numbers
+  rest on 3 solvable tasks (the other 3 are censored for every policy, oracle included). The
+  threshold-free "score of the first proposal" column is the cleaner evidence, and it points the same way.
+- 6 held-out tasks, wide confidence intervals (see `evaluate.py` output); held-out old layers are the ones
+  seen in training, only the sizes and seeds are new. Unseen layers or other architectures are untested.
+- Still one model (NanoWSP-3) and one intervention family (closed-form imprint). This shows that a
+  proposer can learn a task-dependent rule from past experiments there; it does not show it for LLM-scale
+  weight edits.

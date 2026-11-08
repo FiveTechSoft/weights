@@ -36,14 +36,31 @@ PAPER_DEFAULT = (3, 3.5, 1e-2)
 
 
 def load(path: Path):
+    import math
     raw = json.loads(path.read_text())
     tasks = {}
     for name, t in raw.items():
         scores = {tuple(json.loads(k)): v for k, v in t["scores"].items()}
-        import math
-        feats = (math.log2(t["n"]), float(t["prefix_len"]))
+        feats = tuple(t["features"]) if "features" in t else (math.log2(t["n"]), float(t["prefix_len"]))
         tasks[name] = {"split": t["split"], "features": feats, "scores": scores}
     return tasks
+
+
+def first_pick_scores(tasks, rng):
+    """Threshold-free view: score of the FIRST configuration each policy proposes on held-out tasks."""
+    configs = sorted(next(iter(tasks.values()))["scores"])
+    train = [(t["features"], t["scores"]) for t in tasks.values() if t["split"] == "train"]
+    test = [t for t in tasks.values() if t["split"] == "test"]
+    out = {"random": [], "static": [], "contextual": [], "shuffled": [], "oracle": []}
+    for t in test:
+        s, f = t["scores"], t["features"]
+        out["random"].append(statistics.fmean(s.values()))
+        out["static"].append(s[static_order(train, configs)[0]])
+        out["contextual"].append(s[contextual_order(train, f, configs)[0]])
+        out["shuffled"].append(statistics.fmean(
+            s[contextual_order(shuffled_experience(train, rng), f, configs)[0]] for _ in range(50)))
+        out["oracle"].append(max(s.values()))
+    return out
 
 
 def mean_ci(xs, rng, reps=2000):
@@ -52,16 +69,17 @@ def mean_ci(xs, rng, reps=2000):
     return statistics.fmean(xs), boots[int(0.025 * reps)], boots[int(0.975 * reps) - 1]
 
 
-def offline(tasks, rng):
+def offline(tasks, rng, paper_default=PAPER_DEFAULT):
     configs = sorted(next(iter(tasks.values()))["scores"])
     train = [(t["features"], t["scores"]) for t in tasks.values() if t["split"] == "train"]
     test = [t for t in tasks.values() if t["split"] == "test"]
+    PAPER_DEFAULT_ = paper_default
     res = {k: [] for k in ("random", "paper_default", "static", "contextual", "shuffled", "oracle")}
     for t in test:
         s, f = t["scores"], t["features"]
         res["random"].append(random_expected_trials(s, THRESHOLD, BUDGET))
         res["paper_default"].append(trials_to_success(
-            [PAPER_DEFAULT] + [c for c in configs if c != PAPER_DEFAULT], s, THRESHOLD, BUDGET))
+            [PAPER_DEFAULT_] + [c for c in configs if c != PAPER_DEFAULT_], s, THRESHOLD, BUDGET))
         res["static"].append(trials_to_success(static_order(train, configs), s, THRESHOLD, BUDGET))
         res["contextual"].append(trials_to_success(contextual_order(train, f, configs), s, THRESHOLD, BUDGET))
         sh = []
@@ -92,11 +110,19 @@ def online(tasks, rng, orders=200):
 
 
 def main():
-    path = HERE / "grid_scores.json"
+    global THRESHOLD, BUDGET
+    bench = sys.argv[1] if len(sys.argv) > 1 else "recall"
+    if bench == "interference":
+        from lab.meta import interference as itf
+        path, THRESHOLD, BUDGET, default = HERE / "interference_scores.json", itf.THRESHOLD, itf.BUDGET, itf.PAPER_DEFAULT
+    else:
+        path, default = HERE / "grid_scores.json", PAPER_DEFAULT
+    print(f"Benchmark: {bench}")
     tasks = load(path)
     rng = random.Random(0)
-    res, n_test = offline(tasks, rng)
-    print(f"Held-out tasks: {n_test}  threshold={THRESHOLD}  budget={BUDGET}/36 (censored at {BUDGET + 1})")
+    res, n_test = offline(tasks, rng, default)
+    n_cfg = len(next(iter(tasks.values()))["scores"])
+    print(f"Held-out tasks: {n_test}  threshold={THRESHOLD}  budget={BUDGET}/{n_cfg} (censored at {BUDGET + 1})")
     print("Mean trials-to-success on held-out tasks (lower is better), 95% bootstrap CI over tasks:")
     for k, xs in res.items():
         m, lo, hi = mean_ci(xs, rng)
@@ -109,6 +135,11 @@ def main():
     }
     print("Pre-registered criteria:", verdict)
     print("CLAIM 'learned to learn' supported:", all(verdict.values()))
+
+    fp = first_pick_scores(tasks, rng)
+    print("Score of the first configuration proposed, mean over held-out tasks (higher is better):")
+    for k, xs in fp.items():
+        print(f"  {k:14s} {statistics.fmean(xs):.3f}")
 
     by_pos = online(tasks, rng)
     pos = sorted(by_pos)
