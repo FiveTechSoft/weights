@@ -1619,3 +1619,36 @@ Test: retención media **0.59** (B2: 0.60), umbral 0.7. Por tarea (TIES / suma):
 NLL 1.313 (base 1.321). Con C casi ortogonales hay pocos conflictos de signo que resolver: TIES sin recorte es casi
 una suma escalada, y el recorte quita información útil. Lo que falla al juntar 7 no es el signo sino la interferencia
 en la función (aritmética larga), que ni la suma ni TIES evitan.
+
+## 43. Base contra mejorado (Qwen3.5-9B): la mejora en MATH es saber cerrar (2026-11-08)
+H9 se paró a petición del usuario a las 10:45 (solo terminó mul3x3: test en el paso 50 Cold 0.382, W_sum 0.406,
+W_rand 0.380; sin conclusión). Nuevo punto de partida: comparar la base con su mejorado, solo pruebas rápidas.
+
+### 43.1 Comparación con cuantización propia (Q6_K sin imatrix, protocolo §39, voraz, 8 192 tokens)
+| modelo | GSM8K (n=100, a mano) | MATH-500 (n=50) | cortadas MATH | tokens medios MATH |
+|---|---|---|---|---|
+| base (A0) | — | 20 (40 %) | 30 | 6 480 |
+| Jackrong (dsv4 distill) | 95 | 31 (62 %) | 5 | 1 490 |
+| MiMo | 94 | 41 (82 %) | 13 | 3 077 |
+GSM8K revisado a mano: Jackrong da la respuesta como número suelto sin `\boxed` (el segundo corrector daba 1 %), y
+`\$25,000` se leía como `000`; MiMo pierde dos por formato (`160 \text{ minutes}`, `60\%`). Jackrong vs MiMo GSM8K:
+2 contra 3 discordantes, p = 1.0.
+
+### 43.2 Las 30 cortadas de la base, leídas a mano (`lab/runs/model_compare/base_cut_review.json`)
+La base no falla nunca con respuesta: 20 aciertos, 0 errores, 30 cortadas. De las 30: 16 ya tienen la respuesta y no
+saben cerrar (10 en bucle de despedida "I will write the response", 2 dudando del formato, 4 revisando lo ya
+resuelto), 13 siguen calculando, 1 repetición degenerada. El detector de bucles marca 10, todas del primer grupo.
+
+### 43.3 Cierre forzado (`lab/probes/close_probe/force_close.py`, `lab/runs/close_probe/base.json`)
+La base razona (tope 4 096, se para en el primer `\boxed` no vacío del razonamiento); en 512/1 024/2 048 tokens y al
+final se añade `</think>` + "Final answer: \boxed{" y completa ≤ 40 tokens.
+| cierre forzado a | 512 | 1 024 | 2 048 | 4 096 |
+|---|---|---|---|---|
+| aciertos /50 | 27 | 35 | 41 | **43** |
+Segundo corrector (cadena normalizada): 35/50; las 8 diferencias son la misma fracción escrita distinto (`11/2` vs
+`\frac{11}{2}`), revisadas a mano. Base forzada vs MiMo: 4 contra 2 discordantes, p 0.69 (empate); vs Jackrong 14
+contra 2, p 0.004. De las 16 "tiene la respuesta y no cierra", 13 pasan a acierto; de las 13 "sigue calculando", 9.
+38 min de GPU.
+
+**Lectura:** en MATH la base ya sabe; lo que aporta MiMo es cerrar a tiempo. Copiar la mejora es copiar una conducta
+de cierre, no conocimiento. Límites: n 50, un par, tope 4 096 elegido sin dev.

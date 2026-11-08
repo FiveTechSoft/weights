@@ -466,3 +466,9 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   the C does not predict the loss. No general damage (GSM8K NLL 1.319 vs 1.321). Results §42.2.
 - TIES merge of the seven (H8 addendum a): best on dev is no trimming (d 1.0, λ 2), test retention 0.59, same as the
   plain sum (0.60); trimming hurts. Near-orthogonal C leave few sign conflicts to resolve. Results §42.4.
+
+## F38. The 9B base already knows MATH answers; the improvement is closing on time (measured, 2026-11-08, results §43)
+- Own Q6_K, MATH-500 n 50: base 20/50, all 30 failures are truncations at 8 192 tokens (16 already had the answer and
+  looped on "I will write the response" or format doubts). Forcing `</think>` + "Final answer: \boxed{" gives 27 / 35 /
+  41 / 43 of 50 at 512 / 1 024 / 2 048 / 4 096 tokens; MiMo 41/50 at 8 192 (McNemar p 0.69), Jackrong 31/50.
+- Second grader 35/50, every difference a fraction written another way (checked by hand).
