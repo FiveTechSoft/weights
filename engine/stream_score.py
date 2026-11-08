@@ -33,10 +33,22 @@ def fill_from_state(layer, sd: Dict[str, torch.Tensor]) -> None:
 
 def stream_nll(cfg, ids_list: List[List[int]], embed: Callable, load_layer: Callable,
                final_norm: torch.Tensor, head_chunks: Callable[[], Iterable[Tuple[int, torch.Tensor]]],
-               starts: List[int]) -> List[torch.Tensor]:
+               starts: List[int], spill_dir: str = None) -> List[torch.Tensor]:
     from transformers.models.qwen3_5 import modeling_qwen3_5 as m
     rot = m.Qwen3_5TextRotaryEmbedding(cfg)
-    hs = [embed(torch.tensor(ids)).float()[None] for ids in ids_list]
+    # spill_dir: hidden states of every prompt live in files there and only one prompt is in memory at a time
+    # (peak memory then does not grow with the number of prompts). Without it they stay in memory, as before.
+    import os
+    def put(i, h):
+        if spill_dir is None:
+            hs[i] = h
+        else:
+            torch.save(h, os.path.join(spill_dir, f"h{i}.pt"))
+    def get(i):
+        return hs[i] if spill_dir is None else torch.load(os.path.join(spill_dir, f"h{i}.pt"))
+    hs = [None] * len(ids_list)
+    for i, ids in enumerate(ids_list):
+        put(i, embed(torch.tensor(ids)).float()[None])
     for L in range(cfg.num_hidden_layers):
         with torch.device("meta"):
             layer = m.Qwen3_5DecoderLayer(cfg, L)
@@ -44,26 +56,28 @@ def stream_nll(cfg, ids_list: List[List[int]], embed: Callable, load_layer: Call
         load_layer(L, layer)
         full = cfg.layer_types[L] == "full_attention"
         with torch.no_grad():
-            for i, h in enumerate(hs):
+            for i in range(len(ids_list)):
+                h = get(i)
                 t = h.shape[1]
                 pos = torch.arange(t)[None]
-                hs[i] = layer(h, position_embeddings=rot(h, pos), attention_mask=_causal(t) if full else None, position_ids=pos)
+                put(i, layer(h, position_embeddings=rot(h, pos), attention_mask=_causal(t) if full else None, position_ids=pos))
+                del h
         del layer
     norm = m.Qwen3_5RMSNorm(cfg.hidden_size, eps=cfg.rms_norm_eps).float()
     norm.load_state_dict({"weight": final_norm.float()})
+    # head_chunks() is iterated ONCE: the vocabulary is the outer loop and prompts the inner one, so lm_head is read once
+    # per pass however many prompts there are.
     with torch.no_grad():
-        hn = [norm(h)[0] for h in hs]  # (T, d)
-        out = []
-        for i, ids in enumerate(ids_list):
-            h = hn[i][:-1]  # position t predicts token t+1
-            tgt = torch.tensor(ids[1:])
-            lse = torch.full((h.shape[0],), float("-inf"))
-            tl = torch.zeros(h.shape[0])
-            for s, w in head_chunks():
-                logits = h @ w.float().T
-                lse = torch.logaddexp(lse, torch.logsumexp(logits, dim=1))
-                inside = (tgt >= s) & (tgt < s + w.shape[0])
-                tl[inside] = logits[inside, tgt[inside] - s]
-            nll = lse - tl
-            out.append(nll[max(starts[i] - 1, 0):])  # NLL of tokens starts[i]..T-1
-    return out
+        n = len(ids_list)
+        tgts = [torch.tensor(ids[1:]) for ids in ids_list]
+        lse = [torch.full((len(t),), float("-inf")) for t in tgts]
+        tl = [torch.zeros(len(t)) for t in tgts]
+        for s, w in head_chunks():
+            w = w.float()
+            for i in range(n):
+                h = norm(get(i))[0][:-1]  # position t predicts token t+1
+                logits = h @ w.T
+                lse[i] = torch.logaddexp(lse[i], torch.logsumexp(logits, dim=1))
+                inside = (tgts[i] >= s) & (tgts[i] < s + w.shape[0])
+                tl[i][inside] = logits[inside, tgts[i][inside] - s]
+        return [(lse[i] - tl[i])[max(starts[i] - 1, 0):] for i in range(n)]  # NLL of tokens starts[i]..T-1

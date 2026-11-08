@@ -41,6 +41,32 @@ class StreamParity(unittest.TestCase):
                 self.assertEqual(g.shape, nll.shape)
                 self.assertTrue(torch.allclose(g, nll, atol=1e-4), (g - nll).abs().max())
 
+    def test_spill_gives_the_same_numbers_and_head_is_iterated_once(self):
+        import tempfile
+        from transformers.models.qwen3_5 import modeling_qwen3_5 as m
+        torch.manual_seed(1)
+        cfg = _tiny_cfg()
+        sd = m.Qwen3_5ForCausalLM(cfg).float().eval().state_dict()
+        ids_list = [[3, 14, 15, 92, 65, 35, 89, 79], [7, 1, 8, 2, 8, 1, 8, 2, 8, 4], [5, 9, 0, 4, 5, 3]]
+        W = sd["lm_head.weight"]
+        passes = []
+
+        def head():
+            passes.append(1)
+            for s in range(0, W.shape[0], 30):
+                yield s, W[s:s + 30]
+
+        run = lambda **kw: ss.stream_nll(
+            cfg, ids_list, lambda ids: sd["model.embed_tokens.weight"][ids],
+            lambda L, layer: ss.fill_from_state(layer, {k[len(f"model.layers.{L}."):]: v for k, v in sd.items() if k.startswith(f"model.layers.{L}.")}),
+            sd["model.norm.weight"], head, [1, 1, 1], **kw)
+        a = run()
+        with tempfile.TemporaryDirectory() as d:
+            b = run(spill_dir=d)
+        self.assertEqual(len(passes), 2)  # one head pass per run, not one per prompt
+        for x, y in zip(a, b):
+            self.assertTrue(torch.allclose(x, y, atol=1e-6))
+
     def test_wrong_layer_keys_are_refused(self):
         from transformers.models.qwen3_5 import modeling_qwen3_5 as m
         cfg = _tiny_cfg()
