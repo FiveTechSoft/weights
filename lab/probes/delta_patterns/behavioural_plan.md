@@ -49,15 +49,20 @@ That is proximity. The question here is improvement: does base + part score bett
 
 ## Staged budget (all numbers: reads are bytes of text tensors, 8.954 B parameters per model, about 17.9 GB in bf16 per model; times are estimates from the extrapolation above)
 Common to every stage: weights are streamed layer by layer and never stored whole (disk use under 5 GB); no GPU, no money, this machine only; restartable per layer.
-- Stage A, no large read: parity of the streaming pipeline on a tiny random model against the library's full forward, and against `layer_probe.py` on layers 0-3 (cached). 0 GB.
-- Stage B, the gate: score base and MiMo on the development split only. Reads about 36 GB (2 x 17.9). Tokens: at most 4k scored tokens per dataset (first items in id order within the split), 3 datasets, 12k per model:
-  about 20 min per model compute (estimate), about 40 min in total. Hard stops: throughput under 50 MB/s, any layer taking more than 3x the estimate, or disk use over 5 GB. If G1 fails on all datasets: stop, report, nothing else is read.
+- Stage A, no large read (DONE 2026-11-08, `engine/stream_score.py`, `tests/test_stream_score.py`): the streamed per-token NLL equals the library's full-model cross-entropy on a tiny random model
+  (atol 1e-4; uneven vocabulary chunks; causality checked; wrong layer keys refused). Measured on the REAL cached layers 2-3 (base), 3,992 tokens in 26 HumanEval-length prompts (random placeholder embeddings,
+  random head chunks, so the NLL value is meaningless, only time and memory count): two layers plus a full-vocabulary head pass took 79 s; four layers plus head took 111 s; peak anonymous memory
+  1.55 GB (sampled every 0.2 s, baseline 0.48 GB before the run), so about 0.4 GB of margin on a 1.98 GB machine. A first attempt overlapped another heavy process and was killed by the memory limit
+  (anon 1.83 GB): heavy runs must never overlap. The revised time per layer is about 17 s per 4k tokens including weight handling (earlier layer timings at 512 tokens suggested 12 s), and the head is about 44 s per 4k tokens.
+  Hidden states are not the memory problem (4k tokens x 4096 x 4 B = 65 MB); the float32 layer (0.9 GB), the DeltaNet fallback kernels and the head logits are. Rules: one process at a time; at most 4k tokens per batch; head chunks of 4096 rows; abort when sampled anonymous memory passes 1.75 GB.
+- Stage B, the gate: score base and MiMo on the development split only. Reads about 36 GB (2 x 17.9). Tokens: at most 4k scored tokens per dataset (first items in id order within the split), 3 datasets run as 3 separate restartable passes, 12k per model:
+  about 10 min per pass per model from the measurement above, so about 30 min per model plus about 2 min of HTTP streaming per pass, about 65-70 min in total (revised up from 40 after measuring). Hard stops: throughput under 50 MB/s, any layer taking more than 3x the estimate, or disk use over 5 GB. If G1 fails on all datasets: stop, report, nothing else is read.
 - Stage C, only if G1 passes and only for the datasets that passed: one pass over both models (about 36 GB read) in which, layer by layer, the delta factors are computed on the fly (eigh of 8 matrices, about 5-10 s each) and every variant's hidden states advance together
-  (about 33 MB of fp16 hidden states per variant for 4k tokens). 12k evaluation tokens x about 9 variants is about 100k token-forwards, about 3 h (estimate). Factors are not kept.
-- Maximum total if everything runs: about 72 GB read and about 4 h of CPU. Statistical power is limited: 4k tokens per dataset may not detect a small MiMo-vs-base difference; G1 would then fail for that reason and the report would say so.
+  (about 33 MB of fp16 hidden states per variant for 4k tokens). 12k evaluation tokens x about 9 variants: per layer and variant, about 5 s of weight writing plus about 50 s of forward for 12k tokens, so about 8 min per layer, about 4 h in total with the eigh work (estimate from the 4k-token measurement). Hidden states per variant (12k x 4096 x 4 B = 197 MB, 9 variants = 1.8 GB) are kept on disk between layers, not in memory; the earlier '33 MB per variant' was wrong. Factors are not kept.
+- Maximum total if everything runs: about 72 GB read and about 5 h of CPU (B 70 min + C 4 h), disk under 5 GB. Statistical power is limited: 4k tokens per dataset may not detect a small MiMo-vs-base difference; G1 would then fail for that reason and the report would say so.
 
 ## What is not authorised (decision pending)
-Stage B (about 36 GB streamed read, about 40 min CPU) is the minimum decision; stage C (about 36 GB more, about 3 h) is a separate decision after G1. The standing limit was "do not download large models"; this is the same
+Stage B (about 36 GB streamed read, about 70 min CPU) is the minimum decision; stage C (about 36 GB more, about 3 h) is a separate decision after G1. The standing limit was "do not download large models"; this is the same
 kind of act, so it is not started. Preparation that needs no large read (harness parity on a tiny random model, the pack format below) can proceed.
 
 ## Selective delta package (reproducible, no third-party weights distributed)
