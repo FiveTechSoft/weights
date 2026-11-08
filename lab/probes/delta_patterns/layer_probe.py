@@ -15,6 +15,7 @@ Scope and limits (read before quoting any number):
   * Per-tensor streaming keeps memory under the 2 GB limit of this machine.
 
   python lab/probes/delta_patterns/layer_probe.py fetch   BASE@rev MODEL@rev CACHE_DIR LAYER
+  python lab/probes/delta_patterns/layer_probe.py stack   CACHE_DIR out.json   (layers 0-3 composed; needs fetch for 0-3)
   python lab/probes/delta_patterns/layer_probe.py run     CACHE_DIR out.json LAYER   (layers in order: 0 first, each saves the next layer's input)
 """
 import json
@@ -94,7 +95,7 @@ def _chunks(n, step=2048):
 class Probe:
     BIG = 5_000_000  # tensors above this many entries are processed in row chunks (2 GB RAM limit)
 
-    def __init__(self, cache, layer):
+    def __init__(self, cache, layer, seqs=None):
         from safetensors import safe_open
         from safetensors.torch import load_file
         from transformers.models.qwen3_5 import modeling_qwen3_5 as m
@@ -115,7 +116,9 @@ class Probe:
         inp = load_file(f"{cache}/inputs.safetensors")
         lens = inp["lens"].tolist()
         self.seqs = []
-        if layer == 0:  # real embeddings of the prompts, from the base table
+        if seqs is not None:  # inputs given by the caller (a stack run)
+            self.seqs = seqs
+        elif layer == 0:  # real embeddings of the prompts, from the base table
             tbl = {int(u): inp["table"][i].float() for i, u in enumerate(inp["uniq"].tolist())}
             ids, o = inp["ids"].tolist(), 0
             for n in lens:
@@ -125,11 +128,16 @@ class Probe:
             h = load_file(f"{cache}/hidden_in_{layer}.safetensors")
             self.seqs = [h[f"p{i}"][None].float() for i in range(len(lens))]
         self.rot = m.Qwen3_5TextRotaryEmbedding(self.cfg)
-        self.norm = {n: self._dnorm(n) for n in self.names}
+        self.cache, self.layer_id, self._norms = cache, layer, {}
         self.basis = {}
         missing = [n[len(self.pre):] for n in self.names if n[len(self.pre):] not in self.params]
         if missing:
             raise KeyError(f"layer tensors without a module parameter: {missing}")
+
+    def _norm(self, n):
+        if n not in self._norms:
+            self._norms[n] = self._dnorm(n)
+        return self._norms[n]
 
     def _pair(self, n):
         return wd.common_dtype(self.fb.get_tensor(n), self.fm.get_tensor(n))
@@ -157,6 +165,11 @@ class Probe:
         """Singular vectors of delta on its smaller side, from a chunked Gram matrix."""
         if n in self.basis:
             return self.basis[n]
+        import os
+        bf = f"{self.cache}/basis_{n}.pt"
+        if os.path.exists(bf):
+            self.basis[n] = torch.load(bf)
+            return self.basis[n]
         a, b = self._pair(n)
         rows, cols = a.shape
         side = "right" if cols <= rows else "left"
@@ -173,6 +186,7 @@ class Probe:
         w, v = torch.linalg.eigh(g)
         v = v[:, torch.argsort(w, descending=True)[:kmax]].contiguous()
         self.basis[n] = (side, v)
+        torch.save(self.basis[n], bf)
         return self.basis[n]
 
     def write(self, n, mode, arg, seed):
@@ -191,7 +205,7 @@ class Probe:
                     param.data[i:j] = base[i:j].float() + (b[i:j].float() - a[i:j].float())
         elif mode == "random":
             g = torch.Generator().manual_seed(seed)
-            scale = self.norm[n] / (base.numel() ** 0.5)  # E||noise||_F = scale * sqrt(numel) = ||delta||_F
+            scale = self._norm(n) / (base.numel() ** 0.5)  # E||noise||_F = scale * sqrt(numel) = ||delta||_F
             if small:
                 param.data.copy_(base.float() + torch.randn(base.shape, generator=g) * scale)
             else:
@@ -314,8 +328,77 @@ def run(cache, out, layer):
     print("done", time.time() - t0, flush=True)
 
 
+def stack(cache, out, layers=(0, 1, 2, 3)):
+    """Composition test: the same rank-k budget in every layer of a short stack, run layer by layer so only one layer is in
+    memory. Each layer receives the output of the PATCHED layer before it (the patched model's own trajectory); the
+    embeddings are the base table's. Compared with the base stack, the full-MiMo-delta stack and same-size random controls."""
+    from safetensors.torch import load_file
+    t0 = time.time()
+    seqs0 = Probe(cache, layers[0]).seqs
+    hid = seqs0[0].shape[-1]
+    lens = [int(x.shape[1]) for x in seqs0]
+
+    def run_stack(select, mode, arg=None, seed=0):
+        h = seqs0
+        for L in layers:
+            pr = Probe(cache, L, seqs=h)
+            o = pr.run_variant(select, mode, arg, seed)
+            h, i = [], 0
+            for n in lens:
+                h.append(o[i:i + n * hid].reshape(1, n, hid))
+                i += n * hid
+            del pr
+        return o
+
+    o_base = run_stack(lambda s: False, "none")
+    o_mimo = run_stack(lambda s: True, "full")
+    edge = [0]
+    for n in lens:
+        edge.append(edge[-1] + n * hid)
+    groups = {"dev": (0, edge[N_DEV]), "heldout": (edge[N_DEV], edge[-1])}
+    res = {"layers": list(layers), "input": "base embeddings; each layer fed by the patched stack's own previous layer",
+           "shift_rel_to_output": float((o_mimo - o_base).norm() / o_base.norm()), "variants": {}}
+
+    def add(name, o):
+        v = {g: metrics(o[i:j], o_base[i:j], o_mimo[i:j]) for g, (i, j) in groups.items()}
+        res["variants"][name] = v
+        r = lambda d: {k: round(x, 3) for k, x in d.items()}
+        print(f"{time.time() - t0:6.0f}s {name:34s} dev", r(v["dev"]), "heldout", r(v["heldout"]), flush=True)
+        json.dump(res, open(out, "w"), indent=1)
+
+    add("sanity_full_delta", o_mimo)
+    add("sanity_base", o_base)
+    for k in (16, 256):
+        add(f"rank{k}:true", run_stack(is_matrix, "rank", k))
+        for sd in (11, 12):
+            add(f"rank{k}:random_subspace_s{sd - 10}", run_stack(is_matrix, "rsub", k, seed=sd))
+    add("top10pct_entries:true", run_stack(is_matrix, "entries", 0.1))
+    add("matrices_full:true", run_stack(is_matrix, "full"))
+    add("mlp_full:true", run_stack(lambda s: s.startswith("mlp."), "full"))
+    print("done", time.time() - t0, flush=True)
+
+
+def check_causal(cache, layer):
+    """Implementation check: changing the LAST token's input must not change any earlier output (causality), and must change the last one."""
+    pr = Probe(cache, layer)
+    pr.run_variant(lambda s: False, "none")
+    x = pr.seqs[1].clone()
+    y = x.clone()
+    y[0, -1] += torch.randn(y.shape[-1], generator=torch.Generator().manual_seed(5)) * 3
+    pr.seqs = [x]
+    a = pr.forward().reshape(x.shape[1], -1)
+    pr.seqs = [y]
+    b = pr.forward().reshape(x.shape[1], -1)
+    print({"layer": layer, "type": pr.cfg.layer_types[layer], "max_diff_earlier_tokens": float((a[:-1] - b[:-1]).abs().max()),
+           "diff_last_token": float((a[-1] - b[-1]).abs().max())})
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "fetch":
         fetch(sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]))
+    elif sys.argv[1] == "causal":
+        check_causal(sys.argv[2], int(sys.argv[3]))
+    elif sys.argv[1] == "stack":
+        stack(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == "run":
         run(sys.argv[2], sys.argv[3], int(sys.argv[4]))

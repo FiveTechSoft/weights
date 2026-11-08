@@ -449,3 +449,27 @@ captured (cos in brackets), dev | held out; "rand sub." = random subspace of the
   for a given task, and a part that reproduces it would then reproduce that. No generation, no benchmark, no behavioural claim. The earlier statement that the full-delta layer equals the MiMo layer
   only shows the code rebuilds the weights.
 - Not done: layer 3 and beyond (layer 3 is full attention and needs the causal-mask path, implemented but not run), MiMo's native trajectory, other prompt domains at scale (12 short prompts), any task.
+
+## F31. Layer 3 (full attention) and a composed stack of layers 0-3: the rank-k effect survives composition (measured, 2026-11-08)
+Data: `layer_probe_L3_mimo.json`, `stack_L0-3_mimo.json`; same probe, pinned revisions, 4 dev + 8 held-out prompts. Cost: 0.4 GB per model for layer 3, no new reads for the stack (cache),
+about 6 min of CPU for the stack. Still: base embeddings in, a short stack, no generation, no task.
+- Implementation checks. Layers are the transformers 5.20.2 `Qwen3_5DecoderLayer` in float32 (eager attention, explicit causal mask for the full-attention layer 3; the DeltaNet
+  layers use the library's torch fallback because `flash-linear-attention` is not installed). Checked: changing the last token's input leaves earlier outputs bit-identical (max diff 0.0 in layer 2 and in layer 3) and moves the last one. Not checked: agreement with the vendor runtime (sglang/llama.cpp) numerically.
+- Layer 3 alone (captured | resid | cos | norm ratio, held out in brackets): rank 16 .15 | .92 | .39 | .39 (.14 | .93 | .36 | .37); rank 256 .50 | .68 | .74 | .67 (.48 | .68 | .74 | .66);
+  rank 1024 .77 | .43 | .90 (.77 | .43 | .90). Random subspace of the same size: rank 16 .00-.01 | 1.00 | .07-.13 (norm ratio .05); rank 256 .08-.09 | .94 | .35-.39 | .22.
+- Composition (the same rank in all 8 matrices of layers 0, 1, 2, 3 at once, each layer fed by the patched stack's own previous layer). The MiMo shift of the stack output is
+  the reference; full delta in the 4 layers rebuilds it (sanity 1.00 / 0.00). dev | held out:
+  | variant | captured | resid | cos | norm ratio |
+  |---|---|---|---|---|
+  | rank 16 | .11 \| .15 | .94 \| .91 | .35 \| .44 | .30 \| .33 |
+  | rank 16, random subspace (2 seeds) | .01 \| .01 | 1.00 \| 1.00 | .11 \| .10-.12 | .06 |
+  | rank 256 | .41 \| .47 | .70 \| .66 | .74 \| .77 | .55 \| .61 |
+  | rank 256, random subspace (2 seeds) | .08 \| .07 | .95 \| .95 | .35 \| .34 | .21 |
+  | top 10 % entries | .33 \| .37 | .72 \| .68 | .79 \| .82 | .42 \| .46 |
+  | MLP delta only, full | .60 \| .63 | .55 \| .52 | .85 \| .86 | .70 \| .74 |
+  | all 8 matrices, full delta (norms and DeltaNet constants left at base) | .98 \| .99 | .13 \| .12 | .99 \| .99 | .99 |
+- Reading: composed in four layers, rank 256 reduces the relative error against MiMo's stack output from 1.00 (base) to .66-.70, and the random control only to .95. Rank 16 reduces it to .91-.94 (control 1.00). The per-layer effects
+  do not cancel or collapse when stacked; the composed numbers sit near the isolated ones (layer 0-3 rank 256 .38-.61). resid answers "is the output closer to MiMo's": yes, partially and clearly better than a same-size random part.
+  The difference between full matrices (.13) and everything (0) lies in the norms, A_log/dt_bias and conv1d, whose delta is small but not zero.
+- The gap to the control is the evidence; the absolute level (rank 16 closes 6-9 % of the distance) is small, and rank 256 closes 30-34 %, about a quarter of the full delta's size per matrix (256 of 4096).
+- Still NOT shown: any benefit on a task, MiMo's native trajectory (embeddings differ), layers 4-31, long contexts, that the closer output is a better output.
