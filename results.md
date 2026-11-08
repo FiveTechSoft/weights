@@ -1610,3 +1610,12 @@ por tarea: mul3x3 0.26, mul2x2x1 0.63, muladd1 0.38, div6_2 0.12, mod3_1 0.95, a
 - Reutilizar sí funciona de dos en dos (B1), pero con siete cambios la suma simple pierde las habilidades de
   aritmética larga. Siguiente candidato natural: fusión con recorte y elección de signo (TIES), que en Delta League
   sobre este mismo modelo es la técnica del líder.
+
+### 42.4 B3 (addendum a): fusión TIES de los 7: falla, igual que la suma
+Rejilla en dev: densidad d ∈ {0.2, 0.5, 1.0} × λ ∈ {1, 2, 3, 5}. Gana d = 1.0 (sin recorte), λ = 2: suma de dev
+3.545, frente a 3.535 de la suma simple con λ 0.5 (B2). Recortar empeora (mejor d 0.2: 3.23; d 0.5: 3.51).
+Test: retención media **0.59** (B2: 0.60), umbral 0.7. Por tarea (TIES / suma): mul3x3 0.15 / 0.26, mul2x2x1
+0.66 / 0.63, muladd1 0.43 / 0.38, div6_2 0.06 / 0.12, mod3_1 0.96 / 0.95, add3x3 0.88 / 0.87, rev4 0.99 / 0.99.
+NLL 1.313 (base 1.321). Con C casi ortogonales hay pocos conflictos de signo que resolver: TIES sin recorte es casi
+una suma escalada, y el recorte quita información útil. Lo que falla al juntar 7 no es el signo sino la interferencia
+en la función (aritmética larga), que ni la suma ni TIES evitan.

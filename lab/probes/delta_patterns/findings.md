@@ -464,3 +464,5 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Summing the C of two tasks keeps median 0.89 of each one's gain (42 cells); summing seven (λ 0.5 on dev) keeps 0.60,
   with long arithmetic losing most (div6_2 0.12, mul3x3 0.26) and format-like tasks keeping ~1.0. Cosine between
   the C does not predict the loss. No general damage (GSM8K NLL 1.319 vs 1.321). Results §42.2.
+- TIES merge of the seven (H8 addendum a): best on dev is no trimming (d 1.0, λ 2), test retention 0.59, same as the
+  plain sum (0.60); trimming hurts. Near-orthogonal C leave few sign conflicts to resolve. Results §42.4.
