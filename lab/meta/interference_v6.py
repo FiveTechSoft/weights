@@ -63,6 +63,9 @@ def task_specs():
 def build(out_path: Path, which: str) -> dict:
     table = json.loads(out_path.read_text()) if out_path.exists() else {}
     train, test = task_specs()
+    if which == "test":
+        from lab.meta.prereg_guard import assert_preregistered
+        print("pre-registration commit:", assert_preregistered(Path(__file__)))
     todo = [(s, "train") for s in train] if which == "train" else [(s, "test") for s in test]
     for spec, split in todo:
         if spec["name"] in table:
