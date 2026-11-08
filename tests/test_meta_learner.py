@@ -79,3 +79,24 @@ class TestEncodingSelection(unittest.TestCase):
         name, v = select(exp, cfgs)
         self.assertEqual(name, "rel_old")
         self.assertGreater(v["rel_old"], v["absolute"])
+
+
+class TestAdaptiveSearch(unittest.TestCase):
+    def test_update_finds_a_shifted_optimum_that_a_wrong_prior_misses(self):
+        from lab.meta.adaptive_search import search
+        etas = [0.5, 0.7, 1.0, 1.4, 2.0]
+        cfgs = [(l, e, 1e-4) for l in (1, 2, 3) for e in etas]
+        f = (1.0, 5.0, 5.0, 0.0)     # old layer 2
+        truth = lambda c: 1.0 if (c[0] == 2 and c[1] == 1.4) else 0.0
+        wrong_prior = lambda c: 1.0 if (c[0] == 2 and c[1] == 1.0) else 0.0
+        t = search(wrong_prior, f, cfgs, truth, budget=15, update=True)
+        self.assertEqual(t[0][0], (2, 1.0, 1e-4))            # prior proposes first
+        self.assertEqual(max(y for _, y in t), 1.0)           # and the search still finds the optimum
+        self.assertEqual(len({c for c, _ in t}), len(t))      # never repeats a config
+
+    def test_no_update_follows_the_prior_order(self):
+        from lab.meta.adaptive_search import search
+        cfgs = [(1, 1.0, 1e-4), (2, 1.0, 1e-4), (3, 1.0, 1e-4)]
+        prior = {cfgs[0]: 0.1, cfgs[1]: 0.9, cfgs[2]: 0.5}.get
+        t = search(prior, (1.0, 5.0, 5.0, 0.0), cfgs, lambda c: 0.0, budget=3, update=False)
+        self.assertEqual([c for c, _ in t], [cfgs[1], cfgs[2], cfgs[0]])
