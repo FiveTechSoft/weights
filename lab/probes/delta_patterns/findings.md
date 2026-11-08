@@ -384,3 +384,10 @@ Goal stated by the user: compare the Qwen base with MiMo-V2.6 Qwen, see what cha
   change peaks), compared with a random subset of equal delta norm, as pre-registered in plan.md H4. They need a
   behavioural evaluation and therefore an inference machine.
 - Limits: 4 tensors of 427, one layer mostly; the families' rank curves were not all measured.
+- **F27 addendum, depth check (8 more tensors, about 1.1 GB read in total, 8 tensors in `reuse_curve_mimo_depth.json`;
+  12 of 427 tensors measured in all).** Layers 0 and 30 for gate_proj, down_proj and in_proj_qkv, v_proj at layers 7
+  and 31. The rank for 80 % of the energy stays at 1630-1890 (MLP) and 1250-1390 (in_proj_qkv); rank-16 energy stays
+  at 3-8 % for large matrices. v_proj keeps rank 400-485 for 80 % (rank-16 energy 7-15 %). No depth trend that would
+  make a shallow or deep layer a compact patch. Reference used: Qwen3.5-9B (the declared parent), an exploratory choice, not
+  the user's confirmed "base". Sources: HF repos `Qwen/Qwen3.5-9B` and `XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B` at `main`
+  as read on 2026-11-08 (revisions not pinned; pin them before any behavioural run).
