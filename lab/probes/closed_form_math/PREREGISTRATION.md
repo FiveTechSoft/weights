@@ -1,3 +1,7 @@
+> **SUPERSEDED (2026-11-09 07:08).** Anto replaced this closed-form-answer test with the teacher/delta experiment in
+> `lab/probes/skill_delta/PROTOCOL.md`. Nothing below was evaluated beyond 75 unpatched add2 calibration generations
+> (54/75 exact match; kept in lab/runs/closed_form_math/calibration.jsonl). Kept for the record; do not run.
+
 # Closed-form write of one arithmetic skill: pre-registration (written BEFORE any run)
 
 Question: can a closed-form edit of one MLP down_proj (no gradients) make a small Qwen model answer NEW problems of one arithmetic

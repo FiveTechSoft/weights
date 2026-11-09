@@ -5,8 +5,9 @@ SKILLS = {  # name: (digits_a, digits_b, op)
     "add2": (2, 2, "+"), "add3": (3, 3, "+"), "add4": (4, 4, "+"), "mul2x2": (2, 2, "*"),
 }
 SMOKE_PAIRS = {(47, 68), (12, 30)}   # observed in a 3-prompt smoke test before the sets were fixed
-SEEDS = {"calibration": 1, "write": 2, "holdout": 3}
-SIZES = {"calibration": 100, "write": 40, "holdout": 100}
+SEEDS = {"calibration": 1, "write": 2, "holdout": 3, "train": 4, "selection": 5, "control": 6}
+SWAP_EXCLUDE = {"mul2x2"}   # a*b and b*a count as the same problem across sets (no operand-order leak)
+SIZES = {"calibration": 100, "write": 40, "holdout": 100, "train": 2000, "selection": 100, "control": 100}
 
 
 def prompt(a, b, op):
@@ -20,7 +21,7 @@ def answer(a, b, op):
 def make_sets(skill):
     da, db, op = SKILLS[skill]
     used, out = set(SMOKE_PAIRS), {}  # pairs seen in the smoke test are excluded from every set
-    for name in ("calibration", "write", "holdout"):
+    for name in ("calibration", "write", "holdout", "train", "selection", "control"):
         rng = random.Random(SEEDS[name] * 1000 + len(skill) * 7 + sum(map(ord, skill)))
         items = []
         while len(items) < SIZES[name]:
@@ -31,6 +32,8 @@ def make_sets(skill):
             if (a, b) in used:
                 continue
             used.add((a, b))
+            if skill in SWAP_EXCLUDE:
+                used.add((b, a))
             items.append({"a": a, "b": b, "op": op, "prompt": prompt(a, b, op), "answer": answer(a, b, op)})
         out[name] = items
     return out

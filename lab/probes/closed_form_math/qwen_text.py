@@ -53,8 +53,8 @@ class QwenText:
         rows = {u: self.sl[u:u + 1] for u in uniq}
         return torch.cat([rows[i] for i in flat], 0).reshape(*ids.shape, -1).to(torch.bfloat16)
 
-    def hidden(self, ids, mask):
-        with torch.no_grad():
+    def hidden(self, ids, mask, grad=False):
+        with torch.set_grad_enabled(grad):
             return self.m(inputs_embeds=self.embed(ids), attention_mask=mask).last_hidden_state
 
     def logits_last(self, h_last: torch.Tensor, chunk: int = 8192) -> torch.Tensor:
