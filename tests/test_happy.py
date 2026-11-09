@@ -13,6 +13,14 @@ class TestHappy(unittest.TestCase):
         self.assertEqual(happy.lex1("The kettle boils water."), 0.0)
         self.assertAlmostEqual(happy.lex1("I am so happy and excited!"), 100 * 3 / 6)
 
+    def test_judge_answer_skips_the_think_block(self):
+        # MiMo ignores enable_thinking=False and opens with <think>: the verdict is what follows </think>
+        import happy
+        self.assertEqual(happy.judge_answer("<think>The reply is coherent.</think>\n\nYes"), "yes")
+        self.assertEqual(happy.judge_answer("<think></think>3"), "3")
+        self.assertEqual(happy.judge_answer("No"), "no")
+        self.assertIsNone(happy.judge_answer("<think>The reply is coherent, fluent,"))   # cut inside the think block
+
     def test_sign_test(self):
         import happy
         self.assertEqual(happy.sign_p([0, 0]), 1.0)

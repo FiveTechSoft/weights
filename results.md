@@ -1857,3 +1857,90 @@ Prioridad §4.0sexies del roadmap: ¿el op y su veredicto generalizan a otro aut
   con n pequeño la prueba es débil: no distingue "transfiere la mitad" de "no transfiere". Es el segundo caso de la
   regla (Jackrong sí con 58.6 %, este no con 7.5 %); el tercero (OSS-Distilled, LoRA r16 fusionado, en cola) debería
   dar ≈ 100 % y transferir si la regla vale.
+
+### 43.12 Acortar el razonamiento de MiMo con el delta de OSS-Distilled: transfiere la conducta, cuesta precisión (2026-11-09)
+Plan fijado antes de correr: `lab/probes/short_reasoning/PLAN.md` (C1 cortadas MATH −5 o más; C2 aciertos totales no
+bajan más de 2; C3 el placebo no alcanza C1). Donante `iAmBoosted/Qwen3.5-9B-OSS-Distilled@7a7c96f` (LoRA r16 fusionado);
+`programs/extract_oss_distilled.wspl` lo lee del hub por rangos de bytes, veredicto del op **`likely`** (r16 guarda el
+98.3 % ponderado, 248 matrices). Adaptador aplicado en tiempo de ejecución sobre el Q6_K propio de MiMo; protocolo §43.1
+(voraz, 8 192 tokens, GSM8K 100 + MATH-500 50); placebo = mismo rango y norma de Frobenius por matriz, direcciones al azar.
+
+| brazo | GSM8K ok | GSM8K cortadas | MATH ok | MATH cortadas | tokens GSM8K | tokens MATH |
+|---|---|---|---|---|---|---|
+| MiMo (ref., §43.1) | 92 | 4 | 41 | 13 | 706 | 3 077 |
+| + OSS ×1 | 83 | 1 | 39 | **3** | **286** | **965** |
+| + OSS ×0.5 | 83 | 1 | 39 | 5 | 281 | 1 284 |
+| + placebo ×1 | 93 | 3 | 39 | 17 | 624 | 3 515 |
+
+McNemar exacto (corrector 1 / corrector 2 independiente, coinciden):
+- GSM8K, OSS ×1 frente a MiMo 3/12 (p = 0.035 / 0.013); frente al placebo 3/13 (p = 0.021 / 0.021).
+  OSS ×0.5 frente a MiMo 1/10 (p = 0.012 / 0.003); frente al placebo 2/12 (p = 0.013 / 0.007).
+- MATH: ninguna diferencia (p ≥ 0.6 en todos los pares).
+- 11 de los 12 GSM8K que pierde OSS ×1 terminan con `stop` en 122-557 tokens: no le falta espacio, razona demasiado corto.
+
+**Veredicto del plan: FALLA en las dos dosis** (C1 sí, −10 y −8; C2 no, 122 frente a 133; C3 sí). Lectura: el op
+transfiere a otro modelo (MiMo, no la base de la que sale el delta) una **conducta** — pensar ≈ 3 veces menos — que el
+placebo no produce; esa conducta, tal como la trae el donante, cuesta aritmética. Tercer donante con veredicto
+coherente: `likely` (98 %) → transfiere. El conjunto sellado (§ abajo) no se usa: ningún brazo pasó.
+
+**Conjunto sellado de confirmación (añadido hoy):** `data/sealed_confirm.json`, GSM8K 100 + MATH-500 50 disjuntos del
+set de desarrollo, con sha256 comprobado (`engine/sealed_set.py`, regla en `lab/probes/sealed/README.md`). Solo para
+confirmar, una vez, un brazo que ya haya pasado su criterio.
+
+### 43.13 Felicidad con el op `contrast_vector`: pasa, tras dos arreglos del juez (2026-11-09)
+Plan fijado antes de correr: `lab/probes/happy/PLAN.md` (C1 tono +1.0 y p < 0.01; C2 léxico +2/100 palabras y
+p < 0.01; C3 placebo tono < +0.5; C4 coherentes ≥ 36/40; C5 GSM8K no baja más de 2). Base Qwen3.5-9B (Q6_K propio A0),
+sin prompt de sistema, voraz, 200 tokens. Pares: 70 preguntas de entrenamiento contestadas por la propia base con
+sistema "alegre" y "neutro" (el sistema no se guarda). `programs/happy_vector.wspl` → `hf_cache/cvec/happy.gguf`
+(incrementos por capa, 31 capas) + placebo de la misma norma por capa. Juez MiMo (tono 1-5, coherente sí/no); segundo
+método independiente: léxico de afecto positivo + "!" por 100 palabras. Prueba: 40 preguntas no vistas.
+
+**Dos fallos de medición, arreglados antes de tocar la prueba** (enmiendas en el plan, ficheros previos guardados):
+1. MiMo ignora `enable_thinking: false` y empieza con `<think>`; con 8 tokens el "yes" nunca llegaba → 0/10 coherentes
+   en todas las escalas. Ahora se lee el veredicto tras `</think>` (1 024 tokens; test `test_judge_answer_skips_the_think_block`).
+2. El juez llamaba incoherente a toda respuesta cortada por el tope de 200 tokens: la **base sin vector** sacaba 4/10
+   (4/5 completas coherentes, 0/5 cortadas). La pregunta ahora avisa del corte; validez exigida: base ≥ 9/10 → 9/10.
+
+Con el juez válido, desarrollo (10 preguntas): escala 0.125 10/10 coherentes, 0.25 10/10, 0.5 8/10, 1.0 0/10, 2 y 4
+degeneran ("OHOOOO…"). La regla (mayor escala con ≥ 9/10) elige **0.25** (rejilla ampliada hacia abajo por enmienda; la
+original 0.5-4 no daba ninguna).
+
+| prueba (40) | tono medio | léxico /100 palabras | coherentes |
+|---|---|---|---|
+| base | 2.83 | 0.27 | 39 |
+| **vector ×0.25** | **3.90** | **2.63** | 37 |
+| placebo ×0.25 | 2.88 | 0.29 | 39 |
+
+- Tono +1.07 (signo exacto p = 3·10⁻⁸); léxico +2.36 (p = 7·10⁻¹²); placebo +0.05 (p = 1.0) y +0.02 (p = 0.55).
+- GSM8K rápido (48): 7 frente a 9 de la base (dentro del margen de 2).
+- **Veredicto: PASA C1-C5**, con la salvedad de los dos arreglos del juez. El efecto del post original (sumar una
+  dirección de "felicidad" al flujo residual) se reproduce con un solo paso WSP-Lang, sin tocar pesos, con placebo y
+  dos métodos de medida que coinciden. Límite: a escalas ≥ 0.5 la coherencia cae; la ventana útil es estrecha.
+
+### 43.14 MiMo 2.6 frente a DeepSeek-V4-Pro-Qwen3.5-9B-UNCENSORED-heretic (pregunta del driver, 2026-11-09)
+Mismo protocolo §43.1 (Q6_K propio sin imatrix, voraz, 8 192 tokens). Heretic convertido desde una carpeta de
+preparación (`hf_cache/dsv4_heretic_conv`: pesos enlazados; solo cambia `tokenizer_class` Qwen3_5Tokenizer →
+Qwen2Tokenizer, que el conversor sí conoce; vocabulario, fusiones e ids idénticos a Qwen3.5-9B para texto).
+
+| | base | Jackrong | MiMo 2.6 | heretic |
+|---|---|---|---|---|
+| GSM8K /100 (corrector 1 / último número) | — | 94 / 95 | 92 / 93 | 89 / 90 |
+| GSM8K cortadas | — | 2 | 4 | 6 |
+| MATH-500 /50 (corrector 1 / 2) | 20 / 19 | 31 / 30 | **41** / 36 | 33 / 33 |
+| MATH cortadas | 30 | 5 | 13 | **3** |
+| tokens medios GSM8K / MATH | — / 6 480 | 588 / 1 490 | 706 / 3 077 | 804 / **1 223** |
+| HumanEval 20 primeros, tope 2 048 | 20 * | 6 † | 19 | 7 † |
+
+- Heretic frente a MiMo, McNemar exacto: GSM8K 4/7 (p = 0.55); MATH 5/13 (p = 0.096) con el corrector 1, 6/9
+  (p = 0.61) con el 2. **Ninguna diferencia significativa** con estos n.
+- Formato: heretic (y Jackrong) escriben `\boxed{}` en el razonamiento y contestan solo el número; el corrector 2 de
+  GSM8K, que exige `\boxed` en la respuesta, da 1/100. Con un tercer corrector que no depende del formato (último
+  número), 90, coherente con el 1.
+- † HumanEval: en 13/20 respuestas heretic y Jackrong completo devuelven Python con la sangría colapsada a 1 espacio
+  (bloques anidados inválidos) y fallan; MiMo 19/20; la base (* tope distinto, §43.8) y el adaptador de Jackrong no lo
+  hacen. **No verificado si es hábito del modelo o del camino de conversión**: no se usa para comparar.
+- No medido por diseño: rechazos/censura (heretic es "uncensored"), ni calidad fuera de matemáticas.
+
+**Respuesta a "cuál es mejor y en qué":** en matemáticas, empate estadístico; MiMo acierta algo más en MATH (no
+significativo) y heretic piensa ≈ 2.5 veces menos y casi nunca se queda sin espacio (3 cortadas frente a 13). Si el
+coste por respuesta importa, heretic; si importa el último punto de MATH, MiMo, sin poder afirmarlo con n = 50.

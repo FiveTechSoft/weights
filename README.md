@@ -34,7 +34,23 @@ Paired against the base (exact McNemar), both p < 0.0001. Before any benchmark t
 change will move: rank 16 keeps 58.6 % of Jackrong's change (it moves) and 3.8 % of MiMo's (it does not, at any rank
 up to 512). Demo and commands: [`demos/math_transplant/`](demos/math_transplant/). It **needs a donor**: every attempt
 to create the skill without one (synthesis, learned jumps, merges, self-distillation) failed; see the table below.
-A second donor (another author, RL instead of SFT) is being tested to check that the op generalizes.
+**Does the verdict generalize?** Four donors so far (results §43.11-43.12), verdict given before any benchmark:
+
+| donor | change kept at rank 16 | verdict | what the adapter did |
+|---|---|---|---|
+| Jackrong reasoning distill (SFT) | 58.6 % | likely | MATH 6 → 30/36, GSM8K 9 → 37/48 |
+| iAmBoosted OSS-Distilled (merged LoRA r16), read from the hub | 98.3 % | likely | moved its *behaviour* onto another model (MiMo): ≈ 3× shorter reasoning, MATH answers cut at 8,192 tokens 13 → 3, a same-norm placebo does not; but GSM8K 92 → 83/100 (p = 0.035), so it fails its pre-registered criterion |
+| LeoZotos math GRPO (RL) | 7.5 % | unlikely | not distinguishable from the base (GSM8K 15/48 vs 9, p = 0.21) although the full donor improves it (21/48, p = 0.012) |
+| MiMo 2.6 (full fine-tune) | 3.8 % | unlikely | does not move at any rank up to 512 |
+
+The verdict was right each time; moving a change does not make the change good (OSS). Next transplants are confirmed
+once on a sealed set (`data/sealed_confirm.json`, sha256-checked, disjoint from everything used so far).
+
+**Second use: steering without touching weights** (results §43.13). The `contrast_vector` op turns two sets of answers
+(same prompts, cheerful vs neutral) into a llama.cpp control vector. On 40 unseen prompts, Qwen3.5-9B with the vector at
+scale 0.25: judged tone 2.83 → 3.90 of 5 (sign test p = 3·10⁻⁸), positive-affect words 0.27 → 2.63 per 100 (p = 7·10⁻¹²),
+37/40 coherent; a same-norm random vector changes nothing (+0.05, +0.02). Passed all five pre-registered criteria
+after two fixes to the judge, both made before the test set was used (documented). Scales ≥ 0.5 break coherence.
 
 🌐 Research portal: [fivetechsoft.github.io/weights](https://fivetechsoft.github.io/weights/) ·
 📒 Full log: [`results.md`](results.md) · 🗺️ Plan: [`roadmap.md`](roadmap.md) ·
@@ -51,6 +67,10 @@ items. Results that did not survive the audit are listed as such instead of bein
 | Result | Evidence | Status |
 | :--- | :--- | :--- |
 | **Fine-tune → adapter (`delta_to_lora`)**, Jackrong's distill on Qwen3.5-9B (results §43.4-43.6) | See *Main result*. Rank 4 fails (11/36), rank 8 27/36, rank 16 30-32/36. HumanEval first 20: 20/20 base, 19/20 with the lab adapter. | ✅ Measured, paired tests, small sets (36 + 48 items). |
+| **Transfer verdict on 4 donors** (results §43.11-43.12) | See *Main result*: `likely` for Jackrong (58.6 %) and OSS-Distilled (98.3 %), both transferred; `unlikely` for LeoZotos (7.5 %) and MiMo (3.8 %), neither did. | ✅ Measured, small sets; LeoZotos's test is weak (adapter between base and donor, neither difference significant). |
+| **Shorter reasoning on MiMo with OSS-Distilled's change** (results §43.12) | GSM8K 100 + MATH-500 50, 8,192 tokens: MATH cut 13 → 3 (×1) / 5 (×0.5), tokens 3,077 → 965; placebo 17 cut. GSM8K 92 → 83 at both doses (p = 0.035 / 0.012, two graders agree). | ❌ Fails its pre-registered criterion: the behaviour moves, accuracy drops. |
+| **Happiness control vector (`contrast_vector`)** (results §43.13) | See *Main result*. Judge (MiMo) and lexicon agree; placebo null; GSM8K fast set 7/48 vs 9/48 (within the margin of 2). | ✅ Passes C1-C5 after two documented judge fixes. One model, one style, 40 test prompts. |
+| **MiMo 2.6 vs DeepSeek-V4-Pro-Qwen3.5-9B-heretic** (results §43.14) | Same protocol: GSM8K 92 vs 89 (p = 0.55), MATH-500 41 vs 33 (p = 0.10; second grader 36 vs 33, p = 0.61); heretic thinks ≈ 2.5× less (1,223 vs 3,077 tokens on MATH, 3 vs 13 cut). | ✅ Statistical tie on math. HumanEval not used: heretic's code comes back with 1-space indentation in 13/20 (cause not verified). Refusals not measured. |
 | **MiMo's change does not fit an adapter** (results §43.4-43.5) | Full fine-tune, diffuse change: rank 64-512 adapters reach ≤ 4/16 on the stuck MATH items vs MiMo's own 12/16. | ✅ Negative result, predicted by `energy.json`. |
 | **Copying MiMo's behaviour instead of its weights** (results §43.7-43.10) | Rank-16 adapter trained on MiMo's own answers: MATH 6 → 16 / 24 / 27 of 36 with 93 / 171 / 256 answers, GSM8K 9 → 34 / 41 / 41 of 48. Closed-form, gradient-free fit of `down_proj` to MiMo's hidden states (the WSP/MEMIT write used for a behaviour): 17/36, 25/48; a same-norm random placebo gives 10/36, 14/48 (not significant vs base, p 0.13 / 0.23), and the fit beats it (p 0.039 / 0.003). Writing the attention output too does not help (15/36, 26/48). | ✅ Measured. Distillation flattens after 171 answers; the gradient-free route is closed. |
 | **Creating a skill without a donor** (results §40-§42, §43.8) | Qwen3.5-0.8B, 3×3 multiplication: a training's change lives in a narrow subspace shared across seeds (overlap 0.72-0.80, chance 0.016); rank 20 recovers 91 % of it, another seed's subspace 92 %. But extrapolating early steps, one gradient, coefficients in the subspace, a learned jump (0/7 tasks) and summing changes all fail; donor-free self-distillation on 9B = base. | ❌ Not achieved. Moving an existing change works; making one does not. |
@@ -93,6 +113,18 @@ python demos/math_transplant/demo.py 8095        # same server: adapter off vs o
 copy. The step returns `verdict` (`likely` / `uncertain` / `unlikely`) from the weighted energy kept at rank 16, before
 any eval. `gguf=` needs `WSP_LORA_CONVERTER` (llama.cpp's `convert_lora_to_gguf.py`). One score for an adapter:
 `lab/probes/close_probe/reward.py` (IWIBench reward = gain on stuck items × retention of solved ones; a no-op scores 0).
+
+### Steer a mood with a control vector (`contrast_vector`)
+```wspl
+experiment happy_vector:
+steps:
+    step contrast_vector model=hf_cache/qwen35-9b-hf pos=lab/runs/happy/pairs/pos.jsonl neg=lab/runs/happy/pairs/neg.jsonl out=hf_cache/cvec/happy.gguf placebo=2026
+```
+```bash
+python -m engine.wsplang programs/happy_vector.wspl --run      # pos/neg: jsonl rows {prompt, response}
+llama-server -m <Qwen3.5-9B base>.gguf --control-vector-scaled hf_cache/cvec/happy.gguf:0.25 --port 8095
+```
+The full measured study (pairs, judge, lexicon, placebo, retention) is `lab/probes/happy/` with its plan in `PLAN.md`.
 
 ### Inspect one weight of a GGUF
 ```bash
@@ -155,10 +187,11 @@ NLL near ln 65. For language-model behaviour use `lab/verify_llmness.py`, calibr
 
 ## 🧠 WSP-Lang
 
-A declarative language for weight-space experiments. Steps cover:
+A declarative language for weight-space experiments (runtime version 0.7.0). Steps cover:
 - inspection: `peek`, `semantic_map`;
 - edits under a guard: `project_out`, `scale-cols`, closed-form imprints;
 - weight diffs: `delta_stats`, `delta_signature`, `delta_compare`, `model_report`, `delta_to_lora` (a fine-tune's change as a reusable LoRA adapter, local or from the hub, with a transfer verdict);
+- steering: `contrast_vector` (a llama.cpp control vector from two sets of answers, with a same-norm placebo);
 - behavioural evaluation: `evaluate_benchmark` against a running server.
 
 Spec: [`docs/wsplang_specification.md`](docs/wsplang_specification.md).
@@ -183,6 +216,8 @@ The contrast gain this gives has not been measured.
 | [`wsp.py`](wsp.py) | GGUF Q6_K inspector and in-place editor; NumPy port of `quantize_row_q6_K_ref` (87 % byte-identical on unedited blocks, error ~6e-6). |
 | [`engine/wsplang.py`](engine/wsplang.py) | WSP-Lang parser, validator and runtime (`--run`). |
 | [`engine/weight_diff.py`](engine/weight_diff.py) | Tensor-by-tensor diff of two checkpoints. It reads safetensors locally or by HTTP ranges and maps tensor names across architectures. Per tensor it gives relative change, spectrum and subspace signatures; storage casts are not counted as change. |
+| [`engine/contrast_vector.py`](engine/contrast_vector.py) | `contrast_vector`: per-layer mean difference of two sets of answers, written as llama.cpp per-layer increments (GGUF) + placebo. |
+| [`engine/sealed_set.py`](engine/sealed_set.py) | Sealed confirmation set (GSM8K 100 + MATH-500 50) with a sha256 check; rule in [`lab/probes/sealed/`](lab/probes/sealed/README.md). |
 | [`engine/lora_export.py`](engine/lora_export.py) | `delta_to_lora`: exact SVD of each matrix's change, PEFT adapter + `energy.json` (share of the change kept at each rank). |
 | [`demos/math_transplant/`](demos/math_transplant/) | The main result as a runnable demo (adapter off vs on, same server). |
 | [`lab/probes/close_probe/`](lab/probes/close_probe/) | Base vs improved Qwen3.5-9B: fast eval (`fast_eval.py`), reward (`reward.py`), behaviour distillation (`distill_gen.py`, `distill_train.py`), closed-form fit (`cf_distill.py`), placebo adapters (`placebo_lora.py`). |
@@ -205,7 +240,8 @@ The contrast gain this gives has not been measured.
    table above are all kept.
 2. **Causal claims need a placebo.** A random-direction edit of the same norm is required by `PROTOCOL.md`. It was
    used in Exp 8 and in the loop fixes. The older experiments without one are marked ⚠️ above.
-3. **Holdouts are sealed** before an edit is designed. Evaluation uses GSM8K and MATH-500 subsets.
+3. **Holdouts are sealed** before an edit is designed. Evaluation uses GSM8K and MATH-500 subsets; since 2026-11-09 a
+   hashed confirmation set, disjoint from every item used to pick doses or donors, is run once on anything that passes.
 4. **Edits are fenced.** `FORBIDDEN_TENSORS` (in `wsp.py` and `engine/wsplang.py`) blocks embeddings, the output head
    and norms unless explicitly allowed.
 5. **Numbers need two methods.** A figure is reported only if two independent computations agree. Example: the
@@ -225,7 +261,9 @@ without forward passes:
   same neurons ×20 or ×100 leaves the replies practically unchanged, because they barely fire). Qwen3.5's `down_proj`
   has no bias, so that addition cannot be written into the weights; it needs a control vector
   ([dahara1/EvilQwen-control-vectors](https://huggingface.co/dahara1/EvilQwen-control-vectors), llama.cpp). Scaling
-  columns, as `evil_mimo.json` does, is the multiplicative kind. We have not tested either on MiMo.
+  columns, as `evil_mimo.json` does, is the multiplicative kind. We have not tested either on MiMo. The additive
+  kind does work here for a mood: the happiness control vector (`contrast_vector`, results §43.13) passes its
+  pre-registered test with a placebo.
 - **Not done:** the behavioural effect was **never evaluated**, so this is an untested edit, not a result. Notes:
   [`docs/behavioral_steering_and_dreaming.md`](docs/behavioral_steering_and_dreaming.md).
 

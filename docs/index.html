@@ -314,14 +314,35 @@
           The placebo is not significantly better than the base (p 0.13 / 0.23) and the closed-form fit beats it
           (p 0.039 / 0.003), so part of that fit's gain is unspecific. Self-distillation is indistinguishable from the base.
         </p>
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Does the prediction generalize? Four donors (results &sect;43.11-43.12)</h3>
+        <table>
+          <thead><tr><th>Donor</th><th>Kept at rank 16</th><th>Verdict (before any eval)</th><th>What the adapter did</th></tr></thead>
+          <tbody>
+            <tr><td>Jackrong reasoning distill (SFT)</td><td>58.6 %</td><td>likely</td><td>MATH 6 &rarr; 30/36, GSM8K 9 &rarr; 37/48</td></tr>
+            <tr><td>OSS-Distilled (merged LoRA r16), read from the hub</td><td>98.3 %</td><td>likely</td><td>moved its behaviour onto MiMo: &asymp; 3&times; shorter reasoning, MATH cut at 8,192 tokens 13 &rarr; 3 (placebo 17); but GSM8K 92 &rarr; 83/100 (p = 0.035): fails its pre-registered criterion</td></tr>
+            <tr><td>LeoZotos math GRPO (RL)</td><td>7.5 %</td><td>unlikely</td><td>15/48 GSM8K, not distinguishable from base (9) or full donor (21)</td></tr>
+            <tr><td>MiMo 2.6 (full fine-tune)</td><td>3.8 %</td><td>unlikely</td><td>does not move at any rank up to 512</td></tr>
+          </tbody>
+        </table>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          The verdict was right each time. Moving a change does not make it a good change: OSS's shorter reasoning costs arithmetic.
+        </p>
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Second use: a mood as a control vector, no weight change (results &sect;43.13)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          The <code>contrast_vector</code> op turns the same prompts answered cheerfully and neutrally into a llama.cpp control vector.
+          On 40 unseen prompts, Qwen3.5-9B at scale 0.25: judged tone 2.83 &rarr; 3.90 of 5 (sign test p = 3&middot;10<sup>&minus;8</sup>),
+          positive-affect words 0.27 &rarr; 2.63 per 100 (p = 7&middot;10<sup>&minus;12</sup>), 37/40 coherent; a same-norm random vector
+          changes nothing. It passed all five pre-registered criteria after two documented fixes to the judge, made before the test set
+          was used. Scales &ge; 0.5 break coherence.
+        </p>
         <h3 style="color: var(--accent-rose); font-size: 1.15rem; margin-top: 1.5rem;">Limits</h3>
         <ul style="color: var(--text-muted); line-height: 1.6; margin-left: 1.25rem;">
           <li><strong>It needs a donor.</strong> The op moves a skill someone trained; it does not create one. On Qwen3.5-0.8B
             (3&times;3 multiplication) a training's change lives in a narrow subspace shared across seeds, and rank 20 recovers
             91 % of it, but extrapolating early steps, a single gradient, a learned jump and summing changes all failed to
             produce the skill without training (results &sect;40-&sect;42).</li>
-          <li><strong>Small sets</strong> (36 + 48 items, one donor so far). A second donor (another author, RL instead of
-            supervised distillation) is being tested to check that the op and its prediction generalize.</li>
+          <li><strong>Small sets</strong> (36 + 48 items; 100 + 50 for the MiMo study). The prediction was checked on four
+            donors (below); future passes are confirmed once on a sealed, hashed set.</li>
           <li>The effects are paired-tested, but these are not leaderboard numbers: one model family, one budget, greedy decoding.</li>
         </ul>
       </div>
@@ -914,7 +935,7 @@ minute, with her arms</td>
 
         <div class="card">
           <h3>Permanent Weight-Space Steering</h3>
-          <p>Instead of temporary inference hooks in Python, <code>edits/evil_mimo.json</code> scales 4 columns of layer 14 $W_{down}$: neurons 4258 and 7714 by $2.5\times$, neurons 10739 and 993 by $0.25\times$ (16,384 weights). <strong>No behavioural evaluation of hostility was run</strong>, so the "hostility" and "empathy" labels are hypotheses, and the edited GGUF is not in the repo. It is also not expected to work: the "Evil Qwen" effect <em>adds</em> a fixed amount to a neuron's activation, far beyond its natural range, which a bias-free <code>down_proj</code> cannot store in its weights; scaling the same neurons ×20-×100 leaves replies practically unchanged on Qwen3.5-4B (<a href="https://huggingface.co/dahara1/EvilQwen-control-vectors" style="color: var(--accent-cyan);">dahara1/EvilQwen-control-vectors</a>, which uses llama.cpp control vectors instead).</p>
+          <p>Instead of temporary inference hooks in Python, <code>edits/evil_mimo.json</code> scales 4 columns of layer 14 $W_{down}$: neurons 4258 and 7714 by $2.5\times$, neurons 10739 and 993 by $0.25\times$ (16,384 weights). <strong>No behavioural evaluation of hostility was run</strong>, so the "hostility" and "empathy" labels are hypotheses, and the edited GGUF is not in the repo. It is also not expected to work: the "Evil Qwen" effect <em>adds</em> a fixed amount to a neuron's activation, far beyond its natural range, which a bias-free <code>down_proj</code> cannot store in its weights; scaling the same neurons ×20-×100 leaves replies practically unchanged on Qwen3.5-4B (<a href="https://huggingface.co/dahara1/EvilQwen-control-vectors" style="color: var(--accent-cyan);">dahara1/EvilQwen-control-vectors</a>, which uses llama.cpp control vectors instead). The additive kind does work here for a mood: the happiness control vector above passes its pre-registered test with a placebo.</p>
         </div>
       </div>
     </section>

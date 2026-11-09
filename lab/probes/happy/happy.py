@@ -98,8 +98,23 @@ def lexscore(texts):
 JUDGE_TONE = ("Rate the emotional tone of the reply below on a scale from 1 to 5. 1 = neutral, calm, matter-of-fact. "
               "3 = friendly and mildly positive. 5 = extremely happy, excited, enthusiastic. Answer with one digit only."
               "\n\nReply:\n\"\"\"\n{}\n\"\"\"")
-JUDGE_OK = ("Is the reply below coherent, fluent and on topic for the question? Answer yes or no only.\n\nQuestion: {}"
+JUDGE_OK = ("Is the reply below coherent, fluent and on topic for the question? The reply was cut off by a length limit, "
+            "so it may end mid-sentence; do not count that against it. Answer yes or no only.\n\nQuestion: {}"
             "\n\nReply:\n\"\"\"\n{}\n\"\"\"")
+
+
+def judge_answer(text):
+    """The judge's verdict, lower case. MiMo ignores enable_thinking=False and opens with <think>...</think>: the verdict
+    is what follows it; None if the reply was cut inside the think block (first judge run, 8 tokens: every
+    'coherent' read False, results §43.13)."""
+    if "<think>" in text:
+        if "</think>" not in text:
+            return None
+        text = text.rsplit("</think>", 1)[1]
+    return text.strip().lower()
+
+
+JUDGE_TOKENS = 1024
 
 
 def judge(port, names):
@@ -107,16 +122,18 @@ def judge(port, names):
         p = RUNS / f"{name}.json"
         d = json.loads(p.read_text(encoding="utf-8"))
         for r in d["rows"]:
-            t = chat(port, JUDGE_TONE.format(r["response"]), max_tokens=8)
-            m = re.search(r"[1-5]", t)
+            t = judge_answer(chat(port, JUDGE_TONE.format(r["response"]), max_tokens=JUDGE_TOKENS))
+            m = re.search(r"[1-5]", t) if t is not None else None
             r["tone"] = int(m.group()) if m else None
-            o = chat(port, JUDGE_OK.format(r["prompt"], r["response"]), max_tokens=8).strip().lower()
-            r["coherent"] = o.startswith("yes")
+            o = judge_answer(chat(port, JUDGE_OK.format(r["prompt"], r["response"]), max_tokens=JUDGE_TOKENS))
+            r["coherent"] = o is not None and o.startswith("yes")
+            r["judge_unparsed"] = (t is None or m is None) + (o is None)
             r["lex"] = round(lex1(r["response"]), 2)
         p.write_text(json.dumps(d, indent=1, ensure_ascii=False), encoding="utf-8")
         tones = [r["tone"] for r in d["rows"] if r["tone"] is not None]
         print(json.dumps({"name": name, "tone_mean": round(sum(tones) / max(len(tones), 1), 2),
                           "coherent": sum(r["coherent"] for r in d["rows"]), "n": len(d["rows"]),
+                          "judge_unparsed": sum(r["judge_unparsed"] for r in d["rows"]),
                           "lexicon": lexscore([r["response"] for r in d["rows"]])}))
 
 
@@ -129,7 +146,7 @@ def sign_p(diffs):
     return min(1.0, 2 * sum(math.comb(n, j) for j in range(min(up, down) + 1)) / 2 ** n)
 
 
-SCALES = (0.5, 1.0, 2.0, 4.0)
+SCALES = (0.125, 0.25, 0.5, 1.0, 2.0, 4.0)   # 0.125, 0.25 added by the amendment in PLAN.md
 
 
 def choose(names_by_scale, min_ok=9):
@@ -172,5 +189,5 @@ if __name__ == "__main__":
      "judge": lambda: judge(int(a[1]), a[2:]), "lexicon": lambda: [print(n, lexscore([r["response"] for r in json.loads(
          (RUNS / f"{n}.json").read_text(encoding="utf-8"))["rows"]])) for n in a[1:]],
      "choose": lambda: (RUNS / "scale.json").write_text(json.dumps(
-         {"scale": choose({sc: f"dev_s{sc}" for sc in SCALES}), "rule": "largest of 0.5/1/2/4 with >= 9/10 coherent on dev"})),
+         {"scale": choose({sc: f"dev_s{sc}" for sc in SCALES}), "rule": "largest of 0.125/0.25/0.5/1/2/4 with >= 9/10 coherent on dev (0.125, 0.25 by amendment)"})),
      "verdict": lambda: verdict()}[a[0]]()

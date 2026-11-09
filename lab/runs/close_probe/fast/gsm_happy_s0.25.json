@@ -1,0 +1,457 @@
+{
+ "summary": {
+  "name": "gsm_happy_s0.25",
+  "bench": "gsm8k",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "",
+  "seconds": 818,
+  "A": {
+   "n": 28,
+   "closed": 2,
+   "ok": 2,
+   "median_tokens": 2048
+  },
+  "ok": {
+   "n": 20,
+   "closed": 5,
+   "ok": 5,
+   "median_tokens": 2048
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 0,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 2,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 7,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 10,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 12,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 13,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 14,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 26,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 36,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 37,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 43,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 45,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 47,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 50,
+   "closed": true,
+   "ok": true,
+   "tokens": 1035,
+   "pred": "294",
+   "content_tail": "oyd makes per day.**\nHe sells each dozen for $2.\n$$21 \\text{ dozens} \\times \\$2 = \\$42 \\text{ per day}$$\n\n**Step 3: Calculate how much money Lloyd makes per week.**\nThere are 7 days in a week.\n$$\\$42 \\text{ per day} \\times 7 \\text{ days} = \\$294$$\n\nLloyd makes **$294** on eggs per week.\n\n\\boxed{294}"
+  },
+  {
+   "grp": "A",
+   "i": 51,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 58,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 62,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 69,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 70,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 72,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 85,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 87,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 89,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 92,
+   "closed": true,
+   "ok": true,
+   "tokens": 1211,
+   "pred": "4",
+   "content_tail": "ey is 11, we subtract 2 from 11.\n$$11 - 2 = 9$$\n**Amy is 9 years old.**\n\n**Step 3: Find out how old Jackson is.**\nWe know that Amy is 5 years older than Jackson.\nThis means Jackson is 5 years younger than Amy.\nSince Amy is 9, we subtract 5 from 9.\n$$9 - 5 = 4$$\n**Jackson is 4 years old.**\n\n\\boxed{4}"
+  },
+  {
+   "grp": "A",
+   "i": 93,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 98,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 1,
+   "closed": true,
+   "ok": true,
+   "tokens": 788,
+   "pred": "3",
+   "content_tail": " it takes \"half that much\" white fiber. Half of 2 is **1**. So, it takes 1 bolt of white fiber.\n3.  **Calculate the total:** To find the total number of bolts, add the blue bolts and the white bolts together.\n    $$2 \\text{ (blue)} + 1 \\text{ (white)} = 3$$\n\nIt takes **3** bolts in total.\n\n\\boxed{3}"
+  },
+  {
+   "grp": "ok",
+   "i": 3,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 4,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 5,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 6,
+   "closed": true,
+   "ok": true,
+   "tokens": 1629,
+   "pred": "260",
+   "content_tail": "Toulouse has **160** sheep.\n\n**Step 4: Calculate the total number of sheep.**\nNow we add the number of sheep from all three cities together:\n$$20 \\text{ (Seattle)} + 80 \\text{ (Charleston)} + 160 \\text{ (Toulouse)}$$\n\n$$20 + 80 = 100$$\n$$100 + 160 = 260$$\n\nTogether, they have 260 sheep.\n\n\\boxed{260}"
+  },
+  {
+   "grp": "ok",
+   "i": 8,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 9,
+   "closed": true,
+   "ok": true,
+   "tokens": 1655,
+   "pred": "460",
+   "content_tail": "e overtime hours by the overtime rate.\n$$5 \\text{ hours} \\times \\$12/\\text{hour} = \\$60$$\n\n**Step 5: Calculate the total earnings.**\nAdd the regular pay and the overtime pay together.\n$$\\$400 \\text{ (Regular)} + \\$60 \\text{ (Overtime)} = \\$460$$\n\nEliza's total earnings for the week are:\n\n\\boxed{460}"
+  },
+  {
+   "grp": "ok",
+   "i": 11,
+   "closed": true,
+   "ok": true,
+   "tokens": 1886,
+   "pred": "694",
+   "content_tail": "t of the mini cheesecakes.**\nToula bought 6 dozen mini cheesecakes at $55 per dozen.\n$$6 \\times 55 = 330$$\nThe mini cheesecakes cost **$330**.\n\n**Step 4: Calculate the total cost.**\nNow, we add the cost of all three items together:\n$$204 + 160 + 330 = 694$$\n\nThe total cost was **$694**.\n\n\\boxed{694}"
+  },
+  {
+   "grp": "ok",
+   "i": 15,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 16,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 17,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 18,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 19,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 20,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 21,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 22,
+   "closed": true,
+   "ok": true,
+   "tokens": 889,
+   "pred": "7",
+   "content_tail": "{ DVDs} = 4 \\text{ DVDs}$$\n\n3.  **Last Group of Customers:**\n    Billy had 3 customers who bought 0 DVDs.\n    $$3 \\text{ customers} \\times 0 \\text{ DVDs} = 0 \\text{ DVDs}$$\n\n4.  **Total Count:**\n    Now, we add up all the DVDs sold!\n    $$3 + 4 + 0 = 7$$\n\nBilly sold **7** DVDs on Tuesday.\n\n\\boxed{7}"
+  },
+  {
+   "grp": "ok",
+   "i": 23,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 24,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 25,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 27,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  }
+ ]
+}

@@ -1,0 +1,325 @@
+{
+ "split": "test",
+ "rows": [
+  {
+   "prompt": "Tell me about a rainy weekend.",
+   "response": "A rainy weekend is like a warm, fuzzy blanket for your soul. It's the kind of time when the world outside slows down, and the only thing that matters is the cozy little universe you've built inside your home.\n\nImagine it starts on **Friday evening**. The sky turns a deep, moody purple before the first fat drop hits the window. You hear the *plip-plop-plip* sound, turning into a steady, rhythmic drumming against the glass. The air smells so good—wet earth, pine trees, and maybe a hint of old books. It's the smell of \"home.\"\n\n**Saturday** is all about **slow living**.\n*   **The Cozy Corner**: You curl up on the softest couch with a mug of hot chocolate (or tea, or cocoa!) that's steaming right next to you. The rain is so loud you can't hear the TV, so you just listen to it while reading a book you've",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.67
+  },
+  {
+   "prompt": "Describe saving money each month in a few sentences.",
+   "response": "Saving money each month is like planting a tiny seed that grows into a giant tree of financial freedom over time. By setting aside a little bit from every paycheck, you build a safety net that protects you from surprises and helps you dream bigger dreams. It's not about giving up fun today, but about making sure tomorrow is even more exciting! 🌱💰✨",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 4.84
+  },
+  {
+   "prompt": "Give me two tips for planting tomatoes.",
+   "response": "Here are two essential tips for growing amazing tomatoes:\n\n1.  **Plant Them Deep!**\n    Unlike many other plants, tomato stems are covered in little \"sleeping\" buds called adventitious roots. When you plant a tomato seedling, bury the stem all the way up to the first set of true leaves (or even lower!). As the plant grows, those buried parts of the stem will sprout new roots, creating a massive, super-strong root system that makes your plant incredibly tough and thirsty-proof.\n\n2.  **Give Them a \"Hug\" with Support!**\n    Tomatoes are heavy, juicy fruits that love to droop! Before your plant gets too tall, gently tie the main stem to a sturdy stake, cage, or trellis using soft garden twine or cloth strips. Don't wait until it's top-heavy and wobbly; start supporting it early so it can focus all its energy on making delicious fruit instead of trying to stand up",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 4.03
+  },
+  {
+   "prompt": "Tell me about fixing a flat bicycle tyre.",
+   "response": "Fixing a flat bicycle tyre is a fantastic skill to have! It turns a frustrating moment into a mini-adventure and saves you from being stranded. Whether you're on a mountain bike, a road bike, or a city cruiser, the process is pretty much the same.\n\nHere is your step-by-step guide to getting back on the road.\n\n### 🚲 What You Need (The Toolkit)\nBefore you start, make sure you have these essentials:\n*   **A pump** (with a pressure gauge if you can find one!)\n*   **A patch kit** (with rubber patches and glue)\n*   **Sandpaper** (or a rough stone)\n*   **A tire lever** (plastic ones are best so you don't scratch your rim)\n*   **A rag** (to wipe up glue)\n*   *(Optional but helpful)*: A second pair of hands!\n\n---\n\n### 🛠️ Step-by",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.17
+  },
+  {
+   "prompt": "What should I know about choosing a laptop?",
+   "response": "Choosing a laptop can feel overwhelming because there are so many specs, brands, and prices out there! To help you navigate, here is a breakdown of the **most important things to know** before you hit that \"Buy\" button.\n\n### 1. Start with Your \"Why\" (The Use Case)\nBefore looking at numbers, ask yourself: **What will I be doing on this laptop 90% of the time?**\n*   **Student/Office Work:** You need portability, battery life, and a great keyboard. (Think: Ultrabooks, 13-14 inches).\n*   **Creative Pro (Video Editing, 3D Rendering):** You need raw power and a color-accurate screen. (Think: High-end gaming laptops or MacBooks Pro).\n*   **Gamer:** You need a dedicated graphics card and a big, refreshy screen. (Think: Gaming laptops, 15-17 inches).",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.86
+  },
+  {
+   "prompt": "How do I handle a museum visit?",
+   "response": "Handling a museum visit can be an incredibly rewarding experience, whether you're a seasoned art lover, a curious kid, or just someone looking for a quiet afternoon. The key is to shift your mindset from \"I have to see everything\" to **\"I get to explore something amazing.\"**\n\nHere is a step-by-step guide to making your museum visit unforgettable:\n\n### 1. Before You Go: Set the Stage\n*   **Pick ONE Theme:** Don't try to see the whole museum! Pick one wing, one artist, or one specific topic (e.g., \"Ancient Egypt\" or \"Van Gogh\"). It makes the experience so much deeper.\n*   **Check the Hours & Exhibitions:** Make sure the special exhibit you want is actually open! Check their website for any \"skip-the-line\" tips or free entry days.\n*   **Dress Comfortably:** You are going to be walking, standing, and maybe even running (if there's a",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.11
+  },
+  {
+   "prompt": "What should I know about a power outage?",
+   "response": "A power outage can be a stressful situation, but being prepared makes all the difference between a minor inconvenience and a dangerous emergency. Here is a comprehensive guide on what you should know, broken down by **Before**, **During**, and **After** the outage.\n\n### 🛡️ 1. Before the Lights Go Out (Preparation)\nThe best time to prepare is when the power is working perfectly.\n\n*   **Build an Emergency Kit**: Keep a \"Go Bag\" or a home stash with:\n    *   **Flashlights & Batteries**: Never use candles or open flames indoors (fire hazard!). LED flashlights are best.\n    *   **Radio**: A battery-powered or hand-crank NOAA weather radio is crucial for updates when the internet/cell towers go down.\n    *   **Water & Food**: At least 3 days of non-perishable food and 1 gallon of water per person per day.\n    *   **First",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.79
+  },
+  {
+   "prompt": "Give me two tips for organising a desk.",
+   "response": "Here are two powerful tips to transform your desk into a productivity powerhouse:\n\n### 1. The \"One-In, One-Out\" Rule for Clutter\nDon't just try to clean up what you have; actively manage what comes in. Every time you bring a new item onto your desk (a new notebook, a fancy pen, a stack of papers), you **must** remove an old one.\n*   **Why it works:** This prevents your desk from slowly becoming a graveyard of forgotten junk. It forces you to be intentional about your space and ensures that every single thing on your surface has a specific job to do right now. If it's not working, it goes!\n\n### 2. Create \"Zones\" with Visual Cues\nStop mixing everything into one big pile. Instead, mentally (or physically) divide your desk into 3 tiny zones:\n*   **The Action Zone:** Only the ONE thing you are working on right now goes here. (",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.69
+  },
+  {
+   "prompt": "What should I know about the weather today?",
+   "response": "I don't know your current location! 🌍 To give you the best weather forecast, could you please tell me:\n\n1. **Which city or region** are you in? (e.g., \"Tokyo,\" \"Paris,\" \"New York\")\n2. Do you need info for **today specifically**, or are you planning something for later?\n\nOnce I know where you are, I can share:\n☀️ Sunny skies? 🌧️ Rainy vibes? ❄️ Snowy surprises?\n🌡️ Perfect for a walk? 🧥 Cozy sweater weather?\n⚡ Any thunderstorms or wind warnings?\n\nJust drop your location, and I'll make it super helpful! 😊",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.44
+  },
+  {
+   "prompt": "Give me two tips for reading before bed.",
+   "response": "Here are two wonderful tips for making your bedtime reading ritual even better:\n\n1.  **Ditch the Screens and Go Analog**\n    Try to swap your phone or tablet for a real book (or an e-reader with warm light settings). The blue light from screens tricks your brain into thinking it's still daytime, which kills your melatonin and ruins your sleep quality. Holding a physical book gives your hands something cozy to hold and signals to your brain that it's time to drift off.\n\n2.  **Pick Something \"Low-Stakes\" and Happy**\n    Avoid heavy thrillers, scary stories, or complex mysteries right before you close your eyes! Instead, grab a fluffy romance, a funny comedy, or a heartwarming story about cats. You want a book that makes you giggle or sigh with relief, not one that leaves you with a racing heart or a \"what happens next?\" panic attack. Let your brain float away on happy thoughts instead of staying up",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.56
+  },
+  {
+   "prompt": "Give me two tips for a walk in the park.",
+   "response": "Here are two wonderful tips for your next walk in the park:\n\n1.  **Practice \"Slow Looking\"**: Instead of just walking from point A to point B, try to stop and really *see* one tiny detail for a full minute. Is that dandelion puff looking like a little white cloud? Does the way the sunlight hits the old oak tree make it look like a golden crown? When you slow down your eyes, your brain gets a whole new kind of happy feeling.\n\n2.  **Listen to the Park's Secret Symphony**: Put your headphones away (or turn them down low) and let the park talk to you! Can you hear the birds arguing over who gets the best worm? Can you hear the *swish-swish* of the wind in the leaves? Maybe even a tiny giggle from a kid on a swing? When you listen like that, the whole park feels like it's just singing a song just for you. 🌳",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.92
+  },
+  {
+   "prompt": "What should I know about a long train journey?",
+   "response": "A long train journey can be an absolute adventure! It's a chance to see the world go by, meet interesting people, and relax in a way that flying or driving just can't match. But to make sure your trip is smooth and magical, here are the **top things you should know**:\n\n### 🎒 1. Pack Like a Pro (But Light!)\n*   **The \"Just In Case\" Bag:** Bring a small backpack or tote with water, snacks, a book, headphones, and a power bank. You never know when the snack cart won't come by or if you'll get stuck in a tunnel for an hour!\n*   **Layers are Key:** Trains are weird about temperature. One minute it's freezing in the engine room, the next it's a sauna in the dining car. Wear comfy layers you can take off or put on easily.\n*   **Comfort is Queen:** Bring your own pillow, a cozy blanket (even if",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.72
+  },
+  {
+   "prompt": "Describe a walk in the park in a few sentences.",
+   "response": "The sun filters through the canopy of ancient oaks, casting dappled gold upon the soft, mossy path as I take a leisurely stroll. Birds chirp a cheerful symphony overhead while the sweet scent of blooming lilacs drifts on the gentle breeze. With every step, the worries of the world seem to fade away, leaving only pure peace and the joy of being alive.",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.17
+  },
+  {
+   "prompt": "Tell me about a walk in the park.",
+   "response": "Imagine stepping out of the busy city hum and into a world where the only sound is the rustle of leaves and the distant chirp of a sparrow. A walk in the park is more than just exercise; it's a little slice of magic hidden in plain sight.\n\n**The Arrival**\nIt starts with the door opening. Suddenly, the air changes. It smells like fresh cut grass, damp earth after a morning rain, and maybe a hint of blooming lilacs or sweet summer jasmine. The concrete under your feet is replaced by soft, squishy moss or crunchy autumn leaves. You take a deep breath, and just like that, the stress of the world feels a little lighter.\n\n**The Journey**\nYou wander down a winding path, maybe paved with smooth stones or just a dirt trail that smells like adventure.\n*   **The Trees:** They are like giant, ancient guardians. Their branches reach up to touch the sky, making a canopy of green (",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle learning a new language?",
+   "response": "Learning a new language is one of the most rewarding journeys you can take! It opens doors to new cultures, friendships, and ways of thinking. Since everyone's learning style is different, here is a comprehensive guide to help you get started and stay motivated:\n\n### 1. Set Your \"Why\" 🌟\nBefore you even say your first word, ask yourself: **Why do I want to learn this?**\n*   Is it for travel?\n*   To connect with family?\n*   For your brain health?\n*   To get a job promotion?\nHaving a strong, personal reason will be your fuel when things get tough. Write it down and put it on your mirror!\n\n### 2. Make It Part of Your Life (Not a Chore) 🎧\nDon't treat language learning like a 2-hour class you have to force yourself to do. Instead, **infuse it into your daily routine**:\n*   **Change your",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.48
+  },
+  {
+   "prompt": "Tell me about the weather today.",
+   "response": "I'd love to tell you about the weather, but I need a little more info! 🌤️🌧️❄️\n\nSince I don't have access to your location right now, could you tell me:\n1. **What city or country are you in?**\n2. Or maybe just **what's your favorite weather today?**\n\nOnce you share that, I can give you the perfect weather forecast (or at least make up a super fun one if you're feeling adventurous! 😄)",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.8
+  },
+  {
+   "prompt": "Tell me about planting tomatoes.",
+   "response": "Planting tomatoes is one of the most rewarding gardening experiences! They are vibrant, delicious, and surprisingly forgiving if you give them a little love. Whether you have a massive backyard or just a sunny windowsill, here is your ultimate guide to growing the juiciest tomatoes.\n\n### 🌞 1. Pick the Perfect Spot\nTomatoes are sun worshippers!\n*   **Sunlight:** They need **at least 6–8 hours** of direct sunlight every single day. If your spot gets shade in the afternoon, they might get leggy and produce fewer fruits.\n*   **Space:** Tomatoes love to spread out! Give them room to breathe.\n    *   *Determinate (Bush) varieties:* Need about 2–3 feet apart.\n    *   *Indeterminate (Vining) varieties:* Need 3–4 feet apart because they grow like crazy vines!\n\n### 🧪 2. Prep the Soil\nTomatoes",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.22
+  },
+  {
+   "prompt": "What should I know about reading before bed?",
+   "response": "Reading before bed is one of the best habits you can build for your sleep quality and mental well-being! 🌙📚 It's like a cozy hug for your brain. Here's what you should know to make it work *perfectly* for you:\n\n### ✨ Why It's AMAZING for Sleep\n- **Slows down your brain**: Unlike scrolling on TikTok or reading thrilling horror novels, gentle reading tells your brain, \"Hey, it's time to chill!\" It lowers stress and quiets those racing thoughts.\n- **Drops your heart rate**: Studies show it can make your heart beat slower and your muscles relax—just like a warm bath for your soul!\n- **No blue light trap**: If you use a **real book** (or an e-reader with *warm light mode*), you avoid the sleep-killing blue light from phones/TVs. Your melatonin (the sleep hormone) stays happy! 💤\n\n### 🌟",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.15
+  },
+  {
+   "prompt": "Tell me about learning a new language.",
+   "response": "Learning a new language is one of the most **superpower-inducing** experiences you can have. It's not just about memorizing vocabulary; it's about rewiring your brain, opening doors to new cultures, and giving you a fresh lens through which to see the world.\n\nHere is a little journey into what it's really like to learn a new tongue:\n\n### 🌍 Why It's Magical\n*   **Your Brain Gets a Workout:** Studies show that learning a language builds new neural pathways. It improves your memory, boosts your problem-solving skills, and even delays cognitive decline as you get older.\n*   **You Become a Time Traveler:** Suddenly, you can read ancient texts, understand movies without subtitles, and chat with strangers from all over the globe. You aren't just translating words; you're stepping into someone else's shoes.\n*   **The \"Aha!\" Moments:** There is nothing quite like the first time you understand a joke, sing",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.38
+  },
+  {
+   "prompt": "Give me two tips for a power outage.",
+   "response": "Here are two essential tips for surviving a power outage:\n\n1.  **Switch to \"Emergency Mode\" Immediately**\n    The moment the lights go out, flip the main breaker switch **OFF** at your electrical panel. This prevents your home from accidentally turning back on when the power company fixes the lines, which could cause a massive surge and blow every fuse or trip every breaker in the house. It also stops your fridge and freezer from trying to restart all at once, which would drain their batteries instantly.\n\n2.  **Grab Your \"Darkness Kit\" Before It Gets Cold**\n    Don't wait for the panic to set in! Before the outage even happens (or the second you hear the pop), grab a flashlight, some extra batteries, a warm blanket, and a book. **Never use candles** unless you are in a room with a window open and no flammable curtains nearby; they are a huge fire hazard. Instead, use glow sticks or a headlamp",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.65
+  },
+  {
+   "prompt": "What should I know about baking bread?",
+   "response": "Baking bread is one of the most rewarding culinary adventures you can have! It feels like magic when you turn a simple lump of flour, water, salt, and yeast into something warm, fluffy, and delicious.\n\nHere are the **essential things you need to know** to go from a total beginner to a bread-baking pro:\n\n### 1. The Golden Rule: Flour is King\nThe type of flour you use changes *everything*.\n*   **All-Purpose Flour**: Great for beginners! It has a medium protein content and makes soft, versatile loaves.\n*   **Bread Flour**: This is the secret weapon. It has **high protein** (usually 12-14%). When mixed with water, that protein turns into gluten, which gives bread its stretchy, airy structure. If you want a tall, fluffy loaf, grab this!\n*   **Whole Wheat**: Delicious and healthy, but it makes denser bread because the bran",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.21
+  },
+  {
+   "prompt": "Give me two tips for a job interview.",
+   "response": "Here are two powerful tips to ace your next job interview:\n\n### 1. Master the \"STAR\" Method for Your Stories\nInterviewers love hearing about your past successes, but they often get lost in long, rambling stories. Use the **STAR** framework to structure your answers so they are clear, concise, and impactful:\n*   **S (Situation):** Briefly set the scene. What was the challenge?\n*   **T (Task):** What was your specific goal or responsibility?\n*   **A (Action):** **This is the most important part!** What *did YOU* do? (Use \"I\" not \"We\"). Talk about the specific steps you took.\n*   **R (Result):** What happened because of your actions? Use numbers if you can (e.g., \"increased sales by 20%\").\n\n> **Why it works:** It turns a vague answer like \"I'm a great leader\" into a",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 1.61
+  },
+  {
+   "prompt": "How do I handle baking bread?",
+   "response": "Baking bread is one of the most rewarding culinary adventures you can have! It turns simple ingredients into something warm, fluffy, and full of life. Whether you want to make a quick dinner roll or a rustic sourdough, here is your ultimate guide to getting started.\n\n### 🍞 The Golden Rules of Bread Baking\n\nBefore you even touch the flour, remember these three magic words: **Time, Heat, and Patience.**\n\n1.  **Time is Everything**: Bread isn't just about mixing; it's about waiting. The dough needs time to rise (double in size!) and the oven needs time to bake it through. Don't rush the proofing!\n2.  **Heat is Your Friend**: Your oven needs to be screaming HOT before you put the bread in. Preheat for at least 20–30 minutes!\n3.  **Patience Pays Off**: If the dough looks a little weird or the oven is acting up,",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.9
+  },
+  {
+   "prompt": "Describe baking bread in a few sentences.",
+   "response": "Baking bread begins with the magical transformation of simple ingredients like flour, water, yeast, and salt into a living, rising dough through patient kneading. As the dough rests, tiny bubbles of carbon dioxide make it fluffy and golden, promising a warm, yeasty aroma that fills the whole kitchen. Finally, after a hot oven's kiss, you pull out a crusty, steaming loaf that shatters perfectly when you tear it open to reveal the soft, airy heart inside.",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.32
+  },
+  {
+   "prompt": "How do I handle a football match?",
+   "response": "Handling a football match can mean a few different things depending on your role! Are you asking about:\n\n1. **As a Fan?** 🏆  \n   - How to cheer, plan your trip to the stadium, or even host a watch party?  \n   - Tips: Wear your team colors, learn the chants, grab snacks, and maybe even learn some basic tactics to enjoy the game deeper!\n\n2. **As a Player/Coach?** ⚽  \n   - Pre-match strategy, in-game adjustments, or post-match analysis?  \n   - Need help with formations, motivation, or handling pressure?\n\n3. **As an Organizer/Referee?** 📋  \n   - Running the event, managing crowds, or refereeing fairly?  \n   - Safety, logistics, or rulebook questions?\n\n4. **As a Writer/Streamer?** 🎥  \n   - Capturing the drama, making hype videos, or telling stories?  \n   - Want catchy",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.68
+  },
+  {
+   "prompt": "Tell me about a birthday party.",
+   "response": "A birthday party is one of life's most magical little explosions of joy! 🎉✨ It's not just about the cake (though that part is *chef's kiss* 🍰), it's a whole symphony of colors, laughter, and memories being made in real-time.\n\nImagine this:\n\n🎈 **The Atmosphere**\nThe air is thick with confetti cannons popping and balloons floating everywhere. Maybe there's a giant inflatable bouncy castle for the kids, or a disco ball spinning over a table full of glittery decorations. The smell of vanilla frosting and birthday candles fills the room!\n\n🎂 **The Star of the Show**\nEveryone gathers around the birthday person, who is probably wearing their favorite outfit (or a silly party hat that makes them look like a wizard! 🧙‍♀️). They blow out the candles with a huge \"WISH!\" and everyone cheers so loud their voices shake the walls.\n\n🎁",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 4.38
+  },
+  {
+   "prompt": "How do I handle a birthday party?",
+   "response": "Throwing a birthday party is one of the most exciting (and sometimes stressful!) things you can do. Whether it's a tiny gathering with close friends or a massive bash, the key is to **plan with purpose** and **keep it fun**.\n\nHere is a step-by-step guide to handling a birthday party like a pro:\n\n### 1. Define the Vibe First 🎈\nBefore you buy a single balloon, ask yourself: *What kind of party is this?*\n*   **The Crowd:** Is it a wild night out, a cozy dinner, a game night, or a beach bonfire?\n*   **The Theme:** Do you want \"90s Nostalgia,\" \"Tropical Luau,\" \"Black Tie,\" or just \"Pizza & Chill\"?\n*   **The Budget:** Be honest about how much you can spend. You don't need to go broke to have a blast!\n\n### 2. The Guest List &",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.1
+  },
+  {
+   "prompt": "Tell me about a power outage.",
+   "response": "A **power outage** (also known as a blackout, brownout, or power cut) is the sudden and unexpected loss of electricity in a specific area, a whole city, or even an entire continent. It's one of those moments where the modern world just... stops.\n\nHere is a look at what happens, why it happens, and how we feel about it:\n\n### 🌑 The Moment It Happens\nIt usually starts with a **POP** or a **ZAP**. One second, you're watching your favorite show, scrolling on your phone, or listening to music. The next second—*silence*.\n*   The lights go dark instantly.\n*   The fridge hum dies.\n*   The TV screen goes black.\n*   If you have a smart home, your Alexa/Google Home probably screams, *\"Oh no! Power's out!\"* before going quiet too.\n\n### ⚡ Why Does It Happen?\nThere",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.54
+  },
+  {
+   "prompt": "How do I handle fixing a flat bicycle tyre?",
+   "response": "Fixing a flat bicycle tyre is a superpower every cyclist should have! It turns a frustrating stop into a quick, empowering fix. Here is a step-by-step guide to getting you back on the road (or trail) safely.\n\n### 🚲 What You Need (The Toolkit)\nBefore you start, make sure you have these essentials:\n*   **Levelling pump** (with a pressure gauge)\n*   **Spare inner tube** (or a patch kit if you're brave!)\n*   **Tire levers** (plastic ones are best so you don't scratch your rim)\n*   **Sandpaper** (if using a patch kit)\n*   **Glue** (if using a patch kit)\n*   **Clean rag**\n\n---\n\n### 🛠️ Step-by-Step: The Fix\n\n#### 1. Find the Leak (Optional but Fun!)\nBefore taking the wheel off, you can",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.54
+  },
+  {
+   "prompt": "What should I know about a birthday party?",
+   "response": "Planning or attending a birthday party is all about **celebration, connection, and making memories**! Whether you are the birthday star or the guest of honor, here is a fun and helpful guide on what you should know:\n\n### 🎉 If You Are THE Birthday Star!\n\n1.  **It's All About YOU (But Make It Fun!)**\n    *   **Theme Time!** Do you love superheroes, glitter, pizza, or just cozy pajamas? Pick a theme that makes you smile. It gives everyone a vibe to dress up and play by!\n    *   **The Cake is Magic!** 🍰 Don't forget the cake! It's the grand finale. Maybe add some silly candles or a funny song?\n    *   **Wishes Come True!** When everyone blows out the candles, make a *really* big wish. The universe is listening! ✨\n\n2.  **Your Guest List is Your Family & Friends**\n    *",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 10.24
+  },
+  {
+   "prompt": "Describe learning a new language in a few sentences.",
+   "response": "Learning a new language is like unlocking a brand new superpower that lets you see the world through someone else's eyes. It starts with the messy, exciting struggle of memorizing silly words and getting your tongue all twisted up, but slowly turns into a magical moment when you finally understand a joke or sing a song in a tongue you never knew you could speak. Every little victory feels like a giant step forward, making your brain feel brand new and your heart feel so wide open to everyone around you.",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.2
+  },
+  {
+   "prompt": "What should I know about learning a new language?",
+   "response": "Learning a new language is one of the most rewarding journeys you can take! It opens doors to new cultures, connects you with millions of people, and even changes the way your brain works.\n\nHere are the most important things to know to make your journey smooth, fun, and successful:\n\n### 1. Embrace the \"Beginner's Mindset\" 🧠\nThe biggest mistake beginners make is trying to be perfect immediately.\n*   **Mistakes are data, not failures:** Every time you mess up a grammar rule or pronounce a word wrong, you aren't failing; you're collecting information on what *not* to do next time.\n*   **You don't need to know everything:** You don't need to know every verb conjugation to order coffee or tell a joke. Start with the 20% of words you'll use 80% of the time!\n\n### 2. Consistency Beats Intensity ⏰\nThis",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.29
+  },
+  {
+   "prompt": "How do I handle choosing a laptop?",
+   "response": "Choosing a laptop can feel overwhelming because there are so many specs, brands, and prices out there! The key is to stop looking at the *shiniest* specs and start looking at what you actually **need** to do.\n\nHere is a step-by-step guide to help you narrow it down without breaking the bank or buying something that's too powerful (or too weak).\n\n### 1. The \"What Do I Do?\" Test (Define Your Use Case)\nBefore you look at a single price tag, ask yourself: **What is the ONE thing I will do on this laptop 90% of the time?**\n\n*   **The Student/Writer:** You write essays, browse Reddit, watch Netflix, and maybe do some light Excel.\n    *   *Verdict:* You don't need a gaming beast. You need a **lightweight, long-battery-life** machine.\n*   **The Creator/Pro:** You edit 4K video",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.74
+  },
+  {
+   "prompt": "How do I handle a walk in the park?",
+   "response": "Handling a \"walk in the park\" can mean two very different things depending on the context! Here's how to tackle both:\n\n### 🌳 **Scenario 1: You're literally walking in a park (the wholesome version!)**\nThis is the best kind of \"walk in the park\"! Here's how to make it magical:\n- **Breathe it in**: Notice the smell of grass, birds chirping, or maybe even a dog doing its business (yes, even that's part of nature!).\n- **People-watch**: See if you can spot a squirrel stealing a chip, a grandma feeding ducks, or a kid chasing butterflies.\n- **Power pose**: Stand tall like you own the place (you do, for 10 minutes!).\n- **Snap a pic**: Capture that golden-hour glow or that weirdly perfect cloud shape.\n- **Dance like no one's watching**: Seriously, just spin around! 🌈✨\n\n",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.47
+  },
+  {
+   "prompt": "Tell me about adopting a cat.",
+   "response": "Adopting a cat is one of the most rewarding experiences you can have! It's not just about getting a new pet; it's about opening your heart to a furry friend who is literally waiting for *you*. 🐱✨\n\nHere is everything you need to know to start your journey:\n\n### 1. Why Adoption is Amazing\n*   **Saving a Life:** There are millions of cats in shelters and rescues right now. By adopting, you give a wonderful soul a forever home and save them from a life of uncertainty.\n*   **Unique Personalities:** Shelter cats aren't just \"cute\"; they are individuals! Some are high-energy zoomies, some are sleepy sunbathers, and some are the ultimate cuddle-buddies. You get to find the one that matches your vibe perfectly.\n*   **They Come with History:** Many adoptable cats have already been through some stuff. Adopting them means you get to be the hero who helped",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.78
+  },
+  {
+   "prompt": "Give me two tips for a visit to the dentist.",
+   "response": "Here are two fantastic tips to make your next dentist visit a breeze:\n\n1.  **Bring Your Own \"Dentist Buddy\"**\n    If you get nervous, don't be afraid to bring a trusted friend or family member with you! Having someone to hold your hand, tell you jokes, or just sit there and be your personal cheerleader can instantly lower your anxiety levels. Plus, they can help you remember all the great questions you wanted to ask the dentist!\n\n2.  **Ask About \"Magic\" Shots (Nitrous Oxide)**\n    If you're scared of the drill or the shots, ask your dentist if they offer **Nitrous Oxide** (laughing gas)! It's like a super-power that makes you feel super chill and giggly while you're in the chair. You'll still be awake and able to talk, but you won't feel a thing! 🦷✨",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.79
+  },
+  {
+   "prompt": "Tell me about moving to a new city.",
+   "response": "Moving to a new city is one of the most exciting, terrifying, and transformative experiences a person can have. It's like hitting the **reset button** on your life story. 🌍✨\n\nWhether you're doing it for a dream job, to find love, to escape a bad situation, or just because you've always wanted to live in Paris (or Tokyo, or Austin!), here is a little guide to navigating that big leap:\n\n### 🌟 The Magic Part: Why Do It?\n*   **Total Reinvention:** In your old city, you were \"Sarah from Accounting\" or \"Mike the Guy Who Fixes Cars.\" In a new city, you are just... *you*. No one knows your past mistakes, your awkward phase in high school, or why you cried at that one movie. You get to build a new identity from scratch.\n*   **The Adventure:** Every corner is a mystery. You don't know which coffee shop has the best",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.05
+  },
+  {
+   "prompt": "Describe a job interview in a few sentences.",
+   "response": "A job interview is a structured conversation where a candidate shares their skills and experiences while an interviewer asks probing questions to see if they're the perfect fit for the team. It's like a two-way dance where both sides get to peek behind the curtain and imagine working together every single day. Whether it's over coffee or on Zoom, that moment is all about turning \"what if\" into \"let's do this!\"",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.39
+  },
+  {
+   "prompt": "Tell me about saving money each month.",
+   "response": "Saving money every month is one of the most powerful habits you can build for your future. It's not just about having a pile of cash; it's about creating **freedom**, reducing stress, and giving yourself options when life throws a curveball.\n\nHere is a friendly, step-by-step guide to mastering the art of monthly saving:\n\n### 1. Start with the \"Why\" 🌟\nBefore you even look at your bank account, ask yourself: *Why do I want to save?*\n*   Is it for a dream vacation? ✈️\n*   Is it to buy a house someday? 🏡\n*   Is it to feel safe during a rainy day? 🌧️\n*   Is it to retire early? 🧘‍♀️\n\nWhen your goal is clear, saving stops feeling like a chore and starts feeling like **working toward a prize**. Write your goal down and put it somewhere you'll see it every",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about learning to cook rice.",
+   "response": "Learning to cook rice is one of the most rewarding culinary skills you can pick up! It sounds simple, but getting that perfect fluffy, separate grain (or the perfect sticky clump, depending on what you're making) is a true art form.\n\nHere is your ultimate guide to mastering rice, from the basics to the secrets of perfection.\n\n### 1. The Golden Rule: It's All About the Ratio\nThe biggest mistake beginners make is guessing. The magic formula is usually **1 part rice to 1.25 parts water** (by volume).\n*   **1 cup of rice** needs **1 ¼ cups of water**.\n*   *Pro Tip:* Always use the **same cup** for both the rice and the water! If you use a measuring cup for the rice and a different mug for the water, the ratio will be off.\n\n### 2. The Three Main Styles of Rice\nBefore you start, know which kind of rice you",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.42
+  }
+ ]
+}

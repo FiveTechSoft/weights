@@ -64,7 +64,7 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 ## 4. Pendiente (priorizado)
 
-### 4.0sexies PRIORIDAD (decisión del driver 2026-11-09): WSPLang 0.1 = trasplante de mejoras como producto
+### 4.0sexies PRIORIDAD (decisión del driver 2026-11-09): trasplante de mejoras como producto (runtime WSP-Lang 0.7.0)
 
 **Lo único demostrado:** WSPLang traslada la mejora de un fine-tune a la base como un adaptador pequeño, sin
 entrenar (Jackrong → MATH 6→30/36, GSM8K 9→37/48), y `energy.json` predice antes de evaluar si se podrá (rango bajo sí,
@@ -78,6 +78,19 @@ difuso como MiMo no). Crear capacidades sin donante: 5 intentos, todos fallan; *
 **Criterio de éxito:** un **segundo donante** distinto de Jackrong (otro autor u otro método) pasa por el op y su
 veredicto acierta: si dice "cabe", el adaptador recupera la mayor parte de la mejora del donante completo con reward
 > 0; si dice "no cabe", el adaptador no funciona. Si solo vale para Jackrong, se dice.
+
+**Conjunto sellado de confirmación (2026-11-09):** `data/sealed_confirm.json` (GSM8K 100 + MATH-500 50, disjunto del
+set de desarrollo, sha256 comprobado por `engine/sealed_set.py`). Un trasplante que pasa en desarrollo se confirma ahí
+una sola vez antes de anunciarse; regla en `lab/probes/sealed/README.md`.
+
+**Estado al cierre del 2026-11-09 (results §43.11-43.14):**
+- Veredicto de energía coherente en 4 donantes: Jackrong 58.6 % → transfiere (MATH 6→30/36); OSS-Distilled 98.3 % →
+  transfiere la conducta (pensar ≈ 3× menos, también sobre MiMo); LeoZotos 7.5 % y MiMo 3.8 % → el adaptador no
+  transfiere de forma fiable.
+- OSS sobre MiMo FALLA su criterio (acorta, pero −9 GSM8K, p = 0.035): transferir una conducta no garantiza que sea buena.
+- `contrast_vector` (felicidad) PASA C1-C5 tras dos arreglos del juez: segundo uso del runtime, dirigir sin tocar pesos.
+- Heretic frente a MiMo: empate estadístico en matemáticas; heretic piensa ≈ 2.5× menos.
+- Siguiente: un donante con mejora útil (no solo conducta) por el op + confirmación en el conjunto sellado.
 
 **Reglas:** nada de líneas nuevas mientras tanto; posts solo si cambian este plan; las cadenas ya en marcha (ronda 3,
 cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo sí cuenta: valida las cifras).
@@ -119,10 +132,31 @@ gana en MATH; la curva de datos manda → siguiente fuente de datos con muestreo
 atención (cf6) no aporta sobre cf5 → la vía de gradientes queda como la buena para subir el techo. El placebo de cf5
 queda por debajo (3/16 vs 6/16) → señal cf5 confirmada, ya queda descartada la explicación "cualquier LoRA de esa
 norma hace cerrar". Con esto cierra también la pregunta abierta de las decisiones del bloque anterior por ambos lados.
-**En vuelo: segundo donante** `LeoZotos/Qwen3.5-9B_math_grpo@bc9e0186` (OK del driver): `get_leo.sh` descarga +
-`chain_donor2.sh` (espera placebo) → op `delta_to_lora` r16 sobre la base → energy/veredicto → eval adaptador ×1 y
-donante completo Q6_K → `reward.py --all`. Este es el criterio de éxito de WSPLang 0.1; todo automático
-(`lab/runs/close_probe/distill/chain_donor2.log`). Disco: 75 GB libres.
+Donante descargado y verificado (`get_leo.done`), cadena donor2 lista para arrancar en cuanto el placebo cierre (~10 min, GSM8K en curso). Todo está en rieles. Disco: 75 GB libres.
+**Cerrado 2026-11-09 10:33 (donor2, criterio de éxito del op de trasplante): CUMPLE.** Segundo donante
+`LeoZotos/Qwen3.5-9B_math_grpo@bc9e0186`: `energy.json` dio veredicto **"unlikely"** (kept_weighted_at_16 = 0.0752, Δ
+difuso) y el resultado confirmó la predicción: el adaptador r16 no hace nada (MATH 2/16 reward 0.040, GSM8K 6/28
+0.060) y ni siquiera el donante COMPLETO en Q6_K suma (2/16, 8/28: 0.053/0.133 — el donante es débil, su delta no
+representa una capacidad transferible). Second donor evaluado, el veredicto de energía ACIERTA por el lado negativo.
+**Corrección (2026-11-09, results §43.11):** esas cifras son de un fast_eval de 16/28 ítems. Con la medida de §43.8
+(36 + 48 ítems) el donante completo SÍ mejora GSM8K (9 → 21/48, McNemar 16/4, p = 0.012); el adaptador r16 (15/48) no
+se distingue ni de la base (p = 0.21) ni del donante (p = 0.15). El veredicto "unlikely" es coherente, pero la prueba
+es débil con este n: no separa "transfiere la mitad" de "no transfiere".
+El criterio de éxito queda demostrado en ambos lados (Jackrong: verdict funciona; Leo: improbable→no hace nada) y ya
+confirma el dato de fondo: las capacidades transferibles por este op son las de rango bajo. Este op es el producto.
+Se anota y cierra; viene el experimento único 4.0sexto.
+### 4.0sexto PRIORIDAD (decisión del driver, 2026-11-09 ~09:40): UN SOLO EXPERIMENTO — vector de tarea + SVD selectivo en el 0.8B
+
+Cambio de dirección: no se abren ni retoman más líneas hasta veredicto (dspine, subespacios, Behavior Extraction y
+demás quedan congelados; las cadenas en vuelo terminan y se anotan). Hipótesis y criterios preregistrados en
+`lab/probes/taskvec_mult/PREREG.md`: entrenar el propio donante (multiplicaciones, full-FT bf16 sobre
+`hf_cache/qwen35-08b-hf`), ΔW = B − A, y comprobar si UNA SELECCIÓN ESPECTRAL del ΔW recupera ≥90% de la mejora con
+≤10% de los parámetros modificados (r ∈ {8,16,64,256} vía op `delta_to_lora` del runtime WSPLang 0.7.0
+(`engine/wsplang.py` __version__ = 0.7.0; el doc WSP-LANG.md conserva la spec 0.1 como referencia)), sin romper general (gsm8k/math s10,
+retención ≥0.90) y con placebo norm-matched fracasando (R3). Cadena automática reanudable:
+`bash lab/probes/taskvec_mult/chain_taskvec.sh` (espera a que donor2 libere la GPU; un server a la vez).
+Si falla, el resultado es la curva recovery(params_frac) + el espectro de energía: eso decide si la cirugía selectiva
+sirve o la generación con gradientes es la única vía para capacidades.
 
 **Escribir una capacidad vs escribir un dato (2026-11-09, results §43.9):** la propuesta externa "usar la escritura
 de WSP para una mejora matemática y comprobarla en preguntas no usadas" ya está hecha (cf5: 6→17/36, 9→25/48,
@@ -145,10 +179,42 @@ contraste rango 1 no, 0/48; rigor bueno; aporta la idea del placebo y del térmi
 (ya probado: vector de control MiMo 6→15/36, por debajo de cf5); Cadence (`muellerberndt/cadence`, red recurrente por
 equilibrio + recompensa, sin LLM: otro paradigma, sin relación con editar pesos de un LLM).
 
+**Revisado 2026-11-09 (steering/control vectors — NO se adopta, fuera de la prioridad 4.0sexto):** la familia
+EvilQwen (lyramakesmusic/neuron-explorer, dahara1/EvilQwen-control-vectors, metrovoc/neuron-steering,
+occcat/qwen35-evil-neuron, shmuelamar/evil-qwen) y generadores genéricos (vgel/repeng + cvector-generator nativo de
+llama.cpp con --control-vector-scaled, IBM/activation-steering, jukofyork/creative-writing-v3, aneoncore/gemma-cv).
+Ya medido aquí: control vectors sobre MiMo (cvec_inc 0.107-0.267, cvec_mimo 0.000) por debajo o igual que cf5 y muy
+por debajo del trasplante Jackrong (0.800); el steering por neuronas sueltas es "push" lineal por activación, no une
+pesos, y su señal es de conducta/estilo (catalogables como los cvec). Si algún día se hace un reto de localización
+fina de neuronas (tipo reto WSP-40 de "dosis-neurona con dose-response"), neuron-explorer + repeng son las piezas
+RFC que ahorrarían scripts propios. Hoy úsalos solo como referencia; no se abren líneas.
+
 **Revisado y descartado (2026-11-08):** `areu01or00/qwen0.8B-wsp` (MEMIT de hechos; útil solo la resolución en forma
 cerrada; su resultado cae a 0/5 al comprobar con pesos bf16 guardados); thePM_001/AEP (promocional, sin código de
 pesos); "MIT 90 % de pesos sobra" (lottery ticket 2018, no aplica a LLMs a ese nivel); AbridgeKV (comprime caché, no
 acorta el razonamiento); Terminal-RSI de Tencent (iteración experta → origen de la cadena 4).
+
+**Cerrado por el driver (2026-11-09 ~17:05): taskvec_mult SIN entrenamiento.** La producción queda cancelada: la GPU
+12GB está ocupada el día entero por otra sesión de agente (chain_happy/chain_heretic, llama-server :8095, 7.5-9GB
+VRAM, 93% util) — el full-FT iba a 45 min por 100 pasos (50× lento) y murió a las 16:53; y la regla nueva es
+"pruebas ≤10 min". Datos ya conseguidos (quedan en `lab/runs/taskvec_mult/`): base 0.8B 0/200 en mult-test
+(capacidad ausente; `fast/base_mult.json`), data sellada generada (7000/64/200, rng fijo). Lo que sobrevive si se
+retoma: chain_taskvec.sh es reanudable por marcadores y el protocolo en dos fases (criba mult barata → batería solo
+para el ganador) ya reduce cada prueba a ≤10 min; el bloqueo real es la GPU compartida, no el diseño. Sin entrenar
+quedan los donantes EXISTENTES como vía del op (Jackrong 0.800 demostrado; Leo "unlikely" acertado).
+
+**Revisado y VERIFICADO 2026-11-09 (referencia externa, no se adopta por la prioridad única): HypaNet
+(github.com/Hypabolic/HypaNet + 2 posts matthewgribben.com, mismo autor matt-gribben, repo creado 11-05,
+último commit 11-09).** Fable(claude-fable-5.1) escribe pesos desde spec sin entrenar: detector de bucles de
+agentes 2.1M par v0.3 macro-F1 0.957 sealed / 0.908 OOD vs el MISMO arqu entrenado con 223,930 labels
+0.923/0.488 (34.5% falsas alarmas OOD vs 6.8%); v0.4 edición rank-1 de neuronas SwiGLU "silenciosas"
+sobre Qwen3.5-0.8B (10.240/752M entradas): 0.419 (+0.196 sobre base), techo bajo = mismo veredicto que
+nuestra serie E1-E5/cf6 (ganchos locales no traguen capacidades); v0.5 esc das 0.750 en 4 familias OOD
+no vistas. Comprobación de procedencia: sin commits future-dated (alarma de fechas 10/11-nov descartada;
+README sin fechas). Importable sin abrir líneas (salvaguardas de evaluación): (1) generador OOD escrito
+por un agente INDEPENDIENTE como juez; (2) splits sellados con hash y evaluador que se niega a puntuar
+dos veces; (3) CIRCUITS.md — documentación por parte del modelo escrito (nuestro decomp usa manifiestos
+afines). Su ruta "C transferencia entre modelos" la cubre el nuestro `delta_to_lora` (0.867 Jackrong).
 
 ### 4.0quater ESTADO 2026-11-07 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
