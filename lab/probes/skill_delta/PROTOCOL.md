@@ -65,3 +65,19 @@ of 128 positions, Adam lr 1e-4, one seed, bf16 B tensor saved to safetensors and
   were not run (no teacher to reproduce). Re-running with a stronger teacher means a new, separately fixed configuration and a fresh holdout.
 - Measured limits: OOM when the model stays loaded during training (resolved by caching in one process and training in another; phase 2
   uses 0.37 GB); ~2.1 s per step; tool calls limited to ~2 min, so training and evaluation were run in resumable slices.
+
+## Amendment 3 (2026-11-09, written BEFORE running): one correction after the stage-1 diagnosis
+Basis: `DIAGNOSIS.md`. Stage-1 B fixed the answer format (re-asks 13 to 0, newline 71/85 to 85/85); the numeric-only gain was +5 of 87 (p=0.40); the
+remaining errors are wrong third/fourth digits, with teacher-forced train accuracy on the third digit only 62%. Hypotheses (untested): 150 steps on
+800 problems underfit (H2), or too few problems (H3).
+Intervention (one, same trainer, nothing else changed): B2 = same tensor (`layers.23.mlp.down_proj.weight`), same lr 1e-4, Adam, seed 0, trained on ALL 2000
+problems of the train set (first 800 are stage-1's) for 600 steps of 128 positions. No checkpoint selection: the tensor at step 600 is the one evaluated.
+Baseline A and stage-1 B stay untouched (B sha256 bea3340e...).
+Data roles: the 100-problem holdout was already inspected: results on it are exploration, shown for comparison only. The CONFIRMATION set is
+`behavior_extraction/range_data.make_confirm_set()` (seed 23, 100 two-digit problems disjoint from every existing mul2x2 set); it has not been scored for A, B or
+B2, and was not used to choose this intervention. Retention sets: add2 `control` (100 problems) and the 30-item text control, A vs B2 (and B for reference).
+Criteria, fixed now, not tuned afterwards (same as stage 1): on the confirmation set, B2 over A by >= 15 points with exact McNemar p < 0.05 (the size/p are the
+maintainer's addition, not the owner's); retention: add2 and text each not worse than A by more than 2 points (owner's threshold); persistence: B2 saved as bf16
+safetensors and evaluated from the saved file in a fresh process. Also reported, not part of the gate: re-ask count, and exact matches among problems where A gave a number.
+If the gate is not met: conclude that this matrix/recipe is limited at this budget; the minimal extension would be a mid-layer matrix, which needs a backward pass through the
+later layers (memory design work); it is not started. No second intervention is tried after seeing results.
