@@ -103,7 +103,9 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
     ntrain = len(seqs) - heldout
     kws, hb, ht = [], [], []
     emb_dt = next(model.parameters()).dtype
-    for s in seqs:
+    for n, s in enumerate(seqs):
+        if n % 20 == 0:
+            print(json.dumps({"prepared": n, "of": len(seqs)}), flush=True)
         kw, h0 = layer_kwargs(model, s, device)
         kws.append(kw)
         hb.append(h0)
@@ -176,21 +178,31 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
     return out
 
 
+_READER = None
+
+
 def teacher_loader(teacher_dir):
-    from safetensors import safe_open
-    idx = json.loads((Path(teacher_dir) / "model.safetensors.index.json").read_text())["weight_map"]
+    """Reads the teacher tensor by tensor with plain byte-range reads (engine.weight_diff.LocalSafetensors).
+    safe_open per tensor crashed natively on Windows here (access violation in storage __getitem__, run cf2)."""
+    global _READER
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from engine.weight_diff import LocalSafetensors
+    _READER = r = LocalSafetensors(teacher_dir)
+    names = r.keys()
 
     def get(name):
-        with safe_open(str(Path(teacher_dir) / idx[name]), "pt") as f:
-            return f.get_tensor(name)
+        return r.get(name)
 
     def state(l):
         pre = f"{PREFIX}.{l}."
-        return {k[len(pre):]: get(k) for k in idx if k.startswith(pre)}
+        return {k[len(pre):]: get(k) for k in names if k.startswith(pre)}
     return state, get
 
 
 def main():
+    import faulthandler
+    faulthandler.enable()          # a native crash (no Python traceback) killed the first 9B run silently
     from transformers import AutoModelForCausalLM, AutoTokenizer
     sys.path.insert(0, str(ROOT))
     from engine.lora_export import lowrank

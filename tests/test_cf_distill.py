@@ -12,6 +12,7 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "lab" / "probes" / "close_probe"))
 M08 = ROOT / "hf_cache" / "qwen35-08b-hf"
 
@@ -25,6 +26,22 @@ class TestSolve(unittest.TestCase):
         dW = cf.solve(K.T @ K, K.T @ (K @ D.T), mu=1e-9)
         self.assertEqual(tuple(dW.shape), (7, 20))
         self.assertTrue(torch.allclose(dW.double(), D, atol=1e-5))
+
+
+@unittest.skipUnless(M08.exists(), "needs hf_cache/qwen35-08b-hf")
+class TestTeacherLoader(unittest.TestCase):
+    def test_reads_a_layer_without_mmap_and_matches_the_model(self):
+        import cf_distill as cf
+        from engine.weight_diff import LocalSafetensors
+        from transformers import AutoModelForCausalLM
+        state, get = cf.teacher_loader(M08)
+        self.assertIsInstance(cf._READER, LocalSafetensors)     # safe_open per tensor crashed natively on Windows
+        model = AutoModelForCausalLM.from_pretrained(str(M08), dtype=torch.bfloat16)
+        sd = state(2)
+        ref = cf.layers_of(model)[2].state_dict()
+        self.assertEqual(set(sd), set(ref))
+        for k in ref:
+            self.assertTrue(torch.equal(sd[k].to(ref[k].dtype), ref[k]), k)
 
 
 @unittest.skipUnless(M08.exists(), "needs hf_cache/qwen35-08b-hf")

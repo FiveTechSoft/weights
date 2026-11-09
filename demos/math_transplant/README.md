@@ -11,6 +11,19 @@ llama-server -m <Qwen3.5-9B base>.gguf --lora hf_cache/close_lora/demo_jack_r16.
 python demos/math_transplant/demo.py 8095                                    # same server: adapter off vs on
 ```
 
+Output (2026-11-09, adapter from the op, scale 0.5; the three default problems were picked as short examples among
+the 16 stuck ones, so this shows the effect, the table below measures it):
+
+```
+MATH-500 # expected  base                              base + transplant
+-----------------------------------------------------------------------------------------
+106        \frac43   cut at 2048, no answer            RIGHT \frac{4}{3} (398 tok)
+185        1         cut at 2048, no answer            RIGHT 1 (301 tok)
+289        16        cut at 2048, no answer            RIGHT 16 (405 tok)
+
+right: base 0/3   transplant 3/3
+```
+
 (`gguf=` needs `WSP_LORA_CONVERTER` = llama.cpp's `convert_lora_to_gguf.py`; see `docs/wsplang_specification.md`.)
 
 ## Result (Qwen3.5-9B, greedy, 2,048-token budget)
