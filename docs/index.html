@@ -914,7 +914,7 @@ minute, with her arms</td>
 
         <div class="card">
           <h3>Permanent Weight-Space Steering</h3>
-          <p>Instead of temporary inference hooks in Python, <code>edits/evil_mimo.json</code> scales 4 columns of layer 14 $W_{down}$: neurons 4258 and 7714 by $2.5\times$, neurons 10739 and 993 by $0.25\times$ (16,384 weights). <strong>No behavioural evaluation of hostility was run</strong>, so the "hostility" and "empathy" labels are hypotheses, and the edited GGUF is not in the repo.</p>
+          <p>Instead of temporary inference hooks in Python, <code>edits/evil_mimo.json</code> scales 4 columns of layer 14 $W_{down}$: neurons 4258 and 7714 by $2.5\times$, neurons 10739 and 993 by $0.25\times$ (16,384 weights). <strong>No behavioural evaluation of hostility was run</strong>, so the "hostility" and "empathy" labels are hypotheses, and the edited GGUF is not in the repo. It is also not expected to work: the "Evil Qwen" effect <em>adds</em> a fixed amount to a neuron's activation, far beyond its natural range, which a bias-free <code>down_proj</code> cannot store in its weights; scaling the same neurons ×20-×100 leaves replies practically unchanged on Qwen3.5-4B (<a href="https://huggingface.co/dahara1/EvilQwen-control-vectors" style="color: var(--accent-cyan);">dahara1/EvilQwen-control-vectors</a>, which uses llama.cpp control vectors instead).</p>
         </div>
       </div>
     </section>

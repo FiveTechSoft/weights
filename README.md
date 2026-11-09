@@ -220,6 +220,12 @@ without forward passes:
 - **The search:** layer 14 `ffn_down` columns of MiMo-9B were ranked by their projection on lexical centroids (*anger*,
   politeness).
 - **The edit:** 4 columns were scaled (`edits/evil_mimo.json`).
+- **Why it is not expected to work:** the "Evil Qwen" effect *adds* a fixed amount to a neuron's activation at every
+  token, far beyond its natural range (dahara1's analysis on Qwen3.5-4B: about 20× the dataset maximum; scaling the
+  same neurons ×20 or ×100 leaves the replies practically unchanged, because they barely fire). Qwen3.5's `down_proj`
+  has no bias, so that addition cannot be written into the weights; it needs a control vector
+  ([dahara1/EvilQwen-control-vectors](https://huggingface.co/dahara1/EvilQwen-control-vectors), llama.cpp). Scaling
+  columns, as `evil_mimo.json` does, is the multiplicative kind. We have not tested either on MiMo.
 - **Not done:** the behavioural effect was **never evaluated**, so this is an untested edit, not a result. Notes:
   [`docs/behavioral_steering_and_dreaming.md`](docs/behavioral_steering_and_dreaming.md).
 
