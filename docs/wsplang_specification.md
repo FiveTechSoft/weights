@@ -1,6 +1,6 @@
-# WSP-Lang 0.1: Declarative Language Specification for Weight-Space Programming
+# WSP-Lang: Declarative Language Specification for Weight-Space Programming
 
-**Version:** 0.1.0  
+**Version:** 0.7.0 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.7_spec.md`, and §5.0 lists every op the runtime accepts)  
 **Status:** Living Specification  
 **Authors:** FiveTechSoft Engineering & Research Team  
 **Repository:** [github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
@@ -10,12 +10,10 @@
 
 ## 1. Executive Summary & Philosophy
 
-**Weight-Space Programming (WSP)** represents a fundamental paradigm shift in how we analyze, steer, and modify Large Language Models (LLMs). Rather than treating neural network weights as an opaque black-box to be modified exclusively via stochastic gradient descent (backpropagation) or expensive fine-tuning pipelines, WSP posits that:
-
-$$\mathcal{W} \in \mathbb{R}^{D_{\text{model}} \times D_{\text{out}}} \quad \text{encodes a structured, decomposable computer program.}$$
+**Weight-Space Programming (WSP)** reads, compares and edits the weights of LLMs directly, as an alternative or a complement to changing them by gradient descent. Its working hypothesis, tested case by case and not assumed, is that parts of what a network does can be located in, read from and written into its weight matrices. What has and has not held up is in the README's status table and `results.md`.
 
 **WSP-Lang** is the domain-specific declarative programming language designed to query, decompile, steer, and edit neural network weights in quantized formats (such as GGUF `Q6_K` and `BF16`) with:
-1. **Zero forward passes** required for weight inspection and semantic decompilation.
+1. **No forward pass** for reading weights; every claim about behaviour still needs one (a benchmark run).
 2. **Deterministic, falsifiable hypothesis definitions** (every program declares its hypothesis, budget, and validation threshold).
 3. **Hardware safety & physical barriers** (`FORBIDDEN_TENSORS` and pre-execution validation gates).
 4. **Machine-agent interoperability** via native Model Context Protocol (FastMCP) bindings.
@@ -115,6 +113,68 @@ The sequence of atomic declarative operations executed by the runtime.
 
 WSP-Lang 0.1 implements five core operations designed for mechanistic interpretability and surgical intervention:
 
+### 5.0. Ops the runtime accepts (checked by `tests/test_wsplang_spec.py`)
+A step whose op is not in this table is rejected by the validator. *read / report* ops never write weights (reports, signatures, a new adapter directory); *writes weights* ops need the safetensors+torch backend and pass the write guard (§6.1b); *stub* ops return a placeholder and support no claim.
+
+<!-- ops:begin -->
+| op | kind | documented in |
+|---|---|---|
+| `architectural_drift` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `assert_behavioral_drift` | read / report | `wsplang_0.7_spec.md` |
+| `assert_davis_kahan` | writes weights | `wsplang_0.4_spec.md` |
+| `assert_orthogonal_preservation` | writes weights | `wsplang_0.3_spec.md` |
+| `assert_weyl` | writes weights | `wsplang_0.4_spec.md` |
+| `audit` | writes weights | `wsplang_0.2_spec.md` |
+| `compare` | read / report | `wsplang_0.2_spec.md` |
+| `compile_synthetic` | writes weights | `wsplang_0.7_spec.md` |
+| `cov_imprint` | writes weights | `wsplang_0.5_spec.md` |
+| `cross_project` | writes weights | `wsplang_0.6_spec.md` |
+| `decompile` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `decoupled_delta` | writes weights | `wsplang_0.5_spec.md` |
+| `delta_compare` | read / report | this file |
+| `delta_signature` | read / report | this file |
+| `delta_stats` | read / report | this file |
+| `delta_to_lora` | read / report | this file |
+| `delta_unlearn` | writes weights | this file, `wsplang_0.3_spec.md`, `wsplang_0.4_spec.md` |
+| `diff` | read / report | `wsplang_0.2_spec.md` |
+| `distributed_memit` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `drift_profile` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `evaluate` | read / report | this file |
+| `evaluate_benchmark` | read / report | this file |
+| `export_control_vector` | writes weights | this file, `wsplang_0.2_spec.md` |
+| `fwp_overlay` | writes weights | `wsplang_0.3_spec.md` |
+| `imprint_association` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `imprint_batch` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `imprint_corpus` | writes weights | `wsplang_0.7_spec.md` |
+| `init_architecture` | writes weights | `wsplang_0.7_spec.md` |
+| `jepa_steer` | writes weights | `wsplang_0.7_spec.md` |
+| `layer_envelope` | writes weights | `wsplang_multilayer_envelope_spec.md` |
+| `leace_erase` | stub | `wsplang_0.5_spec.md` |
+| `memit_imprint` | writes weights | `wsplang_0.5_spec.md` |
+| `model_report` | read / report | this file |
+| `multi_layer_envelope` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `peek` | read / report | this file, `wsplang_0.2_spec.md` |
+| `permute_align` | writes weights | `wsplang_0.7_spec.md` |
+| `project_in` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.3_spec.md` |
+| `project_out` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.4_spec.md` |
+| `rosetta_align` | writes weights | `wsplang_0.6_spec.md` |
+| `semantic-areas` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `semantic-map` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `semantic_areas` | read / report | `wsplang_0.2_spec.md` |
+| `semantic_delta` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `semantic_map` | read / report | this file, `wsplang_0.2_spec.md` |
+| `spectral_audit` | writes weights | `wsplang_0.4_spec.md` |
+| `spectral_decay` | writes weights | `wsplang_0.3_spec.md` |
+| `spectral_delta` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `ssm_dynamics_diff` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `subspace_transfer` | writes weights | this file |
+| `surprise_fwp` | stub | `wsplang_0.5_spec.md` |
+| `synthesize` | writes weights | `wsplang_0.7_spec.md` |
+| `tie_weights` | writes weights | `wsplang_0.7_spec.md` |
+| `train` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `vicreg_preserve` | read / report | `wsplang_0.7_spec.md` |
+<!-- ops:end -->
+
 ### 5.1. `step semantic_map`
 Queries the model's global semantic taxonomy or calculates the functional projection of a specific tensor.
 
@@ -149,44 +209,14 @@ Performs surgical, read-only decompilation of a single weight, row, column, or t
 
 ---
 
-### 5.3. `step poke`
-Modifies an individual scalar weight in-place while preserving numerical integrity across the remaining 255 values in the `Q6_K` block.
-
-* **Syntax:**
-  ```wspl
-  step poke <tensor> <row> <col> <target_value> [out=<output_path>]
-  ```
-* **Parameters:**
-  * `tensor`: Target tensor (strictly validated against `FORBIDDEN_TENSORS`).
-  * `row`, `col`: Matrix coordinates.
-  * `target_value`: Absolute floating-point target value.
-  * `out`: Optional destination file. If omitted, generates a candidate in `served/`.
-* **Guarantees:**
-  * Zero collateral corruption outside the edited 256-element quantization super-block.
-  * Canonical requantization via `quantize_row_q6_k_ref` with L1 reconstruction error $< 6.2 \times 10^{-6}$.
-
----
-
-### 5.4. `step scale`
-Scales specific neuron columns or attention heads uniformly to amplify or suppress behavioral features (Behavioral Steering).
-
-* **Syntax:**
-  ```wspl
-  step scale <tensor> col=<neuron_idx> factor=<alpha>
-  ```
-* **Parameters:**
-  * `col`: Neuron column index in `ffn_down.weight` or attention projection.
-  * `factor`: Multiplier (e.g. `2.5` to amplify, `0.25` to suppress).
-
----
-
-### 5.5. `step steer`
-Applies Covariance-Aligned Steering (Dreaming Technique 16) by adding or subtracting an empirical residual control direction vector $\mathbf{u}$:
-
-* **Syntax:**
-  ```wspl
-  step steer <tensor> vector=<u_npz_path> dose=<alpha>
-  ```
+### 5.3-5.5. Single-weight edits are a CLI, not WSP-Lang steps
+Earlier versions of this file listed `poke`, `scale` and `steer` as steps. The runtime never accepted them (the validator
+rejects them). What exists:
+* `python wsp.py poke <gguf> <tensor> -r <row> -c <col> -v <value> [-o <out>]`: one scalar of a Q6_K tensor, requantizing
+  only its 256-value block (`quantize_row_q6_K` NumPy port, 87 % byte-identical on unedited blocks, error ~6e-6).
+* Column scaling of a GGUF: `python wsp.py edit <gguf> <prog> -o <out>` with an edit manifest (e.g. `edits/evil_mimo.json`).
+  There is no steering-vector step; llama.cpp control vectors do that at run time.
+`FORBIDDEN_TENSORS` (§6.1) applies to both.
 
 ---
 
@@ -251,7 +281,7 @@ Under no circumstances may a WSP-Lang program write to or mutate critical ground
 * `output_norm.weight`: Final layer normalization.
 * `*.norm`, `*.attn_norm.weight`, `*.ffn_norm.weight`: Internal RMSNorm scales.
 
-Any step attempting a `poke` or `scale` on a protected tensor is immediately blocked with:
+Any write (a WSP-Lang write op, or `wsp.py poke` / `edit`) on a protected tensor is blocked with:
 ```json
 {
   "status": "security_rejection",
@@ -349,58 +379,31 @@ experiment inspect_semantic_areas:
 
 ---
 
-### Example 2: Weight Synthesis from Scratch ([`blog_exp5_write_mlp.wspl`](../programs/blog_exp5_write_mlp.wspl))
-Replicates MIT Blog Experiment 5, synthesizing an exact identity function $f(u) = u$ using twin ReLU activations without training:
-
-$$\text{ReLU}(u) - \text{ReLU}(-u) \equiv u, \quad \forall u \in \mathbb{R}$$
+### Example 2: Move a fine-tune's skill onto the base ([`transplant_jackrong_math.wspl`](../programs/transplant_jackrong_math.wspl))
+The README's main result: the change of a reasoning distill against Qwen3.5-9B as a rank-16 LoRA adapter (exact SVD),
+with `energy.json` (share of the change kept per rank) and a `verdict` before any eval. `model=hf:<owner>/<repo>[@rev]`
+reads the fine-tune from the Hugging Face hub by byte ranges.
 
 ```wspl
-experiment write_linear_mlp_from_scratch:
-    model: toy_linear_mlp
-    objective: synthesize_identity_without_training
-
-    budgets:
-        max_parameters = 16
-        allow_training = false
-
-    steps:
-        # Synthesize up projection weights: [+1, -1]
-        step poke blk.0.ffn_up.weight 0 0 1.0
-        step poke blk.0.ffn_up.weight 1 0 -1.0
-
-        # Synthesize down projection weights: [+1, -1]
-        step poke blk.0.ffn_down.weight 0 0 1.0
-        step poke blk.0.ffn_down.weight 0 1 -1.0
-
-        # Verify exact numerical reconstruction across 100 test vectors
-        step verify_accuracy dataset=toy_synthetic threshold=1e-7
+experiment transplant_jackrong_math:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-9b-hf model=hf_cache/dp_keep_dsv4_distill rank=16 out=hf_cache/close_lora/demo_jack_r16 gguf=hf_cache/close_lora/demo_jack_r16.gguf
 ```
 
----
-
-### Example 3: Covariance-Aligned Behavioral Steering ([`dreaming_covariance_steering.wspl`](../programs/dreaming_covariance_steering.wspl))
-Implements Dreaming Technique 16, amplifying host-defensive or villany neurons in Layer 14 while dampening empathetic compliance:
+### Example 3: Read-only inspection of layer-14 neurons ([`dreaming_covariance_steering.wspl`](../programs/dreaming_covariance_steering.wspl))
+The program only reads (`semantic_map`, `peek`). An earlier version of this file showed scaling lines here; scaling is
+not a WSP-Lang step (§5.3-5.5), and the column-scaling edit was never evaluated (README, "Evil Qwen").
 
 ```wspl
 experiment dreaming_covariance_steering:
-    model: MiMo-V2.6-Distill-Qwen-9B
-    objective: amplify_villain_perspective
-
-    budgets:
-        max_modified_weights = 16384
-        allow_write = true
-
     steps:
-        # 1. Introspect hostility neuron 4258 in Layer 14
-        step peek blk.14.ffn_down.weight col=4258 top=3
-
-        # 2. Scale hostile activation directions
-        step scale blk.14.ffn_down.weight col=4258 factor=2.5
-        step scale blk.14.ffn_down.weight col=7714 factor=2.0
-
-        # 3. Suppress empathetic compliance neuron
-        step scale blk.14.ffn_down.weight col=10739 factor=0.25
+        step semantic_map top=4
+        step peek blk.14.ffn_down.weight row=100 col=4258 top=3
+        step peek blk.19.attn_output.weight row=100 col=200 top=3
 ```
+
+The earlier Example 2 (`blog_exp5_write_mlp.wspl`, MIT Exp 5 identity MLP by single-weight writes) does not pass the
+validator (its `poke` steps are rejected) and is no longer shown.
 
 ---
 
@@ -449,7 +452,7 @@ Execution of any WSP-Lang program automatically generates a cryptographically fi
 
 ## 10. Summary & Roadmap
 
-WSP-Lang 0.1 establishes a rigorous, typed, and falsifiable foundation for weight-space programming. Current frozen priorities:
+Current priority (roadmap §4.0sexies, 2026-11-09): the transplant op (`delta_to_lora`: verdict from energy, adapter, automatic validation), tested on more donors. Standing rules:
 1. **Freeze Core Syntax:** No syntax expansion until the first verified empirical `keep` is established.
 2. **Deterministic Evaluation First:** All weight modifications must be gated by `agent_loop_probe` or sealed holdout benchmarks.
 3. **Pure BF16 Pipeline:** Transition high-precision experiments to uncompressed BF16 tensors, utilizing canonical `llama-quantize` for final GGUF compilation.
