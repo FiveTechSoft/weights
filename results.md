@@ -1784,3 +1784,38 @@ GSM8K a este tope: retención ruidosa). Un no-op puntúa 0.
   (p = 0.375), GSM8K 1/2 (p = 1), no distinguibles. Rango 16 guarda el 58.6 % de la energía de Jackrong (ponderada),
   3.8 % de la de MiMo. Lado a lado en 3 atascados elegidos: base 0/3 (cortada a 2 048), con adaptador 3/3 en 300-405
   tokens.
+
+### 43.9 Escribir una capacidad, no un dato: WSP/MEMIT frente a nuestra forma cerrada; en marcha ronda 3 y o_proj (2026-11-09)
+Pregunta del driver (análisis externo de `areu01or00/qwen0.8B-wsp`): ¿se puede usar su mecanismo de escritura para
+escribir una mejora matemática y comprobar que sobrevive a preguntas no usadas? Ya está hecho (§43.8, forma cerrada).
+Comparación de lo que hace cada uno:
+
+| | WSP de `qwen0.8B-wsp` | nuestra forma cerrada (`cf_distill.py`) |
+|---|---|---|
+| qué se escribe | un dato (perfil de @TensorSlay) | una conducta: razonar y cerrar en MATH |
+| modelo | Qwen3.5-0.8B | Qwen3.5-9B |
+| regla | MEMIT: ΔW = R Kᵀ(λK₀K₀ᵀ + KKᵀ)⁻¹ | la misma sin término de protección; ridge μ elegido por capa en retenidas |
+| objetivo R | salida deseada (respuesta escrita por el autor) | residual de MiMo capa a capa, sobre las respuestas de MiMo |
+| dónde | down_proj de 5 tensores, capas 17-21 | down_proj de las 32 capas |
+| datos | ~5 paráfrasis de la pregunta | 171 respuestas de MiMo (143 721 tokens), 16 retenidas |
+| medida | 2/5 paráfrasis nuevas, sin estadística (0/5 al recomprobar con pesos bf16 guardados, §4.0quinquies) | 36 + 48 ítems nunca usados, McNemar pareado |
+| resultado | — | MATH 6→17/36 (p = 0.003), GSM8K 9→25/48 (p = 0.0004, benchmark no usado al escribir) |
+
+Lectura:
+1. **Una capacidad necesita un objetivo**: el dato tiene respuesta escrita; para razonar hay que saber qué estado
+   interno es el bueno, y lo da un profesor (MiMo). Sin profesor no hay R: la autodestilación (§43.8) = base.
+2. **Techo de down_proj**: desde la capa 9 explica ≤ 20 % del desajuste retenido; queda por debajo de la destilación
+   con gradientes (24/36, 41/48). MiMo cambia todas las matrices.
+3. **No es local**: un dato cabe en 5 tensores; la conducta se escribió en 32 capas y el ΔW no es de rango bajo
+   (r256 guarda 31 %).
+
+**En marcha (2026-11-09, una cadena de GPU tras otra, logs en `lab/runs/close_probe/distill/`):**
+- `chain_r3.sh`: destilación ronda 3, los últimos 150 ítems de MATH-500 (fuera de eval y rondas 1-2) → respuestas
+  de MiMo a tope 2 048 → LoRA r16 MLP, 1 pasada, sobre rondas 1+2+3 → misma eval y reward. Se agota MATH-500.
+- `chain_cf6.sh` (espera a la anterior): forma cerrada en dos escrituras por capa, primero la proyección de salida de
+  la atención (`self_attn.o_proj` en las capas de atención completa, `linear_attn.out_proj` en las lineales) para que
+  el flujo tras la atención (entrada de `post_attention_layernorm`) siga al de MiMo, luego down_proj sobre lo que
+  queda; mismos datos que cf5, rango 256, para aislar el efecto de la escritura extra. `cf_distill.py --targets
+  attn,down`; test nuevo en `tests/test_cf_distill.py` (cambio conocido en out_proj de la capa 1 y o_proj de la 3 de
+  Qwen3.5-0.8B: recuperado, explicado retenido > 0.99, down_proj sin cambio); conversión GGUF comprobada
+  (`ssm_out`, `attn_output`, `ffn_down`). Resultados: se añadirán aquí.

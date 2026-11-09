@@ -119,16 +119,65 @@ def _first(o):
     return o[0] if isinstance(o, (tuple, list)) else o
 
 
-def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", heldout=0, log=None, mus=None):
+def attn_out_name(layer):
+    """Name of the projection that writes the attention (or linear-attention) output into the residual stream."""
+    return "linear_attn.out_proj" if hasattr(layer, "linear_attn") else "self_attn.o_proj"
+
+
+def attn_out(layer):
+    return layer.get_submodule(attn_out_name(layer))
+
+
+class _Acc:
+    """K^T K, K^T R and ||R||^2 sums of one linear write, on the training and the held-out sequences."""
+    def __init__(self, n_in, n_out, device, sel):
+        z = lambda *s: torch.zeros(*s, device=device)
+        self.G, self.P, self.E = z(n_in, n_in), z(n_in, n_out), 0.0
+        self.sel = sel
+        self.Gh, self.Ph, self.Eh = (z(n_in, n_in), z(n_in, n_out), 0.0) if sel else (None, None, 0.0)
+
+    def add(self, K, R, train):
+        if train:
+            self.G += K.T @ K
+            self.P += K.T @ R
+            self.E += float(R.pow(2).sum())
+        elif self.sel:
+            self.Gh += K.T @ K
+            self.Ph += K.T @ R
+            self.Eh += float(R.pow(2).sum())
+
+    def solve(self, mu, mus, device):
+        mus = mus if self.sel else None
+        """(dW fp32 on device, mu, held-out error by mu or None, explained train, explained held-out or None) -
+        the explained shares in closed form from the sums (the write is linear in the residual)."""
+        if mus:
+            dW, mu, errs = solve_select(self.G, self.P, self.Gh, self.Ph, torch.tensor(self.Eh, device=device), mus,
+                                        device)
+        else:
+            dW, errs = solve(self.G, self.P, mu, device), None
+        dW = dW.to(device=device, dtype=torch.float32)
+        ex = 1 - float(residual_error(dW, self.G, self.P, self.E)) / max(self.E, 1e-30)
+        exh = 1 - float(residual_error(dW, self.Gh, self.Ph, self.Eh)) / max(self.Eh, 1e-30) if self.sel else None
+        self.G = self.P = self.Gh = self.Ph = None
+        return dW, mu, errs, ex, exh
+
+
+def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", heldout=0, log=None, mus=None,
+        targets=("down",)):
     """seqs: token id lists. teacher_state(l) -> state dict of the teacher's layer l (layer-relative names).
     Fits the down_proj change of every layer in `layers`; the last `heldout` sequences are only measured, and with
     `mus` they also choose each layer's ridge (closed-form held-out error) - then explained_heldout is optimistic.
-    Returns {"delta": {l: dW (out x in, fp32, CPU)}, "stats": {l: {...}}, "keys_sample": {l: first rows of K}}.
-    The model's weights are not modified."""
+    targets ("attn", "down"): first the attention output projection (o_proj / linear_attn.out_proj) is fitted so the
+    stream after attention follows the teacher's (input of post_attention_layernorm), then down_proj to what is left
+    at the layer output; explained_* are then shares of the layer's original mismatch, attn_* of the post-attention
+    one (closed form, training / held-out).
+    Returns {"delta": {l: dW (out x in, fp32, CPU)}, "delta_attn": {l: ...}, "stats": {l: {...}},
+    "keys_sample": {l: first rows of K}}. The model's weights are not modified."""
     L = layers_of(model)
     fitset = set(layers)
     top = max(layers)
     ntrain = len(seqs) - heldout
+    do_attn = "attn" in targets
     kws, hb, ht = [], [], []
     emb_dt = next(model.parameters()).dtype
     for n, s in enumerate(seqs):
@@ -138,7 +187,7 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
         kws.append(kw)
         hb.append(h0)
         ht.append(embed_t[torch.tensor(s)].to(device=device, dtype=emb_dt))
-    out = {"delta": {}, "stats": {}, "keys_sample": {}}
+    out = {"delta": {}, "delta_attn": {}, "stats": {}, "keys_sample": {}}
     for l in range(top + 1):
         t0 = time.time()
         bl = L[l]
@@ -157,14 +206,52 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
         dp = bl.mlp.down_proj
         cap = {}
         delta = None
+        dl = {}             # attention write of this layer, once fitted
 
         def hook(mod, inp, o):
             cap["K"] = inp[0]
             if delta is not None:
                 return o + (inp[0].float() @ delta.T).to(o.dtype)
-        hh = dp.register_forward_hook(hook)
+
+        def hook_a(mod, inp, o):
+            cap["Ka"] = inp[0]
+            if "a" in dl:
+                return o + (inp[0].float() @ dl["a"].T).to(o.dtype)
+
+        def pre(key):
+            def f(mod, inp):
+                cap[key] = inp[0]
+            return f
+        hh = [dp.register_forward_hook(hook)]
+        if do_attn and l in fitset:
+            hh += [attn_out(bl).register_forward_hook(hook_a),
+                   bl.post_attention_layernorm.register_forward_pre_hook(pre("h1b")),
+                   tl.post_attention_layernorm.register_forward_pre_hook(pre("h1t"))]
         try:
             with torch.no_grad():
+                st = {}
+                err_orig = None
+                yt = None
+                if do_attn and l in fitset:
+                    # pass 0: teacher output (kept), and the attention write, fitted to the post-attention stream
+                    am = attn_out(bl)
+                    acc = _Acc(am.in_features, am.out_features, device, heldout > 0)
+                    yt, err_orig = [], []
+                    for i in range(len(seqs)):
+                        y_t = _first(tl(ht[i][None], **kws[i][l]))[0]
+                        y_b = _first(bl(hb[i][None], **kws[i][l]))[0]
+                        err_orig.append(float((y_t - y_b).float().pow(2).sum()))
+                        acc.add(cap["Ka"][0].float(), (cap["h1t"][0] - cap["h1b"][0]).float(), i < ntrain)
+                        yt.append(y_t)
+                    da, mu_a, errs_a, ex_a, exh_a = acc.solve(mu, mus, device)
+                    del acc
+                    dl["a"] = da
+                    st.update({"attn_explained_train": ex_a, "attn_explained_heldout": exh_a,
+                               "attn_rel_norm": float(da.norm() / am.weight.float().norm()), "attn_mu": mu_a,
+                               "attn_module": attn_out_name(bl)})
+                    if errs_a:
+                        st["attn_heldout_err_by_mu"] = {str(k): round(v, 4) for k, v in errs_a.items()}
+                    out["delta_attn"][l] = da.cpu() if str(device) == "cpu" else da.to(torch.bfloat16).cpu()
                 if l in fitset:
                     n_in, n_out = dp.in_features, dp.out_features
                     G = torch.zeros(n_in, n_in, device=device)
@@ -174,9 +261,11 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
                         Gh = torch.zeros(n_in, n_in, device=device)
                         Ph = torch.zeros(n_in, n_out, device=device)
                         Eh = 0.0
-                yt, err_old = [], []
+                have_yt = yt is not None
+                yt = yt if have_yt else []
+                err_old = []
                 for i in range(len(seqs)):
-                    y_t = _first(tl(ht[i][None], **kws[i][l]))[0]
+                    y_t = yt[i] if have_yt else _first(tl(ht[i][None], **kws[i][l]))[0]
                     y_b = _first(bl(hb[i][None], **kws[i][l]))[0]
                     R = (y_t - y_b).float()
                     err_old.append(float(R.pow(2).sum()))
@@ -191,7 +280,8 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
                             Eh += err_old[-1]
                         if i == 0:
                             out["keys_sample"][l] = K[:256].cpu()
-                    yt.append(y_t)
+                    if not have_yt:
+                        yt.append(y_t)
                     if l not in fitset:
                         hb[i] = y_b
                 if l in fitset:
@@ -211,12 +301,13 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
                         err_new.append(float((yt[i] - y_b).float().pow(2).sum()))
                         hb[i] = y_b
                     W = dp.weight.float()
-                    st = {"explained_train": 1 - sum(err_new[:ntrain]) / max(sum(err_old[:ntrain]), 1e-30),
-                          "explained_heldout": (1 - sum(err_new[ntrain:]) / max(sum(err_old[ntrain:]), 1e-30))
-                          if heldout else None,
-                          "rel_norm": float(delta.norm() / W.norm()),
-                          "mismatch_rms": (sum(err_old) / sum(len(s) for s in seqs) / W.shape[0]) ** 0.5,
-                          "mu": mu_l}
+                    e0 = err_orig if err_orig is not None else err_old     # the layer's mismatch before any write
+                    st.update({"explained_train": 1 - sum(err_new[:ntrain]) / max(sum(e0[:ntrain]), 1e-30),
+                               "explained_heldout": (1 - sum(err_new[ntrain:]) / max(sum(e0[ntrain:]), 1e-30))
+                               if heldout else None,
+                               "rel_norm": float(delta.norm() / W.norm()),
+                               "mismatch_rms": (sum(e0) / sum(len(s) for s in seqs) / W.shape[0]) ** 0.5,
+                               "mu": mu_l})
                     if errs:
                         st["heldout_err_by_mu"] = {str(k): round(v, 4) for k, v in errs.items()}
                     # bf16 on the CPU for a GPU run: 32 fp32 deltas of a 9B (6.4 GB) helped run cf3 out of RAM
@@ -225,7 +316,8 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
                     out["stats"][l] = st
                 ht = yt
         finally:
-            hh.remove()
+            for h in hh:
+                h.remove()
             for x in masters:
                 if len(x) == 2:
                     x[0].data = x[1]
@@ -279,6 +371,7 @@ def main():
     ap.add_argument("--mus", default="0.01,0.1,1,10", help="ridge grid chosen per layer on the held-out sequences")
     ap.add_argument("--heldout", type=int, default=8)
     ap.add_argument("--max_len", type=int, default=2600)
+    ap.add_argument("--targets", default="down", help="down | attn,down (attention output projection first)")
     a = ap.parse_args()
     out = Path(a.out)
     if out.exists():
@@ -301,18 +394,22 @@ def main():
     out.mkdir(parents=True)
     t0 = time.time()
     res = fit(model, state, embed_t, seqs, layers=list(range(n)), mu=a.mu, device="cuda", heldout=a.heldout, mus=[float(x) for x in a.mus.split(",")] if a.mus else None,
-              log=out / "fit.jsonl")
+              log=out / "fit.jsonl", targets=tuple(a.targets.split(",")))
+    names = {l: attn_out_name(m) for l, m in enumerate(layers_of(model))}
     del model
     T, energy = {}, {}
-    for l, d in res["delta"].items():
+    writes = [(f"{l}.mlp.down_proj", d) for l, d in res["delta"].items()] + \
+             [(f"{l}.{names[l]}", d) for l, d in res["delta_attn"].items()]
+    for key, d in writes:
         A, B, kept = lowrank(d, a.rank)
-        stem = f"base_model.model.{PREFIX}.{l}.mlp.down_proj"
+        stem = f"base_model.model.{PREFIX}.{key}"
         T[stem + ".lora_A.weight"] = A.to(torch.bfloat16).contiguous()
         T[stem + ".lora_B.weight"] = B.to(torch.bfloat16).contiguous()
-        energy[l] = kept
+        energy[key] = kept
     save_file(T, str(out / "adapter_model.safetensors"))
+    mods = ["down_proj"] + (["o_proj", "out_proj"] if res["delta_attn"] else [])
     cfg = {"peft_type": "LORA", "task_type": "CAUSAL_LM", "r": a.rank, "lora_alpha": a.rank, "lora_dropout": 0.0,
-           "bias": "none", "target_modules": ["down_proj"], "fan_in_fan_out": False}
+           "bias": "none", "target_modules": mods, "fan_in_fan_out": False}
     (out / "adapter_config.json").write_text(json.dumps(cfg, indent=1))
     (out / "fit_summary.json").write_text(json.dumps({"stats": res["stats"], "kept_at_rank": energy,
                                                       "seconds": round(time.time() - t0)}, indent=1))

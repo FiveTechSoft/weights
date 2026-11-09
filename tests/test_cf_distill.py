@@ -107,6 +107,45 @@ class TestFit(unittest.TestCase):
         # the model's own weights are left as they were (the change is returned, not written in)
         self.assertEqual(len(L[1].mlp.down_proj._forward_hooks), 0)
 
+    def test_teacher_with_known_attention_output_change_is_matched(self):
+        """targets=("attn","down"): the attention output projection (linear_attn.out_proj in linear-attention layers,
+        self_attn.o_proj in full-attention ones) is fitted first, to the teacher's stream after attention, then
+        down_proj to the rest. A known change in the attention output of layers 1 (linear) and 3 (full) is found."""
+        import cf_distill as cf
+        from transformers import AutoModelForCausalLM
+        model = AutoModelForCausalLM.from_pretrained(str(M08), dtype=torch.float32)
+        L = cf.layers_of(model)
+        self.assertEqual(cf.attn_out_name(L[1]), "linear_attn.out_proj")
+        self.assertEqual(cf.attn_out_name(L[3]), "self_attn.o_proj")
+        g = torch.Generator().manual_seed(4)
+        known = {}
+        for l in (1, 3):
+            W = cf.attn_out(L[l]).weight
+            known[l] = torch.randn(W.shape, generator=g) * W.std() * 0.3
+
+        def teacher_state(l):
+            sd = {k: v.clone() for k, v in L[l].state_dict().items()}
+            if l in known:
+                sd[cf.attn_out_name(L[l]) + ".weight"] += known[l]
+            return sd
+        embed = model.get_input_embeddings().weight.detach()
+        seqs = [torch.randint(0, 5000, (n,), generator=g).tolist() for n in (1500, 1400, 1300, 400)]
+        out = cf.fit(model, teacher_state, embed, seqs, layers=[0, 1, 2, 3, 4], mu=1e-6, device="cpu", heldout=1,
+                     targets=("attn", "down"))
+        for l in (1, 3):
+            st = out["stats"][l]
+            self.assertGreater(st["attn_explained_heldout"], 0.99, st)
+            self.assertGreater(st["explained_heldout"], 0.99, st)
+            rn = known[l].norm() / cf.attn_out(L[l]).weight.norm()
+            self.assertAlmostEqual(st["attn_rel_norm"], rn.item(), delta=0.05 * rn.item())
+            # the known change was all in attention: down_proj has nothing left to fix
+            self.assertLess(out["delta"][l].float().norm().item(), 1e-2 * L[l].mlp.down_proj.weight.norm().item())
+        for l in (0, 2, 4):
+            self.assertLess(out["delta_attn"][l].float().norm().item(),
+                            1e-3 * cf.attn_out(L[l]).weight.norm().item())
+        self.assertEqual(len(cf.attn_out(L[1])._forward_hooks), 0)
+        self.assertEqual(len(L[1].post_attention_layernorm._forward_pre_hooks), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

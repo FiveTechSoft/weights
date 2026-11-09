@@ -76,7 +76,7 @@ Detalle y cifras: results.md §43, findings F39-F41. Métrica única nueva: **re
   (reward 0.867, más que MiMo completo 0.733), GSM8K 3→18/28 (0.600), HumanEval 20→19/20. **No borrar
   `hf_cache/dp_keep_dsv4_distill`: es el donante de la demo.**
 - Demo `demos/math_transplant/` (README, `demo.py`, `programs/transplant_jackrong_math.wspl`): cifras del adaptador de
-  laboratorio; **confirmación con la salida exacta del op PENDIENTE** (chain_demo).
+  laboratorio; confirmado con la salida exacta del op (30/36, 37/48, reward 0.800 / 0.560).
 
 **Lo que no:** MiMo (fine-tune completo, Δ difuso: r512 guarda 45 % de energía) no cabe en ningún LoRA (≤4/16).
 Destilación de conducta de MiMo r16 (1 pasada, 93 respuestas): reward 0.213 MATH / 0.467 GSM8K.
@@ -89,14 +89,24 @@ Destilación de conducta de MiMo r16 (1 pasada, 93 respuestas): reward 0.213 MAT
 | 2 | `chain_cf5.sh` | Ajuste en forma cerrada (idea WSP/MEMIT, sin gradientes): `down_proj` de cada capa sigue el residual de MiMo → LoRA r256 (`cf_distill.py`) | HECHO (5.º intento): MATH 17/36, GSM8K 25/48, reward 0.267 / 0.233 (F43) |
 | 3 | `chain_demo.sh` + `chain_demo2.sh` | Op `delta_to_lora` exacto sobre Jackrong → demo + eval completa ×0.5 | HECHO: 30/36, 37/48, reward 0.800 / 0.560; lado a lado base 0/3, adaptador 3/3. README confirmado |
 | 4 | `chain_self.sh` | **Sin donante** (STaR, 1 ronda voraz) | HECHO, NO FUNCIONA: 8/36, 15/48, no distinguible de la base (F42) |
+| 5 | `chain_r3.sh` | Destilación MiMo ronda 3: últimos 150 ítems de MATH-500 (se agota) → r16 MLP sobre rondas 1+2+3. Lanzada 06:35 | EN MARCHA |
+| 6 | `chain_cf6.sh` | Forma cerrada en dos escrituras por capa: salida de atención (`o_proj` / `linear_attn.out_proj`) y luego `down_proj`; mismos datos que cf5 → aísla la escritura extra (`cf_distill.py --targets attn,down`) | EN COLA (espera a la 5) |
 
 Resumen 2026-11-09: tres vías transfieren conducta con medida significativa (pesos de rango bajo de Jackrong; destilar
 respuestas de MiMo; forma cerrada sin gradientes). Sin donante, una ronda voraz no.
 
-**Siguiente (propuestas, no lanzadas):** destilación ronda 3 con más respuestas de MiMo (la curva 93→171 sigue
-subiendo); forma cerrada también en `o_proj` y exporte de mayor rango (cada capa solo explica ≤ 20 % retenido desde
-la 9); autodestilación con muestreo (varias respuestas por ítem, quedarse con las cortas). Opcional: un editor en
-IWIBench (licencia de Gemma 3 1B y API key del driver).
+**Escribir una capacidad vs escribir un dato (2026-11-09, results §43.9):** la propuesta externa "usar la escritura
+de WSP para una mejora matemática y comprobarla en preguntas no usadas" ya está hecha (cf5: 6→17/36, 9→25/48,
+significativo). Diferencias con el WSP original: el objetivo R sale de un profesor (MiMo), no de una respuesta
+escrita; la conducta ocupa las 32 capas, no 5 tensores; down_proj solo tiene techo (≤ 20 % explicado desde la capa 9).
+
+**Decisiones según resultado:** si la ronda 3 sube otra vez → la curva de datos manda; siguiente fuente de datos sería
+generar con muestreo (varias respuestas por ítem) porque MATH-500 se agota. Si cf6 sube claramente sobre cf5 → probar
+la forma cerrada en todas las matrices lineales (q/k/v, gate/up) con el mismo esquema secuencial; si no sube → el
+techo no es de qué matriz se escribe sino del ajuste lineal capa a capa, y la vía de gradientes queda como la buena.
+
+**Otras propuestas (no lanzadas):** exporte de mayor rango de cf; autodestilación con muestreo (varias respuestas por
+ítem, quedarse con las cortas). Opcional: un editor en IWIBench (licencia de Gemma 3 1B y API key del driver).
 
 **Revisado y descartado (2026-11-08):** `areu01or00/qwen0.8B-wsp` (MEMIT de hechos; útil solo la resolución en forma
 cerrada; su resultado cae a 0/5 al comprobar con pesos bf16 guardados); thePM_001/AEP (promocional, sin código de
