@@ -64,6 +64,24 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 
 ## 4. Pendiente (priorizado)
 
+### 4.0sexies PRIORIDAD (decisión del driver 2026-11-09): WSPLang 0.1 = trasplante de mejoras como producto
+
+**Lo único demostrado:** WSPLang traslada la mejora de un fine-tune a la base como un adaptador pequeño, sin
+entrenar (Jackrong → MATH 6→30/36, GSM8K 9→37/48), y `energy.json` predice antes de evaluar si se podrá (rango bajo sí,
+difuso como MiMo no). Crear capacidades sin donante: 5 intentos, todos fallan; **no se sigue por ahí**.
+
+**Objetivo:** un op que, dado base + fine-tune (local o en Hugging Face, sin copiarlo al disco):
+1. mide con `energy.json` si el cambio cabe en un adaptador (veredicto antes de evaluar);
+2. si cabe, escribe el adaptador (+ GGUF);
+3. lo valida solo con la reward gain × retención (fast_eval + `reward.py`).
+
+**Criterio de éxito:** un **segundo donante** distinto de Jackrong (otro autor u otro método) pasa por el op y su
+veredicto acierta: si dice "cabe", el adaptador recupera la mayor parte de la mejora del donante completo con reward
+> 0; si dice "no cabe", el adaptador no funciona. Si solo vale para Jackrong, se dice.
+
+**Reglas:** nada de líneas nuevas mientras tanto; posts solo si cambian este plan; las cadenas ya en marcha (ronda 3,
+cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo sí cuenta: valida las cifras).
+
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
 Dirección del driver (2026-11-08): partir del par base → mejorado, buscar diferencias reutilizables, solo pruebas de
