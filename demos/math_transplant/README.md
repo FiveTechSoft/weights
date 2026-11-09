@@ -15,19 +15,22 @@ python demos/math_transplant/demo.py 8095                                    # s
 
 ## Result (Qwen3.5-9B, greedy, 2,048-token budget)
 
-| | base | base + adapter (scale 0.5) |
-|---|---|---|
-| MATH-500, 16 problems the base can't finish | 1/16 | **14/16** |
-| MATH-500, 20 problems the base solves (damage check) | 5/20 | **18/20** |
-| GSM8K, 28 problems the base fails (never used to pick anything) | 3/28 | **18/28** |
-| GSM8K, 20 problems the base solves | 6/20 | **20/20** |
-| HumanEval, first 20 (is code damaged?) | 20/20 | 19/20 |
+| | base | + adapter from this op (×0.5) | (earlier lab adapter) |
+|---|---|---|---|
+| MATH-500, 16 problems the base can't finish | 1/16 | **13/16** | 14/16 |
+| MATH-500, 20 problems the base solves at this budget | 5/20 | **17/20** | 18/20 |
+| GSM8K, 28 problems the base fails (never used to pick anything) | 3/28 | **17/28** | 18/28 |
+| GSM8K, 20 problems the base solves | 6/20 | **20/20** | 20/20 |
+| HumanEval, first 20 (is code damaged?) | 20/20 | not run | 19/20 |
+| one score: IWIBench reward = gain × retention (MATH / GSM8K) | 0 | **0.800 / 0.560** | 0.867 / 0.600 |
 
-On the 16 hard problems: 13 fixed, 0 broken (exact McNemar p = 0.0002). The base had the answer in its reasoning on
-all 16 but never stopped thinking within the budget; the adapter makes it finish.
+Paired against the base (exact McNemar): MATH 24 items fixed vs 0 broken, GSM8K 28 vs 0 (both p < 0.0001). The base
+had the answer in its reasoning on all 16 hard MATH items but never stopped thinking within the budget; the adapter
+makes it finish (median 885 tokens). The op's adapter and the earlier lab adapter (randomised SVD) do not differ
+significantly (MATH 1 vs 4 items, p = 0.375; GSM8K 1 vs 2, p = 1). Reward: `lab/probes/close_probe/reward.py`.
 
-These are the lab adapter's numbers (`results.md` §43.4-43.6). The op's own output (exact SVD) is re-measured on the
-same sets by `lab/runs/close_probe/distill/chain_demo.sh`: CONFIRMATION PENDING.
+Before any benchmark, `energy.json` already says it will transfer: rank 16 keeps **58.6 %** of Jackrong's change
+(weighted by norm, 248 matrices); MiMo's, which does not transfer, keeps 3.8 % at rank 16.
 
 ## What it does not do
 
@@ -36,6 +39,8 @@ same sets by `lab/runs/close_probe/distill/chain_demo.sh`: CONFIRMATION PENDING.
   A full fine-tune whose change is spread over every direction (MiMo) does not fit in any adapter we tried (rank 64-512:
   at most 4/16 vs MiMo's own 12/16). The op writes `energy.json`, the share of the change each rank keeps, so you can
   see this before running any benchmark (MiMo keeps 11 % of its change at rank 64, 45 % at rank 512).
+- Scale 0.5 was chosen on the MATH items (×0.25 / ×0.5 / ×0.75 / ×1 tried); GSM8K and HumanEval were not used to
+  choose anything.
 - Small sets (16 + 20 + 48 + 20 items): the effects are large and paired-tested, but the absolute numbers are not
   leaderboard numbers.
 
