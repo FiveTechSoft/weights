@@ -107,12 +107,22 @@ Destilación de conducta de MiMo r16 (1 pasada, 93 respuestas): reward 0.213 MAT
 | 2 | `chain_cf5.sh` | Ajuste en forma cerrada (idea WSP/MEMIT, sin gradientes): `down_proj` de cada capa sigue el residual de MiMo → LoRA r256 (`cf_distill.py`) | HECHO (5.º intento): MATH 17/36, GSM8K 25/48, reward 0.267 / 0.233 (F43) |
 | 3 | `chain_demo.sh` + `chain_demo2.sh` | Op `delta_to_lora` exacto sobre Jackrong → demo + eval completa ×0.5 | HECHO: 30/36, 37/48, reward 0.800 / 0.560; lado a lado base 0/3, adaptador 3/3. README confirmado |
 | 4 | `chain_self.sh` | **Sin donante** (STaR, 1 ronda voraz) | HECHO, NO FUNCIONA: 8/36, 15/48, no distinguible de la base (F42) |
-| 5 | `chain_r3.sh` | Destilación MiMo ronda 3: últimos 150 ítems de MATH-500 (se agota) → r16 MLP sobre rondas 1+2+3. Lanzada 06:35 | EN MARCHA |
-| 6 | `chain_cf6.sh` | Forma cerrada en dos escrituras por capa: salida de atención (`o_proj` / `linear_attn.out_proj`) y luego `down_proj`; mismos datos que cf5 → aísla la escritura extra (`cf_distill.py --targets attn,down`) | EN COLA (espera a la 5) |
-| 7 | `chain_placebo.sh` | Placebo de cf5: mismo rango y norma de Frobenius por `down_proj`, direcciones aleatorias (`placebo_lora.py`, test) → solo evaluación. Descarta "cualquier cambio de ese tamaño hace cerrar" | EN COLA (espera a la 6) |
+| 5 | `chain_r3.sh` | Destilación MiMo ronda 3: últimos 150 ítems de MATH-500 (se agota) → r16 MLP sobre rondas 1+2+3. Lanzada 06:35 | HECHO 08:08: MATH 9/16 (reward 0.533, r2 0.400), GSM8K 21/28 (= r2, 0.720). **Sube → rige la curva de datos**; siguiente fuente: muestreo (varias respuestas por ítem) |
+| 6 | `chain_cf6.sh` | Forma cerrada en dos escrituras por capa: salida de atención (`o_proj` / `linear_attn.out_proj`) y luego `down_proj`; mismos datos que cf5 → aísla la escritura extra (`cf_distill.py --targets attn,down`) | HECHO 08:54: MATH 3/16 (0.133) < cf5 6/16 (0.267). **La escritura extra en atención NO sube** → el techo no es de qué matriz se escribe sino del ajuste lineal capa a capa; la vía de gradientes queda como la buena |
+| 7 | `chain_placebo.sh` | Placebo de cf5: mismo rango y norma de Frobenius por `down_proj`, direcciones aleatorias (`placebo_lora.py`, test) → solo evaluación. Descarta "cualquier cambio de ese tamaño hace cerrar" | HECHO 09:05: MATH 3/16 vs cf5 6/16 (mismo protocolo) → **la señal de cf5 es real**, no ruido de tamaño/norma |
 
 Resumen 2026-11-09: tres vías transfieren conducta con medida significativa (pesos de rango bajo de Jackrong; destilar
 respuestas de MiMo; forma cerrada sin gradientes). Sin donante, una ronda voraz no.
+
+**Veredicto 2026-11-09 ~09:10 (cadenas 5–7 cerradas):** destilación sigue subiendo (r3: MATH 0.533, GSM8K 0.720 — solo
+gana en MATH; la curva de datos manda → siguiente fuente de datos con muestreo por ítem). La forma cerrada extra de
+atención (cf6) no aporta sobre cf5 → la vía de gradientes queda como la buena para subir el techo. El placebo de cf5
+queda por debajo (3/16 vs 6/16) → señal cf5 confirmada, ya queda descartada la explicación "cualquier LoRA de esa
+norma hace cerrar". Con esto cierra también la pregunta abierta de las decisiones del bloque anterior por ambos lados.
+**En vuelo: segundo donante** `LeoZotos/Qwen3.5-9B_math_grpo@bc9e0186` (OK del driver): `get_leo.sh` descarga +
+`chain_donor2.sh` (espera placebo) → op `delta_to_lora` r16 sobre la base → energy/veredicto → eval adaptador ×1 y
+donante completo Q6_K → `reward.py --all`. Este es el criterio de éxito de WSPLang 0.1; todo automático
+(`lab/runs/close_probe/distill/chain_donor2.log`). Disco: 75 GB libres.
 
 **Escribir una capacidad vs escribir un dato (2026-11-09, results §43.9):** la propuesta externa "usar la escritura
 de WSP para una mejora matemática y comprobarla en preguntas no usadas" ya está hecha (cf5: 6→17/36, 9→25/48,

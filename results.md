@@ -1819,3 +1819,22 @@ Lectura:
   attn,down`; test nuevo en `tests/test_cf_distill.py` (cambio conocido en out_proj de la capa 1 y o_proj de la 3 de
   Qwen3.5-0.8B: recuperado, explicado retenido > 0.99, down_proj sin cambio); conversión GGUF comprobada
   (`ssm_out`, `attn_output`, `ffn_down`). Resultados: se añadirán aquí.
+
+### 43.10 Ronda 3, cf6 (atención + down_proj) y placebo de cf5 (2026-11-09)
+| vía | MATH /36 | GSM8K /48 | reward MATH / GSM8K |
+|---|---|---|---|
+| base | 6 | 9 | 0 / 0 |
+| destilación ronda 3 (256 secuencias; MATH-500 agotado) | 27 | 41 | 0.533 / 0.720 |
+| destilación ronda 2 (171) | 24 | 41 | 0.400 / 0.720 |
+| forma cerrada cf6: o_proj / out_proj y luego down_proj | 15 | 26 | 0.133 / 0.320 |
+| forma cerrada cf5: solo down_proj | 17 | 25 | 0.267 / 0.233 |
+| placebo de cf5 (mismo rango y norma por matriz, direcciones aleatorias) | 10 | 14 | — |
+
+- **Ronda 3 vs ronda 2:** MATH 4/1 (p = 0.375), GSM8K igual: la curva de datos se aplana; vs base MATH 21/0, GSM8K 32/0.
+- **cf6 no mejora a cf5.** La escritura de la atención explica en retenidas 92 % en la capa 0, 18 % en la 4, ≤ 8 % desde
+  la 9; la de down_proj tras ella, 11-25 % desde la 9 (cf5: ≤ 20 %). El techo no depende de qué matriz se escribe sino
+  del ajuste lineal capa a capa. **Vía sin gradientes para conductas: cerrada** (decisión del roadmap §4.0sexies).
+- **Placebo:** vs base MATH 4/0 (p = 0.125), GSM8K 8/3 (p = 0.23): no significativo, pero apunta a que una parte pequeña
+  del efecto es inespecífica (un cambio de esa norma hace cerrar algo más: 10 vs 6 cerradas en MATH, 15 vs 10 en GSM8K).
+  cf5 gana al placebo: MATH 8/1 (p = 0.039), GSM8K 12/1 (p = 0.003). Las cifras de cf5 se leen frente al placebo
+  (+7 / +11), no frente a la base (+11 / +16). Jackrong y la destilación están muy por encima de este nivel.
