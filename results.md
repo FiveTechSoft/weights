@@ -1838,3 +1838,22 @@ Lectura:
   del efecto es inespecífica (un cambio de esa norma hace cerrar algo más: 10 vs 6 cerradas en MATH, 15 vs 10 en GSM8K).
   cf5 gana al placebo: MATH 8/1 (p = 0.039), GSM8K 12/1 (p = 0.003). Las cifras de cf5 se leen frente al placebo
   (+7 / +11), no frente a la base (+11 / +16). Jackrong y la destilación están muy por encima de este nivel.
+
+### 43.11 Segundo donante por el op: LeoZotos/Qwen3.5-9B_math_grpo (GRPO, 100 pasos, lr 1e-6) (2026-11-09)
+Prioridad §4.0sexies del roadmap: ¿el op y su veredicto generalizan a otro autor y otro método (RL)? Donante en revisión
+`bc9e018`; `programs/transplant_leo_math.wspl`; misma medida que §43.8 (tope 2 048, 36 + 48 ítems).
+
+| | MATH /36 | GSM8K /48 | cerradas MATH / GSM8K |
+|---|---|---|---|
+| base | 6 | 9 | 6 / 10 |
+| **donante completo** (Q6_K propio) | 8 | **21** | 8 / 21 |
+| adaptador del op, r16 ×1 | 5 | 15 | 5 / 17 |
+
+- **Veredicto del op antes de evaluar: `unlikely`** (r16 guarda el 7.5 % ponderado del cambio; Jackrong 58.6 %, MiMo 3.8 %).
+- El donante completo mejora GSM8K (16/4 frente a la base, p = 0.012), no MATH (4/2, p = 0.69).
+- El adaptador no se distingue de la base (GSM8K 11/5, p = 0.21; MATH 1/2) ni del donante (GSM8K 3/9, p = 0.15).
+  Punto medio: recupera la mitad de la mejora de GSM8K (+6 de +12), sin significación.
+- **Lectura:** coherente con el veredicto (cambio difuso → el adaptador pequeño no transfiere de forma fiable), pero
+  con n pequeño la prueba es débil: no distingue "transfiere la mitad" de "no transfiere". Es el segundo caso de la
+  regla (Jackrong sí con 58.6 %, este no con 7.5 %); el tercero (OSS-Distilled, LoRA r16 fusionado, en cola) debería
+  dar ≈ 100 % y transferir si la regla vale.
