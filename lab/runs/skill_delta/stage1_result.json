@@ -1,0 +1,11 @@
+{
+ "A_hits": 27,
+ "B_hits": 37,
+ "n": 100,
+ "B_only": 19,
+ "A_only": 9,
+ "mcnemar_exact_p_two_sided": 0.08715855330228806,
+ "gain_points": 10,
+ "gate_stage1_gain_ge_15_and_p_lt_0.05": false,
+ "controls_B": "not run (primary criterion already failed)"
+}

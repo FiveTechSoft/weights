@@ -50,3 +50,18 @@ It would not be exact for any earlier matrix, so the cache path is limited to th
 - Planned run (not executed): cache 800 examples (~100 s), 150 steps (~5 min), then evaluate A and B on holdout (100 prompts, ~90 s each),
   control additions (~90 s each) and text control (~50 s each). About 15 minutes in total.
 - No GPU is used. Whether the owner's RTX 3060 is reachable is unverified. No GitHub Actions workflow has been added.
+
+## Result of stage 1 for ONE configuration (2026-11-09 07:32): gate NOT met, configuration closed
+Configuration, fixed before the run and not tuned: train only layers.23.mlp.down_proj, 800 train examples (4657 answer positions), 150 steps
+of 128 positions, Adam lr 1e-4, one seed, bf16 B tensor saved to safetensors and loaded by `evaluate.py --tensor` in a fresh process
+(so the numbers below are for the persisted tensor, same dtype; the check asserts shape and dtype).
+- Holdout (100 new 2-digit multiplications, free generation, exact match): A 27/100, B 37/100, gain +10 points. B-only 19, A-only 9, exact
+  McNemar p = 0.087. Gate was gain >= 15 points and p < 0.05: **not met**. Data: lab/runs/skill_delta/stage1_result.json and evalA_/evalB_ files.
+- Training loss (on the training positions) fell from ~0.8 to ~0.3 (lab/runs/skill_delta/train_report_B.json); the delta is 15.5% of the
+  matrix norm and changes 3.62M of 3.67M entries. B sha256 bea3340e...ec26d7a (tensor not published).
+- Controls for B (2-digit addition, text) were NOT run, because the primary criterion already failed; A text control is 22/30.
+- Reading: a one-matrix, 150-step CPU teacher gives a +10 point gain that this 100-problem holdout cannot separate from noise. This closes
+  THIS configuration. It does not say the idea fails: the matrix, step count, learning rate and data size were not varied, and stage 2-3
+  were not run (no teacher to reproduce). Re-running with a stronger teacher means a new, separately fixed configuration and a fresh holdout.
+- Measured limits: OOM when the model stays loaded during training (resolved by caching in one process and training in another; phase 2
+  uses 0.37 GB); ~2.1 s per step; tool calls limited to ~2 min, so training and evaluation were run in resumable slices.
