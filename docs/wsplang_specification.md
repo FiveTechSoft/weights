@@ -127,6 +127,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `audit` | writes weights | `wsplang_0.2_spec.md` |
 | `compare` | read / report | `wsplang_0.2_spec.md` |
 | `compile_synthetic` | writes weights | `wsplang_0.7_spec.md` |
+| `contrast_vector` | read / report | this file |
 | `cov_imprint` | writes weights | `wsplang_0.5_spec.md` |
 | `cross_project` | writes weights | `wsplang_0.6_spec.md` |
 | `decompile` | writes weights | not documented yet (see `engine/wsplang.py`) |
@@ -267,6 +268,21 @@ step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds
   total budget; protected tensors need `unlock_tensors`; on failure the partial output is removed. Provenance
   `synthetic_transfer`, with the source, basis, k and α, is stored in each shard: the op runs no gradient, but the
   update it moves along came from a trained model.
+
+---
+
+### 5.7. `step contrast_vector` (added 2026-11-09)
+A llama.cpp control vector from two sets of texts, usually the same prompts answered in two styles (e.g. happy vs
+neutral). Rows are `{"prompt", "response"}` jsonl; each goes through the model's chat template with no system prompt,
+and the residual stream is averaged over the response tokens per layer. The file holds the difference pos − neg as
+per-layer increments (llama.cpp adds `direction.N` at the output of every layer N, so a cumulative difference would be
+summed ~N times). It is used at run time (`llama-server --control-vector-scaled <out>:<scale>`): an additive push
+cannot be stored in Qwen3.5's bias-free weights. `placebo=<seed>` also writes a vector with the same norm per layer in
+random directions, the control for "any push of this size".
+
+```wspl
+step contrast_vector model=<hf dir> pos=<pos.jsonl> neg=<neg.jsonl> out=<vector.gguf> [placebo=<seed>] [max_resp=384]
+```
 
 ---
 

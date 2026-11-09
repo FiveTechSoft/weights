@@ -1,0 +1,136 @@
+"""A llama.cpp control vector from two sets of texts (WSP-Lang op contrast_vector).
+
+pos / neg: jsonl rows {"prompt": ..., "response": ...}, usually the same prompts answered in two styles. Each row is
+put through the model's chat template (user = prompt, assistant = response, no system prompt), and the residual stream
+is averaged over the response tokens, per layer. D = mean(pos) - mean(neg).
+
+llama.cpp adds direction.N (N >= 1) at the output of 0-based layer N and the residual stream carries it on, so the file
+holds per-layer increments: direction.1 = D after layer 1 - D after layer 0, ..., and their running sum after layer N
+is the difference itself (writing D directly summed it ~N times and broke the model, results §43.5). The vector is used
+at run time (llama-server --control-vector-scaled file:scale); it cannot be stored in Qwen3.5's bias-free weights.
+
+placebo(): same norm per layer, random direction; the control for "any push of this size does it".
+"""
+import json
+from pathlib import Path
+
+import numpy as np
+import torch
+
+
+def increments(D):
+    """D: (n_layers + 1, d), row k = residual stream after layer k - 1 (row 0 = embeddings).
+    -> {N: increment added at layer N's output}, N = 1 .. n_layers - 1 (layer 0 cannot be steered by llama.cpp)."""
+    return {N: (D[N + 1] - D[N]).clone() for N in range(1, D.shape[0] - 1)}
+
+
+def write_gguf(vecs, out, model_hint):
+    import gguf
+    w = gguf.GGUFWriter(str(out), "controlvector")
+    w.add_string("controlvector.model_hint", model_hint)
+    w.add_uint32("controlvector.layer_count", len(vecs))
+    for k in sorted(vecs):
+        w.add_tensor(f"direction.{k}", np.asarray(vecs[k], dtype=np.float32))
+    w.write_header_to_file()
+    w.write_kv_data_to_file()
+    w.write_tensors_to_file()
+    w.close()
+
+
+def placebo(vecs, seed=0):
+    g = np.random.default_rng(seed)
+    out = {}
+    for k, v in vecs.items():
+        r = g.normal(size=np.shape(v)).astype(np.float32)
+        out[k] = r * (np.linalg.norm(v) / max(np.linalg.norm(r), 1e-30))
+    return out
+
+
+def _rows(path):
+    return [json.loads(x) for x in Path(path).read_text(encoding="utf-8").splitlines() if x.strip()]
+
+
+def _pairs(tok, rows, max_resp):
+    out = []
+    for r in rows:
+        p = tok.apply_chat_template([{"role": "user", "content": r["prompt"]}], tokenize=False, add_generation_prompt=True,
+                                    enable_thinking=False)   # the same template llama-server uses with thinking off
+        pi = tok(p, add_special_tokens=False)["input_ids"]
+        ri = tok(r["response"], add_special_tokens=False)["input_ids"][:max_resp]
+        if ri:
+            out.append((pi, ri))
+    return out
+
+
+def _stream(layers, device):
+    """Each decoder layer goes to the device only for its own forward (a 9B model in bf16 on the CPU, 12 GB GPU)."""
+    def mv(x, dev):
+        if torch.is_tensor(x):
+            return x.to(dev)
+        if isinstance(x, (list, tuple)):
+            return type(x)(mv(v, dev) for v in x)
+        if isinstance(x, dict):
+            return {k: mv(v, dev) for k, v in x.items()}
+        return x
+    hs = []
+    for L in layers:
+        def pre(mod, args, kwargs):
+            mod.to(device)
+            return mv(args, device), mv(kwargs, device)
+
+        def post(mod, args, kwargs, out):
+            mod.to("cpu")
+            return mv(out, "cpu")
+        hs.append(L.register_forward_pre_hook(pre, with_kwargs=True))
+        hs.append(L.register_forward_hook(post, with_kwargs=True))
+    return hs
+
+
+@torch.no_grad()
+def layer_means(model, pairs, batch=8):
+    """Mean residual stream over response tokens, per hidden state: (n_layers + 1, d), float32."""
+    core = model.model
+    core = core.language_model if hasattr(core, "language_model") else core
+    sums, count = None, 0
+    for k in range(0, len(pairs), batch):
+        chunk = pairs[k:k + batch]
+        n = max(len(a) + len(b) for a, b in chunk)
+        ids = torch.tensor([a + b + [0] * (n - len(a) - len(b)) for a, b in chunk])   # right pad: causal, pads unseen
+        hs = core(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states
+        for j, (a, b) in enumerate(chunk):
+            sl = slice(len(a), len(a) + len(b))
+            v = torch.stack([h[j, sl].float().cpu().sum(0) for h in hs])
+            sums = v if sums is None else sums + v
+            count += len(b)
+    return sums / count
+
+
+def contrast_vector(model_dir, pos, neg, out, model_hint="qwen35", max_resp=384, placebo_seed=None, device=None):
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    out = Path(out)
+    tok = AutoTokenizer.from_pretrained(str(model_dir))
+    P, N = _pairs(tok, _rows(pos), max_resp), _pairs(tok, _rows(neg), max_resp)
+    if not P or not N:
+        raise ValueError("contrast_vector: pos and neg need at least one row with a response")
+    model = AutoModelForCausalLM.from_pretrained(str(model_dir), dtype=torch.bfloat16).eval()
+    device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    core = model.model
+    layers = (core.language_model if hasattr(core, "language_model") else core).layers
+    hooks = _stream(layers, device) if device != "cpu" else []
+    try:
+        D = layer_means(model, P) - layer_means(model, N)
+    finally:
+        for h in hooks:
+            h.remove()
+    del model
+    vecs = {k: v.numpy() for k, v in increments(D).items()}
+    write_gguf(vecs, out, model_hint)
+    res = {"output": str(out), "pairs": min(len(P), len(N)), "pos": len(P), "neg": len(N), "layers": len(vecs),
+           "last_layer_norm": float(D[-1].norm()), "increment_norms": {k: round(float(np.linalg.norm(v)), 4)
+                                                                        for k, v in vecs.items()}}
+    if placebo_seed is not None:
+        pp = out.with_name(out.stem + f".placebo{placebo_seed}.gguf")
+        write_gguf(placebo(vecs, placebo_seed), pp, model_hint)
+        res["placebo"] = str(pp)
+    out.with_suffix(".json").write_text(json.dumps(res, indent=1))
+    return res

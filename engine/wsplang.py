@@ -69,6 +69,7 @@ OPS_ALLOWED = {
     # Studying improved models (engine/weight_diff.py, engine/bench_runner.py); none writes weights
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",
     "delta_to_lora",  # a fine-tune's change as a LoRA adapter beside the models (engine/lora_export.py)
+    "contrast_vector",  # llama.cpp control vector from two sets of texts (engine/contrast_vector.py)
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -256,6 +257,7 @@ READ_ONLY_OPS = {
     "assert_behavioral_drift", "vicreg_preserve",
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",  # reports, never weights
     "delta_to_lora",  # writes a new adapter dir, never inside or over an input model
+    "contrast_vector",  # writes a new control-vector GGUF (run-time steering), never weights
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -2212,6 +2214,27 @@ def execute_plan_v4(
                     out_p.parent.mkdir(parents=True, exist_ok=True)
                     out_p.write_text(json.dumps(rows, indent=1), encoding="utf-8")
                     res["result"]["output"] = str(out_p)
+                res["execution_state"] = "executed"
+
+            elif op == "contrast_vector":
+                # model=<hf dir> pos=<jsonl> neg=<jsonl> out=<file.gguf> [placebo=<seed>] [max_resp=384]: mean residual
+                # stream over the responses, pos - neg, as per-layer increments for llama.cpp --control-vector-scaled.
+                from engine import contrast_vector as cvx
+                for k in ("model", "pos", "neg", "out"):
+                    if not named.get(k):
+                        raise ValueError("contrast_vector needs model=<hf dir> pos=<jsonl> neg=<jsonl> out=<file.gguf>")
+                model_p = _model_path(named["model"])
+                out_p = _model_path(named["out"])
+                if out_p.suffix.lower() != ".gguf":
+                    raise ValueError("contrast_vector: out= must be a .gguf control vector")
+                check_report_path(out_p.with_suffix(".json"), [model_p])
+                if out_p.exists():
+                    raise WriteGuardError(f"contrast_vector: {out_p} exists; vectors are never overwritten")
+                seed = named.get("placebo")
+                res["result"] = cvx.contrast_vector(model_p, _model_path(named["pos"]), _model_path(named["neg"]), out_p,
+                                                    max_resp=int(named.get("max_resp", 384)),
+                                                    placebo_seed=int(seed) if seed is not None else None)
+                res["result"]["use"] = "llama-server -m <gguf> --control-vector-scaled <out>:<scale>"
                 res["execution_state"] = "executed"
 
             elif op == "delta_to_lora":
