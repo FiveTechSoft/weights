@@ -38,3 +38,17 @@ Social posts were read through public pages without login; most replies and all 
 exact-match and identity-retention definitions, criteria and a cost ceiling before any run. The solver `engine/closed_form_write.py`
 is independent and tested on synthetic data only. Expectation recorded in advance: it may well fail, because a write fits any
 targets (including shuffled ones) and only new-problem accuracy can show a skill.
+
+## Update 2026-11-09: new external sources and change of plan
+- github.com/khordoo/dusty-wsp (MIT; author Mahmood Khordoo; read README and commit list only, nothing run): analytic rank-2 edit of one
+  256x1024 matrix of an 8M model. Rename Dusty to Milo: identity pattern 13/30 to 21/30 greedy (90% bar not met), 0 paired losses; stairs
+  attitude edit: 0/48 held-out, a kept negative result. Regex metric, development-informed ("training-free is not data-free"). Concept
+  or capability editing is not shown.
+- Verified in the history of github.com/areu01or00/qwen0.8B-wsp (not dusty-wsp): commit 39265db, 2026-11-08, "results: tried checking the
+  write on bf16-merged weights; worse on the saved file (2/5 -> 0/5 word-perfect), not merged", with a "Co-Authored-By: Claude Opus 5.5"
+  trailer (a trailer is a claim, not proof of who ran what). dusty-wsp credits GPT-6 Astra. The two repos should not be conflated.
+  Consequence for us: results must be re-measured on tensors saved and reloaded in the same dtype.
+- Plan change: the closed-form answer-writing test (closed_form_math/PREREGISTRATION.md) is superseded by lab/probes/skill_delta/PROTOCOL.md
+  (train a small teacher on 2-digit multiplication, then reproduce its delta by surgery, gates fixed in advance). Executed so far: Qwen3.5-0.8B
+  downloaded (pinned), free-generation runner measured (100 prompts ~90 s), 75 add2 unpatched calibration generations (54/75), trainer smoke
+  tests. No teacher trained, no gate evaluated.
