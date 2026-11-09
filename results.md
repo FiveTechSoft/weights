@@ -1751,3 +1751,36 @@ Los pesos de MiMo no caben en un LoRA (§43.6), así que se entrena uno sobre su
 - Lectura: destilar conducta sí transfiere algo que copiar pesos no transfería (los LoRA de pesos de MiMo ≤ 4/16 en
   A); entrenado solo con MATH, mejora GSM8K casi como el LoRA de Jackrong. En MATH queda a mitad (16 vs 31-32).
   Una sola época con 93 ejemplos fáciles: no se probó más datos, más épocas ni escala; no generalizar.
+
+### 43.8 Tres vías más para la conducta de MiMo, y la demo confirmada (2026-11-09)
+Misma medida: tope 2 048, 16 atascados + 20 de control en MATH, 28 + 20 en GSM8K; McNemar exacto pareado; y una
+cifra única, la **reward de IWIBench** (`lab/probes/close_probe/reward.py`): gain = máx(0, (éxito editado − éxito
+base) / (1 − éxito base)) sobre los atascados, × retención de los controles que la base acertaba (5 en MATH, 6 en
+GSM8K a este tope: retención ruidosa). Un no-op puntúa 0.
+
+| vía | coste | MATH /36 | GSM8K /48 | reward MATH / GSM8K |
+|---|---|---|---|---|
+| base | — | 6 | 9 | 0 / 0 |
+| destilación MiMo ronda 1 (93 respuestas, §43.7) | 22 min | 16 | 34 | 0.213 / 0.467 |
+| **destilación MiMo ronda 2** (171 respuestas: +78 nuevas, disjuntas de eval y ronda 1) | 20 + 40 min | **24** | **41** | **0.400 / 0.720** |
+| autodestilación sin donante (la base, 300 ítems → 39 cerrados y correctos) | 64 + 14 min | 8 | 15 | 0.107 / 0.100 |
+| forma cerrada sin gradientes (`cf_distill.py`, down_proj de 32 capas → LoRA r256) | 19 min | 17 | 25 | 0.267 / 0.233 |
+| Jackrong, adaptador del op `delta_to_lora` r16 ×0.5 | minutos | 30 | 37 | 0.800 / 0.560 |
+
+- **Ronda 2 vs ronda 1:** MATH 10/2 (p = 0.039), GSM8K 7/0 (p = 0.016): más datos del profesor ayudan. Vs Jackrong:
+  GSM8K 3/0 (p = 0.25, no entrenado en GSM8K), MATH 1/10 (p = 0.012): en MATH la mitad de los atascados sigue sin cerrar.
+- **Autodestilación** (idea de iteración experta, STaR / Terminal-RSI): vs base MATH 4/2 (p = 0.69), GSM8K 9/3
+  (p = 0.15). Pérdida inicial 0.06 (la base ya genera ese texto); solo el 13 % de los ítems da ejemplo y son los que ya
+  resolvía corto. Una ronda voraz no basta; con muestreo y varias respuestas por ítem no se probó.
+- **Forma cerrada** (la regla de MEMIT / `areu01or00/qwen0.8B-wsp`, usada para una conducta): cada down_proj se resuelve
+  para que la salida de su capa siga a la de MiMo sobre las respuestas de MiMo; μ elegido por capa con el error de 16
+  secuencias retenidas (forma cerrada). Explicado en retenidas: 92 % en la capa 0, ≤ 20 % desde la 9, 5-13 % al final
+  (MiMo cambia todas las matrices; down_proj solo no lo sigue); el ΔW tampoco es de rango bajo (r256 guarda 31 %).
+  Aun así vs base MATH 12/1 (p = 0.003), GSM8K 18/2 (p = 0.0004); al nivel de la ronda 1 en MATH, por debajo en GSM8K
+  (2/11, p = 0.023) y de la ronda 2 (MATH 2/9, p = 0.065; GSM8K 1/17, p = 0.0001). Cuatro intentos murieron antes
+  por fallos de memoria/nativos de Windows (safe_open por tensor, copia GPU→CPU, solve fp64 en CPU): corregidos con
+  lector sin mmap, reapuntado de punteros y solve fp32 en GPU, todos con test.
+- **Demo** (`demos/math_transplant/`): el adaptador que escribe el op (SVD exacta) frente al de laboratorio: MATH 1/4
+  (p = 0.375), GSM8K 1/2 (p = 1), no distinguibles. Rango 16 guarda el 58.6 % de la energía de Jackrong (ponderada),
+  3.8 % de la de MiMo. Lado a lado en 3 atascados elegidos: base 0/3 (cortada a 2 048), con adaptador 3/3 en 300-405
+  tokens.

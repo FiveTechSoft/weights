@@ -495,3 +495,13 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   by layer streaming with a hand-written backward): MATH probe 6 → 16/36 (p = 0.013), GSM8K 9 → 34/48 (p < 0.0001,
   not trained on GSM8K). MiMo's weight-delta LoRAs got ≤ 4/16 on the stuck items; this one 5/16 there, 11/20 on the
   rest. Still below MiMo (31/36) and Jackrong's weight LoRA (32/36) on MATH; on GSM8K not distinguishable from it.
+## F42. More teacher answers keep improving the distilled LoRA; the base's own answers do not (measured, 2026-11-09, results §43.8)
+- MiMo behaviour distillation with 171 instead of 93 answers: MATH probe 16 → 24/36 (p = 0.039), GSM8K 34 → 41/48
+  (p = 0.016); IWIBench reward 0.400 / 0.720, above Jackrong's weight LoRA on GSM8K (0.560-0.600, n.s.), below on MATH.
+- Donor-free self-distillation (one greedy round, 39 of 300 base answers closed and correct): not distinguishable from
+  the base (MATH 4/2, GSM8K 9/3). The examples are the items it already solved briefly; initial loss 0.06.
+## F43. A closed-form (no-gradient) fit of down_proj to a teacher's residual stream transfers some behaviour (measured, 2026-11-09, results §43.8)
+- Layer by layer, ridge chosen on held-out sequences, exported as LoRA r256: MATH 6 → 17/36 (p = 0.003), GSM8K
+  9 → 25/48 (p = 0.0004) in 19 min, without a gradient; about distillation round 1 on MATH, below it on GSM8K.
+- The fit explains ≤ 20 % of the held-out mismatch past layer 9 and its ΔW is not low-rank (r256 keeps 31 %): a
+  full fine-tune is not followed by one matrix kind; o_proj / other matrices and higher export rank are untested.

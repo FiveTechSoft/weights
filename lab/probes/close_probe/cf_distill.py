@@ -39,13 +39,40 @@ def layers_of(model):
     return text_model(model).layers
 
 
-def solve(G, P, mu):
+def solve(G, P, mu, device="cpu"):
     """G = K^T K (in x in), P = K^T R (in x out) -> dW (out x in), ridge mu relative to the mean diagonal of G.
-    float64 on the CPU (a 12288 Cholesky is seconds there; the GPU's float64 is slow)."""
+    device "cpu": float64 LU (exact; ~2.4 GB of RAM at 12288, too much next to a 9B model on 32 GB, run cf3 died).
+    other devices: float32 Cholesky there (the ridge keeps it positive definite), float64 CPU fallback if it fails."""
+    if str(device) != "cpu":
+        Gf = G.to(device=device, dtype=torch.float32)
+        M = (Gf + Gf.T) / 2
+        M.diagonal().add_(mu * M.diagonal().mean())
+        L, info = torch.linalg.cholesky_ex(M)
+        del M
+        if int(info) == 0:
+            return torch.cholesky_solve(P.to(device=device, dtype=torch.float32), L).T.contiguous()
     G = G.double().cpu()
     G = (G + G.T) / 2                      # fp32 accumulation leaves it only nearly symmetric / PSD
     M = G + mu * G.diagonal().mean() * torch.eye(G.shape[0], dtype=G.dtype)
     return torch.linalg.solve(M, P.double().cpu()).T.float().contiguous()
+
+
+def residual_error(dW, Gh, Ph, Eh):
+    """||R - K dW^T||^2 from the held-out sums Gh = K^T K, Ph = K^T R, Eh = ||R||^2 (no pass over the data)."""
+    dW = dW.to(Gh.dtype)
+    return Eh - 2 * (dW.T * Ph).sum() + ((dW @ Gh) * dW).sum()
+
+
+def solve_select(G, P, Gh, Ph, Eh, mus, device="cpu"):
+    """Ridge chosen per layer by the held-out error. Returns (dW, mu, {mu: held-out error})."""
+    best, errs = None, {}
+    for mu in mus:
+        dW = solve(G, P, mu, device)
+        errs[mu] = float(residual_error(dW, Gh, Ph, Eh))
+        if best is None or errs[mu] < errs[best[1]]:
+            best = (dW, mu)
+        del dW
+    return best[0], best[1], errs
 
 
 class _Stub(torch.nn.Module):
@@ -92,9 +119,10 @@ def _first(o):
     return o[0] if isinstance(o, (tuple, list)) else o
 
 
-def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", heldout=0, log=None):
+def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", heldout=0, log=None, mus=None):
     """seqs: token id lists. teacher_state(l) -> state dict of the teacher's layer l (layer-relative names).
-    Fits the down_proj change of every layer in `layers`; the last `heldout` sequences are only measured.
+    Fits the down_proj change of every layer in `layers`; the last `heldout` sequences are only measured, and with
+    `mus` they also choose each layer's ridge (closed-form held-out error) - then explained_heldout is optimistic.
     Returns {"delta": {l: dW (out x in, fp32, CPU)}, "stats": {l: {...}}, "keys_sample": {l: first rows of K}}.
     The model's weights are not modified."""
     L = layers_of(model)
@@ -116,7 +144,15 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
         bl = L[l]
         tl = copy.deepcopy(bl)
         tl.load_state_dict(teacher_state(l), strict=True)
-        bl.to(device)
+        # base layer to the device by pointer, back by pointer to the untouched CPU tensors: copying it back with
+        # .to("cpu") crashed natively (access violation, run cf4 layer 11), as it did in distill_train
+        masters = [(p, p.data) for p in bl.parameters()] + \
+                  [(m, k, b) for m in bl.modules() for k, b in m._buffers.items() if b is not None]
+        for x in masters:
+            if len(x) == 2:
+                x[0].data = x[1].to(device)
+            else:
+                x[0]._buffers[x[1]] = x[2].to(device)
         tl.to(device)
         dp = bl.mlp.down_proj
         cap = {}
@@ -133,6 +169,11 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
                     n_in, n_out = dp.in_features, dp.out_features
                     G = torch.zeros(n_in, n_in, device=device)
                     P = torch.zeros(n_in, n_out, device=device)
+                    sel = bool(mus) and heldout > 0
+                    if sel:
+                        Gh = torch.zeros(n_in, n_in, device=device)
+                        Ph = torch.zeros(n_in, n_out, device=device)
+                        Eh = 0.0
                 yt, err_old = [], []
                 for i in range(len(seqs)):
                     y_t = _first(tl(ht[i][None], **kws[i][l]))[0]
@@ -144,14 +185,26 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
                         if i < ntrain:
                             G += K.T @ K
                             P += K.T @ R
+                        elif sel:
+                            Gh += K.T @ K
+                            Ph += K.T @ R
+                            Eh += err_old[-1]
                         if i == 0:
                             out["keys_sample"][l] = K[:256].cpu()
                     yt.append(y_t)
                     if l not in fitset:
                         hb[i] = y_b
                 if l in fitset:
-                    delta = solve(G, P, mu).to(device)
+                    if sel:
+                        delta, mu_l, errs = solve_select(G, P, Gh, Ph, torch.tensor(Eh, device=device), mus,
+                                                         device)
+                        del Gh, Ph
+                    else:
+                        delta, mu_l, errs = solve(G, P, mu, device), mu, None
+                    delta = delta.to(device=device, dtype=torch.float32)
                     del G, P
+                    if str(device) != "cpu":
+                        torch.cuda.empty_cache()
                     err_new = []
                     for i in range(len(seqs)):
                         y_b = _first(bl(hb[i][None], **kws[i][l]))[0]
@@ -162,14 +215,23 @@ def fit(model, teacher_state, embed_t, seqs, layers, mu=1e-2, device="cuda", hel
                           "explained_heldout": (1 - sum(err_new[ntrain:]) / max(sum(err_old[ntrain:]), 1e-30))
                           if heldout else None,
                           "rel_norm": float(delta.norm() / W.norm()),
-                          "mismatch_rms": (sum(err_old) / sum(len(s) for s in seqs) / W.shape[0]) ** 0.5}
-                    out["delta"][l] = delta.cpu()
+                          "mismatch_rms": (sum(err_old) / sum(len(s) for s in seqs) / W.shape[0]) ** 0.5,
+                          "mu": mu_l}
+                    if errs:
+                        st["heldout_err_by_mu"] = {str(k): round(v, 4) for k, v in errs.items()}
+                    # bf16 on the CPU for a GPU run: 32 fp32 deltas of a 9B (6.4 GB) helped run cf3 out of RAM
+                    out["delta"][l] = delta.cpu() if str(device) == "cpu" else delta.to(torch.bfloat16).cpu()
+                    del W
                     out["stats"][l] = st
                 ht = yt
         finally:
             hh.remove()
-            bl.to("cpu")
-            del tl
+            for x in masters:
+                if len(x) == 2:
+                    x[0].data = x[1]
+                else:
+                    x[0]._buffers[x[1]] = x[2]
+            del tl, masters
         rec = {"layer": l, "fit": l in fitset, **out["stats"].get(l, {}), "seconds": round(time.time() - t0, 1)}
         print(json.dumps(rec), flush=True)
         if log:
@@ -214,6 +276,7 @@ def main():
     ap.add_argument("out")
     ap.add_argument("--rank", type=int, default=256)
     ap.add_argument("--mu", type=float, default=1e-2)
+    ap.add_argument("--mus", default="0.01,0.1,1,10", help="ridge grid chosen per layer on the held-out sequences")
     ap.add_argument("--heldout", type=int, default=8)
     ap.add_argument("--max_len", type=int, default=2600)
     a = ap.parse_args()
@@ -237,7 +300,7 @@ def main():
                       "mu": a.mu}), flush=True)
     out.mkdir(parents=True)
     t0 = time.time()
-    res = fit(model, state, embed_t, seqs, layers=list(range(n)), mu=a.mu, device="cuda", heldout=a.heldout,
+    res = fit(model, state, embed_t, seqs, layers=list(range(n)), mu=a.mu, device="cuda", heldout=a.heldout, mus=[float(x) for x in a.mus.split(",")] if a.mus else None,
               log=out / "fit.jsonl")
     del model
     T, energy = {}, {}

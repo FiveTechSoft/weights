@@ -27,6 +27,31 @@ class TestSolve(unittest.TestCase):
         self.assertEqual(tuple(dW.shape), (7, 20))
         self.assertTrue(torch.allclose(dW.double(), D, atol=1e-5))
 
+    def test_heldout_error_in_closed_form_equals_direct(self):
+        import cf_distill as cf
+        g = torch.Generator().manual_seed(2)
+        K = torch.randn(300, 12, generator=g, dtype=torch.float64)
+        R = torch.randn(300, 5, generator=g, dtype=torch.float64)
+        dW = torch.randn(5, 12, generator=g, dtype=torch.float64)
+        direct = (R - K @ dW.T).pow(2).sum()
+        closed = cf.residual_error(dW, K.T @ K, K.T @ R, R.pow(2).sum())
+        self.assertAlmostEqual(float(closed), float(direct), places=6)
+
+    def test_ridge_is_chosen_on_heldout(self):
+        import cf_distill as cf
+        g = torch.Generator().manual_seed(3)
+        D = torch.randn(4, 30, generator=g, dtype=torch.float64)
+
+        def data(n):
+            K = torch.randn(n, 30, generator=g, dtype=torch.float64)
+            return K, K @ D.T + 3.0 * torch.randn(n, 4, generator=g, dtype=torch.float64)
+        Kt, Rt = data(40)                 # few noisy training rows: a tiny ridge overfits
+        Kh, Rh = data(400)
+        mus = (1e-6, 1e-2, 1e-1, 1.0)
+        dW, mu, errs = cf.solve_select(Kt.T @ Kt, Kt.T @ Rt, Kh.T @ Kh, Kh.T @ Rh, Rh.pow(2).sum(), mus)
+        self.assertEqual(errs[mu], min(errs.values()))
+        self.assertGreater(mu, 1e-6)
+
 
 @unittest.skipUnless(M08.exists(), "needs hf_cache/qwen35-08b-hf")
 class TestTeacherLoader(unittest.TestCase):
