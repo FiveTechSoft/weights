@@ -229,6 +229,7 @@
     <div style="font-weight: 800; font-size: 1.25rem; color: var(--text-main);">🧠 FiveTechSoft / weights</div>
     <div style="display: flex; gap: 1.5rem; font-size: 0.95rem;">
       <a href="index.html" style="color: var(--accent-cyan); text-decoration: none;">Overview</a>
+      <a href="#main-result" style="color: var(--accent-emerald); text-decoration: none; font-weight: 700;">Main result</a>
       <a href="wsplang_0.7_spec.md" style="color: var(--accent-amber); text-decoration: none; font-weight: 700;">🛡️ WSP-Lang 0.7 Spec</a>
       <a href="mimo_critique_transfer_benchmark.md" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">⚡ MiMo u_critic Benchmark</a>
       <a href="wsplang_multilayer_envelope_spec.md" style="color: var(--accent-amber); text-decoration: none; font-weight: 600;">📐 Multilayer Envelope Spec</a>
@@ -246,7 +247,7 @@
   <header>
     <div class="badge-pill">RESEARCH RELEASE · OPEN SOURCE MIT LICENSE</div>
     <h1>WSP-Lang: Weight-Space Programming</h1>
-    <p class="subtitle">Direct sub-weight decompilation, reverse engineering, and weight editing on 9B quantized LLMs. Reading and editing weights needs no forward pass or gradient; any claim about behaviour is measured with forward passes (llama.cpp, often on GPU). Audited status of every result: <a href="https://github.com/FiveTechSoft/weights#status-of-the-results-november-2026-audited" style="color: var(--accent-cyan);">README, "Status of the results"</a>.</p>
+    <p class="subtitle">Direct sub-weight decompilation, reverse engineering, and weight editing on 9B quantized LLMs. Reading and editing weights needs no forward pass or gradient; any claim about behaviour is measured with forward passes (llama.cpp, often on GPU). Main result (2026-11-09): a fine-tune's skill moved onto the base as a small adapter, measured below. Audited status of every result: <a href="https://github.com/FiveTechSoft/weights#status-of-the-results-november-2026-audited" style="color: var(--accent-cyan);">README, "Status of the results"</a>.</p>
     
     <div class="btn-group">
       <a href="https://github.com/FiveTechSoft/weights" class="btn btn-primary" target="_blank">
@@ -267,12 +268,71 @@
 
   <div class="container">
 
+    <!-- MAIN RESULT (2026-11-09): kept first; every number links to results.md -->
+    <section id="main-result">
+      <div class="card" style="border-color: var(--accent-emerald); padding: 2.25rem; margin-bottom: 2.5rem;">
+        <div style="margin-bottom: 1rem;">
+          <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--accent-emerald); color: #A7F3D0; font-size: 0.8rem; font-weight: 800;">MAIN RESULT · MEASURED 2026-11-08/09 · PAIRED TESTS · SMALL SETS</span>
+        </div>
+        <h2 style="font-size: 1.85rem; color: #FFFFFF; margin-bottom: 0.85rem;">Moving a fine-tune's skill onto the unchanged base model, as an 87 MB adapter, with no training</h2>
+        <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6;">
+          WSP-Lang's <code>delta_to_lora</code> op takes the difference between a fine-tune and its base, matrix by matrix,
+          keeps its 16 strongest directions (exact SVD) and writes a standard LoRA adapter, loaded on top of the
+          unchanged base. Donor: Jackrong's reasoning distill of Qwen3.5-9B. Base: Qwen3.5-9B, Q6_K, llama.cpp, greedy,
+          2,048-token budget. The adapter is applied at scale 0.5, chosen on the MATH items (0.25 / 0.5 / 0.75 / 1 tried);
+          GSM8K was never used to choose anything.
+        </p>
+        <table>
+          <thead><tr><th>Items</th><th>Base</th><th>Base + adapter</th></tr></thead>
+          <tbody>
+            <tr><td>MATH-500: 16 the base cannot finish + 20 it solves (not used to build the adapter)</td><td>6 / 36</td><td><strong>30 / 36</strong></td></tr>
+            <tr><td>GSM8K: 28 the base fails + 20 it solves (another benchmark)</td><td>9 / 48</td><td><strong>37 / 48</strong></td></tr>
+            <tr><td>GSM8K problems the base solved at this budget, still solved</td><td>6 / 6</td><td>6 / 6</td></tr>
+          </tbody>
+        </table>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Exact McNemar test, paired with the base: MATH 24 items gained, 0 lost; GSM8K 28 gained, 0 lost (both p &lt; 0.0001).
+          The base usually had the answer in its reasoning but did not stop thinking within the budget; the adapter makes
+          it finish. Before any benchmark, the op's <code>energy.json</code> predicts whether a change can move: rank 16
+          keeps 58.6 % of Jackrong's change (it moves) and 3.8 % of MiMo-9B's (it does not: adapters up to rank 512 reach
+          at most 4/16 of the stuck items, against MiMo's own 12/16).
+          Demo: <a href="https://github.com/FiveTechSoft/weights/tree/main/demos/math_transplant" style="color: var(--accent-cyan);">demos/math_transplant</a> ·
+          record: <a href="https://github.com/FiveTechSoft/weights/blob/main/results.md" style="color: var(--accent-cyan);">results.md &sect;43</a>.
+        </p>
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">What else was measured, with the same items</h3>
+        <table>
+          <thead><tr><th>Route</th><th>Needs</th><th>MATH /36</th><th>GSM8K /48</th></tr></thead>
+          <tbody>
+            <tr><td>Rank-16 adapter trained on MiMo's own answers (256 answers)</td><td>a teacher's answers, ~1 h</td><td>27</td><td>41</td></tr>
+            <tr><td>Gradient-free closed-form fit of <code>down_proj</code> to MiMo's hidden states (the MEMIT-style write used for a behaviour)</td><td>a teacher's hidden states, 19 min</td><td>17</td><td>25</td></tr>
+            <tr><td>Same-norm random placebo of that fit</td><td>&mdash;</td><td>10</td><td>14</td></tr>
+            <tr><td>Steering vector (MiMo &minus; base, per layer)</td><td>a teacher</td><td>15</td><td>&mdash;</td></tr>
+            <tr><td>Donor-free self-distillation (the base's own correct answers)</td><td>nothing</td><td>8</td><td>15</td></tr>
+          </tbody>
+        </table>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          The placebo is not significantly better than the base (p 0.13 / 0.23) and the closed-form fit beats it
+          (p 0.039 / 0.003), so part of that fit's gain is unspecific. Self-distillation is indistinguishable from the base.
+        </p>
+        <h3 style="color: var(--accent-rose); font-size: 1.15rem; margin-top: 1.5rem;">Limits</h3>
+        <ul style="color: var(--text-muted); line-height: 1.6; margin-left: 1.25rem;">
+          <li><strong>It needs a donor.</strong> The op moves a skill someone trained; it does not create one. On Qwen3.5-0.8B
+            (3&times;3 multiplication) a training's change lives in a narrow subspace shared across seeds, and rank 20 recovers
+            91 % of it, but extrapolating early steps, a single gradient, a learned jump and summing changes all failed to
+            produce the skill without training (results &sect;40-&sect;42).</li>
+          <li><strong>Small sets</strong> (36 + 48 items, one donor so far). A second donor (another author, RL instead of
+            supervised distillation) is being tested to check that the op and its prediction generalize.</li>
+          <li>The effects are paired-tested, but these are not leaderboard numbers: one model family, one budget, greedy decoding.</li>
+        </ul>
+      </div>
+    </section>
+
     <section>
       <div class="infographic-card">
         <img src="assets/wsplang_semantic_areas.png" alt="WSP-Lang Semantic Architecture Infographic">
       </div>
     </section>
-    <!-- WSP-LANG 0.7 HERO SECTION: CAUSAL CONTRACTS & CRITIQUE TRANSFER -->
+    <!-- WSP-LANG 0.7 SECTION (WITHDRAWN, kept as a record): CAUSAL CONTRACTS & CRITIQUE TRANSFER -->
     <section>
       <div class="card" style="border-color: var(--accent-amber); background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.98) 100%); padding: 2.25rem; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem;">
@@ -740,7 +800,7 @@ minute, with her arms</td>
         <div class="grid-2" style="margin-bottom: 1rem;">
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">1. Weyl's Inequality & Davis-Kahan Invariance</h4>
-            <p style="font-size: 0.9rem; color: #CBD5E1;">Singular value shifts bounded by <code>||&Delta;W||<sub>2</sub> = 0.0364</code>. Principal singular value changes by only <strong>0.000288%</strong>, while the principal reasoning subspace rotates by <strong>&lt; 0.05&deg;</strong> (theoretical bound &le; 2.12&deg;).</p>
+            <p style="font-size: 0.9rem; color: #CBD5E1;">Singular value shifts bounded by <code>||&Delta;W||<sub>2</sub> = 0.0364</code>. Principal singular value changes by only <strong>0.000288%</strong>, while the principal singular subspace rotates by <strong>&lt; 0.05&deg;</strong> (theoretical bound &le; 2.12&deg;).</p>
           </div>
           <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 0.5rem;">
             <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">2. RandNLA Leverage Score Efficiency</h4>

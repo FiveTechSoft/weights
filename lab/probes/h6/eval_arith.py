@@ -3,7 +3,7 @@
 Prompts of one split all have the same token length (Qwen tokenizes digits one by one), so batches need no padding;
 this is asserted, because the DeltaNet torch path is not trusted with left padding.
 Tokenizer: tokenizers.Tokenizer from tokenizer.json, not AutoTokenizer (transformers 5.6-5.17 builds the wrong Qwen
-pre-tokenizer, findings F27).
+pre-tokenizer, findings F37).
 """
 import json
 import re

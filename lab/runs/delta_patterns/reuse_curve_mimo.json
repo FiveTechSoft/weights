@@ -1,0 +1,62 @@
+{
+ "base": "Qwen/Qwen3.5-9B",
+ "model": "XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B",
+ "tensors": {
+  "model.layers.3.self_attn.v_proj.weight": {
+   "shape": [
+    1024,
+    4096
+   ],
+   "min_dim": 1024,
+   "rank_for_50pct": 191,
+   "rank_for_80pct": 476,
+   "rank_for_90pct": 651,
+   "energy_rank_16": 0.0923323705792427,
+   "energy_rank_64": 0.24835485219955444,
+   "energy_rank_256": 0.5917822122573853,
+   "energy_rank_1024": 1.0
+  },
+  "model.layers.17.mlp.gate_proj.weight": {
+   "shape": [
+    12288,
+    4096
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 657,
+   "rank_for_80pct": 1688,
+   "rank_for_90pct": 2369,
+   "energy_rank_16": 0.035607803612947464,
+   "energy_rank_64": 0.09994643926620483,
+   "energy_rank_256": 0.2733877897262573,
+   "energy_rank_1024": 0.6377844214439392
+  },
+  "model.layers.17.mlp.down_proj.weight": {
+   "shape": [
+    4096,
+    12288
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 708,
+   "rank_for_80pct": 1748,
+   "rank_for_90pct": 2425,
+   "energy_rank_16": 0.026151638478040695,
+   "energy_rank_64": 0.08442723006010056,
+   "energy_rank_256": 0.25054219365119934,
+   "energy_rank_1024": 0.6190727949142456
+  },
+  "model.layers.17.linear_attn.in_proj_qkv.weight": {
+   "shape": [
+    8192,
+    4096
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 516,
+   "rank_for_80pct": 1363,
+   "rank_for_90pct": 1979,
+   "energy_rank_16": 0.04052558168768883,
+   "energy_rank_64": 0.11733994632959366,
+   "energy_rank_256": 0.32127493619918823,
+   "energy_rank_1024": 0.7124691009521484
+  }
+ }
+}

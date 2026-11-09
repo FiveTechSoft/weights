@@ -1,15 +1,15 @@
 # H7: a dataset of training steps, to learn to learn (APPROVED by the user 2026-11-08)
 
-Date: 2026-11-07. Follows H6 (results §40, findings F29-F33). Thresholds below are fixed before any H7 result;
+Date: 2026-11-07. Follows H6 (results §40, findings F39-F43). Thresholds below are fixed before any H7 result;
 changes go in dated addenda.
 
 ## Why (user, 2026-11-07: "el dataset de pasos, para aprender a aprender")
 H6 found:
-- where a small training moves: a narrow lane (F29, F31);
+- where a small training moves: a narrow lane (F39, F41);
 - that the "how much" per direction cannot be guessed:
-  - from the first frames (F30);
-  - from one gradient (F32, H6f-a);
-- that training only 20 directions per matrix learns most of the skill, even in a random basis (F33).
+  - from the first frames (F40);
+  - from one gradient (F42, H6f-a);
+- that training only 20 directions per matrix learns most of the skill, even in a random basis (F43).
 
 **Learning to learn needs several tasks.** For one task there is nothing to predict: a second run of the same task
 can simply reuse the first run's weights. The question is whether the trajectories of past tasks teach a rule that
@@ -19,7 +19,7 @@ lets a **new** task skip most of its steps.
 **Common coordinates.**
 - Per matrix, one fixed random orthonormal basis U of rank 20 on the smaller side (seed fixed), shared by all tasks.
   ΔW = U·C, so every task's state is a vector C of 10.4 M numbers in the same coordinates.
-- F33 shows that a random rank-20 basis learns nearly as well as the lane. A task-agnostic basis keeps the held-out
+- F43 shows that a random rank-20 basis learns nearly as well as the lane. A task-agnostic basis keeps the held-out
   task's own training out of the coordinates.
 
 **Tasks** (3 solved examples in the prompt, answer then newline, exact-match grading). M0 3-shot accuracy measured

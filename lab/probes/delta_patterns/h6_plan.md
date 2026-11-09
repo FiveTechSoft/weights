@@ -35,7 +35,7 @@ because they run before any transfer result exists.
     sequences.
   - A smoke run checks this. Fallback (addendum): Adafactor.
 - **Tokenizer:** `tokenizers.Tokenizer.from_file(tokenizer.json)`, not AutoTokenizer. transformers 5.12.1 in the
-  venv has the wrong Qwen pre-tokenizer (findings F27).
+  venv has the wrong Qwen pre-tokenizer (findings F37).
 - **Seeds:** 3 trainings (s = 1, 2, 3), same data, different data order (and dropout if any), giving ΔW_1, ΔW_2,
   ΔW_3.
 

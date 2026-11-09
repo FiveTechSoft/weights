@@ -1,12 +1,12 @@
 # H9: warm start — does starting from other tasks' learned changes shorten the training of a new one? (APPROVED by the user 2026-11-08)
 
-Date: 2026-11-08. Follows H7 and H8 (results §41-42, findings F34-F37). Thresholds below are fixed before any H9
+Date: 2026-11-08. Follows H7 and H8 (results §41-42, findings F44-F47). Thresholds below are fixed before any H9
 result; changes go in dated addenda.
 
 ## Why
-"Learning to learn" by skipping training has failed three ways (F30, F32, F34), and F36 explains why: the learned
+"Learning to learn" by skipping training has failed three ways (F40, F42, F44), and F46 explains why: the learned
 change only works as a whole. Reuse does work: a learned C is copied instantly, and two summed C keep ~0.89 of each
-task's gain (F37).
+task's gain (F47).
 H9 asks the practical version: if the jump cannot be skipped, can **reuse make it shorter**? Start a new task's
 training from the sum of the other tasks' learned C instead of from zero, and count the steps it saves.
 

@@ -30,3 +30,6 @@ scratch/
 runs/test_*
 runs/ci_*
 lab/runs/decompiled/
+
+# Windows-style paths hardcoded in some tests create this literal directory on Linux/macOS
+C:\\weights/

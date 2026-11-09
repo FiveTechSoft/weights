@@ -1,3 +1,9 @@
+# Core runtime
 torch>=2.0.0
 safetensors>=0.4.0
 numpy>=1.24.0
+# GGUF inspection/editing (wsp.py, model_report) and tokenizer diff (model_report)
+gguf>=0.10.0
+tokenizers>=0.15.0
+# MCP server (engine/wsp_mcp_server.py). mcp 2.x renames FastMCP and the import fails.
+mcp>=1.0,<2

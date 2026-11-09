@@ -57,4 +57,4 @@ Before any benchmark, `energy.json` already says it will transfer: rank 16 keeps
 - Small sets (16 + 20 + 48 + 20 items): the effects are large and paired-tested, but the absolute numbers are not
   leaderboard numbers.
 
-Full record: `results.md` §43.4-43.6, `findings.md` F39-F40.
+Full record: `results.md` §43.4-43.6, `findings.md` F49-F50.

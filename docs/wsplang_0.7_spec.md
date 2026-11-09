@@ -224,3 +224,15 @@ La arquitectura nanoGPT compilada por WSPLang ([`programs/build_karpathy_nanogpt
 - **Diferencia Máxima en Logits:** $0.0000000000	imes 10^0$ a lo largo de secuencias de 16 a 256 tokens.
 - **Diferencia de Cross-Entropy Loss:** $0.0000000000	imes 10^0$.
 - **Discrepancias en Generación Autorregresiva:** $0 / 35$ tokens (100% idéntico paso a paso).
+
+## 11. `imprint_corpus` (NanoWSP-3 corpus imprint with measured recall)
+
+> **Estado real (2026-11-08):** `step imprint_corpus facts=<json> [probe=<json>] layer=<int> eta=<float> reg_lambda=<float> [model=<ckpt>] [out=<file>]`
+> carga un checkpoint NanoWSP-3, imprime el corpus (`facts`: lista JSON de pares `[prompt, target]`) con
+> `imprint_thematic_corpus` en la capa, `eta` y `reg_lambda` dados, y devuelve el recall medido (pasadas hacia adelante)
+> de los hechos antes y después, y de un conjunto opcional `probe` (retención). Sin `allow_write` y `out=` el estado es
+> `simulated` y no se escribe nada. Con `model=` ausente usa el checkpoint por defecto de `model: nanowsp3`, no el
+> resultado del paso anterior: encadena pasos pasando `model=` explícito. Contrato: `tests/test_wsplang_imprint_corpus.py`
+> compara la puntuación de un programa `.wspl` de dos pasos con `lab.meta.interference.score_config` (llamada directa).
+> Qué NO está en el lenguaje: la búsqueda de configuraciones, la selección de codificación y la evaluación pre-registrada
+> de `lab/meta` siguen siendo scripts de Python.

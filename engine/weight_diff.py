@@ -186,16 +186,26 @@ def text_model_name(name: str) -> Optional[str]:
     return name
 
 
-def hf_fetch(repo: str, revision: str = "main", retries: int = 5) -> Callable[[str, int, int], bytes]:
-    """fetch(file, start, end_inclusive) over HTTP range requests to huggingface.co (public repos)."""
+def hf_fetch(repo: str, revision: str = "main", retries: int = 5, meter: Callable[[int], None] = None) -> Callable[[str, int, int], bytes]:
+    """fetch(file, start, end_inclusive) over HTTP range requests to huggingface.co (public repos).
+
+    meter(n), when given, is called BEFORE every attempt (so each retry is charged again) with the most bytes that attempt
+    may download; it may raise to refuse the attempt. A reply that is not 206 Partial Content (a server ignoring Range
+    would send the whole file) is dropped without reading its body, and a body is never read past the requested length + 1.
+    A refusal from meter is never retried."""
 
     def fetch(name, start, end):
         url = f"https://huggingface.co/{repo}/resolve/{revision}/{name}"
+        n = end - start + 1
         for attempt in range(retries):
+            if meter is not None:
+                meter(n)
             try:
                 req = urllib.request.Request(url, headers={"Range": f"bytes={start}-{end}"})
                 with urllib.request.urlopen(req, timeout=600) as r:
-                    data = r.read()
+                    if r.status != 206 and not (r.status == 200 and start == 0 and int(r.headers.get("Content-Length", -1)) == n):
+                        raise IOError(f"server ignored Range (status {r.status})")
+                    data = r.read(n + 1)
                 if len(data) != end - start + 1:
                     raise IOError(f"short read {len(data)} of {end - start + 1}")
                 return data

@@ -352,7 +352,213 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Lesson (same class as the viral WSP posts we audited): a storage format difference read as a weight change. Every
   diff now rounds to the common dtype before comparing.
 
-## F27. The "older pre-tokenizer" of F25 comes from transformers 5.6.0-5.17.0, fixed in 5.18.0 (verified, 2026-11-07)
+## F27. Reusing MiMo's change on Qwen3.5-9B: the full delta is trivial, rank-k parts carry little (measured, 2026-11-08)
+Goal stated by the user: compare the Qwen base with MiMo-V2.6 Qwen, see what changed, and see how to reuse it on the base.
+- **Pair (verified from primary sources today):** the model card of `XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B` says it is
+  supervised fine-tuning of Qwen3.5-9B on MiMo-generated data (77.4B tokens). Text configs match field for field with
+  `Qwen/Qwen3.5-9B` and `Qwen/Qwen3.5-9B-Base`. Read live by header: 427 text tensors with identical names and shapes in
+  MiMo and Qwen3.5-9B. "Base" is ambiguous: the SFT parent is Qwen3.5-9B (post-trained), not `-Base`; the existing
+  analysis uses Qwen3.5-9B. Using `-Base` instead would mix Qwen's own post-training into the delta.
+- **Three different claims, only the first two are made here:**
+  1. structural comparison (what changed, where): F1-F3, F26. Done.
+  2. delta extraction and how much a part carries (this entry). Done for a sample.
+  3. behavioural proof that applying a part to the base helps: NOT done. Needs inference on a 9B model, which this
+     environment cannot run (2 CPUs, about 2 GB RAM).
+- **Full delta:** base + (MiMo - base) is MiMo exactly. That is a copy, not reuse, so it proves nothing.
+- **Energy by family** (from `stats_mimo.jsonl`, squared delta norm): mlp 60.3 % (54.0 % of parameters), ssm/DeltaNet
+  20.6 % (18.1 %), head 8.1 % (11.4 %), attn 5.5 % (5.2 %), embed 5.5 % (11.4 %), norms about 0. Delta energy follows
+  parameter share closely; the MLP is not unusually concentrated. Top-16 directions per tensor keep 4.4 % in total.
+- **Rank needed** (`reuse_curve.py`, full tensors by HTTP range, 4 tensors, `lab/runs/delta_patterns/reuse_curve_mimo.json`):
+  | tensor | min dim | rank for 50 % / 80 % / 90 % | energy kept at rank 16 / 64 / 256 / 1024 |
+  |---|---|---|---|
+  | L3 v_proj | 1024 | 191 / 476 / 651 | 9 % / 25 % / 59 % / 100 % |
+  | L17 gate_proj | 4096 | 657 / 1688 / 2369 | 4 % / 10 % / 27 % / 64 % |
+  | L17 down_proj | 4096 | 708 / 1748 / 2425 | 3 % / 8 % / 25 % / 62 % |
+  | L17 in_proj_qkv | 4096 | 516 / 1363 / 1979 | 4 % / 12 % / 32 % / 71 % |
+  A rank-k transplant is cheap only for tiny k, and there it carries a few percent of the change. Reaching 80 % of
+  one MLP matrix's delta takes about 40 % of its rank, i.e. a large part of the full cost. Energy is not function:
+  a small-energy part could still matter, and a large-energy part could be mostly noise. Only the behavioural test
+  can say, and it has not been run.
+- **Reading for reuse:** the update is diffuse in magnitude. A compact, transferable "patch" is not visible in the
+  spectrum. Candidates that remain open are tensor-type subsets (for example MLP only, or layers 14-23 where the
+  change peaks), compared with a random subset of equal delta norm, as pre-registered in plan.md H4. They need a
+  behavioural evaluation and therefore an inference machine.
+- Limits: 4 tensors of 427, one layer mostly; the families' rank curves were not all measured.
+- **F27 addendum, depth check (8 more tensors, about 1.1 GB read in total, 8 tensors in `reuse_curve_mimo_depth.json`;
+  12 of 427 tensors measured in all).** Layers 0 and 30 for gate_proj, down_proj and in_proj_qkv, v_proj at layers 7
+  and 31. The rank for 80 % of the energy stays at 1630-1890 (MLP) and 1250-1390 (in_proj_qkv); rank-16 energy stays
+  at 3-8 % for large matrices. v_proj keeps rank 400-485 for 80 % (rank-16 energy 7-15 %). No depth trend that would
+  make a shallow or deep layer a compact patch. Reference used: Qwen3.5-9B (the declared parent), an exploratory choice, not
+  the user's confirmed "base". Sources: HF repos `Qwen/Qwen3.5-9B` and `XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B` at `main`
+  as read on 2026-11-08 (revisions not pinned; pin them before any behavioural run).
+
+## F28. MiMo's delta is not sparse either: no neuron, channel or entry patch (measured, 2026-11-08)
+Second axis besides rank (F27): can a pruned delta (TIES/DARE-style entries, or a set of neurons or hidden channels)
+carry most of the change? Same 4 tensors as F27, revisions pinned: base `Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a`,
+model `XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B@1f09ddcc1a0ea45751ae0dfe2af20d533168c46f` (the third repo, `Qwen/Qwen3.5-9B-Base@68c46c4b3498877f3ef123c856ecfde50c39f404`, is not used).
+Data: `lab/runs/delta_patterns/reuse_sparsity_mimo.json` (reuse_curve.py, entry thresholds from a 1M-entry sample).
+- Largest 1 % / 10 % / 30 % of entries keep 9.5-10.8 % / 46-50 % / 80-82 % of the energy. A Gaussian keeps about 8 % / 46 % / 79 %,
+  so the tails are only slightly heavier than noise.
+- Largest 1 % / 10 % of rows keep 1.2-1.8 % / 12-16 %; of columns 1.2-2.2 % / 12-18 %. Uniform would be 1 % / 10 %.
+  No neuron-level or channel-level (outlier dimension) concentration in these tensors.
+- Reading: not low rank (F27), not sparse (F28). Whatever MiMo's SFT adds is spread over most weights. A small reusable
+  patch, if it exists, is defined by function and not by size, so only a behavioural test can find it. Not tested here.
+- Same limits: 4 of 427 tensors. A first run of the sparsity code was killed by the memory limit (sorting 50M entries),
+  and was replaced by the chunked version; no number from the killed run is used.
+
+## F29. One layer, real embeddings: a rank-16 part of MiMo's delta reproduces 26 % of the layer's output change (measured, 2026-11-08)
+Script `layer_probe.py`, data `lab/runs/delta_patterns/layer_probe_L0_mimo.json`, pinned revisions as in F28. Definitions
+(`captured`, `resid`, random controls) are in the script docstring and were written before the first run.
+**Scope: layer 0 of 32 (a Gated DeltaNet layer), float32 CPU, 4 prompts / 95 tokens. Input = real token embeddings from
+the base table (what layer 0 receives; no earlier layer exists). It is NOT behaviour and NOT the full model. Deeper layers need real
+activations from the layers before them, not done.** The MiMo shift of the layer output is 4.7 % of the output norm. Sanity rows:
+base+full delta = exactly the MiMo layer (captured 1.0, resid 0.0), base alone = 0.0, 1.0.
+- Parts of the delta added to the base layer (captured; same-norm Gaussian control on the same tensors in brackets):
+  MLP all 0.44 [0.00], DeltaNet all 0.58 [0.03], gate+up 0.26 [0.00], down 0.17 [0.00], in_proj_qkv 0.22 [-0.01], out_proj 0.16 [0.03],
+  norms 0.003 [0.00] (they barely move this layer).
+- Truncated to rank k in all 8 matrices: rank 16 0.26, rank 256 0.61, rank 1024 0.83 (per prompt 0.16-0.32, 0.40-0.73, 0.70-0.91).
+  Energy-fair control, a random subspace of the same size on the same side, 2 seeds: rank 16 gives 0.00 and 0.00, rank 256 gives 0.05 and 0.05.
+- Largest 10 % / 30 % of entries: 0.29 / 0.61.
+- Reading: rank-16 parts hold 4-7 % of the weight energy (F27) but reproduce 26 % of this layer's output change; the same size in a random
+  subspace reproduces none. So in this layer the delta's function is more concentrated than its energy, consistent with it acting along the
+  directions where the input carries most of its variance. This undoes the earlier weights-only
+  impression that nothing small is reusable: weights alone cannot decide that, and this probe is evidence in the other direction.
+- NOT shown: that it holds beyond layer 0, on other inputs (4 short prompts, one of them a chat template), through the stack of layers, or in generation;
+  that transplanting the part into the base improves any task. The first-layer input is also the least processed one.
+- Next, bounded by memory (2 GB RAM): layers 1-3 need exact activations from the layers before, which means running those layers of the base
+  (one layer is about 0.4 GB per model in bf16, run one at a time and keep only the hidden states): a depth-wise chain is possible without ever loading
+  the full model.
+
+## F30. Layers 0-2, 12 prompts (4 dev + 8 held out), cosine added: the rank-k effect holds on held-out prompts and weakens after layer 0 (measured, 2026-11-08)
+Same probe as F29 (data `layer_probe_L{0,1,2}_mimo.json`, pinned revisions). Changes since F29: (1) 8 held-out prompts, written after the dev numbers
+of F29 were seen and before any number on them existed, reported apart from the 4 dev prompts; the delta bases come from weights only; (2) cosine and norm
+ratio added; (3) layer 0 re-run (the dev numbers reproduce exactly); (4) layers 1 and 2 use the hidden states the BASE model produces on the same
+tokens (saved layer by layer), NOT MiMo's own trajectory: both models receive the base model's activations at that depth. Layer 0 receives the base embedding table's rows, also not MiMo's own embeddings.
+Metric (pooled over all tokens and dims of the group): captured = <d, shift>/<shift, shift> (projection coefficient, can be < 0 or > 1; not 1 - error), cos = direction agreement, d = variant output - base output, shift = MiMo output - base output.
+captured (cos in brackets), dev | held out; "rand sub." = random subspace of the same size on the same side of the same 8 matrices (seed 1):
+| layer | rank 16 | rand sub. 16 | rank 256 | rand sub. 256 | rank 1024 | MLP only | attention only |
+|---|---|---|---|---|---|---|---|
+| 0 | .26 (.59) \| .24 (.55) | .00 \| .00 | .61 \| .57 | .05 \| .06 | .83 \| .82 | .44 \| .47 | .58 \| .55 |
+| 1 | .11 (.33) \| .14 (.39) | .00 \| .00 | .45 \| .48 | .06 \| .06 | .76 \| .78 | .64 \| .59 | .35 \| .41 |
+| 2 | .11 (.34) \| .20 (.49) | .00 \| .00 | .38 \| .50 | .07 \| .06 | .64 \| .74 | .52 \| .51 | .46 \| .48 |
+- Held out holds: rank 16 gives .24 / .14 / .20 against .00 for the random subspace, and rank 256 gives .57 / .48 / .50 against .05-.06. The effect is not an artefact of the 4 prompts used to design the probe.
+- It is weaker than in layer 0 (rank 16: .26 -> .11-.20) and depends on the prompt: per prompt in layer 2, rank 16 goes .06 to .37 and rank 256 .28 to .69. Three layers say nothing about the other 29.
+- A random subspace of rank 256 still gets cos .2-.3 against .0 for rank 16; direction agreement is not zero for noise projected on the weights' own subspace, so cos is read next to the control, not alone.
+- The MLP delta carries more of the change than the attention delta from layer 1 on (.64 vs .35 in layer 1, dev).
+- What this is: a partial reproduction of a LOCAL output difference, on inputs that are the base model's own activations. What it is not: a benefit. MiMo's change on these tokens might be neutral or harmful
+  for a given task, and a part that reproduces it would then reproduce that. No generation, no benchmark, no behavioural claim. The earlier statement that the full-delta layer equals the MiMo layer
+  only shows the code rebuilds the weights.
+- Not done: layer 3 and beyond (layer 3 is full attention and needs the causal-mask path, implemented but not run), MiMo's native trajectory, other prompt domains at scale (12 short prompts), any task.
+
+## F31. Layer 3 (full attention) and a composed stack of layers 0-3: the rank-k effect survives composition (measured, 2026-11-08)
+Data: `layer_probe_L3_mimo.json`, `stack_L0-3_mimo.json`; same probe, pinned revisions, 4 dev + 8 held-out prompts. Cost: 0.4 GB per model for layer 3, no new reads for the stack (cache),
+about 6 min of CPU for the stack. Still: base embeddings in, a short stack, no generation, no task.
+- Implementation checks. Layers are the transformers 5.20.2 `Qwen3_5DecoderLayer` in float32 (eager attention, explicit causal mask for the full-attention layer 3; the DeltaNet
+  layers use the library's torch fallback because `flash-linear-attention` is not installed). Checked: changing the last token's input leaves earlier outputs bit-identical (max diff 0.0 in layer 2 and in layer 3) and moves the last one. Not checked: agreement with the vendor runtime (sglang/llama.cpp) numerically.
+- Layer 3 alone (captured | resid | cos | norm ratio, held out in brackets): rank 16 .15 | .92 | .39 | .39 (.14 | .93 | .36 | .37); rank 256 .50 | .68 | .74 | .67 (.48 | .68 | .74 | .66);
+  rank 1024 .77 | .43 | .90 (.77 | .43 | .90). Random subspace of the same size: rank 16 .00-.01 | 1.00 | .07-.13 (norm ratio .05); rank 256 .08-.09 | .94 | .35-.39 | .22.
+- Composition (the same rank in all 8 matrices of layers 0, 1, 2, 3 at once, each layer fed by the patched stack's own previous layer). The MiMo shift of the stack output is
+  the reference; full delta in the 4 layers rebuilds it (sanity 1.00 / 0.00). dev | held out:
+  | variant | captured | resid | cos | norm ratio |
+  |---|---|---|---|---|
+  | rank 16 | .11 \| .15 | .94 \| .91 | .35 \| .44 | .30 \| .33 |
+  | rank 16, random subspace (2 seeds) | .01 \| .01 | 1.00 \| 1.00 | .11 \| .10-.12 | .06 |
+  | rank 256 | .41 \| .47 | .70 \| .66 | .74 \| .77 | .55 \| .61 |
+  | rank 256, random subspace (2 seeds) | .08 \| .07 | .95 \| .95 | .35 \| .34 | .21 |
+  | top 10 % entries | .33 \| .37 | .72 \| .68 | .79 \| .82 | .42 \| .46 |
+  | MLP delta only, full | .60 \| .63 | .55 \| .52 | .85 \| .86 | .70 \| .74 |
+  | all 8 matrices, full delta (norms and DeltaNet constants left at base) | .98 \| .99 | .13 \| .12 | .99 \| .99 | .99 |
+- Reading: composed in four layers, rank 256 reduces the relative error against MiMo's stack output from 1.00 (base) to .66-.70, and the random control only to .95. Rank 16 reduces it to .91-.94 (control 1.00). The per-layer effects
+  do not cancel or collapse when stacked; the composed numbers sit near the isolated ones (layer 0-3 rank 256 .38-.61). resid answers "is the output closer to MiMo's": yes, partially and clearly better than a same-size random part.
+  The difference between full matrices (.13) and everything (0) lies in the norms, A_log/dt_bias and conv1d, whose delta is small but not zero.
+- The gap to the control is the evidence; the absolute level (rank 16 closes 6-9 % of the distance) is small, and rank 256 closes 30-34 %, about a quarter of the full delta's size per matrix (256 of 4096).
+- Still NOT shown: any benefit on a task, MiMo's native trajectory (embeddings differ), layers 4-31, long contexts, that the closer output is a better output.
+
+## F32 - delta_pack reproduces the probe's rank mode (layer 0, rank 16, 6 matrices)
+
+`demo_pack_layer0.py` builds a pack (manifest + factors, factors kept under /tmp, not committed) for the six large layer-0 matrices and compares `apply_pack` with
+the probe's own "rank" formula (basis files from `layer_probe.py`). Max abs difference 2e-8 to 6e-8, relative to |delta| 7e-7 to 2.4e-6 (float32 rounding and
+eigenvector sign choice do not matter for a projection). `verify_tensors` on the base returned no mismatches. Energy kept at rank 16: 3.1% to 6.9%.
+Manifest (hashes only, no weights): `lab/runs/delta_patterns/pack_manifest_layer0_rank16.json`; it states `behavioural_benefit: "not shown"`.
+This checks the packaging against the probe, one layer. It says nothing about benefit. Redistribution of factors is not decided (both licences apply).
+
+## F33 - select-and-apply the delta (engine/delta_apply.py): mechanics only
+
+Layer-0 cache, both models: 98.0% of the 218.4 M elements of the 10 comparable tensors differ between Qwen3.5-9B and MiMo, and F27 measured diffuse,
+not low-rank structure (rank 16 keeps 3-7% of the delta energy). That rules out a compact EXACT reconstruction of the delta from what was measured
+(12/427 tensors). It does not rule out a compact functional component: F29-F31 show rank-16/256 parts reproduce part of the layer output shift
+(a local measure, not benefit). Which subsets are useful is open.
+`apply_selected(base, model, select, alpha, rank)` is an in-memory function over tensor readers, covered by 4 unit tests on tiny tensors. It is NOT a
+ready 9B patch on disk and has no CLI; it has not been run on the full checkpoints. Per tensor it leaves unselected tensors as the base, skips and reports
+shape/dtype mismatches instead of casting, never modifies its inputs, and records sha256 of base, model and output. alpha=1 with the full delta reproduces
+the model up to float32 rounding (layer 0: 2-27 elements per matrix, abs error <= 1.2e-10): a tautology, not a result.
+No behavioural test of any selection was run. The streaming scoring protocol (behavioural_plan.md) exists but was not run, because the user asked
+for short checks; that is a scope decision, not an inability.
+
+## F34 - closing reading of F31 for a concrete patch choice (no new compute except a cost count and a tool-vs-probe check)
+
+Question: does a reduced patch bring the output of layers 0-3 closer to MiMo than a random patch of the same size? Data: stack_L0-3_mimo.json, base embeddings in,
+each layer fed by the patched stack's own output, 4 dev prompts and 8 separate held-out prompts, resid = distance to MiMo's output relative to the unpatched base (1.0 = no change).
+
+| patch on the matrices of layers 0-3 | params (of 864.0 M matrix params) | resid dev / held-out | random subspace, same size |
+|---|---|---|---|
+| rank 16 | 5.0 M (0.6%, ~10 MB bf16) | 0.94 / 0.91 | 0.995 / 0.995 |
+| rank 256 | 80.2 M (9.3%, ~160 MB bf16) | 0.70 / 0.66 | 0.945-0.947 / 0.950-0.951 |
+| top 10% entries by size | 86.4 M values + indices (~518 MB with int32 indices) | 0.72 / 0.68 | not run |
+| all matrices, full delta | 864.0 M (1.7 GB bf16) | 0.13 / 0.12 | - |
+
+Reading: yes, for these four layers, a rank-256 patch gets residual 0.66-0.70 where a random patch of the same size gets 0.95; the effect repeats on held-out prompts.
+Entry-thresholding reaches a similar residual at ~3x the stored size. Rank 16 is the most size-efficient but moves the output little.
+Recommended patch (local candidate, not a generated file; the ~160 MB of factors is a size estimate from tensor shapes): rank 256 on the matrices, alpha 1.
+Criterion: held-out resid <= 0.80 AND at least 3x the (1 - resid) gap of the random control. These thresholds were chosen AFTER seeing the layers 0-3 numbers,
+so for layers 0-3 the result is post hoc, not a pre-registered success (0.66 and 0.34 vs 0.05 only show it clears a bar set with the data in view). The criterion is
+prospective only for data not yet seen. A failure on other layers would show only that this protocol fails there, not that the patch serves only early layers in general.
+Limits: layers 0-3 only (not 4-31), 4 dev + 8 held-out short prompts, MiMo's own trajectory not used (base trajectory in), distance to MiMo's output is not task quality.
+Tool link: `apply_selected(rank=k)` agrees with the probe's rank formula on two layer-0 matrices (rank 16 and 256): |difference| <= 3.9e-4 of |delta|, which is the
+bf16 rounding of the output tensor (the probe works in float32).
+
+## F35 - choosing the rank-r subspace with activations instead of weights alone (idea taken from areu01or00/qwen0.8B-wsp; layer 0, one matrix, cache only)
+
+Source reviewed (read only, not run): the X post by @TensorSlay (2026-11-08) and the repo it links, github.com/areu01or00/qwen0.8B-wsp (no licence file declared in the
+GitHub API; created 2026-11-08). It writes FACTS into Qwen3.5-0.8B `mlp.down_proj` of layers 17-21 by a closed-form MEMIT-style solve from the activations entering
+down_proj ("keys"); there is no donor model and no delta transfer, so it is not a method for moving MiMo's changes onto Qwen. Its results are the author's own (2 of 5
+unseen wordings word-perfect, others drift or loop; reported in its README); I did not reproduce them.
+What transfers to our question: its subspace comes from real activations. Test (`data_aware_rank.py`, data `data_aware_rank_L0_down_proj.json`): for layer 0 `mlp.down_proj`,
+patch = U U^T delta with U from (a) the left singular vectors of delta (weights only, our current choice), (b) those of delta @ K_dev^T with K_dev = keys of the 4 dev
+prompts (95 tokens, so rank <= 95), (c) random. Scored on the 8 held-out prompts (217 tokens), base trajectory:
+
+| rank | captured weights-only | captured data-aware | random | rel. error weights-only / data-aware |
+|---|---|---|---|---|
+| 8 | 0.032 | 0.080 | 0.002 | 0.984 / 0.959 |
+| 16 | 0.057 | 0.096 | 0.004 | 0.971 / 0.951 |
+| 32 | 0.087 | 0.126 | 0.008 | 0.956 / 0.935 |
+| 64 | 0.131 | 0.156 | 0.015 | 0.932 / 0.919 |
+
+(captured = <patch K, delta K>/<delta K, delta K> on the held-out keys; local reproduction of the matrix's output difference, not benefit.)
+Reading: with the same size, picking U from activations beats picking it from weights on held-out tokens at every rank tried (2.5x at rank 8, shrinking to 1.2x at rank 64);
+both are far above random. Limits: one matrix, one layer, 95 fit tokens, our own prompts, base trajectory, no task metric; the gap may change with more fit data,
+other matrices or deeper layers, and the dev set cannot support ranks above 95 (rank 256 untested). Not applied to the F34 recommendation.
+
+## F36 - pre-registered test of F35 on all large matrices of layers 0-3: criterion NOT met (25 matrices, ranks 16 and 64, cache only)
+
+Criterion fixed and committed before the first run (d4e911d; `data_aware_stack.py` docstring): data-aware beats weights-only if, at BOTH ranks, it has lower resid in >= 75% of matrices,
+the mean resid is lower by >= 0.01, and it beats the random control in >= 90%. Fit on the 4 dev prompts (95 tokens), score on the 8 held-out prompts' keys, base trajectory, per matrix.
+After that commit the script only changed in how it computes (resumable per matrix, no patch matrix materialised for memory); the criterion and the metrics were not touched.
+Data: `lab/runs/delta_patterns/data_aware_stack_L0-3.json`.
+
+| rank | win rate vs weights-only | mean resid weights / data-aware / random | mean cos weights / data-aware / random | mean norm_ratio weights / data-aware / random | beats random | passes |
+|---|---|---|---|---|---|---|
+| 16 | 72% (18/25) | 0.905 / 0.853 / 0.998 | 0.395 / 0.469 / 0.055 | 0.395 / 0.469 / 0.055 | 100% | no (win rate 72% < 75%) |
+| 64 | 48% (12/25) | 0.809 / 0.802 / 0.992 | 0.564 / 0.557 / 0.113 | 0.564 / 0.557 / 0.113 | 100% | no (win rate 48%, mean gain 0.007 < 0.01) |
+
+Result: not shown. F35's gain on layer 0 down_proj does not generalise as a rule to these matrices at rank 64, and at rank 16 it misses the win-rate bar by 3 points (the mean gain, 0.052, is above 0.01).
+Post hoc (looked at after the verdict, not a result of the criterion): by matrix type, data-aware wins in every attention / linear-attention matrix at rank 16 (in_proj_qkv, in_proj_z, out_proj, q/k/v/o: 13/13) and in
+10/13 of them at rank 64, while it loses on MLP gate/up at rank 64 (0/8) and is neutral on down_proj. Possible reasons (not tested): 95 fit tokens against 12288 input dimensions, and for gate/up
+the weights-only basis is on the input side while the data-aware one is on the output side, so the comparison mixes two parametrisations. A follow-up would have to be a new pre-registered test on fresh prompts.
+Both subspace choices beat the random control in every matrix. This is per-matrix reproduction of an output difference, not the composed stack and not task benefit.
+Also: the X post's replies beyond the 2 visible without a login (of 16) were not recoverable: the vault has no X login, so that limit stays.
+
+## F37. The "older pre-tokenizer" of F25 comes from transformers 5.6.0-5.17.0, fixed in 5.18.0 (verified, 2026-11-07)
 - **Mechanism, read in the code** (`models/qwen2/tokenization_qwen2.py`):
   - Qwen ships `tokenizer_config.json` with `tokenizer_class: Qwen2Tokenizer`, both for Qwen3.5-9B and for
     Qwen3.8-27B.
@@ -388,21 +594,21 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   `qwen35` pre-tokenizer) and the math sets are in English, so no result here depends on it. Code that tokenizes
   Qwen3.5 text with `AutoTokenizer` in Hindi/Thai/Bengali/Arabic would be affected.
 
-## F28. Every trained derivative drops the base's MTP head; file-level edits keep it (measured, 2026-11-07)
+## F38. Every trained derivative drops the base's MTP head; file-level edits keep it (measured, 2026-11-07)
 - Qwen3.5-9B and Qwen3.8-27B ship a multi-token-prediction head (`mtp.*`, 15 tensors, `mtp_num_hidden_layers` 1),
   usable for speculative decoding. Count of `mtp.*` tensors per derivative, read from the safetensors headers:
   - 0 in MiMo (transformers 5.12.1), tmax (4.57), Fara (5.6.2), WeMM (5.2), Angry-Claudius (5.15) and Arete-27B
     (5.12.1): every model that went through a training framework;
   - 15 in Huihui abliterated (a weight edit) and Nyx-RP (a merged LoRA): edits made on the files.
 - Reading: the transformers model class does not load `mtp.*`, so `save_pretrained` after training writes a model
-  without it. This happens with every version seen (4.57 to 5.15), unlike F27, which depends on the version.
+  without it. This happens with every version seen (4.57 to 5.15), unlike F37, which depends on the version.
   Consequence: these derivatives lose MTP speculative decoding, and the base's head cannot simply be put back,
   because it was trained against the base trunk.
 - Tooling: `model_report` hid `mtp.*` on both sides and did not report the loss. It now lists hidden parts present
   on one side only, and tells a model on another base (Arete-27B on Qwen3.8-27B) that the Qwen3.5-9B atlas does not
   apply by direction. Tests: `TestHiddenParts`, `TestAtlasFromAnotherBase`.
 
-## F29. A small training moves along a narrow lane set by task and data, not by the seed (measured, 2026-11-07, H6)
+## F39. A small training moves along a narrow lane set by task and data, not by the seed (measured, 2026-11-07, H6)
 - Qwen3.5-0.8B, 3×3 products, 500 AdamW steps in 10 chunks, 3 seeds (data orders). Per chunk, ~89-93 % of the
   increment's energy is in 5 % of its directions; consecutive increments overlap ~0.68 (top-16).
 - Cumulative change, cross-seed overlap (top-16, median over matrices): 0.72-0.74 at chunk 1, 0.79-0.80 at chunk 10;
@@ -411,11 +617,11 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Weights move most in chunks 1-3, when accuracy does not move; accuracy rises in chunks 4-10 with ever smaller
   increments. Results §40.1.
 
-## F30. Extrapolating the first frames does not continue the training (measured, 2026-11-07, H6 E_k)
+## F40. Extrapolating the first frames does not continue the training (measured, 2026-11-07, H6 E_k)
 - W0 + α·C_k, k ∈ {1, 2}: dev picks α = 1 in all 6 runs; α ≥ 2 collapses accuracy. Recovery −0.05..0.07, no better
   than a norm-matched random change. The early change is in the lane but does not carry the skill. Results §40.2.
 
-## F31. The lane of OTHER runs carries the skill: projecting one seed's change on it keeps all of it (measured, 2026-11-07, H6 stage 1)
+## F41. The lane of OTHER runs carries the skill: projecting one seed's change on it keeps all of it (measured, 2026-11-07, H6 stage 1)
 - Rank 20 per matrix (2 %) recovers 0.91 of the skill (own SVD) and 0.92 (lane of the other two seeds); rank 51: ~1.0.
 - From r = 20 up, the other seeds' lane does as well as or better than the seed's own SVD, with less energy, less
   interference and less forgetting; at r = 102 it beats the full training (R 1.06). What the seeds share is the
@@ -423,24 +629,24 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - The norm-matched random control is hard (it projects ΔW itself): M2 beats it by 12-14 points, p < 1e-13, short of
   the pre-registered 20-point margin (H6b fails). Caveat: G2 missed (+23 points, not 30). Results §40.3.
 
-## F32. One gradient cannot replace the training, even inside the lane (measured, 2026-11-07, H6e)
+## F42. One gradient cannot replace the training, even inside the lane (measured, 2026-11-07, H6e)
 - Summed gradient over 512 examples at M0, rescaled globally to a fraction of a real training's norm: at the smallest
   scale tried every arm is below M0 (0-1.6 %); sign-of-gradient projected on the lane is least bad (12-14 %).
 - The lane gives where; the per-direction amounts come from the optimizer over the whole training. Likely cause: a
   raw gradient puts its norm in few matrices/directions, Adam equalises per coordinate. Tested next in H6f.
   Results §40.4.
 
-## F33. Training only 20 directions per matrix learns most of the skill, and a random 20-dim basis does almost as well as the lane (measured, 2026-11-07, H6f)
+## F43. Training only 20 directions per matrix learns most of the skill, and a random 20-dim basis does almost as well as the lane (measured, 2026-11-07, H6f)
 - ΔW = U·C with U fixed (rank 20 per matrix, 2.1 % of the parameters), AdamW on C, 200 steps: lane of the other seeds
   R 0.76, random orthonormal basis R 0.63; lane vs random McNemar p 0.03 / 0.009 / 0.10 per seed, so the pre-registered
   "beats random in each seed" fails. At 100 steps: 0.57 vs 0.51.
 - Neither interferes: 3×2 accuracy rises to 78-86 % (base 74 %, full training 55-60 %); GSM8K NLL unchanged.
 - A one-shot shaped update (gradient or sign in the lane, per-matrix norms from other seeds) no longer breaks the
   model, unlike H6e, but teaches little (R ≤ 0.15).
-- Reading with F31: the lane matters to carry an existing change, not to learn one; low rank alone removes the
+- Reading with F41: the lane matters to carry an existing change, not to learn one; low rank alone removes the
   interference. Results §40.6.
 
-## F34. Coefficient trajectories are nearly straight, yet stretching them does not finish the training (measured, 2026-11-08, H7)
+## F44. Coefficient trajectories are nearly straight, yet stretching them does not finish the training (measured, 2026-11-08, H7)
 - 9 digit tasks in one shared random rank-20 basis: the first temporal mode holds 94.8-98.8 % of each trajectory's
   energy and cos(C_25, C_200) is 0.66-0.92.
 - Learned jumps from step k to 200 (scale, per-kind linear on C_k, C_k/2, Adam m and m/√v, MLP; leave one task out)
@@ -449,31 +655,31 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
 - Reading: direction is right early, but the accuracy lives in the small part of C_200 off that line; the
   optimizer's late steps are not predictable from the early ones with these features. Results §41.3.
 
-## F35. Different tasks use almost orthogonal coefficients in the same basis (measured, 2026-11-08, H7)
+## F45. Different tasks use almost orthogonal coefficients in the same basis (measured, 2026-11-08, H7)
 - Cosine between final C of different tasks 0.03-0.19 (mul3x3/mul4x3 0.53); the share per matrix kind is the same in
   all tasks (linear-attention qkv ~24 %, MLP ~47 %).
 - Cross-application changes other tasks by −14 to +44 points; the large gains (into rev4, add3x3) look like output
   format, not shared arithmetic. Results §41.2.
 
-## F36. The learned change works only as a whole: neither its early-direction part nor the rest works alone (measured, 2026-11-08, H8-A)
+## F46. The learned change works only as a whole: neither its early-direction part nor the rest works alone (measured, 2026-11-08, H8-A)
 - C_200 split into P (along C_k, oracle scale) and O (off it). At k = 25: R(P) 0.38, R(O) −0.43 (alone it hurts),
   together R = 1. The oracle scale of C_25 equals H7's P_scale (0.38): no rescaling of early coefficients can do
   better. Results §42.1.
 
-## F37. Two learned changes add up; seven do not (measured, 2026-11-08, H8-B)
+## F47. Two learned changes add up; seven do not (measured, 2026-11-08, H8-B)
 - Summing the C of two tasks keeps median 0.89 of each one's gain (42 cells); summing seven (λ 0.5 on dev) keeps 0.60,
   with long arithmetic losing most (div6_2 0.12, mul3x3 0.26) and format-like tasks keeping ~1.0. Cosine between
   the C does not predict the loss. No general damage (GSM8K NLL 1.319 vs 1.321). Results §42.2.
 - TIES merge of the seven (H8 addendum a): best on dev is no trimming (d 1.0, λ 2), test retention 0.59, same as the
   plain sum (0.60); trimming hurts. Near-orthogonal C leave few sign conflicts to resolve. Results §42.4.
 
-## F38. The 9B base already knows MATH answers; the improvement is closing on time (measured, 2026-11-08, results §43)
+## F48. The 9B base already knows MATH answers; the improvement is closing on time (measured, 2026-11-08, results §43)
 - Own Q6_K, MATH-500 n 50: base 20/50, all 30 failures are truncations at 8 192 tokens (16 already had the answer and
   looped on "I will write the response" or format doubts). Forcing `</think>` + "Final answer: \boxed{" gives 27 / 35 /
   41 / 43 of 50 at 512 / 1 024 / 2 048 / 4 096 tokens; MiMo 41/50 at 8 192 (McNemar p 0.69), Jackrong 31/50.
 - Second grader 35/50, every difference a fraction written another way (checked by hand).
 
-## F39. A fine-tune's useful change can be cut out and reused as a small LoRA at half scale (measured, 2026-11-08, results §43.4)
+## F49. A fine-tune's useful change can be cut out and reused as a small LoRA at half scale (measured, 2026-11-08, results §43.4)
 - Jackrong's delta as a rank-64 LoRA keeps 99.97 % of it; on the base at scale 0.5, 2 048 tokens, it scores 14/16
   "has the answer, cannot close" MATH items + 19/20 items the base solves at 8 192 (base at 2 048: 1 + 5).
 - Rank 16 or MLP-only at ×0.5 does as well (14 + 18); either half of the layers or attention-only fails and damages.
@@ -483,24 +689,24 @@ Status labels: **verified** (second method agrees), **measured** (one method), *
   close every time without losing answers. The heretic edit (heretic − Jackrong) is a rank-4 LoRA on 30 residual
   writers; stacked on the closing LoRA it costs little (results §43.5). A mean-activation control vector from MiMo
   helps far less (6 → 15 of 36).
-## F40. Whether a change is reusable as a LoRA is read off its exact spectrum (measured, 2026-11-08, results §43.6)
+## F50. Whether a change is reusable as a LoRA is read off its exact spectrum (measured, 2026-11-08, results §43.6)
 - Exact SVD matters: randomized SVD with q = r + 8 missed the rank-16 truncation by 11-16 % on flat-spectrum deltas.
 - MiMo (full fine-tune), ||ΔW||²-weighted share kept: r64 11 %, r512 45 %. No LoRA of it (r64 at ×1/1.5/2, MLP r256,
   MLP r512) beats the base on the 16 stuck items (≤ 4/16, base 1, MiMo 12; vs MiMo p ≤ 0.008). Jackrong (r64 keeps
   99.97 %): r16 ×0.5 14/16, vs base p = 0.0002. Below r8 it is lost (r4: 11/36 vs r16 32/36).
-- Correction to F39: "r64 keeps 29 %" for MiMo was an unweighted mean; weighted it is 11 %.
+- Correction to F49: "r64 keeps 29 %" for MiMo was an unweighted mean; weighted it is 11 %.
 - WSPLang op `delta_to_lora` writes the adapter and the energy curve (ranks 1..1024) in one pass.
-## F41. A full fine-tune's behaviour can be distilled into a LoRA when its weights cannot (measured, 2026-11-08, results §43.7)
+## F51. A full fine-tune's behaviour can be distilled into a LoRA when its weights cannot (measured, 2026-11-08, results §43.7)
 - 93 of MiMo's own closed, correct MATH answers, 1 epoch, r16 MLP LoRA on the frozen 9B base (22 min on a 12 GB GPU
   by layer streaming with a hand-written backward): MATH probe 6 → 16/36 (p = 0.013), GSM8K 9 → 34/48 (p < 0.0001,
   not trained on GSM8K). MiMo's weight-delta LoRAs got ≤ 4/16 on the stuck items; this one 5/16 there, 11/20 on the
   rest. Still below MiMo (31/36) and Jackrong's weight LoRA (32/36) on MATH; on GSM8K not distinguishable from it.
-## F42. More teacher answers keep improving the distilled LoRA; the base's own answers do not (measured, 2026-11-09, results §43.8)
+## F52. More teacher answers keep improving the distilled LoRA; the base's own answers do not (measured, 2026-11-09, results §43.8)
 - MiMo behaviour distillation with 171 instead of 93 answers: MATH probe 16 → 24/36 (p = 0.039), GSM8K 34 → 41/48
   (p = 0.016); IWIBench reward 0.400 / 0.720, above Jackrong's weight LoRA on GSM8K (0.560-0.600, n.s.), below on MATH.
 - Donor-free self-distillation (one greedy round, 39 of 300 base answers closed and correct): not distinguishable from
   the base (MATH 4/2, GSM8K 9/3). The examples are the items it already solved briefly; initial loss 0.06.
-## F43. A closed-form (no-gradient) fit of down_proj to a teacher's residual stream transfers some behaviour (measured, 2026-11-09, results §43.8)
+## F53. A closed-form (no-gradient) fit of down_proj to a teacher's residual stream transfers some behaviour (measured, 2026-11-09, results §43.8)
 - Layer by layer, ridge chosen on held-out sequences, exported as LoRA r256: MATH 6 → 17/36 (p = 0.003), GSM8K
   9 → 25/48 (p = 0.0004) in 19 min, without a gradient; about distillation round 1 on MATH, below it on GSM8K.
 - The fit explains ≤ 20 % of the held-out mismatch past layer 9 and its ΔW is not low-rank (r256 keeps 31 %): a

@@ -1330,7 +1330,7 @@ Script `lab/probes/delta_patterns/run.py`; datos en `lab/runs/delta_patterns/sta
 - **Cuaderno de hallazgos:** `lab/probes/delta_patterns/findings.md` recoge cada hallazgo (F1-F8), su fuente, su estado (verificado, medido, abierto) y lo que enseña para WSPLang, más las lecciones de herramienta. Se actualiza con cada modelo.
 
 ## 39. Informe completo: MiMo-V2.6-Distill-Qwen-9B frente a su base Qwen3.5-9B (2026-11-07)
-Reúne el benchmark de la base (nuevo) con lo medido en pesos y fuera de ellos (findings F1-F3, F21-F28).
+Reúne el benchmark de la base (nuevo) con lo medido en pesos y fuera de ellos (findings F1-F3, F21-F38).
 
 ### 39.1 Comportamiento: mismo protocolo que §37
 Condiciones comunes:
@@ -1378,13 +1378,13 @@ Prueba que zanjaría la cuestión: repetir los ítems cortados de la base con to
   - MiMo sigue moviendo el modelo en las direcciones que ya movió el post-entrenamiento oficial (F21).
   - Que esto sea "mejora" o "seguir entrenando como asistente" sigue abierto: el control LoRA no lo separa (F24).
 
-### 39.3 Fuera de los pesos (F25, F27, F28)
+### 39.3 Fuera de los pesos (F25, F37, F38)
 - **Tokenizer:** vocab y merges iguales; 7 tokens especiales de audio/TTS añadidos.
   - El pre-tokenizer es el regex de Qwen2. Viene de guardar con transformers 5.12.1, que está en el rango con el
-    fallo, 5.6.0-5.17.0 (F27).
+    fallo, 5.6.0-5.17.0 (F37).
   - Tokeniza distinto hindi, tailandés, bengalí y árabe con diacríticos.
   - El GGUF usa `qwen35`, así que este benchmark no se ve afectado.
-- **Cabeza MTP eliminada:** 15 tensores (F28). No hay decodificación especulativa con MTP propio.
+- **Cabeza MTP eliminada:** 15 tensores (F38). No hay decodificación especulativa con MTP propio.
 - **Config:** solo diferencias de serialización. No hay plantilla de chat en la carpeta HF; va en el GGUF.
 
 ### 39.4 Qué aporta frente a la ficha de HF

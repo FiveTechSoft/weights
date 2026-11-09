@@ -86,7 +86,7 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
 
 Dirección del driver (2026-11-08): partir del par base → mejorado, buscar diferencias reutilizables, solo pruebas de
 minutos, y llegar a algo **concreto y demostrable** (comparado con `areu01or00/qwen0.8B-wsp`, que sí lo tiene).
-Detalle y cifras: results.md §43, findings F39-F41. Métrica única nueva: **reward IWIBench = gain × retention**
+Detalle y cifras: results.md §43, findings F49-F51. Métrica única nueva: **reward IWIBench = gain × retention**
 (`lab/probes/close_probe/reward.py --all`; no-op = 0).
 
 **Lo que funciona (resultado concreto):**
@@ -103,10 +103,10 @@ Destilación de conducta de MiMo r16 (1 pasada, 93 respuestas): reward 0.213 MAT
 
 | # | Cadena | Qué mide | Estado |
 |---|---|---|---|
-| 1 | `chain3.sh` | Destilación MiMo ronda 2: 171 respuestas (78 nuevas), r16 MLP, 1 pasada | HECHO: MATH 24/36, GSM8K 41/48, reward 0.400 / 0.720 (F42) |
-| 2 | `chain_cf5.sh` | Ajuste en forma cerrada (idea WSP/MEMIT, sin gradientes): `down_proj` de cada capa sigue el residual de MiMo → LoRA r256 (`cf_distill.py`) | HECHO (5.º intento): MATH 17/36, GSM8K 25/48, reward 0.267 / 0.233 (F43) |
+| 1 | `chain3.sh` | Destilación MiMo ronda 2: 171 respuestas (78 nuevas), r16 MLP, 1 pasada | HECHO: MATH 24/36, GSM8K 41/48, reward 0.400 / 0.720 (F52) |
+| 2 | `chain_cf5.sh` | Ajuste en forma cerrada (idea WSP/MEMIT, sin gradientes): `down_proj` de cada capa sigue el residual de MiMo → LoRA r256 (`cf_distill.py`) | HECHO (5.º intento): MATH 17/36, GSM8K 25/48, reward 0.267 / 0.233 (F53) |
 | 3 | `chain_demo.sh` + `chain_demo2.sh` | Op `delta_to_lora` exacto sobre Jackrong → demo + eval completa ×0.5 | HECHO: 30/36, 37/48, reward 0.800 / 0.560; lado a lado base 0/3, adaptador 3/3. README confirmado |
-| 4 | `chain_self.sh` | **Sin donante** (STaR, 1 ronda voraz) | HECHO, NO FUNCIONA: 8/36, 15/48, no distinguible de la base (F42) |
+| 4 | `chain_self.sh` | **Sin donante** (STaR, 1 ronda voraz) | HECHO, NO FUNCIONA: 8/36, 15/48, no distinguible de la base (F52) |
 | 5 | `chain_r3.sh` | Destilación MiMo ronda 3: últimos 150 ítems de MATH-500 (se agota) → r16 MLP sobre rondas 1+2+3. Lanzada 06:35 | HECHO: 27/36, 41/48 (r2: 24, 41); vs r2 MATH 4/1 p = 0.375, GSM8K igual → **se aplana**, no se sigue (§43.10) |
 | 6 | `chain_cf6.sh` | Forma cerrada en dos escrituras por capa: salida de atención (`o_proj` / `linear_attn.out_proj`) y luego `down_proj`; mismos datos que cf5 → aísla la escritura extra (`cf_distill.py --targets attn,down`) | HECHO, NO MEJORA: 15/36, 26/48 (cf5: 17, 25) → techo del ajuste lineal capa a capa; **vía sin gradientes para conductas cerrada** (§43.10) |
 | 7 | `chain_placebo.sh` | Placebo de cf5: mismo rango y norma de Frobenius por `down_proj`, direcciones aleatorias (`placebo_lora.py`, test) → solo evaluación. Descarta "cualquier cambio de ese tamaño hace cerrar" | HECHO: 10/36, 14/48; vs base no significativo (p 0.13 / 0.23) pero algo inespecífico; cf5 le gana (p 0.039 / 0.003) → leer cf5 frente al placebo (§43.10) |

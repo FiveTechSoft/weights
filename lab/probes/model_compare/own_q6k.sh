@@ -7,7 +7,7 @@ set -u
 cd /c/weights
 NAME=$1; HF=$2; GSM=$3; MATH=$4
 PY="$HOME/.venvs/weights-cuda/Scripts/python.exe"
-CONV_PY="$HOME/.venvs/llama-convert/Scripts/python.exe"   # transformers 4.57.6 pinned by llama.cpp (F27)
+CONV_PY="$HOME/.venvs/llama-convert/Scripts/python.exe"   # transformers 4.57.6 pinned by llama.cpp (F37)
 LLAMA=/c/Users/Anto/llamacpp
 Q=hf_cache/own_q6k
 OUT=lab/runs/model_compare

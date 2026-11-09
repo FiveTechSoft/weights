@@ -3,7 +3,7 @@
 Written 2026-11-08 at commit 60980fe. One file per experiment family was the ReproBridge lesson: keep environment,
 exact commands, input hashes and expected numbers together, so a new session (or another agent) does not have to
 rediscover them. Plans with pre-registered criteria: `h6_plan.md`, `h7_plan.md`, `h8_plan.md` (same folder).
-Results: `results.md` §40-42; findings F29-F37.
+Results: `results.md` §40-42; findings F39-F47.
 
 ## 1. Environment (the one that produced the numbers)
 | item | value |
@@ -16,7 +16,7 @@ Results: `results.md` §40-42; findings F29-F37.
 | shell | Git Bash; long jobs under `nohup` (Claude Code reaps background shells under memory pressure) |
 
 **Tokenizer:** always `tokenizers.Tokenizer.from_file(tokenizer.json)` (`eval_arith.load_tokenizer`), never
-`AutoTokenizer`: transformers 5.6-5.17 builds the wrong Qwen pre-tokenizer (F27).
+`AutoTokenizer`: transformers 5.6-5.17 builds the wrong Qwen pre-tokenizer (F37).
 
 ## 2. Inputs (verify with `sha256sum` before re-running)
 | file | sha256 |

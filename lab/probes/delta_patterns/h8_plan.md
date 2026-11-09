@@ -1,14 +1,14 @@
 # H8: where the accuracy lives in C, and whether learned changes add up (APPROVED by the user 2026-11-08)
 
-Date: 2026-11-08. Follows H7 (results §41, findings F34-F35). Uses only H7's saved coefficients
+Date: 2026-11-08. Follows H7 (results §41, findings F44-F45). Uses only H7's saved coefficients
 (`hf_cache/h7/<task>/`); nothing is trained. Thresholds below are fixed before any H8 result; changes go in dated
 addenda.
 
 ## Why
 H7 found:
 - the coefficient trajectory is nearly straight and C_25 already points the right way (cos(C_25, C_200) 0.66-0.92);
-- yet no predictor stretched from step k beats stopping at k (F34);
-- different tasks use nearly orthogonal C in the shared basis (F35).
+- yet no predictor stretched from step k beats stopping at k (F44);
+- different tasks use nearly orthogonal C in the shared basis (F45).
 
 Two questions follow:
 - **A.** Is the accuracy in the part of C_200 along C_k (which a predictor could reach by scaling) or in the part off

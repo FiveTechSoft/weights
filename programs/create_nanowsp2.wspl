@@ -2,6 +2,8 @@
 # WSP-Lang 0.5: NanoWSP-2 Architecture Synthesis & Weight Programming
 # Model: NanoWSP-2 (4 Layers, d=128, 4 Heads, d_ff=256, Vocab=256, 599,168 params)
 # Objective: Declarative compilation of 4-layer micro-LLM without backpropagation
+# NOTE (2026-11-08): run as written, 6 of 13 steps are rejected by the write guard (max |delta| > 100) and only
+# 1 of 11 prompts is recalled. See programs/create_nanowsp2_batch.wspl for a variant that fits its own budget.
 # ==============================================================================
 
 experiment create_nanowsp2_from_scratch:

@@ -5,7 +5,7 @@ set -u
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel 2>/dev/null || echo /c/weights)"
 ARM=$1
 PY="$HOME/.venvs/weights-cuda/Scripts/python.exe"
-CONV_PY="$HOME/.venvs/llama-convert/Scripts/python.exe"   # transformers 4.57.6 pinned by llama.cpp (findings F27)
+CONV_PY="$HOME/.venvs/llama-convert/Scripts/python.exe"   # transformers 4.57.6 pinned by llama.cpp (findings F37)
 LLAMA=/c/Users/Anto/llamacpp
 H4=hf_cache/h4
 OUT=lab/runs/h4

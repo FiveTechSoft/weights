@@ -1,0 +1,54 @@
+== Protocol v5 report ==
+Selected encoding per family: {'A': ['rel_old'], 'B': ['rel_old']}
+[all held-out] n=20  trials (censored at 16) | first-proposal score
+   random               9.56 | 0.258
+   static               8.70 | 0.449
+   selected             6.30 | 0.876
+   shuffled_selected    9.32 | 0.386
+   fixed_absolute       7.90 | 0.635
+   fixed_rel_old        6.30 | 0.876
+   fixed_rel_size       7.30 | 0.619
+   oracle               6.25 | 0.890
+[solvable only] n=13  trials (censored at 16) | first-proposal score
+   random               6.10 | 0.323
+   static               4.77 | 0.639
+   selected             1.08 | 0.967
+   shuffled_selected    5.72 | 0.503
+   fixed_absolute       3.54 | 0.707
+   fixed_rel_old        1.08 | 0.967
+   fixed_rel_size       2.62 | 0.720
+   oracle               1.00 | 0.985
+[unseen old layers (2, 4)] n=8  trials (censored at 16) | first-proposal score
+   random               9.13 | 0.247
+   static               9.00 | 0.325
+   selected             4.75 | 0.905
+   shuffled_selected    9.31 | 0.350
+   fixed_absolute       8.75 | 0.301
+   fixed_rel_old        4.75 | 0.905
+   fixed_rel_size       6.75 | 0.513
+   oracle               4.75 | 0.907
+[family A] n=10  trials (censored at 16) | first-proposal score
+   random              14.70 | 0.147
+   static              16.00 | 0.108
+   selected            11.50 | 0.774
+   shuffled_selected   15.20 | 0.170
+   fixed_absolute      14.50 | 0.462
+   fixed_rel_old       11.50 | 0.774
+   fixed_rel_size      13.40 | 0.359
+   oracle              11.50 | 0.780
+[family B] n=10  trials (censored at 16) | first-proposal score
+   random               4.43 | 0.369
+   static               1.40 | 0.789
+   selected             1.10 | 0.979
+   shuffled_selected    3.43 | 0.602
+   fixed_absolute       1.30 | 0.808
+   fixed_rel_old        1.10 | 0.979
+   fixed_rel_size       1.20 | 0.879
+   oracle               1.00 | 1.000
+BEST FIXED (hindsight, all held-out): fixed_rel_old;  hindsight-per-family best: {'A': 'fixed_rel_old', 'B': 'fixed_rel_old'}
+criterion g on all held-out: False   (selected 0.876/6.30 vs best fixed 0.876/6.30)
+criterion g on unseen layers: False   (selected 0.905/4.75 vs best fixed 0.905/4.75)
+criterion h (selected > shuffled and > static, first score): True
+criterion i family A: selected ['rel_old'], hindsight best fixed_rel_old
+criterion i family B: selected ['rel_old'], hindsight best fixed_rel_old
+unsolved by every policy incl. oracle: 7/20

@@ -39,7 +39,7 @@ A wrong prediction is recorded as wrong, not re-explained.
 5. Outside the weights:
    - Right: vocab and merges are identical, and the chat template is byte-identical.
    - **Wrong** on the config: it has 2 real changes, MTP removed and `vision_config.model_type` renamed.
-   - Not predicted: the pre-tokenizer and decoder differ, the same as MiMo (F25). Cause found in findings F27.
+   - Not predicted: the pre-tokenizer and decoder differ, the same as MiMo (F25). Cause found in findings F37.
 
 Report defects to fix:
 - (a) It must list hidden tensors that exist only in the base (the MTP head).

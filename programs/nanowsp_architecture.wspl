@@ -1,6 +1,8 @@
 # ==============================================================================
 # NanoWSP Architecture & Surgical Weight-Space Programming Program
 # Model: NanoWSP-80k (2-layer micro-transformer, d=64, heads=2, d_ff=128)
+# Prerequisites: python scripts/make_nanowsp_key.py (creates data/nanowsp_key.npz) and programs/create_nanowsp.wspl
+# (creates models/nanowsp/model.safetensors). The unlearning step writes a separate file, never the input model.
 # Foundation: Fast Weight Programmers (Schlag, Irie, Schmidhuber 2021) &
 #             Spectral Perturbation Bounds (Davis-Kahan & Weyl)
 # ==============================================================================
@@ -30,4 +32,4 @@ experiment nanowsp_surgical_surgery:
         step assert_orthogonal_preservation layers.1.mlp_out.weight key=data/nanowsp_key.npz
 
         # Step 5: Delta-Rule Attractor Unlearning
-        step delta_unlearn layers.1.mlp_out.weight key=data/nanowsp_key.npz eta=1.0 target=0.0
+        step delta_unlearn layers.1.mlp_out.weight key=data/nanowsp_key.npz eta=1.0 target=0.0 out=models/nanowsp/model_unlearned.safetensors

@@ -1,6 +1,6 @@
 """Build base + alpha * (source - base) for every tensor the two models share (task-arithmetic scaling of a fine-tune).
 
-Tensors missing in the source (MTP head, F28) keep the base value. Config, tokenizer and chat template come from the
+Tensors missing in the source (MTP head, F38) keep the base value. Config, tokenizer and chat template come from the
 base (avoids the source's older pre-tokenizer, F25). Shards are written with the base's names. Inputs are never
 modified; out must be a new directory.
 
