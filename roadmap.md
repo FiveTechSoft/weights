@@ -85,14 +85,18 @@ Destilación de conducta de MiMo r16 (1 pasada, 93 respuestas): reward 0.213 MAT
 
 | # | Cadena | Qué mide | Estado |
 |---|---|---|---|
-| 1 | `chain3.sh` | Destilación MiMo ronda 2: 171 respuestas (78 nuevas), r16 MLP, 1 pasada | entrenando |
-| 2 | `chain_cf.sh` | Ajuste en forma cerrada (idea WSP/MEMIT, sin gradientes): `down_proj` de cada capa sigue el residual de MiMo → LoRA r256 (`cf_distill.py`, test 0.8B OK) | en cola |
-| 3 | `chain_demo.sh` | Op `delta_to_lora` exacto sobre Jackrong → demo 3 ítems + eval completa ×0.5 (confirma o corrige el README) | en cola |
-| 4 | `chain_self.sh` | **Sin donante** (STaR / iteración experta, 1 ronda): la base responde 300 ítems de entrenamiento, se guardan solo los cerrados y correctos, LoRA r16 → reward. Si se acerca a Jackrong, quita el límite "hace falta un donante" | en cola |
+| 1 | `chain3.sh` | Destilación MiMo ronda 2: 171 respuestas (78 nuevas), r16 MLP, 1 pasada | HECHO: MATH 24/36, GSM8K 41/48, reward 0.400 / 0.720 (F42) |
+| 2 | `chain_cf5.sh` | Ajuste en forma cerrada (idea WSP/MEMIT, sin gradientes): `down_proj` de cada capa sigue el residual de MiMo → LoRA r256 (`cf_distill.py`) | HECHO (5.º intento): MATH 17/36, GSM8K 25/48, reward 0.267 / 0.233 (F43) |
+| 3 | `chain_demo.sh` + `chain_demo2.sh` | Op `delta_to_lora` exacto sobre Jackrong → demo + eval completa ×0.5 | HECHO: 30/36, 37/48, reward 0.800 / 0.560; lado a lado base 0/3, adaptador 3/3. README confirmado |
+| 4 | `chain_self.sh` | **Sin donante** (STaR, 1 ronda voraz) | HECHO, NO FUNCIONA: 8/36, 15/48, no distinguible de la base (F42) |
 
-**Siguiente según resultados:** si (4) funciona, 2ª ronda de autodestilación con el modelo mejorado (¿se estanca?);
-si (2) supera a (1) en reward, forma cerrada como op de WSPLang (`behaviour_fit`). Después: README de la demo
-definitivo. Opcional: correr un editor en IWIBench (necesita que el driver acepte la licencia de Gemma 3 1B y una API key).
+Resumen 2026-11-09: tres vías transfieren conducta con medida significativa (pesos de rango bajo de Jackrong; destilar
+respuestas de MiMo; forma cerrada sin gradientes). Sin donante, una ronda voraz no.
+
+**Siguiente (propuestas, no lanzadas):** destilación ronda 3 con más respuestas de MiMo (la curva 93→171 sigue
+subiendo); forma cerrada también en `o_proj` y exporte de mayor rango (cada capa solo explica ≤ 20 % retenido desde
+la 9); autodestilación con muestreo (varias respuestas por ítem, quedarse con las cortas). Opcional: un editor en
+IWIBench (licencia de Gemma 3 1B y API key del driver).
 
 **Revisado y descartado (2026-11-08):** `areu01or00/qwen0.8B-wsp` (MEMIT de hechos; útil solo la resolución en forma
 cerrada; su resultado cae a 0/5 al comprobar con pesos bf16 guardados); thePM_001/AEP (promocional, sin código de
