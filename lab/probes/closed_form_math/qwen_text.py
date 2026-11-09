@@ -29,14 +29,18 @@ class QwenText:
             self.m = Qwen3_5TextModel(cfg)
         self.m.embed_tokens = torch.nn.Embedding(1, cfg.hidden_size)
         self.m = self.m.to_empty(device="cpu").to(torch.bfloat16)
-        sd = {}
-        for k in self.f.keys():
+        params = dict(self.m.named_parameters()); params.update(dict(self.m.named_buffers()))
+        loaded = set()
+        for k in self.f.keys():                  # one tensor at a time: no second full copy of the layers in memory
             if k.startswith(PFX) and not k.startswith(PFX + "embed_tokens"):
-                sd[k[len(PFX):]] = self.f.get_tensor(k)
-        missing, unexpected = self.m.load_state_dict(sd, strict=False)
-        missing = [k for k in missing if not k.startswith("embed_tokens") and "rotary" not in k]
-        if missing or unexpected:
-            raise RuntimeError("load mismatch: missing %s unexpected %s" % (missing[:5], unexpected[:5]))
+                name = k[len(PFX):]
+                if name not in params:
+                    raise RuntimeError("unexpected tensor " + name)
+                params[name].data.copy_(self.f.get_tensor(k).to(params[name].dtype))
+                loaded.add(name)
+        missing = [n for n, _ in self.m.named_parameters() if n not in loaded and not n.startswith("embed_tokens")]
+        if missing:
+            raise RuntimeError("missing tensors: %s" % missing[:5])
         # non-persistent buffers (rotary inv_freq) were emptied by to_empty: rebuild
         self.m.rotary_emb = type(self.m.rotary_emb)(config=cfg)
         self.m.eval()
@@ -53,7 +57,7 @@ class QwenText:
         with torch.no_grad():
             return self.m(inputs_embeds=self.embed(ids), attention_mask=mask).last_hidden_state
 
-    def logits_last(self, h_last: torch.Tensor, chunk: int = 31040) -> torch.Tensor:
+    def logits_last(self, h_last: torch.Tensor, chunk: int = 8192) -> torch.Tensor:
         out = []
         V = self.sl.get_shape()[0]
         for s in range(0, V, chunk):

@@ -4,6 +4,7 @@ import random
 SKILLS = {  # name: (digits_a, digits_b, op)
     "add2": (2, 2, "+"), "add3": (3, 3, "+"), "add4": (4, 4, "+"), "mul2x2": (2, 2, "*"),
 }
+SMOKE_PAIRS = {(47, 68), (12, 30)}   # observed in a 3-prompt smoke test before the sets were fixed
 SEEDS = {"calibration": 1, "write": 2, "holdout": 3}
 SIZES = {"calibration": 100, "write": 40, "holdout": 100}
 
@@ -18,7 +19,7 @@ def answer(a, b, op):
 
 def make_sets(skill):
     da, db, op = SKILLS[skill]
-    used, out = set(), {}
+    used, out = set(SMOKE_PAIRS), {}  # pairs seen in the smoke test are excluded from every set
     for name in ("calibration", "write", "holdout"):
         rng = random.Random(SEEDS[name] * 1000 + len(skill) * 7 + sum(map(ord, skill)))
         items = []
