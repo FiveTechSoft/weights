@@ -42,3 +42,33 @@ class TestRunTail(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestLoraField(unittest.TestCase):
+    def test_ask_sends_per_request_lora_scales(self):
+        """lora=[(id, scale)] -> the llama-server per-request field "lora": [{"id", "scale"}]; absent when None."""
+        import io
+        import json as _json
+        from engine import bench_runner as br
+        sent = []
+
+        class R(io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        def fake(req, timeout=0):
+            sent.append(_json.loads(req.data))
+            return R(_json.dumps({"choices": [{"message": {"content": "x"}, "finish_reason": "stop"}],
+                                  "usage": {"completion_tokens": 1}}).encode())
+        old = br.urllib.request.urlopen
+        br.urllib.request.urlopen = fake
+        try:
+            br.ask("http://x", "q", 10, lora=[(0, 0.5)])
+            br.ask("http://x", "q", 10)
+        finally:
+            br.urllib.request.urlopen = old
+        self.assertEqual(sent[0]["lora"], [{"id": 0, "scale": 0.5}])
+        self.assertNotIn("lora", sent[1])

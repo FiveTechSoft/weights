@@ -40,9 +40,12 @@ def endpoint_url(endpoint) -> str:
     return f"http://127.0.0.1:{e}/v1/chat/completions" if e.isdigit() else e
 
 
-def ask(url, text, max_tokens):
+def ask(url, text, max_tokens, lora=None):
+    """lora: [(id, scale), ...] for adapters loaded with llama-server --lora ... --lora-init-without-apply."""
     body = {"messages": [{"role": "user", "content": text + SUFFIX}], "temperature": 0, "seed": 0,
             "max_tokens": max_tokens}
+    if lora:
+        body["lora"] = [{"id": int(i), "scale": float(s)} for i, s in lora]
     req = urllib.request.Request(url, json.dumps(body).encode(), {"Content-Type": "application/json"})
     r = json.loads(urllib.request.urlopen(req, timeout=7200).read())
     ch = r["choices"][0]
@@ -78,7 +81,7 @@ def simple_norm(s):
     return re.sub(r"\s+", "", s).lower().rstrip(".")
 
 
-def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_dir=None, log=print):
+def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_dir=None, log=print, lora=None):
     m5 = _m5()
     url = endpoint_url(endpoint)
     out_dir = Path(out_dir) if out_dir else ROOT / "lab" / "runs" / "model_compare"
@@ -97,7 +100,7 @@ def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_d
 
     def one(job):
         bench, i, text, gold = job
-        r = ask(url, text, max_tokens)
+        r = ask(url, text, max_tokens, lora=lora)
         pred = m5.extract_pred(r["content"])
         ok1 = bool(pred) and m5.equivalent(pred, gold)
         ok2 = grade_gsm_independent(r["content"], gold) if bench == "gsm8k" else (
@@ -126,7 +129,7 @@ def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_d
                           "loop_tails": sum(bool(r.get("loop")) for r in rs),
                           "mean_tokens": round(sum(r["tokens"] for r in rs) / len(rs)),
                           "mean_tok_s": round(sum(r["tok_s"] for r in rs) / len(rs), 1)}
-    report = {"model": name, "endpoint": url, "max_tokens": max_tokens, "seconds": round(time.time() - t0),
+    report = {"model": name, "endpoint": url, "max_tokens": max_tokens, "lora": lora, "seconds": round(time.time() - t0),
               "summary": summary, "items": rows}
     (out_dir / f"{name}.json").write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     log(f"{name} {json.dumps(summary)}")
