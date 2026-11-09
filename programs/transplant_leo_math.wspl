@@ -1,0 +1,3 @@
+experiment transplant_leo_math:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-9b-hf model=hf_cache/leo_math_grpo rank=16 out=hf_cache/close_lora/leo_r16 gguf=hf_cache/close_lora/leo_r16.gguf

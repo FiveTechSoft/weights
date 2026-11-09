@@ -200,6 +200,16 @@ def check_new_file(out_path, protected, written) -> None:
             raise WriteGuardError(f"refusing to overwrite the input model {p}; choose another out=")
 
 
+def transfer_verdict(kept_weighted_at) -> str:
+    """Will a fine-tune's change move as a small adapter? Read from the weighted energy kept at rank 16 (delta_to_lora's
+    energy.json), before any eval. Calibrated on Qwen3.5-9B: Jackrong keeps 0.586 and transfers (MATH 6->30/36),
+    MiMo keeps 0.038 and does not (<= 4/16 at any rank up to 512)."""
+    k = kept_weighted_at.get("16")
+    if k is None:
+        return "uncertain"
+    return "likely" if k >= 0.5 else "unlikely" if k < 0.2 else "uncertain"
+
+
 def check_report_path(out_path, inputs) -> Path:
     """Reports and signatures never land inside an input model, and are never weight files."""
     out = Path(out_path)
@@ -2204,23 +2214,34 @@ def execute_plan_v4(
                 from engine import weight_diff as wd
                 if not named.get("base") or not named.get("model") or not named.get("out"):
                     raise ValueError("delta_to_lora needs base=<model> model=<model> out=<adapter dir> [rank=16]")
-                base_p, model_p = _model_path(named["base"]), _model_path(named["model"])
-                out_p = check_report_path(named["out"], [base_p, model_p])
+                # model=hf:<owner>/<repo>[@revision]: the fine-tune is read from the hub by byte ranges, not copied
+                hub = str(named["model"])[3:] if str(named["model"]).startswith("hf:") else None
+                base_p = _model_path(named["base"])
+                model_p = None if hub else _model_path(named["model"])
+                out_p = check_report_path(named["out"], [base_p] + ([model_p] if model_p else []))
                 if out_p.exists():
                     raise WriteGuardError(f"delta_to_lora: {out_p} exists; adapters are never overwritten")
                 gguf_p = None
                 if named.get("gguf"):
                     gguf_p = _model_path(named["gguf"])
-                    check_report_path(gguf_p.with_suffix(".json"), [base_p, model_p])
+                    check_report_path(gguf_p.with_suffix(".json"), [base_p] + ([model_p] if model_p else []))
                     if gguf_p.exists():
                         raise WriteGuardError(f"delta_to_lora: {gguf_p} exists")
                 kinds = set(str(named["kinds"]).split(",")) if named.get("kinds") else None
                 if kinds and not kinds <= set(le.KINDS):
                     raise ValueError(f"delta_to_lora: kinds must be among {le.KINDS}")
                 base_r = wd.Renamed(wd.LocalSafetensors(base_p), wd.text_model_name)
-                model_r = wd.Renamed(wd.LocalSafetensors(model_p), wd.text_model_name)
+                if hub:
+                    repo, _, rev = hub.partition("@")
+                    rev = rev or "main"
+                    model_src = wd.RangeSafetensors(wd.hf_files(repo, rev), wd.hf_fetch(repo, rev))
+                else:
+                    model_src = wd.LocalSafetensors(model_p)
+                model_r = wd.Renamed(model_src, wd.text_model_name)
                 res["result"] = le.export_lora(base_r, model_r, int(named.get("rank", 16)), out_p, kinds=kinds,
                                                base_label=str(base_p))
+                res["result"]["verdict"] = transfer_verdict(res["result"]["kept_weighted_at"])
+                res["result"]["donor"] = named["model"]
                 if gguf_p:
                     conv = os.environ.get("WSP_LORA_CONVERTER")
                     if not conv:

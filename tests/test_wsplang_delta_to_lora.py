@@ -92,6 +92,43 @@ class TestDeltaToLora(unittest.TestCase):
         self.assertLess(float((B @ A - X).norm() / X.norm()), 1e-4)
         self.assertAlmostEqual(kept, float(S[:16].pow(2).sum() / S.pow(2).sum()), places=5)
 
+    def test_model_on_the_hub_is_read_by_ranges(self):
+        """model=hf:<owner>/<repo> reads the fine-tune from the Hugging Face hub by byte ranges (nothing written to
+        disk); here the hub is a stub that serves the local file's bytes."""
+        from engine import weight_diff as wd
+        src = self.dir / "tuned" / "model.safetensors"
+        seen = []
+
+        def files(repo, revision="main", subfolder=""):
+            seen.append((repo, revision))
+            return ["model.safetensors"]
+
+        def fetch(repo, revision="main", retries=5):
+            def f(name, start, end):
+                with open(src, "rb") as fh:
+                    fh.seek(start)
+                    return fh.read(end - start + 1)
+            return f
+        old = wd.hf_files, wd.hf_fetch
+        wd.hf_files, wd.hf_fetch = files, fetch
+        try:
+            out = self.dir / "lora_hub"
+            r = run([f"delta_to_lora base={self.base} model=hf:someone/tuned-9b rank=4 out={out.as_posix()}"])[0]
+        finally:
+            wd.hf_files, wd.hf_fetch = old
+        self.assertEqual(r["status"], "ok", r)
+        self.assertEqual(seen, [("someone/tuned-9b", "main")])
+        self.assertGreater(r["result"]["mean_kept"], 0.999)
+        self.assertEqual(r["result"]["verdict"], "likely")
+
+    def test_verdict_from_the_energy_kept_at_rank_16(self):
+        """Measured on 9B: Jackrong keeps 58.6 % at rank 16 and transfers; MiMo keeps 3.8 % and does not.
+        verdict: likely >= 0.5, unlikely < 0.2, uncertain between (a prediction made before any eval)."""
+        self.assertEqual(wsplang.transfer_verdict({"16": 0.586}), "likely")
+        self.assertEqual(wsplang.transfer_verdict({"16": 0.038}), "unlikely")
+        self.assertEqual(wsplang.transfer_verdict({"16": 0.35}), "uncertain")
+        self.assertEqual(wsplang.transfer_verdict({}), "uncertain")
+
     def test_passes_cli_gate(self):
         prog = wsplang.parse_args_lines("experiment g:\nsteps:\n    step delta_to_lora base=a model=b rank=8 out=o\n")
         steps, errors = wsplang.validate(prog)
