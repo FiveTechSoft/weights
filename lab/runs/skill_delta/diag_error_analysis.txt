@@ -1,0 +1,53 @@
+{'a': 63, 'b': 88, 'op': '*', 'prompt': 'Q: 63 * 88 = ?\nA:', 'answer': '5544'}
+A {'wrong_same_len': 60, 'correct': 27, 'new_question': 13}
+B {'wrong_same_len': 63, 'correct': 37}
+A {'nz': (12, 68), 'both_nonround': (13, 76), 'ends0': (15, 32), 'round_operand': (14, 24)}
+B {'nz': (18, 68), 'both_nonround': (21, 76), 'ends0': (19, 32), 'round_operand': (16, 24)}
+63 88 5544 ' 5584\n' ' 5584\n'
+60 62 3720 ' 3780\n' ' 3780\n'
+41 40 1640 ' 1600\n' ' 1600\n'
+28 30 840 ' 840\nA' ' 840\n\n'
+60 13 780 ' 780\nIs' ' 780\n\n'
+90 69 6210 ' 6210\n' ' 6210\n'
+14 75 1050 ' 14 * 7' ' 1050\n'
+52 49 2548 ' 2500\n' ' 2512\n'
+54 21 1134 ' 1111\n\n' ' 1132\n'
+66 52 3432 ' 3400\n' ' 3400\n'
+97 23 2231 ' 2201\n' ' 2213\n'
+74 10 740 ' 740\nA' ' 740\n\n'
+49 59 2891 ' 2901\n' ' 2915\n'
+19 98 1862 ' 19 * 9' ' 1900\n'
+100 {'calibration': 100, 'write': 40, 'holdout': 100, 'train': 2000, 'selection': 100, 'control': 100}
+-----
+A new_question items 13 -> B correct 5
+A numeric items 87 A correct 27 B correct 32
+among numeric: B-only 14 A-only 9
+McNemar numeric-only p 0.4048728942871094  format-only gain 13 items, 10 corrects
+A wrong digits count {1: 26, 2: 26, 3: 7, 4: 1} first wrong position {2: 38, 1: 16, 0: 2, 3: 4}
+B wrong digits count {1: 28, 2: 26, 3: 8, 4: 1} first wrong position {2: 37, 3: 3, 1: 19, 0: 4}
+A median rel err (numeric answers) 0.0055
+B median rel err (numeric answers) 0.0039
+{
+ "steps": 150,
+ "complete": true,
+ "first5": [
+  0.8233096599578857,
+  0.4810347855091095,
+  0.6712706089019775,
+  0.5197611451148987,
+  0.5807737708091736
+ ],
+ "last5": [
+  0.3130570650100708,
+  0.34594717621803284,
+  0.3821825087070465,
+  0.2771188020706177,
+  0.29647862911224365
+ ],
+ "seconds": 29.4,
+ "cached_positions": 4657,
+ "delta_fro": 2.541370153427124,
+ "delta_rel": 0.1547962874174118,
+ "changed_entries": 3622834,
+ "B_sha256": "bea3340ee3bb33d191e9a03fdecac2d9a543247d0f75602d78a29b6b26ec2d7a"
+}
