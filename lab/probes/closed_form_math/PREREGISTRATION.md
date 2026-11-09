@@ -27,9 +27,34 @@ transfers to a SKILL is the hypothesis, and the prior is low: a write fits any t
 4. Write problems alone do not count; their accuracy is reported only to show the write took.
 Any layer that fails 1-3 is a failed layer. Passing is evidence for that model, skill and layer only.
 
+## Measurement definitions (added before any run; amendment 1, 2026-11-09 06:55, no results seen)
+- Scoring is FREE GENERATION, not teacher-forced probability. A higher probability of the target token is never counted as a hit.
+  Greedy decode, max 5 new tokens for sums, 8 for text prompts. Qwen tokenises digits one by one, so a 3-digit sum is 3 tokens + a
+  newline/EOS.
+- Prompt: "Q: {a} + {b} = ?\nA:" (no chat template, no thinking). Output is cut at the first newline, stripped, and must equal
+  str(a+b) exactly. Anything else, including a correct number followed by extra digits, is a miss.
+- The write must cover EVERY answer position, because later digits are produced at later positions: for each write problem the keys
+  are the down_proj inputs at the last prompt token and after each correct answer digit (teacher-forced prefix, write set only).
+  About 3-4 keys per problem, ~150 keys. Value change R = c * (E[correct next token] - E[model's top token]) in the model's own
+  output space; c is the smallest value from {0.5, 1, 2, 4} (times the median hidden norm) that makes the correct token the argmax at
+  every write key. c is fixed on the write set only. Never tuned on the 100 held-out.
+- Retention is identity, not similarity: greedy output of the 50 text prompts (first 8 tokens) must equal the unpatched output
+  token for token, and the 50 subtraction problems must give the same exact-match verdict AND the same string as unpatched.
+- Variants per layer: unpatched, written, shuffled-answers write, random same-norm update. Reference only (no criterion): unpatched with
+  3 in-context examples, to show whether a write beats the cheapest alternative.
+- Layer: L=16 and L=20 are both reported; none is chosen on the held-out. The headroom gate is ONE decision on the unpatched holdout:
+  >= 80% exact match makes the whole test null for this skill. Changing skill needs a new, disjoint holdout and a new amendment.
+- Abort rules: measure 10 prompts first; if projected total > 90 min, stop and report instead of trimming criteria.
+
+## Cost (estimate, NOT measured)
+- Generation without a KV cache re-runs the short prompt each step (~16 tokens), reading the weights once per step for the whole batch.
+  Per step: 1.75 GB of reads (page cache cannot hold it all in 1.7 GB free RAM) plus ~1.6 GFLOP/token; 240 prompts x 16 tokens ~ 6 TFLOP,
+  roughly 1-2 minutes on 2 CPUs. 5-8 steps, 7 variants per layer (shared prefix below layer L reused): ~35-90 min per layer, two layers
+  up to ~3 h. This is NOT the short run the instruction asked for. Cheaper version, to be decided before running: one layer (16),
+  3 variants (unpatched, written, shuffled) = ~15-30 min. The timing run on 10 prompts replaces these guesses.
+
 ## Feasibility here (checked, not run)
-- Box: 2 CPU, ~1.7 GB RAM free, 15 GB disk. The model file (1.75 GB bf16) does not fit in RAM as a loaded model; it needs a
-  layer-streamed forward (embedding matrix alone is ~0.5 GB). A scoring pass of 240 short prompts is minutes on CPU, not hours.
-- Blocking decision: downloading the 1.75 GB file (a one-off, pinned, via ByteBudget) and writing a layer-streamed runner for
-  Qwen3.5's mixed linear/full attention layers. No spend, no server. Not started: the instruction was no heavy downloads.
-- The cached Qwen3.5-9B layers 0-3 cannot run this test: scoring math needs every layer.
+- Box: 2 CPU, ~1.7 GB RAM free, 15 GB disk. The model file (1.75 GB bf16) does not fit in RAM as a loaded model, so a layer-streamed
+  forward is needed (embedding ~0.5 GB, also the tied output head). Free generation re-reads the weights every step, as above.
+- Blocking decision: explicit permission to download the 1.75 GB file once (pinned, via ByteBudget). NOT given; nothing downloaded.
+- The cached Qwen3.5-9B layers 0-3 cannot run this test: scoring arithmetic needs every layer.
