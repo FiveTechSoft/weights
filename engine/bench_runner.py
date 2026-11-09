@@ -81,15 +81,20 @@ def simple_norm(s):
     return re.sub(r"\s+", "", s).lower().rstrip(".")
 
 
-def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_dir=None, log=print, lora=None):
+def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_dir=None, log=print, lora=None,
+        gsm_idx=None, math_idx=None):
+    """gsm_idx / math_idx: explicit item lists (e.g. engine/sealed_set.py); otherwise GSM8K first gsm_n and MATH-500
+    select_indices(2026, math_n)."""
     m5 = _m5()
     url = endpoint_url(endpoint)
     out_dir = Path(out_dir) if out_dir else ROOT / "lab" / "runs" / "model_compare"
     out_dir.mkdir(parents=True, exist_ok=True)
-    gsm = [json.loads(line) for line in (ROOT / "data" / "gsm8k_test.jsonl").read_text(encoding="utf-8").splitlines()][:gsm_n]
+    gsm_all = [json.loads(line) for line in (ROOT / "data" / "gsm8k_test.jsonl").read_text(encoding="utf-8").splitlines()]
+    gsm_idx = list(gsm_idx) if gsm_idx is not None else list(range(min(gsm_n, len(gsm_all))))
     math_all = m5.load_items()
-    math_idx = m5.select_indices(2026, math_n, len(math_all)) if math_n else []
-    jobs = [("gsm8k", i, it["question"], gsm_gold(it["answer"])) for i, it in enumerate(gsm)]
+    if math_idx is None:
+        math_idx = m5.select_indices(2026, math_n, len(math_all)) if math_n else []
+    jobs = [("gsm8k", i, gsm_all[i]["question"], gsm_gold(gsm_all[i]["answer"])) for i in gsm_idx]
     jobs += [("math500", i, math_all[i]["problem"], math_all[i]["answer"]) for i in math_idx]
     t0 = time.time()
     partial = out_dir / f"{name}.partial.jsonl"
