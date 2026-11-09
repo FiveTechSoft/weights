@@ -51,4 +51,19 @@ targets (including shuffled ones) and only new-problem accuracy can show a skill
 - Plan change: the closed-form answer-writing test (closed_form_math/PREREGISTRATION.md) is superseded by lab/probes/skill_delta/PROTOCOL.md
   (train a small teacher on 2-digit multiplication, then reproduce its delta by surgery, gates fixed in advance). Executed so far: Qwen3.5-0.8B
   downloaded (pinned), free-generation runner measured (100 prompts ~90 s), 75 add2 unpatched calibration generations (54/75), trainer smoke
-  tests. No teacher trained, no gate evaluated.
+  tests. (Superseded by the stage-1 result below.)
+
+## Update 2026-11-09 (later): stage 1 executed, gate not met; one DSpine-inspired prototype archived
+Stage 1 of `lab/probes/skill_delta/PROTOCOL.md`, one configuration, one seed: teacher B = Qwen3.5-0.8B (pinned) with only
+`layers.23.mlp.down_proj` trained (800 two-digit multiplication examples, 150 steps, Adam 1e-4), saved as bf16 safetensors
+(sha256 bea3340ee3bb33d191e9a03fdecac2d9a543247d0f75602d78a29b6b26ec2d7a, not published) and re-measured in a fresh process.
+Holdout of 100 new problems, free generation, exact match: A 27/100, B 37/100 (+10 points; B-only 19, A-only 9; McNemar exact p=0.087).
+The owner's criterion "B improves over A" is directionally met but small and not significant; the stricter size (>=15 points and p<0.05)
+is an addition by the maintainer's task, not the owner's, and it is NOT met. B's retention on controls was not evaluated.
+So B exists; what is missing is sufficient evidence of improvement and of retention. Stages 2 (A+delta recovers B) and 3 (filtering/subspace
+>=90% of the gain, controls within 2 points) were NOT run, and no other task was tried. Details: `experiments/multiplication/README.md`,
+`lab/runs/skill_delta/`.
+
+A separate DSpine-inspired probe (speculative-decoding style drafter, not DSpine, not an engine feature) is archived in
+`lab/probes/behavior_extraction/` as a prototype. Status: NOT validated on the real model; only synthetic tests of its memory-light
+helper (`tests/test_behavior_extraction_lite.py`). Its README separates the original files from the maintainer's later edits.

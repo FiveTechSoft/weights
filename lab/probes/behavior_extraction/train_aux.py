@@ -21,7 +21,8 @@ import torch
 from torch.utils.checkpoint import checkpoint
 from safetensors.torch import load_file, save_file
 sys.path.insert(0, "."); sys.path.insert(0, "lab/probes/closed_form_math")
-from qwen_text import QwenText
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from lite_text import LiteText
 
 ap = argparse.ArgumentParser(); ap.add_argument("model"); ap.add_argument("cache"); ap.add_argument("out")
 ap.add_argument("--arm", choices=["h", "x", "c"], required=True)
@@ -33,7 +34,7 @@ a = ap.parse_args(); torch.manual_seed(0); os.makedirs(a.out, exist_ok=True)
 LAYERS = [int(x) for x in a.layers.split(",")]
 cache = load_file(a.cache)
 TGT = cache["tgt"]; H_LAST = cache["hlast"].float()
-q = QwenText(a.model)
+q = LiteText(a.model, tokenizer=False)   # embedding/head rows only: no decoder layers in the training process
 
 if a.arm == "h":
     IN = torch.cat([cache["h%d" % i].float() for i in LAYERS], -1)          # (N, 1024*len(LAYERS))

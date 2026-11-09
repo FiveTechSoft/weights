@@ -13,11 +13,13 @@ disjoint from every existing set). Hit = exact match of the text before the firs
 prompts and the mul2x2/add2 sets are identical to the main experiment.
 usage: eval_aux.py MODEL_DIR AUX.safetensors OUT.json --arm h|x|c [--zero-hidden] [--layers 3,11,19,23] SET...
 """
-import json, sys, time
+import json, os, sys, time
 import torch
 from safetensors.torch import load_file
 sys.path.insert(0, "."); sys.path.insert(0, "lab/probes/closed_form_math")
 sys.path.insert(0, "lab/probes/behavior_extraction")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from lite_text import LiteText, prefix_mean_bf16
 from qwen_text import QwenText
 from data import make_sets, is_hit
 from range_data import make_range_set, make_confirm_set
@@ -32,7 +34,8 @@ if "--layers" in args:
 else:
     LAYERS = [3, 11, 19, 23]
 model, aux_path, out, sets = args[0], args[1], args[2], args[3:]
-q = QwenText(model); tok = q.tok
+q = QwenText(model) if arm == "h" else LiteText(model)   # X and C never run a decoder layer
+tok = q.tok
 state = {k[len("aux."):]: w.float() for k, w in load_file(aux_path).items()}
 if arm in ("h", "x"):
     aux = torch.nn.Sequential(torch.nn.Linear(state["0.weight"].shape[1], state["0.weight"].shape[0]),
@@ -60,8 +63,7 @@ def propose(prompts, max_new=6):
                 st = torch.zeros_like(st)
             z = h_last + aux(st)
         elif arm == "x":                        # standalone: embeddings + aux + head, no decoder layers
-            emb = q.embed(ids).float() * mask[..., None]
-            z = aux(emb.sum(1) / mask.sum(1, keepdim=True).clamp(min=1).float())
+            z = aux(prefix_mean_bf16(q.embed(ids), mask))   # bf16-rounded like the training cache
         else:                                   # arm C: GRU over each non-pad sequence, no decoder layers
             rows = []
             for r in range(len(prompts)):
