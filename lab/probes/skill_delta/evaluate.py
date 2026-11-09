@@ -1,5 +1,5 @@
 """Free-generation evaluation of A (base) or B (one tensor replaced). Prints/stores exact-match counts and per-item verdicts.
-usage: evaluate.py MODEL_DIR OUT.json SET [SET...] [--tensor FILE.safetensors]   SET in holdout|selection|control|text
+usage: evaluate.py MODEL_DIR OUT.json SET [SET...] [--tensor FILE.safetensors]   SET in holdout|selection|control|text|confirm
 Hit = exact match of the text before the first newline (arithmetic) or gold substring in the first 8 generated tokens (text)."""
 import json, sys, time
 sys.path.insert(0, "."); sys.path.insert(0, "lab/probes/closed_form_math")
@@ -27,7 +27,11 @@ for s in sets:
         verdict = [gold in g for g, (_, gold) in zip(gen, items)]
     else:
         skill = "add2" if s == "control" else "mul2x2"
-        pool = make_sets(skill)["control" if s == "control" else s][LO:HI]
+        if s == "confirm":
+            sys.path.insert(0, "lab/probes/behavior_extraction"); from range_data import make_confirm_set
+            pool = make_confirm_set()[LO:HI]
+        else:
+            pool = make_sets(skill)["control" if s == "control" else s][LO:HI]
         gen = [g for i in range(0, len(pool), 5) for g in q.generate([p["prompt"] for p in pool[i:i + 5]], 6)]
         verdict = [is_hit(g, p["answer"]) for g, p in zip(gen, pool)]
     res[s] = {"hits": sum(verdict), "n": len(verdict), "verdict": verdict, "gen": gen, "seconds": round(time.time() - t, 1)}
