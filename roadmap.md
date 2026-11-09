@@ -91,6 +91,7 @@ Destilación de conducta de MiMo r16 (1 pasada, 93 respuestas): reward 0.213 MAT
 | 4 | `chain_self.sh` | **Sin donante** (STaR, 1 ronda voraz) | HECHO, NO FUNCIONA: 8/36, 15/48, no distinguible de la base (F42) |
 | 5 | `chain_r3.sh` | Destilación MiMo ronda 3: últimos 150 ítems de MATH-500 (se agota) → r16 MLP sobre rondas 1+2+3. Lanzada 06:35 | EN MARCHA |
 | 6 | `chain_cf6.sh` | Forma cerrada en dos escrituras por capa: salida de atención (`o_proj` / `linear_attn.out_proj`) y luego `down_proj`; mismos datos que cf5 → aísla la escritura extra (`cf_distill.py --targets attn,down`) | EN COLA (espera a la 5) |
+| 7 | `chain_placebo.sh` | Placebo de cf5: mismo rango y norma de Frobenius por `down_proj`, direcciones aleatorias (`placebo_lora.py`, test) → solo evaluación. Descarta "cualquier cambio de ese tamaño hace cerrar" | EN COLA (espera a la 6) |
 
 Resumen 2026-11-09: tres vías transfieren conducta con medida significativa (pesos de rango bajo de Jackrong; destilar
 respuestas de MiMo; forma cerrada sin gradientes). Sin donante, una ronda voraz no.
@@ -107,6 +108,14 @@ techo no es de qué matriz se escribe sino del ajuste lineal capa a capa, y la v
 
 **Otras propuestas (no lanzadas):** exporte de mayor rango de cf; autodestilación con muestreo (varias respuestas por
 ítem, quedarse con las cortas). Opcional: un editor en IWIBench (licencia de Gemma 3 1B y API key del driver).
+
+**Disco (2026-11-09):** C: llegó a 157 MB libres; con OK del driver se borraron `own_q6k/mimo_a05|a025-Q6_K.gguf` y
+los LoRA fallidos `close_lora/mimox_r512`, `mimox_mlp_r512`, `mimox_mlp_r256` (+ .gguf): 22 GB libres.
+
+**Revisado 2026-11-09 (no se adopta):** `khordoo/dusty-wsp` (8M: nombre por edición de rango 2 sí, actitud por
+contraste rango 1 no, 0/48; rigor bueno; aporta la idea del placebo y del término de protección); Jerry Liu / ActAdd
+(ya probado: vector de control MiMo 6→15/36, por debajo de cf5); Cadence (`muellerberndt/cadence`, red recurrente por
+equilibrio + recompensa, sin LLM: otro paradigma, sin relación con editar pesos de un LLM).
 
 **Revisado y descartado (2026-11-08):** `areu01or00/qwen0.8B-wsp` (MEMIT de hechos; útil solo la resolución en forma
 cerrada; su resultado cae a 0/5 al comprobar con pesos bf16 guardados); thePM_001/AEP (promocional, sin código de
