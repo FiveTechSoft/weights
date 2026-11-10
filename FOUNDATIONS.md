@@ -167,5 +167,10 @@ Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers · *A 
 Understanding, Representation, and Generation* (arXiv 2603.10090, cited in `docs/wsplang_0.7_spec.md` §9) — the map of
 the field: our work is mostly *understanding* (spectral energy T1, shared subspaces §40) plus edits of one model
 measured against placebos, which the survey does not cover; its *generation* branch (hypernetworks, generative models
-over model zoos) is trained, so it is another route than the gradient-free synthesis T4 rules out. Full links in
+over model zoos) is trained, so it is another route than the gradient-free synthesis T4 rules out · Lu et al., *The
+Surprising Effectiveness of Deleting Weights in LLM Post-Training* (arXiv 2611.10866, NeurIPS 2026) — a learned binary
+mask zeroing < 0.05 % of `gate_proj` weights matches full fine-tuning on GRPO/SFT/on-policy distillation at ≥ 7B, with
+little forgetting: support for T2/T8 (what post-training changes on these benchmarks fits in very little; rank-1 per
+layer in §43.19). Caveats: the mask is trained with gradients; no same-fraction random-deletion placebo (T6), and LoRA
+r1 also matches, so the tasks need little information rather than masks being special. Full links in
 README "References".
