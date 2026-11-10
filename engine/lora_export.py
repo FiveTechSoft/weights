@@ -96,6 +96,6 @@ def export_lora(base_r, model_r, rank, out_dir, kinds=None, base_label=""):
         rows = [(v["kept_at"][str(k)], v["norm"] ** 2) for v in stats.values() if str(k) in v["kept_at"]]
         if len(rows) == len(stats):
             at[str(k)] = round(sum(a * b for a, b in rows) / sum(b for _, b in rows), 4) if sum(w) else 1.0
-    return {"output": str(out), "kept_weighted_at": at, "matrices": len(ks), "rank": rank, "mean_kept": sum(ks) / len(ks),
+    return {"output": str(out), "kept_weighted_at": at, "delta_norm": round(sum(w) ** 0.5, 4), "matrices": len(ks), "rank": rank, "mean_kept": sum(ks) / len(ks),
             "kept_weighted": sum(k * x for k, x in zip(ks, w)) / sum(w) if sum(w) else 1.0, "min_kept": min(ks),
             "bytes": (out / "adapter_model.safetensors").stat().st_size}

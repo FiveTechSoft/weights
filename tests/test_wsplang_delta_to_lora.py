@@ -129,6 +129,17 @@ class TestDeltaToLora(unittest.TestCase):
         self.assertEqual(wsplang.transfer_verdict({"16": 0.35}), "uncertain")
         self.assertEqual(wsplang.transfer_verdict({}), "uncertain")
 
+    def test_identical_model_is_no_change_not_likely(self):
+        """A 'fine-tune' whose weights equal the base (OmniCoder-9B, OxCoder-9B on the hub, 2026-11-10) has no energy to
+        keep: the verdict must say no_change, not likely (the old code divided 0 by 0 and reported 100 % kept)."""
+        out = self.dir / "lora_same"
+        r = run([f"delta_to_lora base={self.base} model={self.base} rank=4 out={out.as_posix()}"])[0]
+        self.assertEqual(r["status"], "ok", r)
+        self.assertEqual(r["result"]["delta_norm"], 0.0)
+        self.assertEqual(r["result"]["verdict"], "no_change")
+        self.assertEqual(wsplang.transfer_verdict({"16": 1.0}, delta_norm=0.0), "no_change")
+        self.assertEqual(wsplang.transfer_verdict({"16": 0.586}, delta_norm=12.3), "likely")
+
     def test_passes_cli_gate(self):
         prog = wsplang.parse_args_lines("experiment g:\nsteps:\n    step delta_to_lora base=a model=b rank=8 out=o\n")
         steps, errors = wsplang.validate(prog)

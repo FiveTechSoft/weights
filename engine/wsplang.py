@@ -206,10 +206,13 @@ def check_new_file(out_path, protected, written) -> None:
             raise WriteGuardError(f"refusing to overwrite the input model {p}; choose another out=")
 
 
-def transfer_verdict(kept_weighted_at) -> str:
+def transfer_verdict(kept_weighted_at, delta_norm=None) -> str:
     """Will a fine-tune's change move as a small adapter? Read from the weighted energy kept at rank 16 (delta_to_lora's
     energy.json), before any eval. Calibrated on Qwen3.5-9B: Jackrong keeps 0.586 and transfers (MATH 6->30/36),
-    MiMo keeps 0.038 and does not (<= 4/16 at any rank up to 512)."""
+    MiMo keeps 0.038 and does not (<= 4/16 at any rank up to 512). delta_norm == 0: the "fine-tune" is the base
+    (OmniCoder-9B, OxCoder-9B on the hub): no_change, whatever the kept share says (0/0)."""
+    if delta_norm is not None and delta_norm == 0:
+        return "no_change"
     k = kept_weighted_at.get("16")
     if k is None:
         return "uncertain"
@@ -2273,7 +2276,7 @@ def execute_plan_v4(
                 model_r = wd.Renamed(model_src, wd.text_model_name)
                 res["result"] = le.export_lora(base_r, model_r, int(named.get("rank", 16)), out_p, kinds=kinds,
                                                base_label=str(base_p))
-                res["result"]["verdict"] = transfer_verdict(res["result"]["kept_weighted_at"])
+                res["result"]["verdict"] = transfer_verdict(res["result"]["kept_weighted_at"], res["result"]["delta_norm"])
                 res["result"]["donor"] = named["model"]
                 if gguf_p:
                     conv = os.environ.get("WSP_LORA_CONVERTER")
