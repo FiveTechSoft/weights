@@ -1992,3 +1992,38 @@ guardado). Veredicto leído del manifiesto de WSP-Lang y recalculado aparte desd
 - HuatuoGPT-3 (RL): cambio pequeño y a medio camino; sin dato de qué hace su adaptador, que no se ha medido.
 - **Lectura:** el veredicto sirve además de filtro barato antes de descargar o evaluar nada: de 3 "coders" con
   benchmarks publicados, 2 no tienen cambio que trasplantar. Ningún donante de código útil para el op en esta tanda.
+
+### 43.17 Dirección "concluir" sin donante (réplica de concept.country en Qwen3.5-9B): PASA en dev (2026-11-10)
+Plan fijado antes de correr: `lab/probes/cc/PLAN.md`; datos y veredicto en `lab/runs/cc/`. Referencia: Concept Country,
+*Gradient-Free Weight Editing Reduces Overthinking in Qwen3.8-27B* (2026-11-08).
+
+- **Dirección:** 128 trazas de la propia base (64 MATH-500 fuera de dev y del sellado, 64 GSM8K train; pensamiento
+  activado, voraz, tope 4 096), **53 terminan** (14 MATH, 39 GSM8K). Op `contrast_vector` con filas por posición
+  (`think` + `focus`, nuevo): media del flujo residual en los **últimos 48 tokens antes de `</think>`** menos la de los
+  tokens de razonamiento anteriores (≤ 1 536), por capa, como vector de control (incrementos por capa). Norma en la
+  última capa 21.0 (felicidad 51.8). Placebo: misma norma por capa, dirección aleatoria (semilla 2026).
+- **Criba de escala** (64 ítems MATH-500 no usados, 2 048 tokens, regla: más aciertos): base 8, ×0.25 10, ×0.5 17,
+  **×1.0 35**, ×2.0 2 (64/64 cortadas, 46 en bucle). Elegida 1.0.
+- **Dev** (GSM8K 0-99 + MATH-500 select_indices(2026, 50), 2 048 tokens, voraz):
+
+| brazo | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle GSM / MATH | tokens medios GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| **vector cc ×1.0** | **84 / 86** | 7 | **32 / 24** | 22 | 6 / 16 | 698 / 1 385 |
+| placebo ×1.0 | 37 / 53 | 62 | 3 / 3 | 47 | 3 / 2 | 1 768 / 2 010 |
+
+- McNemar exacto frente a la base: vector GSM8K 35/1 (p = 1e-9) y 28/3 con último número (p = 5e-6); MATH 26/0
+  (p = 3e-8) y 18/0 con el corrector 2 (p = 8e-6). Placebo GSM8K 8/21 (p = 0.024, **por debajo** de la base), MATH 1/4.
+  Tokens: vector −59 % GSM8K, −29 % MATH; placebo +5 % / +3 %.
+- **C1 ganancia, C2 placebo nulo, C3 GSM8K sin daño: PASA.**
+- Revisado a mano: las 8 discrepancias de correctores en MATH son todas de formato (el vector escribe `4/3`, `11/2`
+  donde el oro es `\frac43`; el corrector 2 compara cadenas): el 32 es el bueno. Estricto: 5 de las 32 de MATH y 1 de
+  las 84 de GSM8K son respuestas cortadas cuya respuesta aparece en un `\boxed{}` repetido en bucle; sin ellas, MATH 27
+  frente a 6. Ese bucle de conclusión es el borde de la ventana (a ×2.0 lo es todo).
+- **Lectura:** con la dirección del propio modelo, sin donante y sin entrenar, la base cierra a tiempo y sube casi como
+  con el adaptador de Jackrong (sellado §43.15: 91 / 35). El empuje del mismo tamaño en dirección aleatoria **empeora**
+  (−13 GSM8K): lo que funciona es la dirección, no el tamaño. Coherente con T2 (la mejora a presupuesto fijo es cerrar)
+  y matiza T4: este tipo de ganancia no necesita donante.
+- Límites: un modelo, un tope (2 048), voraz; dirección sacada mayormente de GSM8K train (39 de 53 trazas); escala
+  elegida en ítems de MATH; a 32k tokens la base ya cierra (arXiv 2611.09382: 97.7 en MATH), así que esto es eficiencia
+  con presupuesto corto, no capacidad. Confirmación sellada en marcha (`lab/probes/sealed/cc_confirm.md`).
