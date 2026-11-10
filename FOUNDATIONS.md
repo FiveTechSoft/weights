@@ -162,4 +162,9 @@ Editing Reduces Overthinking in Qwen3.8-27B* (8 Nov 2026) · Nathan Barry, *Can 
 Programming?* · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
 (arXiv 2611.09382) · Hayashi, *weight-space geometry* (hayashiyus.github.io/blog/weight-space-geometry; theory, mostly
 proposed experiments) · Hu et al., LoRA · Ilharco et al., task arithmetic; Yadav et al., TIES · Belrose et al., LEACE ·
-Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers. Full links in README "References".
+Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers · *A Survey of Weight Space Learning:
+Understanding, Representation, and Generation* (arXiv 2603.10090, cited in `docs/wsplang_0.7_spec.md` §9) — the map of
+the field: our work is mostly *understanding* (spectral energy T1, shared subspaces §40) plus edits of one model
+measured against placebos, which the survey does not cover; its *generation* branch (hypernetworks, generative models
+over model zoos) is trained, so it is another route than the gradient-free synthesis T4 rules out. Full links in
+README "References".
