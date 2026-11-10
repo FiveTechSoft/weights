@@ -1,185 +1,67 @@
-# WSP-Lang 0.1
+# WSP-Lang 0.7
 
-## Un lenguaje experimental para programar el espacio de pesos de los LLM
+**Parser, compilador y runtime para programar el espacio de pesos.** Implementación: `engine/wsplang.py`
+(`__version__ = "0.7.0"`; CLI `python -m engine.wsplang <programa.wspl> [--check | --run]`).
 
-Formalización de la idea como primera versión de un lenguaje de programación para modelos neuronales.
+**Spec canónica: [`docs/wsplang_specification.md`](docs/wsplang_specification.md)**, con la tabla de ops que el runtime
+acepta y un test que la compara con el engine (`tests/test_wsplang_spec.py`: versión, cada op con su tipo, y ningún
+`step` documentado que el runtime rechace). Este fichero resume y apunta ahí. Fundamento científico de lo que se hace
+con el runtime: [`FOUNDATIONS.md`](FOUNDATIONS.md).
 
-La hipótesis central es:
+## 1. Modelo y programa
 
-> Un LLM contiene un programa computacional implícito en sus pesos. Podemos descubrir operaciones primitivas sobre ese programa y combinarlas para producir cambios de comportamiento verificables.
+M = (A, W, t): arquitectura, pesos, intención. Programa P = (o1..on): W' = P(W).
+El programa describe la intención experimental; el runtime resuelve rutas, valida, autoriza escrituras y ejecuta
+con manifiesto. El checkpoint original es inmutable (write guard: nunca se sobreescribe el modelo fuente).
 
-WSP-Lang no pretende ser todavía un lenguaje capaz de modificar cualquier modelo de forma segura. Es una especificación experimental para comenzar a construirlo dentro de FiveTechSoft/weights.
+## 2. Sintaxis (dos formas, ambas reales)
 
-La primera versión tendrá tres objetivos:
-
-1. Describir comportamientos que queremos modificar.
-2. Expresar intervenciones localizadas sobre los pesos o las activaciones.
-3. Ejecutar experimentos reproducibles que determinen si las intervenciones funcionan.
-
-Principio de diseño: el agente puede proponer programas WSP-Lang, pero el runtime local valida y ejecuta únicamente operaciones permitidas.
-
-Especificación — WSP-Lang 0.1 (propuesta experimental)
-
-- Proyecto: FiveTechSoft/weights
-- Modelo objetivo inicial: MiMo-V2.6-Distill-Qwen-9B
-- Runtime: MCP local
-- Modo inicial: investigación, intervenciones reversibles y evaluación
-
-## 1. Modelo computacional
-
-Un modelo se define como M=(A,W,τ), con A arquitectura, W parámetros y τ configuración de inferencia:
-
-    y = M(x; W)
-
-Un programa WSP es una secuencia P=(o1..on) que transforma el modelo:
-
-    W' = P(W)
-
-El objetivo no es minimizar una pérdida con gradientes, sino descubrir transformaciones que mejoren una capacidad determinada bajo restricciones explícitas.
-
-## 2. Sintaxis inicial (declarativa)
-
+A) metadata + pasos con argumentos (la de producción):
 ```
-experiment reduce_tool_loops:
-
-    model:
-        MiMo-V2.6-Distill-Qwen-9B
-
-    objective:
-        reduce_repeated_tool_calls
-
-    constraints:
-        preserve_planning
-        preserve_language
-        max_modified_parameters = 0.01%
-
-    discover:
-        candidate_directions
-
-    intervene:
-        project_out(candidate_direction)
-
-    evaluate:
-        loop_benchmark
-        planning_benchmark
-        language_benchmark
-
-    accept_if:
-        loop_rate < baseline.loop_rate
-        planning_score >= baseline.planning_score
-        language_score >= baseline.language_score
+experiment transplant_jackrong_math:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-9b-hf model=hf_cache/dp_keep_dsv4_distill rank=16 out=hf_cache/close_lora/demo_jack_r16 gguf=hf_cache/close_lora/demo_jack_r16.gguf
 ```
+B) estilo E (primitivas semánticas, ver la spec): inspect / observe / compare / hypothesize / localize / intervene /
+evaluate / confirm / record / select_candidate, resueltas por el runtime.
 
-El programa describe la intención experimental, no una operación arbitraria sobre el modelo. El runtime resuelve componentes abstractos, valida tipos y autoriza la ejecución.
+## 3. Comprobaciones (2026-11-10, repetibles)
 
-## 3. Tipos fundamentales
+1. `--check` sobre un programa real (`programs/taskvec_mult.wspl`, 4 pasos): `[PASS]` sintaxis, presupuestos y
+   fronteras de seguridad.
+2. Op inventado (`step teleport_weights`): `[FAIL] operacion de paso no permitida`.
+3. Op de escritura sin `--model` safetensors: rechazado (los GGUF se editan con `wsp.py`).
+4. Ops sin ejecutor: `distributed_memit` figuraba como implementado sin código que lo ejecutara; en HEAD un programa
+   con él validaba y se "saltaba" en silencio. Retirado de las listas y de la spec; el validador lo rechaza
+   (`tests/test_wsplang_phantom_ops.py`). `leace_erase` y `surprise_fwp` son STUB declarados (`STUB_OPS`): devuelven
+   `stub_result`, sin afirmación causal.
+5. Tests del runtime: `tests/test_wsplang*.py`, 69 en verde.
+6. Uso real: `delta_to_lora` (trasplante con veredicto de energía) en 7 donantes de Qwen3.5-9B; el resultado
+   principal está confirmado en un conjunto sellado (results §43.15). `contrast_vector` (vector de control a partir
+   de dos conjuntos de textos, o por posición con filas `think`/`focus`) pasó su criterio en el estudio de felicidad
+   (results §43.13). El veredicto devuelve `no_change` cuando el "fine-tune" es la base (Δ = 0), como OmniCoder-9B y
+   OxCoder-9B en el hub.
 
-    Model, Tensor, Activation, Direction, Behavior, Hypothesis, Intervention, Benchmark, Experiment, Result
+## 4. Reglas de seguridad vivas (runtime, no prompt)
 
-- **Model**: modelo completo (arquitectura, pesos, configuración).
-- **Tensor**: identificado por nombre, forma, tipo numérico y ubicación.
-- **Activation**: activación observada durante una ejecución.
-- **Direction**: dirección o subespacio candidato en pesos o activaciones.
-- **Behavior**: propiedad observable (`repeated_tool_calls`, `mathematical_reasoning`, `instruction_following`, `planning`, ...).
-- **Hypothesis**: explicación falsable de un comportamiento (mecanismo candidato + predicción comprobable + condiciones de fallo).
-- **Intervention**: modificación concreta, reversible y registrada.
-- **Result**: métricas, configuración, datos y huellas del modelo de una evaluación.
+- `FORBIDDEN_TENSORS` / `FORBIDDEN_PATTERNS` (embeddings, lm_head, output_norm): protegidos salvo
+  `budgets unlock_tensors` explícito.
+- Presupuestos duros: `max_modified_weights`, `max_delta_norm`, `target_parameter_fraction`; formas y dtypes deben
+  coincidir 1:1 (ni añadir, ni quitar, ni cambiar la forma de tensores).
+- Chequeo de factibilidad antes de ejecutar: rechaza ops no implementadas (regla 2026-11-04), ops de escritura sobre
+  GGUF (redirige a `wsp.py`) y referencias a archivos inexistentes.
+- Cada intervención deja manifiesto con `wsplang_version` y resultados JSON inspeccionables.
 
-## 4. Primitivas del lenguaje (8)
+## 5. Registro de experimentos
 
-1. **inspect(model)** — estructura sin modificar: metadatos, dimensiones, estadísticas. [wsp.py: OK]
-2. **observe(model, dataset, capture)** — traza comportamiento (activaciones, residuos, atención, salidas, tool-calls) solo sobre componentes autorizados. [wsp.py: capture_residual/hook OK]
-3. **compare(traces_a, traces_b)** — diferencias estadísticas entre grupos de ejecuciones; no constituye por sí misma explicación causal. [wsp.py: act-scores OK]
-4. **hypothesize(behavior, evidence)** — hipótesis comprobable con mecanismo, predicción y condiciones de fallo. [freeform, pendiente de formalizar]
-5. **localize(hypothesis, search_space)** — candidatos (capa, tensor, canales, dirección); no presupone unicidad. [resuelto parcialmente: E1-E5]
-6. **intervene(model, operation, target, strength)** — transforma siempre en copia experimental; el original permanece inmutable. [wsp.py: OK]
-7. **evaluate(candidate, benchmark)** — evalúa el objetivo y las capacidades potencialmente degradadas. [rig: OK]
-8. **rollback(candidate)** — restaura el estado previo vía manifiesto. [parcial: manifesto+origen, falta op explícita]
+ExperimentRecord: hypothesis, evidence, target, intervention, model_hash, benchmark_version, baseline_result,
+candidate_result, placebo_result, holdout_result, conclusion ∈ {SUPPORTED, REJECTED, INCONCLUSIVE}. Un experimento
+fallido queda como conocimiento reutilizable (tabla de ideas retiradas en `FOUNDATIONS.md`).
 
-## 5. Operaciones matemáticas iniciales
+## 6. Historia de versiones
 
-- **Escalado de dirección**: W' = W + α·d (relación explícita entre dirección y subespacio intervenido).
-- **Proyección**: P_d = d·dᵀ; W_d = W·P_d; reducción W' = W − α·W_d (solo con dims/interpretación compatibles con el tensor objetivo).
-- **Intervención sobre activaciones**: h' = h − α·d·dᵀ·h — modifica la ejecución sin tocar pesos; útil para probar hipótesis antes de editar.
-- **Composición**: P = P2∘P1; el orden NO es irrelevante (P2(P1(W)) ≠ P1(P2(W))) ⇒ el runtime registra el orden exacto.
-
-## 6. Sistema de tipos y seguridad
-
-```
-validate(intervention):
-    verify_model_identity()
-    verify_target_exists()
-    verify_target_is_allowed()
-    verify_dimensions()
-    verify_numeric_type()
-    verify_magnitude_limit()
-    verify_parameter_budget()
-    verify_reversibility()
-    return authorized
-```
-
-Reglas iniciales:
-1. El checkpoint original es inmutable.
-2. No se permite escritura arbitraria de archivos.
-3. No se permite ejecución arbitraria de código Python libre.
-4. No se editan tensores fuera de la lista autorizada (FORBIDDEN_TENSORS: head/lm_head).
-5. Cada intervención lleva manifiesto.
-6. Cada modificación es reversible.
-7. Los benchmarks de confirmación (sellados) jamás se usan para descubrir.
-
-La política de seguridad vive en el runtime, no solo en las instrucciones del agente. [mappings a wsp.py: FORBIDDEN_TENSORS/rangos OK; _budget_check como barrera OK; faltan reversibilidad explícita y no-ejecución-arbitraria en el parser]
-
-## 7. Programa de ejemplo (E2_reduce_loops)
-
-```
-experiment E2_reduce_loops:
-    model = load_model("MiMo-V2.6-Distill-Qwen-9B")
-    baseline = evaluate(model, benchmark=loop_diagnostic)
-    productive = observe(model, dataset=productive_tasks)
-    repetitive = observe(model, dataset=repetitive_tasks)
-    evidence = compare(productive, repetitive)
-    hypothesis = hypothesize(behavior=repeated_tool_calls, evidence=evidence)
-    candidates = localize(hypothesis, search_space=allowed_components)
-    for candidate in candidates:
-        intervention = intervene(model, operation=activation_projection, target=candidate)
-        result = evaluate(intervention, benchmark=validation_suite)
-        record(hypothesis, candidate, intervention, result)
-    best = select_candidate(results, criteria=objective_and_regression)
-    confirm(best, benchmark=sealed_holdout)
-```
-
-El programa no afirma que la dirección sea correcta: convierte una hipótesis en un experimento reproducible.
-
-## 8. Criterio de aceptación
-
-- ΔB > 0 en la métrica del comportamiento objetivo, y
-- ΔR_i ≥ −ε_i para cada capacidad de regresión R_i (sin puntuación agregada que oculte degradaciones), y
-- modified_parameters ≤ B_max, y
-- superación de evaluación independiente (set fresco sellado).
-
-## 9. Registro de conocimiento
-
-```
-ExperimentRecord:
-    hypothesis, evidence, target, intervention, model_hash,
-    benchmark_version, baseline_result, candidate_result,
-    placebo_result, holdout_result, conclusion
-
-conclusion ∈ {SUPPORTED, REJECTED, INCONCLUSIVE}
-```
-
-Un experimento fallido NO se elimina: se convierte en conocimiento reutilizable.(Ej registral: "weight_drift identifies behavior → rejected → lección: el drift solo es insuficiente para establecer causalidad comportamental" = nuestro E1.)
-
-## 10. Evolución prevista: WSP-Lang 0.2
-
-- **A. Descubrimiento de primitivas**: el agente propone operaciones nuevas a partir de resultados experimentales.
-- **B. Composición automática**: combinar intervenciones de efectos compatibles demostrados.
-- **C. Meta-programación**: el agente mejora el propio procedimiento de investigación (vía RSI). El objetivo no es auto-modificarse indiscriminadamente sino mejorar progresivamente el proceso de descubrimiento de modificaciones eficaces.
-
-## Hipótesis final
-
-Si existen regularidades computacionales reutilizables en el espacio de pesos, debería ser posible descubrir primitivas que construyan intervenciones complejas y verificables. La primera tarea de WSP-Lang NO es demostrar que existen: es construir el entorno para descubrirlas, probarlas y refutarlas.
-
-**WSP-Lang 0.1 convierte la edición de pesos en un proceso de programación experimental.**
-
-Siguiente pieza: parser + ejecutor mínimo dentro del MCP de FiveTechSoft/weights — intérprete que acepta programas como E2, valida cada operación y genera manifiesto y resultados automáticamentE.
+- 0.1 (2026-11-03): spec original de Antonio (8 primitivas, ExperimentRecord, criterio de aceptación); el texto
+  íntegro está en el historial de git de este fichero (`git show 4bd3603:WSP-LANG.md`).
+- 0.2-0.6: `docs/wsplang_0.N_spec.md` (addenda por versión) y `docs/wsplang_specification.md`.
+- 0.7: parser + compilador + runtime con chequeo de factibilidad; ops de producto `delta_to_lora` (con
+  `transfer_verdict` sobre `energy.json`) y `contrast_vector`.
