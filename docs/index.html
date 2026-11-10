@@ -970,6 +970,21 @@ minute, with her arms</td>
       <p style="color:var(--text-muted); font-size:0.95rem;">Run in 1 line: <code>python engine/wsplang.py programs/example_semantic_areas.wspl --run</code></p>
     </section>
 
+    <section>
+      <h2 class="section-title">📚 References</h2>
+      <ul style="color: var(--text-muted); line-height: 1.7; margin-left: 1.25rem;">
+        <li>Takehi, Teoh, Zhang, Khattab (MIT CSAIL), <a href="https://rikiyat.github.io/blog/weight-space-programming/" style="color: var(--accent-cyan);"><em>Sparks of Weight-Space Programming</em></a>, blog post, 2 Nov 2026. The starting point of this repo.</li>
+        <li>Bennington, Kaelar, Lee, Edwards, Glick, Danks (Concept Country), <a href="https://concept.country/research/weight-space-programming" style="color: var(--accent-cyan);"><em>Gradient-Free Weight Editing Reduces Overthinking in Qwen3.8-27B</em></a>, working paper v1, 8 Nov 2026
+          (<a href="https://x.com/varien/status/2119880941711827025" style="color: var(--accent-cyan);">post</a>,
+          <a href="https://github.com/conceptcountry/weight-space-programming" style="color: var(--accent-cyan);">code</a>,
+          <a href="https://huggingface.co/ConceptCountry/qwen-concept-27b" style="color: var(--accent-cyan);">weights</a>).
+          A direction from the model's own traces, written as rank-1 terms into 9 <code>down_proj</code> matrices: GPQA Diamond +4.3, LiveCodeBench v6 +13.0, 27-54 % fewer thinking tokens; a norm-matched random edit does nothing. We are replicating it without a donor on Qwen3.5-9B.</li>
+        <li>Nathan Barry, <a href="https://nathanrs.rs/posts/weight-space-lp" style="color: var(--accent-cyan);"><em>Can a Linear Program Do Weight-Space Programming?</em></a>
+          (<a href="https://github.com/nathanrs/weight-space-lp" style="color: var(--accent-cyan);">code</a>), Nov 2026. Finds the MIT Exp 8 loop-breaking edit with a sparse linear program in minutes; a constant steering push gives almost the same result.</li>
+        <li>Irie, Schlag &amp; Schmidhuber, fast weight programmers (ICML 2021). Belrose et al., LEACE (NeurIPS 2023).</li>
+      </ul>
+    </section>
+
   </div>
 
   <footer>
