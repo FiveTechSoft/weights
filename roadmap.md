@@ -54,6 +54,9 @@ Maintenance: `C:\weights\{wsp.py, ediciones\, servidos\, rig_runs\, retos\, data
 - Limpieza C:: liberados +121 GB (4 maestros F32 de sintetizaciones descartadas).
 
 ## 3. Conclusiones y aprendizajes de este estudio
+> **Desde 2026-11-10 el fundamento consolidado está en [`FOUNDATIONS.md`](FOUNDATIONS.md)** (tesis T1-T8 con estado,
+> evidencia, qué las refutaría, e ideas retiradas). Los puntos de abajo son históricos (2026-11-03).
+
 1. **Metodología alineada al paper**: leer (sandbox estadístico), editar (ops quirúrgicas), evaluar (budget A/B keep-if-better). Y alineado en restricciones (sin gradiente/entrenamiento/fwd-tool-only; prohibido tocar head/lm_head).
 2. **WSP ≠ fórmula mágica**: sin patología estructural charofizada, no hay mejora (evidencia: blog Gemma-270M + nuestra E1).
 3. **Medir el comportamiento primero**: nuestro target real no es math (100% baseline), es el bucle agéntico. Reordenar las hipótesis según patologías reales del modelo local.

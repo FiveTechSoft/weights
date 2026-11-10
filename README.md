@@ -229,6 +229,7 @@ The contrast gain this gives has not been measured.
 | [`engine/wsp_mcp_server.py`](engine/wsp_mcp_server.py) | MCP server exposing `peek`, `poke` and WSP-Lang to AI agents. |
 | [`challenges/`](challenges/) | WSP challenge suite: 8 levels, 43 challenges, mechanical judges. |
 | [`edits/`](edits/) | JSON edit manifests (e.g. `evil_mimo.json`). |
+| [`FOUNDATIONS.md`](FOUNDATIONS.md) | The scientific basis, by claim: what we hold, its status, our evidence (results §), outside evidence, what would refute it; refuted ideas not to retry. |
 | [`PROTOCOL.md`](PROTOCOL.md) | Protocol: sealed holdouts, placebo controls, non-degradation criteria. |
 | [`results.md`](results.md) · [`roadmap.md`](roadmap.md) · [`CHANGELOG.md`](CHANGELOG.md) | Results log, plan, patch history (P0–P12). |
 | [`tests/`](tests/) | 50 test files (`python -m unittest discover -s tests`). |
@@ -290,6 +291,9 @@ recurring failure patterns are summarized in `lab/probes/delta_patterns/findings
 ---
 
 ## 📚 References
+
+How these sources bear on our claims: [`FOUNDATIONS.md`](FOUNDATIONS.md).
+
 
 - Takehi, Teoh, Zhang, Khattab (MIT CSAIL), [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/), blog post, 2 Nov 2026.
 - Experiment logs: [RikiyaT/lm_understand-logs](https://github.com/RikiyaT/lm_understand-logs). Edited Exp 8 model: [RikiyaT/Qwen3.5-0.8B-weight-space-programming](https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming).
