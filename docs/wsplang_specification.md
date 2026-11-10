@@ -138,7 +138,6 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `delta_to_lora` | read / report | this file |
 | `delta_unlearn` | writes weights | this file, `wsplang_0.3_spec.md`, `wsplang_0.4_spec.md` |
 | `diff` | read / report | `wsplang_0.2_spec.md` |
-| `distributed_memit` | writes weights | not documented yet (see `engine/wsplang.py`) |
 | `drift_profile` | read / report | not documented yet (see `engine/wsplang.py`) |
 | `evaluate` | read / report | this file |
 | `evaluate_benchmark` | read / report | this file |

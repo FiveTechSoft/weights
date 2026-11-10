@@ -78,8 +78,7 @@ OPS_ALLOWED = {
     "init_architecture", "imprint_association", "imprint_batch", "imprint_corpus",
     "cov_imprint", "memit_imprint", "decoupled_delta",
     "rosetta_align", "cross_project",
-    "layer_envelope", "multi_layer_envelope", "distributed_memit",
-    # WSP-Lang 0.7: JEPA (LeCun) & Weight Space Learning (Damian Borth) Operators
+    "layer_envelope", "multi_layer_envelope",
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift", "tie_weights",
     "train", "synthesize", "decompile",
     # Experimental / stubs
@@ -100,7 +99,7 @@ INT_OPS = {
     "scale-cols", "blend-rows", "cov-steer", "init_architecture", "imprint_association",
     "imprint_batch", "imprint_corpus", "cov_imprint", "memit_imprint", "decoupled_delta",
     "rosetta_align", "cross_project",
-    "layer_envelope", "multi_layer_envelope", "distributed_memit",
+    "layer_envelope", "multi_layer_envelope",
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift",
     "leace_erase", "surprise_fwp"
 }
@@ -266,7 +265,7 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
     "rosetta_align", "cross_project", "init_architecture", "imprint_association",
     "imprint_batch", "imprint_corpus", "delta_unlearn", "fwp_overlay", "layer_envelope",
-    "multi_layer_envelope", "distributed_memit", "spectral_decay",
+    "multi_layer_envelope", "spectral_decay",
     "assert_orthogonal_preservation", "project_out", "project_in", "audit",
     "export_control_vector", "spectral_audit", "assert_weyl", "assert_davis_kahan",
     "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train", "synthesize", "decompile",

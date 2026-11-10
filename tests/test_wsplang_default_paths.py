@@ -25,7 +25,9 @@ class TestDefaultPaths(unittest.TestCase):
 
     def test_environment_overrides(self):
         mimo, base = paths({"WSP_MODELO_GGUF": "/models/a.gguf", "WSP_BASE_GGUF": "/models/b.gguf"})
-        self.assertEqual((mimo, base), ("/models/a.gguf", "/models/b.gguf"))
+        # the runtime normalizes env paths to host separators: compare OS-agnostically
+        self.assertEqual(str(Path(mimo)), str(Path("/models/a.gguf")))
+        self.assertEqual(str(Path(base)), str(Path("/models/b.gguf")))
 
 
 if __name__ == "__main__":
