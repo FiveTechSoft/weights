@@ -98,8 +98,9 @@ una sola vez antes de anunciarse; regla en `lab/probes/sealed/README.md`.
 - Siguiente: un donante con mejora útil (no solo conducta) por el op.
 - **2026-11-10, búsqueda de donantes (cadena `chain_donors4.sh`, veredicto por hub):** OmniCoder-9B (Tesslate, 697 likes)
   publica **los pesos de Qwen3.5-9B sin cambios** (Δ = 0 en las 248 matrices con el op; sha256 de 6 tensores idéntico al
-  repo oficial `Qwen/Qwen3.5-9B` por HTTP range; pesos subidos una vez el 2026-03-12). JackOD-9B-Coder, OxCoder-9B,
-  HuatuoGPT-3-9B en curso.
+  repo oficial `Qwen/Qwen3.5-9B` por HTTP range; pesos subidos una vez el 2026-03-12). Resto (results §43.16): OxCoder-9B
+  **también es la base**; JackOD-9B-Coder 3.6 % unlikely (mezcla); HuatuoGPT-3-9B 25.3 % uncertain. Ningún donante de
+  código útil en esta tanda. Bug del runtime corregido: Δ = 0 daba `likely`, ahora `no_change`.
 - **2026-11-10, réplica "cc" sin donante (en marcha, plan `lab/probes/cc/PLAN.md` fijado antes):** dirección "concluir"
   sacada de las propias trazas de la base (últimos 48 tokens antes de `</think>` menos el resto del pensamiento), op
   `contrast_vector` ampliado con filas `think`/`focus` (posición), aplicada como vector de control; criba de escala en

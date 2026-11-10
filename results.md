@@ -1968,3 +1968,27 @@ espacio en 57/100 y 46/50; gran parte de la mejora es que el adaptador razona �
 cortadas a veces el último número escrito coincide con la respuesta; el adaptador gana igual con él. Límite: un
 modelo, un tope, voraz; contaminación por preentrenamiento posible en todos los brazos por igual (GSM8K y MATH son
 públicos).
+
+### 43.16 Cuatro donantes nuevos por el op, leídos del hub: dos son la base republicada (2026-11-10)
+`chain_donors4.sh`, op `delta_to_lora` rango 16 con `model=hf:<repo>@<revisión fija>` (por rangos de bytes, nada
+guardado). Veredicto leído del manifiesto de WSP-Lang y recalculado aparte desde `energy.json`
+(`energy_summary.py`); coinciden.
+
+| donante (revisión) | qué promete | ‖ΔW‖ total | conservado a r16 | veredicto |
+|---|---|---|---|---|
+| Tesslate/OmniCoder-9B (9edd36a) | código agéntico, Terminal-Bench 14.6 → 23.6 | **0** | — | **no_change** (es la base) |
+| OrionLLM/OxCoder-9B (07ba04e) | código agéntico, `.eval_results` HLE/GPQA/SWE-Bench | **0** | — | **no_change** (es la base) |
+| ManniX-ITA/JackOD-9B-Coder (b0cabb1) | código, mezcla de varias fuentes | 28.7 | 3.6 % | unlikely |
+| FreedomIntelligence/HuatuoGPT-3-9B (6870b60) | medicina, RL (OnePO) | 2.4 | 25.3 % | uncertain |
+| *referencia:* Jackrong (§43.6) / OSS (§43.12) | | 77.9 / 10.9 | 58.6 / 98.3 % | likely |
+
+- **OmniCoder y OxCoder son Qwen3.5-9B byte a byte**, por dos métodos: el op da Δ = 0 en las 248 matrices, y el sha256
+  de tensores sueltos leídos por HTTP range (MLP, atención, atención lineal, norms, `lm_head`) es idéntico al del repo
+  oficial `Qwen/Qwen3.5-9B` (rev c202236). Historial: OmniCoder subió los pesos una vez (2026-03-12) y luego solo README;
+  OxCoder, solo config, plantilla, imágenes y resultados de benchmarks. No se miraron sus repos GGUF aparte.
+- **Bug encontrado así en el runtime:** con Δ = 0 el op decía `likely` (0/0 → "100 % conservado"). Arreglado con test:
+  `delta_norm` en el resultado y veredicto `no_change` (commit 4d28356).
+- JackOD, mezcla de varias fuentes: el cambio está repartido (como MiMo, 3.8 %); no candidato.
+- HuatuoGPT-3 (RL): cambio pequeño y a medio camino; sin dato de qué hace su adaptador, que no se ha medido.
+- **Lectura:** el veredicto sirve además de filtro barato antes de descargar o evaluar nada: de 3 "coders" con
+  benchmarks publicados, 2 no tienen cambio que trasplantar. Ningún donante de código útil para el op en esta tanda.

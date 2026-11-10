@@ -28,8 +28,10 @@ as of 2026-11-10.
     vs base, ≤ 0.008 vs MiMo).
   - OSS-Distilled (merged LoRA), 98.3 %: its behaviour moved, even onto another model (§43.12).
   - LeoZotos (GRPO, 100 steps), 7.5 %: adapter not distinguishable from base (§43.11).
-  - Verdict right 4/4. One donor (OmniCoder-9B) turned out to publish the base weights unchanged: Δ = 0, verified by
-    the op and by raw tensor hashes (roadmap §4.0sexies, 2026-11-10).
+  - Verdict right 4/4 where measured. Four more donors read from the hub (§43.16): JackOD-9B-Coder (a merge) 3.6 %
+    unlikely; HuatuoGPT-3 (RL) 25.3 % uncertain, not measured; OmniCoder-9B and OxCoder-9B publish the base weights
+    unchanged (Δ = 0, by the op and by raw tensor hashes) despite published benchmark gains — verdict `no_change`.
+    The verdict doubles as a cheap filter before downloading or evaluating anything.
 - **Outside evidence.** LoRA's premise (low intrinsic rank of fine-tuning updates); task arithmetic.
 - **Would refute it.** A donor with ≥ 0.5 kept whose adapter does not recover its gain, or < 0.2 kept whose adapter
   does; or a sealed run that fails.
@@ -119,7 +121,8 @@ as of 2026-11-10.
   read from the base's own traces, as a control vector. A pass would show that T2's kind of gain needs no donor, and
   narrow T4.
 - **Why RL changes do not fit a small adapter** (LeoZotos 7.5 %, MiMo 3.8 %) while SFT distills do. One RL donor so far.
-- **A useful non-math donor** (code, medicine): verdicts for JackOD, OxCoder, HuatuoGPT-3 running.
+- **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
+  the medical RL model is uncertain at 25 %).
 - **Quantization × edits:** all our numbers are Q6_K; quantization alone moves base loops (§39.6).
 - **Single model family, greedy only.** Nothing here is shown for sampling or for other families.
 
