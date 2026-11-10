@@ -228,6 +228,45 @@ retoma: chain_taskvec.sh es reanudable por marcadores y el protocolo en dos fase
 para el ganador) ya reduce cada prueba a ≤10 min; el bloqueo real es la GPU compartida, no el diseño. Sin entrenar
 quedan los donantes EXISTENTES como vía del op (Jackrong 0.800 demostrado; Leo "unlikely" acertado).
 
+**Forense 27B verificado con el driver (2026-11-09 ~20:15): concept27b blind test PASADO en estructura, FAILED en semántica.**
+Sobre los pesos públicos de ConceptCountry/qwen-concept-27b (la edición sin gradiente de 9 down_prof alternadas
+32-48 de Qwen3.8-27B: GPQA +4.3, LCB +13.0, tokens −27-54%, placebo norm-matched = 0 — paper + código Apache-2.0 +
+pesos públicos): `step model_report` (rows=128, rangos HTTP, CPU) instinto, con predicción sellada previa
+(`lab/runs/concept27b_forensic/sealed_prediction.md`), y el informe lo clavo: layers 32-48 (9 touched),
+mlp.down_proj.weight único, rank1/tensor, method=directional_ablation → Jaccard 1.0 vs receta publicada. Falso
+positivo declarado: el "usable" lo va de decensoring (la firma estructural de abliteración coincide; la dirección
+aquí es de conducta) → lección J4: modelo_report orienta la estructura de la verdad, no las intenciones. Herramienta
+reparada en la correrida: `hf_files` descubre checkpoints en subfolder-variante (bf16/) y `model_report` admite
+`base=` sin `hf:` varado (401). Veredicto y tabla en `lab/runs/concept27b_forensic/verdict.md`. Este caso pasa a ser
+el caso J4 de segunda familia (Qwen3.8-27B) con habrá znaka conocida.
+
+**Revisado 2026-11-09 (mapa del campo): survey "A Survey of Weight Space Learning" (arXiv 2603.10090,
+Han/Wang/.../Borth/Maron, mar-2026; awesome-list Zehong-Wang/Awesome-Weight-Space-Learning).** Taxonomía
+WSU (geometría/simetrías) / WSR (embeddings de pesos) / WSG (generación). Nuestro programa ya vive en las
+tres vías sin gap crítico: WSU = spectral delta/symmetries (ops `permute_align`, `rosetta_align`,
+`vicreg_preserve`, `jepa_steer` ya llevan los nombres de la escuela Borth/Maron), WSR = `sig_*.pt` +
+`model_report`/atlas (= su "model retrieval"), WSG = delta_to_lora/producto trasplante + imprint/NanoWSP
+(= su "conditional generation"/"data-free reconstruction"). HUECO CONFIRMADO: su sección "Model Editing"
+solo tiene hypernets de imagen (StyleGAN); el WSP de LLMs (rikiyat blog, Gribben, ConceptCountry 27B,
+nathanrs LP) NO está indexado — oportunidad de PR al awesome-list cuando haya veredicto del experimento
+único (outreach, no línea de investigación). Útil también como fuente de evaluaciones estándar
+("Model Zoo" benchmark section) si algún día se compara con el resto del campo.
+Outreach iniciado: respuesta de una línea al post del survey (2026-11-09) señalando el hueco "Model Editing"
+para LLMs reales — pendiente de veredicto del experimento único para el PR con datos objetivos.
+
+**Revisado 2026-11-09 (sin ejecutar; candidato a primitiva): nathanrs/weight-space-lp + blog (nathan.rs,
+9-nov-2026).** Sobre la receta de Astra del paper CSAIL (rank-1 ΔW=u·vᵀ sobre down_proj L15/L19 del 0.8B,
+v elegida por ~28 pases de prueba en ~8 h): demostrar que ELEGIR v ES UN PROGRAMA LINEAL (v·h_t ≤ −δ en
+tokens de bucle, |v·h_t| ≤ ε en productivos, min ‖v‖₁ con holguras; solver PDHG ~1 min vs LP-HiGHS 20 min)
+→ 8 columnas por capa, 8× menos pesos que Astra, resultados dentro del ruido con su u (GSM8K 69.6 vs 68.2)
+y ~93% con u heurística sin agente. Dos hallazgos que CONFIRMAN lo nuestro de forma independiente:
+(1) "un steering vector hace el mismo trabajo" — el empuje es casi constante por token (89% tokens activos,
+ventana 0.5-2× estrecha): enlaza con la línea cvec/loop del repo; (2) "la edición quita obstáculos, no añade
+habilidades" (Gemma 270M no mejora). Huecos: sin holdout/OOD explícito, no publica pesos, todo del 0.8B.
+VERIFICACIÓN BARATA SUGERIDA (si se retoma): su PDHG contra nuestro harness exp8-replica 0.8B (30-45 min).
+Candidato directo a primitiva WSPLang: `lp_select_v` (u + etiquetas de conducta → columnas/escala por LP,
+determinista, sustituye el buscar-y-escalar) — familia forma-cerrada (cf_distill). Anotado; no adoptado.
+
 **Revisado y VERIFICADO 2026-11-09 (referencia externa, no se adopta por la prioridad única): HypaNet
 (github.com/Hypabolic/HypaNet + 2 posts matthewgribben.com, mismo autor matt-gribben, repo creado 11-05,
 último commit 11-09).** Fable(claude-fable-5.1) escribe pesos desde spec sin entrenar: detector de bucles de

@@ -2299,9 +2299,13 @@ def execute_plan_v4(
                 if not named.get("model"):
                     raise ValueError("model_report needs model=<dir or repo id>")
                 model_spec = str(named["model"])
+                if model_spec.startswith("hf:"):     # hf: owner/repo (delta_to_lora syntax) — model_report is HTTP-range based anyway
+                    model_spec = model_spec[3:]
                 is_local = Path(model_spec).exists() or (ROOT / model_spec).exists()
                 card = {} if is_local or str(named.get("card", "true")).lower() == "false" else mr.card_info(model_spec)
                 base_spec = str(named.get("base") or card.get("base_model") or "")
+                if base_spec.startswith("hf:"):
+                    base_spec = base_spec[3:]
                 if not base_spec:
                     raise ValueError("model_report needs base=<dir or repo id> (the card names no base_model)")
                 rep = mr.build_report(mr.reader_for(base_spec, ROOT), mr.reader_for(model_spec, ROOT),

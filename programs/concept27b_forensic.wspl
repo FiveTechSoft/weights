@@ -1,0 +1,3 @@
+experiment concept27b_forensic:
+steps:
+    step model_report model=hf:ConceptCountry/qwen-concept-27b base=Qwen/Qwen3.8-27B rows=128 transfer=false out=lab/runs/concept27b_forensic/report.md

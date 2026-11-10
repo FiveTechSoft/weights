@@ -218,13 +218,31 @@ def hf_fetch(repo: str, revision: str = "main", retries: int = 5, meter: Callabl
 
 
 def hf_files(repo: str, revision: str = "main", subfolder: str = "") -> List[str]:
-    """The root (or subfolder) .safetensors files of a public hub repo."""
+    """The root (or subfolder) .safetensors files of a public hub repo.
+
+    Variant discovery (2026-11-09, weight-space-lp/ConceptCountry case): some repos keep the checkpoints in a
+    single subfolder (bf16/, fp8/...). When the root has none, pick the variant folder by priority
+    (bf16 first: edits and fingerprints must compare against the same precision as the base), and refuse to
+    mix two variant folders (they are different checkpoints of the same repo)."""
     url = f"https://huggingface.co/api/models/{repo}/revision/{revision}"
     with urllib.request.urlopen(url, timeout=60) as r:
         sib = json.loads(r.read())["siblings"]
     prefix = f"{subfolder}/" if subfolder else ""
-    return sorted(s["rfilename"] for s in sib if s["rfilename"].endswith(".safetensors")
-                  and s["rfilename"].startswith(prefix) and "/" not in s["rfilename"][len(prefix):])
+    out = sorted(s["rfilename"] for s in sib if s["rfilename"].endswith(".safetensors")
+                 and s["rfilename"].startswith(prefix) and "/" not in s["rfilename"][len(prefix):])
+    if out or prefix:
+        return out
+    cand = sorted(s["rfilename"] for s in sib if s["rfilename"].endswith(".safetensors"))
+    folders = sorted({c.rsplit("/", 1)[0] for c in cand if "/" in c})
+    for pref in ("bf16", "bfloat16", "dst"):
+        if pref in folders:
+            return [c for c in cand if c.startswith(pref + "/")]
+    if len(folders) == 1:
+        return [c for c in cand if c.startswith(folders[0] + "/")]
+    if not folders:
+        return cand
+    raise ValueError(f"{repo}: several checkpoint variants exist without a bf16/ folder: {folders}; "
+                     "pass subfolder= to hf_files explicitly")
 
 
 def family(name: str) -> str:
