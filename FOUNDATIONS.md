@@ -117,6 +117,8 @@ fixed budget — closing in time — *can* be obtained without donor or training
 - **Outside evidence.** Concept Country makes the same argument and runs the control; the MIT post does not publish
   one; Hayashi's controls were not effect-matched. Hu et al. (2611.09382): on 0.8B dev, edit 20/48, base 6/48, equal-norm
   random direction 10/48 — a random push gets part of the way; no held-out placebo, and dev gains often vanish held-out.
+  Their own search variance makes the same point: three independent searches on MATH gave +29.45, +5.00 and +27.30
+  (1,023, ~1.04 M and ~1.98 M values changed), and 6 of 16 runs found no improvement — one search is not evidence.
 - **Depends on it.** `placebo_lora.py`, `contrast_vector.placebo`, `PROTOCOL.md`, exact McNemar in every verdict.
 
 ## T7. What weights alone can and cannot tell
