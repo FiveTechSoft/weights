@@ -1,0 +1,3 @@
+experiment extract_oxcoder:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-9b-hf model=hf:OrionLLM/OxCoder-9B@07ba04e2149bace1b43c66448471a70378a7a708 rank=16 out=hf_cache/close_lora/oxcoder_r16 gguf=hf_cache/close_lora/oxcoder_r16.gguf

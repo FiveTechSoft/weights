@@ -93,6 +93,23 @@ una sola vez antes de anunciarse; regla en `lab/probes/sealed/README.md`.
 - **2026-11-10: confirmación sellada del resultado principal CONFIRMA** (results §43.15): adaptador Jackrong ×0.5
   GSM8K 43 → 91/100, MATH 4 → 35/50 a 2 048 tokens, placebo 46 / 5; McNemar p < 1e-7 con dos correctores.
 - Siguiente: un donante con mejora útil (no solo conducta) por el op.
+- **2026-11-10, búsqueda de donantes (cadena `chain_donors4.sh`, veredicto por hub):** OmniCoder-9B (Tesslate, 697 likes)
+  publica **los pesos de Qwen3.5-9B sin cambios** (Δ = 0 en las 248 matrices con el op; sha256 de 6 tensores idéntico al
+  repo oficial `Qwen/Qwen3.5-9B` por HTTP range; pesos subidos una vez el 2026-03-12). JackOD-9B-Coder, OxCoder-9B,
+  HuatuoGPT-3-9B en curso.
+- **2026-11-10, réplica "cc" sin donante (en marcha, plan `lab/probes/cc/PLAN.md` fijado antes):** dirección "concluir"
+  sacada de las propias trazas de la base (últimos 48 tokens antes de `</think>` menos el resto del pensamiento), op
+  `contrast_vector` ampliado con filas `think`/`focus` (posición), aplicada como vector de control; criba de escala en
+  ítems no usados, dev con placebo de misma norma; si pasa, conjunto sellado y luego compilar en `down_proj`.
+  Pregunta: ¿la base arregla "no saber cerrar" **sin donante**? Referencia:
+  - Concept Country, *Gradient-Free Weight Editing Reduces Overthinking in Qwen3.8-27B* (working paper v1, 2026-11-08):
+    https://concept.country/research/weight-space-programming · post: https://x.com/varien/status/2119880941711827025 ·
+    código: github.com/conceptcountry/weight-space-programming · pesos: huggingface.co/ConceptCountry/qwen-concept-27b.
+    Rango 1 en `down_proj` de 9 capas (32-48 pares), α 0.1; GPQA 81.8 → 86.1, LCB v6 58.0 → 71.0, −27-54 % tokens; control
+    aleatorio de misma norma nulo. Límites: T = 1 con 1-2 muestras, cortes a 32k en todos los brazos (la prueba a 128k
+    va por 5/48), un solo control aleatorio.
+  - Relacionado: nathanrs.rs/posts/weight-space-lp (LP para la edición anti-bucle de MIT Exp 8; un empuje constante da
+    casi lo mismo que la edición).
 
 **Reglas:** nada de líneas nuevas mientras tanto; posts solo si cambian este plan; las cadenas ya en marcha (ronda 3,
 cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo sí cuenta: valida las cifras).

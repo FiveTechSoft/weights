@@ -51,14 +51,26 @@ def _rows(path):
 
 
 def _pairs(tok, rows, max_resp):
+    """-> [(prompt ids, response ids, slice of response ids to average)].
+    Optional row fields: "think": true uses the thinking-mode template (the response is then the reasoning, starting
+    after "<think>\\n"); "focus": [a, b) character offsets in the response, averaged over the tokens that overlap it
+    (the response is cut right after them: the model is causal, later tokens cannot change those states)."""
     out = []
     for r in rows:
         p = tok.apply_chat_template([{"role": "user", "content": r["prompt"]}], tokenize=False, add_generation_prompt=True,
-                                    enable_thinking=False)   # the same template llama-server uses with thinking off
+                                    enable_thinking=bool(r.get("think")))   # thinking off = llama-server's template
         pi = tok(p, add_special_tokens=False)["input_ids"]
-        ri = tok(r["response"], add_special_tokens=False)["input_ids"][:max_resp]
-        if ri:
-            out.append((pi, ri))
+        if r.get("focus") is None:
+            ri = tok(r["response"], add_special_tokens=False)["input_ids"][:max_resp]
+            if ri:
+                out.append((pi, ri, slice(0, len(ri))))
+            continue
+        a, b = r["focus"]
+        enc = tok(r["response"], add_special_tokens=False, return_offsets_mapping=True)
+        idx = [k for k, (s, e) in enumerate(enc["offset_mapping"]) if s < b and e > a]   # overlap: " So" starts at a-1
+        if idx:
+            ri = enc["input_ids"][:idx[-1] + 1]
+            out.append((pi, ri, slice(idx[0], idx[-1] + 1)))
     return out
 
 
@@ -88,20 +100,22 @@ def _stream(layers, device):
 
 @torch.no_grad()
 def layer_means(model, pairs, batch=8):
-    """Mean residual stream over response tokens, per hidden state: (n_layers + 1, d), float32."""
+    """Mean residual stream over each pair's selected response tokens, per hidden state: (n_layers + 1, d), float32."""
     core = model.model
     core = core.language_model if hasattr(core, "language_model") else core
     sums, count = None, 0
+    if any(len(a) + len(b) > 1024 for a, b, _ in pairs):
+        batch = 1                                   # long reasoning traces: hidden states of 8 x 4k tokens do not fit
     for k in range(0, len(pairs), batch):
         chunk = pairs[k:k + batch]
-        n = max(len(a) + len(b) for a, b in chunk)
-        ids = torch.tensor([a + b + [0] * (n - len(a) - len(b)) for a, b in chunk])   # right pad: causal, pads unseen
+        n = max(len(a) + len(b) for a, b, _ in chunk)
+        ids = torch.tensor([a + b + [0] * (n - len(a) - len(b)) for a, b, _ in chunk])   # right pad: causal, pads unseen
         hs = core(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states
-        for j, (a, b) in enumerate(chunk):
-            sl = slice(len(a), len(a) + len(b))
+        for j, (a, b, s) in enumerate(chunk):
+            sl = slice(len(a) + s.start, len(a) + s.stop)
             v = torch.stack([h[j, sl].float().cpu().sum(0) for h in hs])
             sums = v if sums is None else sums + v
-            count += len(b)
+            count += s.stop - s.start
     return sums / count
 
 

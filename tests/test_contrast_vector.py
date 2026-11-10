@@ -53,6 +53,45 @@ class TestPure(unittest.TestCase):
 
 
 @unittest.skipUnless(M08.exists(), "needs hf_cache/qwen35-08b-hf")
+class TestPositionContrast(unittest.TestCase):
+    """Rows may average over part of the response only ("focus": [a, b) character offsets) and use the thinking-mode
+    template ("think": true): the "end of thinking vs the rest" contrast of concept.country's weight-space programming."""
+
+    @classmethod
+    def setUpClass(cls):
+        from transformers import AutoTokenizer
+        cls.tok = AutoTokenizer.from_pretrained(str(M08))
+
+    def test_default_row_averages_the_whole_response(self):
+        from engine import contrast_vector as cv
+        (pi, ri, sl), = cv._pairs(self.tok, [{"prompt": "Hi", "response": "Plain answer here."}], 384)
+        self.assertEqual((sl.start, sl.stop), (0, len(ri)))
+
+    def test_focus_selects_the_tokens_of_that_substring(self):
+        from engine import contrast_vector as cv
+        resp = "Let me think about this carefully. So the answer is 42.\n</think>\n\nThe answer is 42."
+        a = resp.index("So the answer")
+        b = resp.index("</think>")
+        (pi, ri, sl), = cv._pairs(self.tok, [{"prompt": "Q", "response": resp, "focus": [a, b]}], 384)
+        self.assertEqual(self.tok.decode(ri[sl]).strip(), resp[a:b].strip())
+
+    def test_think_row_uses_the_thinking_template(self):
+        from engine import contrast_vector as cv
+        (pi, ri, sl), = cv._pairs(self.tok, [{"prompt": "Q", "response": "hmm", "think": True}], 384)
+        self.assertTrue(self.tok.decode(pi).endswith("<think>\n"), repr(self.tok.decode(pi)[-40:]))
+        (pi2, _, _), = cv._pairs(self.tok, [{"prompt": "Q", "response": "hmm"}], 384)
+        self.assertIn("</think>", self.tok.decode(pi2))
+
+    def test_focus_past_max_resp_is_kept(self):
+        from engine import contrast_vector as cv
+        resp = "word " * 600 + "THE END REGION" + " tail"
+        a = resp.index("THE END")
+        (pi, ri, sl), = cv._pairs(self.tok, [{"prompt": "Q", "response": resp, "focus": [a, a + 14]}], 384)
+        self.assertEqual(self.tok.decode(ri[sl]).strip(), "THE END REGION")
+        self.assertEqual(sl.stop, len(ri))     # cut right after the focus, nothing beyond is needed (causal)
+
+
+@unittest.skipUnless(M08.exists(), "needs hf_cache/qwen35-08b-hf")
 class TestOnModel(unittest.TestCase):
     def test_op_writes_a_vector_that_separates_the_two_sets(self):
         import engine.wsplang as wsplang

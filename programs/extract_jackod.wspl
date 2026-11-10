@@ -1,0 +1,3 @@
+experiment extract_jackod:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-9b-hf model=hf:ManniX-ITA/JackOD-9B-Coder@b0cabb1969ce415c24ddcaeb9d1fdf2467e0937a rank=16 out=hf_cache/close_lora/jackod_r16 gguf=hf_cache/close_lora/jackod_r16.gguf
