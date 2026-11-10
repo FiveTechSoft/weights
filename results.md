@@ -2064,3 +2064,42 @@ voraz, `--control-vector-scaled` ×1.0 (escala fijada en la criba §43.17, sin t
   es la dirección. Sigue siendo eficiencia (cerrar antes del tope), no capacidad nueva: a 32k tokens la base ya resuelve
   casi todo MATH (arXiv 2611.09382). Aplicado en inferencia (`--control-vector`); compilarlo en `down_proj` es el paso
   siguiente, con su propio plan.
+
+### 43.19 La dirección "concluir" compilada en los pesos (`down_proj`, rango 1, Q6_K): PASA en dev (2026-11-11)
+Plan fijado antes de correr: `lab/probes/cc_weights/PLAN.md`; código `lab/probes/cc_weights/{compile,agree,verdict}.py`;
+cadena `lab/runs/close_probe/distill/chain_cc_weights.sh`; datos y veredicto en `lab/runs/cc_weights/`.
+
+- **Qué se escribe:** por capa N = 1..31, ΔW_N = v_N u_Nᵀ en `mlp.down_proj` (4 096 × 12 288), v_N = incremento del
+  vector cc de §43.17-18, u_N = mínimos cuadrados con cresta para que u ᵀx ≈ 1 sobre las entradas de `down_proj`
+  (λ = 1e-3 · tr(KᵀK)/12 288, fijado antes). Capas en orden, cada una sobre el flujo ya editado. Calibración: las 128
+  trazas de descubrimiento de cc (100 ajuste / 28 reserva, semilla 20261111). Mismas matrices, mismas formas, nada
+  añadido. ΔW es el 2.3-2.9 % de la norma de cada `down_proj`.
+- **G0 (antes de cualquier benchmark): pasa.** Mediana sobre capas de la mediana en reserva de |u ᵀx − 1| = 0.032
+  (peor capa 0.043; umbral 0.5). Placebo compilado igual: 0.032 / 0.047 (la mediana cae en la capa 1, cuya entrada no
+  depende de ninguna edición: idéntica en los dos). Recuantización Q6_K del peso fusionado: coseno(escrito, ΔW) mínimo
+  0.83, error relativo mediano 0.47 (Q6_K pierde casi la mitad de ΔW en norma, pero conserva la dirección).
+  Acuerdo voraz de los primeros 256 tokens, fusionado frente a vector: 0/10 idénticos, prefijo común medio 22 %
+  (informativo: divergen pronto, mismo estilo).
+- **Dev** (mismos ítems y servidor que §43.17; base y vector reutilizados de allí, montaje determinista):
+
+| brazo | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle GSM / MATH | tokens medios GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| vector cc ×1.0 (inferencia) | 84 / 86 | 7 | 32 / 24 | 22 | 6 / 16 | 698 / 1 385 |
+| **fusionado Q6_K (sin flags)** | **87 / 90** | 8 | **34 / 27** | 14 | 4 / 3 | 730 / 1 385 |
+| placebo fusionado | 28 / 43 | 71 | 6 / 6 | 44 | 8 / 1 | 1 800 / 1 985 |
+| LoRA r1 sobre A0 (diagnóstico) | 84 / 86 | 8 | 35 / 27 | 19 | 9 / 15 | 705 / 1 341 |
+
+- McNemar exacto, fusionado frente a la base: GSM8K 38/1 (p < 1e-9) y 30/1 con último número; MATH 28/0 y 21/0 con el
+  corrector 2. **Frente al vector:** GSM8K 5/2 (p = 0.45), MATH 5/3 (p = 0.73): ni mejor ni peor. Placebo fusionado
+  frente a la base: GSM8K 2/24 (p < 1e-5), **por debajo**; MATH 2/2.
+- **C1 fusionado > base, C2 placebo no mejor, C3 GSM8K sin daño, C4 fusionado no por debajo del vector: PASA.**
+- Dos métodos: los aciertos por ítem de `verdict.py` coinciden con el resumen de `bench_runner` en el log de la cadena
+  (0.87 / 0.68 / 0.28 / 0.12 / 0.84 / 0.70). Discrepancias de correctores del fusionado (8), revisadas: todas de formato
+  (`4/3` frente a `\frac43`, `60\%`, `0.35625` frente a `.35625`).
+- HumanEval primeros 20 (informativo en el plan): no corrido aún.
+- **Lectura:** el efecto de un vector de control sale de la inferencia y vive en el checkpoint como edición de matrices
+  existentes, con una escritura de rango 1 en forma cerrada por capa y sin gradientes, y sobrevive a Q6_K aunque la
+  cuantización pierda casi la mitad de ΔW. Un empuje compilado del mismo tamaño en dirección aleatoria daña. Dev ya
+  se miró muchas veces (base y vector); siguiente: conjunto sellado nuevo `data/sealed_confirm2.json` (sha256
+  10381eee…, hecho antes de correr nada), brazos base / vector / fusionado / placebo fusionado, mismos C1-C4.

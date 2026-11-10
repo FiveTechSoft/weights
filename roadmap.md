@@ -102,8 +102,10 @@ una sola vez antes de anunciarse; regla en `lab/probes/sealed/README.md`.
   **también es la base**; JackOD-9B-Coder 3.6 % unlikely (mezcla); HuatuoGPT-3-9B 25.3 % uncertain. Ningún donante de
   código útil en esta tanda. Bug del runtime corregido: Δ = 0 daba `likely`, ahora `no_change`.
 - **2026-11-10, réplica "cc" sin donante — CONFIRMADA en el sellado (results §43.17-43.18):** dev GSM8K 50 → 84,
-  MATH 6 → 32; sellado 43 → 87/100, 4 → 25/50; placebo de misma norma por debajo de la base (23 / 2). Siguiente:
-  compilar la dirección en `down_proj` (plan propio, mismo placebo, mismo sellado). Plan original `lab/probes/cc/PLAN.md`: dirección "concluir"
+  MATH 6 → 32; sellado 43 → 87/100, 4 → 25/50; placebo de misma norma por debajo de la base (23 / 2). **Compilada en `down_proj`
+  (rango 1 por capa en forma cerrada, fusionada en Q6_K, sin flags): PASA en dev (§43.19)** — GSM8K 50 → 87, MATH 6 → 34,
+  igual que el vector (p 0.45 / 0.73), placebo compilado 28 / 6. Siguiente: sellado 2 (`data/sealed_confirm2.json`,
+  `chain_sealed_ccw.sh`, encadenado tras el forense de Turbo). Plan original `lab/probes/cc/PLAN.md`: dirección "concluir"
   sacada de las propias trazas de la base (últimos 48 tokens antes de `</think>` menos el resto del pensamiento), op
   `contrast_vector` ampliado con filas `think`/`focus` (posición), aplicada como vector de control; criba de escala en
   ítems no usados, dev con placebo de misma norma; si pasa, conjunto sellado y luego compilar en `down_proj`.

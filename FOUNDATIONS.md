@@ -133,9 +133,10 @@ fixed budget — closing in time — *can* be obtained without donor or training
 ---
 
 ## T8. Open questions (being tested or next)
-- **Compile the "conclude" direction into weights** (confirmed as a control vector, §43.18): write it into `down_proj`
-  as Concept Country does, so the edit lives in the checkpoint; needs its own plan, same placebo and sealed check.
-  Also open: does it hold at other budgets, other models, and with sampling.
+- **Compile the "conclude" direction into weights** (confirmed as a control vector, §43.18): **passes on dev (§43.19)**.
+  A closed-form rank-1 write per layer into `down_proj` (31 layers, no gradients), merged into the Q6_K checkpoint with
+  no inference flags: GSM8K 50 → 87, MATH 6 → 34, not different from the control vector (p 0.45 / 0.73); the same
+  write in a random direction damages (28 / 6). Sealed set 2 (`data/sealed_confirm2.json`) is next. Also open: does it hold at other budgets, other models, and with sampling.
 - **Why RL changes do not fit a small adapter** (LeoZotos 7.5 %, MiMo 3.8 %) while SFT distills do. One RL donor so far.
 - **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
   the medical RL model is uncertain at 25 %).

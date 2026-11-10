@@ -347,7 +347,13 @@
         <p style="color: var(--text-muted); line-height: 1.6;">
           Gained/lost 46/2 and 21/0, exact McNemar p &lt; 1e-5 with two graders each; plan written before the run. A random push of
           the same size hurts, so the gain is the direction. It is efficiency (closing within the budget), not new knowledge; applied at
-          inference, compiling it into the weights is the next step.
+          inference.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          <strong>Compiled into the weights</strong> (results &sect;43.19, dev so far): the same vector written into <code>down_proj</code> of
+          31 layers as a closed-form rank-1 edit per layer (no gradients, same matrices and shapes), merged into the Q6_K file and run
+          with no flags: dev GSM8K 50 &rarr; <strong>87</strong>/100, MATH 6 &rarr; <strong>34</strong>/50, not different from the control
+          vector (84 / 32; p 0.45 / 0.73). The same write in a random direction hurts (28 / 6). A fresh sealed set is next.
         </p>
         <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Second use: a mood as a control vector, no weight change (results &sect;43.13)</h3>
         <p style="color: var(--text-muted); line-height: 1.6;">
