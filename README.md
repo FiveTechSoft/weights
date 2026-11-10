@@ -29,8 +29,9 @@ the donor, rank 16, 87 MB, a few minutes:
 | MATH-500, 36 held-out items (16 the base cannot finish + 20 it solves) | 6/36 | **30/36** |
 | GSM8K, 48 items (another benchmark; never used to pick anything) | 9/48 | **37/48** |
 | GSM8K problems the base already solved, kept | 6/6 | **6/6** |
+| **Sealed confirmation** (2026-11-10): GSM8K 100 + MATH-500 50 never used by any decision | 43/100, 4/50 | **91/100, 35/50** |
 
-Paired against the base (exact McNemar), both p < 0.0001. Before any benchmark the op's `energy.json` says whether a
+Paired against the base (exact McNemar), both p < 0.0001. The sealed run (plan written before it, results §43.15) confirms with two graders per benchmark (gained/lost 48/0 and 31/0) while a same-norm random placebo stays at the base (46/100, 5/50); much of the gain is that the adapter reasons 2-3× shorter and finishes within the budget. Before any benchmark the op's `energy.json` says whether a
 change will move: rank 16 keeps 58.6 % of Jackrong's change (it moves) and 3.8 % of MiMo's (it does not, at any rank
 up to 512). Demo and commands: [`demos/math_transplant/`](demos/math_transplant/). It **needs a donor**: every attempt
 to create the skill without one (synthesis, learned jumps, merges, self-distillation) failed; see the table below.
@@ -43,8 +44,8 @@ to create the skill without one (synthesis, learned jumps, merges, self-distilla
 | LeoZotos math GRPO (RL) | 7.5 % | unlikely | not distinguishable from the base (GSM8K 15/48 vs 9, p = 0.21) although the full donor improves it (21/48, p = 0.012) |
 | MiMo 2.6 (full fine-tune) | 3.8 % | unlikely | does not move at any rank up to 512 |
 
-The verdict was right each time; moving a change does not make the change good (OSS). Next transplants are confirmed
-once on a sealed set (`data/sealed_confirm.json`, sha256-checked, disjoint from everything used so far).
+The verdict was right each time; moving a change does not make the change good (OSS). The main result is confirmed
+on a sealed set (`data/sealed_confirm.json`, sha256-checked, disjoint from everything used so far; results §43.15) and next transplants will be too.
 
 **Second use: steering without touching weights** (results §43.13). The `contrast_vector` op turns two sets of answers
 (same prompts, cheerful vs neutral) into a llama.cpp control vector. On 40 unseen prompts, Qwen3.5-9B with the vector at
@@ -66,7 +67,7 @@ items. Results that did not survive the audit are listed as such instead of bein
 
 | Result | Evidence | Status |
 | :--- | :--- | :--- |
-| **Fine-tune → adapter (`delta_to_lora`)**, Jackrong's distill on Qwen3.5-9B (results §43.4-43.6) | See *Main result*. Rank 4 fails (11/36), rank 8 27/36, rank 16 30-32/36. HumanEval first 20: 20/20 base, 19/20 with the lab adapter. | ✅ Measured, paired tests, small sets (36 + 48 items). |
+| **Fine-tune → adapter (`delta_to_lora`)**, Jackrong's distill on Qwen3.5-9B (results §43.4-43.6) | See *Main result*. Rank 4 fails (11/36), rank 8 27/36, rank 16 30-32/36. HumanEval first 20: 20/20 base, 19/20 with the lab adapter. | ✅ Measured, paired tests; **confirmed on the sealed set** (91/100, 35/50 vs base 43, 4; placebo 46, 5; results §43.15). |
 | **Transfer verdict on 4 donors** (results §43.11-43.12) | See *Main result*: `likely` for Jackrong (58.6 %) and OSS-Distilled (98.3 %), both transferred; `unlikely` for LeoZotos (7.5 %) and MiMo (3.8 %), neither did. | ✅ Measured, small sets; LeoZotos's test is weak (adapter between base and donor, neither difference significant). |
 | **Shorter reasoning on MiMo with OSS-Distilled's change** (results §43.12) | GSM8K 100 + MATH-500 50, 8,192 tokens: MATH cut 13 → 3 (×1) / 5 (×0.5), tokens 3,077 → 965; placebo 17 cut. GSM8K 92 → 83 at both doses (p = 0.035 / 0.012, two graders agree). | ❌ Fails its pre-registered criterion: the behaviour moves, accuracy drops. |
 | **Happiness control vector (`contrast_vector`)** (results §43.13) | See *Main result*. Judge (MiMo) and lexicon agree; placebo null; GSM8K fast set 7/48 vs 9/48 (within the margin of 2). | ✅ Passes C1-C5 after two documented judge fixes. One model, one style, 40 test prompts. |

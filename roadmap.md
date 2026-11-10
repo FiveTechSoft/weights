@@ -90,7 +90,9 @@ una sola vez antes de anunciarse; regla en `lab/probes/sealed/README.md`.
 - OSS sobre MiMo FALLA su criterio (acorta, pero −9 GSM8K, p = 0.035): transferir una conducta no garantiza que sea buena.
 - `contrast_vector` (felicidad) PASA C1-C5 tras dos arreglos del juez: segundo uso del runtime, dirigir sin tocar pesos.
 - Heretic frente a MiMo: empate estadístico en matemáticas; heretic piensa ≈ 2.5× menos.
-- Siguiente: un donante con mejora útil (no solo conducta) por el op + confirmación en el conjunto sellado.
+- **2026-11-10: confirmación sellada del resultado principal CONFIRMA** (results §43.15): adaptador Jackrong ×0.5
+  GSM8K 43 → 91/100, MATH 4 → 35/50 a 2 048 tokens, placebo 46 / 5; McNemar p < 1e-7 con dos correctores.
+- Siguiente: un donante con mejora útil (no solo conducta) por el op.
 
 **Reglas:** nada de líneas nuevas mientras tanto; posts solo si cambian este plan; las cadenas ya en marcha (ronda 3,
 cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo sí cuenta: valida las cifras).

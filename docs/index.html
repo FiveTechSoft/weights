@@ -288,10 +288,12 @@
             <tr><td>MATH-500: 16 the base cannot finish + 20 it solves (not used to build the adapter)</td><td>6 / 36</td><td><strong>30 / 36</strong></td></tr>
             <tr><td>GSM8K: 28 the base fails + 20 it solves (another benchmark)</td><td>9 / 48</td><td><strong>37 / 48</strong></td></tr>
             <tr><td>GSM8K problems the base solved at this budget, still solved</td><td>6 / 6</td><td>6 / 6</td></tr>
+            <tr><td><strong>Sealed confirmation</strong> (2026-11-10): GSM8K 100 + MATH-500 50 never used by any decision</td><td>43 / 100, 4 / 50</td><td><strong>91 / 100, 35 / 50</strong></td></tr>
           </tbody>
         </table>
         <p style="color: var(--text-muted); line-height: 1.6;">
-          Exact McNemar test, paired with the base: MATH 24 items gained, 0 lost; GSM8K 28 gained, 0 lost (both p &lt; 0.0001).
+          Exact McNemar test, paired with the base: MATH 24 items gained, 0 lost; GSM8K 28 gained, 0 lost (both p &lt; 0.0001). On the sealed set (plan written first) it confirms with two graders per benchmark, and a
+          same-norm random placebo stays at the base (46 / 100, 5 / 50).
           The base usually had the answer in its reasoning but did not stop thinking within the budget; the adapter makes
           it finish. Before any benchmark, the op's <code>energy.json</code> predicts whether a change can move: rank 16
           keeps 58.6 % of Jackrong's change (it moves) and 3.8 % of MiMo-9B's (it does not: adapters up to rank 512 reach
@@ -342,7 +344,7 @@
             91 % of it, but extrapolating early steps, a single gradient, a learned jump and summing changes all failed to
             produce the skill without training (results &sect;40-&sect;42).</li>
           <li><strong>Small sets</strong> (36 + 48 items; 100 + 50 for the MiMo study). The prediction was checked on four
-            donors (below); future passes are confirmed once on a sealed, hashed set.</li>
+            donors (below); the main result was confirmed once on a sealed, hashed set (150 unseen items).</li>
           <li>The effects are paired-tested, but these are not leaderboard numbers: one model family, one budget, greedy decoding.</li>
         </ul>
       </div>

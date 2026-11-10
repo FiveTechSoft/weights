@@ -1944,3 +1944,27 @@ Qwen2Tokenizer, que el conversor sí conoce; vocabulario, fusiones e ids idénti
 **Respuesta a "cuál es mejor y en qué":** en matemáticas, empate estadístico; MiMo acierta algo más en MATH (no
 significativo) y heretic piensa ≈ 2.5 veces menos y casi nunca se queda sin espacio (3 cortadas frente a 13). Si el
 coste por respuesta importa, heretic; si importa el último punto de MATH, MiMo, sin poder afirmarlo con n = 50.
+
+### 43.15 Confirmación sellada 1: el resultado principal (adaptador de Jackrong sobre la base) CONFIRMA (2026-11-10)
+Plan escrito antes de correr: `lab/probes/sealed/jackrong_confirm.md`. Conjunto `data/sealed_confirm.json` (sha256
+3acfbc8d…, primer y único uso para esta afirmación; disjunto del set de desarrollo). Q6_K de la base, voraz, tope
+2 048 tokens, un servidor con el adaptador por petición. Veredicto: `lab/probes/sealed/jackrong_verdict.py` →
+`lab/runs/sealed/verdict.txt`.
+
+| brazo | GSM8K /100 (corrector 1 / último número) | GSM8K cortadas | MATH-500 /50 (corrector 1 / 2) | MATH cortadas | tokens medios GSM / MATH |
+|---|---|---|---|---|---|
+| base | 43 / 64 | 57 | 4 / 4 | 46 | 1 703 / 1 981 |
+| **adaptador r16 ×0.5** | **91 / 93** | 5 | **35 / 33** | 13 | 616 / 1 067 |
+| placebo misma norma ×0.5 | 46 / 63 | 52 | 5 / 4 | 44 | 1 692 / 1 974 |
+
+McNemar exacto frente a la base (gana/pierde):
+- C1 MATH: adaptador 31/0 (p = 9e-10) con el corrector 1, 29/0 (p = 4e-9) con el 2. **Pasa.**
+- C2 GSM8K: adaptador 48/0 (p = 7e-15) con el corrector 1, 30/1 (p = 3e-8) con último número. **Pasa.**
+- C3 placebo: GSM8K 12/9 (p = 0.66) y 15/16 (p = 1); MATH 2/1 y 1/1 (p = 1). No mejora. **Pasa.**
+
+**CONFIRMA** en problemas no usados por ninguna decisión. Lectura honesta: a 2 048 tokens la base se queda sin
+espacio en 57/100 y 46/50; gran parte de la mejora es que el adaptador razona ≈ 2-3× más corto y llega a contestar
+(lo mismo que en desarrollo, §43.8). El corrector de último número da a la base 64 (no 43) porque en respuestas
+cortadas a veces el último número escrito coincide con la respuesta; el adaptador gana igual con él. Límite: un
+modelo, un tope, voraz; contaminación por preentrenamiento posible en todos los brazos por igual (GSM8K y MATH son
+públicos).
