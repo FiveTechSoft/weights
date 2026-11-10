@@ -59,3 +59,13 @@ No search over k, layers, λ or scale; no column *scaling* edits (scaling neuron
 Δa is a mean over tokens: a neuron can matter through rare large firings and still show a small mean (it would count as
 spread here). The attention share is not decomposed further. SwiGLU "neurons" here are `down_proj` input coordinates
 (act(gate) · up), the same unit as Goodfire's.
+
+## Clarifications written before running (2026-11-11, with the script `decompose.py`)
+
+- `cc.gguf`'s last increment (layer 31) is taken against HF's last hidden state, which is after the final norm; the
+  attention + MLP identity holds for the raw layer outputs, so check 2 uses the layer outputs (hooks) and check 1 the
+  hidden states (as `contrast_vector`). Layer 31's share against `cc.gguf` is reported but may not add up.
+- The null's concentration is measured against its own MLP direction (W Δa_null), not against v_N: a random split has
+  no reason to point along v_N, and the question is only how many neurons it takes to make *a* mean difference.
+- Tokens assigned to the null groups independently with probability n_pos / (n_pos + n_neg) (expected sizes equal to
+  the real groups, not exact).

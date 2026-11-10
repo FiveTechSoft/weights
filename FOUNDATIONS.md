@@ -172,5 +172,10 @@ Surprising Effectiveness of Deleting Weights in LLM Post-Training* (arXiv 2611.1
 mask zeroing < 0.05 % of `gate_proj` weights matches full fine-tuning on GRPO/SFT/on-policy distillation at ≥ 7B, with
 little forgetting: support for T2/T8 (what post-training changes on these benchmarks fits in very little; rank-1 per
 layer in §43.19). Caveats: the mask is trained with gradients; no same-fraction random-deletion placebo (T6), and LoRA
-r1 also matches, so the tasks need little information rather than masks being special. Full links in
+r1 also matches, so the tasks need little information rather than masks being special · Zheng et al., *Correctness
+vs Efficiency: Behavior Control with Weight-Space Extrapolation in Code RL* (arXiv 2605.28751, NeurIPS 2026) — two RL
+runs from one SFT checkpoint differing only in reward strictness; their weight difference steers reward hacking, and
+extrapolating past the strict run cuts resource-limit failures 14.5 → 8.0 % without more RL; too far and outputs
+collapse (repetition, reasoning that never ends): T3's narrow window in weight space, and T5 (a "correctness tax", total
+solve rate unchanged). Read from the author's thread; no same-norm placebo there (T6). Full links in
 README "References".
