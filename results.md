@@ -2,9 +2,15 @@
 
 
 
-Estudio: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
+> **Cómo leer este fichero.** Es el cuaderno de laboratorio: orden cronológico, cada corrida, incluidas las
+> afirmaciones luego retiradas (§26) y las ideas refutadas. **No es el estado actual.** El estado actual está en
+> [`README.md`](README.md) (resultado principal) y [`FOUNDATIONS.md`](FOUNDATIONS.md) (tesis, estado y evidencia).
+> §1-§25 (3-4 nov) son el estudio inicial (MiMo, toolkit, nanoGPT); §26 retira lo que no se demostró; el resultado
+> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-10.
 
-Actualizado: 2026-11-03. Fuente primaria rig_runs/, journal/, sellados/.
+Estudio inicial: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
+
+Cabecera original del 2026-11-03. Fuente primaria rig_runs/, journal/, sellados/.
 
 
 

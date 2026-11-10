@@ -1,0 +1,40 @@
+name: WSPLang runtime tests
+
+# The transplant ops (delta_to_lora, contrast_vector) and the runtime's guards, on CPU, from a clean checkout.
+# Tests that need local models (hf_cache/, models/, both gitignored) skip themselves here.
+
+on:
+  push:
+    branches: [main, feat/wsp-synthesis]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies (CPU torch)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements.txt
+
+      - name: Runtime and transplant tests
+        run: |
+          set -e
+          for f in tests/test_wsplang*.py tests/test_contrast_vector.py; do
+            echo "== $f"
+            python -m unittest "$f"
+          done

@@ -25,6 +25,8 @@ from engine.wsplang import (
     execute_plan_v4,
 )
 
+NANOWSP = Path(__file__).resolve().parent.parent / "models" / "nanowsp" / "model.safetensors"
+
 
 class TestWSPLangV7JepaWSL(unittest.TestCase):
 
@@ -101,6 +103,7 @@ class TestWSPLangV7JepaWSL(unittest.TestCase):
         self.assertGreater(sim_after, sim_before)
         self.assertGreaterEqual(sim_after, 0.95, "Permutation matching should recover high alignment")
 
+    @unittest.skipUnless(NANOWSP.exists(), "needs models/nanowsp/model.safetensors (local, gitignored)")
     def test_program_validation_and_execution(self):
         code = """experiment test_v7_suite:
 model: nanowsp3
