@@ -981,6 +981,8 @@ minute, with her arms</td>
           <a href="https://github.com/conceptcountry/weight-space-programming" style="color: var(--accent-cyan);">code</a>,
           <a href="https://huggingface.co/ConceptCountry/qwen-concept-27b" style="color: var(--accent-cyan);">weights</a>).
           A direction from the model's own traces, written as rank-1 terms into 9 <code>down_proj</code> matrices: GPQA Diamond +4.3, LiveCodeBench v6 +13.0, 27-54 % fewer thinking tokens; a norm-matched random edit does nothing. We are replicating it without a donor on Qwen3.5-9B.</li>
+        <li>Hu, Tang, Li, Zhu, Feng, Zhang, Chen, Hu, <a href="https://arxiv.org/abs/2611.09382" style="color: var(--accent-cyan);"><em>Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations</em></a>, arXiv 2611.09382, 6 Nov 2026
+          (<a href="https://github.com/WSP-Scope/WSP-Scope-Project" style="color: var(--accent-cyan);">code</a>). 16 agent editing searches on Qwen3.5-0.8B and 9B: one <code>down_proj</code> column lifts 0.8B MATH-500 8.4 &rarr; 37.8 (a loop fix); on 9B gains are small and a MATH dev gain vanished held-out (base already 97.7 at 32k tokens).</li>
         <li>Nathan Barry, <a href="https://nathanrs.rs/posts/weight-space-lp" style="color: var(--accent-cyan);"><em>Can a Linear Program Do Weight-Space Programming?</em></a>
           (<a href="https://github.com/nathanrs/weight-space-lp" style="color: var(--accent-cyan);">code</a>), Nov 2026. Finds the MIT Exp 8 loop-breaking edit with a sparse linear program in minutes; a constant steering push gives almost the same result.</li>
         <li>Irie, Schlag &amp; Schmidhuber, fast weight programmers (ICML 2021). Belrose et al., LEACE (NeurIPS 2023).</li>

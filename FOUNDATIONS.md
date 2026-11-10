@@ -51,7 +51,10 @@ as of 2026-11-10.
   - Base loops are fragile: quantization recipe alone moves ~12 cut answers out of 100 (§39.6).
 - **Outside evidence.** Concept Country (Qwen3.8-27B): a direction read from the model's own pre-`</think>` region cuts
   thinking 27-54 % and raises GPQA/LCB, with truncation falling on every benchmark. Hayashi's analysis of MIT Exp 8:
-  85/96 practice answers exhausted the budget; the edit removes a completion obstacle.
+  85/96 practice answers exhausted the budget; the edit removes a completion obstacle. Hu et al. (arXiv 2611.09382):
+  their +29.45 MATH edit on Qwen3.5-0.8B is a "Wait/However vs Therefore" column on a base cut in 111/128; on
+  **Qwen3.5-9B at 32k tokens the base scores 97.7 on MATH** and a +29.69 dev edit gave −0.35 held-out — with room to
+  think, our base already knows.
 - **Would refute it.** A transplant that raises accuracy at a budget where the base is never cut, or a forced-close
   base far below the donor.
 - **Limit.** Says nothing about tasks where the base lacks the knowledge; HumanEval base was at ceiling (20/20).
@@ -102,7 +105,8 @@ as of 2026-11-10.
   shared directions: 24 → 18 cut, within what quantization alone moves (§39.6-39.7). cf5's placebo recovered part of the
   gain (§43.10). Conversely, placebos stayed at base in every result we claim (§43.13, §43.15).
 - **Outside evidence.** Concept Country makes the same argument and runs the control; the MIT post does not publish
-  one; Hayashi's controls were not effect-matched.
+  one; Hayashi's controls were not effect-matched. Hu et al. (2611.09382): on 0.8B dev, edit 20/48, base 6/48, equal-norm
+  random direction 10/48 — a random push gets part of the way; no held-out placebo, and dev gains often vanish held-out.
 - **Depends on it.** `placebo_lora.py`, `contrast_vector.placebo`, `PROTOCOL.md`, exact McNemar in every verdict.
 
 ## T7. What weights alone can and cannot tell
@@ -143,6 +147,7 @@ as of 2026-11-10.
 ## Reading list
 Takehi et al., *Sparks of Weight-Space Programming* (MIT CSAIL, 2 Nov 2026) · Concept Country, *Gradient-Free Weight
 Editing Reduces Overthinking in Qwen3.8-27B* (8 Nov 2026) · Nathan Barry, *Can a Linear Program Do Weight-Space
-Programming?* · Hayashi, *weight-space geometry* (hayashiyus.github.io/blog/weight-space-geometry; theory, mostly
+Programming?* · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
+(arXiv 2611.09382) · Hayashi, *weight-space geometry* (hayashiyus.github.io/blog/weight-space-geometry; theory, mostly
 proposed experiments) · Hu et al., LoRA · Ilharco et al., task arithmetic; Yadav et al., TIES · Belrose et al., LEACE ·
 Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers. Full links in README "References".
