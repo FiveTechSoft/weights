@@ -330,6 +330,25 @@
         <p style="color: var(--text-muted); line-height: 1.6;">
           The verdict was right each time. Moving a change does not make it a good change: OSS's shorter reasoning costs arithmetic.
         </p>
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Without a donor: the base's own "conclude" direction (results &sect;43.17-43.18)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Replicating Concept Country's idea on Qwen3.5-9B: the <code>contrast_vector</code> op reads, from the base's own finished
+          reasoning traces, the residual stream of the last 48 tokens before <code>&lt;/think&gt;</code> minus the rest of the thinking,
+          and applies it as a control vector at scale 1.0 (picked on unused items). No donor, no training. Same sealed set, same budget:
+        </p>
+        <table>
+          <thead><tr><th>Sealed set (150 unseen items)</th><th>Base</th><th>+ "conclude" vector</th><th>Same-norm random vector</th></tr></thead>
+          <tbody>
+            <tr><td>GSM8K / 100</td><td>43</td><td><strong>87</strong></td><td>23</td></tr>
+            <tr><td>MATH-500 / 50</td><td>4</td><td><strong>25</strong></td><td>2</td></tr>
+            <tr><td>GSM8K answers cut at the budget</td><td>57</td><td>10</td><td>76</td></tr>
+          </tbody>
+        </table>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Gained/lost 46/2 and 21/0, exact McNemar p &lt; 1e-5 with two graders each; plan written before the run. A random push of
+          the same size hurts, so the gain is the direction. It is efficiency (closing within the budget), not new knowledge; applied at
+          inference, compiling it into the weights is the next step.
+        </p>
         <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Second use: a mood as a control vector, no weight change (results &sect;43.13)</h3>
         <p style="color: var(--text-muted); line-height: 1.6;">
           The <code>contrast_vector</code> op turns the same prompts answered cheerfully and neutrally into a llama.cpp control vector.
@@ -340,7 +359,7 @@
         </p>
         <h3 style="color: var(--accent-rose); font-size: 1.15rem; margin-top: 1.5rem;">Limits</h3>
         <ul style="color: var(--text-muted); line-height: 1.6; margin-left: 1.25rem;">
-          <li><strong>It needs a donor.</strong> The op moves a skill someone trained; it does not create one. On Qwen3.5-0.8B
+          <li><strong>It needs a donor</strong> (except for closing in time, above). The op moves a skill someone trained; it does not create one. On Qwen3.5-0.8B
             (3&times;3 multiplication) a training's change lives in a narrow subspace shared across seeds, and rank 20 recovers
             91 % of it, but extrapolating early steps, a single gradient, a learned jump and summing changes all failed to
             produce the skill without training (results &sect;40-&sect;42).</li>

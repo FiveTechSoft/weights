@@ -2033,3 +2033,34 @@ Plan fijado antes de correr: `lab/probes/cc/PLAN.md`; datos y veredicto en `lab/
 - Límites: un modelo, un tope (2 048), voraz; dirección sacada mayormente de GSM8K train (39 de 53 trazas); escala
   elegida en ítems de MATH; a 32k tokens la base ya cierra (arXiv 2611.09382: 97.7 en MATH), así que esto es eficiencia
   con presupuesto corto, no capacidad. Confirmación sellada en marcha (`lab/probes/sealed/cc_confirm.md`).
+
+### 43.18 Confirmación sellada 2: la dirección "concluir" sin donante CONFIRMA (2026-11-10)
+Plan escrito antes de correr: `lab/probes/sealed/cc_confirm.md`; veredicto `lab/probes/sealed/cc_verdict.py` →
+`lab/runs/sealed_cc/verdict.txt`. Conjunto `data/sealed_confirm.json` (sha256 3acfbc8d…, segundo uso, primero para esta
+afirmación; ningún ítem tocó ninguna decisión del estudio cc). Mismo servidor y ajustes que dev: Q6_K `A0`, 2 048 tokens,
+voraz, `--control-vector-scaled` ×1.0 (escala fijada en la criba §43.17, sin tocar).
+
+| brazo | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle GSM / MATH | tokens medios GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 43 / 64 | 57 | 4 / 4 | 46 | 4 / 2 | 1 703 / 1 981 |
+| **vector cc ×1.0** | **87 / 92** | 10 | **25 / 23** | 27 | 10 / 22 | 692 / 1 440 |
+| placebo ×1.0 | 23 / 43 | 76 | 2 / 2 | 48 | 7 / 3 | 1 839 / 2 026 |
+
+- McNemar exacto frente a la base: vector GSM8K ganadas/perdidas 46/2 (p = 8e-12) y 30/2 con último número
+  (p = 2e-7); MATH 21/0 (p = 1e-6) y 19/0 con el corrector 2 (p = 4e-6). Placebo GSM8K 5/25 (p = 3e-4) y 6/27, **por
+  debajo** de la base; MATH 1/3 (p = 0.63).
+- **C1 ganancia (los dos benchmarks, los dos correctores), C2 placebo no mejor, C3 GSM8K sin daño: CONFIRMA.**
+- Dos métodos: los aciertos por ítem coinciden con el resumen de `bench_runner` (0.87 / 0.50 / 0.43 / 0.08 / 0.23 /
+  0.04). La base, corrida de nuevo, da **los mismos 150 resultados ítem a ítem** que la base del sellado 1 (§43.15):
+  el montaje es determinista y las dos confirmaciones comparten base.
+- Discrepancias de correctores, revisadas: las 4 son de formato (`10\%` frente a `10`; `13/18` frente a
+  `\frac{13}{18}`; `32348` frente a `\$32,\!348`).
+- Estricto (quitando las correctas cortadas con la respuesta en un `\boxed{}` repetido): GSM8K 84 frente a 42, MATH 19
+  frente a 4. El bucle de conclusión sigue siendo el borde de la ventana: 22 de las 50 de MATH acaban en cola en bucle.
+- Comparado con el trasplante de Jackrong en el mismo conjunto (§43.15): 91 / 35 frente a 87 / 25. Sin donante, casi
+  igual en GSM8K y por debajo en MATH.
+- **Lectura:** la mejora a presupuesto corto se puede sacar del propio modelo, sin donante ni entrenamiento, y se
+  mantiene en ítems nunca vistos. Un empuje del mismo tamaño en dirección aleatoria **daña** (−20 GSM8K): todo el efecto
+  es la dirección. Sigue siendo eficiencia (cerrar antes del tope), no capacidad nueva: a 32k tokens la base ya resuelve
+  casi todo MATH (arXiv 2611.09382). Aplicado en inferencia (`--control-vector`); compilarlo en `down_proj` es el paso
+  siguiente, con su propio plan.

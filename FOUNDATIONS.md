@@ -49,6 +49,8 @@ as of 2026-11-10.
   - Every working transplant shortens reasoning: Jackrong ≈ 2-3× fewer tokens, cut answers 57 → 5 (GSM8K) on the
     sealed set (§43.15); OSS ≈ 3× (§43.12).
   - Base loops are fragile: quantization recipe alone moves ~12 cut answers out of 100 (§39.6).
+  - A direction read from the base's own "about to close" region, with no donor, gives most of the same gain on the
+    sealed set: GSM8K 43 → 87/100, MATH 4 → 25/50, cut answers 57 → 10 (GSM8K), tokens −59 % (§43.18).
 - **Outside evidence.** Concept Country (Qwen3.8-27B): a direction read from the model's own pre-`</think>` region cuts
   thinking 27-54 % and raises GPQA/LCB, with truncation falling on every benchmark. Hayashi's analysis of MIT Exp 8:
   85/96 practice answers exhausted the budget; the edit removes a completion obstacle. Hu et al. (arXiv 2611.09382):
@@ -65,7 +67,8 @@ as of 2026-11-10.
 - **Claim.** Style/mood/stop-thinking behaviours are well described by adding a fixed vector to the residual stream.
   Too small does nothing; too large breaks coherence.
 - **Our evidence.** Happiness control vector (`contrast_vector`, §43.13): tone 2.83 → 3.90 (sign p = 3e-8), lexicon
-  0.27 → 2.63 (p = 7e-12), placebo null, coherence kept at scale 0.25; scales ≥ 0.5 break coherence.
+  0.27 → 2.63 (p = 7e-12), placebo null, coherence kept at scale 0.25; scales ≥ 0.5 break coherence. "Conclude"
+  vector (§43.17-43.18): on MATH screen items base 8/64, ×0.25 10, ×0.5 17, ×1.0 35, ×2.0 2 (all cut, in loops).
 - **Outside evidence.** Nathan Barry (LP re-derivation of MIT Exp 8): a constant steering push gives almost the same
   result as the per-token-constrained weight edit; doubling it breaks. Hayashi: Exp 8's weight edit equals an
   activation hook (KL 1e-11 in FP32). Concept Country's additive edit "writes about α along the direction" on typical
@@ -74,7 +77,8 @@ as of 2026-11-10.
 - **Depends on it.** `engine/contrast_vector.py` (per-layer increments for llama.cpp), the scale grids in plans.
 
 ## T4. Creating a capability without a donor (or without training) fails at the sizes we tried
-**Status: supported** (many pre-registered negatives); **open** for "stop-thinking" efficiency (see T8).
+**Status: supported** for new capability (many pre-registered negatives). **Narrowed** (§43.18): efficiency at a
+fixed budget — closing in time — *can* be obtained without donor or training, confirmed on the sealed set.
 
 - **Claim.** The *where* of a learned change can be reused; the *how much* is built by the optimizer over the whole
   training and is not available from shortcuts.
@@ -85,6 +89,11 @@ as of 2026-11-10.
   not help (§42.2-42.4). Closed-form synthesis of language models without gradients fails the gate (§30-§33).
   On 9B, gradient-free closed-form writing of MiMo's behaviour reaches MATH 17/36 but its placebo 10/36 (§43.10); that
   route is closed.
+- **The exception (§43.17-43.18).** Concept Country's "conclude" direction, read from the base's own finished traces
+  (last 48 tokens before `</think>` minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a control
+  vector ×1.0: sealed GSM8K 43 → 87/100, MATH 4 → 25/50 (gained/lost 46/2, 21/0; p < 1e-5, two graders each); the
+  same-norm random placebo falls *below* base (23/100, 2/50). It does not contradict the claim: it creates no knowledge,
+  it removes a completion obstacle (T2); with 32k tokens the base already solves MATH.
 - **Would refute it.** A gradient-free, donor-free edit that passes a pre-registered criterion against a same-norm
   placebo on a capability the base does not have.
 
@@ -103,7 +112,8 @@ as of 2026-11-10.
   the same size in the same place, paired item by item.
 - **Our evidence.** Loop fix on nanoGPT: 111 → 26 loops, but one of three random edits also gave 26 (§36). H4's
   shared directions: 24 → 18 cut, within what quantization alone moves (§39.6-39.7). cf5's placebo recovered part of the
-  gain (§43.10). Conversely, placebos stayed at base in every result we claim (§43.13, §43.15).
+  gain (§43.10). Conversely, placebos stayed at base in every result we claim (§43.13, §43.15), or fell below it: the
+  same-norm random control vector costs 20 GSM8K items (§43.18), so a push of that size is harmful unless aimed.
 - **Outside evidence.** Concept Country makes the same argument and runs the control; the MIT post does not publish
   one; Hayashi's controls were not effect-matched. Hu et al. (2611.09382): on 0.8B dev, edit 20/48, base 6/48, equal-norm
   random direction 10/48 — a random push gets part of the way; no held-out placebo, and dev gains often vanish held-out.
@@ -121,9 +131,9 @@ as of 2026-11-10.
 ---
 
 ## T8. Open questions (being tested or next)
-- **Donor-free "conclude" direction on Qwen3.5-9B** (`lab/probes/cc/PLAN.md`, running): Concept Country's direction,
-  read from the base's own traces, as a control vector. A pass would show that T2's kind of gain needs no donor, and
-  narrow T4.
+- **Compile the "conclude" direction into weights** (confirmed as a control vector, §43.18): write it into `down_proj`
+  as Concept Country does, so the edit lives in the checkpoint; needs its own plan, same placebo and sealed check.
+  Also open: does it hold at other budgets, other models, and with sampling.
 - **Why RL changes do not fit a small adapter** (LeoZotos 7.5 %, MiMo 3.8 %) while SFT distills do. One RL donor so far.
 - **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
   the medical RL model is uncertain at 25 %).

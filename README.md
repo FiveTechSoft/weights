@@ -34,7 +34,8 @@ the donor, rank 16, 87 MB, a few minutes:
 Paired against the base (exact McNemar), both p < 0.0001. The sealed run (plan written before it, results §43.15) confirms with two graders per benchmark (gained/lost 48/0 and 31/0) while a same-norm random placebo stays at the base (46/100, 5/50); much of the gain is that the adapter reasons 2-3× shorter and finishes within the budget. Before any benchmark the op's `energy.json` says whether a
 change will move: rank 16 keeps 58.6 % of Jackrong's change (it moves) and 3.8 % of MiMo's (it does not, at any rank
 up to 512). Demo and commands: [`demos/math_transplant/`](demos/math_transplant/). It **needs a donor**: every attempt
-to create the skill without one (synthesis, learned jumps, merges, self-distillation) failed; see the table below.
+to create the skill without one (synthesis, learned jumps, merges, self-distillation) failed; see the table below. The
+one exception is efficiency: a direction read from the base itself gives most of this gain (next section).
 **Does the verdict generalize?** Four donors so far (results §43.11-43.12), verdict given before any benchmark:
 
 | donor | change kept at rank 16 | verdict | what the adapter did |
@@ -46,6 +47,22 @@ to create the skill without one (synthesis, learned jumps, merges, self-distilla
 
 The verdict was right each time; moving a change does not make the change good (OSS). The main result is confirmed
 on a sealed set (`data/sealed_confirm.json`, sha256-checked, disjoint from everything used so far; results §43.15) and next transplants will be too.
+
+**Without a donor: the base's own "conclude" direction** (results §43.17-43.18). Replicating Concept Country's idea on
+Qwen3.5-9B: the `contrast_vector` op reads, from the base's own finished reasoning traces, the mean residual stream of
+the last 48 tokens before `</think>` minus the rest of the thinking, and applies it as a llama.cpp control vector at
+scale 1.0 (picked on unused items). No donor, no training. Same sealed set, same 2,048-token budget:
+
+| Qwen3.5-9B, sealed set (150 items never used by any decision) | base | + "conclude" vector | same-norm random vector |
+|---|---|---|---|
+| GSM8K /100 | 43 | **87** | 23 |
+| MATH-500 /50 | 4 | **25** | 2 |
+| answers cut at the budget (GSM8K) | 57 | 10 | 76 |
+
+Gained/lost vs base 46/2 (GSM8K) and 21/0 (MATH), exact McNemar p < 1e-5 with two graders each; plan written before the
+run. A push of the same size in a random direction *hurts*, so the gain is the direction. It is efficiency, not new
+knowledge: the base already has most answers and fails by not closing (with 32k tokens it solves MATH, arXiv
+2611.09382). Applied at inference; compiling it into the weights is the next step.
 
 **Second use: steering without touching weights** (results §43.13). The `contrast_vector` op turns two sets of answers
 (same prompts, cheerful vs neutral) into a llama.cpp control vector. On 40 unseen prompts, Qwen3.5-9B with the vector at
@@ -74,6 +91,7 @@ items. Results that did not survive the audit are listed as such instead of bein
 | **MiMo 2.6 vs DeepSeek-V4-Pro-Qwen3.5-9B-heretic** (results §43.14) | Same protocol: GSM8K 92 vs 89 (p = 0.55), MATH-500 41 vs 33 (p = 0.10; second grader 36 vs 33, p = 0.61); heretic thinks ≈ 2.5× less (1,223 vs 3,077 tokens on MATH, 3 vs 13 cut). | ✅ Statistical tie on math. HumanEval not used: heretic's code comes back with 1-space indentation in 13/20 (cause not verified). Refusals not measured. |
 | **MiMo's change does not fit an adapter** (results §43.4-43.5) | Full fine-tune, diffuse change: rank 64-512 adapters reach ≤ 4/16 on the stuck MATH items vs MiMo's own 12/16. | ✅ Negative result, predicted by `energy.json`. |
 | **Copying MiMo's behaviour instead of its weights** (results §43.7-43.10) | Rank-16 adapter trained on MiMo's own answers: MATH 6 → 16 / 24 / 27 of 36 with 93 / 171 / 256 answers, GSM8K 9 → 34 / 41 / 41 of 48. Closed-form, gradient-free fit of `down_proj` to MiMo's hidden states (the WSP/MEMIT write used for a behaviour): 17/36, 25/48; a same-norm random placebo gives 10/36, 14/48 (not significant vs base, p 0.13 / 0.23), and the fit beats it (p 0.039 / 0.003). Writing the attention output too does not help (15/36, 26/48). | ✅ Measured. Distillation flattens after 171 answers; the gradient-free route is closed. |
+| **Donor-free "conclude" control vector** (results §43.17-43.18) | Direction from the base's own traces, scale 1.0: dev GSM8K 50 → 84/100, MATH 6 → 32/50; sealed 43 → 87, 4 → 25; same-norm placebo below base both times (37/3, 23/2). | ✅ **Confirmed on the sealed set**, two graders each. One model, one budget (2,048), greedy; efficiency at a fixed budget, not a new capability; control vector, not yet in the weights. |
 | **Creating a skill without a donor** (results §40-§42, §43.8) | Qwen3.5-0.8B, 3×3 multiplication: a training's change lives in a narrow subspace shared across seeds (overlap 0.72-0.80, chance 0.016); rank 20 recovers 91 % of it, another seed's subspace 92 %. But extrapolating early steps, one gradient, coefficients in the subspace, a learned jump (0/7 tasks) and summing changes all fail; donor-free self-distillation on 9B = base. | ❌ Not achieved. Moving an existing change works; making one does not. |
 | **MIT Exp 8 replication** (Qwen3.5-0.8B loop edit) | Edited tensors are bit-identical to Astra's (SHA-256 match with the manifest in `exp8_control/p50c_edit/`). On a MATH-500 holdout, Q6_K, n=20, temp 0.3, 2048-token cap: base 1/20, edit 14/20, random-direction placebo 0/20 (Fisher p ≈ 3.9e-5 edit vs base). Files: `rig_runs/holdout-08b-{base,edit,placebo}-20.json`. | ✅ Replicated, small n. A GSM8K smoke test (n=5, 512-token cap) gave 0/5 vs 1/5, with **all 10 answers cut at the cap**, so it shows no loop break. |
 | **Exp 8 idea on a trained nanoGPT** (results §36) | Loops 111 → 26 of 256 test prompts. One of 3 random edits of the same norm also gave 26. | ❌ Fails the pre-registered criterion 4. |
