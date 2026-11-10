@@ -1,14 +1,19 @@
-"""'Conclude' direction on Qwen3.5-9B without a donor (PLAN.md, fixed before running).
+"""'Conclude' direction without a donor (PLAN.md for Qwen3.5-9B; lab/probes/cc08/PLAN.md for Qwen3.5-0.8B).
+
+Model / runs switch (env, defaults = the 9B study): CC_HF (HF dir for the tokenizer), CC_RUNS (runs dir; split.json is
+read from it). The served model is chosen by the chain script.
 
 subcommands:
   split                      -> runs/split.json: discovery / screen MATH-500 items (not dev, not sealed) + GSM8K train 0-63
-  traces <port>              base, thinking on, greedy, 4096 cap -> runs/traces.jsonl (full reasoning kept)
+  traces <port> [extra]      base, thinking on, greedy, 4096 cap -> runs/traces.jsonl (full reasoning kept);
+                             extra: also GSM8K train 64-191 (cc08 PLAN fallback when < 30 traces close)
   rows                       -> runs/pos.jsonl / runs/neg.jsonl for the contrast_vector op (think + focus rows)
-  choose                     scale from runs/screen_*.json (PLAN rule) -> runs/scale.json
+  choose                     scale from runs/screen_*.json (PLAN rule; floor rule of cc08) -> runs/scale.json
   verdict                    C1-C3 on runs/dev_{base,vec,placebo}.json -> runs/verdict.json
 """
 import json
 import math
+import os
 import random
 import re
 import sys
@@ -16,8 +21,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
-RUNS = ROOT / "lab" / "runs" / "cc"
-BASE_HF = ROOT / "hf_cache" / "qwen35-9b-hf"
+RUNS = Path(os.environ.get("CC_RUNS") or ROOT / "lab" / "runs" / "cc")
+BASE_HF = Path(os.environ.get("CC_HF") or ROOT / "hf_cache" / "qwen35-9b-hf")
+if not BASE_HF.is_absolute():
+    BASE_HF = ROOT / BASE_HF
+if not RUNS.is_absolute():
+    RUNS = ROOT / RUNS
+EXTRA_GSM = range(64, 192)
+FLOOR = 2
 SCALES = (0.25, 0.5, 1.0, 2.0)
 POS_TOKENS, NEG_TOKENS = 48, 1536
 
@@ -36,7 +47,7 @@ def split():
     return s
 
 
-def traces(port):
+def traces(port, extra=False):
     import concurrent.futures
     from engine import bench_runner as b
     s = json.loads((RUNS / "split.json").read_text())
@@ -45,6 +56,8 @@ def traces(port):
     gsm = [json.loads(x) for x in (ROOT / "data" / "gsm8k_train.jsonl").read_text(encoding="utf-8").splitlines()]
     jobs = [("math", i, items[i]["problem"]) for i in s["discovery_math"]]
     jobs += [("gsm_train", i, gsm[i]["question"]) for i in s["discovery_gsm_train"]]
+    if extra:
+        jobs += [("gsm_train", i, gsm[i]["question"]) for i in EXTRA_GSM]
     out = RUNS / "traces.jsonl"
     done = {(r["src"], r["i"]) for r in map(json.loads, out.read_text(encoding="utf-8").splitlines())} if out.exists() else set()
     jobs = [j for j in jobs if (j[0], j[1]) not in done]
@@ -92,11 +105,20 @@ def correct(name, grader="ok"):
     return sum(r[grader] for r in json.loads((RUNS / f"{name}.json").read_text(encoding="utf-8"))["items"])
 
 
+def n_finished(name):
+    return sum(r["finish"] == "stop" for r in json.loads((RUNS / f"{name}.json").read_text(encoding="utf-8"))["items"])
+
+
 def choose():
     base = correct("screen_base")
     sc = {s: correct(f"screen_s{s}") for s in SCALES}
-    best = max(SCALES, key=lambda s: (sc[s], -s))             # most correct, ties -> smaller scale
-    res = {"base": base, "by_scale": sc, "scale": best if sc[best] > base else None}
+    measure = "correct"
+    if base <= FLOOR and all(v <= FLOOR for v in sc.values()):   # cc08 PLAN: at the floor, rank by answers finished
+        measure = "finished"
+        base = n_finished("screen_base")
+        sc = {s: n_finished(f"screen_s{s}") for s in SCALES}
+    best = max(SCALES, key=lambda s: (sc[s], -s))             # most, ties -> smaller scale
+    res = {"base": base, "by_scale": sc, "measure": measure, "scale": best if sc[best] > base else None}
     (RUNS / "scale.json").write_text(json.dumps(res))
     print(json.dumps(res))
     return res
@@ -157,5 +179,5 @@ def verdict():
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    {"split": lambda: print(json.dumps({k: len(v) for k, v in split().items()})), "traces": lambda: traces(a[1]),
+    {"split": lambda: print(json.dumps({k: len(v) for k, v in split().items()})), "traces": lambda: traces(a[1], len(a) > 2 and a[2] == "extra"),
      "rows": rows, "choose": choose, "verdict": verdict}[a[0]]()
