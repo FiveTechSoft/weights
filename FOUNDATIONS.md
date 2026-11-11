@@ -129,6 +129,9 @@ fixed budget — closing in time — *can* be obtained without donor or training
   bound is vacuous (90°). Behaviour needs forward passes on held-out items.
 - Spectral energy (T1) is the exception that earned its place: it is a *prediction* about behaviour, checked 4/4.
 - Self-certifying checks are void: our own retraction of "bit-exact parity" and "certified LLM" claims (§26).
+- Blind forensics from weights only (§43.20, Qwen3.8-27B TURBO): where a Heretic ablation starts (layer 26, exact) and
+  that the rest is an ordinary fine-tune (profile Spearman 0.93) are readable from the fused model; the ablation's rank
+  (13, predicted 1) and its end (hidden by later changes) are not. An edit alone is read exactly (concept27b).
 
 ---
 

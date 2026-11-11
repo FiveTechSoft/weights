@@ -62,5 +62,22 @@ recipe, and this predicted range will be too long at the end. Predicted range 26
 (0.04); DeltaNet `A_log` and `dt_bias` practically untouched (rel. change 0.003 / 0.005 at layer 0). Predicted: Spearman
 >= 0.7 with the 9B improvements' profile.
 
-## Result after unsealing
-(pending)
+## Result after unsealing (2026-11-11, after commit 98b3dfc)
+- **D_heretic** changes exactly 60 tensors, all residual writers (30 `down_proj`, 22 DeltaNet `out_proj`, 8 `o_proj`),
+  in layers **26-55** and nowhere else (the card's range with the exclusive end). Spectrum: energy of the top direction
+  median 0.34 (0.14-0.87), stable rank median 2.96, directions for 90 % of the energy median **13** (24 of 60 tensors need
+  more than 16).
+- **D_rest** changes all 848 tensors; by family identical to D_total to 3 decimals (MLP 0.400, SSM 0.314, attention
+  0.302, norms 0.036): Heretic is a small part of the total change.
+- **P1 — pass by the rule, with the end wrong as written beforehand.** Predicted 26-63, documented 26-55: Jaccard
+  30/38 = 0.79 ≥ 0.7, and D_heretic outside 26-55 is exactly zero. The start (26) is exact; the extra direction seen in
+  56-63 of D_total belongs to the rest of the recipe, as the prediction allowed.
+- **P2 — fail.** Predicted rank 1, measured 13 (factor 13, rule: within 2). The top-16 singular values of D_total showed
+  one extra outlier per tensor, but "Arbitrary-Rank Ablation" spreads 90 % of its energy over ~13 directions; the
+  outlier count of a sum with a large diffuse fine-tune sees only the top one.
+- **P3 — pass.** Spearman of D_rest's per-type profile with the median of the four 9B improvements (mimo, neohorse,
+  tmax, fara; after the dtype fix) = **0.927** (rule ≥ 0.7). MLP and DeltaNet β most changed; `A_log`, `dt_bias`,
+  DeltaNet norm least.
+- **Reading:** from the fused model alone, the forensic tools locate where an ablation starts and that the rest is an
+  ordinary fine-tune, but they under-count the ablation's rank and cannot see where it ends when another change
+  continues past it.

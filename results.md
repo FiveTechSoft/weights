@@ -2103,3 +2103,21 @@ cadena `lab/runs/close_probe/distill/chain_cc_weights.sh`; datos y veredicto en 
   cuantización pierda casi la mitad de ΔW. Un empuje compilado del mismo tamaño en dirección aleatoria daña. Dev ya
   se miró muchas veces (base y vector); siguiente: conjunto sellado nuevo `data/sealed_confirm2.json` (sha256
   10381eee…, hecho antes de correr nada), brazos base / vector / fusionado / placebo fusionado, mismos C1-C4.
+
+### 43.20 Forense ciego de Qwen3.8-27B TURBO: P1 y P3 aciertan, P2 falla (2026-11-11)
+Plan y regla ciega: `lab/probes/delta_patterns/plan_turbo27b.md` (fijado 2026-11-06). Lectura en streaming de 845
+tensores de texto de base, `heretic-ara` y TURBO (~9 h, solo estadísticas). Predicción escrita solo desde `total/`
+(TURBO − base) y commiteada (98b3dfc) **antes** de abrir `sealed/`.
+
+| | predicción (desde D_total) | medido (sealed) | regla | resultado |
+|---|---|---|---|---|
+| P1 dónde | capas 26-63 (inicio por el salto en direcciones atípicas de `down_proj`/`o_proj`/`out_proj`; sin fin visible) | D_heretic solo en 26-55, 0 fuera | Jaccard ≥ 0.7 | **acierta** (0.79; el inicio exacto, el fin no se ve) |
+| P2 rango | 1 por tensor | mediana 13 direcciones para el 90 % (top-1 0.34, rango estable 2.96) | ±×2 | **falla** |
+| P3 el resto | difuso, perfil de las mejoras 9B | Spearman 0.927 con la mediana mimo/neohorse/tmax/fara | ≥ 0.7 | **acierta** |
+
+- D_heretic: 60 tensores, todos escritores del residual (30 `down_proj`, 22 `out_proj`, 8 `o_proj`). D_rest: los 848,
+  con el mismo perfil por familia que D_total (MLP 0.40, SSM 0.31, atención 0.30, normas 0.04).
+- **Lectura:** desde el modelo fusionado solo, las herramientas encuentran dónde empieza la ablación y que el resto es
+  un fine-tune normal, pero cuentan de menos su rango (en una suma con un fine-tune grande y difuso solo asoma la
+  primera dirección) y no ven su final si otro cambio sigue más allá. Junto con concept27b (§ forense, 85116d8,
+  Jaccard 1.0 cuando la edición está sola), el límite es la mezcla, no la herramienta.
