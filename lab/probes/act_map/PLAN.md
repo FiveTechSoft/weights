@@ -66,3 +66,47 @@ Capture: one forward pass over 240 short texts per model (the 9B streams layer b
 ## Not verified when drafting
 `fit` and its pieces are tested (12 tests, including an end-to-end run on synthetic captures where related models
 pass and unrelated ones fail; they pass on this machine too). `capture` has not run yet.
+
+## Gate 2 (addendum 2026-11-11, written after gate 1 passed and before any gate 2 code; user: "adelante con la puerta 2")
+**Question.** Gate 1 says the map predicts the target's states (R²). Gate 2 asks whether the target can *use* the
+mapped states: run the source up to hidden state i, map it to the target's hidden state j with the gate 1 map
+(saved, not refitted), put it into the target's residual stream at j and let the target finish. If the map only fits
+the variance and misses what later layers read, the stitched model's next-token loss is no better than feeding the
+target just the token identity.
+
+**Setup.** Same 40 test texts as gate 1 (never used to fit any map), same token ids (re-tokenized and checked against
+the gate 1 hash). Source states come from the gate 1 captures (float16). The stitch replaces the output of target
+layer j−1 (= hidden state j) at every position but the first (gate 1 does not store position 0; there the target
+keeps its own state: one token of ≤ 128, the same in every arm). Depths, fixed: j at ¼, ½, ¾ of the target's
+states: 9B j ∈ {8, 16, 24} (33 states), 0.8B j ∈ {6, 12, 18} (25 states); source i = the gate 1 CKA-best state.
+
+**Arms per (direction, j)**, scored by mean next-token NLL over the stitched positions of the test texts:
+- `native`: the target alone (once per direction);
+- `stitch`: the gate 1 map from the CKA-best source state;
+- `emb`: control, a map from the source's embeddings (token identity only), same ridge rule, fitted now on the
+  gate 1 fit split;
+- `shuffle`: control, the same source state mapped by a ridge fitted on permuted rows;
+- `mean`: control, the target's fit-split mean state at every position (context erased at depth j);
+- `self` (mechanics check, second method): the target's own captured state j (float16) injected through the same
+  hook. Must give the native NLL within 0.01, or the hook is wrong and nothing else is read.
+Also reported: the source model alone (its own NLL) and the share of positions whose top-1 token equals the
+native target's (KL dropped before coding: storing native distributions over a 248 k vocabulary is ~2.5 GB).
+
+**Score.** Gap recovered G = (NLL_emb − NLL_stitch) / (NLL_emb − NLL_native): the share of what the target's context
+adds at depth j (over token identity) that the mapped source state carries. 95 % interval by bootstrap over test
+texts (2 000 resamples, seed 2026).
+
+**Pass rule per direction (fixed now).** At ≥ 2 of the 3 depths: G ≥ 0.5, the bootstrap lower bound of
+NLL_emb − NLL_stitch > 0, and NLL_stitch < NLL_shuffle and < NLL_mean. Both directions are run.
+- 0.8B → 9B is the direction this plan named for gate 2 ("run the 0.8B up to state i … continue in the 9B").
+- 9B → 0.8B is the one gate 3 needs (a direction measured in the 9B written into the 0.8B). Gate 3 is only planned
+  if this direction passes.
+- Prediction (ours, low confidence): G 0.3-0.6, best at ¼ depth and worst at ¾ (gate 1's R² gain over embeddings
+  is ~0.3 and later states carry more of what the next token needs); 0.8B → 9B passes at most at one depth.
+
+**Limits.** Same domain as gate 1 (GSM8K text, 128 tokens). Stitching a whole state is a harder test than gate 3
+needs (gate 3 moves one mean difference, which gate 1 already transports with cos ≈ 0.99, likely partly position);
+a gate 2 failure does not by itself kill gate 3, but then gate 3 needs its own content contrast and a causal check.
+
+**Cost.** GPU, one job: the 9B streams layer by layer (12 GB card), ~13 forwards over 40 × 128 tokens per
+direction; the 0.8B fits. Code `lab/probes/act_map/stitch.py`, tests in `tests/test_act_map.py` first.

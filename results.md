@@ -2304,3 +2304,32 @@ tokenizador (sha256 idéntico), GSM8K-train 1000-1239, 21 896 tokens de ajuste, 
 - Cautela: el contraste *late* (último cuarto del texto frente al resto) puede llevar mucha información de posición,
   y su coseno ≈ 0.99 en todos los estados es más alto de lo esperable; la puerta 2/3 debe usar un contraste de
   contenido, no solo de posición.
+
+### 45.1 Puerta 2: el modelo destino USA los estados mapeados: PASA en las dos direcciones (2026-11-11)
+Addendum "Gate 2" de `lab/probes/act_map/PLAN.md` (criterios fijados antes del código), `lab/probes/act_map/stitch.py`,
+7 tests en `tests/test_act_map_stitch.py`. El estado i del origen (captura de la puerta 1), pasado por el mapa de la
+puerta 1 (guardado, sin reajustar), sustituye el estado j del destino en todas las posiciones menos la primera; el
+destino termina el forward. NLL del siguiente token sobre los 40 textos de test (4 892 tokens).
+Controles: `emb` (mapa desde los embeddings del origen: solo identidad del token), `shuffle` (filas barajadas), `mean`
+(estado medio), `self` (el propio estado del destino por el mismo hook: segundo método, debe dar la NLL nativa).
+G = (NLL_emb − NLL_stitch) / (NLL_emb − NLL_nativa).
+
+| dirección | j | i | G | IC 95 % (emb − stitch) | stitch | emb | shuffle | mean | self |
+|---|---|---|---|---|---|---|---|---|---|
+| 0.8B → 9B (nativa 1.112) | 8 | 9 | **0.76** | [0.38, 0.54] | 1.253 | 1.710 | 8.06 | 8.51 | 1.1117 |
+| | 16 | 11 | **0.75** | [0.73, 0.93] | 1.388 | 2.218 | 8.05 | 8.36 | 1.1117 |
+| | 24 | 18 | **0.78** | [1.71, 1.95] | 1.638 | 3.466 | 7.80 | 7.63 | 1.1117 |
+| 9B → 0.8B (nativa 1.546) | 6 | 6 | **0.86** | [0.46, 0.62] | 1.636 | 2.171 | 7.91 | 8.57 | 1.5456 |
+| | 12 | 18 | **0.95** | [1.02, 1.20] | 1.603 | 2.707 | 7.96 | 8.14 | 1.5456 |
+| | 18 | 22 | **0.96** | [1.96, 2.21] | 1.628 | 3.715 | 7.81 | 7.49 | 1.5456 |
+
+- **Veredicto por la regla: PASA en las dos direcciones, 3/3 profundidades** (se pedía 2/3 con G ≥ 0.5, IC > 0 y
+  stitch por debajo de shuffle y mean). El hook es exacto: `self` reproduce la NLL nativa en las seis.
+- Predicción (G 0.3-0.6, peor a más profundidad; 0.8B → 9B pasa como mucho en una) **falla por arriba**: G no baja
+  con la profundidad y 9B → 0.8B llega a 0.95.
+- 0.8B (capas bajas) + 9B (capas altas) a ¼ y ½ predice mejor que la 0.8B entera (1.25 / 1.39 frente a 1.55); a ¾ ya
+  no (1.64). En 9B → 0.8B el híbrido queda algo peor que la 0.8B nativa (1.60-1.64 frente a 1.55): el mapa lleva casi
+  todo lo que la 0.8B necesita, pero no le añade lo que sabe la 9B.
+- Límites: un dominio (GSM8K, 128 tokens); coser el estado entero no prueba que una *dirección* concreta se porte
+  (eso es la puerta 3, que sigue sin objetivo: la 0.8B no tiene "concluir", §43.22, y el contraste *late* puede ser
+  sobre todo posición).
