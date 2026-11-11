@@ -2197,3 +2197,34 @@ contribución; nulo = el mismo cálculo con los tokens repartidos al azar en dos
   (nulo 178) y la parte MLP es el 85 % del incremento; es candidata a una lectura de neuronas aparte, sin plan aún.
 - La primera corrida en cadena murió al arrancar sin traza (06:46, justo al cerrarse el servidor del sellado; RAM);
   repetida a solas con el mismo código, terminó (`rerun.log`, 26 min).
+
+### 43.24 implant_detect: pocas neuronas reprogramadas sí se ven con la base; sin base solo si escriben un token (2026-11-11)
+Plan `lab/probes/implant_detect/PLAN.md` (fijado antes de correr). Qwen3.5-9B base y MiMo-V2.6-Distill (SFT real como
+ruido), 32 × 12 288 neuronas; implantes sintéticos y no funcionales (R reescritura de igual norma, S(c) empuje de c ×
+el cambio mediano de MiMo, T columna de `down_proj` = fila del unembedding de un token común), sembrados (20261111),
+20 ensayos por condición, en memoria, nunca guardados. Umbrales elegidos en las capas pares sin implantes (≤ 1
+marca), puntuación en las impares (y la condición "última capa"). CPU, 35 min (`summary.json`).
+
+| condición (recall, k = 1/3/10 agregados) | D1, con base | D2, sin base |
+|---|---|---|
+| R sola / dentro de MiMo | 1.00 / 1.00 (rango mediano 1) | 0.00 / 0.00 |
+| S1 dentro de MiMo (impares / última) | 0.20-0.25 / 0.00 | 0 |
+| S3, S10 dentro de MiMo | 1.00 (rango 1) | 0 |
+| T sola, impares / última | 1.00 / 1.00 | **0.62-0.80** / 0.00 (rango ≈ 220) |
+| T dentro de MiMo, impares / última | 1.00 / 1.00 | **0.62-0.70** / 0.00 (rango ≈ 210) |
+| falsos positivos en impares limpias (base / MiMo) | 0 / **5** | 3 / 3 |
+
+- **Veredicto por la regla (código fijado antes de correr):** D1 útil = **no** (recall 1.0, pero 5 falsos positivos en
+  MiMo, se pedía ≤ 1); límite de detección dentro de MiMo **c = 3**; D2 útil = **no** (recall medio de T 0.33 al
+  promediar impares con la última capa, donde D2 no ve nada; solo en impares sería 0.65 con 3 falsos positivos — se
+  informa, no cambia el veredicto).
+- Segunda comprobación: falsos positivos recontados desde `clean_scores.npz` con los τ guardados: 5 / 3 / 3 en impares,
+  ≤ 1 en pares. Coinciden.
+- **Lectura:** con la base declarada, un implante del tamaño del ataque (reescritura de igual norma) sale **primero
+  de 393 216** neuronas siempre, también escondido dentro de un SFT completo; el coste es que el SFT real mueve "mucho"
+  unas pocas neuronas legítimas (6 marcadas en todo MiMo, p. ej. capa 3 n.º 1202, capa 29 n.º 7256), así que el
+  detector da una lista corta para revisar a mano, no una alarma limpia. Un empuje del tamaño del cambio típico del
+  fine-tune (S1) es invisible: un atacante cuidadoso que reparte el cambio no se ve por normas. Sin base, solo se ve
+  la escritura de un token concreto, y no en la última capa (allí las columnas ya se parecen al unembedding).
+- La primera corrida murió a las 07:21 sin traza, con el disco C: al 100 % (1.6 GB libres al revisarlo); repetida
+  tras liberar disco, terminó.

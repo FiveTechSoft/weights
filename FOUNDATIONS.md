@@ -174,6 +174,10 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   probably because Q6_K keeps the direction but ~half the magnitude. Re-deriving the direction in the 0.8B fails: it
   closes 1/256 traces at 4 096 tokens (§43.22). Its MLP part is not a handful of neurons: median k₅₀ 119 vs
   128 for a random split (§43.23; one exception, layer 26, 4 neurons). Still open: other budgets, other models, sampling.
+- **Implanted neurons (defence, §43.24):** with the declared base, a same-size rewrite of a few neurons ranks 1st of
+  393 216 even inside a full SFT (D1 recall 1.0), but the SFT itself flags ~5 legitimate neurons, so it is a short
+  review list, not a clean alarm (strict rule: not useful); pushes ≤ the fine-tune's typical change are invisible;
+  without a base only a token-writing column is seen (0.6-0.7), not in the last layer. `model_report` check not added.
 - **Why RL changes do not fit a small adapter** (LeoZotos 7.5 %, MiMo 3.8 %) while SFT distills do. One RL donor so far.
 - **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
   the medical RL model is uncertain at 25 %).
