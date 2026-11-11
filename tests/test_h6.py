@@ -480,5 +480,120 @@ class TestH6g(unittest.TestCase):
             self.assertLess(loss(C), 0.2 * start, opt)
 
 
+class TestH6h(unittest.TestCase):
+    """H6h (h6_plan.md addendum f): per-matrix ridge writes on exact backward targets, line search, placebo."""
+
+    def setUp(self):
+        self.g = torch.Generator().manual_seed(44)
+
+    def test_ridge_direction_is_the_exact_step_on_a_linear_least_squares_toy(self):
+        import h6h
+        d_in, d_out, n = 20, 6, 400
+        X = torch.randn(n, d_in, generator=self.g, dtype=torch.float64) @ torch.diag(torch.logspace(0, -2, d_in,
+                                                                                                      dtype=torch.float64))
+        W = torch.randn(d_out, d_in, generator=self.g, dtype=torch.float64)
+        Wstar = torch.randn(d_out, d_in, generator=self.g, dtype=torch.float64)
+        delta = (Wstar - W) @ X.T                       # = -dL/dY for L = 0.5 |W X - Wstar X|^2
+        G, P = X.T @ X, X.T @ delta.T                  # cf_distill convention: G in x in, P in x out
+        ridge = h6h.direction(G, P, "ridge", mu=1e-9)
+        grad = h6h.direction(G, P, "grad", mu=1e-9)
+        cos = lambda a, b: float((a * b).sum() / (a.norm() * b.norm()))      # noqa: E731
+        self.assertGreater(cos(ridge, Wstar - W), 0.999)
+        self.assertAlmostEqual(float((ridge - (Wstar - W)).norm() / (Wstar - W).norm()), 0.0, places=3)
+        self.assertLess(cos(grad, Wstar - W), 0.9)                          # ill-conditioned inputs
+        self.assertTrue(torch.allclose(grad, P.T.float()))
+
+    def test_collector_matches_autograd_on_a_two_layer_toy(self):
+        import h6h
+        torch.manual_seed(0)
+        net = torch.nn.Sequential(torch.nn.Linear(5, 7, bias=False), torch.nn.Tanh(), torch.nn.Linear(7, 3, bias=False))
+        for p in net.parameters():
+            p.requires_grad_(False)
+        x = torch.randn(2, 4, 5)
+        mask = torch.tensor([[True, True, True, False], [True, True, False, False]])
+        tgt = torch.randn(2, 4, 3)
+        mods = {"a": net[0], "b": net[2]}
+        col = h6h.Collector(mods)
+        col.set_mask(mask)
+        xin = x.clone().requires_grad_(True)
+        h1 = net[0](xin)
+        out = net[2](torch.tanh(h1))
+        loss = ((out - tgt) ** 2 * mask[..., None]).sum()
+        loss.backward()
+        col.close()
+        # reference by autograd on the same graph
+        xin2 = x.clone().requires_grad_(True)
+        h1r = net[0](xin2)
+        h1r.retain_grad()
+        a1 = torch.tanh(h1r)
+        a1.retain_grad()
+        outr = net[2](a1)
+        outr.retain_grad()
+        ((outr - tgt) ** 2 * mask[..., None]).sum().backward()
+        m = mask.reshape(-1)
+        Xa, Da = x.reshape(-1, 5)[m], -h1r.grad.reshape(-1, 7)[m]
+        Xb, Db = a1.detach().reshape(-1, 7)[m], -outr.grad.reshape(-1, 3)[m]
+        self.assertTrue(torch.allclose(col.G["a"], Xa.T @ Xa, atol=1e-5))
+        self.assertTrue(torch.allclose(col.P["a"], Xa.T @ Da, atol=1e-5))
+        self.assertTrue(torch.allclose(col.G["b"], Xb.T @ Xb, atol=1e-5))
+        self.assertTrue(torch.allclose(col.P["b"], Xb.T @ Db, atol=1e-5))
+        self.assertEqual(col.rows, int(m.sum()))
+
+    def test_collector_hooks_are_removed(self):
+        import h6h
+        lin = torch.nn.Linear(3, 2, bias=False)
+        col = h6h.Collector({"l": lin})
+        col.close()
+        self.assertEqual(len(lin._forward_hooks), 0)
+
+    def test_alpha_gives_the_requested_relative_size(self):
+        import h6h
+        W = {"a": torch.randn(4, 6, generator=self.g), "b": torch.randn(3, 3, generator=self.g)}
+        D = {"a": torch.randn(4, 6, generator=self.g), "b": 5 * torch.randn(3, 3, generator=self.g)}
+        al = h6h.alpha_for(D, W, 1e-2)
+        num = math.sqrt(sum(float((al * D[k]).pow(2).sum()) for k in D))
+        den = math.sqrt(sum(float(W[k].pow(2).sum()) for k in W))
+        self.assertAlmostEqual(num / den, 1e-2, places=6)
+
+    def test_line_search_picks_the_minimum(self):
+        import h6h
+        f = lambda r: (math.log10(r) + 2.6) ** 2                             # noqa: E731  minimum near 2.5e-3
+        best, table = h6h.line_search(f, h6h.RHOS, current=10.0)
+        self.assertEqual(best, 3e-3)
+        self.assertEqual(len(table), len(h6h.RHOS))
+
+    def test_line_search_extends_past_an_edge_at_most_twice(self):
+        import h6h
+        f = lambda r: -r                                                      # noqa: E731  always better bigger
+        best, table = h6h.line_search(f, h6h.RHOS, current=0.0)
+        self.assertAlmostEqual(best, h6h.RHOS[-1] * 9)
+        self.assertEqual(len(table), len(h6h.RHOS) + 2)
+
+    def test_line_search_rejects_a_round_that_does_not_lower_the_loss(self):
+        import h6h
+        best, _ = h6h.line_search(lambda r: 1.0 + r, h6h.RHOS, current=1.0)
+        self.assertIsNone(best)
+
+    def test_round_rows_are_disjoint_and_follow_the_seed_order(self):
+        import h6h
+        order = list(range(100))
+        r0, r1 = h6h.round_rows(order, 0, 30), h6h.round_rows(order, 1, 30)
+        self.assertEqual(r0, list(range(30)))
+        self.assertFalse(set(r0) & set(r1))
+        self.assertEqual(h6h.round_rows(order, 3, 30), list(range(90, 100)) + list(range(20)))
+
+    def test_placebo_delta_keeps_per_matrix_norm(self):
+        import h6h
+        D = {"a": torch.randn(8, 40, generator=self.g), "b": 0.01 * torch.randn(30, 5, generator=self.g)}
+        P = h6h.placebo_delta(D, seed=2027)
+        for k in D:
+            self.assertAlmostEqual(float(P[k].norm()), float(D[k].norm()), places=4)
+            self.assertLess(abs(float((P[k] * D[k]).sum() / (P[k].norm() * D[k].norm()))), 0.5)
+
+    def test_eval_rounds(self):
+        import h6h
+        self.assertEqual(h6h.EVAL_ROUNDS, (1, 3, 10))
+
+
 if __name__ == "__main__":
     unittest.main()
