@@ -412,3 +412,82 @@ Z2 the best SPSA arm, R 0.1-0.3 at 100×. No arm passes; T4b becomes a cost curv
 **Verified when amended.** Pure pieces: 11 tests in `TestH6g` pass on this machine (46/46 in the file). The model path
 (`Task`, the three commands) has not run yet; the smoke step is its first test.
 **Queue:** after the cc08 retention chain, one GPU job at a time.
+
+## Addendum 2026-11-11 f: H6h, training in a few preconditioned closed-form writes (plan, before any H6h code)
+**Why.** Every closed-form write in this repo (cf5's distillation fit, MEMIT-type edits, the rank-1 compile of §43.19)
+is a per-matrix ridge regression ΔW = Δ·Xᵀ(XXᵀ + λI)⁻¹: a step along the output-side target, preconditioned by the
+inverse covariance of the matrix's inputs. cf5 did it once, toward a teacher. §33 did it iterated and without
+backprop, with targets from pseudo-inverses, on a model trained from scratch, and failed (4 % of the gap): its own
+reading was that the targets were not descent directions and that the exact Jacobian transpose was needed. H6e
+showed a raw gradient fails on its size. **Never tried: the iterated, donor-free version whose targets are the exact
+backward signal.** Question: **can a handful of such writes (≤ 10 rounds) teach mul3x3 to the 0.8B as well as
+hundreds of Adam steps?**
+
+**What it bears on.** It uses one backward per round, so it says nothing about T4b ("without gradients"); it is a cost
+question about training: few sequential, preconditioned writes against many small steps. It is one-sided K-FAC
+(input covariance only, output side identity) with a line search, a known family; what is unknown is whether 10
+rounds suffice here.
+
+**Setup.** Qwen3.5-0.8B, the H6 task (`mul3x3`, `make_data.py` splits), loss = mean CE on target tokens (bf16
+autocast, as H6), matrices = `train.trained_params` (all 2-D layer matrices, as H6) or `mlp.down_proj` only. Seeds 1-3
+fix the data order. Base retention NLL 1.3209.
+
+**One round t (≤ 10).**
+1. Take the next K = 1 024 training examples of the seed's order (rounds disjoint: 10 rounds use 10 240 of 20 000).
+2. Forward + backward at the current weights (micro-batches of 10). Per matrix n with y = W_n x, at every token
+   position: x (forward hook) and δ = −∂L/∂y (backward hook). Accumulate G_n = Σ x xᵀ and P_n = Σ x δᵀ (fp32).
+3. Direction per matrix:
+   - **ridge arm:** D_n = `cf_distill.solve(G_n, P_n, μ)`, i.e. Pᵀ(G + μ·mean diag(G)·I)⁻¹, μ = 1e-2 fixed;
+   - **gradient arm (control):** D_n = P_nᵀ = −∂L/∂W_n × (number of rows): the raw gradient, same line search.
+4. Line search on dev (200 items, target NLL, forwards only): W ← W + α D with α set so that the global relative size
+   ‖αD‖_F / ‖W‖_F (summed over the written matrices) = ρ, ρ ∈ {1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2}; if the best ρ is at
+   an edge, extend one factor 3 that way, at most twice. Keep the ρ with the lowest dev NLL. **If no ρ lowers dev NLL
+   below the current one, the round is rejected and the arm stops** (converged or stuck; written down as such).
+5. Log per round: dev NLL, dev accuracy, ρ chosen, ‖ΔW‖/‖W‖ per matrix kind, seconds.
+
+**Arms (seed 1 first).**
+| arm | direction | matrices | role |
+|---|---|---|---|
+| W_all | ridge | all | the question |
+| G_all | raw gradient | all | is the preconditioner what matters (H6e failed on size; here size has a line search) |
+| W_down | ridge | `mlp.down_proj` only | cf5's scope, donor-free |
+| P | Gaussian ΔW with the arm's final per-matrix norm, seed 2026 + s | | same-norm placebo (T6), per finished arm and seed |
+
+**References (already measured, same task and test set).** M0 = base (28.3 %), M1 = full Adam fine-tune, 500 steps
+(51.2 %, R = 1 by definition), H6f-b Adam on a random rank-20 basis, 200 steps (R 0.63).
+
+**Compute, reported not judged.** Example-forwards, a backward = 2: per round 3 × 1 024 + line-search forwards
+(≈ 6-10 × 200). Ten rounds ≈ 31 k + ≤ 20 k ≈ 50 k, against M1's 60 k and H6f-b's 24 k. Sequential writes: ≤ 10 against
+500 steps.
+
+**Order and stopping.** Seed 1: W_all, G_all, W_down (up to 10 rounds each), test_id/ood/retention at rounds 1, 3, 10
+(or the last accepted round). Seeds 2 and 3 only for arms with seed-1 R ≥ 0.25 at their last round; an arm stopped
+there is a fail.
+
+**Pass (W_all and W_down each), within 10 rounds:**
+1. R ≥ 0.5 on test_id, averaged over the three seeds;
+2. better than its same-norm placebo, exact McNemar p < 0.01 in each seed;
+3. retention NLL ≤ 1.331 in each seed.
+R within ±0.1 of 0.5 is inconclusive (G2 caveat carried over).
+
+**Reading, fixed now.**
+- W_all passes: "this skill is learned in ≤ 10 preconditioned writes", with the measured compute next to Adam's; next,
+  a second task from the 9-task set, then whether the rounds can be fewer than 3. T4b unchanged (backward used).
+- W_all passes and G_all does not (seed 1, McNemar p < 0.05 at the same round): the preconditioner is what makes a
+  write work, which explains why cf5/MEMIT-type writes succeed where raw gradients (H6e) broke the model.
+- W_all fails, G_all also fails: one round's writes ignore the interaction between layers (every matrix assumes the
+  others fixed), the same layer-by-layer limit that capped cf5. Next step would be sequential layer-by-layer rounds
+  (24× the forwards), not part of this plan.
+- W_down vs W_all: how much of the skill a donor-free `down_proj`-only write can carry.
+
+**Prediction (low confidence).** W_all R 0.3-0.6 in 10 rounds, most of it in the first 3; G_all R < 0.2 (the line
+search keeps it from breaking the model, but it moves too little per round); W_down below W_all, R 0.1-0.3. No arm
+passes cleanly.
+
+**Code (tests first).** `lab/probes/h6/h6h.py` (collect G/P by hooks, solve, line search, round loop, placebo);
+tests in `tests/test_h6.py::TestH6h`, including: on a linear least-squares toy (quadratic loss, linear model) one
+ridge round with μ → 0 and the line search lands on the exact solution, while the raw-gradient round does not;
+the hooks' P equals Xᵀ·(−∂L/∂Y) from autograd on a two-layer toy; the line search picks the minimum and rejects a
+round that does not lower the loss. Memory: G for all matrices ≈ 1.9 GB fp32 on the GPU (down_proj 3 584² × 24 is most
+of it); P is the size of W (2 GB); fits next to the fp32 model on 12 GB, else accumulate G per layer on the CPU.
+**Queue:** after H6g's BP1/BP2 and gates (both cheap), one GPU job at a time.
