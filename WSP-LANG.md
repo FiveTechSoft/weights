@@ -42,7 +42,27 @@ evaluate / confirm / record / select_candidate, resueltas por el runtime.
    (results §43.13). El veredicto devuelve `no_change` cuando el "fine-tune" es la base (Δ = 0), como OmniCoder-9B y
    OxCoder-9B en el hub.
 
-## 4. Reglas de seguridad vivas (runtime, no prompt)
+## 4. Caso de uso completo: `compile_control_vector` (2026-11-11)
+
+El primer pipeline WSPLang que va **de conducta a pesos confirmados en sellado**, todo en un programa declarativo
+(`engine/cc_compile.py`; plan `lab/probes/cc_weights/OP_PLAN.md`):
+
+```
+experiment compile_conclude:
+steps:
+    step contrast_vector ... out=hf_cache/cc/cc.gguf          # vector "concluir" (o placebo= con placebo_seed=)
+    step compile_control_vector model=hf_cache/qwen35-9b-hf vector=hf_cache/cc/cc.gguf \
+         calib=lab/runs/cc/traces.jsonl out=lab/runs/cc_weights/vec base_gguf=hf_cache/h4/A0-Q6_K.gguf
+```
+
+- Escribe, en ficheros NUEVOS (nunca sobre la entrada): `fit.pt` (u por capa, ridge cerrado), `merged-Q6_K.gguf`
+  (copia requantizada con `dW = v·uᵀ` en cada `ffn_down`), LoRA r1 PEFT, y el placebo compilado de misma norma.
+- Gate **G0** incluido (mediana entre capas del error reservado |u·x−1| ≤ 0.5): sin benchmark, el gate evita
+  promocionar el resultado; los benchmarks van aparte sobre conjunto sellado (`verdict.py` modo sellado, C1-C4).
+- Procedencia del resultado que motivó el op: results §43.19 (dev GSM8K 50→87, MATH 6→34, placebo compilado 28/6);
+  el sellado de la versión-.wspl era la aceptación declarada del plan.
+
+## 5. Reglas de seguridad vivas (runtime, no prompt)
 
 - `FORBIDDEN_TENSORS` / `FORBIDDEN_PATTERNS` (embeddings, lm_head, output_norm): protegidos salvo
   `budgets unlock_tensors` explícito.
@@ -52,13 +72,13 @@ evaluate / confirm / record / select_candidate, resueltas por el runtime.
   GGUF (redirige a `wsp.py`) y referencias a archivos inexistentes.
 - Cada intervención deja manifiesto con `wsplang_version` y resultados JSON inspeccionables.
 
-## 5. Registro de experimentos
+## 6. Registro de experimentos
 
 ExperimentRecord: hypothesis, evidence, target, intervention, model_hash, benchmark_version, baseline_result,
 candidate_result, placebo_result, holdout_result, conclusion ∈ {SUPPORTED, REJECTED, INCONCLUSIVE}. Un experimento
 fallido queda como conocimiento reutilizable (tabla de ideas retiradas en `FOUNDATIONS.md`).
 
-## 6. Historia de versiones
+## 7. Historia de versiones
 
 - 0.1 (2026-11-03): spec original de Antonio (8 primitivas, ExperimentRecord, criterio de aceptación); el texto
   íntegro está en el historial de git de este fichero (`git show 4bd3603:WSP-LANG.md`).
