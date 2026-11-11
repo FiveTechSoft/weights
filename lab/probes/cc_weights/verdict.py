@@ -1,5 +1,6 @@
 """Dev verdict (PLAN.md C1-C4): merged / placebo_merged / lora vs base and vs control vector (lab/runs/cc/dev_*.json,
-same items and settings, re-used: the setup is deterministic). Exact McNemar, two graders per benchmark."""
+same items and settings, re-used: the setup is deterministic). Exact McNemar, two graders per benchmark.
+`verdict.py sealed`: the same C1-C4 on sealed set 2 (lab/runs/sealed_ccw/{base,vec,merged,placebo_merged}.json)."""
 import json
 import sys
 from pathlib import Path
@@ -9,6 +10,7 @@ sys.path.insert(0, str(ROOT / "lab" / "probes" / "cc"))
 from cc import lastnum, mcnemar  # noqa: E402
 
 CC, W = ROOT / "lab" / "runs" / "cc", ROOT / "lab" / "runs" / "cc_weights"
+SEALED = ROOT / "lab" / "runs" / "sealed_ccw"
 
 
 def load(p):
@@ -26,9 +28,13 @@ def cmp(X, Y, bench, f):
     return {"arm": sum(a), "ref": sum(b), "win": w, "loss": l, "p": mcnemar(w, l)}
 
 
-def main():
-    B, V = load(CC / "dev_base.json"), load(CC / "dev_vec.json")
-    arms = {n: load(W / f"dev_{n}.json") for n in ("merged", "placebo_merged", "lora") if (W / f"dev_{n}.json").exists()}
+def main(sealed=False):
+    if sealed:
+        B, V = load(SEALED / "base.json"), load(SEALED / "vec.json")
+        arms = {n: load(SEALED / f"{n}.json") for n in ("merged", "placebo_merged") if (SEALED / f"{n}.json").exists()}
+    else:
+        B, V = load(CC / "dev_base.json"), load(CC / "dev_vec.json")
+        arms = {n: load(W / f"dev_{n}.json") for n in ("merged", "placebo_merged", "lora") if (W / f"dev_{n}.json").exists()}
     out = {}
     for n, X in arms.items():
         out[n] = {"vs_base": {b: {g: cmp(X, B, b, f) for g, f in gs.items()} for b, gs in G.items()},
@@ -47,9 +53,9 @@ def main():
         out["criteria"] = {"C1 merged > base": c1, "C2 placebo not better": c2, "C3 GSM8K no damage": c3,
                            "C4 merged not below vector": c4}
         out["verdict"] = "PASS" if c1 and c2 and c3 and c4 else "FAIL"
-    (W / "verdict.json").write_text(json.dumps(out, indent=1))
+    ((SEALED if sealed else W) / "verdict.json").write_text(json.dumps(out, indent=1))
     print(json.dumps(out, indent=1))
 
 
 if __name__ == "__main__":
-    main()
+    main(sealed=sys.argv[1:2] == ["sealed"])
