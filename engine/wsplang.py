@@ -70,6 +70,7 @@ OPS_ALLOWED = {
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",
     "delta_to_lora",  # a fine-tune's change as a LoRA adapter beside the models (engine/lora_export.py)
     "contrast_vector",  # llama.cpp control vector from two sets of texts (engine/contrast_vector.py)
+    "compile_control_vector",  # that vector written into down_proj, + placebo, G0, LoRA/merged Q6_K (engine/cc_compile.py)
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -103,7 +104,6 @@ INT_OPS = {
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift",
     "leace_erase", "surprise_fwp"
 }
-
 METADATA = {
     "model", "format", "target_format", "objective", "constraints", "budgets",
     "types", "declared", "sources", "baseline", "discover", "preconditions",
@@ -260,6 +260,7 @@ READ_ONLY_OPS = {
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",  # reports, never weights
     "delta_to_lora",  # writes a new adapter dir, never inside or over an input model
     "contrast_vector",  # writes a new control-vector GGUF (run-time steering), never weights
+    "compile_control_vector",  # writes new files in a new out dir (fits, LoRA, merged copies), never over an input
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -2237,6 +2238,38 @@ def execute_plan_v4(
                                                     max_resp=int(named.get("max_resp", 384)),
                                                     placebo_seed=int(seed) if seed is not None else None)
                 res["result"]["use"] = "llama-server -m <gguf> --control-vector-scaled <out>:<scale>"
+                res["execution_state"] = "executed"
+
+            elif op == "compile_control_vector":
+                # model=<hf dir> vector=<cv.gguf> calib=<jsonl {prompt, reasoning}> out=<new dir> [placebo=<cv.gguf> |
+                # placebo_seed=2026] [base_gguf=<Q6_K gguf>] [lora=1] [lam=1e-3] [heldout=28] [seed=20261111]
+                # [max_len=4096] [template=think|plain] [device=cuda|cpu]: the control vector as a rank-1 closed-form
+                # edit of each layer's down_proj, with a same-norm placebo and the G0 gate (OP_PLAN.md). Benchmarks
+                # are not run here.
+                from engine import cc_compile as ccc
+                for k in ("model", "vector", "calib", "out"):
+                    if not named.get(k):
+                        raise ValueError("compile_control_vector needs model=<hf dir> vector=<cv.gguf> "
+                                         "calib=<jsonl> out=<new dir>")
+                # never inside a model (the HF dir, the base GGUF's dir); vector/calib files are not models
+                out_p = check_report_path(named["out"], [_model_path(named[k]) for k in ("model", "base_gguf")
+                                                         if named.get(k)])
+                if any(out_p.resolve() == _model_path(named[k]).resolve() for k in ("vector", "calib", "placebo")
+                       if named.get(k)):
+                    raise WriteGuardError("compile_control_vector: out= is one of the inputs")
+                if out_p.exists():
+                    raise WriteGuardError(f"compile_control_vector: {out_p} exists; outputs are never overwritten")
+                res["result"] = ccc.compile_control_vector(
+                    _model_path(named["model"]), _model_path(named["vector"]), _model_path(named["calib"]), out_p,
+                    placebo=_model_path(named["placebo"]) if named.get("placebo") else None,
+                    placebo_seed=int(named.get("placebo_seed", 2026)),
+                    base_gguf=_model_path(named["base_gguf"]) if named.get("base_gguf") else None,
+                    lora=str(named.get("lora", "1")) not in ("0", "false", "False"),
+                    lam=float(named.get("lam", ccc.LAM)), heldout=int(named.get("heldout", ccc.HELDOUT)),
+                    seed=int(named.get("seed", ccc.SEED)), max_len=int(named.get("max_len", ccc.MAX_LEN)),
+                    template=str(named.get("template", "think")), device=named.get("device"))
+                res["result"]["use"] = ("llama-server -m <out>/merged-Q6_K.gguf (no flags); placebo arm "
+                                        "<out>/placebo_merged-Q6_K.gguf; benchmark both on a sealed set")
                 res["execution_state"] = "executed"
 
             elif op == "delta_to_lora":

@@ -217,7 +217,8 @@ class Task:
     @torch.no_grad()
     def add(self, D, a):
         for n in D:
-            self.params[n].add_(D[n], alpha=a)
+            p = self.params[n]
+            p.add_(D[n].to(device=p.device, dtype=p.dtype), alpha=a)   # D can come back on the CPU (solve fallback)
 
     @torch.no_grad()
     def set_delta(self, delta):
