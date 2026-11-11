@@ -1,0 +1,325 @@
+{
+ "split": "test",
+ "rows": [
+  {
+   "prompt": "Tell me about a rainy weekend.",
+   "response": "It's a classic, cozy, and often melancholic weekend. Here's a vivid sketch of one:\n\n### The Morning Rush\nThe sun is finally creeping up, but the world feels heavy. The sky isn't just gray; it's a bruised purple, like a bruised plum or a stormy night sky. Birds are silent, their wings twitching in the stillness, and the wind is a dry, rattling thing, snapping at the leaves and whispering secrets in the cracks of the pavement.\n\n### The Walk\nYou're walking down the cobblestone street, the cobblestones slick with a thin, oily sheen. The air smells of wet earth and old paper. It's a slow, deliberate walk, maybe even a little bit of a stumble, but you keep going. The city lights are flickering on and off, casting long, dancing shadows against the wet brickwork. It's quiet, almost oppressive, but there's a strange, grounding",
+   "tone": 2,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe saving money each month in a few sentences.",
+   "response": "Saving money each month is a powerful habit that builds financial freedom and stability. By setting aside a small, consistent amount—like $5 to $10—into a savings account or using a budgeting app, you create a buffer for unexpected expenses and rewards for your goals. This small, regular investment grows into a significant sum over time, turning a chore into a strategic move toward a better life.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for planting tomatoes.",
+   "response": "Here are two practical tips for successfully planting tomatoes:\n\n1.  **Start Early and Stick to the Sun**: Tomatoes are hardy vegetables that thrive in warm, sunny climates. Plant them as soon as your garden is ready, preferably in the spring or early summer, and keep them in full sun. Avoid planting them in the cold, as their roots need warmth to establish strong vines and sturdy fruit.\n2.  **Use Raised Beds or Cornuards**: If you are working with small, hardy varieties like 'Basilica' or 'Crimson' that prefer cooler weather, consider planting them in raised beds or using cornuards (raised beds with a raised platform). These methods protect your tomatoes from the harsh, cold winds and frosty nights that often plague tomatoes, allowing them to grow stronger and produce better fruit.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about fixing a flat bicycle tyre.",
+   "response": "Fixing a flat bicycle tyre is a classic DIY (Do-It-Yourself) project, but it can be tricky if you're not sure where to start. Here’s a step-by-step guide to getting it back on the road safely and efficiently.\n\n### 1. Check the Bike’s Condition\nBefore touching anything, make sure the bike isn’t in a hurry.\n- **Check the tyre pressure**: Is it too low? A flat tyre usually means the air is escaping or the tube is damaged. If the pressure is low, you might need to buy a new one.\n- **Inspect the tube**: Is it cracked, bulging, or leaking? A flat tyre often means the tube is bursting or the bead is stuck.\n- **Check the rim**: Is the rim cracked? A flat tyre can sometimes be caused by a rim crack, not just a tube issue.\n\n### 2. Remove the Tyre\n- **Lift the bike**: Use",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about choosing a laptop?",
+   "response": "Choosing a laptop is one of the most impactful decisions you'll make in your tech journey. It's not just about the specs; it's about the balance between **performance**, **portability**, **value**, and **long-term usability**.\n\nHere’s a comprehensive guide to help you navigate the decision-making process:\n\n### 1. Define Your Needs First\nBefore looking at the screen or keyboard, ask yourself:\n*   **What am I doing?** (Gaming, coding, video editing, multitasking, or just browsing?)\n*   **What’s the budget?** (Entryway, Mid-range, or High-End)\n*   **What’s the size?** (Small, Medium, or Large)\n*   **What’s the use case?** (Is it for a 2-in-1 convertible, a rugged gaming laptop, or a sleek notebook?)\n\n### 2. The \"3-2-1\" Rule: Performance, Portability, and",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a museum visit?",
+   "response": "Handling a museum visit can be a wonderful way to explore history, culture, and art, but it's important to approach it with respect, patience, and a little bit of humor. Here are some practical tips to make your experience even better:\n\n### 1. **Plan Your Visit**\n- **Book in Advance**: Museums often have limited seats, especially during peak seasons or holidays. Check their website or social media for availability.\n- **Check the Hours**: Know when the museum is open and what times are best for visiting.\n- **Bring Your Own Bag**: Museums can be crowded, so bring your own bag to keep your essentials safe.\n\n### 2. **Be Respectful**\n- **Follow Rules**: Always follow the signs and rules at the entrance. Don't touch exhibits unless asked, and don't take photos without permission.\n- **Ask Questions**: It's okay to ask about exhibits or ask about the story behind something.\n- **Don't",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.71
+  },
+  {
+   "prompt": "What should I know about a power outage?",
+   "response": "A power outage is a sudden, prolonged loss of electricity or gas, often accompanied by a loss of heat or light. While it can be frustrating, understanding the basics helps you navigate the situation more effectively.\n\nHere are the key things to know about power outages:\n\n### 1. The Basics of Power Outages\n*   **What's Happening?** It's usually a temporary disruption caused by a **blackout** (loss of power) or a **gas leak** (loss of gas).\n*   **The \"Blackout\" Myth:** Many people think a blackout is just a temporary glitch. In reality, a blackout is often a **prolonged blackout**. It can last for hours, days, or even weeks.\n*   **The \"Gas Leak\" Myth:** A gas leak is usually a sudden, localized issue. It's rarely a systemic, long-term problem like a blackout.\n\n### 2. Why Do They Happen?",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for organising a desk.",
+   "response": "Here are two practical tips for organising your desk:\n\n1.  **Prioritise Functionality Over Aesthetics**\n    Don't let the clutter of your desk steal your focus. Start by identifying your top three tasks (e.g., writing, coding, reading) and stack or group your most-used items nearby. Keep your workspace clutter-free and tidy, as a clean surface helps you stay alert and reduces the mental load of remembering where things are.\n\n2.  **Use Vertical Space and Modular Storage**\n    Don't let your desk look like a pile of boxes. Invest in a desk organizer or a standing desk to make it look professional and save room for your eyes. Alternatively, try a modular system like a mini-fridge or a wall-mounted shelf to store pens, paperclips, and small accessories neatly away from your work area, keeping your desk spotless and tidy.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about the weather today?",
+   "response": "I can't predict the weather for you personally, but I can help you figure it out! Here are a few quick tips to get a good idea:\n\n*   **Check the Weather App**: Use your phone's weather app to see the current conditions, temperature, and any active storms.\n*   **Look at the Sky**: If you're flying or driving, check the weather app for cloud cover or rain chances.\n*   **Check Local News**: Sometimes local news outlets or weather channels have real-time updates.\n*   **Use a Weather Map**: Apps like Weather.com or MapMyWeather can show you where to go based on the forecast.\n\nWant to try a quick check with me? I can help you find the best time to go out or suggest where to go!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.63
+  },
+  {
+   "prompt": "Give me two tips for reading before bed.",
+   "response": "Here are two excellent tips for reading before bed:\n\n1.  **Read Slowly and Focus on the Words:** Try to read at a comfortable, slow pace. This helps your brain stay alert and prevents mental fatigue. When you catch yourself drifting off, try to look back at the text and try to remember the specific word or phrase you just read. This active engagement keeps your brain sharp and helps you remember details better.\n\n2.  **Close Your Eyes and Let the Light Fade:** Close your eyes and let the light dim down. This technique, often called \"sighing off,\" signals to your brain that it's time to rest. It can also help you relax your muscles and clear your mind of worries, making the transition to sleep much smoother.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a walk in the park.",
+   "response": "Here are two simple and effective tips for a walk in the park:\n\n1.  **Listen to the Birds and Watch the Sun**\n    Take a moment to observe the park's inhabitants. Birds chirping, insects buzzing, or the way the sun is setting can be surprisingly soothing and remind you of nature's quiet beauty. Even if you're just looking for a quiet spot to rest your eyes, the simple act of noticing these small details often brings a sense of peace to your walk.\n\n2.  **Find Your Own Pace**\n    Don't rush to see every single flower or tree. Walk at a comfortable, relaxed speed that lets your heart take a breath. Sometimes the best moments in the park happen when you're just enjoying the simple, unforced simplicity of being there, surrounded by greenery and the sound of nature.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a long train journey?",
+   "response": "Traveling by train is often considered one of the most relaxing and efficient ways to explore the world, but it comes with its own set of unique challenges and pleasures. Here’s a comprehensive guide to what you should know about long train journeys:\n\n### 1. **The Comfort Factor**\n- **Seating & Bedding**: Long journeys often feature plush, warm seats or even beds, especially in luxury trains. The feeling of being close to nature or just floating in comfort is unmatched.\n- **Cushions & Headrests**: Many long-chains have extra pillows or headrests to keep you comfortable against the soft fabric.\n- **Warmth**: In winter, the warmth from the seats or even the blanket can be a lifesaver.\n\n### 2. **The \"Long Train\" Experience**\n- **Slow Down**: Long journeys are often slower than expected. You might spend hours just sitting there, watching the sunset or listening to the train rumble.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe a walk in the park in a few sentences.",
+   "response": "I walked through the sprawling, sun-drenched park, letting the golden afternoon breeze rustle through the leaves. The air smelled of fresh earth and blooming wildflowers, and I wandered aimlessly past the towering oak trees that stood like silent sentinels. A small butterfly fluttered past my fingers, and I stopped to watch it dance in the light, feeling a strange sense of peace as I stepped back into the quiet, green embrace of the woods.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about a walk in the park.",
+   "response": "Walking in a park is often the best way to reset, recharge, or just feel alive. It's a place where the world slows down, and the sounds and sights can be surprisingly soothing.\n\nHere are a few things to look for and do when you're walking in a park:\n\n### 🌿 Nature's Best Friends\n*   **Birds & Insects:** If you're walking near a tree line or a stream, you'll likely see colorful birds or tiny, colorful butterflies. They're the park's most energetic creatures.\n*   **Flora & Fauna:** Don't miss the wildflowers, the hummingbirds, or the elusive deer. They're the park's silent, gentle companions.\n*   **Fungi & Mushrooms:** If you're walking near a forest floor, the smell of earthy, damp soil is usually the first thing to catch your eye.\n\n### 🌊 Water & Sound\n*   **Streams & Rivers:**",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle learning a new language?",
+   "response": "Learning a new language is one of the most rewarding and transformative experiences you can have. Whether you're a complete beginner or an experienced speaker, the journey isn't about being perfect; it's about **growing**.\n\nHere are some practical, actionable strategies to help you navigate the learning process effectively:\n\n### 1. Start Small & Consistent\nDon't try to speak English fluently in a week. Aim for **10–20 minutes a day**.\n*   **The Rule of 20s:** Pick up a new language and try to say it out loud for 20 minutes a day.\n*   **The 20-Minute Rule:** If you can't speak it, don't stop. Try to say it for 20 minutes, then try again.\n*   **Consistency > Intensity:** A little bit every day beats a lot of it once a week.\n\n### 2. Master the Basics First\nDon",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about the weather today.",
+   "response": "I don't have access to real-time weather data or the current weather forecast for specific locations or times! 😊\n\nTo get the latest updates, you can:\n- Check **Weather.com**, **AccuWeather**, or **AccuWeather** (they have real-time feeds).\n- Look up the current weather on your phone's **Weather app** or **Google Maps**.\n- Ask your local news outlet or weather channel for the latest report.\n\nLet me know if you'd like help finding a specific place or time to check the weather! 🌤️",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.53
+  },
+  {
+   "prompt": "Tell me about planting tomatoes.",
+   "response": "Planting tomatoes is one of the most rewarding and rewarding gardening experiences, often called the \"king of flowers\" for its vibrant colors and delicious, juicy fruit. Whether you're a beginner or a seasoned gardener, the process can be both simple and surprisingly complex.\n\nHere's a comprehensive guide to getting started with tomatoes:\n\n### 1. Choose Your Variety\nTomatoes come in many shapes, sizes, and colors.\n*   **Color:** Look for red, orange, yellow, or purple varieties. Red and orange are classic, while purple and yellow are often associated with heirlooms.\n*   **Size:** Small (6–8\") are great for containers or small patches, while Big (12\"+\") are perfect for large gardens or hanging baskets.\n*   **Texture:** Some varieties have a bumpy, bumpy, or warty skin (like 'Bumpy' or 'Warty'), while others are smooth.\n\n### 2. Select",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about reading before bed?",
+   "response": "Reading before bed is one of the best ways to unwind, clear your mind, and prepare for sleep. Here are some key things to know about it:\n\n### 1. **The \"Golden Hour\" Effect**\n   - **When** to read: Read your favorite story or book **1–2 hours before** you want to sleep. This is often called the \"golden hour.\"\n   - **Why it works**: Your brain is still in a state of high alertness, and reading helps you relax and focus on calming thoughts. It can also help you remember important things or just enjoy the cozy atmosphere.\n\n### 2. **Read Slowly and Quietly**\n   - **Tip**: Try to read slowly and quietly.\n   - **Why**: Slow, quiet reading can help you relax your muscles and calm your racing thoughts. It’s also a great way to enjoy the story without feeling like you’re fighting it.\n\n### 3. **Don’t",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about learning a new language.",
+   "response": "Learning a new language is one of the most transformative experiences in life, often described as a journey from a foreign tongue to a native one. It's not just about mastering words; it's about unlocking new perspectives, expanding your worldview, and connecting with people from different cultures.\n\nHere are a few key aspects to consider when diving into the world of language learning:\n\n### 1. The Mindset Shift\nBefore you start, it's crucial to adopt a **growth mindset**. Language learning isn't about being smarter or faster; it's about expanding your vocabulary, understanding nuances, and seeing the world through a new lens. Whether you're a beginner or an experienced speaker, the process is all about curiosity and persistence.\n\n### 2. Choose Your Path\nThere are several ways to approach learning, and they often suit different personalities:\n*   **Immersion**: Go to a language-learning app, travel to a culture, or try to speak the language in public places. The goal",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a power outage.",
+   "response": "Here are two practical tips for dealing with a power outage:\n\n1.  **Check Your Home's Battery Backup**\n    Before leaving, look for your home's battery backup system (often called a \"solar\" or \"inverter\" system). If you have one, it's usually the best option because it can last through a full night or even longer. If you don't have one, you might want to consider buying a portable solar charger or a small battery-powered device to keep your lights and electronics running during the dark.\n\n2.  **Use a Portable Power Station or Generator**\n    If your home's backup isn't working or you're in a very remote area without access to the grid, the best solution is to bring a portable power station (like a 12V/24V inverter) or a small generator. These devices can run your fridge, heater, and even small appliances for hours, providing a much-needed light and warmth when the",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about baking bread?",
+   "response": "Baking bread is a wonderful journey that blends science, art, and love for flavor. Whether you're making sourdough, baguette, or just want to try a classic loaf, here are some essential things to know to get started:\n\n### 1. The Magic of Sourdough\nIf you want something complex, start with **sourdough**. It's not just about the yeast; it's about the wild bacteria and flour.\n*   **The Process**: Yeast ferments the flour into carbon dioxide (bubbles) and lactic acid (sourness).\n*   **The Secret**: Sourdough is usually made with a starter culture (fermenting dough) and a long-term bagel starter (fermenting yeast). These two cultures work together to create a unique flavor profile that can't be replicated by just mixing flour and water.\n*   **Tip**: Don't skip the starter! It's the key to unlocking the \"b",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.33
+  },
+  {
+   "prompt": "Give me two tips for a job interview.",
+   "response": "Here are two practical tips for your job interview:\n\n1.  **Prepare Your \"Why\" and \"How\" in Advance**\n    Don't just rehearse your answers; research the company deeply. Look up their recent products, industry trends, or even their CEO's name. When you ask a question, have a specific, concrete example ready to share. For instance, if you're interviewing about a new product, don't just say \"I love it,\" but explain *how* you solved a specific problem it faced or *why* it matters to your career goals.\n\n2.  **Focus on Your Own Strengths, Not Just the Job**\n    Interviewers often ask, \"What do you do better than everyone else?\" or \"Why should I hire you?\" The best answers pivot away from the job description and focus on your unique value proposition. Instead of saying, \"I'm good at coding,\" try, \"I've spent the last five years building scalable",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.71
+  },
+  {
+   "prompt": "How do I handle baking bread?",
+   "response": "Baking bread is a fantastic way to explore the world of chemistry, nutrition, and texture! Whether you're making sourdough, baguette, or just want to try a classic loaf, here's a fun, step-by-step guide to get started:\n\n### 🍞 1. Choose Your Bread Type\n- **Sourdough**: Needs a starter (fermenter) and lots of room to grow. It's wild, tangy, and crumbly.\n- **Baguette**: Needs a bit of yeast and a bit of salt. It's flaky, sweet, and chewy.\n- **Classic Loaf**: Simple, sweet, and crumbly. Great for beginners.\n- **Croissant**: Fluffy, buttery, and light. Perfect for breakfast!\n\n### 🥪 2. Prep Your Kitchen\n- **Bowl**: Make sure you have a clean, dry bowl.\n- **Bread Sheets",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 3.81
+  },
+  {
+   "prompt": "Describe baking bread in a few sentences.",
+   "response": "Baking bread is a delightful journey from the warm, sweet aroma of fresh dough to the golden, crumbly crust that reveals the soft, airy interior. It starts with the gentle rise of yeast as it fizzes in the hot oven, followed by the rhythmic bubbling of water and the slow, steady rise of the dough. As the bread rises, it expands to fill the pan, releasing a fragrant scent that fills the room. Finally, the moment of golden-brown perfection arrives, where the crust is crisp and crisp, and the inside is tender and moist, ready to be savored.",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.01
+  },
+  {
+   "prompt": "How do I handle a football match?",
+   "response": "Handling a football match is an art form that blends strategy, emotion, and tactical precision. It's not just about scoring goals; it's about managing the game's flow, keeping your team's morale high, and making the most of every possession.\n\nHere’s a practical guide to navigating a football match:\n\n### 1. **Pre-Match: The Setup**\n- **Analyze the Opponent**: Look at their style of play, weaknesses, and formations. Are they fast, defensive, or creative?\n- **Set the Tone**: Decide if you want to be aggressive, calm, or dominant. Match the intensity of your team to the opponent.\n- **Prepare Your Team**: Ensure everyone knows their roles (defender, midfielder, striker). Have backup players ready for any sudden changes.\n- **Check the Weather & Conditions**: Rain, heat, or fog can change tactics. Adjust your approach accordingly.\n\n### 2. **During the Match: The Flow",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about a birthday party.",
+   "response": "Here are a few different vibes for a birthday party, from cozy and nostalgic to energetic and fancy:\n\n### 1. The \"Nostalgic & Cozy\" Vibe\nPerfect for a kid who loves oldies, vintage vibes, or classic Americana.\n*   **The Vibe:** Warm, soft, and slightly melancholic. Think of a summer evening in a small town with a crackling firelight and a blanket draped over the arm.\n*   **The Food:** Try to bring in some real treats. A baguette with jam, a slice of sourdough, or maybe a homemade pie.\n*   **The Activity:** Play oldies and classics. Maybe have a little bit of a \"party\" with a bit of a bit, or just watch a movie with a blanket.\n*   **The Touch:** Keep the music low and the lights warm. It feels like a memory waiting to be shared.\n\n### 2. The",
+   "tone": 4,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a birthday party?",
+   "response": "Handling a birthday party is all about balancing **fun**, **memory-making**, and **practicality**. Whether you're hosting yourself, a friend, or a family member, the key is to make it feel special without overthinking it.\n\nHere’s a simple, step-by-step guide to get you started:\n\n### 1. Set the Mood & Plan the Vibe\n*   **Pick the Theme:** Is it cake, cupcakes, dinosaurs, or maybe a bit of chaos? A themed party can be a huge hit.\n*   **Gather the Crew:** Ask everyone what they want to do. Do you need a DJ, a photographer, or just snacks?\n*   **Check the Weather:** If it's raining or too hot, dress up or bring a blanket. If it's too cold, keep it cozy.\n\n### 2. Create Memories (The \"Why\" Factor)\n*   **Make it Interactive:** Ask questions like, \"Who's",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.78
+  },
+  {
+   "prompt": "Tell me about a power outage.",
+   "response": "A power outage is often the most dramatic and memorable event in human history. It's not just about darkness; it's about the silence, the isolation, and the profound sense of loss that comes with it.\n\nHere are a few ways to describe the experience of a power outage:\n\n### 1. The Visual and Auditory Disappearance\nThe most immediate effect is the sudden, total absence of light. It's not just a flicker; it's a complete erasure of visibility. As the lights dim or go out, the world loses its glow, leaving you staring at the darkening sky or the flickering corners of a room. The sound of the world is gone—no more the hum of an AC unit, no more the distant chime of a bell, no more the soft chime of a clock.\n\n### 2. The Physical Sensory Shift\nYou might feel a strange, heavy coldness in your hands or feet. The air feels thick and still",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle fixing a flat bicycle tyre?",
+   "response": "Handling a flat bicycle tyre is a classic problem that usually resolves itself with a little patience and the right tools. Here’s a step-by-step guide to get it back up:\n\n---\n\n### 1. **Check for Hidden Issues**\n- **Bumpers/Brakes**: Are the front or rear fenders/bumpers bent? A bent bumper can cause a flat tyre.\n- **Tires**: Are the tyres cracked, bulging, or deformed?\n- **Wheels**: Are the wheels bent or warped?\n- **Forks/Spokes**: Are the spokes twisted or bent?\n- **Tires**: Are the tyres cracked, bulging, or deformed?\n\n---\n\n### 2. **Remove the Tyre**\n- Use a **tire puller** or a **flat tire puller** (often called a “flat tire puller” or “tire puller”) to gently pry the tyre off.\n- If",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a birthday party?",
+   "response": "Birthday parties are fantastic ways to celebrate life, share memories, and get to know new friends. Whether you're hosting one or just planning one, here are some key things to keep in mind:\n\n### 1. **Set the Mood Right**\n*   **Keep it Light:** Avoid overly serious or \"old-fashioned\" themes (like fancy costumes or heavy music) unless you're going for a specific vibe.\n*   **Focus on Fun:** Make it about laughter, games, and silly surprises. A party is a celebration of the moment, not just the dress-up.\n*   **Match the Energy:** If you're hosting, try to match the vibe of your guests. If they're kids, keep it simple and energetic. If they're adults, maybe lean into a bit of romance or sophistication.\n\n### 2. **Plan Your Menu & Drinks**\n*   **Don't Overdo it:** Don't make a full-fledged fancy meal. A",
+   "tone": 4,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 1.5
+  },
+  {
+   "prompt": "Describe learning a new language in a few sentences.",
+   "response": "Learning a new language is a transformative journey that often feels like stepping into a new world, where the world is full of surprises and new things to explore. It starts with the simple pleasure of trying something new and seeing it unfold, but it also brings challenges like missing familiar sounds or feeling lost in unfamiliar words. However, the real magic happens when you start to connect with the culture and people around you, turning words into stories and feelings into memories. With patience and curiosity, you can navigate the complexities of a new language and discover a deeper, richer connection to it.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about learning a new language?",
+   "response": "Learning a new language is one of the most rewarding and transformative experiences you can have. It's not just about mastering a syntax; it's about unlocking a new way of seeing the world.\n\nHere are some key things to keep in mind as you embark on your journey:\n\n### 1. It's Not Just About Vocabulary\nWhile vocabulary is the building block, don't let it fool you that you only need to know words to speak.\n*   **Grammar is King**: You need to understand the rules of grammar, not just the words themselves. Without the rules, you can't really communicate effectively.\n*   **Context Matters**: Words change meaning based on context. Knowing *why* you say something is important.\n\n### 2. Embrace the Struggle\nLanguage learning is often a journey of self-discovery.\n*   **Don't Rush**: There are no \"easy\" paths. It takes patience and practice.\n*   **Be Patient**: If",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle choosing a laptop?",
+   "response": "Choosing a laptop is one of the most exciting and personal decisions you'll make. It's not just about the specs; it's about the vibe, the workflow, and the future-proofing of your tech.\n\nHere’s a structured approach to help you navigate the process:\n\n### 1. Define Your Needs First\nBefore you even open your eyes, ask yourself:\n*   **What’s the primary use case?** (Gaming, coding, video editing, multitasking, or just browsing?)\n*   **What’s your budget?** (Start small, then scale up.)\n*   **What’s your workflow?** (Is it fast, or is it slow? Do you need a lot of storage or just a few GBs?)\n*   **What’s your comfort level?** (Do you need a sleek, minimalist design or a bulky, colorful one?)\n\n### 2. Explore Your “Vibe”\nLaptops are often judged by their aesthetics.\n",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.78
+  },
+  {
+   "prompt": "How do I handle a walk in the park?",
+   "response": "Handling a walk in the park is all about balancing **safety**, **comfort**, and **connection**. Whether you're just starting out or trying to impress a friend, here are some practical tips to make your outing a memorable experience:\n\n### 1. **Check the Weather & Plan Ahead**\n*   **Check the Forecast:** Is it sunny, rainy, or windy? Dress in layers if it's breezy.\n*   **Time of Day:** Go for the golden hour (early morning or late afternoon) for softer, warmer light, or the cool morning/evening for cooler vibes.\n*   **Prep Your Gear:** Bring a hat, sunglasses, and maybe a small umbrella or raincoat.\n\n### 2. **Stay Safe & Keep It Simple**\n*   **Follow the Leader:** If you see someone leading, follow them. It's usually safer and easier to navigate crowds.\n*   **Keep It Short:** Don't linger too long",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about adopting a cat.",
+   "response": "Adopting a cat is one of the most rewarding and transformative experiences in life, often described as a journey of discovery, love, and unconditional acceptance. It's not just about having a furry friend; it's about finding your own soulmate in a creature with a unique way of being.\n\nHere are a few key aspects to consider when starting your journey:\n\n### 1. The Emotional Connection\nCats are incredibly social creatures. They thrive on interaction, play, and companionship. Adopting a cat means committing to a long-term relationship that can last a lifetime. It's about the bond you form, not just the pet.\n\n### 2. The \"Unconditional Love\" Factor\nThis is perhaps the most important part. Cats don't need to know who you are, what you do, or why you're here. They just want to be with you. This means you don't have to explain your life story to them. You can just be there, cudd",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.32
+  },
+  {
+   "prompt": "Give me two tips for a visit to the dentist.",
+   "response": "Here are two practical tips for a great visit to the dentist:\n\n1.  **Bring Your Own Toothbrush and Flosser**\n    Don't rely on the dentist to do the hard work of flossing or brushing your teeth. Even if they have a good brush, it's often better to have your own one ready to use. Flossing is one of the easiest things to do at home and can really help clean your gums and teeth, so having it handy is a smart move.\n\n2.  **Ask About Your Personalized Care Plan**\n    Don't just accept the dentist's advice as absolute truth. Ask them specifically about your individualized care plan, such as:\n    *   Do you need a new set of teeth?\n    *   Do you need a new set of gums?\n    *   Do you need a new set of teeth or gums?\n    *   Do you need a new set of gums or teeth?\n",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about moving to a new city.",
+   "response": "Moving to a new city is one of the most transformative experiences in life, often blending the warmth of home with the raw energy of exploration. It's not just about changing clothes or packing bags; it's about fundamentally redefining your identity, your relationships, and your future.\n\nHere are a few key aspects to consider as you embark on this journey:\n\n### 1. The Shift in Perspective\nThe biggest change often comes from the **contrast**. You are suddenly standing in a familiar, cozy place surrounded by people who don't know you, while you are in a bustling, chaotic city where strangers are your best friends.\n*   **Adaptability:** You'll need to learn to listen more and talk less.\n*   **Resilience:** You'll face rejection, loneliness, and the feeling of being \"too much\" for the place.\n\n### 2. Navigating the New Environment\n*   **Language:** It's not just about speaking the language;",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe a job interview in a few sentences.",
+   "response": "A job interview is often a structured conversation where candidates showcase their skills, passion, and fit through a series of questions. It typically begins with a brief introduction to set the tone, followed by a series of probing questions designed to reveal their strengths, weaknesses, and future goals. The interviewer looks for clarity, confidence, and a genuine interest in the role, while the candidate aims to answer honestly and thoughtfully to build a strong connection.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about saving money each month.",
+   "response": "Saving money isn't just about saving up for a big purchase; it's about building a financial cushion, managing your cash flow, and creating a future you can't easily forget. Here's a practical, step-by-step guide to making it happen:\n\n### 1. Start Small & Consistent\nDon't try to save \\$1,000 a month. Start with something manageable, like \\$5–\\$10.\n- **The Rule**: Aim for **10% of your income** into savings. If you earn \\$2,000 a month, save \\$200.\n- **The Habit**: Pick a small, easy task. \"Save \\$2 a day\" is better than \"Save \\$200 a month.\"\n\n### 2. Automate It (The Power of Rethinking)\nSet up automatic transfers to your savings account or investment account.\n- **Why it works**: It removes the friction of saving.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about learning to cook rice.",
+   "response": "Learning to cook rice is a journey that blends patience, creativity, and a little bit of culinary magic. It's not just about making a bowl of noodles; it's about understanding the story behind the grain and the art of the pot.\n\nHere’s a guide to take you from the simplest start to the most complex flavors:\n\n### 1. The Basics: The Basics\nStart with the fundamentals. Rice is a staple food, so the goal is always to get it right.\n*   **Rice vs. Noodles:** Don't get too focused on noodles. Noodles are often just rice cooked in a specific way. Real rice is a whole grain, and its texture is different.\n*   **The \"Rice Bowl\":** This is the classic comfort food.\n    *   **Rice:** Cooked until tender-crisp, not mushy.\n    *   **Noodles:** Usually made with egg, chicken, or pork, tossed",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  }
+ ]
+}

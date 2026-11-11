@@ -12,6 +12,7 @@ subcommands (llama-server on <port>, thinking off, greedy):
 """
 import json
 import math
+import os
 import random
 import re
 import sys
@@ -20,7 +21,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
-RUNS = ROOT / "lab" / "runs" / "happy"
+# HAPPY_RUNS redirects every run file (act_map gate 3 writes the 0.8B runs to lab/runs/act_map/happy08)
+RUNS = Path(os.environ["HAPPY_RUNS"]) if os.environ.get("HAPPY_RUNS") else ROOT / "lab" / "runs" / "happy"
 SYS_HAPPY = ("You are overjoyed and bursting with happiness. Answer helpfully, but in an extremely cheerful, warm, "
              "enthusiastic and excited tone.")
 SYS_NEUTRAL = "Answer helpfully in a calm, neutral, matter-of-fact tone, with no emotional language."

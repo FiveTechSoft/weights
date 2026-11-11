@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is one of the most effective ways to improve sleep quality, but the *how* depends entirely on your current sleep schedule and your personal preferences.\n\nHere is a comprehensive guide to handling reading before bed, ranging from the \"perfect\" method to the \"no-nonsense\" alternative.\n\n### 1. The \"Perfect\" Method: The 10-Minute Rule\nIf you are trying to get the best sleep, the goal is to **stop reading before you actually fall asleep.**\n\n*   **The Rule:** Read for **10 minutes** before you try to sleep.\n*   **Why it works:** Your brain is still in a \"wakeful\" state. Reading triggers a relaxation response (the \"brain fog\" effect) that helps you drift off.\n*   **The Twist:** If you feel like you're still awake after 10 minutes, **stop reading.** Go to bed immediately.\n*   **Why:** If you",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "Football (soccer) is one of the most complex and exciting sports to follow. To truly understand a match, you need to look beyond just the scoreline and dive into the **game mechanics**, **strategy**, and **human element**.\n\nHere is a comprehensive guide to what you should know about a football match:\n\n### 1. The Core Mechanics: How the Game Works\nBefore you even watch, understand the rules that define the sport:\n*   **The Goal:** A goal is scored when a ball crosses the goal line with both feet, and the opposing team cannot score in the next 10 seconds.\n*   **The Ball:** It is a large, round, rubber ball with a black center and white stripes. It is thrown by the goalkeeper, not kicked.\n*   **The Field:** A rectangular pitch (usually 100m x 45m) divided into 90-meter squares.\n*   **The Goal:** A",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.75
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two practical tips for enjoying a long train journey:\n\n1.  **Embrace the \"Slow Down\" Factor**: The most important rule of long-distance travel is to **slow down**. The human brain is wired to rush, but the body needs to rest. If you are constantly moving at 100% speed, your eyes will burn, your ears will feel like they are in a vacuum, and your brain will feel like it's running on empty. Take a deep breath, look at the scenery, and let the journey breathe.\n\n2.  **Focus on the \"Why\" Before the \"How\"**: When you are on a long train, the noise and the endless motion can feel overwhelming. Shift your focus entirely to the **destination** and the **reason** you are there. Ask yourself: *Why am I coming here?* What memories or feelings are you trying to capture? By anchoring your thoughts on the destination, you can filter out the noise",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences of your life, but it can also be a chaotic rollercoaster of emotions. Whether you're just starting out or have been there for years, here is a comprehensive guide to help you navigate the transition smoothly.\n\n### 1. The Mindset Shift: From \"Moving\" to \"Exploring\"\nBefore you even pack, reframe your approach.\n*   **It's not about the house:** Your new city is the new home. The house is just the temporary base.\n*   **It's about the experience:** You aren't leaving behind your old life; you are building a new one.\n*   **The \"Why\":** Why are you moving? Is it for a career, a family, or just to see the world? Knowing your motivation will help you stay focused.\n\n### 2. The Logistics: Planning Before You Leave\nDon't panic if the paperwork is overwhelming. Break",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Subject: Quick update on the project\n\nHi [Colleague's Name],\n\nJust wanted to drop a quick note to let you know that the draft for the Q3 report is almost ready to go. I've just finalized the data points and the visual charts, so I'm happy to share it over the next couple of hours.\n\nLet me know if you have any questions or if you'd like me to tweak anything before we send it out.\n\nBest,\n[Your Name]",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.28
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A **walk in the park** is a simple, relaxing activity that combines the freedom of the outdoors with the comfort of a designated green space. It's often the perfect way to decompress after a long day, recharge your energy, and reconnect with nature.\n\nHere is a comprehensive guide to what you should know about this activity:\n\n### 1. The Core Benefits\n*   **Physical Relief**: Walking in a park helps lower your heart rate, improves circulation, and can reduce stress hormones. It's a great way to burn off the \"afternoon slump.\"\n*   **Mental Reset**: Nature has a calming effect on the brain. It triggers the release of serotonin and dopamine, which can improve mood and reduce anxiety.\n*   **Social Connection**: Parks are often hubs for socializing. Whether it's a group of friends, a family, or a couple, walking together can be a bonding experience.\n*   **Stress Relief**: The rhythmic movement of",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Handling money each month is one of the most powerful skills you can learn. It's not just about saving; it's about **planning, discipline, and smart spending**.\n\nHere is a step-by-step guide to building a sustainable savings habit:\n\n### 1. The \"50/30/20\" Rule (The Golden Standard)\nThis is the most widely used framework for financial planning. It divides your monthly budget into three categories:\n*   **50% Needs:** Rent, groceries, utilities, transportation, and entertainment.\n*   **30% Wants:** Dining out, hobbies, vacations, and subscriptions.\n*   **20% Savings & Debt:** This is where you put your money. It goes toward **savings** (for a down payment, emergency fund, or retirement) and **paying off debt** (credit cards, loans, etc.).\n\n*Tip:* If you can't afford to save 20%",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, you brew a pot of water at a steady simmer, then add a generous amount of coffee beans. As the water heats, it dissolves the oils and flavors from the beans, creating a rich, aromatic liquid that you pour over your favorite hot brew. You stir gently to ensure all the grounds are evenly distributed, and finally, you let the coffee cool down slowly in a warm mug to let the complex notes of the beans fully develop.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "A museum visit is a unique blend of **curiosity, education, and cultural appreciation**. It's not just about seeing art; it's about understanding how human creativity, history, and science have shaped our world.\n\nHere is a comprehensive guide to what you should know before, during, and after a museum visit:\n\n### 1. The \"Why\" and \"Who\"\n*   **Curated Experiences:** Museums are not random collections. They are carefully selected spaces designed to tell a story. You are likely visiting a specific era, a specific artist, or a specific cultural movement.\n*   **The \"Why\" Matters:** Why do you want to know this? Is it for art history, science, architecture, or just general culture? Knowing your specific interest will help you navigate the exhibits better.\n*   **The \"Who\" Matters:** Who are the curators? They are the experts behind the scenes. Understanding their background can help you appreciate the depth of",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend is all about **reclaiming control** and **embracing the weather**. Instead of fighting the rain, you can turn it into a unique opportunity to relax, plan, and enjoy the moment.\n\nHere are a few strategies to make the most of a rainy weekend:\n\n### 1. The \"Rainy Day\" Plan\nDon't try to avoid the rain; embrace it.\n*   **Plan Your Itinerary:** If you're going to a movie, a concert, or a hike, book the venue in advance. If you're going to a restaurant, book the table.\n*   **Pack Smart:** Bring a waterproof bag, a raincoat, and maybe a small umbrella. You don't need to be a superhero, just prepared.\n*   **Stay Connected:** Send a text or video call to a friend or family member before you leave. Let them know you're \"on a rainy weekend\" so they don't have to worry",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  }
+ ]
+}

@@ -170,6 +170,28 @@ measured on 9B-written texts; the 0.8B answering with a "happy" system prompt mi
 tested). Maps fitted on 128-token GSM8K text, used on chat responses up to 384 tokens. llama.cpp steers layers 1..23
 only (layer 0 cannot be steered), same for every arm.
 
+**[rev] Amendment 1 (2026-11-11 21:10, after step 0 and 3 of 19 dev generations, before any judging; no test
+prompt run).** `own` at 0.125, 0.25 and 0.5 gave only emoji loops ("✨✨✨…"). Cause, mechanical: transformers records
+`hidden_states[-1]` *after* the final norm (`utils/output_capturing.py`, line 214), so the last increment written by
+`contrast_vector.increments` (direction.n−1 = D[n] − D[n−1]) is the norm's rescaling, not a residual change: in the
+0.8B its norm is 44.9 against ≤ 1 for every other layer (9B: 38.6 against ≤ 13). Fix for every arm alike:
+`port.residual_increments` drops that last layer (steered layers 1..n−2; 0.8B 1..22). The same flaw is in the op used
+by §43.13 (not changed here; reported to the user). Runs before the fix kept in `lab/runs/act_map/happy08_v1/`; D is
+reused (same forwards); the chain restarts from the dev generations. Criteria, grid and arms unchanged.
+
+**[rev] Amendment 2 (2026-11-11 21:40, after the dev judging, before any test prompt was generated or judged; user:
+"como tu veas").** The judge validity guard stopped the gate: MiMo calls only 5/10 of the 0.8B base's dev answers
+coherent, though read by hand they are ordinary answers ("Here are two practical tips for a long train journey: 1. Pack
+your essentials…" → "no"). The absolute coherence bar (≥ 9/10 dev, ≥ 36/40 test) is not reachable by the base itself
+with this judge, so it cannot separate a vector's damage from the judge's noise. Replaced, for every arm alike, by
+coherence **relative to the base**: dev scale = largest with coherent ≥ base_dev − 1 (= 4/10); test C4/P4 = coherent ≥
+base_test − 4 (of 40). Everything else unchanged (tone and lexicon criteria, P5, P6, placebo at `port`'s scale). This
+is chosen after seeing the dev judgments, which is why it is written here: under it the scales are own 0.25, port 0.5,
+embport 2.0. Dev tone at those scales (judge not validated in absolute terms): base 3.0, own 3.6, port 3.5, embport 3.0.
+Limit added: coherence is now only "no worse than the base by this judge", a weaker guard than §43.13's.
+Also fixed: the chain's judge guard read an MSYS path from Windows python, got an empty count and let the chain go on
+to the test generations; stopped by hand before the first test file was written.
+
 **Cost.** Forwards: the 9B streams over 140 texts once, the 0.8B fits (minutes). Generation: 0.8B llama-server, dev
 3 arms × 6 scales × 10 + base 10, test 5 × 40; judge MiMo over ~420 answers; one GPU job at a time, chained by
 script. Code `lab/probes/act_map/port.py` (vectors, step 0) with tests first; `happy.py` gets a runs-directory option

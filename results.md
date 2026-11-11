@@ -2333,3 +2333,49 @@ G = (NLL_emb − NLL_stitch) / (NLL_emb − NLL_nativa).
 - Límites: un dominio (GSM8K, 128 tokens); coser el estado entero no prueba que una *dirección* concreta se porte
   (eso es la puerta 3, que sigue sin objetivo: la 0.8B no tiene "concluir", §43.22, y el contraste *late* puede ser
   sobre todo posición).
+
+### 45.2 Puerta 3: la dirección "feliz" de la 9B escrita en la 0.8B: NO DECIDIDA (la referencia propia de la 0.8B no pasa) (2026-11-11)
+Plan: anexo "Gate 3" de `lab/probes/act_map/PLAN.md`, fijado antes del código, con dos enmiendas escritas antes de tocar
+la prueba. Código `lab/probes/act_map/port.py` (12 tests en `tests/test_act_map_port.py`), cadenas
+`lab/runs/act_map/gate3_chain.sh` y `gate3_resume.sh`, datos en `lab/runs/act_map/happy08/`. Los 70 pares de §43.13
+pasan por los dos modelos. `own` = contraste de la propia 0.8B; `port` = contraste de la 9B por el mapa de la puerta 1
+(sin reajustar, ajustado en GSM8K); `embport` = contraste de embeddings de la 9B por un mapa de embeddings (solo
+identidad del token); placebo = `port` con la misma norma por capa en direcciones aleatorias. Protocolo de §43.13 en la
+0.8B Q6_K, juez MiMo.
+
+- **Enmienda 1 (fallo del op, no de la idea):** transformers guarda el último estado oculto *después* de la norma final,
+  así que el último incremento de `contrast_vector.increments` es el reescalado de la norma, no un cambio residual
+  (0.8B: norma 44.9 frente a ≤ 1 en las demás capas; 9B: 38.6 frente a ≤ 13). Con él, `own` daba solo bucles de "✨"
+  a cualquier escala. Se quita esa capa en todos los brazos. **El mismo fallo está en el op usado en §43.13** (sin
+  cambiar aquí).
+- **Enmienda 2 (juez):** MiMo llama coherentes solo 5/10 respuestas de desarrollo de la 0.8B base, que leídas a mano
+  son normales; el listón absoluto (≥ 9/10, ≥ 36/40) no lo alcanzaba ni la base. Se sustituye por coherencia relativa a
+  la base (desarrollo ≥ base − 1; prueba ≥ base − 4 de 40), elegida tras ver el desarrollo y anotada como tal.
+  Escalas: own 0.25, port 0.5, embport 2.0.
+
+**Paso 0 (sin generar; dos métodos, diferencia máxima 9·10⁻¹⁶):** coseno por estado con `own`: `port` mediana 0.65
+(0.57-0.71, estable en profundidad); `embport` 0.41, cae de 0.61 a 0.12 con la profundidad. La norma de `port` es
+0.5-0.7 la de `own`.
+
+| prueba (40) | escala | tono (Δ base, ↑/↓, p) | léxico /100 (Δ, p) | coherentes |
+|---|---|---|---|---|
+| base | - | 2.90 | 0.31 | 27 |
+| `own` (0.8B) | 0.25 | +0.75 (19/0, p < 10⁻⁵) | +0.86 (p 2·10⁻⁴) | 24 |
+| **`port` (9B → 0.8B)** | 0.5 | **+0.53 (13/0, p 2·10⁻⁴)** | **+2.20 (p < 10⁻⁵)** | 24 |
+| `embport` | 2.0 | +0.20 (7/3, p 0.34) | +0.12 (p 1.0) | 20 |
+| placebo | 0.5 | +0.05 (4/3, p 1.0) | −0.16 (p 0.15) | 24 |
+
+- **Veredicto por la regla: NO DECIDIDA.** `own` no pasa C1 (+0.75 < +1.0) ni C2 (+0.86 < +2): en la 0.8B no hay
+  escala que suba el tono un punto sin romper la coherencia (desarrollo: own 0.5 da tono 4.6 pero 2/10 coherentes).
+  Sin referencia, P1-P6 no se leen como criterio.
+- **Descriptivo (no criterio):** la dirección medida en la 9B mueve la 0.8B en los dos métodos, con signo limpio (13
+  suben, 0 bajan) y por encima del placebo (+0.05) y del control de identidad del token (+0.20, no significativo, y eso
+  a escala 4× mayor). Hace ≈ 70 % del tono de la dirección propia (P5 se cumpliría) y más léxico. P1 fallaría (+0.53).
+  `port` − `embport` = +0.33 en tono (P6 pedía +0.5) pero +2.1 en léxico.
+- Predicciones: "own pasa" falla; "embport cerca de port, P6 falla porque feliz es sobre todo vocabulario" falla en
+  el léxico: el mapa de embeddings no lleva la dirección, el mapa del estado sí.
+- GSM8K rápido (informado): 0/48 en todos los brazos, ninguna traza cierra en 2 048 tokens (la 0.8B no cierra, §43.22):
+  no informa.
+- Límites: un juez (MiMo) que no es fiable en absoluto con la 0.8B; coherencia solo "no peor que la base"; una
+  dirección de estilo, no una capacidad; textos escritos por la 9B. Siguiente forma útil: una dirección que la 0.8B
+  sí pueda mover un punto (o un juez validado para la 0.8B) antes de repetir; y corregir el op y repetir §43.13.
