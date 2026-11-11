@@ -25,6 +25,28 @@ class TestPure(unittest.TestCase):
         for N in range(1, 5):                        # running sum after layer N = difference at layer N's output
             self.assertTrue(torch.allclose(sum(inc[k] for k in range(1, N + 1)), D[N + 1] - D[1], atol=1e-6))
 
+    def test_last_row_is_the_residual_before_the_final_norm(self):
+        # HF records hidden_states[-1] after the final norm; llama.cpp adds direction.(n-1) to the residual before it.
+        # The last increment must be a residual change (results 45.2, amendment 1: the post-norm row gave 44.9 vs <= 1).
+        from transformers import LlamaConfig, LlamaForCausalLM
+        from engine import contrast_vector as cv
+        torch.manual_seed(0)
+        m = LlamaForCausalLM(LlamaConfig(vocab_size=64, hidden_size=16, intermediate_size=32, num_hidden_layers=3,
+                                         num_attention_heads=2, num_key_value_heads=2)).eval()
+        with torch.no_grad():
+            m.model.norm.weight.mul_(7.0)                 # make the norm's rescaling obvious
+        pairs = [([1, 2, 3], [4, 5, 6, 7], slice(0, 4)), ([8, 9], [10, 11, 12], slice(1, 3))]
+        seen = []
+        h = m.model.layers[-1].register_forward_hook(lambda mod, a, o: seen.append(o[0] if isinstance(o, tuple) else o))
+        try:
+            got = cv.layer_means(m, pairs, batch=2)
+        finally:
+            h.remove()
+        out = seen[0]
+        want = (out[0, 3:7].sum(0) + out[1, 3:5].sum(0)) / 6
+        torch.testing.assert_close(got[-1], want.float(), atol=1e-5, rtol=1e-5)
+        self.assertEqual(got.shape[0], 4)                 # embeddings + 3 layers
+
     def test_gguf_round_trip(self):
         from engine import contrast_vector as cv
         import gguf

@@ -100,22 +100,32 @@ def _stream(layers, device):
 
 @torch.no_grad()
 def layer_means(model, pairs, batch=8):
-    """Mean residual stream over each pair's selected response tokens, per hidden state: (n_layers + 1, d), float32."""
+    """Mean residual stream over each pair's selected response tokens, per hidden state: (n_layers + 1, d), float32.
+    The last row is the last layer's output BEFORE the final norm: transformers records hidden_states[-1] after it,
+    and llama.cpp adds direction.(n-1) to the residual before the norm (the post-norm row made the last increment the
+    norm's rescaling: 0.8B 44.9 against <= 1 elsewhere, 9B 38.6 against <= 13; results 45.2, fixed 2026-11-11)."""
     core = model.model
     core = core.language_model if hasattr(core, "language_model") else core
     sums, count = None, 0
     if any(len(a) + len(b) > 1024 for a, b, _ in pairs):
         batch = 1                                   # long reasoning traces: hidden states of 8 x 4k tokens do not fit
-    for k in range(0, len(pairs), batch):
-        chunk = pairs[k:k + batch]
-        n = max(len(a) + len(b) for a, b, _ in chunk)
-        ids = torch.tensor([a + b + [0] * (n - len(a) - len(b)) for a, b, _ in chunk])   # right pad: causal, pads unseen
-        hs = core(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states
-        for j, (a, b, s) in enumerate(chunk):
-            sl = slice(len(a) + s.start, len(a) + s.stop)
-            v = torch.stack([h[j, sl].float().cpu().sum(0) for h in hs])
-            sums = v if sums is None else sums + v
-            count += s.stop - s.start
+    cap = {}
+    hook = core.layers[-1].register_forward_hook(
+        lambda mod, args, out: cap.__setitem__("h", out[0] if isinstance(out, tuple) else out))
+    try:
+        for k in range(0, len(pairs), batch):
+            chunk = pairs[k:k + batch]
+            n = max(len(a) + len(b) for a, b, _ in chunk)
+            ids = torch.tensor([a + b + [0] * (n - len(a) - len(b)) for a, b, _ in chunk])   # right pad: causal
+            hs = list(core(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states)
+            hs[-1] = cap.pop("h")                   # pre-norm output of the last layer
+            for j, (a, b, s) in enumerate(chunk):
+                sl = slice(len(a) + s.start, len(a) + s.stop)
+                v = torch.stack([h[j, sl].float().cpu().sum(0) for h in hs])
+                sums = v if sums is None else sums + v
+                count += s.stop - s.start
+    finally:
+        hook.remove()
     return sums / count
 
 

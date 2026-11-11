@@ -46,3 +46,25 @@ and that this does not count against it (generations unchanged). Validity check 
 on dev, otherwise the judge is unusable and the study stops. Result: base 9/10 (valid); 0.125 10/10, 0.25 10/10,
 0.5 8/10, 1.0 0/10 (2.0 and 4.0 degenerate) -> rule picks **0.25**. Judge-v1/v2 files kept in lab/runs/happy/judge_v*/.
 C1-C5 unchanged; the outcome is reported as "after two measurement fixes".
+
+## Repeat with the corrected op (written 2026-11-11, before re-deriving the vector; user: "si, adelante")
+**Why.** `contrast_vector.layer_means` took transformers' `hidden_states[-1]`, which is *after* the final norm, so
+direction.31 of `happy.gguf` was the norm's rescaling, not a residual increment (norm 38.6 against a median of 3.1;
+results 45.2). The op now records the last layer's output before the norm (test
+`test_last_row_is_the_residual_before_the_final_norm`). Does the §43.13 pass survive without that layer artifact?
+
+**Same everything else:** pairs `lab/runs/happy/pairs/` (not regenerated), `programs/happy_vector_v2.wspl` ->
+`hf_cache/cvec/happy_v2.gguf` + placebo seed 2026; base A0 Q6_K; dev grid 0.125-4, rule "largest with >= 9/10
+coherent"; judge MiMo as fixed by the two amendments, valid only if the base gets >= 9/10 on dev; test 40: base, vector,
+placebo; C1-C5 unchanged (C5 against the base's 9/48). Runs in `lab/runs/happy_v2/` (HAPPY_RUNS); §43.13's files stay.
+
+**Mechanical checks (before any generation):** direction.1..30 of happy_v2 equal those of happy.gguf (max abs
+difference < 1e-3 of their norm: only the last row of D changed); direction.31's norm is reported old vs new. The
+regenerated `test_base` must be identical to §43.13's (greedy, same server): a second check that nothing else moved.
+
+**Reading.** Pass -> §43.13 stands with the corrected op. Fail -> §43.13's pass depended on the artifact layer and is
+marked so. Prediction (ours): passes; the chosen scale may be higher (the new direction.31 is smaller).
+
+**Not in this repeat:** the "conclude" vector `hf_cache/cc/cc.gguf` (§43.19-21, §43.25) has the same flaw (direction.31
+13.2 against 9.1 at layer 30, median 1.9). Repeating it means re-deriving cc and re-running dev and sealed evals; a
+separate decision for the user.

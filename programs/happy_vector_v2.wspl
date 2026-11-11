@@ -1,0 +1,3 @@
+experiment happy_vector_v2:
+steps:
+    step contrast_vector model=hf_cache/qwen35-9b-hf pos=lab/runs/happy/pairs/pos.jsonl neg=lab/runs/happy/pairs/neg.jsonl out=hf_cache/cvec/happy_v2.gguf placebo=2026

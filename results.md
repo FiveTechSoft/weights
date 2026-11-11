@@ -1896,7 +1896,7 @@ coherente: `likely` (98 %) → transfiere. El conjunto sellado (§ abajo) no se 
 set de desarrollo, con sha256 comprobado (`engine/sealed_set.py`, regla en `lab/probes/sealed/README.md`). Solo para
 confirmar, una vez, un brazo que ya haya pasado su criterio.
 
-### 43.13 Felicidad con el op `contrast_vector`: pasa, tras dos arreglos del juez (2026-11-09)
+### 43.13 Felicidad con el op `contrast_vector`: pasa, tras dos arreglos del juez (2026-11-09) — [rev 2026-11-11] solo con el op antiguo: con la capa 31 corregida FALLA C4/C5, §45.3
 Plan fijado antes de correr: `lab/probes/happy/PLAN.md` (C1 tono +1.0 y p < 0.01; C2 léxico +2/100 palabras y
 p < 0.01; C3 placebo tono < +0.5; C4 coherentes ≥ 36/40; C5 GSM8K no baja más de 2). Base Qwen3.5-9B (Q6_K propio A0),
 sin prompt de sistema, voraz, 200 tokens. Pares: 70 preguntas de entrenamiento contestadas por la propia base con
@@ -2379,3 +2379,32 @@ identidad del token); placebo = `port` con la misma norma por capa en direccione
 - Límites: un juez (MiMo) que no es fiable en absoluto con la 0.8B; coherencia solo "no peor que la base"; una
   dirección de estilo, no una capacidad; textos escritos por la 9B. Siguiente forma útil: una dirección que la 0.8B
   sí pueda mover un punto (o un juez validado para la 0.8B) antes de repetir; y corregir el op y repetir §43.13.
+
+### 45.3 Repetición de §43.13 (felicidad, 9B) con el op `contrast_vector` corregido: FALLA en C4 y C5 (2026-11-11)
+Corrección: `layer_means` toma la salida de la última capa *antes* de la norma final (transformers guarda
+`hidden_states[-1]` después; test `test_last_row_is_the_residual_before_the_final_norm`). Plan: sección "Repeat with
+the corrected op" de `lab/probes/happy/PLAN.md`, escrita antes de re-derivar. Mismos pares, base A0 Q6_K, juez, rejilla y
+criterios que §43.13. Datos `lab/runs/happy_v2/`, vector `hf_cache/cvec/happy_v2.gguf`.
+
+- **Comprobaciones mecánicas:** direction.1..30 idénticas a las de `happy.gguf` (diferencia 0.0); solo cambia la 31:
+  norma 38.6 → **48.7**, coseno 0.70 con la antigua. La base regenera las 40 respuestas de prueba idénticas a §43.13
+  (40/40). En la 0.8B (CPU, mismos pares) el último incremento pasa de 44.9 a 2.46 (resto ≤ 0.91): allí el artefacto
+  inflaba; en la 9B la norma final *encogía* un salto real y además lo giraba.
+- Juez válido (base 9/10 en desarrollo); la regla elige otra vez **0.25** (10/10 coherentes; 0.5 cae a 5/10).
+
+| prueba (40) | tono | léxico /100 | coherentes | GSM8K rápido (48) |
+|---|---|---|---|---|
+| base | 2.83 | 0.27 | 39 | 9 |
+| vector v2 ×0.25 | 3.90 (+1.07, 24/0, p 1·10⁻⁷) | 3.16 (+2.89, p 7·10⁻¹²) | **34** | **5** |
+| placebo ×0.25 | 2.88 (+0.05) | 0.25 | 39 | - |
+| (§43.13, op antiguo) | 3.90 (+1.07) | 2.63 (+2.36) | 37 | 7 |
+
+- **Veredicto: FALLA** (C1-C3 pasan; C4 34 < 36; C5 5 frente a 9, más de 2 por debajo). Segunda comprobación: el signo
+  y el p del tono recalculados desde las filas dan lo mismo.
+- **Lectura:** el efecto de tono es idéntico (+1.07) y el léxico algo mayor, pero con la capa 31 corregida el vector
+  daña más (5 incoherentes más que la base, 4 GSM8K menos). El pase de §43.13 dependía en parte de la capa 31 errónea,
+  que empujaba *menos* y en otra dirección en la última capa: **§43.13 queda marcado como "pasa solo con el op
+  antiguo"**. La ventana útil, ya estrecha en §43.13, aquí no existe en la rejilla fijada (0.125: 8/10 en desarrollo).
+- Predicción ("pasa; escala mayor porque la 31 se encoge") falla en las dos partes.
+- **Pendiente, decisión del usuario:** el vector "concluir" `hf_cache/cc/cc.gguf` (§43.19-21, §43.25) tiene el mismo
+  fallo (direction.31 13.2 frente a 9.1 en la 30); repetirlo exige re-derivar y repetir desarrollo y sellado.
