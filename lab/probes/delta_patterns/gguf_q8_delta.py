@@ -9,6 +9,10 @@ every row the fine-tune did not touch. Per tensor, on one block of `rows` middle
 Two Q8_0 recipes are tried per block (gguf-py numpy = convert_hf_to_gguf --outtype q8_0, and the C reference
 x * (1/d)); the one matching more blocks is used, and the counts are reported.
 
+Limit: only Q8_0 and BF16 tensors are read (others are reported as skipped). K-quants, IQ types and imatrix /
+"dynamic" GGUFs (per-tensor mixed types, importance-weighted rounding) are not reproducible from the base this way,
+so untouched rows would not come out byte-identical and the method does not apply to them.
+
 usage: python gguf_q8_delta.py <gguf url> <base repo> <out.json> [--rows 128] [--layers 0-63]
 """
 import argparse
