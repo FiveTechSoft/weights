@@ -323,3 +323,92 @@ amounts without the full training. Lane everywhere below = X basis, r = 20, from
 
 **Caveat carried over:** G2 missed (+23 points). Recovery within ±0.1 of a threshold is reported as inconclusive.
 **Order:** H6f-a (≈15 min/seed), then the lr probe, then H6f-b (≈30-40 min per seed per arm).
+
+## Addendum 2026-11-11 e: H6g, the coefficients found with forward passes only (approved by the user 2026-11-11; no H6g code has run on the GPU)
+Drafted by the user's outside reviewer; reviewed and amended here before any run (amendments marked **[rev]**).
+
+**Why.** FOUNDATIONS T4b (split 2026-11-11) rests on one-shot or linear shortcuts (extrapolation, one gradient, a
+learned jump, sums, closed form). No iterative gradient-free search was tried. H6f-b showed that training the
+coefficients of ANY rank-20 basis learns most of the skill (random basis, mean R 0.63 at 200 steps), so the search
+space can be small and needs no trained seed.
+
+**What H6g can and cannot show.** It still optimizes on the 20 000 training products: it removes the backward pass,
+not the optimization. A pass narrows T4b to "no backward needed, at a cost of N× forwards"; it says nothing about
+writing a capability without data, and nothing about building a model from scratch. That forward-only fine-tuning
+works in general is known (MeZO, Malladi et al. 2023); what is measured here is the price for this skill and the
+size of the subspace it fits in.
+
+**Method (`lab/probes/h6/h6g.py`, tests in `tests/test_h6.py::TestH6g`).** Same parametrization as H6f-b:
+ΔW_n = U_n C_n, U_n fixed, C_n init 0, W_n = W0_n + U_n C_n written in place. Per step, on the batch the seed's data
+order gives (batch 40), SPSA with 8 pairs: z ~ N(0, I), s = (L(C + εz) − L(C − εz)) / 2ε, ĝ = mean(s·z). Then a
+normalized-SGD step (ĝ rescaled to unit RMS, so lr is the RMS move per coefficient) or an AdamW step fed with ĝ; one
+cosine schedule with 10 % warmup over the whole budget. No backward anywhere in the run.
+
+**Cost unit.** Example-forwards; a backward counts as two. B0 = 24 000 = the H6f-b reference (200 steps × 40 × 3).
+SPSA step = 640. Budgets 1×, 10×, 100× B0 (38, 375, 3 750 steps), evaluated on the way. At 100× the search sees 7.5
+epochs of the training split; the Adam reference saw 8 000 examples. The comparison is on compute, not on data.
+
+**Arms** (basis seeds as in h6f.py; d = number of coefficients, the gate prints the exact value):
+
+| arm | basis | r | matrices | d (approx.) | role |
+|---|---|---|---|---|---|
+| Z1 | random | 1 | `mlp.down_proj` only | 86 k | thesis, smallest space |
+| Z2 | random | 1 | all | 0.52 M | thesis |
+| Z3 | random | 20 | all | 10.4 M | thesis, same space as H6f-b |
+| BP1, BP2 | as Z1, Z2 | | | | backprop ceiling in the same basis, `--method bp --budget 1`, lr 1e-5 (H6f-b's) |
+| P | per finished arm | | | | placebo: Gaussian C with the arm's per-matrix norm, `placebo --tag` |
+
+Z3's ceiling already exists (H6f-b random basis, R 0.63 at 200 steps).
+**[rev] ZL (lane, diagnostic) dropped:** the trained H6 weights it needs (`hf_cache/h6/seed*/chunk10`) are no longer
+on disk (their evals in `lab/runs/h6` are). Re-training two seeds for a diagnostic arm is not worth the GPU time. The
+`--basis lane` code path stays but is not run.
+
+**Gate G3 (before any SPSA run, per arm, seed 1, `h6g.py gate`).** At C = 0, one batch, against the true coefficient
+gradient g (one backward, used only here), for ε ∈ {3e-5, 1e-4, 3e-4}:
+1. finite difference along g with a displacement of norm ε√d, divided by |g|: must be in [0.8, 1.25];
+2. cosine of the 512-pair SPSA estimate with g: at least half of its expected value √(N / (N + d + 1)).
+
+ε = the largest value that passes both. If none passes under bf16 autocast, repeat with `--dtype fp32` (the
+perturbation may be below bf16 resolution: **[rev]** with r = 1 a ΔW entry is ≈ ε·|u_i| ≈ 1e-4 × 0.03, far below the
+bf16 step of a weight near 0.02, ≈ 8e-5, so bf16 failing for Z1/Z2 is expected); if none passes in fp32 either, the
+arm is not run and that is the result. Evaluation always uses the common bf16 path of `eval_arith.py`.
+
+**[rev] Order (BP first: it is cheap and bounds what SPSA can reach).**
+1. BP1 and BP2 on seed 1 (200 steps each, as H6f-b). **An arm whose BP ceiling has R < 0.25 is not run with SPSA**:
+   it is reported as "the subspace does not hold the skill", which is itself the intrinsic-dimension result.
+2. G3 for the arms still in.
+3. Smoke: `run --budget 0.05 --probe` on Z1 (two steps) to check the model path and time one step.
+4. Selection, then Z1 on seed 1 → the other arms on seed 1. Seeds 2 and 3 only for arms with recovery ≥ 0.25 at 100×
+   on seed 1; an arm stopped there is a fail.
+
+**Selection (seed 1 dev only, `--probe`).** On Z1: optimizer ∈ {nsgd, adam} × lr ∈ {3e-6, 1e-5, 3e-5, 1e-4};
+highest dev accuracy, ties by the lower mean loss of the last 50 steps. The optimizer chosen on Z1 is used for every
+arm; Z2 and Z3 choose only lr on the same grid. Nothing else is searched (pairs, batch, schedule fixed).
+**[rev] Probe budget:** 10× if the smoke step time puts one 10× probe under 1 h; otherwise 1× (fixed rule, so the
+8 + 4 + 4 probes stay within a day of GPU).
+
+**Pass (per thesis arm Z1-Z3), at ≤ 100× B0:**
+1. recovery ≥ 0.5 on test_id, averaged over the three seeds;
+2. better than its placebo, exact McNemar p < 0.01 in each seed;
+3. retention NLL ≤ 1.331 (base 1.321 + 0.01) in each seed.
+
+Also reported: the recovery curve at 1× / 10× / 100×, ood_easy, ood_hard, coefficient norm, seconds, and the smallest
+budget at which the arm reaches its backprop ceiling's recovery (the cost ratio), if it does.
+Recovery within ±0.1 of the threshold is inconclusive (G2 caveat carried over).
+
+**Reading, fixed now.**
+- A thesis arm passes: T4b is reworded (no backward needed for this skill, at the measured cost ratio); next, the same
+  arm on a second task from the 9-task set.
+- All fail with G3 passed: the estimate is right and the budget is not enough; the curve goes to "Refuted / retired"
+  with the budget stated.
+- G3 fails in fp32 too: nothing is concluded about T4b.
+- By-product either way: BP1/BP2 give how small a random subspace still holds the skill (86 k / 0.52 M coefficients).
+
+**Prediction.** Drafter: Z3 fails (R < 0.1 at 100×); Z1 reaches R 0.1-0.4 at 100×, below the threshold, limited by
+what one random direction per `down_proj` can express; Z2 between the two. **[rev] Ours:** the same for Z3. BP1 R
+0.2-0.5 (one random direction per `down_proj` is little next to rank 20 everywhere); if BP1 < 0.25 Z1 is not run.
+Z2 the best SPSA arm, R 0.1-0.3 at 100×. No arm passes; T4b becomes a cost curve, not a refutation. Low confidence.
+
+**Verified when amended.** Pure pieces: 11 tests in `TestH6g` pass on this machine (46/46 in the file). The model path
+(`Task`, the three commands) has not run yet; the smoke step is its first test.
+**Queue:** after the cc08 retention chain, one GPU job at a time.

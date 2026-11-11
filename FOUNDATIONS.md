@@ -76,26 +76,55 @@ as of 2026-11-10.
 - **Would refute it.** A behaviour that a learned weight edit produces but no fixed vector at any scale approaches.
 - **Depends on it.** `engine/contrast_vector.py` (per-layer increments for llama.cpp), the scale grids in plans.
 
-## T4. Creating a capability without a donor (or without training) fails at the sizes we tried
-**Status: supported** for new capability (many pre-registered negatives). **Narrowed** (§43.18): efficiency at a
-fixed budget — closing in time — *can* be obtained without donor or training, confirmed on the sealed set.
+## T4. Creating a capability without a donor, or with a one-shot gradient-free shortcut, fails at the sizes we tried
+Two claims with different evidence (split 2026-11-11 after an outside review; before, the title mixed them).
+**Status: supported, narrow scope** — one model (0.8B), one task family (arithmetic), plus one 9B case. **Narrowed**
+(§43.18): efficiency at a fixed budget — closing in time — *can* be obtained without donor or training.
 
+**What counts as a "new capability" here (operational).** A task from a fixed bank where the base fails at any
+budget because the answer is direct (3-shot, no reasoning tokens): H6 `mul3x3` (base 28-30 %) and the H7 tasks that
+pass G1/G2 (§41.1). On reasoning benchmarks a gain is *not* a new capability unless the base also fails with a large
+budget (T2: at 32k tokens the base already solves MATH). The bank is arithmetic only; a second, non-arithmetic family
+is missing and is needed before "supported" means more than "supported for arithmetic on 0.8B".
+
+### T4a. Without a donor
+- **Claim.** No route that uses only the base (its own traces, its own directions, no stronger model's weights or
+  outputs) has created a new capability.
+- **Evidence.** The only donor-free route that passed anything is the "conclude" direction (§43.17-43.18), and it
+  creates no capability (see the exception below). Every other route had a donor: cf5/cf6 write MiMo's behaviour
+  (§43.10); transplants and LoRA come from fine-tunes (§43.8, §43.11-43.12).
+- **Would refute it.** A donor-free edit that passes a pre-registered criterion against a same-norm placebo on a task
+  of the bank above. A better donor does not bear on T4a; it bears on T1.
+
+### T4b. Without gradients, in one shot
 - **Claim.** The *where* of a learned change can be reused; the *how much* is built by the optimizer over the whole
-  training and is not available from shortcuts.
-- **Our evidence (0.8B, 9 arithmetic tasks).** A training's change lives in a narrow subspace shared across seeds;
-  rank 20 recovers most of it (§40.3). But: extrapolating early checkpoints fails (§40.2); one gradient fails (§40.4);
+  training and is not available from one-shot or linear shortcuts.
+- **Evidence (0.8B arithmetic).** A training's change lives in a narrow subspace shared across seeds; rank 20
+  recovers most of it (§40.3). But: extrapolating early checkpoints fails (§40.2); one gradient fails (§40.4);
   training only the lane's coefficients learns about as well as a *random* rank-20 basis (§40.6); a learned jump from
-  step k to 200 never beats stopping at k (0/7 tasks, §41.3); summing 7 task changes loses long arithmetic, TIES does
-  not help (§42.2-42.4). Closed-form synthesis of language models without gradients fails the gate (§30-§33).
-  On 9B, gradient-free closed-form writing of MiMo's behaviour reaches MATH 17/36 but its placebo 10/36 (§43.10); that
-  route is closed.
-- **The exception (§43.17-43.18).** Concept Country's "conclude" direction, read from the base's own finished traces
-  (last 48 tokens before `</think>` minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a control
-  vector ×1.0: sealed GSM8K 43 → 87/100, MATH 4 → 25/50 (gained/lost 46/2, 21/0; p < 1e-5, two graders each); the
-  same-norm random placebo falls *below* base (23/100, 2/50). It does not contradict the claim: it creates no knowledge,
-  it removes a completion obstacle (T2); with 32k tokens the base already solves MATH.
-- **Would refute it.** A gradient-free, donor-free edit that passes a pre-registered criterion against a same-norm
-  placebo on a capability the base does not have.
+  step k to 200 never beats stopping at k (0/7 tasks, §41.3; fitted on only 8 tasks per fold); summing 7 task changes
+  loses long arithmetic and TIES does not help (§42.2-42.4) — those changes were already rank-20 (ΔW = U·C), so
+  restricting rank does not remove the interference of a sum; pairs do sum (B1, median retention 0.89). Closed-form
+  synthesis of language models fails the gate (§30-§33). Caveat: H6's gate G2 was not met (+23 points, 30 asked, §40).
+- **9B, with a donor.** Closed-form writing of MiMo's behaviour into `down_proj` (cf5) reaches MATH 17/36 and GSM8K
+  25/48 and **beats its same-norm placebo** (10/36, 14/48; McNemar MATH 8/1 p = 0.039, GSM8K 12/1 p = 0.003; §43.10).
+  So it is a real but small effect, not a zero; the route was closed because its ceiling stays far below
+  distillation (27/36, 41/48) and the layer-by-layer linear fit, not the matrix written, sets that ceiling.
+- **Not tested yet: iterative search without gradients** (evolution strategies, SPSA / zero-order). Everything above is
+  one-shot or linear; §40.6 says almost any rank-20 subspace learns *with* Adam. Planned as H6g
+  (`lab/probes/delta_patterns/h6_plan.md` addendum e). If it passes, T4b stays true for one-shot shortcuts and the
+  thesis becomes "without backprop it can be done, at a cost of N× the forwards"; if it fails, its curve joins the
+  negatives.
+- **Would refute it.** A gradient-free edit that passes a pre-registered criterion against a same-norm placebo on a
+  task of the bank **and costs less compute than the equivalent training** (forwards per example, counting a backward
+  as 2 forwards). A gradient-free route that works only at a much higher cost narrows the claim, it does not refute it.
+
+### The exception (§43.17-43.18)
+Concept Country's "conclude" direction, read from the base's own finished traces (last 48 tokens before `</think>`
+minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a control vector ×1.0: sealed GSM8K 43 →
+87/100, MATH 4 → 25/50 (gained/lost 46/2, 21/0; p < 1e-5, two graders each); the same-norm random placebo falls
+*below* base (23/100, 2/50). It contradicts neither claim: it creates no knowledge, it removes a completion obstacle
+(T2); with 32k tokens the base already solves MATH.
 
 ## T5. Moving a behaviour does not make the behaviour good
 **Status: supported** (one clean case).

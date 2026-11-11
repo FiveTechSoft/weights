@@ -1,4 +1,5 @@
 """H6 stage 0 (lab/probes/delta_patterns/h6_plan.md): data splits and the per-chunk fingerprint."""
+import math
 import sys
 import unittest
 from pathlib import Path
@@ -347,6 +348,136 @@ class TestH6f(unittest.TestCase):
         self.assertAlmostEqual(h6f.lr_at(0, 200, 1e-4), 1e-4 / 20)
         self.assertAlmostEqual(h6f.lr_at(19, 200, 1e-4), 1e-4)
         self.assertLess(h6f.lr_at(199, 200, 1e-4), 1e-6)
+
+
+class TestH6g(unittest.TestCase):
+    """H6g (h6_plan.md addendum e): forward-only (SPSA) search of the coefficients, its gate and its accounting."""
+
+    def setUp(self):
+        self.g = torch.Generator().manual_seed(33)
+
+    def _linear(self, shapes):
+        G = {n: torch.randn(s, generator=self.g, dtype=torch.float64) for n, s in shapes.items()}
+        return G, (lambda C: sum(float((G[n] * C[n]).sum()) for n in G))
+
+    def test_spsa_cosine_matches_its_expected_value(self):
+        import h6g
+        G, loss = self._linear({"a": (4, 50), "b": (30, 10)})          # d = 500
+        C = {n: torch.zeros_like(v) for n, v in G.items()}
+        d = h6g.n_coef(C)
+        self.assertEqual(d, 500)
+        for pairs in (16, 256):
+            cos = [h6g.flat_cos(h6g.spsa(loss, C, 1e-3, pairs, self.g)[0], G) for _ in range(30)]
+            self.assertAlmostEqual(sum(cos) / len(cos), h6g.expected_cos(pairs, d), delta=0.03)
+
+    def test_spsa_is_unbiased(self):
+        import h6g
+        G, loss = self._linear({"a": (5, 8)})                          # d = 40
+        C = {"a": torch.zeros(5, 8, dtype=torch.float64)}
+        est, st = h6g.spsa(loss, C, 1e-3, 20000, self.g)
+        self.assertGreater(h6g.flat_cos(est, G), 0.99)
+        self.assertAlmostEqual(h6g.flat_norm(est) / h6g.flat_norm(G), 1.0, delta=0.05)
+        self.assertAlmostEqual(st["loss"], 0.0, places=9)               # symmetric pairs around C = 0
+        self.assertGreater(st["abs_diff"], 0)
+
+    def test_spsa_does_not_move_the_coefficients(self):
+        import h6g
+        G, loss = self._linear({"a": (3, 7)})
+        C = {"a": torch.randn(3, 7, generator=self.g, dtype=torch.float64)}
+        before = C["a"].clone()
+        h6g.spsa(loss, C, 1e-2, 4, self.g)
+        self.assertTrue(torch.equal(C["a"], before))
+
+    def test_directional_difference_is_the_gradient_norm_when_linear(self):
+        import h6g
+        G, loss = self._linear({"a": (6, 9), "b": (2, 5)})
+        C = {n: torch.zeros_like(v) for n, v in G.items()}
+        self.assertAlmostEqual(h6g.directional(loss, C, G, 0.3), h6g.flat_norm(G), places=8)
+
+    def test_directional_difference_drops_when_the_step_leaves_the_linear_range(self):
+        import h6g
+        G = {"a": torch.randn(4, 4, generator=self.g, dtype=torch.float64)}
+        loss = lambda C: math.tanh(float((G["a"] * C["a"]).sum()))      # noqa: E731
+        C = {"a": torch.zeros(4, 4, dtype=torch.float64)}
+        gn = h6g.flat_norm(G)
+        self.assertAlmostEqual(h6g.directional(loss, C, G, 1e-4 / gn) / gn, 1.0, places=6)
+        self.assertLess(h6g.directional(loss, C, G, 3.0 / gn) / gn, 0.5)
+
+    def test_normalized_sgd_moves_each_coefficient_by_lr_in_rms(self):
+        import h6g
+        C = {"a": torch.zeros(4, 10), "b": torch.zeros(20, 3)}
+        g = {"a": 5 * torch.randn(4, 10, generator=self.g), "b": 0.01 * torch.randn(20, 3, generator=self.g)}
+        h6g.nsgd_step(C, g, 1e-3)
+        self.assertAlmostEqual(h6g.flat_norm(C) / math.sqrt(h6g.n_coef(C)), 1e-3, places=8)
+        self.assertLess(h6g.flat_cos(C, g), -0.999)                     # against the estimate
+        h6g.nsgd_step(C, {n: torch.zeros_like(v) for n, v in g.items()}, 1e-3)   # zero estimate: no move, no nan
+        self.assertTrue(all(torch.isfinite(v).all() for v in C.values()))
+
+    def test_placebo_has_the_per_matrix_norm_and_another_direction(self):
+        import h6g
+        C = {"a": torch.randn(4, 100, generator=self.g), "b": 0.1 * torch.randn(100, 4, generator=self.g)}
+        P = h6g.placebo_like(C, seed=5)
+        for n in C:
+            self.assertAlmostEqual(float(P[n].norm()), float(C[n].norm()), places=4)
+        self.assertLess(abs(h6g.flat_cos(P, C)), 0.2)
+        self.assertTrue(torch.equal(h6g.placebo_like(C, seed=5)["a"], P["a"]))
+
+    def test_cost_and_evaluation_points(self):
+        import h6g
+        self.assertEqual(h6g.step_cost("spsa", pairs=8, batch=40), 640)
+        self.assertEqual(h6g.step_cost("bp", batch=40), 120)
+        self.assertEqual(h6g.eval_steps(1, h6g.step_cost("bp")), {200: 1})          # the H6f-b reference
+        at = h6g.eval_steps(100, h6g.step_cost("spsa"))
+        self.assertEqual(at, {38: 1, 375: 10, 3750: 100})
+        self.assertEqual(h6g.eval_steps(10, 640), {38: 1, 375: 10})
+
+    def test_select_and_tag(self):
+        import h6g
+        names = ["model.layers.0.mlp.down_proj.weight", "model.layers.0.mlp.up_proj.weight"]
+        self.assertEqual(h6g.select(names, None), names)
+        self.assertEqual(h6g.select(names, "mlp.down_proj"), names[:1])
+        self.assertEqual(h6g.run_tag("spsa", "nsgd", "random", 1, "mlp.down_proj", 2),
+                         "g_spsa_nsgd_random_r1_mlp.down_proj_seed2")
+        self.assertEqual(h6g.run_tag("bp", "nsgd", "random", 20, None, 1), "g_bp_adam_random_r20_all_seed1")
+
+    def test_gate_verdict_takes_the_largest_eps_that_passes(self):
+        import h6g
+        N = h6g.GATE_N[-1]
+
+        def row(eps, ratio, share):
+            return {"eps": eps, "ratio": ratio, "cos": {N: share * 0.01}, "expected": {N: 0.01}}
+        self.assertEqual(h6g.gate_verdict([row(3e-5, 1.0, 1.0), row(1e-4, 0.9, 0.8), row(3e-4, 0.5, 1.0)]), 1e-4)
+        self.assertEqual(h6g.gate_verdict([row(3e-5, 1.0, 0.2), row(1e-4, 1.4, 1.0)]), None)
+
+    def test_forward_only_search_learns_a_toy_matrix_in_a_random_basis(self):
+        """End to end without a model: W = W0 + U C, loss = |W X - Y|^2, target reachable inside the basis."""
+        import h6f
+        import h6g
+        import train
+        import transfer as tr
+        shape, r = (12, 30), 3
+        U = tr.random_basis(12, r, seed=4).double()
+        W0 = torch.randn(shape, generator=self.g, dtype=torch.float64)
+        X = torch.randn(30, 64, generator=self.g, dtype=torch.float64)
+        Cstar = 0.05 * torch.randn(h6f.coef_shape(shape, r), generator=self.g, dtype=torch.float64)
+        Y = (W0 + h6f.coef_apply(U, Cstar, shape)) @ X
+
+        def loss(C):
+            return float(((W0 + h6f.coef_apply(U, C["w"], shape)) @ X - Y).pow(2).mean())
+
+        for opt in ("nsgd", "adam"):
+            C = {"w": torch.nn.Parameter(torch.zeros_like(Cstar), requires_grad=False)}
+            adam = train.AdamW([C["w"]]) if opt == "adam" else None
+            start = loss(C)
+            for step in range(400):
+                est, _ = h6g.spsa(loss, C, 1e-4, 8, self.g)
+                lr = h6f.lr_at(step, 400, 2e-3)
+                if adam is None:
+                    h6g.nsgd_step(C, est, lr)
+                else:
+                    C["w"].grad = est["w"]
+                    adam.step(lr)
+            self.assertLess(loss(C), 0.2 * start, opt)
 
 
 if __name__ == "__main__":

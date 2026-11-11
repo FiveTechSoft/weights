@@ -1626,6 +1626,9 @@ NLL 1.313 (base 1.321). Con C casi ortogonales hay pocos conflictos de signo que
 una suma escalada, y el recorte quita información útil. Lo que falla al juntar 7 no es el signo sino la interferencia
 en la función (aritmética larga), que ni la suma ni TIES evitan.
 
+*Nota 2026-11-11:* los C sumados en §42.2-42.4 ya son de rango 20 (ΔW = U·C, base aleatoria compartida de H7). Restringir
+el rango quita la interferencia al **aprender** (§40.6), no al **sumar**: no queda ese hueco por probar.
+
 ## 43. Base contra mejorado (Qwen3.5-9B): la mejora en MATH es saber cerrar (2026-11-08)
 H9 se paró a petición del usuario a las 10:45 (solo terminó mul3x3: test en el paso 50 Cold 0.382, W_sum 0.406,
 W_rand 0.380; sin conclusión). Nuevo punto de partida: comparar la base con su mejorado, solo pruebas rápidas.
