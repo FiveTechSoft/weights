@@ -299,8 +299,7 @@ Rama `feat/wsp-synthesis` = `main` = 8649b8e, todo subido (GitHub Pages publica 
    - auditoría del README (e7e178a) y de docs/portal (8649b8e).
 4. **Abierto:**
    - por qué cambia `A_log` en las capas 6 y 14 de mimo, fara, neohorse y tmax (F26);
-   - 27B TURBO a ciegas (espera el OK del usuario);
-   - H4 causal;
+   - 27B TURBO a ciegas — HECHO y verificado (ver §4.0quater, abajo);   - H4 causal;
    - borrar a mano `hf_cache/dp_keep_dsv4_distill`.
 
 | # | Tarea | Estado |
@@ -319,7 +318,7 @@ Rama `feat/wsp-synthesis` = `main` = 8649b8e, todo subido (GitHub Pages publica 
 Ideas del driver (2026-11-06), por evaluar:
 - **Atlas de Δ (dataset de mejoras):** muchos derivados de un mismo base (Qwen3.5-9B) con metadatos, comportamiento medido con un solo protocolo (`lab/probes/model_compare/eval.py`) y firma de pesos (`sig_<name>.pt`). Usos para WSPLang: priors de dónde/cuánto editar por tipo de mejora; base de direcciones de mejora repetidas (SVD de subespacios apilados, no medias de Δ: los Δ son casi ortogonales) → op tipo `apply_improvement_basis` con procedencia `synthetic_transfer`; relación rasgos del Δ ↔ ganancia. Condición: el piloto de 7 modelos (C) debe mostrar que las direcciones compartidas no las comparte también el control Nyx-RP; luego 15-20 modelos y trasplante H4 contra edición aleatoria de la misma norma.
 
-- **Qwen3.8-27B TURBO — prueba forense ciega (anexo exploratorio, EN COLA tras los 9B).** Plan y predicciones: `lab/probes/delta_patterns/plan_turbo27b.md`.
+- **Qwen3.8-27B TURBO — prueba forense ciega: CERRADA 2026-11-11 (P1 pass / P2 fail / P3 pass), verificado por segundo método con `turbo27b_verify2.py`: Jaccard 0.7895, energy_top1 0.338, k90 mediana 13 con 24/60>16 (exacto), Spearman por tipo 0.9286 — todo concuerda.** Predicción ciega commiteada en 98b3dfc ANTES de abrir sealed/ (predicción: rank-1 extra en escritores residuales desde capa 26, rango 26-63; rango medido 26-55 → pass con el final errado como se declaró; P2 fail: ARA reparte 90% de la energía en ~13 direcciones, no en 1). Plan y predicciones: `lab/probes/delta_patterns/plan_turbo27b.md`; verificación: `turbo27b/sealed/verify2.{md,json}`.
   - Modelos (BF16, 851 tensores de texto, mismas formas): base `Qwen/Qwen3.8-27B`; etapa 1 `trohrbaugh/Qwen3.8-27B-heretic-ara` (Heretic ARA, su ficha documenta capas 26-56 de 64, KL 0.0535, rechazos 99→0/100); final `DavidAU/Qwen3.8-27B-TURBO-Fable-Cold-Fusion-735-882-Heretic-Uncensored-NM-DAU` (fusión + Heretic + curación + razonamiento; receta no publicada; el GGUF popular `...-NEO-CODER-MAX-MTP-GGUF` es su cuantización).
   - Mejoras declaradas por el autor: ARC-C 0.591→0.735 (Nightmedia, modo instruct), "pensamiento 1/2-1/10 de tokens, mediana ~2/3 menos" (sin medición publicada).
   - Ejecución: `turbo27b.py` (una pasada por streaming, ~162 GB de red, sin disco; arranca solo cuando existe `lab/runs/delta_patterns/sig_dsv4_heretic.done`; log `lab/runs/delta_patterns_turbo27b.log`; reanudable).

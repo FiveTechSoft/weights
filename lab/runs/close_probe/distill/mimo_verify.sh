@@ -18,11 +18,16 @@ up() { ok=0; for k in $(seq 1 60); do curl -s http://127.0.0.1:$PORT/health | gr
 serve() { nohup $S -m $B --lora "$1" --lora-init-without-apply -ngl 99 -c 32768 -np 6 -fa on --jinja --port $PORT >> $D/../ev_verify.server.log 2>&1 & SP=$!; up || { log "SERVER FAILED"; kill $SP; exit 1; }; }
 down() { kill $SP 2>/dev/null; sleep 5; }
 battery() { log "battery $2"; $P $F "$1" $PORT --guard --parallel 6 >> $LOG 2>&1 || { log "MATH FAILED $1"; exit 1; }; $P $F "$2" $PORT --bench gsm8k --guard --parallel 6 >> $LOG 2>&1 || { log "GSM FAILED"; exit 1; }; }
-gpu_free() { pgrep -x llama-server >/dev/null 2>&1; }
+gpu_free() { # nvidia-smi based: pgrep missed servers of other sessions (19:12 crash); memory+util for 2 probes
+  m=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1)
+  u=$(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | head -1)
+  [ "$m" -lt 2000 ] 2>/dev/null && [ "$u" -lt 10 ] 2>/dev/null
+}
 D=lab/runs/close_probe/distill
 
 log "start"
-while gpu_free; do sleep 90; done
+for k in 1 2; do gpu_free || sleep 120; done
+gpu_free || { while ! gpu_free; do sleep 300; done; }
 
 # A) distill3 re-verify
 if [ ! -f lab/runs/close_probe/fast/math_distill3_reverify.json ]; then
