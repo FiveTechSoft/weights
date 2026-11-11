@@ -110,11 +110,10 @@ is missing and is needed before "supported" means more than "supported for arith
   25/48 and **beats its same-norm placebo** (10/36, 14/48; McNemar MATH 8/1 p = 0.039, GSM8K 12/1 p = 0.003; §43.10).
   So it is a real but small effect, not a zero; the route was closed because its ceiling stays far below
   distillation (27/36, 41/48) and the layer-by-layer linear fit, not the matrix written, sets that ceiling.
-- **Not tested yet: iterative search without gradients** (evolution strategies, SPSA / zero-order). Everything above is
-  one-shot or linear; §40.6 says almost any rank-20 subspace learns *with* Adam. Planned as H6g
-  (`lab/probes/delta_patterns/h6_plan.md` addendum e). If it passes, T4b stays true for one-shot shortcuts and the
-  thesis becomes "without backprop it can be done, at a cost of N× the forwards"; if it fails, its curve joins the
-  negatives.
+- **Iterative search without gradients: not reachable here (H6g, §44.1).** The SPSA estimator matches the exact
+  gradient only at rank 1 in fp32 (rank 20 and all bf16 fail the ratio gate), and with exact backprop the rank-1
+  coefficients themselves stay below the bar (R 0.035 `down_proj`, 0.192 all; 0.25 needed), so no SPSA arm was run.
+  A few preconditioned closed-form writes per round (H6h, §44.2) also fail: R 0.01 / 0.08 / 0.04 against 0.25.
 - **Would refute it.** A gradient-free edit that passes a pre-registered criterion against a same-norm placebo on a
   task of the bank **and costs less compute than the equivalent training** (forwards per example, counting a backward
   as 2 forwards). A gradient-free route that works only at a much higher cost narrows the claim, it does not refute it.

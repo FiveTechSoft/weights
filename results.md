@@ -2228,3 +2228,79 @@ marca), puntuación en las impares (y la condición "última capa"). CPU, 35 min
   la escritura de un token concreto, y no en la última capa (allí las columnas ya se parecen al unembedding).
 - La primera corrida murió a las 07:21 sin traza, con el disco C: al 100 % (1.6 GB libres al revisarlo); repetida
   tras liberar disco, terminó.
+
+### 43.25 El op `compile_control_vector` reproduce §43.19 desde un programa `.wspl`: ACEPTADO (2026-11-11)
+Plan `lab/probes/cc_weights/OP_PLAN.md` (criterios fijados antes de correr). Programa
+`programs/cc_compile_repro.wspl` (modelo `hf_cache/qwen35-9b-hf`, vector `cc.gguf`, placebo `cc.placebo2026.gguf`,
+calib `lab/runs/cc/traces.jsonl`, base `hf_cache/h4/A0-Q6_K.gguf`). Comprobación `lab/probes/cc_weights/op_accept.py`
+→ `lab/runs/cc_weights/op_accept.json` (informe del op copiado en `op_report.json/md`).
+
+| criterio | fijado | sale |
+|---|---|---|
+| G0 vector, mediana / peor capa | 0.032 ± 0.003 / 0.043 ± 0.005 | 0.0318 / 0.0435 |
+| G0 placebo, mediana / peor capa | 0.032 / 0.047 | 0.0318 / 0.0470 |
+| merge, cos(escrito, ΔW) mínimo | 0.83 ± 0.02 | 0.831 |
+| merge, error relativo mediano | 0.47 ± 0.02 | 0.475 |
+| u_N frente a `cc_weights/vec/fit.pt` (segundo método) | cos ≥ 0.999 | ≥ 0.99999 en todas |
+| `ffn_down` frente a `cc_merged-Q6_K.gguf` | byte a byte | **31/31 capas idénticas** |
+
+- El GGUF fusionado que escribe el op es byte a byte el ya evaluado en §43.19/§43.21, así que no se repite ningún
+  benchmark.
+- La base `A0-Q6_K.gguf` se había borrado con `h4`; reconstruida con la receta original (convert bf16 +
+  `llama-quantize` Q6_K) y comprobada idéntica en todos los tensores no editados de `cc_merged`
+  (`a0_rebuild_check.json`) antes de correr el op.
+- La copia `hf_cache/cc_op/` (duplicado, ~14 GB) se borró tras la aceptación, con permiso del usuario.
+
+### 43.26 Forense de dos Qwen3.8-27B sin censura (pregunta de X, 2026-11-11)
+- **Huihui-Qwen3.8-27B-abliterated** (`model_report`, safetensors frente a la base): abliteration de libro. Rango 1,
+  una sola dirección global, solo matrices que escriben al residuo, capas 17-51, cambio relativo ~2.1 %
+  (`lab/runs/model_report/huihui_qwen38_27b.md`).
+- **HauhauCS Qwen3.8-27B Aggressive** (solo GGUF Q8_K_P): leído con un diff nuevo por re-cuantización Q8_0
+  (`lab/probes/delta_patterns/gguf_q8_delta.py`, rangos HTTP, sin descargar). Las filas sin tocar reproducen los
+  bytes Q8_0 publicados, lo que valida el método; `ssm_out` necesita deshacer el reordenado de cabezas de valor del
+  conversor. Resultado (`hauhau_qwen38_27b_q8delta.json`): `ffn_down` 16/64 capas (24-40, 2.2 %, top1 0.85 frente a
+  0.90 si fuese rango 1), `o_proj` 6/16 (19-43, **6.9 %**), `ssm_out` 13/48 (28-45), `ffn_up` 7/64 (45-53, rango 1),
+  `attn_v` intacto. |cos| mediano entre direcciones 0.42: **una dirección por capa**, no global, más una edición de
+  `ffn_up` que la ablación direccional no hace.
+
+## 44. H6g y H6h: entrenar sin backward, o con pocas escrituras de forma cerrada: ambos negativos (2026-11-11)
+
+### 44.1 H6g (addendum e): se cierra sin correr SPSA
+- **Puertas del estimador** (SPSA frente a gradiente exacto, razón en [0.8, 1.25]): rango 1 `down_proj` fp32 pasa
+  (ε 3e-4), rango 1 todas las matrices fp32 pasa (ε 1e-4); rango 20 todas falla en bf16 y en fp32 (razón ≈ 0.24 o
+  menos); en bf16 fallan todas.
+- **Techos con backprop** (Adam, mismos coeficientes, presupuesto 1.0): BP1 (`down_proj`, r1) R = 0.035; BP2 (todas,
+  r1) R = 0.192. Ambos < 0.25, así que por la regla fijada ningún brazo SPSA se corre: ni con gradiente exacto llega.
+- Lectura para T4b: no hay brazo sin gradiente que pueda pasar en esta parametrización; la pregunta queda sin
+  respuesta positiva y sin coste que medir.
+
+### 44.2 H6h (addendum f): pocas escrituras precondicionadas: FALLA en los tres brazos
+Por ronda: K = 1 024 ejemplos, un forward + backward, dirección ridge (`cf_distill.solve`) o gradiente crudo, tamaño
+por búsqueda en dev; placebo de igual norma en el mismo proceso. Regla: semilla 1 con R < 0.25 → para.
+
+| brazo | rondas aceptadas | R | R placebo | p (frente a placebo) | NLL retención |
+|---|---|---|---|---|---|
+| W_all (ridge, todas) | 1 | 0.01 | −0.01 | 0.60 | 1.3209 |
+| G_all (gradiente, todas) | 4 | 0.08 | −0.04 | 0.018 | 1.3201 |
+| W_down (ridge, `down_proj`) | 1 | 0.04 | −0.02 | 0.13 | 1.3212 |
+
+- La retención no se mueve (base 1.3209), pero tampoco la tarea. El precondicionado ridge no ayuda: el gradiente
+  crudo es el único algo por encima de su placebo y se queda en un tercio del umbral.
+- Fallo de la primera prueba de humo, arreglado antes de los brazos: "Expected all tensors to be on the same device"
+  en `Task.add` (la solución de `solve` puede volver en CPU); se mueve D al dispositivo del parámetro.
+
+## 45. Puerta 1 del porte entre modelos: hay un mapa lineal entre las corrientes residuales de 9B y 0.8B: PASA (2026-11-11)
+Plan `lab/probes/act_map/PLAN.md` (revisor externo, aprobado, criterios fijos). Qwen3.5-9B y Qwen3.5-0.8B, mismo
+tokenizador (sha256 idéntico), GSM8K-train 1000-1239, 21 896 tokens de ajuste, 4 932 de test
+(`lab/runs/act_map/q9__q08.json`).
+
+| dirección | R² mediana | estados por encima del control de embeddings | R² barajado | coseno del contraste *late* ≥ 0.7 |
+|---|---|---|---|---|
+| 9B → 0.8B (la que importa) | **0.731** | 0.917 | −0.10 | 1.0 de los estados (cos ≈ 0.99) |
+| 0.8B → 9B | 0.555 | 0.938 | −0.03 | 1.0 |
+
+- Los cuatro criterios pasan en las dos direcciones → toca la puerta 2 (correr la 0.8B hasta el estado i, mapear y
+  seguir en la 9B; NLL frente a la 9B sola).
+- Cautela: el contraste *late* (último cuarto del texto frente al resto) puede llevar mucha información de posición,
+  y su coseno ≈ 0.99 en todos los estados es más alto de lo esperable; la puerta 2/3 debe usar un contraste de
+  contenido, no solo de posición.
