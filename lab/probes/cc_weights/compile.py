@@ -37,17 +37,17 @@ def read_vector(path):
     return {int(t.name.split(".")[1]): torch.tensor(np.array(t.data, dtype=np.float32)) for t in r.tensors}
 
 
-def sequences(tok):
-    rows = [json.loads(x) for x in TRACES.read_text(encoding="utf-8").splitlines() if x.strip()]
+def sequences(tok, traces_path=None, n_fit=N_FIT, max_len=MAX_LEN, split_seed=SPLIT_SEED):
+    rows = [json.loads(x) for x in (Path(traces_path or TRACES)).read_text(encoding="utf-8").splitlines() if x.strip()]
     seqs = []
     for r in rows:
         p = tok.apply_chat_template([{"role": "user", "content": r["prompt"]}], tokenize=False,
                                     add_generation_prompt=True, enable_thinking=True)
-        ids = tok(p + r["reasoning"].lstrip("\n"), add_special_tokens=False)["input_ids"][:MAX_LEN]
+        ids = tok(p + r["reasoning"].lstrip("\n"), add_special_tokens=False)["input_ids"][:max_len]
         seqs.append(ids)
     order = list(range(len(seqs)))
-    random.Random(SPLIT_SEED).shuffle(order)
-    return [seqs[i] for i in order[:N_FIT]], [seqs[i] for i in order[N_FIT:]]
+    random.Random(split_seed).shuffle(order)
+    return [seqs[i] for i in order[:n_fit]], [seqs[i] for i in order[n_fit:]]
 
 
 def _mv(x, dev):
@@ -60,7 +60,8 @@ def _mv(x, dev):
     return x
 
 
-def fit(vec_path, out):
+def fit(vec_path, out, base_hf=None, traces=None, lam=LAM, n_fit=N_FIT, max_len=MAX_LEN,
+        split_seed=SPLIT_SEED, device=None):
     import faulthandler
     faulthandler.enable()
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -70,12 +71,12 @@ def fit(vec_path, out):
         raise SystemExit(f"{out} exists")
     out.mkdir(parents=True)
     vecs = read_vector(vec_path)
-    tok = AutoTokenizer.from_pretrained(str(BASE_HF))
-    tr, ho = sequences(tok)
+    tok = AutoTokenizer.from_pretrained(str(base_hf or BASE_HF))
+    tr, ho = sequences(tok, traces, n_fit, max_len, split_seed)
     seqs = tr + ho
-    model = AutoModelForCausalLM.from_pretrained(str(BASE_HF), dtype=torch.bfloat16).eval()
+    model = AutoModelForCausalLM.from_pretrained(str(base_hf or BASE_HF), dtype=torch.bfloat16).eval()
     L = layers_of(model)
-    dev = "cuda"
+    dev = device or ("cuda" if torch.cuda.is_available() else "cpu")
     print(json.dumps({"fit_seqs": len(tr), "heldout_seqs": len(ho), "tokens": sum(map(len, seqs)),
                       "layers_edited": sorted(vecs)}), flush=True)
     kws, hs = [], []
@@ -148,13 +149,13 @@ def fit(vec_path, out):
         with open(out / "fit.jsonl", "a", encoding="utf-8") as f:
             f.write(json.dumps(rec) + "\n")
     torch.save({"u": U, "v": {l: vecs[l] for l in U}, "vector": str(vec_path)}, out / "fit.pt")
-    (out / "fit_summary.json").write_text(json.dumps({"vector": str(vec_path), "lam": LAM, "split_seed": SPLIT_SEED,
+    (out / "fit_summary.json").write_text(json.dumps({"vector": str(vec_path), "lam": lam, "split_seed": split_seed,
                                                       "fit_seqs": len(tr), "heldout_seqs": len(ho),
                                                       "layers": summ, "seconds": round(time.time() - t_all)},
                                                      indent=1))
 
 
-def lora(out):
+def lora(out, base_hf=None):
     import os
     import subprocess
     from safetensors.torch import save_file
@@ -172,21 +173,21 @@ def lora(out):
         {"peft_type": "LORA", "task_type": "CAUSAL_LM", "r": 1, "lora_alpha": 1, "lora_dropout": 0.0, "bias": "none",
          "target_modules": ["down_proj"], "fan_in_fan_out": False}, indent=1))
     cmd = [os.environ.get("WSP_CONVERT_PYTHON", sys.executable), os.environ["WSP_LORA_CONVERTER"], str(peft),
-           "--base", str(BASE_HF), "--outtype", "f32", "--outfile", str(out / "lora_r1.gguf")]
+           "--base", str(base_hf or BASE_HF), "--outtype", "f32", "--outfile", str(out / "lora_r1.gguf")]
     cp = subprocess.run(cmd, capture_output=True, text=True)
     if cp.returncode:
         raise SystemExit(cp.stderr[-1500:])
     print(json.dumps({"lora": str(out / "lora_r1.gguf")}))
 
 
-def merge(out, merged):
+def merge(out, merged, base_gguf=None):
     import gguf
     import wsp
     out, merged = Path(out), Path(merged)
     if merged.exists():
         raise SystemExit(f"{merged} exists")
     d = torch.load(out / "fit.pt")
-    r = gguf.GGUFReader(str(BASE_GGUF))
+    r = gguf.GGUFReader(str(base_gguf or BASE_GGUF))
     tm = {t.name: t for t in r.tensors}
     tmp = merged.with_suffix(".partial")
     shutil.copyfile(BASE_GGUF, tmp)

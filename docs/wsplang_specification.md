@@ -126,6 +126,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `assert_weyl` | writes weights | `wsplang_0.4_spec.md` |
 | `audit` | writes weights | `wsplang_0.2_spec.md` |
 | `compare` | read / report | `wsplang_0.2_spec.md` |
+| `compile_control_vector` | read / report | this file |
 | `compile_synthetic` | writes weights | `wsplang_0.7_spec.md` |
 | `contrast_vector` | read / report | this file |
 | `cov_imprint` | writes weights | `wsplang_0.5_spec.md` |
@@ -281,6 +282,21 @@ random directions, the control for "any push of this size".
 
 ```wspl
 step contrast_vector model=<hf dir> pos=<pos.jsonl> neg=<neg.jsonl> out=<vector.gguf> [placebo=<seed>] [max_resp=384]
+```
+
+### 5.8. `step compile_control_vector` (added 2026-11-11)
+A control vector (e.g. from `contrast_vector`) written into the weights: for each layer N it carries, a rank-1
+closed-form edit dW_N = v_N u_Nᵀ of `mlp.down_proj`, with u_N the ridge least-squares solution of uᵀx ≈ 1 over that
+layer's `down_proj` inputs on calibration traces (`{"prompt", "reasoning"}` jsonl, the model's own text), each layer
+fitted on the stream already edited below it. Every run also compiles a same-norm random placebo (given, or generated
+with `placebo_seed`). Gate G0 on held-out traces: median over layers of the per-layer median |uᵀx − 1| ≤ 0.5; if it
+fails, only the report is written. Then: rank-1 PEFT LoRA per arm (GGUF adapter too when `WSP_LORA_CONVERTER` is set)
+and, with `base_gguf=` (Q6_K `ffn_down` only), merged copies `merged-Q6_K.gguf` / `placebo_merged-Q6_K.gguf` in `out`.
+`out` must be a new directory outside the input model. The op does not run benchmarks: the effect is shown on a sealed
+set with the placebo arm, planned before the run (results §43.19-21). Plan: `lab/probes/cc_weights/OP_PLAN.md`.
+
+```wspl
+step compile_control_vector model=<hf dir> vector=<cv.gguf> calib=<traces.jsonl> out=<new dir> [placebo=<cv.gguf> | placebo_seed=2026] [base_gguf=<Q6_K gguf>] [lora=1] [lam=1e-3] [heldout=28] [seed=20261111] [max_len=4096] [template=think|plain] [device=cuda|cpu]
 ```
 
 ---
