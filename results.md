@@ -2174,3 +2174,26 @@ Plan `lab/probes/cc08/PLAN.md` (fijado antes de correr). Base 0.8B Q6_K, razonam
   leer. Consecuencia para portar subespacios: la puerta 3 (llevar "concluir" del 9B al 0.8B) no tiene una dirección
   re-derivada en destino con la que compararse; haría falta otra dirección que el 0.8B sí tenga, o leer los cierres
   con un tope mucho mayor (otro plan).
+
+### 43.23 cc_neurons fase A: la dirección "concluir" no vive en pocas neuronas (PARCIAL; sin fase B) (2026-11-11)
+Plan `lab/probes/cc_neurons/PLAN.md` (fijado antes de correr). Cada incremento v_N del vector de §43.17 se parte de
+forma exacta en atención + W_N·Δa_N (MLP); k₅₀ = neuronas del MLP (columnas de `down_proj`) que llevan la mitad de su
+contribución; nulo = el mismo cálculo con los tokens repartidos al azar en dos grupos del mismo tamaño (semilla 2026).
+- **Comprobaciones:** coseno con el `cc.gguf` ≥ 0.9999998 en todas las capas; error de aditividad ≤ 0.0024;
+  linealidad (W·Δa frente a Δmlp) ≤ 0.0007. La descomposición es exacta.
+- Capas que llevan ≥ 70 % de la energía: 22, 24, 26, 28-31. Parte MLP del incremento 0.56-0.85.
+
+| capa | 22 | 24 | 26 | 28 | 29 | 30 | 31 | mediana |
+|---|---|---|---|---|---|---|---|---|
+| k₅₀ | 119 | 214 | **4** | 166 | 123 | 93 | 38 | **119** |
+| k₅₀ nulo | 391 | 367 | 178 | 128 | 46 | 96 | 46 | **128** |
+| k₉₀ | 969 | 1 205 | 489 | 1 251 | 1 092 | 800 | 268 | |
+
+- **Regla:** concentrada si mediana k₅₀ ≤ 32 y ≤ nulo/5; repartida si ≥ 512; si no, parcial. 119 frente a 128 del
+  nulo: **PARCIAL**, sin fase B. Segunda comprobación: la mediana recalculada desde las filas por capa da 119 y 128.
+- **Lectura:** en conjunto la dirección necesita ~10² neuronas por capa para la mitad de su parte MLP, lo mismo que una
+  partición aleatoria de los mismos tokens: no hay un "puñado de neuronas de concluir"; el término denso de rango 1
+  (§43.19) es el objeto adecuado. **Excepción descriptiva (no criterio):** en la capa 26, 4 neuronas llevan la mitad
+  (nulo 178) y la parte MLP es el 85 % del incremento; es candidata a una lectura de neuronas aparte, sin plan aún.
+- La primera corrida en cadena murió al arrancar sin traza (06:46, justo al cerrarse el servidor del sellado; RAM);
+  repetida a solas con el mismo código, terminó (`rerun.log`, 26 min).
