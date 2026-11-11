@@ -172,6 +172,12 @@ es débil con este n: no separa "transfiere la mitad" de "no transfiere".
 El criterio de éxito queda demostrado en ambos lados (Jackrong: verdict funciona; Leo: improbable→no hace nada) y ya
 confirma el dato de fondo: las capacidades transferibles por este op son las de rango bajo. Este op es el producto.
 Se anota y cierra; viene el experimento único 4.0sexto.
+**mimo_verify (2026-11-11 07:52, re-evaluación fresca sin tocar nada):** `distill3_mimo_r16` (trasplante de
+conducta MiMo→base) reproduce en servidor limpio: GSM8K 22/28 reward 0.760, MATH 10/16 reward 0.600, retención
+1.00 — y el op nativo sobre el delta COMPLETO de MiMo (`mimo_r64`, delta_to_lora r64) confirma "no cabe": MATH
+1/16 (0.000), GSM8K 0.213. Ambos veredictos del op siguen siendo ciertos dos días después
+(`lab/runs/close_probe/distill/mimo_verify.log`); cadena endurecida con gate GPU por memoria+utilidad
+(tras el crash de contención del 9-nov).
 ### 4.0sexto PRIORIDAD (decisión del driver, 2026-11-09 ~09:40): UN SOLO EXPERIMENTO — vector de tarea + SVD selectivo en el 0.8B
 
 Cambio de dirección: no se abren ni retoman más líneas hasta veredicto (dspine, subespacios, Behavior Extraction y
