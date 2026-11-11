@@ -350,10 +350,12 @@
           inference.
         </p>
         <p style="color: var(--text-muted); line-height: 1.6;">
-          <strong>Compiled into the weights</strong> (results &sect;43.19, dev so far): the same vector written into <code>down_proj</code> of
+          <strong>Compiled into the weights</strong> (results &sect;43.19 dev, &sect;43.21 sealed): the same vector written into <code>down_proj</code> of
           31 layers as a closed-form rank-1 edit per layer (no gradients, same matrices and shapes), merged into the Q6_K file and run
           with no flags: dev GSM8K 50 &rarr; <strong>87</strong>/100, MATH 6 &rarr; <strong>34</strong>/50, not different from the control
-          vector (84 / 32; p 0.45 / 0.73). The same write in a random direction hurts (28 / 6). A fresh sealed set is next.
+          vector (84 / 32; p 0.45 / 0.73). The same write in a random direction hurts (28 / 6). <strong>Confirmed on a second sealed set</strong> made before the run:
+          GSM8K 46 &rarr; <strong>89</strong>/100, MATH 7 &rarr; <strong>26</strong>/50 (gained/lost 43/0 and 19/0, two graders each), as the
+          vector (90, 22); the merged random-direction placebo falls below base (30, 4). HumanEval first 20: 19/20 merged, 20/20 base.
         </p>
         <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Second use: a mood as a control vector, no weight change (results &sect;43.13)</h3>
         <p style="color: var(--text-muted); line-height: 1.6;">

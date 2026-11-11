@@ -104,8 +104,8 @@ una sola vez antes de anunciarse; regla en `lab/probes/sealed/README.md`.
 - **2026-11-10, réplica "cc" sin donante — CONFIRMADA en el sellado (results §43.17-43.18):** dev GSM8K 50 → 84,
   MATH 6 → 32; sellado 43 → 87/100, 4 → 25/50; placebo de misma norma por debajo de la base (23 / 2). **Compilada en `down_proj`
   (rango 1 por capa en forma cerrada, fusionada en Q6_K, sin flags): PASA en dev (§43.19)** — GSM8K 50 → 87, MATH 6 → 34,
-  igual que el vector (p 0.45 / 0.73), placebo compilado 28 / 6. Siguiente: sellado 2 (`data/sealed_confirm2.json`,
-  `chain_sealed_ccw.sh`, encadenado tras el forense de Turbo). Plan original `lab/probes/cc/PLAN.md`: dirección "concluir"
+  igual que el vector (p 0.45 / 0.73), placebo compilado 28 / 6. **Sellado 2 CONFIRMA (§43.21):** GSM8K 46 → 89, MATH 7 → 26,
+  placebo fusionado 30 / 4; HumanEval-20 19/20 (vector 15/20). Re-derivar en 0.8B falla: 1/256 trazas cierran (§43.22). Plan original `lab/probes/cc/PLAN.md`: dirección "concluir"
   sacada de las propias trazas de la base (últimos 48 tokens antes de `</think>` menos el resto del pensamiento), op
   `contrast_vector` ampliado con filas `think`/`focus` (posición), aplicada como vector de control; criba de escala en
   ítems no usados, dev con placebo de misma norma; si pasa, conjunto sellado y luego compilar en `down_proj`.

@@ -2124,3 +2124,53 @@ tensores de texto de base, `heretic-ara` y TURBO (~9 h, solo estadísticas). Pre
   un fine-tune normal, pero cuentan de menos su rango (en una suma con un fine-tune grande y difuso solo asoma la
   primera dirección) y no ven su final si otro cambio sigue más allá. Junto con concept27b (§ forense, 85116d8,
   Jaccard 1.0 cuando la edición está sola), el límite es la mezcla, no la herramienta.
+
+### 43.21 "Concluir" compilado en los pesos: CONFIRMADO en el conjunto sellado 2 (2026-11-11)
+Conjunto `data/sealed_confirm2.json` (100 GSM8K + 50 MATH-500, semilla 20261111, sha256 comprobado antes de correr,
+creado antes de esta corrida y disjunto de todo lo usado). Mismos cuatro brazos y criterios C1-C4 que §43.19, sin
+tocar nada tras dev. Q6_K, voraz, tope 2 048. Veredicto: `lab/runs/sealed_ccw/verdict.json`.
+
+| brazo | GSM8K /100 (g1 / último número) | MATH /50 (g1 / g2) | cortadas GSM8K / MATH | tokens medios GSM8K / MATH |
+|---|---|---|---|---|
+| base | 46 / 59 | 7 / 7 | 52 / 43 | 1 681 / 1 959 |
+| vector de control ×1.0 | 90 / 91 | 22 / 21 | 10 / 27 | 673 / 1 472 |
+| **fusionado Q6_K (sin flags)** | **89 / 92** | **26 / 25** | 8 / 22 | 689 / 1 456 |
+| placebo fusionado (misma norma, dirección aleatoria) | 30 / 46 | 4 / 4 | 70 / 46 | 1 824 / 1 988 |
+
+- **C1** fusionado vs base: GSM8K 43/0 (p = 2.3e-13) y 34/1 (p = 2.1e-9); MATH 19/0 (p = 3.8e-6) y 18/0 (p = 7.6e-6).
+- **C2** placebo no mejora: GSM8K 9/25 (p = 0.009, **peor** que la base), MATH 0/3.
+- **C3** sin daño en GSM8K. **C4** fusionado vs vector: GSM8K 5/6 (p = 1), MATH 6/2 (p = 0.29). **PASS.**
+- Segunda comprobación: los aciertos por brazo recontados desde los `.json` de cada brazo (acc × n) coinciden con
+  los de las tablas de McNemar del veredicto.
+- **Retención (informada, no criterio; `lab/runs/cc_weights/retention/`, cadena `chain_ccw_retention.sh`):**
+
+| brazo | perplejidad, `corpus.txt` (Alicia), 60 × 512 | HumanEval primeros 20 (cerradas / correctas) | tokens medianos |
+|---|---|---|---|
+| base | 1.142 ± 0.006 | 20 / 20 | 650 |
+| vector ×1.0 | **2.608 ± 0.038** | 19 / **15** | 201 |
+| fusionado Q6_K | 1.350 ± 0.011 | 20 / 19 | 471 |
+| placebo fusionado | 1.210 ± 0.007 | 20 / 20 | 666 |
+
+  - El vector en inferencia cuesta fuera de matemáticas: perplejidad ×2.3 y HumanEval 20 → 15 (respuestas 3× más
+    cortas). El fusionado cuesta mucho menos (×1.18, 19/20) con el mismo efecto en matemáticas. Coherente con la
+    fusión: Q6_K conserva la dirección (coseno mediano 0.895) pero pierde ≈ 47 % de la magnitud (error relativo
+    mediano 0.475, `vec/merge_summary.json`); la dosis efectiva del fusionado es menor y sigue bastando.
+  - Límite: la perplejidad de la base sobre Alicia es 1.14 (texto memorizado), así que mide sobre todo cuánto se
+    altera la reproducción de un texto conocido, no lenguaje general. HumanEval-20 es pequeño.
+- **Lectura:** la mejora de eficiencia de §43.17-43.18 queda escrita de forma permanente en el checkpoint, en forma
+  cerrada, sin gradientes ni donante, y se confirma en un conjunto nuevo; el placebo de la misma norma daña. Sigue
+  siendo eficiencia a presupuesto fijo (T2), no capacidad nueva: con 32 k tokens la base ya resuelve MATH. Un modelo,
+  un presupuesto, voraz.
+
+### 43.22 cc08: la dirección "concluir" no se puede re-derivar en Qwen3.5-0.8B (FALLA en el paso 1) (2026-11-11)
+Plan `lab/probes/cc08/PLAN.md` (fijado antes de correr). Base 0.8B Q6_K, razonamiento activo, voraz, tope 4 096, los
+128 ítems de descubrimiento del 9B y el fallback fijado (GSM8K train 64-191).
+- Trazas que cierran `</think>` dentro del tope: **1 de 256** (1 de 192 GSM8K, 0 de 64 MATH); mediana 4 096 tokens (todas
+  las demás cortadas). Dos recuentos: `rows1.json`/`rows2.json` del pipeline (1 fila) y `traces.jsonl` por `finish`
+  (1 `stop`, 255 `length`). Se pedían ≥ 30.
+- Regla del plan: **FALLA**, "no hay trazas de cierre de las que leer una dirección". No se corrió vector, criba ni dev.
+- **Lectura:** a 4 096 tokens el 0.8B casi nunca concluye (Hu et al., arXiv 2611.09382, ya vieron la base cortada en
+  111/128 en MATH). El método de §43.17 necesita ejemplos propios de cierre; en un modelo que no cierra no tiene qué
+  leer. Consecuencia para portar subespacios: la puerta 3 (llevar "concluir" del 9B al 0.8B) no tiene una dirección
+  re-derivada en destino con la que compararse; haría falta otra dirección que el 0.8B sí tenga, o leer los cierres
+  con un tope mucho mayor (otro plan).
