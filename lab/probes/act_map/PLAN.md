@@ -54,7 +54,7 @@ late states), and the CKA-best source tracks relative depth closely (|best − d
 - Same family and tokenizer. Another family needs token alignment, not written.
 - [rev] R² over all dimensions can be dominated by a few high-variance residual channels; a pass driven by them would
   say little about the rest. Check the per-dimension picture before reading a pass as "the spaces correspond".
-- [rev] **Gate 3 has no target yet:** cc08 (§43.22) could not re-derive "conclude" in the 0.8B (1/256 traces close),
+- [rev] **Gate 3 has no target yet** (see the gate 3 addendum: "happy" chosen): cc08 (§43.22) could not re-derive "conclude" in the 0.8B (1/256 traces close),
   so a ported "conclude" has nothing to be compared with in the destination. Gate 3 needs another direction the
   0.8B does have, or a different pair of models.
 
@@ -110,3 +110,67 @@ a gate 2 failure does not by itself kill gate 3, but then gate 3 needs its own c
 
 **Cost.** GPU, one job: the 9B streams layer by layer (12 GB card), ~13 forwards over 40 × 128 tokens per
 direction; the 0.8B fits. Code `lab/probes/act_map/stitch.py`, tests in `tests/test_act_map.py` first.
+
+## Gate 3 (addendum 2026-11-11, written after gate 2 passed and before any gate 3 code; user: "a")
+**Question.** Can a steering direction measured in the 9B be written into the 0.8B through the gate 1 maps and steer
+it, about as well as the 0.8B's own direction for the same thing? Direction: **"happy"** (results §43.13: passes on the
+9B with judge and lexicon agreeing, placebo flat). "Conclude" is out: the 0.8B has no own version to compare with
+(§43.22).
+
+**Vectors (all from the same 70 pair texts, `lab/runs/happy/pairs/{pos,neg}.jsonl`, written by the 9B in §43.13;
+response tokens averaged per hidden state, as `engine/contrast_vector.py`):**
+- `own`: the 0.8B's own contrast D₀.₈(j), j = 0..24, from its own forwards over those texts (the reference). Same
+  texts in both models, so own and ported measure the same token-level difference; the 0.8B's own *answers* are not
+  used (stated limit, below).
+- `port`: the 9B's contrast D₉(i) (recomputed: §43.13 stored only increments from layer 1, which lose D(0), D(1)),
+  mapped per target state j with the saved gate 1 map from its CKA-best source state: D_port(j) = D₉(i(j)) · W_j
+  (intercepts cancel in a difference). Not refitted on chat text: the maps were fitted on GSM8K raw text, so this
+  also tests whether they hold out of their domain.
+- `embport`: control, the 9B's **embedding** contrast D₉(0) mapped through an embeddings ridge per target state j
+  (same rule as gate 2's `emb` arm, gate 1 fit split): what token identity alone carries across. Happy text differs
+  from neutral largely in word choice, so this control can be strong; it separates "the map carries context" from
+  "the map carries which words were used".
+- `placebo`: `port` with the same norm per layer in random directions (`contrast_vector.placebo`, seed 2026).
+All become per-layer increments (`contrast_vector.increments`) in a llama.cpp control vector for the 0.8B Q6_K
+(`hf_cache/qwen35-08b-gguf`).
+
+**Step 0 (forwards only, no generation; reported, not a criterion).** Cosine per target state j between D_port(j)
+and D₀.₈(j), and between D_embport(j) and D₀.₈(j). The gate 1 analogue on chat text.
+
+**Step 1 (behavior), protocol of §43.13 unchanged** except the model: 0.8B Q6_K, no system prompt, thinking off,
+greedy, 200 tokens; the same 10 dev and 40 test prompts; judge MiMo (tone 1-5, coherent yes/no, verdict read after
+`</think>`, truncation announced); second method the same lexicon (positive-affect words + "!" per 100 words).
+- Judge validity on the 0.8B, fixed now: base coherent in ≥ 9/10 dev. Otherwise the judge is not valid for this model
+  and gate 3 stops before reading any arm (no retuning of the judge on test).
+- Scale per arm (`own`, `port`, `embport`) chosen on dev by the §43.13 rule: largest of 0.125 / 0.25 / 0.5 / 1 / 2 / 4
+  with ≥ 9/10 coherent; none → that arm FAILS. `placebo` runs at `port`'s scale.
+- Test arms: base, own, port, embport, placebo.
+
+**Reference first.** `own` must pass §43.13's C1-C4 on the 0.8B (tone +1.0 over base with sign p < 0.01; lexicon
++2/100 words with p < 0.01; coherent ≥ 36/40). If it does not, the 0.8B has no usable "happy" direction of its own,
+there is nothing to compare with, and gate 3 is **not decided** (written as such, not as a fail).
+
+**Pass rule for `port` (fixed now; all must hold):**
+- P1 tone ≥ +1.0 over base, paired sign test p < 0.01;
+- P2 lexicon ≥ +2 per 100 words over base, p < 0.01 (second method agrees);
+- P3 `placebo` tone gain < +0.5;
+- P4 coherent ≥ 36/40;
+- P5 `port` tone gain ≥ 0.5 × `own` tone gain (it does at least half of what the native direction does).
+P1-P5 → **gate 3 passes**: a direction measured in one model steers another of the same family through the map.
+Then, read separately, P6: `port` tone gain exceeds `embport`'s by ≥ +0.5. P6 fails → the transfer works but token
+identity alone already carries it; "the map carries context" is then not shown for this direction.
+Reported, not criteria: GSM8K fast set (48) with each vector against the 0.8B base, cut answers, step 0 cosines.
+
+**Prediction (ours, low confidence).** Step 0: median cosine port/own ≥ 0.7; embport close to it in early states and
+lower after ½ depth. `own` passes. `port` passes P1-P5 at a smaller scale than `own`. P6 fails: "happy" is mostly
+words.
+
+**Limits.** One direction, one model pair, one family and tokenizer. Tone is not a capability. Own and ported are
+measured on 9B-written texts; the 0.8B answering with a "happy" system prompt might give another direction (not
+tested). Maps fitted on 128-token GSM8K text, used on chat responses up to 384 tokens. llama.cpp steers layers 1..23
+only (layer 0 cannot be steered), same for every arm.
+
+**Cost.** Forwards: the 9B streams over 140 texts once, the 0.8B fits (minutes). Generation: 0.8B llama-server, dev
+3 arms × 6 scales × 10 + base 10, test 5 × 40; judge MiMo over ~420 answers; one GPU job at a time, chained by
+script. Code `lab/probes/act_map/port.py` (vectors, step 0) with tests first; `happy.py` gets a runs-directory option
+so the 0.8B results go to `lab/runs/act_map/happy08/` and §43.13's files stay untouched.
