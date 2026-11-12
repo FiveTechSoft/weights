@@ -83,7 +83,7 @@ after two fixes to the judge, both made before the test set was used (documented
 5 vs 9, failing C4/C5. §43.13 passed only with the old, wrong last layer.
 
 🌐 Research portal: [fivetechsoft.github.io/weights](https://fivetechsoft.github.io/weights/) ·
-📒 Full log: [`results.md`](results.md) · 🗺️ Plan: [`roadmap.md`](roadmap.md) ·
+📒 Full log: [`results.md`](results.md) · 🎯 Pre-registered predictions and their hit rate: [`predictions.md`](predictions.md) · 🗺️ Plan: [`roadmap.md`](roadmap.md) ·
 🧪 Weight-diff findings: [`lab/probes/delta_patterns/findings.md`](lab/probes/delta_patterns/findings.md)
 
 ---
