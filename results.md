@@ -2484,3 +2484,43 @@ predicción. Datos `lab/runs/cc_v2/dev_no31.json`; cadena `lab/runs/cc_v2/chain_
   siga a la capa 31: un empuje en la última capa solo se ve a través de ella, y aquí no se ve. Para "feliz" (§45.3) sí
   pesaba: allí la capa 31 corregida (48.7) rompía la coherencia y el efecto que se media (tono) es de vocabulario,
   que vive al final. Descriptivo: un brazo, un conjunto; no cambia ningún veredicto.
+
+### 45.6 Prueba del nombre: "concluir" acorta fuera de matemáticas casi sin coste; el placebo daña la lógica (2026-11-12)
+Plan: "Name test" de `lab/probes/cc/PLAN.md` (lecturas N1-N3, bandas del control y predicción fijadas antes de correr;
+fila 25 de `predictions.md`). Pregunta: ¿la dirección hallada y nombrada en trazas de matemáticas acorta el razonamiento
+en dominios que nunca se usaron para hallarla, escalarla ni nombrarla, con coste acotado? Dos dominios, pensamiento
+activado, voraz, tope 2 048, mismos flags que dev: D1 HumanEval primeros 20 (`he_eval.py`); D2 lógica Horn, los 120
+casos de `rig/logic_probe.make_cases` (importado, no modificado), respuesta leída tras `</think>`. Brazos base, cc_v2
+×1.0, placebo_v2 ×1.0. Código `lab/probes/cc/name_test.py` (10 tests); datos `lab/runs/cc_v2/name/` y
+`lab/runs/close_probe/fast/he_name_*.json`; lecturas `lab/runs/cc_v2/name/readings.json`.
+
+| brazo | HumanEval /20 correctas (cerradas) | tokens medianos | lógica Horn /120 correctas | cortadas | tokens medianos |
+|---|---|---|---|---|---|
+| base | 20 (20) | 676 | 120 | 0 | 668 |
+| **cc_v2 ×1.0** | **18** (20) | **229** (−66 %) | **119** | 1 | **288** (−57 %) |
+| placebo_v2 ×1.0 | 20 (20) | 668 (−1 %) | **113** | **7** | 718 (+7 %) |
+
+- **N1 acorta: pasa en los dos dominios** (0.34× y 0.43× de la base; umbral ≤ 0.85×). **N2 coste acotado: pasa en los
+  dos** (HumanEval −2, umbral −2; lógica −1, umbral −6). N3 no aplica (la base no corta nada). **Lectura: el nombre se
+  sostiene.**
+- Control: HumanEval dentro de las bandas (20/20, −1 % tokens). **Lógica fuera de banda**: 113 (−7, banda ±6), 7
+  cortadas al tope; tokens +7 % (dentro). Todos los fallos de todos los brazos son respuestas cortadas, ninguna acabada
+  y equivocada: el empuje aleatorio de la misma norma mete al modelo en bucle en 7 de 120 casos; el vector, en 1.
+- Dos métodos: recuento propio por filas coincide (18 / 119 / 113; cortadas 0-1-7). Mediana de HumanEval por recuento
+  propio 661 / 214 / 654 frente a 676 / 229 / 668 del resumen de `he_eval` (convención de mediana; misma lectura).
+- Los 2 fallos de HumanEval del vector: `HumanEval/1` (286 tokens frente a 985 de la base: cerró antes de razonar
+  bastante) y `HumanEval/10` (984 frente a 883: no es longitud). El fallo de lógica es un corte al tope (caso 33).
+- **Predicción (fila 25): parcial.** Acierta N1 en los dos dominios, el rango de tokens de HumanEval (229 en 200-350),
+  el −57 % en lógica (en −30 a −60), N2 en lógica, N3 no aplicable y las premisas p1 (120/120, 0 cortadas) y p2
+  (20/20, 676 ≈ 650). Falla en el coste de HumanEval (predicho 14-17, salió 18: N2 pasa, la lectura prevista era
+  "concluye con coste") y en el control de lógica (predicho dentro de banda, salió −7 por bucles). Otra vez: **el
+  control sorprende** y la predicción sobrestima el coste, como en la fila 23 al revés.
+- Frente al vector antiguo (§43.21, retención): HumanEval 20 → 15 con 201 tokens; cc_v2 20 → 18 con 229. La capa 31
+  corregida cuesta menos fuera de matemáticas con el mismo acortamiento; coherente con §45.5 (la 31 no aporta al efecto
+  en matemáticas) si lo que la 31 errónea añadía era daño.
+- **Lectura:** "concluir" no es una dirección de matemáticas ni un efecto de formato: acorta el razonamiento a un
+  tercio o la mitad en código y en lógica, dominios que nunca vio, y acierta casi igual. El placebo de la misma norma
+  no acorta y empeora la lógica por bucles: el acortamiento es la dirección, no el empuje. Límites: dos dominios
+  pequeños (20 y 120), la base está al techo en ambos (20/20, 120/120), así que N2 solo puede medir daño, no mejora;
+  un modelo, un tope. Dato nuevo para la pregunta de ignorancia: la dirección es **de la conducta** (cerrar), no de la
+  tarea; se transfiere entre dominios como el carril de H6 se transfería entre semillas.

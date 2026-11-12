@@ -36,20 +36,20 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 | 22 | 2026-11-11 | `act_map/PLAN.md` puerta 3 | paso 0: coseno port/own ≥ 0.7; `own` pasa; `port` pasa P1-P5 a menor escala; P6 falla (feliz es vocabulario) | coseno 0.65; `own` falla C1/C2 (NO DECIDIDA); embport no lleva la dirección, port sí (léxico +2.1) | §45.2; falla en las cuatro partes; la más informativa: el mapa de embeddings no lleva la dirección | ❌ |
 | 23 | 2026-11-11 | `happy/PLAN.md` repetición | pasa; la escala elegida puede ser mayor (la nueva capa 31 es menor) | falla C4/C5 (34/40 coherentes, GSM 5 vs 9); escala 0.25 igual; la capa 31 nueva es **mayor** (48.7 vs 38.6) | §45.3; falla en las dos partes, y la premisa ("menor") era falsa | ❌ |
 | 24 | 2026-11-12 | `cc/PLAN.md` addendum | cc_v2 pasa dev y sellado; escala 1.0 otra vez | criba: escala 1.0 (38 vs 35 del antiguo); dev PASA (83 / 35, placebo 26 / 5); sellado CONFIRMA (86 / 33 vs base 43 / 4; placebo 28 / 1) | §45.4; sin número para el control ni rango de sorpresa (la regla nueva se aplica desde la 25); la capa 31 corregida es mayor y aquí ayuda | ✅ |
-| 25 | 2026-11-12 | `cc/PLAN.md` "Name test" | fuera de matemáticas, cc_v2 ×1.0: HumanEval-20 acorta (N1, ~200-350 tokens) y pierde 3-6 correctas (N2 falla); lógica Horn 120 acorta −30 a −60 % con ≤ 6 de coste (N2 pasa); la base corta < 10 % (N3 no aplica); placebo dentro de ±10 % tokens y ±2/±6 correctas. Lectura: "concluye con coste". Premisas marcadas: p1-p3 en el plan | — | — | ⏳ |
+| 25 | 2026-11-12 | `cc/PLAN.md` "Name test" | fuera de matemáticas, cc_v2 ×1.0: HumanEval-20 acorta (N1, ~200-350 tokens) y pierde 3-6 correctas (N2 falla); lógica Horn 120 acorta −30 a −60 % con ≤ 6 de coste (N2 pasa); la base corta < 10 % (N3 no aplica); placebo dentro de ±10 % tokens y ±2/±6 correctas. Lectura: "concluye con coste". Premisas marcadas: p1-p3 en el plan | HumanEval 18/20 (−2, N2 pasa), 229 tokens; lógica 119/120, −57 %; base no corta; placebo HumanEval en banda, **lógica fuera** (113, −7, 7 cortadas por bucle). Lectura: "el nombre se sostiene" | §45.6; acierta N1, los rangos de tokens y las premisas p1-p2; falla el coste de HumanEval (menor que lo predicho) y el control de lógica (el placebo daña) | ◐ |
 | 26 | 2026-11-12 | `cc/PLAN.md` "Composition" | J (Jackrong ×0.5) en dev: GSM 86-93, MATH 31-37. J+C: redundante en GSM (±3 de J), MATH 2-6 por debajo de J, tokens −10 a −25 %, más colas en bucle → K1 "redundante", tirando a "interfiere" en MATH. Control J+placebo: GSM 3-10 por debajo de J, MATH ±3. Sorpresa si J+C gana a J por > 5 | — | — | ⏳ |
 | 27 | 2026-11-12 | `cc_weights/PLAN.md` "Repeat with the corrected vector" | recompilar cc_v2 en `down_proj`: G0 ≈ 0.032, 30/31 `ffn_down` idénticos al primero; dev fusionado GSM 84-90, MATH 31-38, placebo fusionado 25-40 / 2-7, pasa C1-C4; sellado 2 (base 46/7): vec_v2 86-92 / 27-35, fusionado 86-92 / 26-34, placebo 25-40 / 2-7, confirma; HumanEval-20 fusionado 18-20. Premisas p1-p3 en el plan. Sorpresa si fusionado < vec_v2 por > 5 en MATH, placebo > base, G0 > 0.1 o < 28 capas idénticas | — | — | ⏳ |
 
-## Cuenta (27 filas; 20 puntuables)
+## Cuenta (27 filas; 21 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 7 |
-| ◐ parcial | 5 |
+| ◐ parcial | 6 |
 | ❌ falla | 8 |
-| ⏳ / — | 7 |
+| ⏳ / — | 6 |
 
-Acierto limpio 7/20 = 35 %; acierto o parcial 12/20 = 60 %. Con "confianza baja" declarada en casi todas, 30 % es
+Acierto limpio 7/21 = 33 %; acierto o parcial 13/21 = 62 %. Con "confianza baja" declarada en casi todas, 30 % es
 lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el número que importa es **cómo** fallan.
 
 ## Lectura: dónde está la ignorancia
