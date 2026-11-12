@@ -9,7 +9,8 @@ P="$HOME/.venvs/weights-cuda/Scripts/python.exe"
 OUT=lab/runs/cc_v2; LOG=$OUT/chain.log; COMP=$OUT/comp; L=hf_cache/close_lora
 V=hf_cache/cc/cc_v2.gguf; PL=hf_cache/cc/cc_v2.placebo2026.gguf
 S=/c/Users/Anto/llamacpp/bin/llama-server.exe; M=hf_cache/h4/A0-Q6_K.gguf
-LORAS="--lora $L/demo_jack_r16.gguf --lora $L/placebo_demo_jack_r16.gguf --lora-init-without-apply"
+# this llama-server build takes several adapters comma-separated (repeating --lora keeps only the last one); id 0 = adapter, 1 = placebo
+LORAS="--lora $L/demo_jack_r16.gguf,$L/placebo_demo_jack_r16.gguf --lora-init-without-apply"
 log() { echo "[cc_comp] $* ($(date +%H:%M:%S))" >> $LOG; }
 up() { ok=0; for k in $(seq 1 80); do curl -s http://127.0.0.1:8095/health | grep -q ok && { ok=1; break; }; sleep 3; done; [ $ok = 1 ]; }
 SP=""
