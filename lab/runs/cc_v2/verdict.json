@@ -1,0 +1,86 @@
+{
+ "vec": {
+  "math500": {
+   "g1": {
+    "arm": 35,
+    "base": 6,
+    "win": 29,
+    "loss": 0,
+    "p": 3.725290298461914e-09
+   },
+   "g2": {
+    "arm": 27,
+    "base": 6,
+    "win": 21,
+    "loss": 0,
+    "p": 9.5367431640625e-07
+   }
+  },
+  "gsm8k": {
+   "g1": {
+    "arm": 83,
+    "base": 50,
+    "win": 36,
+    "loss": 3,
+    "p": 3.608874976634979e-08
+   },
+   "lastnum": {
+    "arm": 82,
+    "base": 61,
+    "win": 26,
+    "loss": 5,
+    "p": 0.00019219517707824707
+   }
+  }
+ },
+ "placebo": {
+  "math500": {
+   "g1": {
+    "arm": 5,
+    "base": 6,
+    "win": 2,
+    "loss": 3,
+    "p": 1.0
+   },
+   "g2": {
+    "arm": 5,
+    "base": 6,
+    "win": 2,
+    "loss": 3,
+    "p": 1.0
+   }
+  },
+  "gsm8k": {
+   "g1": {
+    "arm": 26,
+    "base": 50,
+    "win": 5,
+    "loss": 29,
+    "p": 3.8558151572942734e-05
+   },
+   "lastnum": {
+    "arm": 35,
+    "base": 61,
+    "win": 8,
+    "loss": 34,
+    "p": 6.877111491121468e-05
+   }
+  }
+ },
+ "token_change": {
+  "vec": {
+   "math500": -0.304,
+   "gsm8k": -0.565
+  },
+  "placebo": {
+   "math500": 0.009,
+   "gsm8k": 0.086
+  }
+ },
+ "criteria": {
+  "C1 gain": true,
+  "C2 placebo null": true,
+  "C3 GSM8K not below base by > 2": true
+ },
+ "verdict": "PASS"
+}

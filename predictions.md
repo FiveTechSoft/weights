@@ -35,20 +35,20 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 | 21 | 2026-11-11 | `act_map/PLAN.md` puerta 2 | G 0.3-0.6, mejor a ¼ y peor a ¾; 0.8B → 9B pasa como mucho en una profundidad | G ≥ 0.5 en 3/3 profundidades y en las dos direcciones; no baja con la profundidad | §45.1; **falla por arriba** | ❌ |
 | 22 | 2026-11-11 | `act_map/PLAN.md` puerta 3 | paso 0: coseno port/own ≥ 0.7; `own` pasa; `port` pasa P1-P5 a menor escala; P6 falla (feliz es vocabulario) | coseno 0.65; `own` falla C1/C2 (NO DECIDIDA); embport no lleva la dirección, port sí (léxico +2.1) | §45.2; falla en las cuatro partes; la más informativa: el mapa de embeddings no lleva la dirección | ❌ |
 | 23 | 2026-11-11 | `happy/PLAN.md` repetición | pasa; la escala elegida puede ser mayor (la nueva capa 31 es menor) | falla C4/C5 (34/40 coherentes, GSM 5 vs 9); escala 0.25 igual; la capa 31 nueva es **mayor** (48.7 vs 38.6) | §45.3; falla en las dos partes, y la premisa ("menor") era falsa | ❌ |
-| 24 | 2026-11-12 | `cc/PLAN.md` addendum | cc_v2 pasa dev y sellado; escala 1.0 otra vez | criba: escala 1.0 (38 vs 35 del antiguo); dev corriendo | — | ⏳ |
+| 24 | 2026-11-12 | `cc/PLAN.md` addendum | cc_v2 pasa dev y sellado; escala 1.0 otra vez | criba: escala 1.0 (38 vs 35 del antiguo); dev PASA (83 / 35, placebo 26 / 5); sellado CONFIRMA (86 / 33 vs base 43 / 4; placebo 28 / 1) | §45.4; sin número para el control ni rango de sorpresa (la regla nueva se aplica desde la 25); la capa 31 corregida es mayor y aquí ayuda | ✅ |
 | 25 | 2026-11-12 | `cc/PLAN.md` "Name test" | fuera de matemáticas, cc_v2 ×1.0: HumanEval-20 acorta (N1, ~200-350 tokens) y pierde 3-6 correctas (N2 falla); lógica Horn 120 acorta −30 a −60 % con ≤ 6 de coste (N2 pasa); la base corta < 10 % (N3 no aplica); placebo dentro de ±10 % tokens y ±2/±6 correctas. Lectura: "concluye con coste". Premisas marcadas: p1-p3 en el plan | — | — | ⏳ |
 | 26 | 2026-11-12 | `cc/PLAN.md` "Composition" | J (Jackrong ×0.5) en dev: GSM 86-93, MATH 31-37. J+C: redundante en GSM (±3 de J), MATH 2-6 por debajo de J, tokens −10 a −25 %, más colas en bucle → K1 "redundante", tirando a "interfiere" en MATH. Control J+placebo: GSM 3-10 por debajo de J, MATH ±3. Sorpresa si J+C gana a J por > 5 | — | — | ⏳ |
 
-## Cuenta (26 filas; 19 puntuables)
+## Cuenta (26 filas; 20 puntuables)
 
 | | n |
 |---|---|
-| ✅ acierta | 6 |
+| ✅ acierta | 7 |
 | ◐ parcial | 5 |
 | ❌ falla | 8 |
-| ⏳ / — | 7 |
+| ⏳ / — | 6 |
 
-Acierto limpio 6/19 = 32 %; acierto o parcial 11/19 = 58 %. Con "confianza baja" declarada en casi todas, 30 % es
+Acierto limpio 7/20 = 35 %; acierto o parcial 12/20 = 60 %. Con "confianza baja" declarada en casi todas, 30 % es
 lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el número que importa es **cómo** fallan.
 
 ## Lectura: dónde está la ignorancia
@@ -67,4 +67,5 @@ lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el
   no va a funcionar. Describir se nos da mejor que predecir magnitudes.
 
 Mejora de método que sale de aquí: cada predicción nueva lleva (a) un número para el brazo **y** otro para el control,
-(b) las premisas que asume, marcadas, y (c) un rango explícito de "me sorprendería si". Se aplica desde la fila 24.
+(b) las premisas que asume, marcadas, y (c) un rango explícito de "me sorprendería si". Se aplica desde la fila 25 (la 24
+se escribió antes de esta regla, sin número para el control).

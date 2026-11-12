@@ -2002,7 +2002,7 @@ guardado). Veredicto leído del manifiesto de WSP-Lang y recalculado aparte desd
 - **Lectura:** el veredicto sirve además de filtro barato antes de descargar o evaluar nada: de 3 "coders" con
   benchmarks publicados, 2 no tienen cambio que trasplantar. Ningún donante de código útil para el op en esta tanda.
 
-### 43.17 Dirección "concluir" sin donante (réplica de concept.country en Qwen3.5-9B): PASA en dev (2026-11-10)
+### 43.17 Dirección "concluir" sin donante (réplica de concept.country en Qwen3.5-9B): PASA en dev (2026-11-10) — [rev 2026-11-12] repetido con la capa 31 corregida: PASA otra vez, §45.4
 Plan fijado antes de correr: `lab/probes/cc/PLAN.md`; datos y veredicto en `lab/runs/cc/`. Referencia: Concept Country,
 *Gradient-Free Weight Editing Reduces Overthinking in Qwen3.8-27B* (2026-11-08).
 
@@ -2037,7 +2037,7 @@ Plan fijado antes de correr: `lab/probes/cc/PLAN.md`; datos y veredicto en `lab/
   elegida en ítems de MATH; a 32k tokens la base ya cierra (arXiv 2611.09382: 97.7 en MATH), así que esto es eficiencia
   con presupuesto corto, no capacidad. Confirmación sellada en marcha (`lab/probes/sealed/cc_confirm.md`).
 
-### 43.18 Confirmación sellada 2: la dirección "concluir" sin donante CONFIRMA (2026-11-10)
+### 43.18 Confirmación sellada 2: la dirección "concluir" sin donante CONFIRMA (2026-11-10) — [rev 2026-11-12] con la capa 31 corregida CONFIRMA otra vez (86 / 33), §45.4
 Plan escrito antes de correr: `lab/probes/sealed/cc_confirm.md`; veredicto `lab/probes/sealed/cc_verdict.py` →
 `lab/runs/sealed_cc/verdict.txt`. Conjunto `data/sealed_confirm.json` (sha256 3acfbc8d…, segundo uso, primero para esta
 afirmación; ningún ítem tocó ninguna decisión del estudio cc). Mismo servidor y ajustes que dev: Q6_K `A0`, 2 048 tokens,
@@ -2408,3 +2408,57 @@ criterios que §43.13. Datos `lab/runs/happy_v2/`, vector `hf_cache/cvec/happy_v
 - Predicción ("pasa; escala mayor porque la 31 se encoge") falla en las dos partes.
 - **Pendiente, decisión del usuario:** el vector "concluir" `hf_cache/cc/cc.gguf` (§43.19-21, §43.25) tiene el mismo
   fallo (direction.31 13.2 frente a 9.1 en la 30); repetirlo exige re-derivar y repetir desarrollo y sellado.
+  [rev 2026-11-12: repetido, §45.4.]
+
+### 45.4 Repetición de §43.17-43.18 ("concluir", 9B) con el op `contrast_vector` corregido: PASA en dev y CONFIRMA en el sellado (2026-11-12)
+Plan: addendum "Repeat with the corrected op (2026-11-12)" de `lab/probes/cc/PLAN.md`, escrito antes de re-derivar, con
+predicción (pasa dev y sellado, escala 1.0 otra vez; fila 24 de `predictions.md`). Programa `programs/cc_vector_v2.wspl`
+(mismos `pos.jsonl`/`neg.jsonl` que §43.17, placebo 2026); vector `hf_cache/cc/cc_v2.gguf`; cadena `lab/runs/cc_v2/chain.sh`;
+datos `lab/runs/cc_v2/` (criba y dev) y `lab/runs/sealed_cc_v2/` (sellado); veredictos `cc.py verdict` y
+`lab/probes/sealed/cc_verdict.py` (con `SEALED_CC_RUNS`), mismos criterios que §43.17 (C1-C3) y §43.18 (C1-C3).
+
+- **Comprobación mecánica (`op_check.json`):** direction.1..30 idénticas a `cc.gguf` (diferencia relativa máxima 0.0);
+  solo cambia la 31: norma 13.24 → **18.14** (la 30: 9.12), coseno 0.545 con la antigua. Misma firma que en "feliz"
+  (§45.3): la norma final encogía y giraba el salto real de la última capa.
+- **Criba (64 ítems de MATH, misma regla):** base 8; cc_v2 ×0.25 15, ×0.5 20, **×1.0 38**, ×2.0 3 (antiguo: 10 / 17 / 35 /
+  2). Escala 1.0, como se predijo. La base de la criba reproduce ítem a ítem la de §43.17 (identidad comprobada en la
+  cadena), así que las bases de dev y del sellado se reutilizan sin correr de nuevo.
+
+| dev, 2 048 tokens | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle | tokens GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| **cc_v2 ×1.0** | **83 / 82** | 8 | **35 / 27** | 17 | 10 / 10 | 735 / 1 359 |
+| placebo_v2 ×1.0 | 26 / 35 | 73 | 5 / 5 | 45 | 3 / 5 | 1 834 / 1 969 |
+| (antiguo §43.17) | 84 / 86 | 7 | 32 / 24 | 22 | 6 / 16 | 698 / 1 385 |
+
+- Dev, McNemar frente a base: vector GSM8K 36/3 (p ≈ 0) y 26/5 con último número (p = 2e-4); MATH 29/0 (p = 1e-6) y
+  21/0 con el corrector 2. Placebo GSM8K 5/29 (p = 4e-5), **por debajo** de la base; MATH 2/3 (p = 1). **PASA C1-C3.**
+
+| sellado (`data/sealed_confirm.json`, tercer uso), 2 048 tokens | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle | tokens GSM / MATH |
+|---|---|---|---|---|---|---|
+| base (reutilizada de §43.18, idéntica) | 43 / 64 | 57 | 4 / 4 | 46 | 4 / 2 | 1 703 / 1 981 |
+| **cc_v2 ×1.0** | **86 / 88** | 2 | **33 / 28** | 17 | 7 / 13 | 621 / 1 278 |
+| placebo_v2 ×1.0 | 28 / 44 | 71 | 1 / 1 | 49 | 4 / 3 | 1 816 / 2 032 |
+| (antiguo §43.18) | 87 / 92 | 10 | 25 / 23 | 27 | 10 / 22 | 692 / 1 440 |
+
+- Sellado, McNemar frente a base: vector GSM8K 45/2 (p = 2e-11) y 28/4 con último número (p = 2e-5); MATH 29/0
+  (p = 4e-9) y 24/0 con el corrector 2 (p = 1e-7). Placebo GSM8K 8/23 (p = 0.011), **por debajo**; MATH 0/3 (p = 0.25).
+  **C1 (los dos benchmarks, los dos correctores), C2, C3: CONFIRMA.**
+- Dos métodos: recuento propio por filas de `vec.json`/`placebo.json`/`base.json` (86 / 33, 28 / 1, 43 / 4) coincide con
+  el resumen de `bench_runner` y con `cc_verdict.py`. Las 7 discrepancias de correctores son de formato (`10\%` frente
+  a `10` ×2, `-35/9` frente a `-\frac{35}{9}`, `13/6`, `11111111100`, `32348`, `18.90` frente a `\$18.90`).
+- Estricto (quitando las correctas cortadas con la respuesta en un `\boxed{}` repetido): GSM8K 85 frente a 42, MATH 27
+  frente a 4 (antiguo: 84 / 19). Con la capa 31 bien construida, el bucle de conclusión se reduce a la mitad en MATH
+  (13 colas frente a 22) y casi desaparece en GSM8K (2 cortadas frente a 10).
+- Comparado en el mismo conjunto: Jackrong (§43.15) 91 / 35; cc compilado en los pesos, vector antiguo (§43.21) 89 / 26;
+  cc_v2 en inferencia 86 / 33. Sin donante, ya iguala al adaptador en MATH; en GSM8K sigue 5 por debajo.
+- **Predicción (fila 24): acierta** en las tres partes (pasa dev, confirma el sellado, escala 1.0).
+- **Lectura:** §43.17-43.18 **quedan en pie con el op corregido**: el efecto "concluir" no dependía del artefacto de la
+  norma final. La capa 31 corregida es *mayor* (18.1 frente a 13.2) y aquí ayuda (MATH +8 en el sellado, menos bucles),
+  mientras que en "feliz" (§45.3) la misma corrección hacía fallar. La misma pieza del op, dos direcciones, dos
+  respuestas opuestas: la capa 31 no es "ruido" ni "señal" en general; es la componente de la dirección que la norma
+  final más distorsiona, y lo que pase depende de cuánto de la dirección vive ahí (para "feliz" la 31 era la capa de
+  mayor norma; para "concluir" es el doble de la 30). Sigue siendo eficiencia a presupuesto corto, no capacidad nueva.
+- Pendiente (plan propio antes de correr): recompilar los pesos con `compile_control_vector` desde cc_v2 y repetir
+  §43.19/§43.21. Brazo descriptivo "cc.gguf sin direction.31" en dev, prueba del nombre (fila 25) y composición con
+  Jackrong (fila 26) corriendo detrás, en ese orden.
