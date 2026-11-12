@@ -100,3 +100,33 @@ Prediction (ours, low confidence), arm and control, premises marked:
   direction. If p1 fails the D2 reading is about closing (N3), not about shortening.
 - "We would be surprised if": the vector lengthens either domain (> 1.1 x base), or the placebo shortens by >= 15 %.
 Cost: ~1.5 GPU hours (HumanEval 3 x ~5 min, logic 3 x ~25 min).
+
+## Composition: does "conclude" add to the Jackrong adapter? (added 2026-11-12, before any run)
+Two edits that each work on the base (adapter r16 x0.5, results 43.15; conclude vector, 43.18 / cc_v2 pending): if we
+understand them, we predict their sum. Both act on closing, so the prior is redundancy. Descriptive; runs after the
+name test, only if cc_v2 passed dev. Code `lab/probes/cc/comp.py` (tests first), chain `lab/runs/cc_v2/chain_comp.sh`,
+runs in `lab/runs/cc_v2/comp/`. Dev set (`bench_runner` defaults), 2,048 tokens, greedy, 2 slots, one run per arm.
+Server: `--lora hf_cache/close_lora/demo_jack_r16.gguf --lora hf_cache/close_lora/placebo_demo_jack_r16.gguf
+--lora-init-without-apply`, adapter scale per request; control vector by server flag.
+
+Arms: base (cc_v2's `dev_base`, identical to 43.17's); C = cc_v2 x SC alone (cc_v2's `dev_vec`); J = adapter x0.5 alone
+(new); J+C = both (new); J+P = adapter x0.5 + cc_v2 placebo x SC (new; "any push of this size on top of J").
+Smoke first: 2 GSM8K items with J+C to confirm the two flags work together; stop and report if the server rejects them.
+
+Readings (exact McNemar, grader 1, each benchmark):
+- K1 J+C vs J: "adds" if J+C > J with p < 0.05 on either benchmark and not below on the other; "interferes" if J+C < J
+  with p < 0.05 on either; else "redundant" (within noise).
+- K2 tokens: mean tokens J+C / J per benchmark.
+- K3 cost: cut answers and loop tails of J+C against J.
+- Control: J+P within +-3 of J on both benchmarks (p >= 0.05); if J+P is below J, the vector's push is not free on top
+  of J either, which bounds K1's reading.
+Prediction (ours, low confidence), arm and control, premises marked:
+- J alone on dev: GSM8K 86-93, MATH 31-37 (sealed gave 91 / 35).
+- J+C: redundant on GSM8K (within +-3 of J); MATH 2-6 below J (the vector's loop tails cost more where J already closes);
+  tokens 10-25 % below J; loop tails above J's. Overall K1: "redundant", leaning "interferes" on MATH.
+- J+P: 3-10 below J on GSM8K (the placebo hurt the base by 13-20; J buffers part), MATH within +-3.
+- Premises: (p1) llama-server applies LoRA and control vector together (smoke test); (p2) J on dev is within the sealed
+  range; (p3) SC = 1.0.
+- "We would be surprised if": J+C beats J by > 5 on either benchmark (would mean two different mechanisms of closing), or
+  J+P is above J.
+Cost: 3 arms x ~35 min + smoke ~ 1.9 GPU hours.
