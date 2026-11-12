@@ -2460,5 +2460,27 @@ datos `lab/runs/cc_v2/` (criba y dev) y `lab/runs/sealed_cc_v2/` (sellado); vere
   final más distorsiona, y lo que pase depende de cuánto de la dirección vive ahí (para "feliz" la 31 era la capa de
   mayor norma; para "concluir" es el doble de la 30). Sigue siendo eficiencia a presupuesto corto, no capacidad nueva.
 - Pendiente (plan propio antes de correr): recompilar los pesos con `compile_control_vector` desde cc_v2 y repetir
-  §43.19/§43.21. Brazo descriptivo "cc.gguf sin direction.31" en dev, prueba del nombre (fila 25) y composición con
-  Jackrong (fila 26) corriendo detrás, en ese orden.
+  §43.19/§43.21 (addendum "Repeat with the corrected vector" de `lab/probes/cc_weights/PLAN.md`, fila 27). Brazo
+  descriptivo "cc.gguf sin direction.31" en dev (§45.5), prueba del nombre (fila 25) y composición con Jackrong
+  (fila 26) corriendo detrás, en ese orden.
+
+### 45.5 Brazo descriptivo: el vector "concluir" sin la capa 31 hace lo mismo (2026-11-12)
+Plan: "Extra arm, descriptive only" de `lab/probes/cc/PLAN.md` (fijado antes de ver cc_v2): `hf_cache/cc/cc_no31.gguf`
+= `cc.gguf` con `direction.31` quitada (30 tensores), dev a la escala elegida para cc_v2 (1.0), sin criterio ni
+predicción. Datos `lab/runs/cc_v2/dev_no31.json`; cadena `lab/runs/cc_v2/chain_no31.sh`.
+
+| dev, 2 048 tokens | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle | tokens GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| cc_v2 ×1.0 (capa 31 corregida, 18.1) | 83 / 82 | 8 | 35 / 27 | 17 | 10 / 10 | 735 / 1 359 |
+| **sin capa 31** ×1.0 | **85 / 85** | 8 | **33 / 23** | 20 | 9 / 11 | 725 / 1 398 |
+| (antiguo §43.17, capa 31 errónea, 13.2) | 84 / 86 | 7 | 32 / 24 | 22 | 6 / 16 | 698 / 1 385 |
+
+- Frente a la base: GSM8K 36/1 (p = 6e-10), 26/2 con último número; MATH 27/0 (p = 1e-8), 17/0 con el corrector 2.
+  Frente a cc_v2: GSM8K 6/4 (p = 0.75), MATH 2/4 (p = 0.69): **indistinguible**. Las 10 discrepancias de correctores
+  en MATH son `a/b` frente a `\frac{a}{b}` (9) y `.35625` frente a `0.35625`.
+- **Lectura:** las capas 1-30 llevan todo el efecto medible en dev; la capa 31, errónea (§43.17), corregida (§45.4) o
+  ausente, no cambia el resultado a esta resolución (n = 150, diferencias ≤ 4). Es coherente con que la norma final
+  siga a la capa 31: un empuje en la última capa solo se ve a través de ella, y aquí no se ve. Para "feliz" (§45.3) sí
+  pesaba: allí la capa 31 corregida (48.7) rompía la coherencia y el efecto que se media (tono) es de vocabulario,
+  que vive al final. Descriptivo: un brazo, un conjunto; no cambia ningún veredicto.
