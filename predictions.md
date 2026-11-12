@@ -44,12 +44,13 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | | n |
 |---|---|
-| ✅ acierta | 7 |
+| ✅ acierta | 6 |
 | ◐ parcial | 7 |
-| ❌ falla | 8 |
+| ❌ falla | 9 |
 | ⏳ / — | 5 |
 
-Acierto limpio 7/22 = 32 %; acierto o parcial 14/22 = 64 %. Con "confianza baja" declarada en casi todas, 30 % es
+Acierto limpio 6/22 = 27 %; acierto o parcial 13/22 = 59 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
+anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es
 lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el número que importa es **cómo** fallan.
 
 ## Lectura: dónde está la ignorancia
