@@ -1,6 +1,6 @@
 """Sealed confirmation 2 verdict (cc_confirm.md): exact McNemar, vector and placebo vs base, two graders per benchmark."""
-import json, math, re
-D = "lab/runs/sealed_cc"
+import json, math, os, re
+D = os.environ.get("SEALED_CC_RUNS", "lab/runs/sealed_cc")
 def load(n): return {(r["bench"], r["i"]): r for r in json.load(open(f"{D}/{n}.json"))["items"]}
 def lastnum(r):
     m = re.findall(r"-?\d[\d,]*\.?\d*", r.get("tail") or "")

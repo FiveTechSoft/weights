@@ -38,3 +38,27 @@ with seed 20261110: first 64 = discovery, next 64 = screen. Discovery also uses 
 PASS -> confirm once on the sealed set (rule in lab/probes/sealed/README.md), then try compiling into `down_proj`.
 FAIL -> results.md says so; "needs a donor" stands for this kind of gain at this size.
 Outcome reported whatever it is.
+
+## Repeat with the corrected op (addendum 2026-11-12, before any run)
+Why: `contrast_vector` took the last row of D from transformers' `hidden_states[-1]`, which is after the final norm, so
+`direction.31` of `hf_cache/cc/cc.gguf` was the norm's rescaling, not a residual change (13.2 against 9.1 at layer 30,
+median 1.9; fixed in 4aeb453, results 45.2-45.3). The happy repeat with the fix failed (45.3), so 43.17-43.18 are
+re-tested, not assumed.
+
+Same traces, rows, items, scales, rules and criterion as above; only the op changes. Runs in `lab/runs/cc_v2`
+(`CC_RUNS`), split / pos / neg copied from `lab/runs/cc`.
+1. Vector: `programs/cc_vector_v2.wspl` -> `hf_cache/cc/cc_v2.gguf`, placebo seed 2026.
+2. Mechanical check (stop if it fails): direction.1..30 equal to `cc.gguf` (max relative diff < 1e-3); report norm and
+   cosine of direction.31 old / new.
+3. Screen: base re-run as an identity check, then scales 0.25 / 0.5 / 1 / 2, same choose rule. If `screen_base` does not
+   match `lab/runs/cc/screen_base.json` item by item, the dev and sealed base arms are re-run too; else they are reused
+   (the setup reproduced 150/150 sealed items in 43.18).
+4. Dev: vector and placebo at the chosen scale, C1-C3 as above.
+5. Sealed confirmation, only if dev passes: `data/sealed_confirm.json` (third use; its items touched no decision of this
+   repeat, the vector differs from 43.18's only in direction.31), vector v2 and placebo v2 at the dev scale, base
+   reused under step 3's rule, criterion of `lab/probes/sealed/cc_confirm.md`, in `lab/runs/sealed_cc_v2`.
+
+Prediction: passes dev and sealed; scale 1.0 again. A fail is reported as "43.17-43.18 held only with the old op", as
+with 43.13. The compiled-weights results (43.19-43.21, 43.25) also used `cc.gguf`; they are re-tested only after this,
+with their own addendum.
+Cost: ~6 GPU hours (op 0.5 h, screen 2.3 h, dev 1.7 h, sealed 1.7 h).
