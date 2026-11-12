@@ -62,3 +62,8 @@ Prediction: passes dev and sealed; scale 1.0 again. A fail is reported as "43.17
 with 43.13. The compiled-weights results (43.19-43.21, 43.25) also used `cc.gguf`; they are re-tested only after this,
 with their own addendum.
 Cost: ~6 GPU hours (op 0.5 h, screen 2.3 h, dev 1.7 h, sealed 1.7 h).
+
+### Extra arm, descriptive only (added 2026-11-12, before any cc_v2 result)
+`hf_cache/cc/cc_no31.gguf` = `cc.gguf` without `direction.31` (layers 1-30 are the same in both ops). Run on dev at the
+scale chosen by the cc_v2 screen (1.0, 43.17's, if it picks none), after the cc_v2 chain ends, once. Not a criterion and not run on the sealed set: it
+only says whether the old layer 31 added to, or took from, 43.17's gain (compare dev_vec of cc, cc_v2 and this arm).
