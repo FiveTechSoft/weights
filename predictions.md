@@ -36,15 +36,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 | 22 | 2026-11-11 | `act_map/PLAN.md` puerta 3 | paso 0: coseno port/own ≥ 0.7; `own` pasa; `port` pasa P1-P5 a menor escala; P6 falla (feliz es vocabulario) | coseno 0.65; `own` falla C1/C2 (NO DECIDIDA); embport no lleva la dirección, port sí (léxico +2.1) | §45.2; falla en las cuatro partes; la más informativa: el mapa de embeddings no lleva la dirección | ❌ |
 | 23 | 2026-11-11 | `happy/PLAN.md` repetición | pasa; la escala elegida puede ser mayor (la nueva capa 31 es menor) | falla C4/C5 (34/40 coherentes, GSM 5 vs 9); escala 0.25 igual; la capa 31 nueva es **mayor** (48.7 vs 38.6) | §45.3; falla en las dos partes, y la premisa ("menor") era falsa | ❌ |
 | 24 | 2026-11-12 | `cc/PLAN.md` addendum | cc_v2 pasa dev y sellado; escala 1.0 otra vez | criba: escala 1.0 (38 vs 35 del antiguo); dev corriendo | — | ⏳ |
+| 25 | 2026-11-12 | `cc/PLAN.md` "Name test" | fuera de matemáticas, cc_v2 ×1.0: HumanEval-20 acorta (N1, ~200-350 tokens) y pierde 3-6 correctas (N2 falla); lógica Horn 120 acorta −30 a −60 % con ≤ 6 de coste (N2 pasa); la base corta < 10 % (N3 no aplica); placebo dentro de ±10 % tokens y ±2/±6 correctas. Lectura: "concluye con coste". Premisas marcadas: p1-p3 en el plan | — | — | ⏳ |
 
-## Cuenta (24 filas; 19 puntuables)
+## Cuenta (25 filas; 19 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 5 |
 | ❌ falla | 8 |
-| ⏳ / — | 5 |
+| ⏳ / — | 6 |
 
 Acierto limpio 6/19 = 32 %; acierto o parcial 11/19 = 58 %. Con "confianza baja" declarada en casi todas, 30 % es
 lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el número que importa es **cómo** fallan.

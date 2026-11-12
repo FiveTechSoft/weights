@@ -67,3 +67,36 @@ Cost: ~6 GPU hours (op 0.5 h, screen 2.3 h, dev 1.7 h, sealed 1.7 h).
 `hf_cache/cc/cc_no31.gguf` = `cc.gguf` without `direction.31` (layers 1-30 are the same in both ops). Run on dev at the
 scale chosen by the cc_v2 screen (1.0, 43.17's, if it picks none), after the cc_v2 chain ends, once. Not a criterion and not run on the sealed set: it
 only says whether the old layer 31 added to, or took from, 43.17's gain (compare dev_vec of cc, cc_v2 and this arm).
+
+## Name test: does "conclude" behave as its name outside maths? (added 2026-11-12, before any run)
+The direction was found on maths traces and named by us. It earns the name if it shortens reasoning in domains that
+were never used to find, scale or name it, and the cost is bounded. Known so far (43.21, old vector): HumanEval-20
+median tokens 650 -> 201 and correct 20 -> 15. Descriptive: not a criterion of the cc study, reported whatever it says.
+Runs after the cc_v2 chain and the no31 arm, with the cc_v2 vector and placebo at the scale cc_v2 chose (1.0), only if
+cc_v2 passed dev (otherwise the vector itself is in question first). Code: `lab/probes/cc/name_test.py` (tests first),
+chain `lab/runs/cc_v2/chain_name.sh`, runs in `lab/runs/cc_v2/name/`.
+
+Domains (both outside maths, thinking as the template does it, greedy, 2,048-token cap, same server flags as dev):
+- D1 HumanEval first 20 (`lab/probes/close_probe/he_eval.py`): closed / correct / median tokens. Arms: base, vector, placebo.
+- D2 Horn logic, the 120 cases of `rig/logic_probe.make_cases` (imported, not modified; its own runner uses 256
+  tokens and no thinking, so it is not reused): correct = `extract_answer` on the text after `</think>` (whole text if
+  no think block), cut = finish != stop, tokens. Arms: base, vector, placebo.
+
+Readings (pre-registered, N = "name"):
+- N1 shortens: vector median tokens <= 0.85 x base in both domains.
+- N2 bounded cost: vector correct >= base - 2 on HumanEval (/20) and >= base - 6 on logic (/120).
+- N3 closes: in a domain where the base cuts >= 10 % of answers, the vector cuts at most half as many. Not applicable
+  if the base cuts < 10 % in both.
+- Control: placebo median tokens within +-10 % of base and correct within +-2 (HumanEval) / +-6 (logic) in both domains.
+Name holds: N1 in both and N2 in both. "Concludes at a cost": N1 in both, N2 fails somewhere. Name fails (the direction
+is maths-specific or a format effect): N1 fails in either domain.
+
+Prediction (ours, low confidence), arm and control, premises marked:
+- D1: N1 passes (tokens ~200-350), N2 fails (correct 14-17 of 20), as with the old vector. Placebo 19-20, tokens within 10 %.
+- D2: N1 passes (tokens -30 to -60 %); N2 passes (base and vector within 6); base cuts < 10 %, so N3 does not apply.
+  Placebo within the control bands. Overall: "concludes at a cost".
+- Premises assumed, not yet measured: (p1) the base closes most logic cases in 2,048 tokens with thinking on; (p2)
+  HumanEval base reproduces 20/20/650 with these flags; (p3) the corrected layer 31 does not change the out-of-maths cost
+  direction. If p1 fails the D2 reading is about closing (N3), not about shortening.
+- "We would be surprised if": the vector lengthens either domain (> 1.1 x base), or the placebo shortens by >= 15 %.
+Cost: ~1.5 GPU hours (HumanEval 3 x ~5 min, logic 3 x ~25 min).
