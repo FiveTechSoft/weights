@@ -1,7 +1,11 @@
 """Dev verdict (PLAN.md C1-C4): merged / placebo_merged / lora vs base and vs control vector (lab/runs/cc/dev_*.json,
 same items and settings, re-used: the setup is deterministic). Exact McNemar, two graders per benchmark.
-`verdict.py sealed`: the same C1-C4 on sealed set 2 (lab/runs/sealed_ccw/{base,vec,merged,placebo_merged}.json)."""
+`verdict.py sealed`: the same C1-C4 on sealed set 2 (lab/runs/sealed_ccw/{base,vec,merged,placebo_merged}.json).
+Directories from the environment (defaults = the first compilation): CCW_CC (dev_base/dev_vec), CCW_RUNS (dev arms),
+CCW_SEALED (sealed arms); the recompilation with the corrected vector uses lab/runs/cc_v2, lab/runs/cc_v2/weights,
+lab/runs/sealed_ccw_v2."""
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -9,8 +13,9 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "lab" / "probes" / "cc"))
 from cc import lastnum, mcnemar  # noqa: E402
 
-CC, W = ROOT / "lab" / "runs" / "cc", ROOT / "lab" / "runs" / "cc_weights"
-SEALED = ROOT / "lab" / "runs" / "sealed_ccw"
+CC = ROOT / os.environ.get("CCW_CC", "lab/runs/cc")
+W = ROOT / os.environ.get("CCW_RUNS", "lab/runs/cc_weights")
+SEALED = ROOT / os.environ.get("CCW_SEALED", "lab/runs/sealed_ccw")
 
 
 def load(p):

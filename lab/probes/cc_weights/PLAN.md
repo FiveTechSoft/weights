@@ -60,3 +60,43 @@ placebo merged; same C1-C4. Written to results.md whatever it says; nothing re-r
 One model (Qwen3.5-9B), one budget (2,048), greedy, Q6_K. A rank-1 write gives v · (u ᵀx), not a constant: where
 u ᵀx drifts (long contexts, other tasks) the push changes size — the scale window is narrow (×2 breaks), so this is
 the main risk and why G0 exists.
+
+## Repeat with the corrected vector (addendum 2026-11-12, written before the run)
+
+**Why.** `cc.gguf`, compiled above (§43.19, §43.21, §43.25), carries the post-norm flaw in `direction.31` (results
+§45.3). The re-derived vector `hf_cache/cc/cc_v2.gguf` (layers 1-30 identical, layer 31 norm 13.2 → 18.1) passed dev
+and confirmed on sealed set 1 (§45.4). The compiled result must be redone with it; this is the order of work agreed
+with the user (finish cc_v2 → recompile and sealed → only then generalize).
+
+**What runs** (`lab/runs/cc_v2/chain_weights.sh`, after the composition chain; one GPU job at a time):
+1. Op `compile_control_vector` from `programs/cc_compile_v2.wspl`: vector `cc_v2.gguf`, placebo
+   `cc_v2.placebo2026.gguf`, same calibration (`lab/runs/cc/traces.jsonl`, same split), same λ, same base GGUF, out
+   `hf_cache/cc_op_v2` (~14 GB; 31 GB free). Nothing in `hf_cache/cc_weights` is touched or deleted.
+2. G0 as above (≤ 0.5). Mechanical check (`lab/probes/cc_weights/v2_check.py`): u_N for N = 1..30 equal to the first
+   compilation's (cos ≥ 0.999) and the written `ffn_down` of layers 1-30 **byte-identical** to `cc_merged-Q6_K.gguf`;
+   layer 31 reported (cos of u, cos of the written tensor, merge error). Descriptive: a miss is reported, not a stop.
+3. Dev: arms **merged** and **placebo merged** (no LoRA arm: diagnostic only in the first run, nothing decided on it),
+   same items and settings; base and control vector reused from `lab/runs/cc_v2/dev_{base,vec}.json` (cc_v2 ×1.0;
+   determinism shown twice, §43.18 and §45.4). Criteria C1-C4 unchanged (`verdict.py`, directories via `CCW_*`).
+4. Sealed, only if dev passes: `data/sealed_confirm2.json` (second use; first was §43.21), arms **vec_v2 ×1.0**
+   (new run), **merged**, **placebo merged**; base copied from `lab/runs/sealed_ccw/base.json` (same model, same
+   settings, deterministic). Same C1-C4. Reported, not a criterion: HumanEval first 20 on the merged model (first
+   compilation: 19/20; control vector 15/20).
+5. Outcome written to results.md whatever it is; nothing re-run or re-tuned after seeing it.
+
+**Prediction** (ours, low confidence), arm and control, premises marked:
+- Mechanical: G0 median ≈ 0.032 (layers 1-30 identical; layer 31's error was 0.009 and its norm grows, so ≤ 0.02);
+  30/31 `ffn_down` byte-identical; layer 31 merge relative error 0.45-0.50 (Q6_K loses ≈ half the magnitude, as in
+  every layer of the first compilation).
+- Dev merged: GSM8K 84-90, MATH 31-38 (the first merge tracked its vector within ±3: 87/34 vs 84/32; cc_v2 is 83/35).
+  Placebo merged: GSM8K 25-40, MATH 2-7 (first: sealed 30/4). **Passes C1-C4.**
+- Sealed set 2 (base 46/7): vec_v2 GSM8K 86-92, MATH 27-35; merged GSM8K 86-92, MATH 26-34 (first merge 89/26);
+  placebo merged 25-40 / 2-7. **Confirms.** HumanEval-20 merged 18-20.
+- Premises: p1 the fit is deterministic (31/31 identical in §43.25) so layers 1-30 reproduce; p2 Q6_K keeps the
+  direction and halves the magnitude also at layer 31 (held for layer 31 of the first vector: cos 0.896, err 0.466);
+  p3 the sealed base from §43.21 is reusable (base re-runs matched 150/150 twice).
+- "We would be surprised if": merged below vec_v2 by > 5 on MATH with p < 0.05 (the bigger layer-31 push would not
+  survive requantization); placebo merged above base with p < 0.05 on either benchmark; G0 median > 0.1; fewer than
+  28 of the 31 `ffn_down` identical (the fit would not be deterministic after all).
+
+Cost: op ≈ 1.1 h (first run 4 058 s), 2 dev arms ≈ 1.5 h, 3 sealed arms ≈ 2.3 h, HumanEval ≈ 10 min: ≈ 5 GPU h.
