@@ -2524,3 +2524,44 @@ casos de `rig/logic_probe.make_cases` (importado, no modificado), respuesta leí
   pequeños (20 y 120), la base está al techo en ambos (20/20, 120/120), así que N2 solo puede medir daño, no mejora;
   un modelo, un tope. Dato nuevo para la pregunta de ignorancia: la dirección es **de la conducta** (cerrar), no de la
   tarea; se transfiere entre dominios como el carril de H6 se transfería entre semillas.
+
+### 45.7 Composición: "concluir" encima del adaptador Jackrong no suma aciertos, pero sí acorta y quita los cortes (2026-11-12)
+Plan: "Composition" de `lab/probes/cc/PLAN.md` (lecturas K1-K3, banda del control y predicción fijadas antes de correr;
+fila 26 de `predictions.md`). Pregunta: dos ediciones que funcionan solas sobre la base (adaptador r16 ×0.5, §43.15;
+vector cc_v2 ×1.0, §45.4), ¿qué hacen juntas? Prior: redundancia, las dos actúan sobre el cierre. Dev (100 GSM8K + 50
+MATH-500), tope 2 048, voraz, 2 ranuras, una corrida por brazo. Servidor con los dos adaptadores cargados sin aplicar
+(`--lora a.gguf,b.gguf --lora-init-without-apply`; esta build quiere la lista separada por comas, un `--lora` repetido
+solo conserva el último) y escala por petición; el vector por flag. Humo previo J+C 2/2 GSM8K. El adaptador y su
+placebo (misma norma, semilla 2026) se reconstruyeron con el mismo programa (`transplant_jackrong_math.wspl`, SVD exacto,
+determinista; r16 conserva 58,6 % de la energía, igual que §43.6) porque `hf_cache/close_lora/` se había borrado tras
+§43.15. Código `lab/probes/cc/comp.py` (tests antes); datos `lab/runs/cc_v2/comp/`; lecturas `readings.json`.
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§45.4) | 50 | 51 | 1 | 1 689 | 6 | 45 | 1 | 1 952 |
+| C = cc_v2 ×1.0 (§45.4) | 83 | 8 | 10 | 736 | 35 | 17 | 10 | 1 359 |
+| J = adaptador ×0.5 | 88 / 89 | 9 | 0 | 643 | 35 / 30 | 15 | 1 | 1 162 |
+| **J+C** | **89** / 90 | **0** | **0** | **248** | **38** / 31 | **1** | **0** | **482** |
+| J+P (placebo ×1.0) | 86 / 87 | 11 | 1 | 724 | 33 / 29 | 15 | 4 | 1 253 |
+
+- **K1 (J+C frente a J, McNemar exacto, g1): "redundante".** GSM8K 6 gana / 5 pierde, p 1,0; MATH 8 / 5, p 0,58. Con g2
+  igual (6/5 p 1,0; 9/8 p 1,0). Ni suma ni interfiere en aciertos.
+- **K2 tokens: J+C / J = 0,39 en GSM8K y 0,41 en MATH.** Encima de J, el vector acorta más de lo que acorta solo encima
+  de la base (0,44 y 0,70). Medianas 424 → 232 y 921 → 392.
+- **K3 coste: cortes 9 → 0 y 15 → 1; bucles 0 → 0 y 1 → 0.** Las colas en bucle que el vector solo pone (10 y 10 sobre
+  la base) desaparecen encima de J. J+C es el brazo más limpio de toda la línea: 100/100 y 49/50 respuestas acabadas.
+- Control: J+P dentro de la banda (−2 y −2, p 0,73 y 0,63). El placebo no acorta (724, 1 253) y pone 4 bucles en MATH.
+- Dos métodos: recuento propio por filas coincide con `readings.json` en aciertos, cortes, bucles, tokens y McNemar (g1
+  y g2). Los desacuerdos entre jueces son todos de formato: J+C escribe `4/3`, `11/2`, `0.35625` donde J escribe
+  `\frac{4}{3}` (7 en J+C, 5 en J, 4 en J+P; g2 no lee la fracción plana). El vector también simplifica el formato.
+- **Predicción (fila 26): parcial.** Acierta J en dev (88 / 35, rangos 86-93 / 31-37), K1 "redundante", GSM8K dentro de
+  ±3, el control dentro de banda y las premisas p1-p3 (humo, J en rango, escala 1,0). Falla el sentido en MATH
+  (predicho 2-6 por debajo de J, salió +3), los tokens (predicho −10 a −25 %, salió −61 / −59 %) y los bucles (predicho
+  más que J, salió cero). Nada en la zona de sorpresa (J+C no gana a J por > 5; J+P no supera a J). Tercera vez
+  seguida que la predicción **sobrestima el coste** del vector (filas 23, 25, 26).
+- **Lectura:** en aciertos las dos ediciones son redundantes: el adaptador ya cierra lo que el vector cierra, y el techo
+  de dev (89 / 38) queda donde estaban Jackrong solo (91 / 35 sellado). En coste no lo son: juntas acortan a 0,39 y
+  quitan todos los cortes y bucles, cosa que ninguna hace sola. Compatible con que el adaptador enseñe *qué* concluir
+  (el camino corto) y el vector empuje *a* concluir (el momento): la misma conducta por dos mecanismos que se suman en
+  longitud y se saturan en acierto. Límites: dev, una corrida por brazo, un modelo, un tope; "redundante" aquí es
+  p ≥ 0,58 con 150 ítems, no una igualdad demostrada.
