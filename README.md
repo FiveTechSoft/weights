@@ -48,6 +48,8 @@ one exception is efficiency: a direction read from the base itself gives most of
 The verdict was right each time; moving a change does not make the change good (OSS). The main result is confirmed
 on a sealed set (`data/sealed_confirm.json`, sha256-checked, disjoint from everything used so far; results §43.15) and next transplants will be too.
 
+> **Under re-test (2026-11-12).** The `contrast_vector` op took the last layer's row after the final norm (transformers' `hidden_states[-1]`), so `direction.31` of this vector was the norm's rescaling, not a residual change (fixed in 4aeb453, results §45.2-45.3). The numbers below are real for the vector that was run; the repeat with the corrected op (layers 1-30 identical, only layer 31 differs) is running under a plan fixed before it (`lab/probes/cc/PLAN.md`, addendum 2026-11-12). The compiled-weights result uses the same vector and will be re-tested after it.
+
 **Without a donor: the base's own "conclude" direction** (results §43.17-43.18). Replicating Concept Country's idea on
 Qwen3.5-9B: the `contrast_vector` op reads, from the base's own finished reasoning traces, the mean residual stream of
 the last 48 tokens before `</think>` minus the rest of the thinking, and applies it as a llama.cpp control vector at
@@ -77,6 +79,8 @@ merged random-direction placebo falls below base (30, 4). Outside maths the merg
 scale 0.25: judged tone 2.83 → 3.90 of 5 (sign test p = 3·10⁻⁸), positive-affect words 0.27 → 2.63 per 100 (p = 7·10⁻¹²),
 37/40 coherent; a same-norm random vector changes nothing (+0.05, +0.02). Passed all five pre-registered criteria
 after two fixes to the judge, both made before the test set was used (documented). Scales ≥ 0.5 break coherence.
+**Does not hold with the corrected op** (results §45.3): same tone gain (+1.07), but 34/40 coherent and GSM8K fast
+5 vs 9, failing C4/C5. §43.13 passed only with the old, wrong last layer.
 
 🌐 Research portal: [fivetechsoft.github.io/weights](https://fivetechsoft.github.io/weights/) ·
 📒 Full log: [`results.md`](results.md) · 🗺️ Plan: [`roadmap.md`](roadmap.md) ·
@@ -95,11 +99,11 @@ items. Results that did not survive the audit are listed as such instead of bein
 | **Fine-tune → adapter (`delta_to_lora`)**, Jackrong's distill on Qwen3.5-9B (results §43.4-43.6) | See *Main result*. Rank 4 fails (11/36), rank 8 27/36, rank 16 30-32/36. HumanEval first 20: 20/20 base, 19/20 with the lab adapter. | ✅ Measured, paired tests; **confirmed on the sealed set** (91/100, 35/50 vs base 43, 4; placebo 46, 5; results §43.15). |
 | **Transfer verdict on 4 donors** (results §43.11-43.12) | See *Main result*: `likely` for Jackrong (58.6 %) and OSS-Distilled (98.3 %), both transferred; `unlikely` for LeoZotos (7.5 %) and MiMo (3.8 %), neither did. | ✅ Measured, small sets; LeoZotos's test is weak (adapter between base and donor, neither difference significant). |
 | **Shorter reasoning on MiMo with OSS-Distilled's change** (results §43.12) | GSM8K 100 + MATH-500 50, 8,192 tokens: MATH cut 13 → 3 (×1) / 5 (×0.5), tokens 3,077 → 965; placebo 17 cut. GSM8K 92 → 83 at both doses (p = 0.035 / 0.012, two graders agree). | ❌ Fails its pre-registered criterion: the behaviour moves, accuracy drops. |
-| **Happiness control vector (`contrast_vector`)** (results §43.13) | See *Main result*. Judge (MiMo) and lexicon agree; placebo null; GSM8K fast set 7/48 vs 9/48 (within the margin of 2). | ✅ Passes C1-C5 after two documented judge fixes. One model, one style, 40 test prompts. |
+| **Happiness control vector (`contrast_vector`)** (results §43.13) | See *Main result*. Judge (MiMo) and lexicon agree; placebo null; GSM8K fast set 7/48 vs 9/48 (within the margin of 2). | ❌ Passed C1-C5 only with the old op; with the last layer corrected it fails C4/C5 (34/40 coherent, GSM8K 5 vs 9; §45.3). |
 | **MiMo 2.6 vs DeepSeek-V4-Pro-Qwen3.5-9B-heretic** (results §43.14) | Same protocol: GSM8K 92 vs 89 (p = 0.55), MATH-500 41 vs 33 (p = 0.10; second grader 36 vs 33, p = 0.61); heretic thinks ≈ 2.5× less (1,223 vs 3,077 tokens on MATH, 3 vs 13 cut). | ✅ Statistical tie on math. HumanEval not used: heretic's code comes back with 1-space indentation in 13/20 (cause not verified). Refusals not measured. |
 | **MiMo's change does not fit an adapter** (results §43.4-43.5) | Full fine-tune, diffuse change: rank 64-512 adapters reach ≤ 4/16 on the stuck MATH items vs MiMo's own 12/16. | ✅ Negative result, predicted by `energy.json`. |
 | **Copying MiMo's behaviour instead of its weights** (results §43.7-43.10) | Rank-16 adapter trained on MiMo's own answers: MATH 6 → 16 / 24 / 27 of 36 with 93 / 171 / 256 answers, GSM8K 9 → 34 / 41 / 41 of 48. Closed-form, gradient-free fit of `down_proj` to MiMo's hidden states (the WSP/MEMIT write used for a behaviour): 17/36, 25/48; a same-norm random placebo gives 10/36, 14/48 (not significant vs base, p 0.13 / 0.23), and the fit beats it (p 0.039 / 0.003). Writing the attention output too does not help (15/36, 26/48). | ✅ Measured. Distillation flattens after 171 answers; the gradient-free route is closed. |
-| **Donor-free "conclude" control vector** (results §43.17-43.18) | Direction from the base's own traces, scale 1.0: dev GSM8K 50 → 84/100, MATH 6 → 32/50; sealed 43 → 87, 4 → 25; same-norm placebo below base both times (37/3, 23/2). | ✅ **Confirmed on the sealed set**, two graders each. One model, one budget (2,048), greedy; efficiency at a fixed budget, not a new capability; compiled into `down_proj` it passes dev (87 / 34, §43.19) and sealed set 2 (89 / 26 vs base 46 / 7, §43.21). |
+| **Donor-free "conclude" control vector** (results §43.17-43.18) | Direction from the base's own traces, scale 1.0: dev GSM8K 50 → 84/100, MATH 6 → 32/50; sealed 43 → 87, 4 → 25; same-norm placebo below base both times (37/3, 23/2). | ✅ **Confirmed on the sealed set** for the vector as run, two graders each; ⏳ under re-test with the corrected op (its layer 31 had the post-norm flaw, §45.3). One model, one budget (2,048), greedy; efficiency at a fixed budget, not a new capability; compiled into `down_proj` it passes dev (87 / 34, §43.19) and sealed set 2 (89 / 26 vs base 46 / 7, §43.21). |
 | **Creating a skill without a donor** (results §40-§42, §43.8) | Qwen3.5-0.8B, 3×3 multiplication: a training's change lives in a narrow subspace shared across seeds (overlap 0.72-0.80, chance 0.016); rank 20 recovers 91 % of it, another seed's subspace 92 %. But extrapolating early steps, one gradient, coefficients in the subspace, a learned jump (0/7 tasks) and summing changes all fail; donor-free self-distillation on 9B = base. | ❌ Not achieved. Moving an existing change works; making one does not. |
 | **MIT Exp 8 replication** (Qwen3.5-0.8B loop edit) | Edited tensors are bit-identical to Astra's (SHA-256 match with the manifest in `exp8_control/p50c_edit/`). On a MATH-500 holdout, Q6_K, n=20, temp 0.3, 2048-token cap: base 1/20, edit 14/20, random-direction placebo 0/20 (Fisher p ≈ 3.9e-5 edit vs base). Files: `rig_runs/holdout-08b-{base,edit,placebo}-20.json`. | ✅ Replicated, small n. A GSM8K smoke test (n=5, 512-token cap) gave 0/5 vs 1/5, with **all 10 answers cut at the cap**, so it shows no loop break. |
 | **Exp 8 idea on a trained nanoGPT** (results §36) | Loops 111 → 26 of 256 test prompts. One of 3 random edits of the same norm also gave 26. | ❌ Fails the pre-registered criterion 4. |
@@ -290,8 +294,8 @@ without forward passes:
   has no bias, so that addition cannot be written into the weights; it needs a control vector
   ([dahara1/EvilQwen-control-vectors](https://huggingface.co/dahara1/EvilQwen-control-vectors), llama.cpp). Scaling
   columns, as `evil_mimo.json` does, is the multiplicative kind. We have not tested either on MiMo. The additive
-  kind does work here for a mood: the happiness control vector (`contrast_vector`, results §43.13) passes its
-  pre-registered test with a placebo.
+  kind moves a mood here (happiness control vector, results §43.13), but with the corrected op it costs coherence and
+  GSM8K and fails its pre-registered test (§45.3).
 - **Not done:** the behavioural effect was **never evaluated**, so this is an untested edit, not a result. Notes:
   [`docs/behavioral_steering_and_dreaming.md`](docs/behavioral_steering_and_dreaming.md).
 
