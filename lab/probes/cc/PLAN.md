@@ -130,3 +130,36 @@ Prediction (ours, low confidence), arm and control, premises marked:
 - "We would be surprised if": J+C beats J by > 5 on either benchmark (would mean two different mechanisms of closing), or
   J+P is above J.
 Cost: 3 arms x ~35 min + smoke ~ 1.9 GPU hours.
+
+## Prompt control: does an instruction to close do what the direction does? (added 2026-11-13, before any run)
+Outside review (2026-11-13, point 2) and our own gap: the base fails on dev mostly by not finishing inside 2,048 tokens
+(cut 51/100, 45/50; results 43.2: with 8,192 tokens it still cuts 30/50 and never answers wrong). "conclude" is read as
+closing, not capability (T2). Missing arm: the same closing asked for **in the prompt**. If a sentence does what the
+direction does, the direction's value is "no prompt, compilable into the weights", not the number. Descriptive; runs
+after the recompilation chain (`lab/runs/cc_v2/chain_prompt.sh`, one GPU job at a time). `bench_runner.run(extra=...)`
+appends the sentence after the usual suffix (test first); everything else as dev (§43.17 settings, 2,048, greedy, 2
+slots, dev items, base A0, no vector, no adapter).
+
+Arms (new): **P_close** = base + " Once you have the answer, stop reasoning and give it: no re-checking, no restating."
+**P_neutral** (control: "any extra sentence") = base + " Use clear notation and define every variable you introduce
+before using it." Reused: base and cc_v2 x1.0 from `lab/runs/cc_v2/dev_{base,vec}.json`.
+
+Readings (exact McNemar, grader 1, each benchmark; grader 2 reported):
+- R1 P_close vs base: does the sentence help at all (p < 0.05 on either)?
+- R2 P_close vs cc_v2: "prompt-equivalent" if within +-3 on both and p >= 0.05 on both; "the direction does more than a
+  prompt" if cc_v2 > P_close with p < 0.05 on either; "the prompt does more" if the reverse.
+- R3 cost: tokens, cut answers, loop tails of P_close against base and against cc_v2.
+- Control: P_neutral within +-3 of base on both (p >= 0.05) and cut answers within +-5.
+Prediction (ours, low confidence), arm and control, premises marked:
+- P_close: GSM8K 62-75, MATH 12-22; cut 20-35 / 30-40; loop tails >= base's (1 / 1): the farewell loop ("I will write
+  the response", 43.2) is not an instruction-following failure, so a sentence shortens the honest cases and leaves the
+  loops. Tokens GSM8K 1,100-1,400 (base 1,689).
+- R2: "the direction does more than a prompt" (cc_v2 83 / 35 above P_close with p < 0.05 on GSM8K at least).
+- P_neutral: within +-3 of 50 / 6, cuts within +-5 of 51 / 45.
+- Premises: (p1) `extra` reaches the server unchanged (test); (p2) base dev is reusable (deterministic, shown three
+  times); (p3) the model follows a closing instruction at all (if P_close == base on tokens too, the arm says nothing
+  about the direction and is reported as such).
+- "We would be surprised if": P_close >= cc_v2 - 3 on both benchmarks (the direction would be instruction following
+  written into the stream, and the name test's cross-domain shortening would be re-read as the same); P_close below
+  base on either.
+Cost: 2 arms x ~50 min (long answers) ~ 1.8 GPU hours.

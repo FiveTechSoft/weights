@@ -72,3 +72,42 @@ class TestLoraField(unittest.TestCase):
             br.urllib.request.urlopen = old
         self.assertEqual(sent[0]["lora"], [{"id": 0, "scale": 0.5}])
         self.assertNotIn("lora", sent[1])
+
+
+class TestExtraInstruction(unittest.TestCase):
+    """extra: text appended after SUFFIX in the user message (prompt-control arm, cc/PLAN.md "Prompt control"); the
+    default sends exactly question + SUFFIX, so every earlier run is unchanged."""
+
+    def _sent(self, **kw):
+        import io
+        sent = []
+
+        class R(io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        def fake(req, timeout=0):
+            sent.append(json.loads(req.data))
+            return R(json.dumps({"choices": [{"message": {"content": "x"}, "finish_reason": "stop"}],
+                                 "usage": {"completion_tokens": 1}}).encode())
+        old = br.urllib.request.urlopen
+        br.urllib.request.urlopen = fake
+        try:
+            br.ask("http://x", "q", 10, **kw)
+        finally:
+            br.urllib.request.urlopen = old
+        return sent[0]["messages"][0]["content"]
+
+    def test_extra_is_appended_after_the_suffix_and_absent_by_default(self):
+        self.assertEqual(self._sent(), "q" + br.SUFFIX)
+        self.assertEqual(self._sent(extra=" Stop now."), "q" + br.SUFFIX + " Stop now.")
+
+    def test_run_passes_extra_to_every_request_and_records_it(self):
+        fake = {"content": "", "reasoning": "", "finish": "stop", "tokens": 3, "tok_s": 30.0}
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(br, "ask", return_value=fake) as m:
+            rep = br.run("t", 1, gsm_n=2, math_n=0, parallel=1, out_dir=d, log=lambda s: None, extra=" Stop now.")
+        self.assertEqual({c.kwargs.get("extra") for c in m.call_args_list}, {" Stop now."})
+        self.assertEqual(rep["extra"], " Stop now.")

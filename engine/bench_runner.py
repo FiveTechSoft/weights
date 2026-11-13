@@ -40,9 +40,10 @@ def endpoint_url(endpoint) -> str:
     return f"http://127.0.0.1:{e}/v1/chat/completions" if e.isdigit() else e
 
 
-def ask(url, text, max_tokens, lora=None):
-    """lora: [(id, scale), ...] for adapters loaded with llama-server --lora ... --lora-init-without-apply."""
-    body = {"messages": [{"role": "user", "content": text + SUFFIX}], "temperature": 0, "seed": 0,
+def ask(url, text, max_tokens, lora=None, extra=""):
+    """lora: [(id, scale), ...] for adapters loaded with llama-server --lora ... --lora-init-without-apply.
+    extra: text appended after SUFFIX (prompt-control arm, lab/probes/cc/PLAN.md); "" sends exactly text + SUFFIX."""
+    body = {"messages": [{"role": "user", "content": text + SUFFIX + extra}], "temperature": 0, "seed": 0,
             "max_tokens": max_tokens}
     if lora:
         body["lora"] = [{"id": int(i), "scale": float(s)} for i, s in lora]
@@ -82,9 +83,9 @@ def simple_norm(s):
 
 
 def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_dir=None, log=print, lora=None,
-        gsm_idx=None, math_idx=None):
+        gsm_idx=None, math_idx=None, extra=""):
     """gsm_idx / math_idx: explicit item lists (e.g. engine/sealed_set.py); otherwise GSM8K first gsm_n and MATH-500
-    select_indices(2026, math_n)."""
+    select_indices(2026, math_n). extra: sentence appended to every prompt after SUFFIX (see ask)."""
     m5 = _m5()
     url = endpoint_url(endpoint)
     out_dir = Path(out_dir) if out_dir else ROOT / "lab" / "runs" / "model_compare"
@@ -105,7 +106,7 @@ def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_d
 
     def one(job):
         bench, i, text, gold = job
-        r = ask(url, text, max_tokens, lora=lora)
+        r = ask(url, text, max_tokens, lora=lora, extra=extra)
         pred = m5.extract_pred(r["content"])
         ok1 = bool(pred) and m5.equivalent(pred, gold)
         ok2 = grade_gsm_independent(r["content"], gold) if bench == "gsm8k" else (
@@ -134,8 +135,8 @@ def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_d
                           "loop_tails": sum(bool(r.get("loop")) for r in rs),
                           "mean_tokens": round(sum(r["tokens"] for r in rs) / len(rs)),
                           "mean_tok_s": round(sum(r["tok_s"] for r in rs) / len(rs), 1)}
-    report = {"model": name, "endpoint": url, "max_tokens": max_tokens, "lora": lora, "seconds": round(time.time() - t0),
-              "summary": summary, "items": rows}
+    report = {"model": name, "endpoint": url, "max_tokens": max_tokens, "lora": lora, "extra": extra,
+              "seconds": round(time.time() - t0), "summary": summary, "items": rows}
     (out_dir / f"{name}.json").write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     log(f"{name} {json.dumps(summary)}")
     return report
