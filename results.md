@@ -2695,3 +2695,22 @@ datos `lab/runs/cc_v2/prompt/`.
   usuario), un modelo, un tope, voraz; no se probó una instrucción de sistema, una frase dentro del pensamiento ni un
   modo sin pensamiento, y una instrucción más fuerte podría comportarse de otro modo. Con esto queda **cerrada la cola de
   cc_v2** (§45.4-45.9); lo siguiente son líneas nuevas con plan y predicción antes.
+- **Nota (2026-11-13, lectura cruzada de datos ya existentes, sin corrida nueva; pregunta de una revisión externa:
+  "¿qué hace la base con tope 8 192?").** El brazo existe desde §39/§43.1: la misma base A0 Q6_K, voraz, tope 8 192,
+  sobre los mismos ítems de dev (`lab/runs/h4/h4_A0.json` GSM8K; `lab/runs/model_compare/own_base.json` MATH).
+  Pareado ítem a ítem con el vector cc_v2 ×1.0 a 2 048 (§45.4):
+
+  | | GSM8K /100 | cortadas | tokens medios | MATH /50 | cortadas | tokens medios |
+  |---|---|---|---|---|---|---|
+  | base, 2 048 | 50 | 51 | 1 689 | 6 | 45 | 1 952 |
+  | base, 8 192 | 72 | 24 | 3 638 | 20 | 30 | 6 480 |
+  | vector cc_v2 ×1.0, 2 048 | 83 | 8 | 735 | 35 | 17 | 1 359 |
+
+  Vector a 2 048 frente a base a 8 192: GSM8K 17 gana / 6 pierde, p 0,035; MATH 17/2, p 0,0007; con un quinto de los
+  tokens (0,20 y 0,21). Con cuatro veces más presupuesto la base sigue por debajo del vector y sigue cortando 24 y 30.
+  Así que a estos topes "concluir" no es solo ahorro de tokens: es acierto que la base no alcanza ni con 8 192 (sí con
+  32k, T2, o forzando el cierre, §43.3: 41/50 a 2 048). Las 13 respuestas de GSM8K que el vector acaba mal (79/92):
+  10 las cortaba la base a 2 048, 7 las sigue cortando a 8 192 y solo 4 las acierta la base a 8 192; el juez 2 da 1
+  por buena. Son sobre todo los ítems que la base no termina (selección), no cierres prematuros de ítems fáciles. En
+  MATH el vector acaba mal 1, que la base corta a los dos topes. Dos métodos: recuento por filas sobre los tres
+  informes; los totales coinciden con los resúmenes de §39.6 (A0 72/100, 24 cortadas) y §43.1 (20/50, 30 cortadas).
