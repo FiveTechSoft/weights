@@ -30,8 +30,15 @@ $IDX
 b.run('$name', $PORT, out_dir='$OUT', max_tokens=2048, parallel=4, log=lambda m: print(m, flush=True), **kw)" >> $LOG 2>&1 || log "ARM FAILED $name"; }
 
 until grep -qE "^\[cc_pl\] PLACEBO DONE" lab/runs/cc_v2/chain.log 2>/dev/null; do sleep 120; done
+# another session's chain (lab/runs/cc_v2/chain_cap8192.sh, row 31) also starts after PLACEBO DONE and its own GPU guard
+# uses pgrep, which this system lacks: if it has started, wait for its end marker (one GPU job at a time)
+CAPLOG=lab/runs/cc_v2/chain_cap8192.log
+if grep -q "^\[cap8192\] start" $CAPLOG 2>/dev/null; then
+  until grep -qE "^\[cap8192\] (CHAIN DONE|CHAIN EXITED)" $CAPLOG 2>/dev/null; do sleep 300; done
+fi
+# and never start while any llama-server is alive (any port)
+until ! tasklist 2>/dev/null | grep -qi "llama-server"; do sleep 120; done
 if netstat -ano | grep ":$PORT " | grep -q LISTENING; then log "port $PORT busy: not started"; exit 1; fi
-if netstat -ano | grep ':8095 ' | grep -q LISTENING; then log "port 8095 busy (another chain): not started"; exit 1; fi
 
 log "dev items (never used anywhere)"
 [ -f $OUT/dev_items.json ] || "$P" $PC items >> $LOG 2>&1 || { log "ITEMS FAILED"; exit 1; }
