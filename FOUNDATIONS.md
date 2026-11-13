@@ -196,8 +196,11 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   sealed set 1 (86 / 33) and its compilation on sealed set 2, second use (89 / 25 vs base 46 / 7, placebo 34 / 5,
   HumanEval-20 19/20). Paired on the same 150 items the corrected layer 31 changes nothing in correctness (3/3, 3/4) and
   halves the loop tails: the signal was in layers 1-30. Composition with the Jackrong adapter is redundant in accuracy
-  and additive in cost (§45.7: tokens ×0.39, cuts 9 → 0). Still open: other budgets, other models, sampling; **running
-  now:** does a closing sentence in the prompt do what the direction does (prompt control, `cc/PLAN.md`, row 28)?
+  and additive in cost (§45.7: tokens ×0.39, cuts 9 → 0). **A closing sentence in the prompt does not do it (§45.9):**
+  base + "stop reasoning once you have the answer" gives GSM8K 50 → 37 (p 0.019), same tokens, more cut answers; a
+  neutral sentence gives 29. The thinking phase does not react to an instruction in the user turn at this budget, and
+  any added sentence lengthens it. Prediction row 28 failed (we expected 62-75). Still open: other budgets, other
+  models, sampling, an instruction placed inside the thinking or as a system prompt.
 - **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
   traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
   rebuild the conclude vector and get dev 83 / 35? Today we only know the *program* is deterministic. Cheap,

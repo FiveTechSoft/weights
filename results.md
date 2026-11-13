@@ -2645,3 +2645,53 @@ correctas, mediana 471 tokens (primera compilación 19/20; vector 15/20).
   descriptivo §45.5, nombre §45.6, composición §45.7, pesos §45.8): la entrada de "concluir" en el README pasa a citar
   estos números. Límites: un modelo, un tope (2 048), voraz, una corrida por brazo; el sellado 2 queda gastado como
   confirmación (dos usos) y el siguiente es `data/sealed_confirm3.json` (un solo uso).
+
+### 45.9 Control de prompt: una frase de cierre en el prompt no hace lo que hace la dirección; cualquier frase añadida daña (2026-11-13)
+Plan: "Prompt control" de `lab/probes/cc/PLAN.md` (2026-11-13, antes de correr; fila 28 de `predictions.md`). Pregunta
+de la revisión externa del 13-nov (punto 2) y hueco propio: si "concluir" es cierre y no capacidad (T2), ¿lo hace
+igual una frase que pida cerrar en el prompt? Brazos sobre la base A0, dev (100 GSM8K + 50 MATH-500), tope 2 048, voraz,
+2 ranuras, sin vector ni adaptador: **P_close** = sufijo habitual ("Please reason step by step, and put your final
+answer within \boxed{}") + " Once you have the answer, stop reasoning and give it: no re-checking, no restating.";
+**P_neutral** (control "cualquier frase más") = sufijo + " Use clear notation and define every variable you introduce
+before using it.". Base y vector cc_v2 ×1.0 reutilizados de §45.4 (mismos 150 ítems, comprobado). `bench_runner.run(extra=…)`
+añade la frase tras el sufijo (tests antes; el informe guarda la frase: premisa p1). Cadena `lab/runs/cc_v2/chain_prompt.sh`;
+datos `lab/runs/cc_v2/prompt/`.
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§45.4) | 50 / 49 | 51 | 1 | 1 689 | 6 / 6 | 45 | 1 | 1 952 |
+| vector cc_v2 ×1.0 (§45.4) | 83 / 84 | 8 | 10 | 735 | 35 / 27 | 17 | 10 | 1 359 |
+| **P_close** (frase de cierre) | **37** / 37 | 63 | 2 | 1 675 | **4** / 4 | 45 | 0 | 1 941 |
+| P_neutral (frase neutra, control) | 29 / 29 | 71 | 2 | 1 910 | 3 / 3 | 47 | 0 | 2 020 |
+
+- **R1 (P_close frente a base): la frase daña.** GSM8K 7 gana / 20 pierde, p 0,019 (g2 8/20, p 0,036); MATH 1/3,
+  p 0,63. Veintidós ítems que la base acababa quedan cortados con la frase; diez al revés.
+- **R2 (P_close frente a cc_v2): "la dirección hace más que un prompt"**, y de sobra: vector 46/0 en GSM8K y 31/0 en
+  MATH (g2 47/0, 24/1), p < 1e-9. La lectura sale como se predijo, pero por la razón contraria: no porque la frase ayude
+  menos, sino porque no ayuda.
+- **R3 coste: la frase no acorta nada.** Tokens medios 1 689 → 1 675 (mediana 2 048 en los dos brazos: la mitad de las
+  respuestas llega al tope); cortes 51 → 63; bucles 1 → 2; caracteres de razonamiento (mediana) 5 342 → 6 090. El
+  modelo no cierra antes con la instrucción: piensa algo más.
+- **Control fuera de banda.** P_neutral 29 (−21 de la base, 10/31, p 0,0015), cortes 71 (+20); MATH 3, cortes 47. La
+  banda era ±3 y ±5. P_close frente a P_neutral: 20/12, p 0,22. Es decir, **cualquier frase añadida tras el sufijo
+  alarga el pensamiento y corta más**; la frase de cierre lo hace algo menos que la neutra, sin significación.
+- **Premisa p3 falla:** el modelo no sigue la instrucción de cerrar en absoluto (mismos tokens, más cortes). El plan lo
+  preveía: "si P_close = base también en tokens, el brazo no dice nada sobre la dirección y se informa así". Se informa
+  así: este brazo **no** mide "prompt frente a dirección"; mide que la instrucción en el turno de usuario no llega a la
+  fase de pensamiento de este modelo a este tope.
+- Dato lateral: entre las respuestas acabadas la precisión es ~100 % en todos los brazos (base 49/49, P_close 37/37,
+  P_neutral 28/29; vector 79/92). Todo lo que se mueve en GSM8K es acabar o no acabar.
+- Dos métodos: recuento propio por filas coincide con los resúmenes del `bench_runner` en aciertos, cortes, bucles y
+  tokens; McNemar exacto recalculado aparte.
+- **Predicción (fila 28): falla.** P_close 37 / 4 (predicho 62-75 / 12-22); cortes 63 / 45 (20-35 / 30-40); tokens
+  1 675 (1 100-1 400); control fuera de banda (−21, +20). Acierta solo el sentido de R2 y los bucles ≥ base (2 ≥ 1). Cae
+  en la zona de sorpresa declarada ("P_close por debajo de la base en alguno"). Después de tres filas que sobrestimaban
+  el coste del vector (23, 25, 26), esta sobrestima lo que hace un prompt.
+- **Lectura:** el valor de la dirección no es "un prompt compilado en los pesos": ningún prompt de los probados hace lo
+  que hace. A 2 048 tokens y voraz, el fallo de la base no es de seguir instrucciones; la fase de pensamiento no reacciona
+  a una frase del turno de usuario, y cualquier frase extra le da más que considerar (5 342 → 5 916-6 090 caracteres).
+  Refuerza la lectura de T2 (cerrar a tiempo es una conducta del flujo residual, no una obediencia) y la de §45.6
+  (la dirección acorta también fuera de matemáticas). Límites: dos frases, una posición (tras el sufijo, en el turno de
+  usuario), un modelo, un tope, voraz; no se probó una instrucción de sistema, una frase dentro del pensamiento ni un
+  modo sin pensamiento, y una instrucción más fuerte podría comportarse de otro modo. Con esto queda **cerrada la cola de
+  cc_v2** (§45.4-45.9); lo siguiente son líneas nuevas con plan y predicción antes.
