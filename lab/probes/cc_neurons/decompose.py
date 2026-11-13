@@ -21,6 +21,7 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
+from engine.contrast_vector import hidden_states_pre_norm   # noqa: E402  (last row before the final norm; audit 2026-11-13)
 BASE_HF = ROOT / "hf_cache" / "qwen35-9b-hf"
 VEC = ROOT / "hf_cache" / "cc" / "cc.gguf"
 POS, NEG = ROOT / "lab" / "runs" / "cc" / "pos.jsonl", ROOT / "lab" / "runs" / "cc" / "neg.jsonl"
@@ -115,7 +116,7 @@ def run(out):
                     sel = slice(len(a) + s.start, len(a) + s.stop)
                     mask = torch.rand(s.stop - s.start, generator=g) < p_a
                     ctx.update(sel=sel, group=group, mask=mask)
-                    hs = core(input_ids=torch.tensor([a + b]), output_hidden_states=True, use_cache=False).hidden_states
+                    hs = hidden_states_pre_norm(core, torch.tensor([a + b]))   # 43.23 ran with the raw tuple (post-norm last row, as cc.gguf then); a re-run must compare with cc_v2.gguf
                     v = torch.stack([h[0, sel].float().cpu().sum(0) for h in hs])     # as contrast_vector.layer_means
                     hsum[group] = v if hsum[group] is None else hsum[group] + v
                     e = hs[0][0, sel].float().cpu()

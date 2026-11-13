@@ -16,6 +16,9 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT))
+from engine import contrast_vector as cv   # noqa: E402  (hidden_states_pre_norm)
+
 SUFFIX = "\nPlease reason step by step, and put your final answer within \\boxed{}."
 MAX_TAIL = 384   # tokens of continuation per text
 
@@ -69,7 +72,8 @@ def layer_means(path, data):
     model = AutoModelForCausalLM.from_pretrained(path, dtype=torch.bfloat16)
     model.eval()
     core = model.model
-    layers = core.layers if hasattr(core, "layers") else core.language_model.layers
+    core = core if hasattr(core, "layers") else core.language_model
+    layers = core.layers
     stream_layers(layers)
     sums, count = None, 0
     B = int(__import__("os").environ.get("CVEC_B", 8))   # right padding: causal model, so real positions never see the pads after them
@@ -77,7 +81,7 @@ def layer_means(path, data):
         chunk = data[k:k + B]
         L = max(len(pi) + len(ti) for pi, ti in chunk)
         ids = torch.tensor([pi + ti + [0] * (L - len(pi) - len(ti)) for pi, ti in chunk])
-        hs = core(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states
+        hs = cv.hidden_states_pre_norm(core, ids)   # last row before the final norm (audit 2026-11-13)
         for b, (pi, ti) in enumerate(chunk):
             sl = slice(len(pi), len(pi) + len(ti))
             v = torch.stack([h[b, sl].float().cpu().sum(0) for h in hs])     # (n_layers + 1, d)

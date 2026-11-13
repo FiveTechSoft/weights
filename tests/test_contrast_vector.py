@@ -47,6 +47,32 @@ class TestPure(unittest.TestCase):
         torch.testing.assert_close(got[-1], want.float(), atol=1e-5, rtol=1e-5)
         self.assertEqual(got.shape[0], 4)                 # embeddings + 3 layers
 
+    def test_hidden_states_pre_norm_replaces_only_the_last_row(self):
+        # Shared helper for every reader of hidden_states (act_map capture, cvec_extract): rows 0..n-1 as transformers
+        # gives them, row n = output of the last decoder layer before the final norm (audit 2026-11-13).
+        from transformers import LlamaConfig, LlamaForCausalLM
+        from engine import contrast_vector as cv
+        torch.manual_seed(0)
+        m = LlamaForCausalLM(LlamaConfig(vocab_size=64, hidden_size=16, intermediate_size=32, num_hidden_layers=3,
+                                         num_attention_heads=2, num_key_value_heads=2)).eval()
+        with torch.no_grad():
+            m.model.norm.weight.mul_(7.0)
+        ids = torch.tensor([[1, 2, 3, 4], [5, 6, 7, 8]])
+        seen = []
+        h = m.model.layers[-1].register_forward_hook(lambda mod, a, o: seen.append(o[0] if isinstance(o, tuple) else o))
+        try:
+            with torch.no_grad():
+                ref = m.model(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states
+                got = cv.hidden_states_pre_norm(m.model, ids)
+        finally:
+            h.remove()
+        self.assertEqual(len(got), 4)
+        for k in range(3):
+            torch.testing.assert_close(got[k], ref[k])
+        torch.testing.assert_close(got[3], seen[0])
+        self.assertFalse(torch.allclose(got[3], ref[3]))         # the post-norm row is a different object
+        self.assertEqual(len(m.model.layers[-1]._forward_hooks), 1)   # the helper removed its own hook
+
     def test_gguf_round_trip(self):
         from engine import contrast_vector as cv
         import gguf

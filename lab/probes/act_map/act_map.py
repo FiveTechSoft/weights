@@ -185,7 +185,7 @@ def capture(a):
             chunk = ids[k:k + a.batch]
             n = max(len(c) for c in chunk)
             x = torch.tensor([c + [0] * (n - len(c)) for c in chunk])        # right pad: causal, pads unseen
-            hs = core(input_ids=x, output_hidden_states=True, use_cache=False).hidden_states
+            hs = cv.hidden_states_pre_norm(core, x)     # last row before the final norm (audit 2026-11-13)
             if mm is None:
                 mm = [np.lib.format.open_memmap(out / f"h{L:02d}.npy", mode="w+", dtype=np.float16,
                                                 shape=(total, hs[L].shape[-1])) for L in range(len(hs))]

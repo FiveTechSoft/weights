@@ -2175,7 +2175,7 @@ Plan `lab/probes/cc08/PLAN.md` (fijado antes de correr). Base 0.8B Q6_K, razonam
   re-derivada en destino con la que compararse; haría falta otra dirección que el 0.8B sí tenga, o leer los cierres
   con un tope mucho mayor (otro plan).
 
-### 43.23 cc_neurons fase A: la dirección "concluir" no vive en pocas neuronas (PARCIAL; sin fase B) (2026-11-11)
+### 43.23 cc_neurons fase A: la dirección "concluir" no vive en pocas neuronas (PARCIAL; sin fase B) (2026-11-11) — [rev 2026-11-13] descompuso `cc.gguf` con la última fila post-norma (coherente entonces); `decompose.py` corregido, una repetición debe comparar con `cc_v2.gguf`
 Plan `lab/probes/cc_neurons/PLAN.md` (fijado antes de correr). Cada incremento v_N del vector de §43.17 se parte de
 forma exacta en atención + W_N·Δa_N (MLP); k₅₀ = neuronas del MLP (columnas de `down_proj`) que llevan la mitad de su
 contribución; nulo = el mismo cálculo con los tokens repartidos al azar en dos grupos del mismo tamaño (semilla 2026).
@@ -2304,6 +2304,13 @@ tokenizador (sha256 idéntico), GSM8K-train 1000-1239, 21 896 tokens de ajuste, 
 - Cautela: el contraste *late* (último cuarto del texto frente al resto) puede llevar mucha información de posición,
   y su coseno ≈ 0.99 en todos los estados es más alto de lo esperable; la puerta 2/3 debe usar un contraste de
   contenido, no solo de posición.
+- [rev 2026-11-13, auditoría post-norma a raíz de §45.2] La captura (`act_map.py`) guardaba la tupla `hidden_states`
+  cruda: el último estado (h24 en la 0.8B, h32 en la 9B) era la salida *después* de la norma final, no la corriente
+  residual. Corregido en el código (`contrast_vector.hidden_states_pre_norm`, compartido por todos los lectores; test
+  `tests/test_pre_norm_readers.py`), **no re-corrido**: afecta a 1 de los 24 / 32 estados de una mediana y a ninguna
+  de las profundidades de la puerta 2 (j = 6-24, i ≤ 18). Mismo repaso: `close_probe/cvec_extract.py` (sin uso en
+  ningún resultado) y `cc_neurons/decompose.py` (§43.23, coherente con el `cc.gguf` antiguo) corregidos;
+  `rig/extract_loop_direction.py` lee igual la última fila y no se toca (anotado).
 
 ### 45.1 Puerta 2: el modelo destino USA los estados mapeados: PASA en las dos direcciones (2026-11-11)
 Addendum "Gate 2" de `lab/probes/act_map/PLAN.md` (criterios fijados antes del código), `lab/probes/act_map/stitch.py`,
