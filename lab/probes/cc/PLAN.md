@@ -197,3 +197,42 @@ Prediction (ours, low confidence), arm and control, premises marked:
 - "We would be surprised if": any seed >= 20/64; median >= 12; vector rank > 1 (a random direction of that norm would
   sometimes do what the direction does, and §43.17-45.8 would need a different control).
 Cost: 8 arms x ~25 min (screen arms ran 1,200-1,700 s) ~ 3.5 GPU hours.
+
+## Token-budget control: the base at 8,192 (added 2026-11-13, before any run; prediction row 31)
+
+**Question.** Is "conclude" an accuracy gain or a token-budget effect? Between finished answers the base is 49/49
+and the vector 79/92 on GSM8K dev (45.9). Reading the 45.8 arms directly (cap8192/thirteen.json,
+cap8192/early_wrong.json): every GSM8K gain of the vector over the base (36 items) is a base token cut; the vector
+closes 13 finished-but-wrong answers, 10 of them also cut in the base and 3 that the base had right (early-close
+cost). In MATH the vector cuts 17 vs 45. Everything so far is consistent with "closes instead of cutting".
+
+**Arms** (`lab/runs/cc_v2/chain_cap8192.sh`, after the placebo and gate-3b chains; one GPU job at a time;
+idempotent markers; GSM8K dev 100, the same items as 45.8, greedy, 2 slots):
+1. base at 8,192 (new run);
+2. vec at 8,192 (`cc_v2` control vector at scale 1.0);
+3. merged at 8,192 (the compiled Q6_K; consistency with the vector arm).
+
+**Readings** (grader 1, grader 2 reported): ok/100, cuts, finished-wrong, mean tokens per arm; per-item on the
+36 base-cut items (how many the base now closes ok), on the 13 vector early-wrong items (does it still close
+them wrong at 8,192?), and the 3 base-ok items (early-close cost persists?).
+
+**Prediction (ours).**
+- Base at 8,192: ok 82-92/100, cuts <= 8. If so, the GSM8K effect of conclude is finishing-in-budget (saving,
+  0.4x tokens), not new capability, and the placebo's 28-34 at 2,048 is prompt fragility of the base, not noise.
+- Vec at 8,192: ok = its 2,048 value (83) +/- 2; it still closes early (its 13 finished-wrong stay mostly wrong);
+  mean tokens far below base.
+- Merged = vec within 2.
+- We would be surprised if: base at 8,192 < 70 (then conclude is a real accuracy gain, the framing changes);
+  vec at 8,192 beats base at 8,192 by more than 5 (effect beyond finishing); base's 3 early-close-ok items
+  (50, 63, 82) also ok under the vector at 8,192 (early-close cost would be an artifact of the 2,048 budget).
+Cost: 3 arms x ~2 GPU h (8,192-token cap doubles-to-quadruples arm time) ~ 5-6 GPU hours.
+
+[rev 2026-11-13 21:20, by the session that integrates this section, before any arm ran; prediction left untouched.]
+- The base at 8,192 on these GSM8K items was already measured: results §39.6, `lab/runs/h4/h4_A0.json`, same A0
+  Q6_K, greedy, 8,192: **72/100, 24 cut**, mean 3,638 tokens (MATH: §43.1, 20/50, 30 cut). Paired with the vector at
+  2,048 it is 17 won / 6 lost (results §45.9, note). The new base arm is therefore a repeat under this chain's server
+  settings (`-c 40960`); its value is the consistency check with the vector and merged arms run the same way.
+- The chain's GPU guard (`pgrep -x llama-server`) does not exist on this system (`pgrep: command not found`), so it
+  only waits for "PLACEBO DONE". Sequencing is done by the gate 3b chain instead (`lab/runs/act_map/cc08_chain.sh`
+  waits for this chain's `CHAIN DONE` / `CHAIN EXITED` marker and for no llama-server alive). Order: row 29 → row 31 →
+  row 30. Prediction row 31 in `predictions.md`.

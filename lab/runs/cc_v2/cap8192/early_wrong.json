@@ -1,0 +1,121 @@
+{
+ "early_wrong": [
+  {
+   "i": 2,
+   "vec_tokens": 1496,
+   "vec_pred": "195000",
+   "gold": "70000",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 7,
+   "vec_tokens": 1135,
+   "vec_pred": "60",
+   "gold": "160",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 8,
+   "vec_tokens": 1162,
+   "vec_pred": "120",
+   "gold": "45",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 12,
+   "vec_tokens": 1352,
+   "vec_pred": "12",
+   "gold": "13",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 14,
+   "vec_tokens": 785,
+   "vec_pred": "60\\%",
+   "gold": "60",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 20,
+   "vec_tokens": 1609,
+   "vec_pred": "15.67",
+   "gold": "15",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 37,
+   "vec_tokens": 400,
+   "vec_pred": "0",
+   "gold": "2",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 50,
+   "vec_tokens": 734,
+   "vec_pred": "306",
+   "gold": "294",
+   "base_finish": "stop",
+   "base_tokens": 1768,
+   "base_ok": true
+  },
+  {
+   "i": 58,
+   "vec_tokens": 1684,
+   "vec_pred": "47.00",
+   "gold": "57",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 62,
+   "vec_tokens": 1805,
+   "vec_pred": "7500",
+   "gold": "25000",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 63,
+   "vec_tokens": 494,
+   "vec_pred": "966",
+   "gold": "1596",
+   "base_finish": "stop",
+   "base_tokens": 1714,
+   "base_ok": true
+  },
+  {
+   "i": 70,
+   "vec_tokens": 619,
+   "vec_pred": "2925",
+   "gold": "7425",
+   "base_finish": "length",
+   "base_tokens": 2048,
+   "base_ok": false
+  },
+  {
+   "i": 82,
+   "vec_tokens": 329,
+   "vec_pred": "498",
+   "gold": "623",
+   "base_finish": "stop",
+   "base_tokens": 1385,
+   "base_ok": true
+  }
+ ]
+}
