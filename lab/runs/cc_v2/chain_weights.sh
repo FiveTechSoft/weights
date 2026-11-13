@@ -21,10 +21,11 @@ stop() {
   for w in $(netstat -ano | grep ':8095 ' | grep LISTENING | awk '{print $5}' | sort -u); do taskkill //F //PID $w > /dev/null 2>&1; done
   sleep 3; SP=""; }
 bench() {  # name out_dir [sealed]
+  local sealed="${3:-}"
   "$P" -c "
 import sys; sys.path.insert(0,'.'); from engine import bench_runner as b, sealed_set as ss
 kw = {}
-if '$3' == 'sealed':
+if '$sealed' == 'sealed':
     s = ss.load('data/sealed_confirm2.json'); kw = dict(gsm_idx=s['gsm8k'], math_idx=s['math500'])
 b.run('$1', 8095, out_dir='$2', max_tokens=2048, log=lambda m: print(m, flush=True), **kw)" >> $LOG 2>&1 || log "ARM FAILED $1"; }
 
