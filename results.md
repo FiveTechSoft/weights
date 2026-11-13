@@ -6,7 +6,7 @@
 > afirmaciones luego retiradas (§26) y las ideas refutadas. **No es el estado actual.** El estado actual está en
 > [`README.md`](README.md) (resultado principal) y [`FOUNDATIONS.md`](FOUNDATIONS.md) (tesis, estado y evidencia).
 > §1-§25 (3-4 nov) son el estudio inicial (MiMo, toolkit, nanoGPT); §26 retira lo que no se demostró; el resultado
-> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-12.
+> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-13.
 
 Estudio inicial: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
 
@@ -2572,3 +2572,76 @@ determinista; r16 conserva 58,6 % de la energía, igual que §43.6) porque `hf_c
   (el camino corto) y el vector empuje *a* concluir (el momento): la misma conducta por dos mecanismos que se suman en
   longitud y se saturan en acierto. Límites: dev, una corrida por brazo, un modelo, un tope; "redundante" aquí es
   p ≥ 0,58 con 150 ítems, no una igualdad demostrada.
+
+### 45.8 "Concluir" recompilado en los pesos con el vector corregido (cc_v2 → `down_proj`): PASA en dev y CONFIRMA en el sellado 2 (2026-11-13)
+Plan: adenda "Repeat with the corrected vector" de `lab/probes/cc_weights/PLAN.md` (2026-11-12, antes de correr; fila 27
+de `predictions.md`). Por qué: `cc.gguf` (§43.19, §43.21, §43.25) llevaba en `direction.31` la fila post-norma (§45.3);
+el vector corregido `cc_v2.gguf` (capas 1-30 idénticas, capa 31 norma 13,2 → 18,1) pasó dev y confirmó en el sellado 1
+(§45.4); el compilado había que rehacerlo con él. Cadena `lab/runs/cc_v2/chain_weights.sh`: op `compile_control_vector`
+desde `programs/cc_compile_v2.wspl` (misma calibración, mismo λ, misma base, placebo `cc_v2.placebo2026.gguf`) →
+`hf_cache/cc_op_v2`; comprobación mecánica `lab/probes/cc_weights/v2_check.py` → `lab/runs/cc_v2/weights/v2_check.json`;
+dev en `lab/runs/cc_v2/weights/`; sellado en `lab/runs/sealed_ccw_v2/`; HumanEval en
+`lab/runs/close_probe/fast/he_ccw2_merged.json`. Mismos criterios C1-C4 (`verdict.py`). La cadena murió dos veces en
+silencio al empezar dev (`set -u` y un `$3` sin poner en la función de bench; ~16 h de GPU perdidas; arreglo en 01e21b3):
+nada de lo medido cambió entre intentos, el op y la comprobación mecánica dieron lo mismo las tres veces.
+
+**Mecánica (descriptiva, sin parada).** G0 mediana 0,0318 (peor 0,0435; placebo peor 0,0470; umbral 0,5). 30 de 31
+`ffn_down` byte a byte iguales a `cc_merged-Q6_K.gguf`; la u de la capa 31 es la misma que en la primera compilación
+(cos 1,0: u = (KᵀK+λI)⁻¹Kᵀ1 no depende de v, solo de la calibración), así que la única diferencia entre los dos GGUF
+fusionados es el tensor 31 (cos 0,99958 con el antiguo). Fusión de la capa 31: ‖ΔW‖ 2,52, error relativo escrito frente
+a ΔW 0,3525, cos 0,9395 (la primera compilación: 0,466 / 0,896 en esa capa; mediana de todas las capas 0,475). El
+empuje mayor sobrevive **mejor** a Q6_K, no peor: el paso de cuantización es el mismo y ΔW es más grande.
+
+**Dev** (100 GSM8K + 50 MATH-500, tope 2 048, voraz; base y vector cc_v2 reutilizados de §45.4):
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§45.4) | 50 | 51 | 1 | 1 689 | 6 | 45 | 1 | 1 952 |
+| vector cc_v2 ×1.0 (§45.4) | 83 | 8 | 10 | 736 | 35 | 17 | 10 | 1 359 |
+| **fusionado v2 Q6_K (sin flags)** | **85** / 86 | 10 | 6 | 796 | **30** / 23 | 21 | 5 | 1 438 |
+| placebo fusionado v2 | 27 / 27 | 73 | 2 | 1 810 | 3 / 3 | 47 | 1 | 1 998 |
+| fusionado v1 (§43.19, referencia) | 87 / 90 | 8 | 4 | 730 | 34 / 27 | 14 | 3 | 1 385 |
+
+C1 fusionado > base: GSM8K 36 gana / 1 pierde, p 5,5e-10 (último nº 29/2, p 4,6e-7); MATH 24/0, p 1,2e-7 (g2 17/0,
+p 1,5e-5). C2 placebo no mejor: GSM8K 6/29 por debajo de la base, p 1,2e-4; MATH 1/4. C3 sin daño en GSM8K. C4 fusionado
+no por debajo del vector: GSM8K 4/2, p 0,69; MATH **0/5, p 0,0625** (g2 0/4, p 0,125): pasa, pero en MATH el fusionado
+pierde 5 ítems frente al vector sin ganar ninguno. Siete desacuerdos entre jueces en MATH (todos de formato, como en
+§45.7). **PASA C1-C4.**
+
+**Sellado 2** (`data/sealed_confirm2.json`, **segundo uso**; el primero fue §43.21; la base no se repite, se copia de
+`lab/runs/sealed_ccw/base.json`, premisa p3). Vector cc_v2 ×1.0 corrido de nuevo aquí por primera vez:
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§43.21) | 46 | 52 | 2 | 1 681 | 7 | 43 | 2 | 1 959 |
+| vector cc_v2 ×1.0 | 86 / 87 | 6 | 9 | 696 | 27 / 26 | 20 | 13 | 1 391 |
+| **fusionado v2** | **89** / 90 | 7 | 3 | 713 | **25** / 24 | 22 | 5 | 1 424 |
+| placebo fusionado v2 | 34 / 33 | 67 | 1 | 1 808 | 5 / 5 | 46 | 5 | 1 993 |
+| vector cc ×1.0 (§43.21, referencia) | 90 / 91 | 10 | 10 | 673 | 22 / 21 | 27 | 16 | 1 472 |
+| fusionado v1 (§43.21, referencia) | 89 / 90 | 8 | 8 | 689 | 26 / 25 | 22 | 8 | 1 456 |
+
+C1: GSM8K 45/2, p 1,6e-11 (último nº 35/3, p 6,7e-8); MATH 18/0, p 7,6e-6 (g2 17/0, p 1,5e-5). C2: placebo 10/22 por
+debajo de la base en GSM8K, p 0,050; MATH 1/3. C3 sin daño. C4 fusionado frente a vector cc_v2: GSM8K 7/4, p 0,55; MATH
+2/4, p 0,69. **CONFIRMA.** Retención (informada, no criterio): HumanEval-20 del fusionado 20/20 cerradas, **19/20**
+correctas, mediana 471 tokens (primera compilación 19/20; vector 15/20).
+
+- Dos métodos: recuento propio fila a fila de los seis informes coincide con los resúmenes y con `verdict.json` en
+  aciertos (g1 y g2), cortes, bucles, tokens y pares gana/pierde (7/4, 2/4); McNemar exacto recalculado aparte da las
+  mismas p. Los índices de dev y del sellado no se solapan (0 de 150).
+- **Lo que cambia la capa 31 corregida: nada medible en aciertos.** Pareado en los mismos 150 ítems sellados, fusionado
+  v2 frente a fusionado v1: GSM8K 3 gana / 3 pierde, MATH 3/4. Vector cc_v2 frente a vector cc: GSM8K 3/7, MATH 5/0
+  (el vector corregido pierde 4 en GSM8K y gana 5 en MATH, nada con p < 0,05). Lo que sí baja con v2 son los bucles:
+  fusionado 8 → 3 (GSM8K) y 8 → 5 (MATH); vector 10 → 9 y 16 → 13.
+- **Predicción (fila 27): parcial.** Acierta G0 (0,032), 30/31 idénticos, dev GSM8K 85 (84-90), placebo dev 27/3 y
+  sellado 34/5 (25-40 / 2-7), C1-C4 en dev, vec_v2 sellado 86/27 (86-92 / 27-35, los dos en el borde bajo), fusionado
+  sellado GSM8K 89 (86-92), confirma, HumanEval 19 (18-20), premisas p1 y p3. Falla por poco MATH del fusionado dos
+  veces (dev 30 con 31-38; sellado 25 con 26-34: un ítem por debajo en cada caso) y el error de fusión de la capa 31
+  (predicho 0,45-0,50, salió 0,35: premisa p2 "Q6_K pierde la mitad de la magnitud también en la 31" falla en el buen
+  sentido). Nada en la zona de sorpresa (fusionado no por debajo del vector por > 5 en MATH; placebo no sobre la base;
+  G0 < 0,1; 30 ≥ 28 idénticas).
+- **Lectura:** el compilado con el vector corregido hace lo mismo que el primero (89 / 25 frente a 89 / 26 en el
+  sellado; dev 85 / 30 frente a 87 / 34) con menos bucles. La capa 31 corregida no añade ni quita aciertos en 300 ítems
+  pareados: la señal que importa estaba en las capas 1-30, que no cambiaron. Esto cierra la cola de cc_v2 (vector §45.4,
+  descriptivo §45.5, nombre §45.6, composición §45.7, pesos §45.8): la entrada de "concluir" en el README pasa a citar
+  estos números. Límites: un modelo, un tope (2 048), voraz, una corrida por brazo; el sellado 2 queda gastado como
+  confirmación (dos usos) y el siguiente es `data/sealed_confirm3.json` (un solo uso).

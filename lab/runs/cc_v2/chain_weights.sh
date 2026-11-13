@@ -52,7 +52,7 @@ done
 DW=$("$P" -c "import json;print(json.load(open('$W/verdict.json'))['verdict'])" 2>/dev/null)
 log "dev verdict $DW"
 [ "$DW" = PASS ] || { log "W2 DONE (sealed not run)"; exit 0; }
-log "sealed set 2 (third use): vec_v2, merged, placebo merged; base reused from lab/runs/sealed_ccw"
+log "sealed set 2 (second use; first was results 43.21): vec_v2, merged, placebo merged; base reused from lab/runs/sealed_ccw"
 mkdir -p $SO
 "$P" -c "import sys; sys.path.insert(0,'.'); from engine import sealed_set as ss; ss.load('data/sealed_confirm2.json'); print('seal ok')" >> $LOG 2>&1 || { log "SEAL CHECK FAILED"; exit 1; }
 [ -f $SO/base.json ] || cp lab/runs/sealed_ccw/base.json $SO/base.json
