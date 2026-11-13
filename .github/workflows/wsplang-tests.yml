@@ -1,7 +1,9 @@
 name: WSPLang runtime tests
 
-# The transplant ops (delta_to_lora, contrast_vector) and the runtime's guards, on CPU, from a clean checkout.
-# Tests that need local models (hf_cache/, models/, both gitignored) skip themselves here.
+# The whole tests/ suite on CPU from a clean checkout (2026-11-13: before, only test_wsplang*.py and
+# test_contrast_vector.py ran here, and a broken import went unnoticed for half a day, 4aeb453 -> b031969).
+# Tests that need local models or artefacts (hf_cache/, models/, data/nanowsp3_weights.safetensors, all gitignored)
+# skip themselves. Two files are pytest-style (plain functions, monkeypatch): they run under pytest.
 
 on:
   push:
@@ -15,7 +17,7 @@ permissions:
 jobs:
   unit:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -31,10 +33,17 @@ jobs:
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r requirements.txt
 
-      - name: Runtime and transplant tests
+      - name: Unit tests (every tests/test_*.py, unittest)
         run: |
           set -e
-          for f in tests/test_wsplang*.py tests/test_contrast_vector.py; do
+          PYTEST_STYLE="tests/test_delta_apply.py tests/test_stream_guard.py"
+          for f in tests/test_*.py; do
+            case " $PYTEST_STYLE " in *" $f "*) continue;; esac
             echo "== $f"
             python -m unittest "$f"
           done
+
+      - name: Unit tests (pytest-style files)
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_delta_apply.py tests/test_stream_guard.py
