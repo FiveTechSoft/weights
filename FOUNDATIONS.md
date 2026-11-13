@@ -9,7 +9,7 @@ Status: **established** (pre-registered, placebo-controlled, confirmed on unseen
 controls, small n or one model) · **open** (being tested) · **refuted / retired** (see the last section).
 
 Scope of everything below: Qwen3.5 family (0.8B, 9B), greedy decoding, llama.cpp Q6_K, GSM8K / MATH-500 subsets,
-as of 2026-11-10.
+as of 2026-11-13.
 
 ---
 
@@ -73,6 +73,15 @@ as of 2026-11-10.
   result as the per-token-constrained weight edit; doubling it breaks. Hayashi: Exp 8's weight edit equals an
   activation hook (KL 1e-11 in FP32). Concept Country's additive edit "writes about α along the direction" on typical
   inputs — steering compiled into weights.
+- **Outside evidence, 0.8B (added 2026-11-13, no placebo in either; T6).** Beaker (Matt Winters, agent loop on
+  Qwen3.5-0.8B): the best single edit is **one neuron** (573, its output column ×2): MATH-500 7.4 → 37.4 %; dose
+  ×0 0.4, ×0.5 1.2, ×1 8.2, ×2 36.6, ×4 38.0, ×8 34.3; forbidding the token "Wait" without touching weights gives
+  37.6 %, the same. shawnghu (LessWrong, Fable agent repeating MIT's eight experiments): 3-11 neurons, the same
+  "Wait" brake plus a push to `</think>`, MATH 8 → 60 while MMLU-Pro / GPQA barely move (40 → 42-45). Two things to
+  note, not to claim: (a) in the 0.8B the closing mechanism is local (a neuron) while in the 9B it is a spread direction
+  (§43.23: no handful of neurons; §43.22: the direction cannot be re-derived in the 0.8B); (b) their useful window is
+  wide (×2-×8 all > 34 %) where ours is narrow (×2 breaks): scaling an existing column keeps the model's geometry, adding
+  a constant vector does not. Both are hypotheses for a later line, not findings.
 - **Would refute it.** A behaviour that a learned weight edit produces but no fixed vector at any scale approaches.
 - **Depends on it.** `engine/contrast_vector.py` (per-layer increments for llama.cpp), the scale grids in plans.
 
@@ -117,6 +126,16 @@ is missing and is needed before "supported" means more than "supported for arith
 - **Would refute it.** A gradient-free edit that passes a pre-registered criterion against a same-norm placebo on a
   task of the bank **and costs less compute than the equivalent training** (forwards per example, counting a backward
   as 2 forwards). A gradient-free route that works only at a much higher cost narrows the claim, it does not refute it.
+- **Where the outside frontier is (added 2026-11-13).** iWSP (Mehta & Singh, MSR; `csinva/weight-space-programming-
+  autoresearch`): an agent writes weights and features in Python from scratch, no training, no pretrained weights, one
+  validation score per iteration. Algorithmic tasks: 26/26 runs at 100 % on a hidden set, and 100 % again when a new
+  session rebuilds the model from a ≤ 200-word description. TREC 87.3 % (beats majority in 3 of 4 NLP tasks). Brain
+  encoding: early visual cortex 0.443 vs 0.400 for the best interpretable baseline (ties AlexNet; loses in ventral,
+  0.317 vs 0.391); the story-fMRI gain (0.067 → 0.104) was a position confound, caught by the legibility test, not by
+  the benchmark. Together with Beaker and shawnghu the picture is one line: **writing from scratch works for a closed
+  algorithm or an interpretable feature; whatever has to be learned from data still needs training or a donor.** That is
+  T4 stated from the other side. Missing in all three: a same-size random control (irrelevant at 100 %, pertinent for
+  brain encoding and for the "Wait" neuron).
 
 ### The exception (§43.17-43.18)
 Concept Country's "conclude" direction, read from the base's own finished traces (last 48 tokens before `</think>`
@@ -172,7 +191,17 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   merged model costs far less outside maths than the vector (HumanEval-20 19 vs 15/20, perplexity ×1.18 vs ×2.3),
   probably because Q6_K keeps the direction but ~half the magnitude. Re-deriving the direction in the 0.8B fails: it
   closes 1/256 traces at 4 096 tokens (§43.22). Its MLP part is not a handful of neurons: median k₅₀ 119 vs
-  128 for a random split (§43.23; one exception, layer 26, 4 neurons). Still open: other budgets, other models, sampling.
+  128 for a random split (§43.23; one exception, layer 26, 4 neurons). **Redone with the corrected vector (§45.4,
+  §45.8, 2026-11-13):** the first vector's layer 31 was the post-norm row (§45.3); the re-derived vector confirms on
+  sealed set 1 (86 / 33) and its compilation on sealed set 2, second use (89 / 25 vs base 46 / 7, placebo 34 / 5,
+  HumanEval-20 19/20). Paired on the same 150 items the corrected layer 31 changes nothing in correctness (3/3, 3/4) and
+  halves the loop tails: the signal was in layers 1-30. Composition with the Jackrong adapter is redundant in accuracy
+  and additive in cost (§45.7: tokens ×0.39, cuts 9 → 0). Still open: other budgets, other models, sampling; **running
+  now:** does a closing sentence in the prompt do what the direction does (prompt control, `cc/PLAN.md`, row 28)?
+- **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
+  traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
+  rebuild the conclude vector and get dev 83 / 35? Today we only know the *program* is deterministic. Cheap,
+  descriptive, after the queue.
 - **Implanted neurons (defence, §43.24):** with the declared base, a same-size rewrite of a few neurons ranks 1st of
   393 216 even inside a full SFT (D1 recall 1.0), but the SFT itself flags ~5 legitimate neurons, so it is a short
   review list, not a clean alarm (strict rule: not useful); pushes ≤ the fine-tune's typical change are invisible;
@@ -217,5 +246,9 @@ vs Efficiency: Behavior Control with Weight-Space Extrapolation in Code RL* (arX
 runs from one SFT checkpoint differing only in reward strictness; their weight difference steers reward hacking, and
 extrapolating past the strict run cuts resource-limit failures 14.5 → 8.0 % without more RL; too far and outputs
 collapse (repetition, reasoning that never ends): T3's narrow window in weight space, and T5 (a "correctness tax", total
-solve rate unchanged). Read from the author's thread; no same-norm placebo there (T6). Full links in
-README "References".
+solve rate unchanged). Read from the author's thread; no same-norm placebo there (T6) · Winters, *Weight-space
+programming* (withbeaker.ai/blog, 11 Nov 2026) — agent loop on Qwen3.5-0.8B, neuron 573 (T3 note) · shawnghu,
+LessWrong (10 Nov 2026) — MIT's eight experiments repeated with a Fable agent, raw outputs on Hugging Face
+(`shawnghu/fable-weight-space-programming`); the author says he did not review outputs or method closely · Mehta &
+Singh (MSR), *Interpretable weight-space programming builds transparent transformers and brain encoding models* (iWSP,
+Nov 2026; `csinva/weight-space-programming-autoresearch`) — T4 note. Full links in README "References".
