@@ -101,13 +101,14 @@ def decide(st, base_test_coherent):
 
 # ---------- run ----------
 
-def _means(model_dir, device):
-    """Mean response-token state, happy minus neutral, per hidden state: (n_layers + 1, d)."""
+def _means(model_dir, device, pairs=PAIRS):
+    """Mean response-token state, pos minus neg, per hidden state: (n_layers + 1, d). pairs: directory with
+    pos.jsonl / neg.jsonl (default: the happy pairs; gate 3b passes the cc rows)."""
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from engine import contrast_vector as cv
     tok = AutoTokenizer.from_pretrained(str(model_dir))
-    P = cv._pairs(tok, cv._rows(PAIRS / "pos.jsonl"), 384)
-    N = cv._pairs(tok, cv._rows(PAIRS / "neg.jsonl"), 384)
+    P = cv._pairs(tok, cv._rows(Path(pairs) / "pos.jsonl"), 384)
+    N = cv._pairs(tok, cv._rows(Path(pairs) / "neg.jsonl"), 384)
     model = AutoModelForCausalLM.from_pretrained(str(model_dir), dtype=torch.bfloat16).eval()
     core = model.model
     layers = (core.language_model if hasattr(core, "language_model") else core).layers

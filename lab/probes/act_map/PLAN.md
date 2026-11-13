@@ -196,3 +196,82 @@ to the test generations; stopped by hand before the first test file was written.
 3 arms × 6 scales × 10 + base 10, test 5 × 40; judge MiMo over ~420 answers; one GPU job at a time, chained by
 script. Code `lab/probes/act_map/port.py` (vectors, step 0) with tests first; `happy.py` gets a runs-directory option
 so the 0.8B results go to `lab/runs/act_map/happy08/` and §43.13's files stay untouched.
+
+## Gate 3b: the "conclude" direction, 9B → 0.8B (addendum 2026-11-13, written before any code or run; user: "como tu veas")
+**Why now.** Gate 3 with "happy" was not decided: the 0.8B had no own direction that passed, and the judge was not
+valid for it (§45.2). "Conclude" has an **objective** measure (answers finished inside the budget, correct answers,
+tokens), no judge, and the outside review of 2026-11-13 (point 5) asked for it. §43.22 ruled it out because the 0.8B
+has no closing traces of its own; gate 3's design avoids that: own and ported contrasts are read over the **same
+9B-written texts** (the cc rows), so an `own` arm exists here too (the 0.8B reading the 9B's closing passages). The
+outside posts also show that the 0.8B *can* close when edited (Beaker neuron 573; MIT Exp 8, replicated here: base 1/20,
+edit 14/20, placebo 0/20 at 2,048 tokens), so a reference intervention is available.
+
+**Vectors (all from the cc rows `lab/runs/cc_v2/{pos,neg}.jsonl`, 53 + 53, `think`/`focus` rows, max 384 response
+tokens, as the op that made `cc_v2.gguf`):**
+- `own`: the 0.8B's own contrast D₀.₈(j) over those texts (its forwards; the texts are the 9B's).
+- `port`: the 9B's contrast D₉(i) mapped per target state j with the saved gate 1 map (`maps_q9__q08.safetensors`,
+  CKA-best source, fitted on GSM8K raw text; not refitted): D_port(j) = D₉(i(j)) · W_j.
+- `embport`: control, the 9B's embedding contrast D₉(0) through the embeddings ridge per target state (gate 2's rule).
+- `placebo`: `port`, same norm per layer, random directions (`contrast_vector.placebo`, seed 2026).
+All as per-layer increments without the post-norm last row (`port.residual_increments`; steered layers 1..22), llama.cpp
+control vectors for the 0.8B Q6_K (`hf_cache/qwen35-08b-gguf`). Files `hf_cache/act_map/cvec08/cc_*.gguf`.
+- Reference edit: `servidos/qwen35-08b__exp8-replica.gguf` (our Exp 8 replication) and its placebo
+  `servidos/qwen35-08b__exp8-placebo.gguf`. Mechanical check before use: against the base GGUF, the replica differs in
+  `blk.15.ffn_down.weight` and `blk.19.ffn_down.weight` only (the Exp 8 edit is 64 columns in each,
+  `exp8_control/p50c_edit/manifest.json`); if other tensors differ, the reference is not used and that is reported.
+  [rev, before any run: the first draft of this paragraph said "layer 15 only, 50 columns"; the check run on the files
+  found 15 and 19, and the manifest lists both with 64 columns. Corrected here; the placebo GGUF differs in the same two.]
+
+**Step 0 (forwards only; reported, not a criterion).** Cosine per target state between D_port and D₀.₈, between
+D_embport and D₀.₈; norms. The gate 1 analogue on thinking text.
+
+**Behavior.** `bench_runner` against the 0.8B (default template: thinking on; 2,048 tokens; greedy; 4 slots), two
+graders as everywhere. Measures per arm: finished answers (`finish == "stop"`), correct (grader 1; grader 2 / last
+number reported), mean tokens, loop tails.
+- **Dev (scale choice):** 64 GSM8K test items and 32 MATH-500 items **never used by any run or sealed set** (the
+  first free indices by `lab/probes/sealed/sealed3.used()`, computed once before any arm and saved to
+  `lab/runs/act_map/cc08/dev_items.json`). Arms: base; `own`, `port`, `embport` at 0.25 / 0.5 / 1 / 2 / 4. Scale per arm:
+  most correct (both benchmarks summed); if no scale beats the base in correct, most finished (cc08's floor rule);
+  ties → smaller. No scale with more correct **or** more finished than the base → that arm fails. `placebo` runs at
+  `port`'s scale.
+- **Test:** `bench_runner` defaults (GSM8K 0-99, MATH-500 `select_indices(2026, 50)`; the 9B's dev items, never used
+  for any 0.8B decision; comparable with §45.4's table): base, `own`, `port`, `embport`, `placebo`, `exp8` (reference),
+  `exp8_placebo`. One run per arm; nothing re-run after seeing it.
+
+**Reference first.** The reference gain is `own`'s if `own` beats base in correct with exact McNemar p < 0.05 on either
+benchmark; otherwise the Exp 8 edit's, under the same condition. Neither → gate 3b is **not decided** (written as such).
+
+**Pass rule for `port` (fixed now; all must hold; grader 1, test items):**
+- Q1 closes: finished answers above base, McNemar p < 0.05, on GSM8K;
+- Q2 correct: above base with p < 0.05 on GSM8K (grader 1 and the last-number grader agree) or on MATH (both graders);
+- Q3 `placebo` not above base in correct on either benchmark (p ≥ 0.05 or below), and its finished gain below half of
+  `port`'s;
+- Q4 `port`'s correct gain over base (both benchmarks summed) ≥ 0.5 × the reference's gain.
+Q1-Q4 → **gate 3b passes**: the 9B's conclude direction, through the map, closes the 0.8B at least half as well as the
+best closing intervention we have for it. Read separately, Q5: `port` − `embport` ≥ 0.5 × `port`'s gain (the map
+carries context, not token identity).
+
+**Prediction (ours, low confidence), arm and control, premises marked.**
+- Step 0: median cos(port, own) 0.4-0.7 (gate 3 happy gave 0.65); embport lower and falling with depth.
+- Dev: base finishes 0-3/64 GSM8K and 0-2/32 MATH at 2,048 (gsm08 fast runs: 0/48 finished). `own` best scale 0.5-1,
+  finished 5-25 GSM8K; `port` best scale 1-2, finished 5-25; `embport` within +3 finished of base at every scale.
+- Test: base GSM8K 0-5/100 correct, MATH 0-3/50. `own` 5-25 / 2-10; `port` 5-25 / 2-8; `embport` and `placebo` within
+  +3 of base; `exp8` 30-55 / 10-25; `exp8_placebo` within +3 of base. Reference = `exp8` (we expect `own` not to reach
+  p < 0.05: the 0.8B's own reading of 9B closing text is weak, §43.22's spirit) and **Q4 fails** (port gain 20-50 % of
+  the edit's): in the 0.8B the closing mechanism is local (a neuron; Beaker, shawnghu) and a mapped distributed
+  direction reaches it only partly. Q1 passes, Q2 passes on GSM8K, Q3 passes, Q5 passes.
+- Premises: (p1) the gate 1 maps 9B → 0.8B load and cover target states 1..24; (p2) forwards are deterministic (D
+  reused if present); (p3) the replica GGUF is the Exp 8 edit (mechanical check above); (p4) `bench_runner` on the 0.8B
+  thinks by default (fast runs: median 2,048 tokens, none finished).
+- "We would be surprised if": `port` ≥ `exp8` − 5 correct on GSM8K (the direction would be fully portable); `port`
+  finished ≤ base + 2 at every dev scale (the map carries nothing of closing); `placebo` above base with p < 0.05;
+  `own` passing Q2 with a gain ≥ `exp8`'s (the 0.8B would read closing from 9B text better than its own edit).
+
+**Limits known now.** One pair, one family, greedy, one budget; "closing" in the 0.8B at 2,048 tokens is near the floor
+on MATH (power comes from GSM8K); own and ported read 9B-written texts; maps fitted on 128-token GSM8K raw text, used on
+thinking text; the reference edit is a 50-column write, not a direction, so Q4 compares mechanisms, not sizes.
+
+**Cost.** Vectors: 9B streamed forwards over 106 texts (~10 min), 0.8B forwards (~2 min). 0.8B at 4 slots: ~5 s/item
+(fast runs: 48 items in 253 s): dev 16 arms × 96 items ≈ 2.2 h; test 7 × 150 ≈ 1.5 h. ≈ 4 GPU h, after the placebo
+chain (`lab/runs/act_map/cc08_chain.sh` waits for "[cc_pl] PLACEBO DONE"). Code `lab/probes/act_map/port_cc.py` (reuses
+`port.port_diff`, `port.residual_increments`, `port._means` with a pairs argument), tests first.
