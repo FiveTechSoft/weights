@@ -40,15 +40,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 | 26 | 2026-11-12 | `cc/PLAN.md` "Composition" | J (Jackrong ×0.5) en dev: GSM 86-93, MATH 31-37. J+C: redundante en GSM (±3 de J), MATH 2-6 por debajo de J, tokens −10 a −25 %, más colas en bucle → K1 "redundante", tirando a "interfiere" en MATH. Control J+placebo: GSM 3-10 por debajo de J, MATH ±3. Sorpresa si J+C gana a J por > 5 | J 88 / 35; J+C 89 / 38 (GSM p 1,0; MATH p 0,58) → K1 "redundante"; tokens J+C/J **0,39 / 0,41**; cortes 9 → 0 y 15 → 1; bucles 0 / 0. Control J+P 86 / 33 (−2 / −2, en banda) | §45.7; acierta J en rango, K1 y el control; falla el sentido en MATH (+3, no −2 a −6), los tokens (−60 %, no −10 a −25 %) y los bucles (cero, no más). Tercera vez que sobrestima el coste del vector | ◐ |
 | 27 | 2026-11-12 | `cc_weights/PLAN.md` "Repeat with the corrected vector" | recompilar cc_v2 en `down_proj`: G0 ≈ 0.032, 30/31 `ffn_down` idénticos al primero; dev fusionado GSM 84-90, MATH 31-38, placebo fusionado 25-40 / 2-7, pasa C1-C4; sellado 2 (base 46/7): vec_v2 86-92 / 27-35, fusionado 86-92 / 26-34, placebo 25-40 / 2-7, confirma; HumanEval-20 fusionado 18-20. Premisas p1-p3 en el plan. Sorpresa si fusionado < vec_v2 por > 5 en MATH, placebo > base, G0 > 0.1 o < 28 capas idénticas | G0 0,032 (peor 0,043); 30/31 idénticos; capa 31 err 0,35 / cos 0,94; dev fusionado 85 / 30, placebo 27 / 3, pasa C1-C4 (C4 MATH 0/5 p 0,06); sellado 2: vec_v2 86 / 27, fusionado 89 / 25, placebo 34 / 5, confirma (C1 p 1,6e-11 / 7,6e-6; C4 p 0,55 / 0,69); HumanEval-20 19 | §45.8; acierta todo menos MATH del fusionado (un ítem por debajo del rango en dev y en sellado) y el error de la capa 31 (mejor que el predicho: p2 falla en el buen sentido). Nada en la zona de sorpresa | ◐ |
 | 28 | 2026-11-13 | `cc/PLAN.md` "Prompt control" | base + frase de cierre en el prompt, dev a 2 048: GSM 62-75, MATH 12-22; cortes 20-35 / 30-40; bucles ≥ base; tokens GSM 1 100-1 400. Lectura R2: "la dirección hace más que un prompt" (cc_v2 83 / 35 por encima con p < 0,05 al menos en GSM). Control (frase neutra): ±3 de 50 / 6, cortes ±5. Premisas p1-p3 en el plan. Sorpresa si P_close ≥ cc_v2 − 3 en los dos, o P_close < base | P_close 37 / 4 (7/20 frente a base, p 0,019), cortes 63 / 45, tokens 1 675, bucles 2; cc_v2 46/0 y 31/0 por encima; control P_neutral 29 / 3 (−21, p 0,0015), cortes 71 | §45.9; falla el brazo, los cortes, los tokens y el control; acierta solo el sentido de R2 y bucles ≥ base. Zona de sorpresa: P_close < base. Premisa p3 falla (el modelo no sigue la instrucción de cerrar): el brazo no mide prompt frente a dirección | ❌ |
+| 29 | 2026-11-13 | `cc/PLAN.md` "Placebo distribution" | 8 placebos de cc_v2 (semillas 1-8, misma norma por capa) a ×1.0 en la criba (64 MATH, 2 048; base 8/64, vector 38/64): mediana 5-9 aciertos, mín 2-5, máx ≤ 12; cortes 52-63; bucles 2-12; tokens 1 850-2 000. D2: 0 semillas sobre la base con p < 0,05 y 0 con ≥ 23 (mitad de la ganancia). D3: mediana ≤ 8, 0-3 semillas significativamente por debajo. Vector rango 1 de 9. Premisas p1-p3 en el plan (p1 comprobada: semilla 2026 regenerada idéntica). Sorpresa si alguna semilla ≥ 20, mediana ≥ 12 o vector no rango 1 | — | — | ⏳ |
 
-## Cuenta (28 filas; 24 puntuables)
+## Cuenta (29 filas; 24 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 8 |
 | ❌ falla | 10 |
-| ⏳ / — | 4 |
+| ⏳ / — | 5 |
 
 Acierto limpio 6/24 = 25 %; acierto o parcial 14/24 = 58 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es

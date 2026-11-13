@@ -163,3 +163,37 @@ Prediction (ours, low confidence), arm and control, premises marked:
   written into the stream, and the name test's cross-domain shortening would be re-read as the same); P_close below
   base on either.
 Cost: 2 arms x ~50 min (long answers) ~ 1.8 GPU hours.
+
+## Placebo distribution: is "a same-norm random direction does not help" robust to the seed? (added 2026-11-13, before any run)
+Every placebo in this line (vector §43.17-43.18, §45.4; compiled §43.19-43.21, §45.8; composition §45.7) had **one
+seed, 2026**. Outside review (2026-11-13, point 4): one seed is one draw; the claim "a random direction of the same norm
+does not help, and tends to hurt" (T6, T3) rests on it. This arm measures the distribution. Descriptive; nothing already
+confirmed is re-decided by it.
+
+**What runs** (`lab/runs/cc_v2/chain_placebo.sh`, after the prompt-control chain; one GPU job at a time):
+1. `lab/probes/cc/placebo_seeds.py check`: the placebo of seed 2026 regenerated from `cc_v2.gguf` (vector read back
+   from the GGUF in layer order, `contrast_vector.placebo`) must be **identical** to `cc_v2.placebo2026.gguf`. If not,
+   stop (the generator would not be the one used so far). Done before writing this plan: identical, max |diff| 0.
+2. `make 1..8`: eight placebos `hf_cache/cc/cc_v2.placebo{1..8}.gguf` (same norm per layer as cc_v2, random direction).
+3. Each at **scale 1.0** on the **screen set** (`split.json` screen_math, 64 MATH-500 items, not dev, not sealed; 2,048
+   tokens, greedy, 2 slots), reports `lab/runs/cc_v2/screen_pl{seed}.json`. Reused: `screen_base.json` (8/64, 57 cut)
+   and `screen_s1.0.json` (38/64, 30 cut, 20 loop tails), both from §45.4 on the same items.
+4. `readings 1..8` -> `lab/runs/cc_v2/placebo_seeds/readings.json`.
+
+Readings (grader 1; grader 2 reported):
+- D1 distribution: per seed correct/64, cut, loop tails, mean tokens; median / min / max over the 8 seeds.
+- D2 "no seed helps": number of seeds above base with exact McNemar p < 0.05, and number at or above **half the
+  vector's gain** (base + ceil((38 - 8) / 2) = 23/64).
+- D3 "harm": median of the seeds at or below base; number of seeds below base with p < 0.05.
+- Vector rank among {8 placebos, vector}: 1 means no placebo ties or beats it (descriptive, 1/9 under the null).
+Prediction (ours, low confidence), arm and control, premises marked:
+- D1: median 5-9 correct (base 8), min 2-5, max <= 12; cut 52-63 per seed (base 57); loop tails 2-12; mean tokens
+  1,850-2,000 (base 1,987).
+- D2: 0 seeds above base with p < 0.05; 0 at or above 23. D3: median <= 8; 0-3 seeds significantly below base (on dev
+  seed 2026 was 26 vs 50 on GSM8K, p < 1e-4, but only 5 vs 6 on MATH: MATH at this budget is at the floor, so little
+  room to harm with significance). Vector rank 1.
+- Premises: (p1) the generator reproduces seed 2026 exactly (checked, see step 1); (p2) screen base is reusable (the
+  identity check of §45.4 matched §43.17 item by item); (p3) scale 1.0 puts each placebo at the vector's norm, as on dev.
+- "We would be surprised if": any seed >= 20/64; median >= 12; vector rank > 1 (a random direction of that norm would
+  sometimes do what the direction does, and §43.17-45.8 would need a different control).
+Cost: 8 arms x ~25 min (screen arms ran 1,200-1,700 s) ~ 3.5 GPU hours.
