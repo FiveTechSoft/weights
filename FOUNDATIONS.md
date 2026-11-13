@@ -9,7 +9,7 @@ Status: **established** (pre-registered, placebo-controlled, confirmed on unseen
 controls, small n or one model) · **open** (being tested) · **refuted / retired** (see the last section).
 
 Scope of everything below: Qwen3.5 family (0.8B, 9B), greedy decoding, llama.cpp Q6_K, GSM8K / MATH-500 subsets,
-as of 2026-11-13.
+as of 2026-11-14.
 
 ---
 
@@ -161,6 +161,8 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   shared directions: 24 → 18 cut, within what quantization alone moves (§39.6-39.7). cf5's placebo recovered part of the
   gain (§43.10). Conversely, placebos stayed at base in every result we claim (§43.13, §43.15), or fell below it: the
   same-norm random control vector costs 20 GSM8K items (§43.18), so a push of that size is harmful unless aimed.
+  Nine seeds, not one (added 2026-11-14, §45.10): eight more same-norm random directions on the 64-item MATH screen
+  score 3-8 (base 8, vector 38), none reaches half the gain, none beats the base, the vector ranks first of nine.
 - **Outside evidence.** Concept Country makes the same argument and runs the control; the MIT post does not publish
   one; Hayashi's controls were not effect-matched. Hu et al. (2611.09382): on 0.8B dev, edit 20/48, base 6/48, equal-norm
   random direction 10/48 — a random push gets part of the way; no held-out placebo, and dev gains often vanish held-out.

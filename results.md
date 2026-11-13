@@ -6,7 +6,7 @@
 > afirmaciones luego retiradas (§26) y las ideas refutadas. **No es el estado actual.** El estado actual está en
 > [`README.md`](README.md) (resultado principal) y [`FOUNDATIONS.md`](FOUNDATIONS.md) (tesis, estado y evidencia).
 > §1-§25 (3-4 nov) son el estudio inicial (MiMo, toolkit, nanoGPT); §26 retira lo que no se demostró; el resultado
-> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-13.
+> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-14.
 
 Estudio inicial: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
 
@@ -2714,3 +2714,52 @@ datos `lab/runs/cc_v2/prompt/`.
   por buena. Son sobre todo los ítems que la base no termina (selección), no cierres prematuros de ítems fáciles. En
   MATH el vector acaba mal 1, que la base corta a los dos topes. Dos métodos: recuento por filas sobre los tres
   informes; los totales coinciden con los resúmenes de §39.6 (A0 72/100, 24 cortadas) y §43.1 (20/50, 30 cortadas).
+
+### 45.10 Distribución del placebo: ocho semillas, ninguna hace lo que hace la dirección (2026-11-14)
+
+- **Pregunta.** Todos los placebos de la línea "concluir" (§43.17-43.18, §45.4, §45.7, §45.8) eran una sola semilla
+  (2026). Una revisión externa (2026-11-13) lo señaló: una semilla es un sorteo. ¿Es robusto al sorteo "una dirección
+  aleatoria de la misma norma no ayuda"? Plan y predicción antes de correr: `lab/probes/cc/PLAN.md` "Placebo
+  distribution", fila 29 de `predictions.md`. Descriptivo; no re-decide nada ya confirmado.
+- **Qué corrió** (`lab/runs/cc_v2/chain_placebo.sh`, 20:33-00:15 del 13 al 14; ≈ 28 min por brazo). (1) Comprobación del generador: el placebo de la
+  semilla 2026 regenerado desde `cc_v2.gguf` es **idéntico byte a byte** a `cc_v2.placebo2026.gguf` (31 capas, máx
+  |dif| 0; `placebo_seeds/check.json`). (2) Ocho placebos `hf_cache/cc/cc_v2.placebo{1..8}.gguf`, misma norma por
+  capa que cc_v2, dirección aleatoria. (3) Cada uno a ×1.0 sobre la criba (64 MATH-500 de `split.json`, ni dev ni
+  sellado; 2 048 tokens, voraz), informes `lab/runs/cc_v2/screen_pl{1..8}.json`. Base y vector reutilizados de §45.4
+  sobre los mismos ítems (`screen_base.json` 8/64, `screen_s1.0.json` 38/64). (4) `placebo_seeds/readings.json`.
+- **Resultado** (juez 1; juez 2 entre paréntesis; McNemar exacto pareado):
+
+  | brazo | aciertos /64 | cortadas | bucles | tokens medios | frente a base (gana/pierde, p) |
+  |---|---|---|---|---|---|
+  | base | 8 (7) | 57 | 2 | 1 987 | — |
+  | vector cc_v2 ×1.0 | **38** (33) | 30 | 20 | 1 414 | 30/0, 2e-9 |
+  | placebo semilla 1 | 3 (3) | 61 | 4 | 2 015 | 1/6, 0,125 |
+  | semilla 2 | 7 (7) | 57 | 1 | 1 959 | 3/4, 1 |
+  | semilla 3 | 5 (5) | 59 | 2 | 1 998 | 1/4, 0,375 |
+  | semilla 4 | 8 (7) | 56 | 1 | 1 952 | 4/4, 1 |
+  | semilla 5 | 7 (7) | 57 | 2 | 1 955 | 2/3, 1 |
+  | semilla 6 | 7 (7) | 57 | 2 | 1 964 | 3/4, 1 |
+  | semilla 7 | 6 (6) | 58 | 3 | 1 983 | 2/4, 0,69 |
+  | semilla 8 | 4 (4) | 60 | 2 | 2 009 | 2/6, 0,29 |
+
+  - D1: mediana **6,5**, mín 3, máx 8 (base 8). Cortes 56-61 (base 57). Bucles 1-4. Tokens 1 952-2 015.
+  - D2: **0** semillas sobre la base con p < 0,05; **0** llegan a 23/64 (mitad de la ganancia del vector). La mejor
+    semilla (4) empata con la base. Cada semilla frente al vector: 0 gana / 30-35 pierde, p < 1e-8 las ocho.
+  - D3: mediana ≤ base; 0 semillas por debajo con p < 0,05 (MATH a 2 048 está en el suelo: 8/64 deja poco margen
+    para dañar con significación; el daño sí se vio en GSM8K dev, 50 → 26, §43.18 y §45.4).
+  - Rango del vector entre {8 placebos, vector}: **1 de 9**.
+  - Ítems: la base acierta 8; la unión de los ocho placebos acierta 12 (5 que la base no: ítems 13, 95, 265, 399,
+    406), y el vector acierta los 12 más 26. Ningún placebo abre un ítem que el vector no abra.
+- **Predicción (fila 29) contra el dato.** Mediana 5-9 → 6,5 ✓; mín 2-5 → 3 ✓; máx ≤ 12 → 8 ✓; cortes 52-63 → 56-61
+  ✓; D2 0 y 0 → 0 y 0 ✓; D3 mediana ≤ 8 y 0-3 significativas → 6,5 y 0 ✓; rango 1 → 1 ✓. Fuera de banda en lo
+  secundario: bucles 2-12 → dos semillas con 1; tokens 1 850-2 000 → dos semillas con 2 009 y 2 015. Nada de la lista
+  "nos sorprendería" (ninguna semilla ≥ 20, mediana < 12, rango 1). **◐**: lecturas D1-D3 y rango exactas; dos bandas
+  secundarias falladas por un bucle y por 15 tokens.
+- **Lectura.** La afirmación "una dirección aleatoria de la misma norma no ayuda" ya no descansa en un sorteo: nueve
+  sorteos (2026 y 1-8), ninguno pasa de la base, ninguno se acerca a la mitad de la ganancia, el vector es primero de
+  nueve (1/9 bajo el nulo de "es una dirección cualquiera"; con la criba de §45.4 y los sellados, el nulo está
+  descartado por la propia p del vector). Refuerza T6 y T3 (FOUNDATIONS). Límites: un modelo, una escala (×1.0), un
+  banco (MATH criba, en el suelo a 2 048), ocho semillas; el daño en GSM8K no se repitió por semilla.
+- **Dos métodos.** `placebo_seeds.py readings` (readings.json) y recuento independiente por filas de los diez
+  informes con binomial exacta propia (sin scipy): mismos aciertos, cortes, bucles, tokens, gana/pierde y p en las
+  ocho semillas; mediana, umbral 23, rango 1 iguales.
