@@ -236,3 +236,14 @@ Cost: 3 arms x ~2 GPU h (8,192-token cap doubles-to-quadruples arm time) ~ 5-6 G
   only waits for "PLACEBO DONE". Sequencing is done by the gate 3b chain instead (`lab/runs/act_map/cc08_chain.sh`
   waits for this chain's `CHAIN DONE` / `CHAIN EXITED` marker and for no llama-server alive). Order: row 29 → row 31 →
   row 30. Prediction row 31 in `predictions.md`.
+
+[post-data 2026-11-14, by the integrating session; results §45.11, row 31 scored.]
+- Base at 8,192: 72/100, 24 cut (item-identical to §39.6); vector at 8,192: 85, 4 cut, 13 finished-wrong; vector over
+  base at 8,192 by 13 (16/3, p 0.0044) — the declared surprise condition. Prediction failed; the "finishing-in-budget"
+  reading does not hold.
+- The **merged arm did not run the merged weights**: `serve` always loads `hf_cache/h4/A0-Q6_K.gguf` and passes the
+  second field as `--control-vector-scaled`; for the merged arm that field was `hf_cache/cc_op_v2/merged-Q6_K.gguf`
+  (a whole model), which llama-server rejected (`server_cap.log`: `no valid control vector files passed`) and served the
+  base. `dev_merged_8192.json` is kept as evidence only. A valid rerun serves `merged-Q6_K.gguf` as `-m` with no control
+  vector (≈ 2.6 GPU h; not launched, pending a decision).
+- The chain also ran MATH 50 (bench_runner default), reported in §45.11.

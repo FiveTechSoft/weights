@@ -2763,3 +2763,59 @@ datos `lab/runs/cc_v2/prompt/`.
 - **Dos métodos.** `placebo_seeds.py readings` (readings.json) y recuento independiente por filas de los diez
   informes con binomial exacta propia (sin scipy): mismos aciertos, cortes, bucles, tokens, gana/pierde y p en las
   ocho semillas; mediana, umbral 23, rango 1 iguales.
+
+### 45.11 Control de presupuesto: la base a 8 192 repite 72, el vector a 8 192 sigue 13 por encima; el brazo "fusionado" sirvió la base (2026-11-14)
+
+- **Origen.** Plan, cadena y predicción de **otra sesión** (`lab/probes/cc/PLAN.md` "Token-budget control",
+  `lab/runs/cc_v2/chain_cap8192.sh`, fila 31 de `predictions.md`, integradas tal cual el 2026-11-13 antes del dato);
+  corrió 00:20-06:28 tras la cadena de placebos. Aquí el recuento independiente y la lectura. Pregunta: ¿"concluir" es
+  acierto o es solo acabar dentro del presupuesto? La predicción de esa sesión: base a 8 192 **82-92/100** con ≤ 8
+  cortes (y entonces el efecto sería presupuesto); vector a 8 192 = 83 ± 2; fusionado = vector ± 2; sorpresa si la
+  base < 70 o si el vector supera a la base a 8 192 en más de 5.
+- **Qué corrió.** Base A0 Q6_K, voraz, tope **8 192**, `-np 2 -c 40960`, sobre los mismos ítems de dev que §45.4/§45.8
+  (GSM8K 100 **y MATH 50**: el plan decía solo GSM8K, pero `bench_runner` corre los dos por defecto; se informan ambos).
+  Brazos `cap8192/dev_{base,vec,merged}_8192.json`. **El brazo "merged" no es el fusionado**: el script sirve siempre
+  `hf_cache/h4/A0-Q6_K.gguf` y pasa el segundo argumento como `--control-vector-scaled`; para ese brazo el argumento era
+  `hf_cache/cc_op_v2/merged-Q6_K.gguf` (un modelo entero, sin tensores `direction.*`). llama-server lo rechazó
+  (`server_cap.log` línea 23: `common_contr: no valid control vector files passed`) y sirvió la base. Se conserva el
+  fichero como evidencia; no se puntúa como fusionado.
+- **Resultado** (juez 1; juez 2 entre paréntesis; McNemar exacto pareado):
+
+  | brazo (tope) | GSM8K /100 | cortadas | acabadas mal | tokens | MATH /50 | cortadas | tokens |
+  |---|---|---|---|---|---|---|---|
+  | base (2 048, §45.4) | 50 | 51 | 0 | 1 689 | 6 | 45 | 1 952 |
+  | **base (8 192, nuevo)** | **72** (72) | 24 | 4 | 3 638 | **21** (19) | 28 | 6 204 |
+  | vector cc_v2 ×1.0 (2 048, §45.4) | 83 | 8 | 13 | 735 | 35 | 17 | 1 359 |
+  | **vector cc_v2 ×1.0 (8 192, nuevo)** | **85** (86) | 4 | 13 | 949 | **37** (28) | 15 | 3 321 |
+  | "merged" (8 192; en realidad la base, ver arriba) | 66 (67) | 32 | 2 | 4 131 | 23 (22) | 27 | 6 104 |
+
+  - La base a 8 192 es **idéntica ítem a ítem** a §39.6 (`lab/runs/h4/h4_A0.json`: 100/100 misma respuesta, mismos
+    tokens, misma cola). En MATH frente a §43.1 (20/50, 30 cortadas, 6 480 tokens): 33/50 misma respuesta, 22 mismos
+    tokens; otra sesión del servidor, misma lectura.
+  - **Vector a 8 192 frente a base a 8 192**: GSM8K 16 gana / 3 pierde, p 0,0044 (**+13**); MATH 16/0, p 3e-5 (+16).
+  - Vector a 8 192 frente a vector a 2 048: GSM8K 4/2, p 0,69; MATH 4/2. Cuadruplicar el tope no cambia al vector:
+    acaba dentro de 2 048 en 92/100 y lo que gana con más tope son 2 ítems.
+  - Base a 8 192 frente a base a 2 048: GSM8K 28/6, p 0,0002; MATH 16/1. El tope sí mueve a la base, pero se queda en
+    72 y sigue cortando 24 (19 de las 51 cortadas a 2 048 siguen cortadas a 8 192).
+  - Por ítem (GSM8K): de las 36 ganancias del vector sobre la base a 2 048 (todas cortes de la base), la base a 8 192
+    recupera 24. De las 13 que el vector acaba mal a 2 048, a 8 192 las 13 siguen acabadas, 11 siguen mal y 2 pasan a
+    bien (58, 82); la base a 8 192 acierta 4 de esas 13. Los 3 ítems que la base acertaba a 2 048 y el vector cerró
+    mal (50, 63, 82): con el vector a 8 192 salen mal, mal, bien (no los tres; sin sorpresa ahí). El vector a 8 192
+    acaba mal 13 (2, 7, 8, 12, 14, 20, 37, 50, 62, 63, 70, 85, 93).
+  - El brazo "merged" (base servida por error) no coincide ítem a ítem con el brazo base del mismo tope (104/150 misma
+    respuesta, 45/150 mismos tokens): dos servicios de la misma base con `-np 2` no son idénticos (la composición de los
+    lotes depende del tiempo), aunque el brazo base sí coincidió al 100 % con §39.6. Queda anotado; no afecta a las
+    lecturas (todas pareadas dentro de una corrida o frente a corridas ya publicadas).
+- **Predicción (fila 31, de la otra sesión) contra el dato.** Base 82-92 y ≤ 8 cortes → **72 y 24: falla** (fuera de
+  banda por 10; no < 70, así que no es la sorpresa declarada, pero la lectura "es presupuesto" cae). Vector 83 ± 2 → 85
+  ✓. Fusionado = vector ± 2 → **no medido** (brazo inválido). Sorpresa declarada "vector > base + 5 a 8 192" →
+  **ocurre** (+13, p 0,0044). **❌**.
+- **Lectura.** Con cuatro veces más tokens la base no alcanza al vector: "concluir" a 2 048 (83) ya supera a la base
+  a 8 192 (72; 17/6, §45.9 nota) y a 8 192 el vector sigue 13 por encima con un cuarto de los tokens (949 frente a
+  3 638). No es un efecto de presupuesto: la base cortada no es una base que acertaría con más sitio, es una base que
+  en 19-24 ítems no termina ni a 8 192 (sí a 32k, T2). Confirma por corrida nueva la lectura cruzada de §45.9 y la
+  premisa de T2 (cerrar a tiempo es conducta, no obediencia ni presupuesto). Límites: un modelo, dos topes, voraz; el
+  brazo fusionado a 8 192 está pendiente (requiere servir `merged-Q6_K.gguf` como modelo, no como vector).
+- **Dos métodos.** `readings.json` de la cadena (base 72/24/4/3 638; vec 85/4/13/949; "merged" 66/32/2/4 131) y
+  recuento propio por filas de los tres informes (mismos cuatro números por brazo) más el pareado contra §45.4, §39.6 y
+  §43.1 ítem a ítem.
