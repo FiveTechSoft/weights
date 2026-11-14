@@ -276,4 +276,14 @@ under sampling (temperature 1.0) while identity was checked greedy, logit margin
 break Japanese words spelled with banned tokens (seen on Qwen3.5-9B), no GGUF/llama.cpp run. Gap they do not state:
 correctness of the 40 JMMLU answers before and after is not reported (T5). Side note worth keeping: mlx-serve gave
 different answers in 49/60 greedy reruns without reloading the model (prompt-cache numerics) — same lesson as our
-§45.11 (`-np 2` batching: two servings of the same base differ item by item). Full links in README "References".
+§45.11 (`-np 2` batching: two servings of the same base differ item by item) · emeraldant, *WSP-Gym* (thread 14 Nov
+2026; emeraldant.github.io/WSP-Gym, code and test sets on GitHub) — the first **trained** weight-writer we know of:
+Inkling 2 Small (Thinking Machines) with a LoRA via Tinker, supervised on 57,600 synthetic small networks with one
+planted fault (weights pasted as text plus one line on the function; answer = at most 3 edits, no tools, no forward
+pass), then RL; repairs 83 % of held-out networks in ~40 tokens with no reasoning (untrained with reasoning 76 %,
+GPT-6 Astra 97 % with ~110-170 reasoning tokens, weight-statistics heuristic 4 %). Generalization drops where it
+should: larger networks 70 %, unseen function families 59 %, gradient-trained networks 67 %, **unseen fault types
+20 %**. Disguised networks (permuted, rescaled, split neurons, decoys, noise) rule out memorization of weights. Our
+reading: closed-form toy networks with a known fix, so it sits with iWSP in T4 ("what has a closed algorithm can be
+written"); the 20 % on unseen faults is the same wall as Naik's writing failure and our H6/H7 — the skill learned is
+the fault catalogue, not weight semantics. No LLM-scale model was edited. Full links in README "References".
