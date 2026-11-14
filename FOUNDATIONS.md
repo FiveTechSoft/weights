@@ -256,4 +256,24 @@ programming* (withbeaker.ai/blog, 11 Nov 2026) — agent loop on Qwen3.5-0.8B, n
 LessWrong (10 Nov 2026) — MIT's eight experiments repeated with a Fable agent, raw outputs on Hugging Face
 (`shawnghu/fable-weight-space-programming`); the author says he did not review outputs or method closely · Mehta &
 Singh (MSR), *Interpretable weight-space programming builds transparent transformers and brain encoding models* (iWSP,
-Nov 2026; `csinva/weight-space-programming-autoresearch`) — T4 note. Full links in README "References".
+Nov 2026; `csinva/weight-space-programming-autoresearch`) — T4 note · Naik, Liu & Gangal, *Auto Weight-Space
+Programming, Part 1* (atharva-naik.github.io/blog/awsp-part-1, 13 Nov 2026; code, LoRAs and item files released) —
+the **reading** side: a rank-32 LoRA teaches Qwen3.5-4B to give the logit lens of 128-number slices of its own
+`down_proj` columns pasted as digits (99.8 % four-way on held-out neurons, chance 25 %; shuffled numbers → chance);
+naming the tokens without candidates is rare (6.6 %), **writing weights fails** (1.0-1.4 % of requested tokens vs
+27.7 % for an analytic writer), predicting activations and circuits is at chance, and single neurons do change
+sycophancy but a linear probe over the weights cannot say which (their 7.4 = our T7 and T3: the effect needs the
+forward pass). Their framing matches ours: the tool (logit lens) is a shortcut, the oracle is the behavioural
+experiment; "no self-advantage" — reading another model's weights works as well, so the *auto* in auto-WSP is not
+yet shown to matter. One seed per run, a four-way choice with same-layer distractors; honest "needs more effort"
+list · rizumita / CAPH TECH, *Qwen3.8 Flash Next: Chinese mixed into Japanese answers removed by rewriting the output
+layer, 27 % → 0 %* (zenn.dev/caphtech/articles/qwen38-zh-ban, 13 Nov 2026; tool `CAPHTECH/kestrom`) — 25,451 `lm_head`
+rows of Chinese tokens overwritten with the bytes of an unused row (id 248077, past the 248,077-token vocabulary);
+byte diff shows only those rows changed; greedy outputs on 60 prompts identical to the base where the ban did not fire.
+A hard constraint written into the weights, not a learned direction: the right control is output identity where it
+does not fire, and they ran it. Gaps they state: 60 medical prompts (27 % has a 17-39 % interval), mixing measured
+under sampling (temperature 1.0) while identity was checked greedy, logit margins unmeasured, token-level bans can
+break Japanese words spelled with banned tokens (seen on Qwen3.5-9B), no GGUF/llama.cpp run. Gap they do not state:
+correctness of the 40 JMMLU answers before and after is not reported (T5). Side note worth keeping: mlx-serve gave
+different answers in 49/60 greedy reruns without reloading the model (prompt-cache numerics) — same lesson as our
+§45.11 (`-np 2` batching: two servings of the same base differ item by item). Full links in README "References".
