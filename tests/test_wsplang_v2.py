@@ -138,6 +138,8 @@ steps:
         """Verify control vector export compiles valid GGUF file."""
         cv_out = self.temp_path / "cv_test.gguf"
         code = f"""experiment test_cv:
+budgets:
+    allow_write = true
 steps:
     step export_control_vector {self.vec_file} out={cv_out} scale=-0.5
 """

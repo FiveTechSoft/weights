@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Handling reading before bed is all about creating a calm, focused environment that helps your brain transition from active thinking to rest. Here's a practical guide to make it easier and more effective:\n\n### 1. **Set a Consistent Routine**\n   - **Time**: Read at the same time every night (e.g., 7–9 PM). This helps your brain anticipate bedtime and reduces anxiety.\n   - **Duration**: Aim for 20–30 minutes. Shorter sessions (15–20 min) are often easier to start and finish, while longer ones (30–45 min) can help with deep relaxation.\n   - **Frequency**: Consistency is key. Even if you skip one night, the pattern helps your brain feel \"ready\" for sleep.\n\n### 2. **Choose the Right Time**\n   - **Avoid**: Reading in the morning or late afternoon, as your brain may still be alert.\n   -",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "Football (soccer) is a global sport with a rich history, but understanding it requires a structured approach. Here is a comprehensive guide to key aspects of a football match:\n\n### 1. The Core Elements\nA football match is defined by four fundamental components:\n*   **The Team**: Two opposing teams, each with 11 players (usually 11-12 in some leagues).\n*   **The Goal**: The objective of the game. A goal is scored when a ball crosses the goal line with both feet (or hands) and is caught by the opposing team's goalkeeper.\n*   **The Field**: A rectangular pitch (usually 105m x 68m) divided into 10 rectangular areas called **quads**.\n*   **The Players**:\n    *   **Goalkeepers**: The first and last players to touch the ball. They are responsible for defending the goal and scoring.\n    *   **Mid",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two practical tips for a long train journey:\n\n1.  **Pack Your Essentials in a Dedicated Bag**: Since long journeys often involve long commutes, it is crucial to carry your daily essentials (water, snacks, phone, and any medications) in a separate, easily accessible bag. This prevents you from having to carry everything in your main cabin, which can be cramped and makes it harder to find items during a long trip.\n2.  **Use the \"Last Mile\" Strategy**: When you arrive at your destination, don't rush to get out of the car. Instead, take a short walk or a quick stop to check your phone, grab a drink, or simply relax. This allows you to assess your route, plan your next stops, and ensure you are fully prepared before you leave, turning a potentially stressful arrival into a productive moment.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences of your life, but it can also be a stressful transition. Whether you're moving for work, family, or simply for the sake of the trip, here is a comprehensive guide to help you navigate the process smoothly.\n\n### 1. Set Clear Goals and Define Your \"Why\"\nBefore you even pack, clarify your motivations. Are you moving for a specific job, a new hobby, or just to see the sights? Knowing *why* you're moving can help you prioritize tasks and avoid feeling overwhelmed.\n\n### 2. Create a Detailed Moving Plan\nA moving plan should include:\n*   **Timeline:** Break it down into weeks (e.g., Week 1: Packing, Week 2: Packing up, Week 3: Packing out).\n*   **Logistics:** Determine where to store your belongings (home vs. temporary storage), how to transport them, and where to put them after arrival",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Subject: Quick update on the project\n\nHi [Colleague's Name],\n\nI hope you're having a good week. Just wanted to follow up on the progress on the Q3 report; we've finalized the data points and are ready to share them over the next few days. Let me know if you need any clarification on the methodology or if there's anything specific you'd like me to double-check before sending it out.\n\nBest regards,  \n[Your Name]",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A **walk in the park** is a popular outdoor activity that combines relaxation, social connection, and physical exercise. It's often the perfect way to unwind after a long day, whether you're looking for a simple stroll or a more structured session.\n\nHere is a comprehensive guide to what you should know about this activity:\n\n### 1. The Benefits\n*   **Physical Health**: Walking improves circulation, strengthens muscles, and boosts heart health. It is one of the most effective ways to burn calories and maintain a healthy weight.\n*   **Mental Well-being**: Parks are often considered \"nature zones\" that reduce stress and anxiety. They provide a sense of calm and can help improve mood and cognitive function.\n*   **Social Connection**: Walking together with friends or family is a great way to bond. It fosters community and creates shared memories.\n*   **Energy Boost**: The fresh air and sunlight can help reset your mood and increase your energy levels.\n\n###",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Handling money each month is a powerful habit that builds financial freedom, reduces stress, and improves overall well-being. Here's a practical, step-by-step approach to make it stick:\n\n---\n\n### **1. Set Clear, Realistic Goals**\n- **Define your monthly goal**: Is it saving $50, $1,000, or $5,000?\n- **Break it down**: If saving $500/month, split it into smaller chunks (e.g., $50/day).\n- **Set a deadline**: \"I'll save $500 by [date]\" creates urgency.\n\n---\n\n### **2. Choose the Right Savings Strategy**\n- **Savings account**: Best for long-term goals (e.g., retirement, down payment).\n- **Investments**: For growth (stocks, bonds, ETFs).\n- **Emergency fund**: For unexpected expenses (3–6 months of living costs).\n",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, you typically brew it by steeping ground coffee in hot water for a specific duration, such as 3 to 4 minutes. The resulting liquid is then poured into a cup, and you can add milk, sugar, or other toppings to enhance the flavor.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Visiting a museum is one of the most rewarding experiences you can have, but it can also be overwhelming if approached without preparation. To make the most of your visit, here is a comprehensive guide covering what to expect, what to bring, and how to navigate the experience.\n\n### 1. Understand the Core Philosophy\nBefore you even enter, it helps to know the museum's mission. Museums generally aim to:\n*   **Preserve History:** Keep artifacts and objects from the past intact.\n*   **Educate:** Teach visitors about human history, culture, science, and art.\n*   **Inspire:** Encourage curiosity and critical thinking.\n*   **Connect:** Help visitors understand how different cultures, people, and ideas have shaped our world.\n\n### 2. Essential Items to Bring\nYour bag should be prepared for a few specific things:\n*   **A Camera:** This is non-negotiable. You will likely take photos of exhibits,",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend can be tricky because it often means you're stuck indoors, the weather is unpredictable, and you might miss out on some outdoor activities. Here are some practical tips to make the most of a rainy weekend:\n\n### 1. **Stay Comfortable and Safe**\n   - **Check the weather forecast**: If it's still raining, stay inside and avoid getting wet.\n   - **Use a raincoat or umbrella**: Even if it's not raining, a light raincoat or umbrella can help you stay dry.\n   - **Stay hydrated**: Keep your water bottle handy and drink plenty of water to stay hydrated.\n\n### 2. **Plan Your Activities**\n   - **Choose indoor activities**: Instead of going out, try indoor games, movies, or even a cozy evening at home.\n   - **Plan a picnic or dinner**: If you're feeling adventurous, plan a picnic or a dinner with friends.\n   - **Use technology**: If",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  }
+ ]
+}

@@ -1,0 +1,2796 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "v53_m025",
+  "archivo": "lab\\runs\\loopfix\\editor\\cands\\v53_m025.wspl",
+  "steps_count": 66,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 107000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_960.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_960.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_961.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_961.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_962.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_962.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_963.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_963.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_964.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_964.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_965.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_965.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_966.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_966.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_967.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_967.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_968.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_968.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_969.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_969.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_970.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_970.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_971.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_971.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_972.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_972.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_973.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_973.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_974.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_974.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_975.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_975.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_976.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_976.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_977.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_977.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_978.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_978.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_979.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_979.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_980.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_980.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_981.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_981.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_982.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_982.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_983.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_983.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_984.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_984.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_985.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_985.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_986.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_986.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_987.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_987.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_988.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_988.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_989.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_989.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_990.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_990.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_991.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_991.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_992.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_992.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_993.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_993.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_994.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_994.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_995.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_995.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_996.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_996.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_997.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_997.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_998.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_998.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_999.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_999.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1000.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1000.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1001.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1001.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1002.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1002.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1003.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1003.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1004.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1004.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1005.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1005.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1006.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1006.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1007.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1007.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1008.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1008.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1009.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1009.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1010.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1010.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1011.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1011.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1012.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1012.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1013.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1013.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1014.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1014.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1015.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1015.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1016.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1016.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1017.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1017.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1018.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1018.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1019.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1019.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1020.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1020.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1021.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1021.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1022.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1022.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    },
+    {
+      "sec": "steps",
+      "expr": "step project_out transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1023.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1023.npz alpha=1.25 top_rows=1 top_cols=1.0"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 2,
+      "steps": 64
+    },
+    "pasos": [
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_960.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_961.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_962.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_963.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_964.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_965.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_966.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_967.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_968.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_969.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_970.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_971.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_972.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_973.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_974.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_975.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_976.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_977.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_978.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_979.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_980.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_981.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_982.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_983.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_984.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_985.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_986.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_987.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_988.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_989.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_990.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_991.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_992.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_993.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_994.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_995.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_996.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_997.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_998.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_999.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1000.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1001.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1002.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1003.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1004.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1005.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1006.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1007.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1008.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1009.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1010.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1011.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1012.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1013.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1014.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1015.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1016.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1017.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1018.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1019.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1020.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1021.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1022.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      },
+      {
+        "op": "project_out",
+        "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1023.npz alpha=1.25 top_rows=1 top_cols=1.0"
+      }
+    ],
+    "pasos_mapeo": {
+      "project_out": "low-rank directional subtraction W <- W - alpha * u(u^T W)"
+    },
+    "budgets": {
+      "max_modified_weights": 107000,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": true,
+      "allow_training": false,
+      "unlock_tensors": []
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-05T23:55:57",
+  "ejecucion": [
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_960.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09436631202697754,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09436631202697754,
+        "directional_energy_before": 0.5261820554733276,
+        "directional_energy_after": 0.1315455138683319,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_961.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11346650123596191,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11346650123596191,
+        "directional_energy_before": 0.5408983826637268,
+        "directional_energy_after": 0.1352245807647705,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_962.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.15266047418117523,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.15266047418117523,
+        "directional_energy_before": 0.5287607312202454,
+        "directional_energy_after": 0.13219018280506134,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_963.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1055363267660141,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1055363267660141,
+        "directional_energy_before": 0.5186442136764526,
+        "directional_energy_after": 0.12966105341911316,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_964.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1006588414311409,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1006588414311409,
+        "directional_energy_before": 0.5173078775405884,
+        "directional_energy_after": 0.1293269693851471,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_965.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11977502703666687,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11977502703666687,
+        "directional_energy_before": 0.5281146168708801,
+        "directional_energy_after": 0.13202863931655884,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_966.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.15139071643352509,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.15139071643352509,
+        "directional_energy_before": 0.5360345244407654,
+        "directional_energy_after": 0.13400863111019135,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_967.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.13580946624279022,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.13580946624279022,
+        "directional_energy_before": 0.6030996441841125,
+        "directional_energy_after": 0.15077491104602814,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_968.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09887915849685669,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09887915849685669,
+        "directional_energy_before": 0.48696786165237427,
+        "directional_energy_after": 0.12174196541309357,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_969.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12084560096263885,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12084560096263885,
+        "directional_energy_before": 0.5953148007392883,
+        "directional_energy_after": 0.14882870018482208,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_970.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10152927786111832,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10152927786111832,
+        "directional_energy_before": 0.4679390490055084,
+        "directional_energy_after": 0.1169847622513771,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_971.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10841139405965805,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10841139405965805,
+        "directional_energy_before": 0.5224770903587341,
+        "directional_energy_after": 0.13061927258968353,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_972.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09724488854408264,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09724488854408264,
+        "directional_energy_before": 0.514949381351471,
+        "directional_energy_after": 0.12873734533786774,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_973.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11090750992298126,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11090750992298126,
+        "directional_energy_before": 0.5288290977478027,
+        "directional_energy_after": 0.1322072595357895,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_974.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1213240697979927,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1213240697979927,
+        "directional_energy_before": 0.5136416554450989,
+        "directional_energy_after": 0.12841041386127472,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_975.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.13263681530952454,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.13263681530952454,
+        "directional_energy_before": 0.5292530059814453,
+        "directional_energy_after": 0.13231325149536133,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_976.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12643547356128693,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12643547356128693,
+        "directional_energy_before": 0.5211209058761597,
+        "directional_energy_after": 0.13028022646903992,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_977.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11824430525302887,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11824430525302887,
+        "directional_energy_before": 0.5530641078948975,
+        "directional_energy_after": 0.13826602697372437,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_978.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11354251205921173,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11354251205921173,
+        "directional_energy_before": 0.5018884539604187,
+        "directional_energy_after": 0.12547211349010468,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_979.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11389279365539551,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11389279365539551,
+        "directional_energy_before": 0.5533636808395386,
+        "directional_energy_after": 0.13834092020988464,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_980.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12400339543819427,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12400339543819427,
+        "directional_energy_before": 0.5517877340316772,
+        "directional_energy_after": 0.1379469335079193,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_981.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11021647602319717,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11021647602319717,
+        "directional_energy_before": 0.5647374391555786,
+        "directional_energy_after": 0.14118435978889465,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_982.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12232282757759094,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12232282757759094,
+        "directional_energy_before": 0.5603871941566467,
+        "directional_energy_after": 0.14009679853916168,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_983.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12965048849582672,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12965048849582672,
+        "directional_energy_before": 0.5734401345252991,
+        "directional_energy_after": 0.14336003363132477,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_984.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12302801012992859,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12302801012992859,
+        "directional_energy_before": 0.5852495431900024,
+        "directional_energy_after": 0.1463123857975006,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_985.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.0942259430885315,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.0942259430885315,
+        "directional_energy_before": 0.5258084535598755,
+        "directional_energy_after": 0.13145212829113007,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_986.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.14959433674812317,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.14959433674812317,
+        "directional_energy_before": 0.5680687427520752,
+        "directional_energy_after": 0.1420171856880188,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_987.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1261141002178192,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1261141002178192,
+        "directional_energy_before": 0.5183094143867493,
+        "directional_energy_after": 0.12957735359668732,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_988.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.15370237827301025,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.15370237827301025,
+        "directional_energy_before": 0.5339865684509277,
+        "directional_energy_after": 0.13349665701389313,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_989.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.13004738092422485,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.13004738092422485,
+        "directional_energy_before": 0.5274727940559387,
+        "directional_energy_after": 0.13186819851398468,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_990.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12087507545948029,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12087507545948029,
+        "directional_energy_before": 0.5750768780708313,
+        "directional_energy_after": 0.14376923441886902,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_991.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10788717120885849,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10788717120885849,
+        "directional_energy_before": 0.5853939056396484,
+        "directional_energy_after": 0.1463484764099121,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_992.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.08710475265979767,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.08710475265979767,
+        "directional_energy_before": 0.4948892295360565,
+        "directional_energy_after": 0.12372230738401413,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_993.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09797989577054977,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09797989577054977,
+        "directional_energy_before": 0.5657152533531189,
+        "directional_energy_after": 0.14142881333827972,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_994.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.13744290173053741,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.13744290173053741,
+        "directional_energy_before": 0.5276402831077576,
+        "directional_energy_after": 0.1319100707769394,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_995.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10641854256391525,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10641854256391525,
+        "directional_energy_before": 0.5155385136604309,
+        "directional_energy_after": 0.12888462841510773,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_996.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.13274411857128143,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.13274411857128143,
+        "directional_energy_before": 0.5534729361534119,
+        "directional_energy_after": 0.13836823403835297,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_997.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1258777529001236,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1258777529001236,
+        "directional_energy_before": 0.5751152038574219,
+        "directional_energy_after": 0.14377880096435547,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_998.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12076952308416367,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12076952308416367,
+        "directional_energy_before": 0.5148748755455017,
+        "directional_energy_after": 0.12871871888637543,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_999.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12333700060844421,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12333700060844421,
+        "directional_energy_before": 0.5423586368560791,
+        "directional_energy_after": 0.13558965921401978,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1000.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1962771862745285,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1962771862745285,
+        "directional_energy_before": 0.6190476417541504,
+        "directional_energy_after": 0.1547619104385376,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1001.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09062609821557999,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09062609821557999,
+        "directional_energy_before": 0.4486406445503235,
+        "directional_energy_after": 0.11216016113758087,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1002.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1195911169052124,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1195911169052124,
+        "directional_energy_before": 0.5864108800888062,
+        "directional_energy_after": 0.14660273492336273,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1003.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12027658522129059,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12027658522129059,
+        "directional_energy_before": 0.5753601789474487,
+        "directional_energy_after": 0.14384004473686218,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1004.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10987230390310287,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10987230390310287,
+        "directional_energy_before": 0.537986159324646,
+        "directional_energy_after": 0.1344965249300003,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1005.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.1151578426361084,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.1151578426361084,
+        "directional_energy_before": 0.5477721691131592,
+        "directional_energy_after": 0.1369430422782898,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1006.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09331949055194855,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09331949055194855,
+        "directional_energy_before": 0.5074837803840637,
+        "directional_energy_after": 0.12687094509601593,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1007.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.08148586750030518,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.08148586750030518,
+        "directional_energy_before": 0.4768792986869812,
+        "directional_energy_after": 0.1192198246717453,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1008.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12515340745449066,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12515340745449066,
+        "directional_energy_before": 0.5508241057395935,
+        "directional_energy_after": 0.13770602643489838,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1009.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10875345021486282,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10875345021486282,
+        "directional_energy_before": 0.5221196413040161,
+        "directional_energy_after": 0.13052991032600403,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1010.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09518499672412872,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09518499672412872,
+        "directional_energy_before": 0.4921906590461731,
+        "directional_energy_after": 0.12304765731096268,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1011.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09820359945297241,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09820359945297241,
+        "directional_energy_before": 0.5036051273345947,
+        "directional_energy_after": 0.12590128183364868,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1012.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10579481720924377,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10579481720924377,
+        "directional_energy_before": 0.5254055857658386,
+        "directional_energy_after": 0.13135139644145966,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1013.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09566675871610641,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09566675871610641,
+        "directional_energy_before": 0.5276404023170471,
+        "directional_energy_after": 0.13191008567810059,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1014.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11633758246898651,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11633758246898651,
+        "directional_energy_before": 0.5219359993934631,
+        "directional_energy_after": 0.13048399984836578,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1015.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11523625254631042,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11523625254631042,
+        "directional_energy_before": 0.5908041596412659,
+        "directional_energy_after": 0.14770105481147766,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1016.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.11107271909713745,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.11107271909713745,
+        "directional_energy_before": 0.5596049427986145,
+        "directional_energy_after": 0.13990125060081482,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1017.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12137652933597565,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12137652933597565,
+        "directional_energy_before": 0.5506777167320251,
+        "directional_energy_after": 0.1376694142818451,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1018.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09928418695926666,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09928418695926666,
+        "directional_energy_before": 0.5696417093276978,
+        "directional_energy_after": 0.14241042733192444,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1019.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12310607731342316,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12310607731342316,
+        "directional_energy_before": 0.5238098502159119,
+        "directional_energy_after": 0.13095246255397797,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1020.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.10660313069820404,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.10660313069820404,
+        "directional_energy_before": 0.5365927219390869,
+        "directional_energy_after": 0.13414818048477173,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1021.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09702659398317337,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09702659398317337,
+        "directional_energy_before": 0.5177891254425049,
+        "directional_energy_after": 0.12944728136062622,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1022.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.09943222999572754,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.09943222999572754,
+        "directional_energy_before": 0.5074008107185364,
+        "directional_energy_after": 0.1268502026796341,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    },
+    {
+      "op": "project_out",
+      "args": "transformer.h.5.attn.c_attn.weight vector=lab/runs/loopfix/editor/vecs/onehot1152_1023.npz alpha=1.25 top_rows=1 top_cols=1.0",
+      "status": "ok",
+      "write_guard": {
+        "modified_parameters": 384,
+        "max_abs_delta": 0.12696731090545654,
+        "tensors_changed": [
+          "transformer.h.5.attn.c_attn.weight"
+        ]
+      },
+      "execution_state": "executed",
+      "result": {
+        "tensor": "transformer.h.5.attn.c_attn.weight",
+        "execution_state": "executed",
+        "shard": "model.safetensors",
+        "column_selection_strategy": "magnitude",
+        "mean_leverage_selected": null,
+        "overall_mean_leverage": null,
+        "modified_parameters": 384,
+        "tensor_total_parameters": 442368,
+        "fraction_modified": "0.0868%",
+        "max_delta_norm": 0.12696731090545654,
+        "directional_energy_before": 0.5477025508880615,
+        "directional_energy_after": 0.1369256228208542,
+        "energy_reduction_pct": "75.00%",
+        "rank_1_purity": false,
+        "empirical_orthogonal_crosstalk": 0.0,
+        "crosstalk_warning": "Row masking (top_rows) breaks pure outer-product structure; non-zero cross-talk introduced.",
+        "written_to_disk": true,
+        "target_shard_path": "lab\\runs\\loopfix\\editor\\cands\\v53_m025\\model.safetensors"
+      }
+    }
+  ]
+}

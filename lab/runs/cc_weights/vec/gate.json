@@ -1,0 +1,7 @@
+{
+ "median_over_layers_of_heldout_median_abs_err": 0.03181314468383789,
+ "worst_layer": 0.04345536231994629,
+ "G0": true,
+ "merge_cos_written_dW_min": 0.8307418823242188,
+ "merge_rel_err_median": 0.47492650151252747
+}

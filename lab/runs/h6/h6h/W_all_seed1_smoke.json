@@ -1,0 +1,58 @@
+{
+ "arm": "W_all",
+ "direction": "ridge",
+ "only": null,
+ "seed": 1,
+ "k": 20,
+ "rounds_max": 1,
+ "mu": 0.01,
+ "rhos": [
+  0.0001,
+  0.0003,
+  0.001,
+  0.003,
+  0.01,
+  0.03
+ ],
+ "n_matrices": 186,
+ "n_weights": 497614848,
+ "rounds": [
+  {
+   "round": 1,
+   "rows": 1176,
+   "train_loss": 0.4798061146455653,
+   "dev_nll_before": 0.42224666927535776,
+   "table": {
+    "0.0001": 0.42355858468625696,
+    "0.0003": 0.4231657796997874,
+    "0.001": 0.4206472311738467,
+    "0.003": 0.4289812926576359,
+    "0.01": 0.47897398027086574,
+    "0.03": 0.7160459684471013
+   },
+   "rho": 0.001,
+   "accepted": true,
+   "seconds": 55,
+   "example_forwards": 1260,
+   "rel_change_by_kind": {
+    "linear_attn.in_proj_a": 3.5123622338591517e-07,
+    "linear_attn.in_proj_b": 7.973292159281175e-07,
+    "linear_attn.in_proj_qkv": 4.4345994969219294e-07,
+    "linear_attn.in_proj_z": 9.979429523167613e-07,
+    "linear_attn.out_proj": 0.002137968124287141,
+    "mlp.down_proj": 0.0034749058165159134,
+    "mlp.gate_proj": 7.868920858547159e-06,
+    "mlp.up_proj": 2.276980699407395e-05,
+    "self_attn.k_proj": 1.1411344081785612e-06,
+    "self_attn.o_proj": 0.0006620907989974328,
+    "self_attn.q_proj": 3.433938086522892e-07,
+    "self_attn.v_proj": 1.8383474648115061e-06
+   },
+   "dev_nll_after": 0.4206472311738467,
+   "dev_acc_after": 0.25
+  }
+ ],
+ "evals": {},
+ "dev_nll_0": 0.42224666927535776,
+ "last_round": 1
+}

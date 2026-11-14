@@ -83,7 +83,8 @@ def chat(endpoint, messages, sampling_params):
 
 
 def run_task(endpoint, prompt, sampling_params, max_turns=12):
-    messages = [{"role": "user", "content": prompt}]
+    sysmsg = getattr(args, "system", None)
+    messages = ([{"role": "system", "content": sysmsg}] if sysmsg else []) + [{"role": "user", "content": prompt}]
     hist, turns, final = [], 0, None
     loop_turn = None
 
@@ -159,6 +160,7 @@ def main():
     ap.add_argument("--presence-penalty", type=float, default=0.0)
     ap.add_argument("--frequency-penalty", type=float, default=0.0)
     ap.add_argument("--seed", type=int, default=42, help="Semilla para muestreo estocástico")
+    ap.add_argument("--max-tokens", type=int, default=800, dest="max_tokens")
     args = ap.parse_args()
 
     if not DIR_DATA.exists():
@@ -170,8 +172,7 @@ def main():
     sampling_params = {
         "temperature": args.temperature,
         "top_p": 0.95,
-        "max_tokens": 800,
-        "seed": args.seed,
+        "max_tokens": getattr(args, "max_tokens", 800),
         "repetition_penalty": args.repetition_penalty,
         "presence_penalty": args.presence_penalty,
         "frequency_penalty": args.frequency_penalty,

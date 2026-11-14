@@ -1,0 +1,3841 @@
+{
+ "loop_tokens": {
+  "Wait": 13784,
+  " Wait": 13428,
+  "wait": 11158,
+  " wait": 3655,
+  "Okay": 31248,
+  " Okay": 34267,
+  "okay": 90006,
+  " okay": 16415,
+  "Hmm": 77264,
+  " Hmm": 85152,
+  "check": 1960,
+  " check": 1716,
+  "Check": 3840,
+  " Check": 4109,
+  "Actually": 50821,
+  " Actually": 32645,
+  "Alternatively": 88842,
+  " Alternatively": 37201,
+  "But": 3850,
+  " But": 1921,
+  "Let": 9764,
+  " Let": 6558,
+  "verify": 12089,
+  " verify": 9845,
+  "double": 4190,
+  " double": 1923,
+  "re": 265,
+  " re": 311,
+  "use": 784,
+  " use": 958,
+  "boxed": 76367,
+  " boxed": 71160,
+  "</think>": 248069
+ },
+ "chance_fraction": 0.00390625,
+ "n_tensors": 128,
+ "enrichment_median_all": {
+  "shared": 1.33,
+  "mimo_top": 1.33,
+  "random": 1.04
+ },
+ "enrichment_median_by_kind": {
+  "linear_attn.in_proj_qkv.weight": {
+   "shared": 1.3,
+   "mimo_top": 1.3,
+   "random": 1.04
+  },
+  "mlp.down_proj.weight": {
+   "shared": 1.42,
+   "mimo_top": 1.42,
+   "random": 1.04
+  },
+  "mlp.gate_proj.weight": {
+   "shared": 1.29,
+   "mimo_top": 1.29,
+   "random": 1.04
+  },
+  "mlp.up_proj.weight": {
+   "shared": 1.23,
+   "mimo_top": 1.23,
+   "random": 1.04
+  },
+  "self_attn.q_proj.weight": {
+   "shared": 1.22,
+   "mimo_top": 1.22,
+   "random": 1.04
+  }
+ },
+ "enrichment_median_by_depth": {
+  "0-7": {
+   "shared": 1.01,
+   "mimo_top": 1.01,
+   "random": 1.04
+  },
+  "8-15": {
+   "shared": 1.09,
+   "mimo_top": 1.09,
+   "random": 1.04
+  },
+  "16-23": {
+   "shared": 1.99,
+   "mimo_top": 1.99,
+   "random": 1.04
+  },
+  "24-31": {
+   "shared": 4.2,
+   "mimo_top": 4.2,
+   "random": 1.04
+  }
+ },
+ "down_proj_first_direction_tokens": [
+  {
+   "tensor": "model.layers.0.mlp.down_proj.weight",
+   "layer": 0,
+   "cos": 0.842,
+   "plus": [
+    "enen",
+    "igh",
+    "icing",
+    "歪",
+    "复审",
+    "arul",
+    "掌",
+    "增强体质",
+    "bower",
+    "لول"
+   ],
+   "minus": [
+    "您的评论",
+    "搜索相关资料",
+    " Dau",
+    " заслужи",
+    "�",
+    "心想",
+    "ejm",
+    "手机站",
+    "本文为博主",
+    "レート"
+   ]
+  },
+  {
+   "tensor": "model.layers.1.mlp.down_proj.weight",
+   "layer": 1,
+   "cos": 0.907,
+   "plus": [
+    "rack",
+    "amid",
+    "城外",
+    "胧",
+    "nen",
+    "stitut",
+    "ขน",
+    "ンプ",
+    "交口",
+    "__:"
+   ],
+   "minus": [
+    "WD",
+    "Lambda",
+    "_SF",
+    "的专栏",
+    "版权属于",
+    "�",
+    "另一半",
+    "违法和不良信息举报",
+    "璞",
+    "像你"
+   ]
+  },
+  {
+   "tensor": "model.layers.10.mlp.down_proj.weight",
+   "layer": 10,
+   "cos": 0.755,
+   "plus": [
+    "iblioteca",
+    "osit",
+    "尔多",
+    "nič",
+    "erein",
+    "ongyang",
+    "elda",
+    "asic",
+    "iaux",
+    " Teixe"
+   ],
+   "minus": [
+    "matrix",
+    "矩阵",
+    "IP",
+    "1",
+    "aran",
+    "4",
+    " matrix",
+    "우",
+    "rost",
+    "含"
+   ]
+  },
+  {
+   "tensor": "model.layers.11.mlp.down_proj.weight",
+   "layer": 11,
+   "cos": 0.383,
+   "plus": [
+    "enza",
+    "/topics",
+    " certain",
+    "搏",
+    "假",
+    "chos",
+    "写生",
+    "ochen",
+    "有下列情形之一的",
+    "ever"
+   ],
+   "minus": [
+    "phis",
+    "reek",
+    " montag",
+    ".intersection",
+    "asuk",
+    "oxic",
+    "ArrayOf",
+    "reform",
+    "emui",
+    "alley"
+   ]
+  },
+  {
+   "tensor": "model.layers.12.mlp.down_proj.weight",
+   "layer": 12,
+   "cos": 0.367,
+   "plus": [
+    "为使",
+    " Sed",
+    "�",
+    "imulator",
+    "/topics",
+    "ELLO",
+    "edor",
+    "돈",
+    "OfDay",
+    "滔"
+   ],
+   "minus": [
+    "iso",
+    "隅",
+    "lang",
+    "cancel",
+    "_domain",
+    "青梅",
+    "domain",
+    "mut",
+    "字型",
+    "rast"
+   ]
+  },
+  {
+   "tensor": "model.layers.13.mlp.down_proj.weight",
+   "layer": 13,
+   "cos": 0.405,
+   "plus": [
+    "abouts",
+    "致",
+    "atori",
+    " Toko",
+    "chas",
+    "ivy",
+    "endan",
+    "PTS",
+    " coz",
+    "带走了"
+   ],
+   "minus": [
+    ".manual",
+    "之三",
+    "金针",
+    "obl",
+    "又在",
+    " blindness",
+    "意思",
+    "éf",
+    "ArrayOf",
+    "摘自"
+   ]
+  },
+  {
+   "tensor": "model.layers.14.mlp.down_proj.weight",
+   "layer": 14,
+   "cos": 0.776,
+   "plus": [
+    "antal",
+    "ved",
+    "在营",
+    " пей",
+    "折",
+    "至关",
+    " multis",
+    "itt",
+    " mult",
+    " merit"
+   ],
+   "minus": [
+    "izzer",
+    "ersh",
+    "eced",
+    "onado",
+    "みつ",
+    "odio",
+    "aze",
+    "ARRIER",
+    "ecedor",
+    "kina"
+   ]
+  },
+  {
+   "tensor": "model.layers.15.mlp.down_proj.weight",
+   "layer": 15,
+   "cos": 0.649,
+   "plus": [
+    "登录查看",
+    "……。",
+    "情况等",
+    "emun",
+    "但其实",
+    "__/",
+    "...]",
+    "查看更多",
+    "šten",
+    "([..."
+   ],
+   "minus": [
+    "WOR",
+    "allel",
+    "具有以下",
+    ".abspath",
+    "发自",
+    "!--",
+    ".cod",
+    "lopen",
+    "поль",
+    "直角"
+   ]
+  },
+  {
+   "tensor": "model.layers.16.mlp.down_proj.weight",
+   "layer": 16,
+   "cos": 0.709,
+   "plus": [
+    "...]",
+    "...).",
+    "……。",
+    " ...\\",
+    " etc",
+    "etc",
+    "...)",
+    "祝福你",
+    "emun",
+    "[__"
+   ],
+   "minus": [
+    "莘",
+    "잇",
+    "ivr",
+    "-parser",
+    " Lour",
+    "_iv",
+    " passphrase",
+    "dap",
+    " وذلك",
+    "-ok"
+   ]
+  },
+  {
+   "tensor": "model.layers.17.mlp.down_proj.weight",
+   "layer": 17,
+   "cos": 0.656,
+   "plus": [
+    "旦",
+    "irro",
+    " BOTH",
+    " dép",
+    "着眼于",
+    "รู",
+    " \\\"",
+    "ivr",
+    "闻",
+    "arel"
+   ],
+   "minus": [
+    "……。",
+    " etc",
+    "…。",
+    " blah",
+    "...).",
+    "等等",
+    " ...\\",
+    "etc",
+    "。。。",
+    "...</"
+   ]
+  },
+  {
+   "tensor": "model.layers.18.mlp.down_proj.weight",
+   "layer": 18,
+   "cos": 0.667,
+   "plus": [
+    "arily",
+    "展销",
+    "poke",
+    "电子版",
+    "reck",
+    "(pf",
+    "�",
+    "רים",
+    " Dixon",
+    "ambre"
+   ],
+   "minus": [
+    "onet",
+    "partment",
+    "紧密结合",
+    "�",
+    "hoek",
+    "enus",
+    "itele",
+    "苟",
+    "成片",
+    "仇"
+   ]
+  },
+  {
+   "tensor": "model.layers.19.mlp.down_proj.weight",
+   "layer": 19,
+   "cos": 0.671,
+   "plus": [
+    " `",
+    "居然",
+    "ise",
+    " **",
+    " -",
+    " ",
+    " *",
+    " \"",
+    " ",
+    " —"
+   ],
+   "minus": [
+    "ystate",
+    "赶紧来",
+    "情况等",
+    "……。",
+    "看看吧",
+    " อ่านต่อ",
+    "很快的",
+    "精明",
+    "berra",
+    "đu"
+   ]
+  },
+  {
+   "tensor": "model.layers.2.mlp.down_proj.weight",
+   "layer": 2,
+   "cos": 0.923,
+   "plus": [
+    "istan",
+    "mun",
+    "ạn",
+    "在这样的",
+    "�",
+    "交所",
+    "所未",
+    "凫",
+    " Alone",
+    "نین"
+   ],
+   "minus": [
+    "asten",
+    " “",
+    "香",
+    "�",
+    ".sav",
+    "ebet",
+    "buk",
+    "魂",
+    "ارج",
+    "atory"
+   ]
+  },
+  {
+   "tensor": "model.layers.20.mlp.down_proj.weight",
+   "layer": 20,
+   "cos": 0.607,
+   "plus": [
+    " **—",
+    " -**",
+    " –**",
+    " pornos",
+    " lazada",
+    " huyn",
+    "目瞪",
+    "QRST",
+    " \r\n \r\n",
+    "жере"
+   ],
+   "minus": [
+    " ",
+    " P",
+    " *",
+    " (",
+    "1",
+    " D",
+    "!",
+    " T",
+    " L",
+    " V"
+   ]
+  },
+  {
+   "tensor": "model.layers.21.mlp.down_proj.weight",
+   "layer": 21,
+   "cos": 0.601,
+   "plus": [
+    " **:**",
+    ".':",
+    "",
+    " **■",
+    "*“.",
+    " **.**",
+    "ftime",
+    " **:",
+    "pje",
+    "»?"
+   ],
+   "minus": [
+    " —",
+    "——",
+    "—",
+    " –",
+    " -",
+    "—it",
+    " ——",
+    "—they",
+    " --",
+    "—you"
+   ]
+  },
+  {
+   "tensor": "model.layers.22.mlp.down_proj.weight",
+   "layer": 22,
+   "cos": 0.708,
+   "plus": [
+    "1",
+    " ",
+    "2",
+    "\n",
+    "3",
+    " p",
+    " ",
+    " c",
+    " s",
+    " -"
+   ],
+   "minus": [
+    " triana",
+    "oween",
+    " egt",
+    " berin",
+    " ydk",
+    " **■",
+    " **:**",
+    " doule",
+    " fkk",
+    " memperm"
+   ]
+  },
+  {
+   "tensor": "model.layers.23.mlp.down_proj.weight",
+   "layer": 23,
+   "cos": 0.726,
+   "plus": [
+    " ",
+    "1",
+    "2",
+    " T",
+    " p",
+    " V",
+    " P",
+    " c",
+    " -",
+    "3"
+   ],
+   "minus": [
+    " **■",
+    " ës",
+    " silen",
+    " quaran",
+    " **:**",
+    " berv",
+    " ▷",
+    " ezz",
+    " seter",
+    " tenden"
+   ]
+  },
+  {
+   "tensor": "model.layers.24.mlp.down_proj.weight",
+   "layer": 24,
+   "cos": 0.803,
+   "plus": [
+    " ",
+    "1",
+    " p",
+    "2",
+    "3",
+    "6",
+    " s",
+    " c",
+    " S",
+    "4"
+   ],
+   "minus": [
+    " **■",
+    " menda",
+    " egt",
+    " dikat",
+    " **:**",
+    " sehar",
+    " triana",
+    " kemen",
+    " diba",
+    " ës"
+   ]
+  },
+  {
+   "tensor": "model.layers.25.mlp.down_proj.weight",
+   "layer": 25,
+   "cos": 0.824,
+   "plus": [
+    " dikat",
+    " **■",
+    " **:**",
+    " egt",
+    "党总支书记",
+    " ezz",
+    "hias",
+    " protes",
+    "本赛季",
+    " podsta"
+   ],
+   "minus": [
+    " s",
+    " c",
+    "1",
+    "3",
+    " ",
+    "2",
+    " S",
+    " r",
+    " p",
+    "5"
+   ]
+  },
+  {
+   "tensor": "model.layers.26.mlp.down_proj.weight",
+   "layer": 26,
+   "cos": 0.866,
+   "plus": [
+    " ezz",
+    "udeau",
+    " prezi",
+    " nrw",
+    "返回列表",
+    "<strong",
+    " doule",
+    "andie",
+    "quetes",
+    "asaran"
+   ],
+   "minus": [
+    "L",
+    "il",
+    " L",
+    "露",
+    "1",
+    "up",
+    "at",
+    "音",
+    "�",
+    "are"
+   ]
+  },
+  {
+   "tensor": "model.layers.27.mlp.down_proj.weight",
+   "layer": 27,
+   "cos": 0.871,
+   "plus": [
+    "2",
+    "1",
+    "6",
+    "8",
+    "4",
+    "3",
+    "5",
+    "un",
+    "J",
+    " A"
+   ],
+   "minus": [
+    " **■",
+    " ezz",
+    " berin",
+    " mantu",
+    " dikat",
+    " nrw",
+    " egt",
+    "encv",
+    " sehar",
+    "🙂"
+   ]
+  },
+  {
+   "tensor": "model.layers.28.mlp.down_proj.weight",
+   "layer": 28,
+   "cos": 0.829,
+   "plus": [
+    "1",
+    "2",
+    "3",
+    "6",
+    "8",
+    "4",
+    "ch",
+    "un",
+    "/",
+    "de"
+   ],
+   "minus": [
+    " ezz",
+    " **■",
+    " mantu",
+    "rray",
+    "🙂",
+    " कांग",
+    "蟀",
+    "😀",
+    " svil",
+    "cante"
+   ]
+  },
+  {
+   "tensor": "model.layers.29.mlp.down_proj.weight",
+   "layer": 29,
+   "cos": 0.884,
+   "plus": [
+    " in",
+    "1",
+    " (",
+    " and",
+    " on",
+    " as",
+    "3",
+    "2",
+    "5",
+    ","
+   ],
+   "minus": [
+    " Stéph",
+    "…**",
+    " ezz",
+    "…»",
+    "”…",
+    "❤️",
+    ":`~",
+    "…but",
+    "…),",
+    "../../../"
+   ]
+  },
+  {
+   "tensor": "model.layers.3.mlp.down_proj.weight",
+   "layer": 3,
+   "cos": 0.962,
+   "plus": [
+    "在下面",
+    " Extras",
+    "閒",
+    "晾",
+    "omu",
+    "磊",
+    "田园",
+    "му",
+    "在上面",
+    "empat"
+   ],
+   "minus": [
+    "rown",
+    "�",
+    "araan",
+    "assem",
+    "_KIND",
+    " tor",
+    "iles",
+    "tor",
+    "Cog",
+    "asley"
+   ]
+  },
+  {
+   "tensor": "model.layers.30.mlp.down_proj.weight",
+   "layer": 30,
+   "cos": 0.829,
+   "plus": [
+    " Stéph",
+    " Ejem",
+    "[…",
+    "querque",
+    "威夷",
+    " |–",
+    "勤勤恳恳",
+    " impac",
+    " €*",
+    "yaç"
+   ],
+   "minus": [
+    " ",
+    " a",
+    " in",
+    " (",
+    ",",
+    "1",
+    " the",
+    " and",
+    "2",
+    " for"
+   ]
+  },
+  {
+   "tensor": "model.layers.31.mlp.down_proj.weight",
+   "layer": 31,
+   "cos": 0.936,
+   "plus": [
+    ".",
+    "/",
+    ".+",
+    " Unsure",
+    ".…",
+    ".»",
+    "สัปดาห์",
+    "\\.",
+    "&amp",
+    " prochains"
+   ],
+   "minus": [
+    " ",
+    " \"",
+    " “",
+    " (",
+    " `",
+    " '",
+    "\n",
+    " **",
+    " *",
+    " I"
+   ]
+  },
+  {
+   "tensor": "model.layers.4.mlp.down_proj.weight",
+   "layer": 4,
+   "cos": 0.898,
+   "plus": [
+    "地完成",
+    "纫",
+    "akta",
+    "楠",
+    "ptes",
+    "活",
+    "acen",
+    "istes",
+    "’S",
+    " accents"
+   ],
+   "minus": [
+    "CHAR",
+    "eric",
+    " Raw",
+    "ample",
+    "法律的",
+    "neau",
+    "ारी",
+    "易地",
+    "ង",
+    "ordo"
+   ]
+  },
+  {
+   "tensor": "model.layers.5.mlp.down_proj.weight",
+   "layer": 5,
+   "cos": 0.861,
+   "plus": [
+    "ential",
+    "一帆",
+    "ঁ",
+    "qe",
+    "prima",
+    "ifu",
+    "辕",
+    "opher",
+    "大利",
+    "/Runtime"
+   ],
+   "minus": [
+    "asar",
+    "太郎",
+    "公布",
+    "견",
+    "到有",
+    "ugen",
+    "上桌",
+    "wick",
+    "ped",
+    " outcome"
+   ]
+  },
+  {
+   "tensor": "model.layers.6.mlp.down_proj.weight",
+   "layer": 6,
+   "cos": 0.827,
+   "plus": [
+    " LIN",
+    "oden",
+    "вень",
+    "izont",
+    "кнуть",
+    "米尔",
+    " Kha",
+    "OG",
+    " geng",
+    "гене"
+   ],
+   "minus": [
+    "beck",
+    "\r\n            \r\n",
+    "%@",
+    "iblioteca",
+    " 이래",
+    "یف",
+    "婷",
+    "rv",
+    "Likes",
+    "早报"
+   ]
+  },
+  {
+   "tensor": "model.layers.7.mlp.down_proj.weight",
+   "layer": 7,
+   "cos": 0.492,
+   "plus": [
+    "klet",
+    "黑暗的",
+    "ТП",
+    "ovich",
+    " Tul",
+    "хай",
+    "orso",
+    ".closed",
+    "有二",
+    "positor"
+   ],
+   "minus": [
+    " ​​",
+    "级",
+    " upstream",
+    "ervers",
+    "ocom",
+    "一贯",
+    "oth",
+    "面试题",
+    "zen",
+    "ald"
+   ]
+  },
+  {
+   "tensor": "model.layers.8.mlp.down_proj.weight",
+   "layer": 8,
+   "cos": 0.405,
+   "plus": [
+    "adt",
+    "轨",
+    "benh",
+    "오",
+    "زا",
+    "考验",
+    "一帆",
+    "マネ",
+    "ご",
+    "ieger"
+   ],
+   "minus": [
+    "宝山",
+    "ỏ",
+    " SEEK",
+    "resa",
+    "sten",
+    "tes",
+    "echa",
+    "andas",
+    "肉眼",
+    "ras"
+   ]
+  },
+  {
+   "tensor": "model.layers.9.mlp.down_proj.weight",
+   "layer": 9,
+   "cos": 0.485,
+   "plus": [
+    "/",
+    "ced",
+    "要紧",
+    " A",
+    " ",
+    " Jets",
+    "人",
+    "1",
+    "ja",
+    " authentic"
+   ],
+   "minus": [
+    "始至",
+    "瑚",
+    "ragen",
+    "usercontent",
+    "ujuk",
+    "😀",
+    "kyat",
+    "usso",
+    "♡",
+    "ıra"
+   ]
+  }
+ ],
+ "tensors": [
+  {
+   "tensor": "model.layers.0.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 0,
+   "side": "read",
+   "shared_cos_mean": 0.521,
+   "shared": {
+    "loop_frac": 0.00392,
+    "random_tok_frac": 0.00394,
+    "enrichment": 1.0
+   },
+   "mimo_top": {
+    "loop_frac": 0.00392,
+    "random_tok_frac": 0.00394,
+    "enrichment": 1.0
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.0.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 0,
+   "side": "write",
+   "shared_cos_mean": 0.322,
+   "shared": {
+    "loop_frac": 0.00424,
+    "random_tok_frac": 0.00375,
+    "enrichment": 1.13
+   },
+   "mimo_top": {
+    "loop_frac": 0.00424,
+    "random_tok_frac": 0.00375,
+    "enrichment": 1.13
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.0.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 0,
+   "side": "read",
+   "shared_cos_mean": 0.406,
+   "shared": {
+    "loop_frac": 0.00386,
+    "random_tok_frac": 0.00378,
+    "enrichment": 1.02
+   },
+   "mimo_top": {
+    "loop_frac": 0.00386,
+    "random_tok_frac": 0.00378,
+    "enrichment": 1.02
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.0.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 0,
+   "side": "read",
+   "shared_cos_mean": 0.423,
+   "shared": {
+    "loop_frac": 0.00395,
+    "random_tok_frac": 0.0039,
+    "enrichment": 1.01
+   },
+   "mimo_top": {
+    "loop_frac": 0.00395,
+    "random_tok_frac": 0.0039,
+    "enrichment": 1.01
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.1.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 1,
+   "side": "read",
+   "shared_cos_mean": 0.439,
+   "shared": {
+    "loop_frac": 0.00465,
+    "random_tok_frac": 0.00372,
+    "enrichment": 1.25
+   },
+   "mimo_top": {
+    "loop_frac": 0.00465,
+    "random_tok_frac": 0.00372,
+    "enrichment": 1.25
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.1.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 1,
+   "side": "write",
+   "shared_cos_mean": 0.489,
+   "shared": {
+    "loop_frac": 0.00363,
+    "random_tok_frac": 0.00378,
+    "enrichment": 0.96
+   },
+   "mimo_top": {
+    "loop_frac": 0.00363,
+    "random_tok_frac": 0.00378,
+    "enrichment": 0.96
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.1.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 1,
+   "side": "read",
+   "shared_cos_mean": 0.383,
+   "shared": {
+    "loop_frac": 0.00421,
+    "random_tok_frac": 0.00408,
+    "enrichment": 1.03
+   },
+   "mimo_top": {
+    "loop_frac": 0.00421,
+    "random_tok_frac": 0.00408,
+    "enrichment": 1.03
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.1.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 1,
+   "side": "read",
+   "shared_cos_mean": 0.384,
+   "shared": {
+    "loop_frac": 0.00413,
+    "random_tok_frac": 0.004,
+    "enrichment": 1.03
+   },
+   "mimo_top": {
+    "loop_frac": 0.00413,
+    "random_tok_frac": 0.004,
+    "enrichment": 1.03
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.10.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 10,
+   "side": "read",
+   "shared_cos_mean": 0.319,
+   "shared": {
+    "loop_frac": 0.004,
+    "random_tok_frac": 0.00406,
+    "enrichment": 0.99
+   },
+   "mimo_top": {
+    "loop_frac": 0.004,
+    "random_tok_frac": 0.00406,
+    "enrichment": 0.99
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.10.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 10,
+   "side": "write",
+   "shared_cos_mean": 0.231,
+   "shared": {
+    "loop_frac": 0.00461,
+    "random_tok_frac": 0.00393,
+    "enrichment": 1.17
+   },
+   "mimo_top": {
+    "loop_frac": 0.00461,
+    "random_tok_frac": 0.00393,
+    "enrichment": 1.17
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.10.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 10,
+   "side": "read",
+   "shared_cos_mean": 0.346,
+   "shared": {
+    "loop_frac": 0.00387,
+    "random_tok_frac": 0.00401,
+    "enrichment": 0.97
+   },
+   "mimo_top": {
+    "loop_frac": 0.00387,
+    "random_tok_frac": 0.00401,
+    "enrichment": 0.97
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.10.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 10,
+   "side": "read",
+   "shared_cos_mean": 0.332,
+   "shared": {
+    "loop_frac": 0.00377,
+    "random_tok_frac": 0.00406,
+    "enrichment": 0.93
+   },
+   "mimo_top": {
+    "loop_frac": 0.00377,
+    "random_tok_frac": 0.00406,
+    "enrichment": 0.93
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.11.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 11,
+   "side": "write",
+   "shared_cos_mean": 0.142,
+   "shared": {
+    "loop_frac": 0.00483,
+    "random_tok_frac": 0.00386,
+    "enrichment": 1.25
+   },
+   "mimo_top": {
+    "loop_frac": 0.00483,
+    "random_tok_frac": 0.00386,
+    "enrichment": 1.25
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.11.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 11,
+   "side": "read",
+   "shared_cos_mean": 0.308,
+   "shared": {
+    "loop_frac": 0.00452,
+    "random_tok_frac": 0.00399,
+    "enrichment": 1.13
+   },
+   "mimo_top": {
+    "loop_frac": 0.00452,
+    "random_tok_frac": 0.00399,
+    "enrichment": 1.13
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.11.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 11,
+   "side": "read",
+   "shared_cos_mean": 0.303,
+   "shared": {
+    "loop_frac": 0.00474,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.2
+   },
+   "mimo_top": {
+    "loop_frac": 0.00474,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.2
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.11.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 11,
+   "side": "read",
+   "shared_cos_mean": 0.402,
+   "shared": {
+    "loop_frac": 0.00399,
+    "random_tok_frac": 0.00409,
+    "enrichment": 0.97
+   },
+   "mimo_top": {
+    "loop_frac": 0.00399,
+    "random_tok_frac": 0.00409,
+    "enrichment": 0.97
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.12.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 12,
+   "side": "read",
+   "shared_cos_mean": 0.322,
+   "shared": {
+    "loop_frac": 0.00421,
+    "random_tok_frac": 0.0038,
+    "enrichment": 1.11
+   },
+   "mimo_top": {
+    "loop_frac": 0.00421,
+    "random_tok_frac": 0.0038,
+    "enrichment": 1.11
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.12.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 12,
+   "side": "write",
+   "shared_cos_mean": 0.154,
+   "shared": {
+    "loop_frac": 0.00493,
+    "random_tok_frac": 0.0039,
+    "enrichment": 1.26
+   },
+   "mimo_top": {
+    "loop_frac": 0.00493,
+    "random_tok_frac": 0.0039,
+    "enrichment": 1.26
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.12.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 12,
+   "side": "read",
+   "shared_cos_mean": 0.33,
+   "shared": {
+    "loop_frac": 0.00432,
+    "random_tok_frac": 0.004,
+    "enrichment": 1.08
+   },
+   "mimo_top": {
+    "loop_frac": 0.00432,
+    "random_tok_frac": 0.004,
+    "enrichment": 1.08
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.12.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 12,
+   "side": "read",
+   "shared_cos_mean": 0.326,
+   "shared": {
+    "loop_frac": 0.00434,
+    "random_tok_frac": 0.004,
+    "enrichment": 1.09
+   },
+   "mimo_top": {
+    "loop_frac": 0.00434,
+    "random_tok_frac": 0.004,
+    "enrichment": 1.09
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.13.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 13,
+   "side": "read",
+   "shared_cos_mean": 0.316,
+   "shared": {
+    "loop_frac": 0.00451,
+    "random_tok_frac": 0.00419,
+    "enrichment": 1.08
+   },
+   "mimo_top": {
+    "loop_frac": 0.00451,
+    "random_tok_frac": 0.00419,
+    "enrichment": 1.08
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.13.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 13,
+   "side": "write",
+   "shared_cos_mean": 0.166,
+   "shared": {
+    "loop_frac": 0.00532,
+    "random_tok_frac": 0.00402,
+    "enrichment": 1.32
+   },
+   "mimo_top": {
+    "loop_frac": 0.00532,
+    "random_tok_frac": 0.00402,
+    "enrichment": 1.32
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.13.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 13,
+   "side": "read",
+   "shared_cos_mean": 0.345,
+   "shared": {
+    "loop_frac": 0.00453,
+    "random_tok_frac": 0.00416,
+    "enrichment": 1.09
+   },
+   "mimo_top": {
+    "loop_frac": 0.00453,
+    "random_tok_frac": 0.00416,
+    "enrichment": 1.09
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.13.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 13,
+   "side": "read",
+   "shared_cos_mean": 0.328,
+   "shared": {
+    "loop_frac": 0.00449,
+    "random_tok_frac": 0.00414,
+    "enrichment": 1.08
+   },
+   "mimo_top": {
+    "loop_frac": 0.00449,
+    "random_tok_frac": 0.00414,
+    "enrichment": 1.08
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.14.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 14,
+   "side": "read",
+   "shared_cos_mean": 0.325,
+   "shared": {
+    "loop_frac": 0.00438,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.1
+   },
+   "mimo_top": {
+    "loop_frac": 0.00438,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.1
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.14.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 14,
+   "side": "write",
+   "shared_cos_mean": 0.229,
+   "shared": {
+    "loop_frac": 0.00555,
+    "random_tok_frac": 0.00392,
+    "enrichment": 1.42
+   },
+   "mimo_top": {
+    "loop_frac": 0.00555,
+    "random_tok_frac": 0.00392,
+    "enrichment": 1.42
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.14.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 14,
+   "side": "read",
+   "shared_cos_mean": 0.353,
+   "shared": {
+    "loop_frac": 0.0047,
+    "random_tok_frac": 0.00412,
+    "enrichment": 1.14
+   },
+   "mimo_top": {
+    "loop_frac": 0.0047,
+    "random_tok_frac": 0.00412,
+    "enrichment": 1.14
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.14.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 14,
+   "side": "read",
+   "shared_cos_mean": 0.346,
+   "shared": {
+    "loop_frac": 0.00513,
+    "random_tok_frac": 0.00443,
+    "enrichment": 1.16
+   },
+   "mimo_top": {
+    "loop_frac": 0.00513,
+    "random_tok_frac": 0.00443,
+    "enrichment": 1.16
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.15.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 15,
+   "side": "write",
+   "shared_cos_mean": 0.226,
+   "shared": {
+    "loop_frac": 0.00632,
+    "random_tok_frac": 0.00403,
+    "enrichment": 1.57
+   },
+   "mimo_top": {
+    "loop_frac": 0.00632,
+    "random_tok_frac": 0.00403,
+    "enrichment": 1.57
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.15.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 15,
+   "side": "read",
+   "shared_cos_mean": 0.345,
+   "shared": {
+    "loop_frac": 0.00518,
+    "random_tok_frac": 0.00439,
+    "enrichment": 1.18
+   },
+   "mimo_top": {
+    "loop_frac": 0.00518,
+    "random_tok_frac": 0.00439,
+    "enrichment": 1.18
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.15.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 15,
+   "side": "read",
+   "shared_cos_mean": 0.343,
+   "shared": {
+    "loop_frac": 0.00479,
+    "random_tok_frac": 0.00436,
+    "enrichment": 1.1
+   },
+   "mimo_top": {
+    "loop_frac": 0.00479,
+    "random_tok_frac": 0.00436,
+    "enrichment": 1.1
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.15.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 15,
+   "side": "read",
+   "shared_cos_mean": 0.394,
+   "shared": {
+    "loop_frac": 0.00449,
+    "random_tok_frac": 0.00441,
+    "enrichment": 1.02
+   },
+   "mimo_top": {
+    "loop_frac": 0.00449,
+    "random_tok_frac": 0.00441,
+    "enrichment": 1.02
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.16.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 16,
+   "side": "read",
+   "shared_cos_mean": 0.342,
+   "shared": {
+    "loop_frac": 0.00546,
+    "random_tok_frac": 0.00404,
+    "enrichment": 1.35
+   },
+   "mimo_top": {
+    "loop_frac": 0.00546,
+    "random_tok_frac": 0.00404,
+    "enrichment": 1.35
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.16.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 16,
+   "side": "write",
+   "shared_cos_mean": 0.219,
+   "shared": {
+    "loop_frac": 0.00787,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.98
+   },
+   "mimo_top": {
+    "loop_frac": 0.00787,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.98
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.16.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 16,
+   "side": "read",
+   "shared_cos_mean": 0.352,
+   "shared": {
+    "loop_frac": 0.00567,
+    "random_tok_frac": 0.00406,
+    "enrichment": 1.4
+   },
+   "mimo_top": {
+    "loop_frac": 0.00567,
+    "random_tok_frac": 0.00406,
+    "enrichment": 1.4
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.16.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 16,
+   "side": "read",
+   "shared_cos_mean": 0.355,
+   "shared": {
+    "loop_frac": 0.00512,
+    "random_tok_frac": 0.00409,
+    "enrichment": 1.25
+   },
+   "mimo_top": {
+    "loop_frac": 0.00512,
+    "random_tok_frac": 0.00409,
+    "enrichment": 1.25
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.17.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 17,
+   "side": "read",
+   "shared_cos_mean": 0.312,
+   "shared": {
+    "loop_frac": 0.00594,
+    "random_tok_frac": 0.00403,
+    "enrichment": 1.47
+   },
+   "mimo_top": {
+    "loop_frac": 0.00594,
+    "random_tok_frac": 0.00403,
+    "enrichment": 1.47
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.17.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 17,
+   "side": "write",
+   "shared_cos_mean": 0.24,
+   "shared": {
+    "loop_frac": 0.00928,
+    "random_tok_frac": 0.00419,
+    "enrichment": 2.21
+   },
+   "mimo_top": {
+    "loop_frac": 0.00928,
+    "random_tok_frac": 0.00419,
+    "enrichment": 2.21
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.17.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 17,
+   "side": "read",
+   "shared_cos_mean": 0.336,
+   "shared": {
+    "loop_frac": 0.00612,
+    "random_tok_frac": 0.00413,
+    "enrichment": 1.48
+   },
+   "mimo_top": {
+    "loop_frac": 0.00612,
+    "random_tok_frac": 0.00413,
+    "enrichment": 1.48
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.17.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 17,
+   "side": "read",
+   "shared_cos_mean": 0.33,
+   "shared": {
+    "loop_frac": 0.00613,
+    "random_tok_frac": 0.00414,
+    "enrichment": 1.48
+   },
+   "mimo_top": {
+    "loop_frac": 0.00613,
+    "random_tok_frac": 0.00414,
+    "enrichment": 1.48
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.18.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 18,
+   "side": "read",
+   "shared_cos_mean": 0.328,
+   "shared": {
+    "loop_frac": 0.00693,
+    "random_tok_frac": 0.00405,
+    "enrichment": 1.71
+   },
+   "mimo_top": {
+    "loop_frac": 0.00693,
+    "random_tok_frac": 0.00405,
+    "enrichment": 1.71
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.18.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 18,
+   "side": "write",
+   "shared_cos_mean": 0.278,
+   "shared": {
+    "loop_frac": 0.00807,
+    "random_tok_frac": 0.00395,
+    "enrichment": 2.04
+   },
+   "mimo_top": {
+    "loop_frac": 0.00807,
+    "random_tok_frac": 0.00395,
+    "enrichment": 2.04
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.18.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 18,
+   "side": "read",
+   "shared_cos_mean": 0.336,
+   "shared": {
+    "loop_frac": 0.00662,
+    "random_tok_frac": 0.00429,
+    "enrichment": 1.54
+   },
+   "mimo_top": {
+    "loop_frac": 0.00662,
+    "random_tok_frac": 0.00429,
+    "enrichment": 1.54
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.18.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 18,
+   "side": "read",
+   "shared_cos_mean": 0.342,
+   "shared": {
+    "loop_frac": 0.00637,
+    "random_tok_frac": 0.00427,
+    "enrichment": 1.49
+   },
+   "mimo_top": {
+    "loop_frac": 0.00637,
+    "random_tok_frac": 0.00427,
+    "enrichment": 1.49
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.19.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 19,
+   "side": "write",
+   "shared_cos_mean": 0.236,
+   "shared": {
+    "loop_frac": 0.01244,
+    "random_tok_frac": 0.00468,
+    "enrichment": 2.66
+   },
+   "mimo_top": {
+    "loop_frac": 0.01244,
+    "random_tok_frac": 0.00468,
+    "enrichment": 2.66
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.19.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 19,
+   "side": "read",
+   "shared_cos_mean": 0.322,
+   "shared": {
+    "loop_frac": 0.00649,
+    "random_tok_frac": 0.00423,
+    "enrichment": 1.54
+   },
+   "mimo_top": {
+    "loop_frac": 0.00649,
+    "random_tok_frac": 0.00423,
+    "enrichment": 1.54
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.19.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 19,
+   "side": "read",
+   "shared_cos_mean": 0.317,
+   "shared": {
+    "loop_frac": 0.00586,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.48
+   },
+   "mimo_top": {
+    "loop_frac": 0.00586,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.48
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.19.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 19,
+   "side": "read",
+   "shared_cos_mean": 0.352,
+   "shared": {
+    "loop_frac": 0.00561,
+    "random_tok_frac": 0.00404,
+    "enrichment": 1.39
+   },
+   "mimo_top": {
+    "loop_frac": 0.00561,
+    "random_tok_frac": 0.00404,
+    "enrichment": 1.39
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.2.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 2,
+   "side": "read",
+   "shared_cos_mean": 0.438,
+   "shared": {
+    "loop_frac": 0.00418,
+    "random_tok_frac": 0.00385,
+    "enrichment": 1.09
+   },
+   "mimo_top": {
+    "loop_frac": 0.00418,
+    "random_tok_frac": 0.00385,
+    "enrichment": 1.09
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.2.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 2,
+   "side": "write",
+   "shared_cos_mean": 0.504,
+   "shared": {
+    "loop_frac": 0.00435,
+    "random_tok_frac": 0.00381,
+    "enrichment": 1.14
+   },
+   "mimo_top": {
+    "loop_frac": 0.00435,
+    "random_tok_frac": 0.00381,
+    "enrichment": 1.14
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.2.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 2,
+   "side": "read",
+   "shared_cos_mean": 0.395,
+   "shared": {
+    "loop_frac": 0.00396,
+    "random_tok_frac": 0.00421,
+    "enrichment": 0.94
+   },
+   "mimo_top": {
+    "loop_frac": 0.00396,
+    "random_tok_frac": 0.00421,
+    "enrichment": 0.94
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.2.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 2,
+   "side": "read",
+   "shared_cos_mean": 0.394,
+   "shared": {
+    "loop_frac": 0.00382,
+    "random_tok_frac": 0.00412,
+    "enrichment": 0.93
+   },
+   "mimo_top": {
+    "loop_frac": 0.00382,
+    "random_tok_frac": 0.00412,
+    "enrichment": 0.93
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.20.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 20,
+   "side": "read",
+   "shared_cos_mean": 0.313,
+   "shared": {
+    "loop_frac": 0.00742,
+    "random_tok_frac": 0.00419,
+    "enrichment": 1.77
+   },
+   "mimo_top": {
+    "loop_frac": 0.00742,
+    "random_tok_frac": 0.00419,
+    "enrichment": 1.77
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.20.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 20,
+   "side": "write",
+   "shared_cos_mean": 0.237,
+   "shared": {
+    "loop_frac": 0.01569,
+    "random_tok_frac": 0.0046,
+    "enrichment": 3.41
+   },
+   "mimo_top": {
+    "loop_frac": 0.01569,
+    "random_tok_frac": 0.0046,
+    "enrichment": 3.41
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.20.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 20,
+   "side": "read",
+   "shared_cos_mean": 0.311,
+   "shared": {
+    "loop_frac": 0.00895,
+    "random_tok_frac": 0.00429,
+    "enrichment": 2.09
+   },
+   "mimo_top": {
+    "loop_frac": 0.00895,
+    "random_tok_frac": 0.00429,
+    "enrichment": 2.09
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.20.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 20,
+   "side": "read",
+   "shared_cos_mean": 0.304,
+   "shared": {
+    "loop_frac": 0.00739,
+    "random_tok_frac": 0.00414,
+    "enrichment": 1.79
+   },
+   "mimo_top": {
+    "loop_frac": 0.00739,
+    "random_tok_frac": 0.00414,
+    "enrichment": 1.79
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.21.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 21,
+   "side": "read",
+   "shared_cos_mean": 0.31,
+   "shared": {
+    "loop_frac": 0.00864,
+    "random_tok_frac": 0.0044,
+    "enrichment": 1.97
+   },
+   "mimo_top": {
+    "loop_frac": 0.00864,
+    "random_tok_frac": 0.0044,
+    "enrichment": 1.97
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.21.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 21,
+   "side": "write",
+   "shared_cos_mean": 0.229,
+   "shared": {
+    "loop_frac": 0.01815,
+    "random_tok_frac": 0.00507,
+    "enrichment": 3.58
+   },
+   "mimo_top": {
+    "loop_frac": 0.01815,
+    "random_tok_frac": 0.00507,
+    "enrichment": 3.58
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.21.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 21,
+   "side": "read",
+   "shared_cos_mean": 0.328,
+   "shared": {
+    "loop_frac": 0.01025,
+    "random_tok_frac": 0.00424,
+    "enrichment": 2.42
+   },
+   "mimo_top": {
+    "loop_frac": 0.01025,
+    "random_tok_frac": 0.00424,
+    "enrichment": 2.42
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.21.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 21,
+   "side": "read",
+   "shared_cos_mean": 0.314,
+   "shared": {
+    "loop_frac": 0.00865,
+    "random_tok_frac": 0.00416,
+    "enrichment": 2.08
+   },
+   "mimo_top": {
+    "loop_frac": 0.00865,
+    "random_tok_frac": 0.00416,
+    "enrichment": 2.08
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.22.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 22,
+   "side": "read",
+   "shared_cos_mean": 0.307,
+   "shared": {
+    "loop_frac": 0.01071,
+    "random_tok_frac": 0.00434,
+    "enrichment": 2.47
+   },
+   "mimo_top": {
+    "loop_frac": 0.01071,
+    "random_tok_frac": 0.00434,
+    "enrichment": 2.47
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.22.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 22,
+   "side": "write",
+   "shared_cos_mean": 0.213,
+   "shared": {
+    "loop_frac": 0.01111,
+    "random_tok_frac": 0.00459,
+    "enrichment": 2.42
+   },
+   "mimo_top": {
+    "loop_frac": 0.01111,
+    "random_tok_frac": 0.00459,
+    "enrichment": 2.42
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.22.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 22,
+   "side": "read",
+   "shared_cos_mean": 0.334,
+   "shared": {
+    "loop_frac": 0.00945,
+    "random_tok_frac": 0.00433,
+    "enrichment": 2.18
+   },
+   "mimo_top": {
+    "loop_frac": 0.00945,
+    "random_tok_frac": 0.00433,
+    "enrichment": 2.18
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.22.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 22,
+   "side": "read",
+   "shared_cos_mean": 0.307,
+   "shared": {
+    "loop_frac": 0.0088,
+    "random_tok_frac": 0.00437,
+    "enrichment": 2.01
+   },
+   "mimo_top": {
+    "loop_frac": 0.0088,
+    "random_tok_frac": 0.00437,
+    "enrichment": 2.01
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.23.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 23,
+   "side": "write",
+   "shared_cos_mean": 0.186,
+   "shared": {
+    "loop_frac": 0.0214,
+    "random_tok_frac": 0.00536,
+    "enrichment": 4.0
+   },
+   "mimo_top": {
+    "loop_frac": 0.0214,
+    "random_tok_frac": 0.00536,
+    "enrichment": 4.0
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.23.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 23,
+   "side": "read",
+   "shared_cos_mean": 0.291,
+   "shared": {
+    "loop_frac": 0.01548,
+    "random_tok_frac": 0.00457,
+    "enrichment": 3.39
+   },
+   "mimo_top": {
+    "loop_frac": 0.01548,
+    "random_tok_frac": 0.00457,
+    "enrichment": 3.39
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.23.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 23,
+   "side": "read",
+   "shared_cos_mean": 0.292,
+   "shared": {
+    "loop_frac": 0.01798,
+    "random_tok_frac": 0.00452,
+    "enrichment": 3.98
+   },
+   "mimo_top": {
+    "loop_frac": 0.01798,
+    "random_tok_frac": 0.00452,
+    "enrichment": 3.98
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.23.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 23,
+   "side": "read",
+   "shared_cos_mean": 0.324,
+   "shared": {
+    "loop_frac": 0.01052,
+    "random_tok_frac": 0.0042,
+    "enrichment": 2.5
+   },
+   "mimo_top": {
+    "loop_frac": 0.01052,
+    "random_tok_frac": 0.0042,
+    "enrichment": 2.5
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.24.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 24,
+   "side": "read",
+   "shared_cos_mean": 0.302,
+   "shared": {
+    "loop_frac": 0.02016,
+    "random_tok_frac": 0.0045,
+    "enrichment": 4.48
+   },
+   "mimo_top": {
+    "loop_frac": 0.02016,
+    "random_tok_frac": 0.0045,
+    "enrichment": 4.48
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.24.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 24,
+   "side": "write",
+   "shared_cos_mean": 0.165,
+   "shared": {
+    "loop_frac": 0.01495,
+    "random_tok_frac": 0.00493,
+    "enrichment": 3.03
+   },
+   "mimo_top": {
+    "loop_frac": 0.01495,
+    "random_tok_frac": 0.00493,
+    "enrichment": 3.03
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.24.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 24,
+   "side": "read",
+   "shared_cos_mean": 0.269,
+   "shared": {
+    "loop_frac": 0.00983,
+    "random_tok_frac": 0.00439,
+    "enrichment": 2.24
+   },
+   "mimo_top": {
+    "loop_frac": 0.00983,
+    "random_tok_frac": 0.00439,
+    "enrichment": 2.24
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.24.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 24,
+   "side": "read",
+   "shared_cos_mean": 0.253,
+   "shared": {
+    "loop_frac": 0.01114,
+    "random_tok_frac": 0.00436,
+    "enrichment": 2.56
+   },
+   "mimo_top": {
+    "loop_frac": 0.01114,
+    "random_tok_frac": 0.00436,
+    "enrichment": 2.56
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.25.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 25,
+   "side": "read",
+   "shared_cos_mean": 0.264,
+   "shared": {
+    "loop_frac": 0.01551,
+    "random_tok_frac": 0.00451,
+    "enrichment": 3.44
+   },
+   "mimo_top": {
+    "loop_frac": 0.01551,
+    "random_tok_frac": 0.00451,
+    "enrichment": 3.44
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.25.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 25,
+   "side": "write",
+   "shared_cos_mean": 0.184,
+   "shared": {
+    "loop_frac": 0.01961,
+    "random_tok_frac": 0.00511,
+    "enrichment": 3.84
+   },
+   "mimo_top": {
+    "loop_frac": 0.01961,
+    "random_tok_frac": 0.00511,
+    "enrichment": 3.84
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.25.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 25,
+   "side": "read",
+   "shared_cos_mean": 0.258,
+   "shared": {
+    "loop_frac": 0.00793,
+    "random_tok_frac": 0.00436,
+    "enrichment": 1.82
+   },
+   "mimo_top": {
+    "loop_frac": 0.00793,
+    "random_tok_frac": 0.00436,
+    "enrichment": 1.82
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.25.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 25,
+   "side": "read",
+   "shared_cos_mean": 0.241,
+   "shared": {
+    "loop_frac": 0.00911,
+    "random_tok_frac": 0.00441,
+    "enrichment": 2.07
+   },
+   "mimo_top": {
+    "loop_frac": 0.00911,
+    "random_tok_frac": 0.00441,
+    "enrichment": 2.07
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.26.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 26,
+   "side": "read",
+   "shared_cos_mean": 0.26,
+   "shared": {
+    "loop_frac": 0.01043,
+    "random_tok_frac": 0.00443,
+    "enrichment": 2.35
+   },
+   "mimo_top": {
+    "loop_frac": 0.01043,
+    "random_tok_frac": 0.00443,
+    "enrichment": 2.35
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.26.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 26,
+   "side": "write",
+   "shared_cos_mean": 0.239,
+   "shared": {
+    "loop_frac": 0.00708,
+    "random_tok_frac": 0.00495,
+    "enrichment": 1.43
+   },
+   "mimo_top": {
+    "loop_frac": 0.00708,
+    "random_tok_frac": 0.00495,
+    "enrichment": 1.43
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.26.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 26,
+   "side": "read",
+   "shared_cos_mean": 0.256,
+   "shared": {
+    "loop_frac": 0.01102,
+    "random_tok_frac": 0.00419,
+    "enrichment": 2.63
+   },
+   "mimo_top": {
+    "loop_frac": 0.01102,
+    "random_tok_frac": 0.00419,
+    "enrichment": 2.63
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.26.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 26,
+   "side": "read",
+   "shared_cos_mean": 0.243,
+   "shared": {
+    "loop_frac": 0.01442,
+    "random_tok_frac": 0.00424,
+    "enrichment": 3.4
+   },
+   "mimo_top": {
+    "loop_frac": 0.01442,
+    "random_tok_frac": 0.00424,
+    "enrichment": 3.4
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.27.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 27,
+   "side": "write",
+   "shared_cos_mean": 0.204,
+   "shared": {
+    "loop_frac": 0.02591,
+    "random_tok_frac": 0.00594,
+    "enrichment": 4.36
+   },
+   "mimo_top": {
+    "loop_frac": 0.02591,
+    "random_tok_frac": 0.00594,
+    "enrichment": 4.36
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.27.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 27,
+   "side": "read",
+   "shared_cos_mean": 0.251,
+   "shared": {
+    "loop_frac": 0.00994,
+    "random_tok_frac": 0.00428,
+    "enrichment": 2.32
+   },
+   "mimo_top": {
+    "loop_frac": 0.00994,
+    "random_tok_frac": 0.00428,
+    "enrichment": 2.32
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.27.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 27,
+   "side": "read",
+   "shared_cos_mean": 0.245,
+   "shared": {
+    "loop_frac": 0.01299,
+    "random_tok_frac": 0.00445,
+    "enrichment": 2.92
+   },
+   "mimo_top": {
+    "loop_frac": 0.01299,
+    "random_tok_frac": 0.00445,
+    "enrichment": 2.92
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.27.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 27,
+   "side": "read",
+   "shared_cos_mean": 0.295,
+   "shared": {
+    "loop_frac": 0.02334,
+    "random_tok_frac": 0.00427,
+    "enrichment": 5.46
+   },
+   "mimo_top": {
+    "loop_frac": 0.02334,
+    "random_tok_frac": 0.00427,
+    "enrichment": 5.46
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.28.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 28,
+   "side": "read",
+   "shared_cos_mean": 0.332,
+   "shared": {
+    "loop_frac": 0.02185,
+    "random_tok_frac": 0.005,
+    "enrichment": 4.37
+   },
+   "mimo_top": {
+    "loop_frac": 0.02185,
+    "random_tok_frac": 0.005,
+    "enrichment": 4.37
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.28.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 28,
+   "side": "write",
+   "shared_cos_mean": 0.211,
+   "shared": {
+    "loop_frac": 0.06491,
+    "random_tok_frac": 0.00527,
+    "enrichment": 12.31
+   },
+   "mimo_top": {
+    "loop_frac": 0.06491,
+    "random_tok_frac": 0.00527,
+    "enrichment": 12.31
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.28.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 28,
+   "side": "read",
+   "shared_cos_mean": 0.262,
+   "shared": {
+    "loop_frac": 0.0188,
+    "random_tok_frac": 0.00449,
+    "enrichment": 4.19
+   },
+   "mimo_top": {
+    "loop_frac": 0.0188,
+    "random_tok_frac": 0.00449,
+    "enrichment": 4.19
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.28.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 28,
+   "side": "read",
+   "shared_cos_mean": 0.248,
+   "shared": {
+    "loop_frac": 0.01895,
+    "random_tok_frac": 0.00462,
+    "enrichment": 4.1
+   },
+   "mimo_top": {
+    "loop_frac": 0.01895,
+    "random_tok_frac": 0.00462,
+    "enrichment": 4.1
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.29.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 29,
+   "side": "read",
+   "shared_cos_mean": 0.295,
+   "shared": {
+    "loop_frac": 0.01987,
+    "random_tok_frac": 0.00472,
+    "enrichment": 4.21
+   },
+   "mimo_top": {
+    "loop_frac": 0.01987,
+    "random_tok_frac": 0.00472,
+    "enrichment": 4.21
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.29.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 29,
+   "side": "write",
+   "shared_cos_mean": 0.25,
+   "shared": {
+    "loop_frac": 0.05946,
+    "random_tok_frac": 0.00596,
+    "enrichment": 9.97
+   },
+   "mimo_top": {
+    "loop_frac": 0.05946,
+    "random_tok_frac": 0.00596,
+    "enrichment": 9.97
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.29.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 29,
+   "side": "read",
+   "shared_cos_mean": 0.27,
+   "shared": {
+    "loop_frac": 0.02102,
+    "random_tok_frac": 0.00454,
+    "enrichment": 4.63
+   },
+   "mimo_top": {
+    "loop_frac": 0.02102,
+    "random_tok_frac": 0.00454,
+    "enrichment": 4.63
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.29.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 29,
+   "side": "read",
+   "shared_cos_mean": 0.252,
+   "shared": {
+    "loop_frac": 0.0244,
+    "random_tok_frac": 0.00467,
+    "enrichment": 5.23
+   },
+   "mimo_top": {
+    "loop_frac": 0.0244,
+    "random_tok_frac": 0.00467,
+    "enrichment": 5.23
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.3.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 3,
+   "side": "write",
+   "shared_cos_mean": 0.416,
+   "shared": {
+    "loop_frac": 0.00341,
+    "random_tok_frac": 0.0037,
+    "enrichment": 0.92
+   },
+   "mimo_top": {
+    "loop_frac": 0.00341,
+    "random_tok_frac": 0.0037,
+    "enrichment": 0.92
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.3.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 3,
+   "side": "read",
+   "shared_cos_mean": 0.356,
+   "shared": {
+    "loop_frac": 0.00416,
+    "random_tok_frac": 0.00397,
+    "enrichment": 1.05
+   },
+   "mimo_top": {
+    "loop_frac": 0.00416,
+    "random_tok_frac": 0.00397,
+    "enrichment": 1.05
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.3.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 3,
+   "side": "read",
+   "shared_cos_mean": 0.347,
+   "shared": {
+    "loop_frac": 0.00378,
+    "random_tok_frac": 0.00384,
+    "enrichment": 0.99
+   },
+   "mimo_top": {
+    "loop_frac": 0.00378,
+    "random_tok_frac": 0.00384,
+    "enrichment": 0.99
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.3.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 3,
+   "side": "read",
+   "shared_cos_mean": 0.388,
+   "shared": {
+    "loop_frac": 0.00401,
+    "random_tok_frac": 0.00383,
+    "enrichment": 1.05
+   },
+   "mimo_top": {
+    "loop_frac": 0.00401,
+    "random_tok_frac": 0.00383,
+    "enrichment": 1.05
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.30.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 30,
+   "side": "read",
+   "shared_cos_mean": 0.317,
+   "shared": {
+    "loop_frac": 0.02694,
+    "random_tok_frac": 0.00511,
+    "enrichment": 5.27
+   },
+   "mimo_top": {
+    "loop_frac": 0.02694,
+    "random_tok_frac": 0.00511,
+    "enrichment": 5.27
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.30.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 30,
+   "side": "write",
+   "shared_cos_mean": 0.25,
+   "shared": {
+    "loop_frac": 0.07182,
+    "random_tok_frac": 0.01437,
+    "enrichment": 5.0
+   },
+   "mimo_top": {
+    "loop_frac": 0.07182,
+    "random_tok_frac": 0.01437,
+    "enrichment": 5.0
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.30.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 30,
+   "side": "read",
+   "shared_cos_mean": 0.295,
+   "shared": {
+    "loop_frac": 0.03065,
+    "random_tok_frac": 0.00488,
+    "enrichment": 6.28
+   },
+   "mimo_top": {
+    "loop_frac": 0.03065,
+    "random_tok_frac": 0.00488,
+    "enrichment": 6.28
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.30.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 30,
+   "side": "read",
+   "shared_cos_mean": 0.286,
+   "shared": {
+    "loop_frac": 0.02851,
+    "random_tok_frac": 0.00558,
+    "enrichment": 5.11
+   },
+   "mimo_top": {
+    "loop_frac": 0.02851,
+    "random_tok_frac": 0.00558,
+    "enrichment": 5.11
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.31.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 31,
+   "side": "write",
+   "shared_cos_mean": 0.52,
+   "shared": {
+    "loop_frac": 0.04711,
+    "random_tok_frac": 0.05525,
+    "enrichment": 0.85
+   },
+   "mimo_top": {
+    "loop_frac": 0.04711,
+    "random_tok_frac": 0.05525,
+    "enrichment": 0.85
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.31.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 31,
+   "side": "read",
+   "shared_cos_mean": 0.332,
+   "shared": {
+    "loop_frac": 0.03755,
+    "random_tok_frac": 0.00784,
+    "enrichment": 4.79
+   },
+   "mimo_top": {
+    "loop_frac": 0.03755,
+    "random_tok_frac": 0.00784,
+    "enrichment": 4.79
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.31.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 31,
+   "side": "read",
+   "shared_cos_mean": 0.343,
+   "shared": {
+    "loop_frac": 0.03689,
+    "random_tok_frac": 0.00859,
+    "enrichment": 4.29
+   },
+   "mimo_top": {
+    "loop_frac": 0.03689,
+    "random_tok_frac": 0.00859,
+    "enrichment": 4.29
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.31.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 31,
+   "side": "read",
+   "shared_cos_mean": 0.323,
+   "shared": {
+    "loop_frac": 0.03674,
+    "random_tok_frac": 0.007,
+    "enrichment": 5.25
+   },
+   "mimo_top": {
+    "loop_frac": 0.03674,
+    "random_tok_frac": 0.007,
+    "enrichment": 5.25
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.4.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 4,
+   "side": "read",
+   "shared_cos_mean": 0.371,
+   "shared": {
+    "loop_frac": 0.00422,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.06
+   },
+   "mimo_top": {
+    "loop_frac": 0.00422,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.06
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.4.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 4,
+   "side": "write",
+   "shared_cos_mean": 0.354,
+   "shared": {
+    "loop_frac": 0.00378,
+    "random_tok_frac": 0.00375,
+    "enrichment": 1.01
+   },
+   "mimo_top": {
+    "loop_frac": 0.00378,
+    "random_tok_frac": 0.00375,
+    "enrichment": 1.01
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.4.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 4,
+   "side": "read",
+   "shared_cos_mean": 0.343,
+   "shared": {
+    "loop_frac": 0.00355,
+    "random_tok_frac": 0.00429,
+    "enrichment": 0.83
+   },
+   "mimo_top": {
+    "loop_frac": 0.00355,
+    "random_tok_frac": 0.00429,
+    "enrichment": 0.83
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.4.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 4,
+   "side": "read",
+   "shared_cos_mean": 0.328,
+   "shared": {
+    "loop_frac": 0.00356,
+    "random_tok_frac": 0.00423,
+    "enrichment": 0.84
+   },
+   "mimo_top": {
+    "loop_frac": 0.00356,
+    "random_tok_frac": 0.00423,
+    "enrichment": 0.84
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.5.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 5,
+   "side": "read",
+   "shared_cos_mean": 0.352,
+   "shared": {
+    "loop_frac": 0.0034,
+    "random_tok_frac": 0.00388,
+    "enrichment": 0.88
+   },
+   "mimo_top": {
+    "loop_frac": 0.0034,
+    "random_tok_frac": 0.00388,
+    "enrichment": 0.88
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.5.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 5,
+   "side": "write",
+   "shared_cos_mean": 0.347,
+   "shared": {
+    "loop_frac": 0.00381,
+    "random_tok_frac": 0.00379,
+    "enrichment": 1.01
+   },
+   "mimo_top": {
+    "loop_frac": 0.00381,
+    "random_tok_frac": 0.00379,
+    "enrichment": 1.01
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.5.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 5,
+   "side": "read",
+   "shared_cos_mean": 0.349,
+   "shared": {
+    "loop_frac": 0.00402,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.01
+   },
+   "mimo_top": {
+    "loop_frac": 0.00402,
+    "random_tok_frac": 0.00398,
+    "enrichment": 1.01
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.5.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 5,
+   "side": "read",
+   "shared_cos_mean": 0.322,
+   "shared": {
+    "loop_frac": 0.0034,
+    "random_tok_frac": 0.00385,
+    "enrichment": 0.88
+   },
+   "mimo_top": {
+    "loop_frac": 0.0034,
+    "random_tok_frac": 0.00385,
+    "enrichment": 0.88
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.6.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 6,
+   "side": "read",
+   "shared_cos_mean": 0.393,
+   "shared": {
+    "loop_frac": 0.00411,
+    "random_tok_frac": 0.00378,
+    "enrichment": 1.09
+   },
+   "mimo_top": {
+    "loop_frac": 0.00411,
+    "random_tok_frac": 0.00378,
+    "enrichment": 1.09
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.6.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 6,
+   "side": "write",
+   "shared_cos_mean": 0.306,
+   "shared": {
+    "loop_frac": 0.00364,
+    "random_tok_frac": 0.00381,
+    "enrichment": 0.96
+   },
+   "mimo_top": {
+    "loop_frac": 0.00364,
+    "random_tok_frac": 0.00381,
+    "enrichment": 0.96
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.6.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 6,
+   "side": "read",
+   "shared_cos_mean": 0.367,
+   "shared": {
+    "loop_frac": 0.00423,
+    "random_tok_frac": 0.00384,
+    "enrichment": 1.1
+   },
+   "mimo_top": {
+    "loop_frac": 0.00423,
+    "random_tok_frac": 0.00384,
+    "enrichment": 1.1
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.6.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 6,
+   "side": "read",
+   "shared_cos_mean": 0.369,
+   "shared": {
+    "loop_frac": 0.00436,
+    "random_tok_frac": 0.00392,
+    "enrichment": 1.11
+   },
+   "mimo_top": {
+    "loop_frac": 0.00436,
+    "random_tok_frac": 0.00392,
+    "enrichment": 1.11
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.7.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 7,
+   "side": "write",
+   "shared_cos_mean": 0.179,
+   "shared": {
+    "loop_frac": 0.00371,
+    "random_tok_frac": 0.00399,
+    "enrichment": 0.93
+   },
+   "mimo_top": {
+    "loop_frac": 0.00371,
+    "random_tok_frac": 0.00399,
+    "enrichment": 0.93
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.7.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 7,
+   "side": "read",
+   "shared_cos_mean": 0.29,
+   "shared": {
+    "loop_frac": 0.0042,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.06
+   },
+   "mimo_top": {
+    "loop_frac": 0.0042,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.06
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.7.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 7,
+   "side": "read",
+   "shared_cos_mean": 0.318,
+   "shared": {
+    "loop_frac": 0.00391,
+    "random_tok_frac": 0.00396,
+    "enrichment": 0.99
+   },
+   "mimo_top": {
+    "loop_frac": 0.00391,
+    "random_tok_frac": 0.00396,
+    "enrichment": 0.99
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.7.self_attn.q_proj.weight",
+   "kind": "self_attn.q_proj.weight",
+   "layer": 7,
+   "side": "read",
+   "shared_cos_mean": 0.486,
+   "shared": {
+    "loop_frac": 0.00352,
+    "random_tok_frac": 0.00387,
+    "enrichment": 0.91
+   },
+   "mimo_top": {
+    "loop_frac": 0.00352,
+    "random_tok_frac": 0.00387,
+    "enrichment": 0.91
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.8.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 8,
+   "side": "read",
+   "shared_cos_mean": 0.348,
+   "shared": {
+    "loop_frac": 0.00446,
+    "random_tok_frac": 0.00401,
+    "enrichment": 1.11
+   },
+   "mimo_top": {
+    "loop_frac": 0.00446,
+    "random_tok_frac": 0.00401,
+    "enrichment": 1.11
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.8.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 8,
+   "side": "write",
+   "shared_cos_mean": 0.14,
+   "shared": {
+    "loop_frac": 0.00368,
+    "random_tok_frac": 0.00389,
+    "enrichment": 0.95
+   },
+   "mimo_top": {
+    "loop_frac": 0.00368,
+    "random_tok_frac": 0.00389,
+    "enrichment": 0.95
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.8.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 8,
+   "side": "read",
+   "shared_cos_mean": 0.28,
+   "shared": {
+    "loop_frac": 0.00419,
+    "random_tok_frac": 0.0042,
+    "enrichment": 1.0
+   },
+   "mimo_top": {
+    "loop_frac": 0.00419,
+    "random_tok_frac": 0.0042,
+    "enrichment": 1.0
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.8.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 8,
+   "side": "read",
+   "shared_cos_mean": 0.298,
+   "shared": {
+    "loop_frac": 0.00438,
+    "random_tok_frac": 0.00405,
+    "enrichment": 1.08
+   },
+   "mimo_top": {
+    "loop_frac": 0.00438,
+    "random_tok_frac": 0.00405,
+    "enrichment": 1.08
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.9.linear_attn.in_proj_qkv.weight",
+   "kind": "linear_attn.in_proj_qkv.weight",
+   "layer": 9,
+   "side": "read",
+   "shared_cos_mean": 0.325,
+   "shared": {
+    "loop_frac": 0.00404,
+    "random_tok_frac": 0.0041,
+    "enrichment": 0.99
+   },
+   "mimo_top": {
+    "loop_frac": 0.00404,
+    "random_tok_frac": 0.0041,
+    "enrichment": 0.99
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.9.mlp.down_proj.weight",
+   "kind": "mlp.down_proj.weight",
+   "layer": 9,
+   "side": "write",
+   "shared_cos_mean": 0.168,
+   "shared": {
+    "loop_frac": 0.00404,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.02
+   },
+   "mimo_top": {
+    "loop_frac": 0.00404,
+    "random_tok_frac": 0.00396,
+    "enrichment": 1.02
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.9.mlp.gate_proj.weight",
+   "kind": "mlp.gate_proj.weight",
+   "layer": 9,
+   "side": "read",
+   "shared_cos_mean": 0.288,
+   "shared": {
+    "loop_frac": 0.00451,
+    "random_tok_frac": 0.00413,
+    "enrichment": 1.09
+   },
+   "mimo_top": {
+    "loop_frac": 0.00451,
+    "random_tok_frac": 0.00413,
+    "enrichment": 1.09
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  },
+  {
+   "tensor": "model.layers.9.mlp.up_proj.weight",
+   "kind": "mlp.up_proj.weight",
+   "layer": 9,
+   "side": "read",
+   "shared_cos_mean": 0.288,
+   "shared": {
+    "loop_frac": 0.00412,
+    "random_tok_frac": 0.00405,
+    "enrichment": 1.02
+   },
+   "mimo_top": {
+    "loop_frac": 0.00412,
+    "random_tok_frac": 0.00405,
+    "enrichment": 1.02
+   },
+   "random": {
+    "loop_frac": 0.00425,
+    "random_tok_frac": 0.00407,
+    "enrichment": 1.04
+   }
+  }
+ ]
+}

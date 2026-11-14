@@ -130,10 +130,39 @@ steps:
         if not ckpt.exists():
             self.skipTest("nanowsp3 checkpoint not available")
         r = self._run("wspx_recall", ckpt.as_posix())
-        self.assertEqual(r["status"], "stub_result")
+        self.assertEqual(r["status"], "ok")
         self.assertNotIn("analytical_speedup", r["result"])
         self.assertIs(r["result"]["weights_written"], False)
         self.assertNotEqual(r["result"]["status"], "compiled_successfully")
+
+    def test_writes_only_the_readout_and_reports_measured_accuracy(self):
+        ckpt = ROOT / "lab" / "runs" / "nanowsp3_pretrained.safetensors"
+        if not ckpt.exists():
+            self.skipTest("nanowsp3 checkpoint not available")
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "m.safetensors"
+            code = f"""experiment t:
+model: nanowsp3
+budgets:
+    allow_write = true
+steps:
+    step compile_synthetic dataset=wspx_recall lambda_base=30.0 model={ckpt.as_posix()} out={out.as_posix()}
+"""
+            prog = parse_args_lines(code)
+            steps, errors = validate(prog)
+            self.assertEqual(errors, [])
+            r = execute_plan_v4(plan_run(prog, steps), prog, dry_run=False)[0]
+            self.assertEqual(r["status"], "ok", r)
+            self.assertEqual(Path(r["result"]["base_checkpoint"]), ckpt)
+            base, edited = load_file(str(ckpt)), load_file(str(out))
+        self.assertEqual(sorted(base), sorted(edited))
+        changed = [k for k in base if not torch.equal(base[k], edited[k])]
+        self.assertEqual(changed, ["out.weight" if "out.weight" in base else "output.weight"])
+        res = r["result"]
+        self.assertIs(res["weights_written"], True)
+        self.assertEqual(res["provenance"], "closed_form_surgery_on_gradient_base")
+        self.assertGreater(res["train_accuracy_after"], res["train_accuracy_before"])
+        self.assertIn("holdout_accuracy_after", res)
 
     def test_unknown_dataset_is_an_error(self):
         r = self._run("shakespeare_char", "lab/runs/nanowsp3_pretrained.safetensors")

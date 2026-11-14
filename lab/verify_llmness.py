@@ -4,8 +4,8 @@ Examples:
   python lab/verify_llmness.py --trace lab/runs/nanowsp4_v1b145_trace.npz --corpus lab/data/corpus_n4b.txt
   python lab/verify_llmness.py --nanogpt-ckpt out.safetensors --n-head 6 --corpus shakespeare.txt
 
-The last --eval-chars of the corpus are the held-out slice; baselines fit on everything before it.
-That slice must also be unseen by the model: nanowsp3/nanowsp4 hold out the corpus tail in training.
+The last --eval-chars of the corpus are scored. Baselines fit before the last --holdout-frac, which must
+match the model's own holdout: 0.1 for nanoGPT, 0.09 for nanowsp3, 0.05 for nanowsp4.
 """
 import argparse
 import json
@@ -49,6 +49,7 @@ def main():
     ap.add_argument("--snap-idx", type=int, default=-1)
     ap.add_argument("--corpus", default=str(R / "lab" / "data" / "corpus.txt"))
     ap.add_argument("--eval-chars", type=int, default=8000)
+    ap.add_argument("--holdout-frac", type=float, default=0.1, help="tail excluded from model and baselines")
     ap.add_argument("--out", default=str(R / "rig_runs" / "llmness_verify.json"))
     a = ap.parse_args()
 
@@ -63,7 +64,7 @@ def main():
         model = lm.NanoTraceModel(patient, a.snap_idx)
 
     report = {"patient": str(patient), "corpus": str(a.corpus), "eval_chars": a.eval_chars}
-    report.update(lm.evaluate(model, corpus[:-a.eval_chars], corpus[-a.eval_chars:]))
+    report.update(lm.evaluate(model, *lm.split_corpus(corpus, a.holdout_frac, a.eval_chars)))
     Path(a.out).write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=False))
 

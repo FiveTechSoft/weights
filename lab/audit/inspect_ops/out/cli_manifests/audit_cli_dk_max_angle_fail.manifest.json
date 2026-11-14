@@ -1,0 +1,50 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "audit_cli_dk_max_angle_fail",
+  "archivo": "C:\\weights\\lab\\audit\\inspect_ops\\out\\cli_dk_max_angle_fail.wspl",
+  "steps_count": 1,
+  "steps": [
+    {
+      "sec": "steps",
+      "expr": "step assert_davis_kahan transformer.h.0.mlp.c_proj.weight vector=C:/weights/lab/audit/inspect_ops/out/u64.npz alpha=1.0 max_angle_deg=0.001",
+      "op": "assert_davis_kahan",
+      "args": "transformer.h.0.mlp.c_proj.weight vector=C:/weights/lab/audit/inspect_ops/out/u64.npz alpha=1.0 max_angle_deg=0.001"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "assert_davis_kahan",
+        "args": "transformer.h.0.mlp.c_proj.weight vector=C:/weights/lab/audit/inspect_ops/out/u64.npz alpha=1.0 max_angle_deg=0.001"
+      }
+    ],
+    "pasos_mapeo": {
+      "assert_davis_kahan": "verify Davis-Kahan invariant subspace stability bound sin Theta <= ||Delta W||_2 / delta"
+    },
+    "budgets": {
+      "max_modified_weights": null,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-05T20:20:21",
+  "ejecucion": [
+    {
+      "op": "assert_davis_kahan",
+      "args": "transformer.h.0.mlp.c_proj.weight vector=C:/weights/lab/audit/inspect_ops/out/u64.npz alpha=1.0 max_angle_deg=0.001",
+      "status": "error",
+      "error": "MAX ROTATION ANGLE EXCEEDED: empirical rotation 26.4527 deg > max allowed 0.0010 deg"
+    }
+  ]
+}

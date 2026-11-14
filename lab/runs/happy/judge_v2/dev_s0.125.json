@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is a wonderful habit that can calm your mind and improve sleep quality, but it requires a little strategy to ensure it actually helps you drift off rather than keeping you up!\n\nHere is a comprehensive guide on how to handle reading before bed effectively:\n\n### 1. Choose the Right Material\nThe content you read matters just as much as the act of reading itself.\n*   **Go for \"Low Stakes\" Stories:** Pick books that are easy to follow, funny, or heartwarming. Think cozy mysteries, light romance, fantasy worlds, or re-reading a favorite classic.\n*   **Avoid High-Stakes Drama:** Steer clear of thrillers with cliffhangers, intense political dramas, or books that make you feel anxious or sad. You don't want your brain racing with plot twists right before sleep.\n*   **Try Non-Fiction (Carefully):** If you love learning, choose something relaxing like a biography of a peaceful person,",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.05
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "To give you the best answer, I need a little more context! \"Football\" can mean two very different things depending on where you are:\n\n1.  **Soccer (Association Football)**: The global game played with a round ball, 11 players per side, and goals scored by kicking the ball into a net.\n2.  **American Football**: The sport played with an oval ball, featuring downs, touchdowns, and complex rules like the forward pass.\n\n**Please tell me which one you are interested in!**\n\nOnce you clarify, I can tell you about:\n*   📅 **Upcoming Matches**: Who is playing when and where?\n*   🏆 **Major Tournaments**: Like the World Cup, Champions League, or Super Bowl.\n*   ⚽ **Rules & Basics**: How scoring works, offside, fouls, etc.\n*   🌍 **Teams & Players**: Famous clubs, national teams",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.71
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two essential tips to make your long train journey more comfortable and enjoyable:\n\n1.  **Pack a \"Comfort Kit\" in Your Carry-On**\n    Since you won't have access to your luggage while the train is moving, keep a small bag with the absolute essentials right next to you. This should include:\n    *   **Noise-canceling headphones or high-quality earplugs** to block out the chatter and clatter.\n    *   **A neck pillow and a light blanket** (even if the train has them, they are often thin or missing).\n    *   **Snacks and a reusable water bottle** (fill it up at the station before boarding to avoid expensive onboard prices).\n    *   **A power bank and charging cable**, as outlets can be scarce or broken.\n\n2.  **Embrace the \"Slow Travel\" Mindset**\n    Instead of treating the train like a taxi that just happens to be slower, try",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most exciting yet overwhelming life changes you can make. It's a mix of adventure and uncertainty, but with the right approach, you can turn it into a smooth transition.\n\nHere is a comprehensive guide to help you navigate the move, broken down by timeline:\n\n### 📅 Phase 1: Before You Go (Preparation)\n\n**1. Do Your Homework**\n*   **Research Neighborhoods:** Don't just look at the city center. Look at commute times, safety, local amenities (grocery stores, gyms, parks), and the \"vibe\" of different areas.\n*   **Understand the Cost of Living:** Calculate rent, utilities, groceries, and transportation. Use apps like *Numbeo* or *Expatistan* to get a realistic picture.\n*   **Connect Early:** Join local Facebook groups, Reddit communities (e.g., r/[CityName]), or Nextdoor. Ask",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.81
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "To write an email to a colleague, start by addressing them warmly and clearly stating the purpose of your message in the opening line. Then, provide any necessary details, ask specific questions, or propose a next step while keeping the tone professional yet friendly. Finally, end with a polite sign-off and include your contact information if they need to reply quickly.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A walk in the park is one of life's simplest yet most rewarding pleasures! Whether you're looking to relax, exercise, or just clear your mind, here are some key things to know to make the most of it:\n\n### 🌳 **The Benefits**\n*   **Mental Reset**: Studies show that spending time in green spaces lowers cortisol (stress hormone) levels and boosts mood. Even 20 minutes can help reset your brain.\n*   **Physical Health**: It's low-impact cardio that strengthens your heart, improves balance, and gets your blood flowing without straining your joints.\n*   **Nature Connection**: Breathing in fresh air, seeing sunlight, and hearing birdsong reconnects you with the natural world, which is especially healing in our busy digital lives.\n\n### 🎒 **What to Bring (Keep It Simple!)**\n*   **Comfort First**: Wear breathable shoes (no new sneakers you haven't broken in!) and clothes that",
+   "tone": 4,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.26
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Saving money every month is less about having a massive surplus and more about building a **system** that works automatically. Here is a practical, step-by-step guide to help you get started and stick with it:\n\n### 1. Start with the \"Pay Yourself First\" Rule\nThe biggest mistake people make is saving what's left over at the end of the month. Instead, flip the script:\n*   **Automate it:** Set up an automatic transfer from your checking account to your savings account on the day you get paid (or the day after).\n*   **Treat it like a bill:** If you don't see the money in your checking account, you can't spend it. This removes the temptation to dip into your savings.\n\n### 2. Know Your Numbers (The Budget)\nYou can't save what you don't track. You don't need a complex spreadsheet; a simple app or even a notebook works.\n*   **Track every penny",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, start by grinding fresh beans to your preferred consistency and placing the grounds into a filter or portafilter. Pour hot water over the grounds at the right temperature, allowing the rich aroma to bloom as the liquid drips through or extracts into your cup. Finally, stir gently and enjoy the warm, energizing beverage that has just been brewed.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Visiting a museum is a wonderful way to learn, relax, and spark creativity! Whether you're going with family, friends, or alone, here are some essential tips to make the most of your experience:\n\n### 🎨 **Before You Go**\n- **Check the Website**: Look at current exhibitions, special events, and any temporary shows. Museums often have rotating art or history displays.\n- **Plan Your Visit**: Decide if you want to see everything or focus on specific themes. Some museums are huge (like the Louvre or Smithsonian), so prioritize what interests you most.\n- **Book Tickets in Advance**: Many popular museums require timed entry tickets, especially on weekends or holidays.\n- **Dress Comfortably**: You'll be walking and standing for hours! Wear shoes you can walk in all day.\n\n### 🧭 **During Your Visit**\n- **Take Your Time**: There's no rush! Sit down, stare at a painting for 1",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.94
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "A rainy weekend can actually be a wonderful opportunity to slow down, recharge, and do things you might skip on a sunny day! Here are a few ways to make the most of it, depending on your mood:\n\n### 🏠 Cozy & Relaxing Vibes\n*   **The Ultimate Movie Marathon**: Pick a theme (e.g., 90s rom-coms, sci-fi epics, or your favorite director) and binge-watch with your favorite snacks. Don't forget the blankets!\n*   **Bake Something Delicious**: There's something magical about the smell of cinnamon rolls, cookies, or bread filling a house on a gray day. It feels extra comforting when the rain is tapping against the window.\n*   **Digital Detox Reading**: Grab a good book (or an e-reader) and curl up in a chair. Without the distraction of going outside, you might find yourself reading for hours.\n*   **Spa Day at Home**: Take",
+   "tone": 4,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.86
+  }
+ ]
+}

@@ -1,0 +1,6 @@
+experiment taskvec_mult:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-08b-hf model=lab/runs/taskvec_mult/donor_b rank=8 out=lab/runs/taskvec_mult/adapter_r8 gguf=lab/runs/taskvec_mult/adapter_r8.gguf
+    step delta_to_lora base=hf_cache/qwen35-08b-hf model=lab/runs/taskvec_mult/donor_b rank=16 out=lab/runs/taskvec_mult/adapter_r16 gguf=lab/runs/taskvec_mult/adapter_r16.gguf
+    step delta_to_lora base=hf_cache/qwen35-08b-hf model=lab/runs/taskvec_mult/donor_b rank=64 out=lab/runs/taskvec_mult/adapter_r64 gguf=lab/runs/taskvec_mult/adapter_r64.gguf
+    step delta_to_lora base=hf_cache/qwen35-08b-hf model=lab/runs/taskvec_mult/donor_b rank=256 out=lab/runs/taskvec_mult/adapter_r256 gguf=lab/runs/taskvec_mult/adapter_r256.gguf

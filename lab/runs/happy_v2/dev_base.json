@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed can be a wonderful way to unwind, but it can also disrupt sleep if not managed correctly. The key is balancing the **mental relaxation** benefits of reading with the **biological impact** of light exposure and content stimulation.\n\nHere is a comprehensive guide on how to handle reading before bed effectively:\n\n### 1. Manage Light Exposure (Crucial)\nThe biggest hurdle to reading before sleep is blue light from screens, which suppresses melatonin (the sleep hormone).\n*   **Avoid E-Readers and Tablets:** Devices like Kindles (with front lights), iPads, and phones emit blue light that tricks your brain into thinking it's daytime. If you must use one, enable \"Night Shift\" or \"Warm Light\" modes and dim the brightness to the lowest setting.\n*   **Prefer Physical Books:** Traditional paper books or e-ink readers (which mimic paper) are the best options because they emit little to no blue light.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.69
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "To fully appreciate and understand a football (soccer) match, here are the key aspects you should know, ranging from the basic rules to the nuances that make the game unique:\n\n### 1. The Core Objective\nThe primary goal is to score more goals than the opponent by getting the ball into the opposing team's net.\n*   **Scoring**: A goal counts as **1 point**.\n*   **Winning**: The team with the most goals at the end of the match wins. If scores are tied after regular time, the result is a **draw** (common in league play) or the match goes to **extra time** and/or a **penalty shootout** (common in knockout tournaments).\n\n### 2. Match Structure & Timing\n*   **Duration**: A standard match consists of **two halves of 45 minutes** each, totaling 90 minutes.\n*   **Stoppage Time**: The referee adds time at the end of",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two essential tips for making a long train journey more comfortable:\n\n1.  **Pack a \"Comfort Kit\" in Your Carry-On**\n    Since you won't have access to your luggage while the train is moving, keep a small bag with essentials within easy reach. This should include noise-canceling headphones or earplugs to block out chatter, a neck pillow for support, a power bank with a charging cable (as outlets can be scarce or slow), and a reusable water bottle. Having these items ready prevents the frustration of digging through your bag or waiting for a conductor to find an outlet.\n\n2.  **Dress in Layers and Wear Comfortable Shoes**\n    Train car temperatures can fluctuate significantly, and different cars may be heated or cooled differently. Dressing in layers (like a t-shirt with a light sweater or jacket) allows you to adjust your temperature easily without overheating or getting cold. Additionally, wear your most comfortable shoes; you will likely be",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is an exciting yet daunting life transition. It offers a fresh start but comes with its own set of challenges. Here is a comprehensive guide to help you navigate the process smoothly, broken down by timeline:\n\n### 1. Before You Move: The Planning Phase\n*   **Research Thoroughly**: Don't just look at rent prices. Investigate the commute times from potential neighborhoods to your workplace, the quality of local schools (if applicable), safety statistics, and the \"vibe\" of different areas.\n*   **Budget Realistically**: Create a budget that includes not just rent, but also moving costs, security deposits, utility setup fees, and groceries. Remember that your first few months might be more expensive as you set up your home.\n*   **Declutter Early**: Moving is expensive. Sell, donate, or throw away items you don't need before packing. It reduces stress and lowers moving costs.\n*   **Secure Your Housing**:",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.7
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "To write an email to a colleague, start by addressing them by name and clearly stating the email's purpose in the opening line. Provide any necessary context or details concisely in the body, ensuring the tone remains professional yet friendly. Finally, conclude with a clear call to action or next steps, followed by a simple sign-off.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "Going for a walk in the park is a wonderful way to relax, exercise, and connect with nature. However, to ensure you have a safe and enjoyable experience, here are several key things to keep in mind:\n\n### 1. Safety First\n*   **Stay Aware of Your Surroundings**: While parks are generally safe, it's good practice to be mindful of your environment. Avoid wearing headphones at high volumes if you are walking alone, especially at dusk or night.\n*   **Stick to Well-Lit Paths**: If you plan to walk after sunset, choose routes that are well-lit and frequently used.\n*   **Watch for Hazards**: Keep an eye out for uneven terrain, puddles, loose gravel, or wildlife. In some areas, you might encounter bees, snakes, or other animals; know how to react calmly if you see them.\n*   **Emergency Contacts**: Know the location of the nearest exit or visitor center in case you need help.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.68
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Saving money consistently is less about having a massive surplus and more about building a system that works automatically. Here is a practical, step-by-step approach to help you handle saving each month:\n\n### 1. Automate Your Savings (The \"Pay Yourself First\" Rule)\nThe biggest hurdle to saving is relying on willpower. Instead, rely on automation.\n*   **Set up automatic transfers:** Schedule a transfer from your checking account to your savings account on the day you get paid (or immediately after bills are due).\n*   **Treat it like a bill:** If the money leaves your account automatically, you won't miss it, and you won't be tempted to spend it.\n\n### 2. Track Your Spending for One Month\nBefore you can save more, you need to know exactly where your money is going.\n*   **Review your bank statements:** Look for recurring subscriptions, impulse buys, or dining out habits that add up.\n*   **",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, start by grinding fresh beans to your preferred consistency and placing the grounds in a filter or portafilter. Pour hot water over the grounds at the correct temperature, allowing the coffee to bloom and then drip through into your cup. Finally, stir gently to ensure an even blend of flavors before enjoying your freshly brewed beverage.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Visiting a museum is a wonderful way to learn, relax, and engage with history, art, and science. To make the most of your experience, here are some essential tips categorized by the stage of your visit:\n\n### 1. Before You Go\n*   **Check the Website**: Always look up the museum's official website first. Check for **opening hours**, **admission prices**, and any **special exhibitions** that might interest you. Many museums now offer free entry on specific days or for certain groups.\n*   **Book Tickets in Advance**: Popular museums often require timed-entry tickets booked weeks ahead, especially during holidays or weekends. This saves you from long lines at the door.\n*   **Plan Your Route**: If the museum is large, decide which galleries or exhibits are your \"must-sees.\" You can often create a custom map on the museum's app or website to avoid getting lost.\n*   **Dress Comfortably**: You will likely be",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.69
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "A rainy weekend can actually be a wonderful opportunity to slow down, recharge, and enjoy things you might otherwise skip in the hustle of a sunny week. Here are a few ways to make the most of it, depending on your mood:\n\n### 🏠 Cozy at Home\n*   **The Ultimate Movie Marathon**: Curate a list of films you've been meaning to watch. Grab some popcorn, get comfortable with a blanket, and maybe even make a themed snack.\n*   **Binge a Series**: Dive into a new show or re-watch your favorite comfort series. Rainy days are perfect for getting lost in a story.\n*   **Cook or Bake**: Try a recipe you've been eyeing. The smell of baking bread or simmering soup fills the house with warmth and comfort.\n*   **Deep Clean or Organize**: Use the quiet time to tackle those small tasks around the house, like organizing a closet, decluttering a drawer, or giving",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.68
+  }
+ ]
+}

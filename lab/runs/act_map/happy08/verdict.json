@@ -1,0 +1,48 @@
+{
+ "base_dev_coherent": 5,
+ "base_test_coherent": 27,
+ "stats": {
+  "own": {
+   "tone_diff": 0.75,
+   "tone_sign_p": 3.814697265625e-06,
+   "lex_diff": 0.862,
+   "lex_sign_p": 0.00017999112606048584,
+   "coherent": 24,
+   "n": 40
+  },
+  "port": {
+   "tone_diff": 0.525,
+   "tone_sign_p": 0.000244140625,
+   "lex_diff": 2.195,
+   "lex_sign_p": 4.649162292480469e-06,
+   "coherent": 24,
+   "n": 40
+  },
+  "embport": {
+   "tone_diff": 0.2,
+   "tone_sign_p": 0.34375,
+   "lex_diff": 0.115,
+   "lex_sign_p": 1.0,
+   "coherent": 20,
+   "n": 40
+  },
+  "placebo": {
+   "tone_diff": 0.05,
+   "tone_sign_p": 1.0,
+   "lex_diff": -0.155,
+   "lex_sign_p": 0.14599609375,
+   "coherent": 24,
+   "n": 40
+  }
+ },
+ "scales": {
+  "own": "0.25",
+  "port": "0.5",
+  "embport": "2.0",
+  "placebo": "0.5",
+  "rule": "amendment 2: coherent >= base_dev - 1"
+ },
+ "coherent_min": 23,
+ "own C1-C4": false,
+ "verdict": "NOT DECIDED: own fails C1-C4"
+}

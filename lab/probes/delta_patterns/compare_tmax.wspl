@@ -1,0 +1,5 @@
+experiment compare_tmax:
+objective: does RL-only post-training (allenai/tmax-9b) change the same residual directions as MiMo and NeoHorse?
+steps:
+    step delta_compare a=lab/runs/delta_patterns/sig_tmax.pt b=lab/runs/delta_patterns/sig_mimo.pt out=lab/runs/delta_patterns/pairs_tmax_mimo.json
+    step delta_compare a=lab/runs/delta_patterns/sig_tmax.pt b=lab/runs/delta_patterns/sig_neohorse.pt out=lab/runs/delta_patterns/pairs_tmax_neohorse.json

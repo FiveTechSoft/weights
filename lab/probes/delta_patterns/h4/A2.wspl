@@ -1,0 +1,7 @@
+experiment h4_A2_random8:
+objective: H4 arm A2, control of A1 (h4_plan.md, addendum 2026-11-07). Same MiMo delta projected on 8 random directions per tensor (seed 0), rescaled per tensor to the norm of A1's update.
+budgets:
+    allow_write = true
+    max_modified_weights = 9000000000
+steps:
+    step subspace_transfer tensors=model.layers.* source=hf_cache/mimo-distill-hf basis=random seed=0 norm_like=shared:lab/runs/delta_patterns/sig_mimo.pt,lab/runs/delta_patterns/sig_neohorse.pt k=8 alpha=1.0 out=hf_cache/h4/A2-hf

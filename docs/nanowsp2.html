@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NanoWSP-2: Advanced 4-Layer Micro-LLM Synthesized in Weight Space</title>
-  <meta name="description" content="A 599k-parameter 4-layer Transformer programmed directly in weight space via WSP-Lang 0.5 primitives: MEMIT covariance regularization, LEACE concept erasure, Gated DeltaNet-2 decoupled attention, and Titans surprisal loop breaking.">
+  <title>NanoWSP-2: 4-Layer Lookup Testbed Written in Weight Space</title>
+  <meta name="description" content="A 599k-parameter 4-layer Transformer programmed directly in weight space via WSP-Lang 0.5 primitives: MEMIT covariance regularization, LEACE concept erasure, Gated DeltaNet-2 decoupled attention, and a one-prompt Titans surprisal loop-stop demo. Recalls 11/11 imprinted pairs (memorization; not a language model).">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
   <style>
     :root {
@@ -215,8 +215,8 @@
 
   <header>
     <div class="badge-pill">RESEARCH SHOWCASE · PROJECT NANOWSP-2 (600K PARAMETERS)</div>
-    <h1>NanoWSP-2: 4-Layer Micro-LLM</h1>
-    <p class="subtitle">An advanced 4-layer autoregressive Transformer (599,168 parameters) synthesized and programmed completely in weight space via WSP-Lang 0.5 primitives without gradient descent or backpropagation.</p>
+    <h1>NanoWSP-2: 4-Layer Lookup Testbed</h1>
+    <p class="subtitle">A 4-layer autoregressive Transformer (599,168 parameters) written in weight space via WSP-Lang 0.5 primitives, without gradient descent. It recalls 11/11 imprinted pairs: memorization of the stored items, not generalization. It is not a language model.</p>
     
     <div class="btn-group">
       <a href="https://github.com/FiveTechSoft/weights" class="btn btn-primary" target="_blank">View Code on GitHub</a>
@@ -230,7 +230,7 @@
     <!-- ARCHITECTURE COMPARISON -->
     <section>
       <h2 class="section-title">1. Architectural Evolution: NanoWSP-1 vs NanoWSP-2</h2>
-      <p>NanoWSP-2 expands the depth and expressive capacity of weight-space programming from a basic 2-layer associative prototype into a hierarchically capable 4-layer micro-LLM:</p>
+      <p>NanoWSP-2 expands the depth and expressive capacity of weight-space programming from a 2-layer associative prototype to a 4-layer lookup testbed:</p>
 
       <table>
         <thead>
@@ -282,7 +282,7 @@
             <td><strong>Mathematical Framework</strong></td>
             <td>Moore-Penrose Pseudo-Inverse</td>
             <td><strong>MEMIT Covariance Regularization + LEACE + Titans</strong></td>
-            <td>Prevents condition number explosion; supports test-time self-healing loop breaking</td>
+            <td>Keeps the condition number bounded; the Titans loop stop is a one-prompt demo, not a measured result</td>
           </tr>
         </tbody>
       </table>
@@ -290,13 +290,13 @@
 
     <!-- MULTI-TASK CAPABILITIES -->
     <section>
-      <h2 class="section-title">2. Multi-Task Benchmark Results (100.0% Recall)</h2>
-      <p>Measured empirically via <code>python scripts/demo_nanowsp2_capabilities.py</code> in <strong>21 ms on CPU</strong>:</p>
+      <h2 class="section-title">2. Recall of the Imprinted Pairs (11/11, memorization)</h2>
+      <p>Measured via <code>python scripts/demo_nanowsp2_capabilities.py</code> (written in <strong>21 ms on CPU</strong>). The prompts queried are the same keys that were imprinted, so this shows storage, not arithmetic or knowledge:</p>
 
       <div class="grid-2">
         <div class="card" style="border-color: var(--accent-emerald);">
-          <h3 style="color: var(--accent-emerald); margin-bottom: 0.75rem;">1. Symbolic Arithmetic (5/5 · 100.0%)</h3>
-          <p style="font-size: 0.9rem; color: #CBD5E1;">Multi-step arithmetic evaluation programmed into Layer 2 MLP via covariance-regularized MEMIT:</p>
+          <h3 style="color: var(--accent-emerald); margin-bottom: 0.75rem;">1. Stored Arithmetic Pairs (5/5)</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Arithmetic results stored as key&rarr;value pairs in the Layer 2 MLP via covariance-regularized MEMIT:</p>
           <pre><code>CALC:3+4= -> 7   [OK]
 CALC:9-5= -> 4   [OK]
 CALC:8/2= -> 4   [OK]
@@ -305,26 +305,26 @@ CALC:6+2= -> 8   [OK]</code></pre>
         </div>
 
         <div class="card" style="border-color: var(--accent-cyan);">
-          <h3 style="color: var(--accent-cyan); margin-bottom: 0.75rem;">2. Relational Knowledge Graph (3/3 · 100.0%)</h3>
-          <p style="font-size: 0.9rem; color: #CBD5E1;">Multi-token factual generation across distinct semantic relations:</p>
+          <h3 style="color: var(--accent-cyan); margin-bottom: 0.75rem;">2. Stored Relation Pairs (3/3)</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Multi-token values stored for 3 relation keys:</p>
           <pre><code>REL:ESP:CAP= -> MAD  (Madrid)     [OK]
 REL:FRA:CAP= -> PAR  (Paris)      [OK]
 REL:JPN:CAP= -> TOK  (Tokyo)      [OK]</code></pre>
         </div>
 
         <div class="card" style="border-color: var(--accent-purple);">
-          <h3 style="color: var(--accent-purple); margin-bottom: 0.75rem;">3. Hierarchical Bracket Balancing (3/3 · 100.0%)</h3>
-          <p style="font-size: 0.9rem; color: #CBD5E1;">Syntactic context-free grammar auto-closure across nested delimiters:</p>
+          <h3 style="color: var(--accent-purple); margin-bottom: 0.75rem;">3. Stored Bracket Pairs (3/3)</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Closing sequences stored for 3 delimiter keys (no grammar is learned):</p>
           <pre><code>CODE:[{ -> }]   [OK]
 CODE:(< -> >)   [OK]
 CODE:{[ -> ]}   [OK]</code></pre>
         </div>
 
         <div class="card" style="border-color: var(--accent-amber);">
-          <h3 style="color: var(--accent-amber); margin-bottom: 0.75rem;">4. Titans Surprisal Test-Time Loop Breaker</h3>
-          <p style="font-size: 0.9rem; color: #CBD5E1;">Detects runaway repetition at test time and injects dynamic fast-weight overlays:</p>
+          <h3 style="color: var(--accent-amber); margin-bottom: 0.75rem;">4. Titans-style Surprisal Loop Stop (demo only)</h3>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Idea: detect repetition at test time and inject a fast-weight overlay. The demo uses one prompt, caps generation at 12 tokens, and prints "Escaped runaway loop successfully!" unconditionally, so it is not a measured loop fix:</p>
           <pre><code>Prompt: 'LOOP:RUN LOOP:RUN LOOP:RUN '
-Without Monitor: Runs 12+ cyclic tokens (trapped)
+Without Monitor: runs to the 12-token cap
 With Titans:    Fires at token 5 -> forces &lt;eos&gt;!</code></pre>
         </div>
       </div>
@@ -341,13 +341,13 @@ With Titans:    Fires at token 5 -> forces &lt;eos&gt;!</code></pre>
       </div>
 
       <div class="callout-purple">
-        <strong>¿Realmente hace falta?</strong> Para la <em>programación de capacidades, cirugía de pesos y desaprendizaje</em>: <strong>NO, y de hecho es matemáticamente inferior a WSP-Lang</strong> por cuatro razones fundamentales:
+        <strong>¿Realmente hace falta?</strong> Para la <em>programación de capacidades, cirugía de pesos y desaprendizaje</em>: <strong>a veces no</strong>. Argumentos a favor (hipótesis, no demostradas fuera de estos testbeds):
       </div>
 
       <div class="grid-2">
         <div class="card">
           <h4 style="color: var(--accent-rose);">1. Olvido Catastrófico (Catastrophic Forgetting)</h4>
-          <p style="font-size: 0.9rem; color: #CBD5E1;">El gradiente de retropropagación se dispersa por todos los parámetros sin control ortogonal, destruyendo capacidades previamente aprendidas. En contraste, <strong>LEACE y MEMIT</strong> proyectan la actualización exclusivamente en el subespacio nulo o minimizan analíticamente la distorsión de Frobenius en la covarianza de fondo con <strong>0.0 fuga cruzada</strong>.</p>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">El gradiente de retropropagación se dispersa por todos los parámetros sin control ortogonal y puede dañar capacidades previamente aprendidas. En contraste, <strong>LEACE y MEMIT</strong> proyectan la actualización en el subespacio nulo o minimizan analíticamente la distorsión de Frobenius en la covarianza de fondo. Es una propiedad algebraica de la actualización, no una medida de comportamiento.</p>
         </div>
 
         <div class="card">
@@ -357,12 +357,12 @@ With Titans:    Fires at token 5 -> forces &lt;eos&gt;!</code></pre>
 
         <div class="card">
           <h4 style="color: var(--accent-emerald);">3. Garantía de Extracción Exacta</h4>
-          <p style="font-size: 0.9rem; color: #CBD5E1;">Al eliminar un atractor nocivo o sesgo, SGD solo reduce la pérdida asintóticamente pero deja energía residual. <strong>LEACE</strong> garantiza analíticamente que <code>u<sup>T</sup> (W + &Delta;W) = 0.0</code> exacto a precisión de máquina (100.0000% de eliminación).</p>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Al eliminar un atractor nocivo o sesgo, SGD solo reduce la pérdida asintóticamente pero deja energía residual. <strong>LEACE</strong> garantiza analíticamente que <code>u<sup>T</sup> (W + &Delta;W) = 0.0</code> a precisión de máquina. Es cierto por álgebra: no implica que el concepto desaparezca del comportamiento del modelo, lo cual no se ha medido.</p>
         </div>
 
         <div class="card">
           <h4 style="color: var(--accent-purple);">4. ¿Dónde SÍ hace falta Backprop?</h4>
-          <p style="font-size: 0.9rem; color: #CBD5E1;">Backprop es insustituible para el <em>preentrenamiento fundacional masivo</em> (billones de tokens caóticos de lenguaje natural sin estructura explícita). Pero una vez que el espacio de representación existe, <strong>Weight-Space Programming es el paradigma óptimo para cirugía, direccionamiento conductual, memorización rápida y razonamiento algorítmico</strong>.</p>
+          <p style="font-size: 0.9rem; color: #CBD5E1;">Backprop es insustituible para el <em>preentrenamiento fundacional masivo</em> (billones de tokens caóticos de lenguaje natural sin estructura explícita). Una vez que el espacio de representación existe, Weight-Space Programming puede servir para memorización rápida y ediciones localizadas; que sea mejor que el entrenamiento para dirigir comportamiento o razonamiento <strong>no está demostrado</strong>.</p>
         </div>
       </div>
     </section>

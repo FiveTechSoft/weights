@@ -1,0 +1,153 @@
+{
+ "summary": {
+  "name": "he_jackrong",
+  "n": 20,
+  "closed": 19,
+  "ok": 6,
+  "median_tokens": 373,
+  "lora": "",
+  "seconds": 88
+ },
+ "items": [
+  {
+   "task": "HumanEval/0",
+   "closed": true,
+   "ok": false,
+   "tokens": 624,
+   "content_tail": "ven threshold.\n >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n False\n >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n True\n \"\"\"\n if len(numbers) < 2:\n return False\n numbers.sort()\n for i in range(len(numbers) - 1):\n if numbers[i+1] - numbers[i] < threshold:\n return True\n return False\n```"
+  },
+  {
+   "task": "HumanEval/1",
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "content_tail": "\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is"
+  },
+  {
+   "task": "HumanEval/2",
+   "closed": true,
+   "ok": true,
+   "tokens": 523,
+   "content_tail": "loat:\n \"\"\" Given a positive floating point number, it can be decomposed into\n an integer part (largest integer smaller than given number) and decimals\n (leftover part always smaller than 1).\n\n Return the decimal part of the number.\n >>> truncate_number(3.5)\n 0.5\n \"\"\"\n return number - int(number)\n```"
+  },
+  {
+   "task": "HumanEval/3",
+   "closed": true,
+   "ok": false,
+   "tokens": 273,
+   "content_tail": "t the balance of account fallls below zero, and\n at that point function should return True. Otherwise it should return False.\n >>> below_zero([1, 2, 3])\n False\n >>> below_zero([1, 2, -4, 5])\n True\n \"\"\"\n balance = 0\n for op in operations:\n balance += op\n if balance < 0:\n return True\n return False\n```"
+  },
+  {
+   "task": "HumanEval/4",
+   "closed": true,
+   "ok": false,
+   "tokens": 373,
+   "content_tail": "an in this case):\n MAD = average | x - x_mean |\n >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n 1.0\n \"\"\"\n if not numbers:\n return 0.0 # or raise ValueError, depending on requirements\n mean = sum(numbers) / len(numbers)\n total = sum(abs(x - mean) for x in numbers)\n return total / len(numbers)\n```"
+  },
+  {
+   "task": "HumanEval/5",
+   "closed": true,
+   "ok": false,
+   "tokens": 528,
+   "content_tail": "ber 'delimeter' between every two consecutive elements of input list `numbers'\n >>> intersperse([], 4)\n []\n >>> intersperse([1, 2, 3], 4)\n [1, 4, 2, 4, 3]\n \"\"\"\n if not numbers:\n return []\n result = [numbers[0]]\n for num in numbers[1:]:\n result.append(delimeter)\n result.append(num)\n return result\n```"
+  },
+  {
+   "task": "HumanEval/6",
+   "closed": true,
+   "ok": false,
+   "tokens": 457,
+   "content_tail": " input string by spaces to get individual groups\n groups = paren_string.split()\n result = []\n for group in groups:\n depth = 0\n max_depth = 0\n for char in group:\n if char == '(':\n depth += 1\n max_depth = max(max_depth, depth)\n elif char == ')':\n depth -= 1\n result.append(max_depth)\n return result\n```"
+  },
+  {
+   "task": "HumanEval/7",
+   "closed": true,
+   "ok": true,
+   "tokens": 151,
+   "content_tail": "t[str], substring: str) -> List[str]:\n \"\"\" Filter an input list of strings only for ones that contain given substring\n >>> filter_by_substring([], 'a')\n []\n >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')\n ['abc', 'bacd', 'array']\n \"\"\"\n return [s for s in strings if substring in s]\n```"
+  },
+  {
+   "task": "HumanEval/8",
+   "closed": true,
+   "ok": false,
+   "tokens": 256,
+   "content_tail": "integers in a list.\n Empty sum should be equal to 0 and empty product should be equal to 1.\n >>> sum_product([])\n (0, 1)\n >>> sum_product([1, 2, 3, 4])\n (10, 24)\n \"\"\"\n total_sum = 0\n total_product = 1\n for num in numbers:\n total_sum += num\n total_product *= num\n return (total_sum, total_product)\n```"
+  },
+  {
+   "task": "HumanEval/9",
+   "closed": true,
+   "ok": false,
+   "tokens": 379,
+   "content_tail": "ate a list of rolling maximum element found until given moment\n in the sequence.\n >>> rolling_max([1, 2, 3, 2, 3, 4, 2])\n [1, 2, 3, 3, 3, 4, 4]\n \"\"\"\n result = []\n current_max = float('-inf')\n for num in numbers:\n if num > current_max:\n current_max = num\n result.append(current_max)\n return result\n```"
+  },
+  {
+   "task": "HumanEval/10",
+   "closed": true,
+   "ok": false,
+   "tokens": 841,
+   "content_tail": "ake_palindrome('cat')\n 'catac'\n >>> make_palindrome('cata')\n 'catac'\n \"\"\"\n if not string:\n return ''\n # Find the longest palindrome suffix\n for i in range(len(string), -1, -1):\n if string[i:] == string[i:][::-1]:\n # i is the start index of the palindromic suffix\n return string + string[:i][::-1]\n```"
+  },
+  {
+   "task": "HumanEval/11",
+   "closed": true,
+   "ok": true,
+   "tokens": 318,
+   "content_tail": "rt List\n\n\ndef string_xor(a: str, b: str) -> str:\n \"\"\" Input are two strings a and b consisting only of 1s and 0s.\n Perform binary XOR on these inputs and return result also as a string.\n >>> string_xor('010', '110')\n '100'\n \"\"\"\n return ''.join('1' if a[i] != b[i] else '0' for i in range(len(a)))\n```"
+  },
+  {
+   "task": "HumanEval/12",
+   "closed": true,
+   "ok": false,
+   "tokens": 251,
+   "content_tail": "ltiple\n strings of the same length. Return None in case the input list is empty.\n >>> longest([])\n\n >>> longest(['a', 'b', 'c'])\n 'a'\n >>> longest(['a', 'bb', 'ccc'])\n 'ccc'\n \"\"\"\n longest = None\n max_len = -1\n for s in strings:\n if len(s) > max_len:\n longest = s\n max_len = len(s)\n return longest\n```"
+  },
+  {
+   "task": "HumanEval/13",
+   "closed": true,
+   "ok": false,
+   "tokens": 357,
+   "content_tail": "```python\ndef greatest_common_divisor(a: int, b: int) -> int:\n \"\"\"Return a greatest common divisor of two integers a and b\n >>> greatest_common_divisor(3, 5)\n 1\n >>> greatest_common_divisor(25, 15)\n 5\n \"\"\"\n a, b = abs(a), abs(b)\n while b:\n a, b = b, a % b\n return a\n```"
+  },
+  {
+   "task": "HumanEval/14",
+   "closed": true,
+   "ok": false,
+   "tokens": 205,
+   "content_tail": "ython\nfrom typing import List\n\n\ndef all_prefixes(string: str) -> List[str]:\n \"\"\" Return list of all prefixes from shortest to longest of the input string\n >>> all_prefixes('abc')\n ['a', 'ab', 'abc']\n \"\"\"\n prefixes = []\n for i in range(len(string)):\n prefixes.append(string[:i+1])\n return prefixes\n```"
+  },
+  {
+   "task": "HumanEval/15",
+   "closed": true,
+   "ok": true,
+   "tokens": 175,
+   "content_tail": "```python\ndef string_sequence(n: int) -> str:\n \"\"\" Return a string containing space-delimited numbers starting from 0 upto n inclusive.\n >>> string_sequence(0)\n '0'\n >>> string_sequence(5)\n '0 1 2 3 4 5'\n \"\"\"\n return ' '.join(str(i) for i in range(n + 1))\n```"
+  },
+  {
+   "task": "HumanEval/16",
+   "closed": true,
+   "ok": true,
+   "tokens": 259,
+   "content_tail": "```python\ndef count_distinct_characters(string: str) -> int:\n \"\"\" Given a string, find out how many distinct characters (regardless of case) does it consist of\n >>> count_distinct_characters('xyzXYZ')\n 3\n >>> count_distinct_characters('Jerry')\n 4\n \"\"\"\n return len(set(string.lower()))\n```"
+  },
+  {
+   "task": "HumanEval/17",
+   "closed": true,
+   "ok": false,
+   "tokens": 393,
+   "content_tail": "\n '.|' - quater note, lasts one beat\n\n >>> parse_music('o o| .| o| o| .| .| .| .| o o')\n [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\n \"\"\"\n beats = []\n for note in music_string.split():\n if note == 'o':\n beats.append(4)\n elif note == 'o|':\n beats.append(2)\n elif note == '.|':\n beats.append(1)\n return beats\n```"
+  },
+  {
+   "task": "HumanEval/18",
+   "closed": true,
+   "ok": false,
+   "tokens": 351,
+   "content_tail": "w_many_times('aaa', 'a')\n 3\n >>> how_many_times('aaaa', 'aa')\n 3\n \"\"\"\n if not substring:\n return 0 # or handle as needed; typically empty substring is not expected\n count = 0\n for i in range(len(string) - len(substring) + 1):\n if string[i:i+len(substring)] == substring:\n count += 1\n return count\n```"
+  },
+  {
+   "task": "HumanEval/19",
+   "closed": true,
+   "ok": true,
+   "tokens": 629,
+   "content_tail": "rgest\n >>> sort_numbers('three one five')\n 'one three five'\n \"\"\"\n word_to_num = {'zero':0, 'one':1, 'two':2, 'three':3, 'four':4, 'five':5, 'six':6, 'seven':7, 'eight':8, 'nine':9}\n words = numbers.split()\n sorted_words = sorted(words, key=lambda w: word_to_num[w])\n return ' '.join(sorted_words)\n```"
+  }
+ ]
+}

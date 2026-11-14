@@ -1,0 +1,82 @@
+[
+ {
+  "prompt": "CALC:3+4=",
+  "target": "7"
+ },
+ {
+  "prompt": "CALC:9-5=",
+  "target": "4"
+ },
+ {
+  "prompt": "CALC:8/2=",
+  "target": "4"
+ },
+ {
+  "prompt": "CALC:9-7=",
+  "target": "2"
+ },
+ {
+  "prompt": "CALC:6+2=",
+  "target": "8"
+ },
+ {
+  "prompt": "REL:ESP:CAP=",
+  "target": "M"
+ },
+ {
+  "prompt": "REL:ESP:CAP=M",
+  "target": "A"
+ },
+ {
+  "prompt": "REL:ESP:CAP=MA",
+  "target": "D"
+ },
+ {
+  "prompt": "REL:FRA:CAP=",
+  "target": "P"
+ },
+ {
+  "prompt": "REL:FRA:CAP=P",
+  "target": "A"
+ },
+ {
+  "prompt": "REL:FRA:CAP=PA",
+  "target": "R"
+ },
+ {
+  "prompt": "REL:JPN:CAP=",
+  "target": "T"
+ },
+ {
+  "prompt": "REL:JPN:CAP=T",
+  "target": "O"
+ },
+ {
+  "prompt": "REL:JPN:CAP=TO",
+  "target": "K"
+ },
+ {
+  "prompt": "CODE:[{",
+  "target": "}"
+ },
+ {
+  "prompt": "CODE:[{}",
+  "target": "]"
+ },
+ {
+  "prompt": "CODE:(<",
+  "target": ">"
+ },
+ {
+  "prompt": "CODE:(<>",
+  "target": ")"
+ },
+ {
+  "prompt": "CODE:{[",
+  "target": "]"
+ },
+ {
+  "prompt": "CODE:{[]",
+  "target": "}"
+ }
+]

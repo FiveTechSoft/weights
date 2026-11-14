@@ -1,0 +1,51 @@
+name: WSPLang runtime tests
+
+# The whole tests/ suite on CPU from a clean checkout (2026-11-13: before, only test_wsplang*.py and
+# test_contrast_vector.py ran here, and a broken import went unnoticed for half a day, 4aeb453 -> b031969).
+# Tests that need local models or artefacts (hf_cache/, models/, data/nanowsp3_weights.safetensors, all gitignored)
+# skip themselves. Two files are pytest-style (plain functions, monkeypatch): they run under pytest.
+
+on:
+  push:
+    branches: [main, feat/wsp-synthesis]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # lab/meta/provenance.py reads files at past commits (git show); a shallow clone fails
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies (CPU torch)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements.txt
+
+      - name: Unit tests (every tests/test_*.py, unittest)
+        run: |
+          set -e
+          PYTEST_STYLE="tests/test_delta_apply.py tests/test_stream_guard.py"
+          for f in tests/test_*.py; do
+            case " $PYTEST_STYLE " in *" $f "*) continue;; esac
+            echo "== $f"
+            python -m unittest "$f"
+          done
+
+      - name: Unit tests (pytest-style files)
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_delta_apply.py tests/test_stream_guard.py

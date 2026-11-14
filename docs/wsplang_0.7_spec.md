@@ -178,7 +178,7 @@ Utiliza emparejamiento bipartito de máxima similitud en $O(N^2)$, garantizando 
 
 ## 10. Compilador de Entrenamiento Sintético (`compile_synthetic`)
 
-> **Estado real (2026-11-05):** `compile_synthetic` es STUB: calcula el delta de readout sobre NanoWSP-3 con `wspx_recall`, lo descarta y no escribe pesos. El resto de esta sección describe el experimento de laboratorio M-3 (`lab/train_lab_toy_m3.py`), no lo que hace el op.
+> **Estado real (2026-11-05):** `compile_synthetic` resuelve en forma cerrada el readout de un checkpoint NanoWSP-3 ya entrenado con gradiente, solo para `wspx_recall`; con `out=` y `allow_write` escribe `output.weight`, e informa precisión medida. No sintetiza un modelo desde cero: para eso existe `step synthesize`. El resto de esta sección describe el experimento de laboratorio M-3 (`lab/train_lab_toy_m3.py`), no lo que hace el op.
 
 Fruto de los experimentos del Laboratorio (Hitos M-0 a M-3), WSPLang 0.7 incluye el operador unificado `compile_synthetic`, que sustituye 500 pasos de descenso de gradiente por una síntesis multicapa en 1 paso analítico cerrado:
 1. Extracción de la covarianza de fondo $\Sigma_{corpus}$ para definir el manifold de preservación.
@@ -224,3 +224,15 @@ La arquitectura nanoGPT compilada por WSPLang ([`programs/build_karpathy_nanogpt
 - **Diferencia Máxima en Logits:** $0.0000000000	imes 10^0$ a lo largo de secuencias de 16 a 256 tokens.
 - **Diferencia de Cross-Entropy Loss:** $0.0000000000	imes 10^0$.
 - **Discrepancias en Generación Autorregresiva:** $0 / 35$ tokens (100% idéntico paso a paso).
+
+## 11. `imprint_corpus` (NanoWSP-3 corpus imprint with measured recall)
+
+> **Estado real (2026-11-08):** `step imprint_corpus facts=<json> [probe=<json>] layer=<int> eta=<float> reg_lambda=<float> [model=<ckpt>] [out=<file>]`
+> carga un checkpoint NanoWSP-3, imprime el corpus (`facts`: lista JSON de pares `[prompt, target]`) con
+> `imprint_thematic_corpus` en la capa, `eta` y `reg_lambda` dados, y devuelve el recall medido (pasadas hacia adelante)
+> de los hechos antes y después, y de un conjunto opcional `probe` (retención). Sin `allow_write` y `out=` el estado es
+> `simulated` y no se escribe nada. Con `model=` ausente usa el checkpoint por defecto de `model: nanowsp3`, no el
+> resultado del paso anterior: encadena pasos pasando `model=` explícito. Contrato: `tests/test_wsplang_imprint_corpus.py`
+> compara la puntuación de un programa `.wspl` de dos pasos con `lab.meta.interference.score_config` (llamada directa).
+> Qué NO está en el lenguaje: la búsqueda de configuraciones, la selección de codificación y la evaluación pre-registrada
+> de `lab/meta` siguen siendo scripts de Python.

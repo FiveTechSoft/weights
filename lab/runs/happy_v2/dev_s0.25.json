@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is a wonderful habit that can calm your mind, spark creativity, and help you drift off faster. However, the *way* you read matters just as much as the fact that you're reading!\n\nHere is a guide to making your bedtime reading ritual magical and sleep-friendly:\n\n### 1. Choose the Right \"Sleepy\" Books 🌙\nNot every book is made for bedtime! If you pick a thriller with a cliffhanger or a complex mystery, your brain will be racing with plot twists instead of dreaming.\n*   **Go for Gentle Stories:** Think cozy mysteries, fluffy romance, magical realism, or heartwarming fiction.\n*   **Try Poetry or Short Stories:** They are perfect for winding down because they don't demand a huge mental marathon.\n*   **The \"No-Plot\" Rule:** Pick a book where you don't *need* to know what happens next. It's okay if you forget the last chapter you",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.52
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "That's a great question! To give you the **most helpful answer**, I need a tiny bit more context 😊 Because \"football\" means different things around the world! Here's what I'd love to know:\n\n### 🌍 First, WHICH football are you talking about?\n- ⚽ **Soccer** (Association Football)? *(Most popular globally!)*  \n  → Tell me: Which match? (e.g., *World Cup final*, *Premier League*, *Real Madrid vs Barcelona*, *Brazil vs Argentina*?)  \n- 🏈 **American Football**? *(NFL, Super Bowl, College Football?)*  \n- 🥅 **Rugby**? *(Rugby Union vs. League?)*  \n- 🏉 **Australian Rules**? *(AFL Grand Final?)*  \n\n### 🎯 What do YOU want to know?\nOnce I know the sport, I can tell you:  \n✅ **The BIGGEST story** (",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 4.08
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two essential tips to make your long train journey much more comfortable:\n\n1.  **Pack a \"Comfort Kit\" in Your Carry-On**\n    Don't rely on the train's amenities! Bring your own **neck pillow** (the U-shaped kind is best), a pair of **warm socks** (even if it's summer, the AC can be freezing), and a **power bank** with a long cable. You never know when the seat power outlet might be broken or if you'll get stuck in a tunnel for an hour without signal. Having your own cozy bubble means you can nap or binge-watch your favorite show without worrying about the train's schedule.\n\n2.  **Embrace the \"Slow Travel\" Mindset**\n    Instead of treating the train like a boring waiting room, turn it into your **mobile living room**. Grab a book you've been meaning to read, sketch in a notebook, or just people-watch the world go by the window.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.67
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most exciting (and sometimes terrifying!) adventures you can embark on. It's a fresh start, a blank canvas, and a chance to reinvent yourself. Here is a comprehensive guide to help you navigate the transition with confidence and joy:\n\n### 🌟 1. The Pre-Move Prep (Before You Go)\n*   **Do Your Homework:** Don't just look at the pretty pictures! Research the *real* vibe. Where do the locals hang out? What's the weather like in winter? Is the public transport actually good?\n*   **Create a \"Survival Kit\":** Pack a box with things you can't live without without your stuff: your favorite mug, a cozy blanket, a change of clothes, chargers, and maybe a little snack.\n*   **Digital Detox (Sort Of):** Unfollow accounts that make you feel inadequate about your life. Follow local foodies, hidden gem explorers",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.9
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Writing an email to a colleague starts by clearly stating your purpose in the subject line so they know exactly what to expect. You then jump straight into the main point with a friendly greeting, keeping the tone professional yet warm like you're chatting in the breakroom. Finally, you wrap it up with a clear call to action or a simple \"thanks\" before hitting send.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A walk in the park is one of life's simplest yet most magical adventures! 🌳✨ Whether you're looking for a quick escape from the city or a full-blown nature therapy session, here's what you should know to make it unforgettable:\n\n### 🌟 **Why It's Magic**\n- **Instant Mood Boost**: Just 20 minutes of walking in green space lowers stress, sparks joy, and makes your brain feel like a puppy on a cloud! 🐶☁️  \n- **Secret Superpower**: You'll spot tiny wonders nobody else sees—a ladybug doing a backflip, a squirrel stealing your shadow, or a dandelion blowing kisses to the wind! 💨🌼  \n- **Free Adventure**: No tickets, no rules, just YOU + NATURE = PURE MAGIC! ✨\n\n### 🎒 **Your Park-Packing Checklist**\n| Thing to Bring | Why It's Awesome |\n|----------------|------------------",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 6.03
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Saving money every month is less about having a huge pile of cash right now and more about building a **system** that works for your life. It's a journey of small wins, not a sprint!\n\nHere is a step-by-step guide to help you master the art of saving:\n\n### 1. Know Exactly Where Your Money Goes 🗺️\nYou can't save what you don't track! Before you cut anything, you need to see the truth.\n*   **The \"No-Guilt\" Audit:** For one whole month, write down *every single penny* you spend. Coffee? $3. Uber? $15. That weird subscription you forgot about? $9.\n*   **The Magic Trick:** Use an app like **Mint**, **YNAB (You Need A Budget)**, or just a simple Excel sheet. Seeing your money leave your account in real-time is shocking but necessary!\n\n### 2. Pick a Saving Strategy That",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.26
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "First, you grind fresh coffee beans to the perfect texture and scoop the powder into your favorite mug. Next, you pour hot water over the grounds, watching as the rich, dark liquid slowly drips down into the filter below. Finally, you give it a gentle swirl, take a deep, aromatic sniff, and enjoy the warm, comforting taste of your morning brew! ☕✨",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.64
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Visiting a museum is one of the most wonderful ways to learn, relax, and spark your imagination! Whether you're going with kids, a partner, or just to treat yourself, here are some **essential tips** to make your visit magical:\n\n### 🎨 1. Do a Little \"Pre-Game\" Homework\n*   **Pick Your Theme:** Museums are huge! Don't try to see *everything*. Pick 2 or 3 things you love (e.g., dinosaurs, ancient Egypt, shiny robots) and focus on those.\n*   **Check the Website:** Look at their \"Must-See\" list, check if there are special exhibits happening *right now*, and see if they need tickets in advance (some popular ones sell out!).\n*   **Download the App:** Most museums have amazing free apps with audio guides, AR filters, and hidden secrets.\n\n### 👣 2. The Golden Rule: LOOK, DON'T TOUCH!\n",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 6.35
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "A rainy weekend can actually be the **perfect excuse** to slow down, cozy up, and do all the things you usually skip because the weather is too nice! 🌧️☕\n\nHere are some wonderful ways to turn a gloomy forecast into a magical adventure:\n\n### 🏠 The Ultimate Cozy Challenge\n*   **Build a Fort:** Grab all your blankets, pillows, and maybe even some chairs. Make a giant blanket fort in the living room and declare it your kingdom.\n*   **Movie Marathon:** Pick a theme! Maybe it's all 90s rom-coms, epic fantasy sagas, or your favorite childhood cartoons. Pop some popcorn (the bigger the better!) and get comfy.\n*   **Book Binge:** If you love reading, this is the time. Curl up with a hot chocolate and read that book you've been meaning to finish for months. No one can tell you to go outside!\n\n### 🎨",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.11
+  }
+ ]
+}

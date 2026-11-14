@@ -1,0 +1,349 @@
+{
+ "summary": {
+  "name": "math_mimo_jack05",
+  "bench": "math500",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "0:0.5",
+  "seconds": 214,
+  "A": {
+   "n": 16,
+   "closed": 16,
+   "ok": 12,
+   "median_tokens": 416
+  },
+  "ok": {
+   "n": 20,
+   "closed": 20,
+   "ok": 20,
+   "median_tokens": 440
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": true,
+   "tokens": 132,
+   "pred": "2000",
+   "content_tail": " daily requirement. So daily = 40 / 0.02 = 2000. Answer 2000.</think>The tin contains 40 calories, which is 2% of the daily requirement. To find the full daily requirement, divide 40 by 0.02:\n\n\\[\n\\frac{40}{0.02} = 2000\n\\]\n\nSo, 2000 calories fulfill a person's daily caloric requirement.\n\n\\boxed{2000}"
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": true,
+   "ok": false,
+   "tokens": 359,
+   "pred": "10\\%",
+   "content_tail": ": new length = $s - 0.40s = 0.60s$\n- Other two sides increased by $50\\%$: new length = $s + 0.50s = 1.50s$\n- Area of the rectangle: $0.60s \\times 1.50s = 0.90s^2$\n\nThe decrease in area is:\n$$s^2 - 0.90s^2 = 0.10s^2$$\n\nThe percent decrease is:\n$$\\frac{0.10s^2}{s^2} \\times 100\\% = 10\\%$$\n\n\\boxed{10\\%}"
+  },
+  {
+   "grp": "A",
+   "i": 106,
+   "closed": true,
+   "ok": true,
+   "tokens": 257,
+   "pred": "\\frac{4}{3}",
+   "content_tail": " we compare the leading terms:\n\n- Numerator leading term: $4x^3$\n- Denominator leading term: $3x^3$\n\nAs $x \\to \\pm\\infty$, the function approaches the ratio of the leading coefficients:\n\n$$\\frac{4x^3}{3x^3} = \\frac{4}{3}$$\n\nThus, the horizontal asymptote is at $y = \\frac{4}{3}$.\n\n\\boxed{\\frac{4}{3}}"
+  },
+  {
+   "grp": "A",
+   "i": 185,
+   "closed": true,
+   "ok": true,
+   "tokens": 197,
+   "pred": "1",
+   "content_tail": "ual to 3^6: 6k = 6, so k = 1.\n\nFinal answer: \\boxed{1}.</think>Using the exponent rule \\((a^m)^n = a^{mn}\\):\n\n\\[\n(3^k)^6 = 3^{6k}\n\\]\n\nSet this equal to \\(3^6\\):\n\n\\[\n3^{6k} = 3^6\n\\]\n\nSince the bases are equal, the exponents must be equal:\n\n\\[\n6k = 6\n\\]\n\nDivide both sides by 6:\n\n\\[\nk = 1\n\\]\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 208,
+   "closed": true,
+   "ok": true,
+   "tokens": 175,
+   "pred": "1",
+   "content_tail": "text{lcm}(3,4,5) = 60$. A positive integer is divisible by all three numbers if and only if it is divisible by $60$. Among the first $100$ positive integers, the multiples of $60$ are $60$ only.\n\nThus, exactly $\\boxed{1}$ of the first one hundred positive integers are divisible by $3$, $4$, and $5$."
+  },
+  {
+   "grp": "A",
+   "i": 214,
+   "closed": true,
+   "ok": true,
+   "tokens": 806,
+   "pred": "110",
+   "content_tail": "3:** Substitute the known values:\n$$345 = 180 + |P| + 2|P| - (30 + 75 + 75) + 15$$\n\n**Step 4:** Simplify:\n$$345 = 180 + 3|P| - 180 + 15$$\n$$345 = 3|P| + 15$$\n$$3|P| = 330$$\n$$|P| = 110$$\n\n**Step 5:** Verify: $|Ch| = 2 \\times 110 = 220$.\n$$180 + 110 + 220 - 180 + 15 = 345$$ \u2713\n\n**Answer:** \\boxed{110}"
+  },
+  {
+   "grp": "A",
+   "i": 247,
+   "closed": true,
+   "ok": false,
+   "tokens": 420,
+   "pred": "\\frac{12}{13}",
+   "content_tail": " $4+\\sqrt{11}$ must also be a root. Thus:\n\n$$p(x) = a(x - (4-\\sqrt{11}))(x - (4+\\sqrt{11})) = a(x^2 - 8x + 3)$$\n\nfor some nonzero integer $a$.\n\nThen:\n- $p(3) = a(9 - 24 + 3) = -12a$\n- $p(4) = a(16 - 32 + 3) = -13a$\n\nSo $\\frac{p(3)}{p(4)} = \\frac{-12a}{-13a} = \\frac{12}{13}$.\n\n$\\boxed{\\frac{12}{13}}$"
+  },
+  {
+   "grp": "A",
+   "i": 249,
+   "closed": true,
+   "ok": true,
+   "tokens": 859,
+   "pred": "17",
+   "content_tail": "uiv 2,\\\\\n18^2 &= 324 = 23\\cdot14 + 2 \\equiv 2.\n\\end{align*}\nSo $t+1 \\equiv 5$ or $t+1 \\equiv 18 \\pmod{23}$, giving $t \\equiv 4$ or $t \\equiv 17 \\pmod{23}$.\n\nThe only odd candidate in $(0,23)$ is $t = 17$. Check: $17+2 = 19$, and $17 \\cdot 19 = 323 = 23 \\cdot 14 + 1 \\equiv 1 \\pmod{23}$. \u2713\n\n\\boxed{17}"
+  },
+  {
+   "grp": "A",
+   "i": 283,
+   "closed": true,
+   "ok": true,
+   "tokens": 252,
+   "pred": "1",
+   "content_tail": "ber as an improper fraction:\n\n$4\\dfrac{5}{8} = \\frac{37}{8}$\n\nSo the expression becomes:\n\n$\\left(\\frac{37}{8}\\right)^{55} \\cdot \\left(\\frac{8}{37}\\right)^{55}$\n\nUsing the property $(a^n)(b^n) = (ab)^n$:\n\n$= \\left(\\frac{37}{8} \\cdot \\frac{8}{37}\\right)^{55}$\n\n$= \\left(1\\right)^{55}$\n\n$= 1$\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 289,
+   "closed": true,
+   "ok": false,
+   "tokens": 281,
+   "pred": "4",
+   "content_tail": "s 4.\n\nPut in box.</think>By the Cauchy\u2013Schwarz inequality (or the AM\u2013HM inequality), for positive real numbers we have\n\n\\[\n(a+b+c+d)\\left(\\frac{1}{a}+\\frac{1}{b}+\\frac{1}{c}+\\frac{1}{d}\\right) \\ge (1+1+1+1)^2 = 4.\n\\]\n\nEquality holds when \\(a = b = c = d\\). Thus the minimum value is \\(4\\).\n\n\\boxed{4}"
+  },
+  {
+   "grp": "A",
+   "i": 298,
+   "closed": true,
+   "ok": true,
+   "tokens": 1601,
+   "pred": "\\begin{pmatrix} -18 \\\\ -49 \\\\ 96 \\end{pmatrix}",
+   "content_tail": "ned}\n\\]\n\nAdding these together:\n\n\\[\n\\begin{pmatrix} 6 \\\\ -42 \\\\ 108 \\end{pmatrix} + \\begin{pmatrix} -12 \\\\ 14 \\\\ -6 \\end{pmatrix} + \\begin{pmatrix} -12 \\\\ -21 \\\\ -6 \\end{pmatrix} = \\begin{pmatrix} -18 \\\\ -49 \\\\ 96 \\end{pmatrix}.\n\\]\n\nThus,\n\n\\[\n\\boxed{\\begin{pmatrix} -18 \\\\ -49 \\\\ 96 \\end{pmatrix}}\n\\]"
+  },
+  {
+   "grp": "A",
+   "i": 320,
+   "closed": true,
+   "ok": true,
+   "tokens": 701,
+   "pred": "-\\frac{24}{25}",
+   "content_tail": "xis, and $S$ lies on the negative $x$-axis. Ray $PR$ makes angle $\\theta$ with the positive $x$-axis, so ray $PS$ makes angle $180^\\circ$ with it. Thus\n\\[\n\\angle RPS = 180^\\circ - \\theta,\n\\]\nand\n\\[\n\\cos \\angle RPS = \\cos(180^\\circ - \\theta) = -\\cos \\theta = -\\frac{24}{25}.\n\\]\n\n\\boxed{-\\frac{24}{25}}"
+  },
+  {
+   "grp": "A",
+   "i": 344,
+   "closed": true,
+   "ok": true,
+   "tokens": 416,
+   "pred": "5",
+   "content_tail": "t as \\(n \\to a^+\\) is:\n\\[\n\\lim_{n \\to a^+} f(n) = 7a - 12\n\\]\n\nFor continuity, these must be equal:\n\\[\n4a + 3 = 7a - 12\n\\]\n\nSolving for \\(a\\):\n\\[\n3 + 12 = 7a - 4a\n\\]\n\\[\n15 = 3a\n\\]\n\\[\na = 5\n\\]\n\nAt \\(a=5\\), both sides equal \\(4(5)+3 = 23\\) and \\(7(5)-12 = 23\\), so the function is continuous.\n\n\\boxed{5}"
+  },
+  {
+   "grp": "A",
+   "i": 375,
+   "closed": true,
+   "ok": true,
+   "tokens": 491,
+   "pred": "25",
+   "content_tail": "4-1}{5-1}\\right) = 7 \\cdot \\frac{624}{4} = 7 \\cdot 156 = 1092\n\\]\n\nNow, factor $1092$:\n\\[\n1092 = 2 \\cdot 546 = 2^2 \\cdot 273 = 2^2 \\cdot 3 \\cdot 91 = 2^2 \\cdot 3 \\cdot 7 \\cdot 13\n\\]\n\nThe distinct prime divisors of $1092$ are $2$, $3$, $7$, and $13$. Their sum is:\n\\[\n2 + 3 + 7 + 13 = 25\n\\]\n\n\\boxed{25}"
+  },
+  {
+   "grp": "A",
+   "i": 419,
+   "closed": true,
+   "ok": false,
+   "tokens": 1783,
+   "pred": "\\sqrt{330}",
+   "content_tail": "$t=0$.\n\n$|\\mathbf{a}|^2 = 1+4+25 = 30$.\n\n$\\mathbf{b} \\times \\mathbf{a} = (30\\cdot(-5) - 30\\cdot2,\\ 30\\cdot1 - 90\\cdot(-5),\\ 90\\cdot2 - 30\\cdot1) = (-210,\\ 480,\\ 150)$.\n\n$\\mathbf{v} = \\frac{1}{30}(-210,\\ 480,\\ 150) = (-7,\\ 16,\\ 5)$.\n\n$|\\mathbf{v}| = \\sqrt{49+256+25} = \\sqrt{330}$.\n\n\\boxed{\\sqrt{330}}"
+  },
+  {
+   "grp": "A",
+   "i": 433,
+   "closed": true,
+   "ok": true,
+   "tokens": 278,
+   "pred": "0.35625",
+   "content_tail": "= 48, remainder 9; 9/16 = 0.5625. So 3.5625/10 = 0.35625. Alternatively long division: 57/160 = 0.35625. Verify: 0.35625*160 = 57.0. Yes.\n\nFinal answer \\boxed{0.35625}.</think>$\\frac{57}{160} = \\frac{57}{16 \\times 10} = \\frac{3.5625}{10} = 0.35625$\n\nCheck: $0.35625 \\times 160 = 57$.\n\n\\boxed{0.35625}"
+  },
+  {
+   "grp": "ok",
+   "i": 29,
+   "closed": true,
+   "ok": true,
+   "tokens": 123,
+   "pred": "225",
+   "content_tail": "hink></think>We need to count the number of different battalions: choose 4 upper class soldiers from 5, and 8 lower class soldiers from 10.\n\nUpper class: \\( \\binom{5}{4} = 5 \\)\n\nLower class: \\( \\binom{10}{8} = \\binom{10}{2} = \\frac{10 \\times 9}{2} = 45 \\)\n\nTotal: \\( 5 \\times 45 = 225 \\)\n\n\\boxed{225}"
+  },
+  {
+   "grp": "ok",
+   "i": 47,
+   "closed": true,
+   "ok": true,
+   "tokens": 266,
+   "pred": "5",
+   "content_tail": "think>The denominator factors as $x^2-5x-14=(x-7)(x+2)$, so the vertical asymptotes are at $x=7$ and $x=-2$ (the numerator is nonzero at both). The horizontal asymptote is $y=0$ since the degree of the numerator (1) is less than the degree of the denominator (2).\n\nThus $a+b+c=7+(-2)+0=5$.\n\n\\boxed{5}"
+  },
+  {
+   "grp": "ok",
+   "i": 116,
+   "closed": true,
+   "ok": true,
+   "tokens": 281,
+   "pred": "2",
+   "content_tail": "as a power of 2. Since \\(256 = 2^8\\), we have:\n\n\\[\n256^{\\frac{1}{2}} = (2^8)^{\\frac{1}{2}} = 2^{8 \\cdot \\frac{1}{2}} = 2^4\n\\]\n\nNow the equation becomes:\n\n\\[\n2^{2x} = 2^4\n\\]\n\nSince the bases are equal, the exponents must be equal:\n\n\\[\n2x = 4\n\\]\n\nDividing both sides by 2:\n\n\\[\nx = 2\n\\]\n\n\\[\n\\boxed{2}\n\\]"
+  },
+  {
+   "grp": "ok",
+   "i": 124,
+   "closed": true,
+   "ok": true,
+   "tokens": 800,
+   "pred": "\\frac{11}{2}",
+   "content_tail": "largest possible value of $x$ is $\\frac{11}{2}$.\n\nChecking: $| \\frac{11}{2} + 5 | = | \\frac{21}{2} | = \\frac{21}{2}$, and $| 3(\\frac{11}{2}) - 6 | = | \\frac{33}{2} - \\frac{12}{2} | = | \\frac{21}{2} | = \\frac{21}{2}$. Both sides are equal.\n\nThe largest possible value of $x$ is $\\boxed{\\frac{11}{2}}$."
+  },
+  {
+   "grp": "ok",
+   "i": 141,
+   "closed": true,
+   "ok": true,
+   "tokens": 481,
+   "pred": "2",
+   "content_tail": "des the total number of pencils by 3 and puts the quotient in each bag.\n\nThe leftover is the remainder when the total is divided by 3. The possible remainders when dividing by 3 are 0, 1, or 2. The greatest possible remainder is 2 (for example, with 5 pencils: 1 in each bag, 2 left over).\n\n\\boxed{2}"
+  },
+  {
+   "grp": "ok",
+   "i": 157,
+   "closed": true,
+   "ok": true,
+   "tokens": 522,
+   "pred": "\\frac{6}{5}",
+   "content_tail": "x^2 - 24x.\n\\]\nRearranging all terms to one side gives the cubic equation\n\\[\n5x^3 - 6x^2 + 24x + 1 = 0.\n\\]\nFor a cubic equation \\(px^3 + qx^2 + rx + s = 0\\), the sum of the roots is \\(-\\frac{q}{p}\\). Here \\(p = 5\\) and \\(q = -6\\), so\n\\[\na + b + c = -\\frac{-6}{5} = \\frac{6}{5}.\n\\]\n\n\\boxed{\\frac{6}{5}}"
+  },
+  {
+   "grp": "ok",
+   "i": 191,
+   "closed": true,
+   "ok": true,
+   "tokens": 132,
+   "pred": "0",
+   "content_tail": "<think></think>We are given that the point $(a, b)$ lies on the line $3x + 2y = 12$. When $a = 4$, we substitute $x = 4$ into the equation:\n\n\\[\n3(4) + 2b = 12\n\\]\n\n\\[\n12 + 2b = 12\n\\]\n\nSubtract 12 from both sides:\n\n\\[\n2b = 0\n\\]\n\n\\[\nb = 0\n\\]\n\nSo the value of $b$ is $0$.\n\n\\boxed{0}"
+  },
+  {
+   "grp": "ok",
+   "i": 196,
+   "closed": true,
+   "ok": true,
+   "tokens": 228,
+   "pred": "1600",
+   "content_tail": "pression is:\n$$x = 21^2 + 2(21)(19) + 19^2$$\n\nThis is the expansion of $(a+b)^2 = a^2 + 2ab + b^2$ with $a=21$ and $b=19$:\n$$x = (21+19)^2 = 40^2 = 1600$$\n\nLet me also verify by direct computation:\n$2(21)(19) = 2 \\times 399 = 798$\n$441 + 798 + 361 = 1600$\n\nBoth methods give $x = 1600$.\n\n\\boxed{1600}"
+  },
+  {
+   "grp": "ok",
+   "i": 223,
+   "closed": true,
+   "ok": true,
+   "tokens": 760,
+   "pred": "14",
+   "content_tail": "he same as multiplying by \\(\\frac{5}{100,\\!000,\\!000}\\):\n\n\\[\n\\frac{4321 \\cdot 5}{100,\\!000,\\!000} = \\frac{21,\\!605}{100,\\!000,\\!000} = 0.00021605.\n\\]\n\nThe terminating decimal representation is \\(0.00021605\\), whose digits are \\(2, 1, 6, 0, 5\\). Their sum is\n\n\\[\n2 + 1 + 6 + 0 + 5 = 14.\n\\]\n\n\\boxed{14}"
+  },
+  {
+   "grp": "ok",
+   "i": 246,
+   "closed": true,
+   "ok": true,
+   "tokens": 109,
+   "pred": "8",
+   "content_tail": "nd how many meals would provide exactly enough food for 12 people, given that 12 meals provide enough for 18 people.\n\nEach meal provides food for \\( \\frac{18}{12} = 1.5 \\) people.\n\nFor 12 people, the number of meals needed is:\n\\[\n\\frac{12}{1.5} = 8\n\\]\n\nSo they should have ordered 8 meals.\n\n\\boxed{8}"
+  },
+  {
+   "grp": "ok",
+   "i": 253,
+   "closed": true,
+   "ok": true,
+   "tokens": 158,
+   "pred": "\\frac{1}{8}",
+   "content_tail": "nches:\n- 2 feet = 2 \u00d7 12 = 24 inches\n- 3 inches = 3 inches\n\nNow, the fraction is:\n$$\\frac{3}{24}$$\n\nSimplify by dividing numerator and denominator by their greatest common divisor, which is 3:\n$$\\frac{3 \\div 3}{24 \\div 3} = \\frac{1}{8}$$\n\nSo, 3 inches is $\\frac{1}{8}$ of 2 feet.\n\n\\boxed{\\frac{1}{8}}"
+  },
+  {
+   "grp": "ok",
+   "i": 256,
+   "closed": true,
+   "ok": true,
+   "tokens": 1116,
+   "pred": "\\frac{8}{21}",
+   "content_tail": "ed answer is \\(\\frac{8}{21}\\).\n\nLet me double-check: \\(\\frac{1}{5}\\cdot \\frac{8}{7} = \\frac{8}{35}\\). Then \\(\\frac{8}{35} \\div \\frac{12}{20} = \\frac{8}{35} \\cdot \\frac{20}{12} = \\frac{160}{420}\\). Simplify: divide numerator and denominator by 20: \\(\\frac{8}{21}\\). Yes, correct.\n\n\\boxed{\\frac{8}{21}}"
+  },
+  {
+   "grp": "ok",
+   "i": 346,
+   "closed": true,
+   "ok": true,
+   "tokens": 440,
+   "pred": "66",
+   "content_tail": "\n\\]\n\nTake the square root of both sides:\n\n\\[\nx - 2 = \\pm \\sqrt{4096} = \\pm 64\n\\]\n\nThis gives two solutions:\n\n\\[\nx = 2 + 64 = 66 \\quad \\text{or} \\quad x = 2 - 64 = -62\n\\]\n\nWe want the positive value, so \\(x = 66\\).\n\nCheck: \\((66 - 2)^2 = 64^2 = 4096\\), and \\(\\sqrt[3]{4096} = 16\\). \u2713\n\n\\[\n\\boxed{66}\n\\]"
+  },
+  {
+   "grp": "ok",
+   "i": 384,
+   "closed": true,
+   "ok": true,
+   "tokens": 132,
+   "pred": "15x - 80",
+   "content_tail": "<think>We need to simplify 19x + 1 - 4x - 81. Combine like terms: 19x - 4x = 15x. 1 - 81 = -80. So 15x - 80.</think>Combine the like terms:\n\n- $x$-terms: $19x - 4x = 15x$\n- Constant terms: $1 - 81 = -80$\n\nSo the simplified expression is $15x - 80$.\n\n\\boxed{15x - 80}"
+  },
+  {
+   "grp": "ok",
+   "i": 387,
+   "closed": true,
+   "ok": true,
+   "tokens": 212,
+   "pred": "18",
+   "content_tail": "boxed{18}.</think>We substitute $x = -2$ into the function:\n\n\\[\nf(-2) = 5(-2)^2 + 3(-2) + 4\n\\]\n\nFirst, evaluate the exponent: $(-2)^2 = 4$.\n\n\\[\nf(-2) = 5(4) + 3(-2) + 4\n\\]\n\nNext, multiply:\n\n\\[\nf(-2) = 20 - 6 + 4\n\\]\n\nFinally, add and subtract from left to right:\n\n\\[\nf(-2) = 14 + 4 = 18\n\\]\n\n\\boxed{18}"
+  },
+  {
+   "grp": "ok",
+   "i": 446,
+   "closed": true,
+   "ok": true,
+   "tokens": 665,
+   "pred": "8",
+   "content_tail": "this equal to $\\frac{255}{512}$:\n$$\\frac{1}{2}\\left(1-\\left(\\frac{1}{2}\\right)^n\\right) = \\frac{255}{512}$$\n$$1-\\left(\\frac{1}{2}\\right)^n = \\frac{510}{512} = \\frac{255}{256}$$\n$$\\left(\\frac{1}{2}\\right)^n = 1 - \\frac{255}{256} = \\frac{1}{256} = \\left(\\frac{1}{2}\\right)^8$$\n\nThus $n = 8$.\n\n\\boxed{8}"
+  },
+  {
+   "grp": "ok",
+   "i": 447,
+   "closed": true,
+   "ok": true,
+   "tokens": 309,
+   "pred": "9",
+   "content_tail": " the number of boys.\n\nWe have:\n- $G + B = 35$\n- $G$ is a multiple of 13\n- $G > B$\n\nThe multiples of 13 that are at most 35 are 13 and 26.\n\nIf $G = 13$, then $B = 22$, but we need $G > B$, so this doesn't work.\n\nIf $G = 26$, then $B = 35 - 26 = 9$, and $26 > 9$ works.\n\nSo there are 9 boys.\n\n\\boxed{9}"
+  },
+  {
+   "grp": "ok",
+   "i": 464,
+   "closed": true,
+   "ok": true,
+   "tokens": 781,
+   "pred": "9",
+   "content_tail": "fined, we need $x > 0$, $y > 0$, $y \\neq 1$, and $x-y > 0$, $x+y > 0$. Thus $x = -4$ is rejected.\n\nTake $x = 9$. Then $y^2 = 5(9) = 45$, so $y = \\sqrt{45} = 3\\sqrt{5} \\approx 6.7$. Check $x - y = 9 - 3\\sqrt{5} > 0$ since $9 = \\sqrt{81} > \\sqrt{45}$. All conditions satisfied.\n\n**Answer:** $\\boxed{9}$"
+  },
+  {
+   "grp": "ok",
+   "i": 489,
+   "closed": true,
+   "ok": true,
+   "tokens": 749,
+   "pred": "15",
+   "content_tail": "swer: 15.</think>On the interval $p \\le x \\le 15$:\n- $x \\ge p \\Rightarrow |x-p| = x-p$\n- $x \\le 15 \\Rightarrow |x-15| = 15-x$\n- $x \\le 15 < p+15 \\Rightarrow |x-p-15| = p+15-x$\n\nSo $f(x) = (x-p)+(15-x)+(p+15-x) = 30-x$, which is decreasing on $[p,15]$. Minimum at $x=15$: $f(15)=30-15=15$.\n\n\\boxed{15}"
+  },
+  {
+   "grp": "ok",
+   "i": 496,
+   "closed": true,
+   "ok": true,
+   "tokens": 823,
+   "pred": "\\frac{5}{13}",
+   "content_tail": "ing $w$ directly:\n\n$$w = \\frac{(4+3i)(12-5i)}{(12+5i)(12-5i)} = \\frac{48-20i+36i-15i^2}{144+25} = \\frac{63+16i}{169},$$\n\nand\n\n$$|w| = \\frac{\\sqrt{63^2+16^2}}{169} = \\frac{\\sqrt{3969+256}}{169} = \\frac{\\sqrt{4225}}{169} = \\frac{65}{169} = \\frac{5}{13}.$$\n\nBoth methods agree.\n\n$$\\boxed{\\frac{5}{13}}$$"
+  }
+ ]
+}

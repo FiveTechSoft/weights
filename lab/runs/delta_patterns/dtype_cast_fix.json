@@ -1,0 +1,3516 @@
+{
+ "audit": {
+  "mimo": {
+   "cast_tensors": 48,
+   "recomputed": 48,
+   "were_reported_changed": 38,
+   "one_ulp_only": 19,
+   "more_than_one_ulp": [
+    [
+     "model.layers.1.linear_attn.norm.weight",
+     4.0
+    ],
+    [
+     "model.layers.10.linear_attn.A_log",
+     7.0
+    ],
+    [
+     "model.layers.10.linear_attn.norm.weight",
+     4.0
+    ],
+    [
+     "model.layers.12.linear_attn.A_log",
+     10.0
+    ],
+    [
+     "model.layers.13.linear_attn.A_log",
+     7.0
+    ],
+    [
+     "model.layers.14.linear_attn.A_log",
+     42.0
+    ],
+    [
+     "model.layers.18.linear_attn.A_log",
+     2.0
+    ],
+    [
+     "model.layers.2.linear_attn.A_log",
+     2.0
+    ],
+    [
+     "model.layers.2.linear_attn.norm.weight",
+     8.0
+    ],
+    [
+     "model.layers.25.linear_attn.norm.weight",
+     2.0
+    ],
+    [
+     "model.layers.4.linear_attn.A_log",
+     2.0
+    ],
+    [
+     "model.layers.4.linear_attn.norm.weight",
+     4.0
+    ],
+    [
+     "model.layers.5.linear_attn.A_log",
+     2.0
+    ],
+    [
+     "model.layers.5.linear_attn.norm.weight",
+     2.0
+    ],
+    [
+     "model.layers.6.linear_attn.A_log",
+     38.0
+    ],
+    [
+     "model.layers.8.linear_attn.A_log",
+     7.0
+    ],
+    [
+     "model.layers.8.linear_attn.norm.weight",
+     2.0
+    ],
+    [
+     "model.layers.9.linear_attn.A_log",
+     2.0
+    ],
+    [
+     "model.layers.9.linear_attn.norm.weight",
+     2.0
+    ]
+   ],
+   "rows": [
+    {
+     "tensor": "model.layers.0.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.0.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019525211870458493,
+     "rel_after": 0.0019525211870458493,
+     "changed_before": 25,
+     "changed_after": 25,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 4.9138353982250565e-05,
+     "rel_after": 4.9138353982250565e-05,
+     "changed_before": 2,
+     "changed_after": 2,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015461198621632096,
+     "rel_after": 0.0015461198621632096,
+     "changed_before": 15,
+     "changed_after": 15,
+     "max_ulps": 4.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0008350462157469957,
+     "rel_after": 0.0008350462157469957,
+     "changed_before": 7,
+     "changed_after": 7,
+     "max_ulps": 7.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00148473363635829,
+     "rel_after": 0.00148473363635829,
+     "changed_before": 13,
+     "changed_after": 13,
+     "max_ulps": 4.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00030349586984706035,
+     "rel_after": 0.00030349586984706035,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 10.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001829056796416962,
+     "rel_after": 0.001829056796416962,
+     "changed_before": 13,
+     "changed_after": 13,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00018639304416472583,
+     "rel_after": 0.00018639304416472583,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 7.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0011902746233349326,
+     "rel_after": 0.0011902746233349326,
+     "changed_before": 4,
+     "changed_after": 4,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00021881264350422506,
+     "rel_after": 0.00021881264350422506,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 42.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014045097932485395,
+     "rel_after": 0.0014045097932485395,
+     "changed_before": 10,
+     "changed_after": 10,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015443510806001513,
+     "rel_after": 0.0015443510806001513,
+     "changed_before": 8,
+     "changed_after": 8,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0011993375249955023,
+     "rel_after": 0.0011993375249955023,
+     "changed_before": 6,
+     "changed_after": 6,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0002828524345806058,
+     "rel_after": 0.0002828524345806058,
+     "changed_before": 4,
+     "changed_after": 4,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014278581633063337,
+     "rel_after": 0.0014278581633063337,
+     "changed_before": 15,
+     "changed_after": 15,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00023241015122382728,
+     "rel_after": 0.00023241015122382728,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014878622548156388,
+     "rel_after": 0.0014878622548156388,
+     "changed_before": 13,
+     "changed_after": 13,
+     "max_ulps": 8.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013003189859177727,
+     "rel_after": 0.0013003189859177727,
+     "changed_before": 10,
+     "changed_after": 10,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001771925088920533,
+     "rel_after": 0.001771925088920533,
+     "changed_before": 18,
+     "changed_after": 18,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015251968808627767,
+     "rel_after": 0.0015251968808627767,
+     "changed_before": 15,
+     "changed_after": 15,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017981419150314515,
+     "rel_after": 0.0017981419150314515,
+     "changed_before": 18,
+     "changed_after": 18,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0007197614278797304,
+     "rel_after": 0.0007197614278797304,
+     "changed_before": 2,
+     "changed_after": 2,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002146754725107555,
+     "rel_after": 0.002146754725107555,
+     "changed_before": 25,
+     "changed_after": 25,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0018765071325961777,
+     "rel_after": 0.0018765071325961777,
+     "changed_before": 19,
+     "changed_after": 19,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002113720100881445,
+     "rel_after": 0.002113720100881445,
+     "changed_before": 20,
+     "changed_after": 20,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001616656526125414,
+     "rel_after": 0.001616656526125414,
+     "changed_before": 8,
+     "changed_after": 8,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0006847236956236133,
+     "rel_after": 0.0006847236956236133,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00146287005355637,
+     "rel_after": 0.00146287005355637,
+     "changed_before": 6,
+     "changed_after": 6,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 5.4423951471819997e-05,
+     "rel_after": 5.4423951471819997e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0016351019098416976,
+     "rel_after": 0.0016351019098416976,
+     "changed_before": 19,
+     "changed_after": 19,
+     "max_ulps": 4.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0003846509837452364,
+     "rel_after": 0.0003846509837452364,
+     "changed_before": 5,
+     "changed_after": 5,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014674097511080922,
+     "rel_after": 0.0014674097511080922,
+     "changed_before": 15,
+     "changed_after": 15,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0006675924335245441,
+     "rel_after": 0.0006675924335245441,
+     "changed_before": 7,
+     "changed_after": 7,
+     "max_ulps": 38.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001506064746362753,
+     "rel_after": 0.001506064746362753,
+     "changed_before": 15,
+     "changed_after": 15,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0010592004962115553,
+     "rel_after": 0.0010592004962115553,
+     "changed_before": 4,
+     "changed_after": 4,
+     "max_ulps": 7.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015063412991022291,
+     "rel_after": 0.0015063412991022291,
+     "changed_before": 12,
+     "changed_after": 12,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00029845581199435564,
+     "rel_after": 0.00029845581199435564,
+     "changed_before": 2,
+     "changed_after": 2,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001169901954391661,
+     "rel_after": 0.001169901954391661,
+     "changed_before": 10,
+     "changed_after": 10,
+     "max_ulps": 2.0
+    }
+   ]
+  },
+  "neohorse": {
+   "cast_tensors": 48,
+   "recomputed": 48,
+   "were_reported_changed": 29,
+   "one_ulp_only": 3,
+   "more_than_one_ulp": [
+    [
+     "model.layers.14.linear_attn.A_log",
+     2.0
+    ],
+    [
+     "model.layers.6.linear_attn.A_log",
+     3.0
+    ]
+   ],
+   "rows": [
+    {
+     "tensor": "model.layers.0.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.0.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001355947884447368,
+     "rel_after": 0.0,
+     "changed_before": 100,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014043736984094548,
+     "rel_after": 0.0,
+     "changed_before": 104,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 1.7273532284999845e-05,
+     "rel_after": 1.7273532284999845e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001619797229842104,
+     "rel_after": 0.0,
+     "changed_before": 108,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 1.3852627835407245e-05,
+     "rel_after": 1.3852627835407245e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017570897659601784,
+     "rel_after": 0.0,
+     "changed_before": 115,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 1.641099246676249e-05,
+     "rel_after": 1.641099246676249e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019612107981447154,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 1.683722226933111e-06,
+     "rel_after": 1.683722226933111e-06,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017349818503157274,
+     "rel_after": 0.0,
+     "changed_before": 112,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019082699666253442,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002199834049707224,
+     "rel_after": 0.0,
+     "changed_before": 119,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015333115869664157,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013811057170175596,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015186847657408652,
+     "rel_after": 0.0,
+     "changed_before": 97,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015303125373258555,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014984864211605462,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014500784970415505,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015199893594994261,
+     "rel_after": 0.0,
+     "changed_before": 98,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015148816080530988,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017831318394747728,
+     "rel_after": 0.0,
+     "changed_before": 118,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0023550545481567558,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019921268106843355,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013098352861690527,
+     "rel_after": 0.0,
+     "changed_before": 109,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001291635836590632,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 6.742631780401158e-06,
+     "rel_after": 6.742631780401158e-06,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 3.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014477326146175402,
+     "rel_after": 0.0,
+     "changed_before": 103,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014993717392561682,
+     "rel_after": 0.0,
+     "changed_before": 95,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001487084019177807,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    }
+   ]
+  },
+  "abliterated": {
+   "cast_tensors": 0,
+   "recomputed": 0,
+   "were_reported_changed": 0,
+   "one_ulp_only": 0,
+   "more_than_one_ulp": [],
+   "rows": []
+  },
+  "tmax": {
+   "cast_tensors": 48,
+   "recomputed": 48,
+   "were_reported_changed": 26,
+   "one_ulp_only": 1,
+   "more_than_one_ulp": [
+    [
+     "model.layers.6.linear_attn.A_log",
+     2.0
+    ]
+   ],
+   "rows": [
+    {
+     "tensor": "model.layers.0.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.0.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001355947884447368,
+     "rel_after": 0.0,
+     "changed_before": 100,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014043736984094548,
+     "rel_after": 0.0,
+     "changed_before": 104,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001619797229842104,
+     "rel_after": 0.0,
+     "changed_before": 108,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017570897659601784,
+     "rel_after": 0.0,
+     "changed_before": 115,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019612107981447154,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 8.418611134665555e-07,
+     "rel_after": 8.418611134665555e-07,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017349818503157274,
+     "rel_after": 0.0,
+     "changed_before": 112,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019082699666253442,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002199834049707224,
+     "rel_after": 0.0,
+     "changed_before": 119,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015333115869664157,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013811057170175596,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015186847657408652,
+     "rel_after": 0.0,
+     "changed_before": 97,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015303125373258555,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014984864211605462,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014500784970415505,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015199893594994261,
+     "rel_after": 0.0,
+     "changed_before": 98,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015148816080530988,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017831318394747728,
+     "rel_after": 0.0,
+     "changed_before": 118,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0023550545481567558,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019921268106843355,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013098352861690527,
+     "rel_after": 0.0,
+     "changed_before": 109,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001291635836590632,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 4.495087853600772e-06,
+     "rel_after": 4.495087853600772e-06,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014477326146175402,
+     "rel_after": 0.0,
+     "changed_before": 103,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014993717392561682,
+     "rel_after": 0.0,
+     "changed_before": 95,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001487084019177807,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    }
+   ]
+  },
+  "fara": {
+   "cast_tensors": 48,
+   "recomputed": 48,
+   "were_reported_changed": 38,
+   "one_ulp_only": 10,
+   "more_than_one_ulp": [
+    [
+     "model.layers.1.linear_attn.A_log",
+     3.0
+    ],
+    [
+     "model.layers.10.linear_attn.A_log",
+     2.0
+    ],
+    [
+     "model.layers.14.linear_attn.A_log",
+     34.0
+    ],
+    [
+     "model.layers.18.linear_attn.A_log",
+     6.0
+    ],
+    [
+     "model.layers.6.linear_attn.A_log",
+     26.0
+    ],
+    [
+     "model.layers.8.linear_attn.A_log",
+     6.0
+    ]
+   ],
+   "rows": [
+    {
+     "tensor": "model.layers.0.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.0.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001355947884447368,
+     "rel_after": 0.0,
+     "changed_before": 100,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 3.575340418902517e-05,
+     "rel_after": 3.575340418902517e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 3.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014079156301341678,
+     "rel_after": 9.980160795664362e-05,
+     "changed_before": 105,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0001554617905649986,
+     "rel_after": 0.0001554617905649986,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 2.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001619797229842104,
+     "rel_after": 0.0,
+     "changed_before": 108,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0001690928720969593,
+     "rel_after": 0.0001690928720969593,
+     "changed_before": 5,
+     "changed_after": 5,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017570897659601784,
+     "rel_after": 0.0,
+     "changed_before": 115,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 6.766425536167746e-05,
+     "rel_after": 6.766425536167746e-05,
+     "changed_before": 2,
+     "changed_after": 2,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019612107981447154,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 6.669325545576722e-05,
+     "rel_after": 6.669325545576722e-05,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 34.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017349818503157274,
+     "rel_after": 0.0,
+     "changed_before": 112,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019082699666253442,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002199834049707224,
+     "rel_after": 0.0,
+     "changed_before": 119,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 9.876901053171115e-05,
+     "rel_after": 9.876901053171115e-05,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 6.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015333115869664157,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 3.8735025203971215e-05,
+     "rel_after": 3.8735025203971215e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013811057170175596,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 4.6409856030352074e-05,
+     "rel_after": 4.6409856030352074e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015186847657408652,
+     "rel_after": 0.0,
+     "changed_before": 97,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015303125373258555,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014984864211605462,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014500784970415505,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 8.927541767461206e-05,
+     "rel_after": 8.927541767461206e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015199893594994261,
+     "rel_after": 0.0,
+     "changed_before": 98,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015148816080530988,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017831318394747728,
+     "rel_after": 0.0,
+     "changed_before": 118,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0023550545481567558,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00017118092390590333,
+     "rel_after": 0.00017118092390590333,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019921268106843355,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00010884790294363999,
+     "rel_after": 0.00010884790294363999,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013131881598466583,
+     "rel_after": 9.377952614987253e-05,
+     "changed_before": 110,
+     "changed_after": 1,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.00010101429714314024,
+     "rel_after": 0.00010101429714314024,
+     "changed_before": 2,
+     "changed_after": 2,
+     "max_ulps": 1.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001291635836590632,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0001593697249108739,
+     "rel_after": 0.0001593697249108739,
+     "changed_before": 3,
+     "changed_after": 3,
+     "max_ulps": 26.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014477326146175402,
+     "rel_after": 0.0,
+     "changed_before": 103,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 9.005643576641481e-05,
+     "rel_after": 9.005643576641481e-05,
+     "changed_before": 1,
+     "changed_after": 1,
+     "max_ulps": 6.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014993717392561682,
+     "rel_after": 0.0,
+     "changed_before": 95,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001487084019177807,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    }
+   ]
+  },
+  "nyx_rp": {
+   "cast_tensors": 0,
+   "recomputed": 0,
+   "were_reported_changed": 0,
+   "one_ulp_only": 0,
+   "more_than_one_ulp": [],
+   "rows": []
+  },
+  "official_post": {
+   "cast_tensors": 0,
+   "recomputed": 0,
+   "were_reported_changed": 0,
+   "one_ulp_only": 0,
+   "more_than_one_ulp": [],
+   "rows": []
+  },
+  "wemm_embed": {
+   "cast_tensors": 48,
+   "recomputed": 48,
+   "were_reported_changed": 24,
+   "one_ulp_only": 0,
+   "more_than_one_ulp": [],
+   "rows": [
+    {
+     "tensor": "model.layers.0.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.0.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001355947884447368,
+     "rel_after": 0.0,
+     "changed_before": 100,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014043736984094548,
+     "rel_after": 0.0,
+     "changed_before": 104,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001619797229842104,
+     "rel_after": 0.0,
+     "changed_before": 108,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017570897659601784,
+     "rel_after": 0.0,
+     "changed_before": 115,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019612107981447154,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017349818503157274,
+     "rel_after": 0.0,
+     "changed_before": 112,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019082699666253442,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002199834049707224,
+     "rel_after": 0.0,
+     "changed_before": 119,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015333115869664157,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013811057170175596,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015186847657408652,
+     "rel_after": 0.0,
+     "changed_before": 97,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015303125373258555,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014984864211605462,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014500784970415505,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015199893594994261,
+     "rel_after": 0.0,
+     "changed_before": 98,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015148816080530988,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017831318394747728,
+     "rel_after": 0.0,
+     "changed_before": 118,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0023550545481567558,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019921268106843355,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013098352861690527,
+     "rel_after": 0.0,
+     "changed_before": 109,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001291635836590632,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014477326146175402,
+     "rel_after": 0.0,
+     "changed_before": 103,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014993717392561682,
+     "rel_after": 0.0,
+     "changed_before": 95,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001487084019177807,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    }
+   ]
+  },
+  "angry_claudius": {
+   "cast_tensors": 48,
+   "recomputed": 48,
+   "were_reported_changed": 24,
+   "one_ulp_only": 0,
+   "more_than_one_ulp": [],
+   "rows": [
+    {
+     "tensor": "model.layers.0.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.0.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001355947884447368,
+     "rel_after": 0.0,
+     "changed_before": 100,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014043736984094548,
+     "rel_after": 0.0,
+     "changed_before": 104,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001619797229842104,
+     "rel_after": 0.0,
+     "changed_before": 108,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017570897659601784,
+     "rel_after": 0.0,
+     "changed_before": 115,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019612107981447154,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017349818503157274,
+     "rel_after": 0.0,
+     "changed_before": 112,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019082699666253442,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002199834049707224,
+     "rel_after": 0.0,
+     "changed_before": 119,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015333115869664157,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013811057170175596,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015186847657408652,
+     "rel_after": 0.0,
+     "changed_before": 97,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015303125373258555,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014984864211605462,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014500784970415505,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015199893594994261,
+     "rel_after": 0.0,
+     "changed_before": 98,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015148816080530988,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017831318394747728,
+     "rel_after": 0.0,
+     "changed_before": 118,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0023550545481567558,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019921268106843355,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013098352861690527,
+     "rel_after": 0.0,
+     "changed_before": 109,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001291635836590632,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014477326146175402,
+     "rel_after": 0.0,
+     "changed_before": 103,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014993717392561682,
+     "rel_after": 0.0,
+     "changed_before": 95,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001487084019177807,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    }
+   ]
+  },
+  "dsv4_distill": {
+   "cast_tensors": 0,
+   "recomputed": 0,
+   "were_reported_changed": 0,
+   "one_ulp_only": 0,
+   "more_than_one_ulp": [],
+   "rows": []
+  },
+  "dsv4_heretic": {
+   "cast_tensors": 48,
+   "recomputed": 48,
+   "were_reported_changed": 24,
+   "one_ulp_only": 0,
+   "more_than_one_ulp": [],
+   "rows": [
+    {
+     "tensor": "model.layers.0.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.0.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001355947884447368,
+     "rel_after": 0.0,
+     "changed_before": 100,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.1.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014043736984094548,
+     "rel_after": 0.0,
+     "changed_before": 104,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.10.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001619797229842104,
+     "rel_after": 0.0,
+     "changed_before": 108,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.12.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017570897659601784,
+     "rel_after": 0.0,
+     "changed_before": 115,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.13.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019612107981447154,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.14.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017349818503157274,
+     "rel_after": 0.0,
+     "changed_before": 112,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.16.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019082699666253442,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.17.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.002199834049707224,
+     "rel_after": 0.0,
+     "changed_before": 119,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.18.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015333115869664157,
+     "rel_after": 0.0,
+     "changed_before": 120,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.2.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013811057170175596,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.20.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015186847657408652,
+     "rel_after": 0.0,
+     "changed_before": 97,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.21.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015303125373258555,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.22.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014984864211605462,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.24.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014500784970415505,
+     "rel_after": 0.0,
+     "changed_before": 94,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.25.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015199893594994261,
+     "rel_after": 0.0,
+     "changed_before": 98,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.26.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0015148816080530988,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.28.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0017831318394747728,
+     "rel_after": 0.0,
+     "changed_before": 118,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.29.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0023550545481567558,
+     "rel_after": 0.0,
+     "changed_before": 122,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.30.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0019921268106843355,
+     "rel_after": 0.0,
+     "changed_before": 114,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.4.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0013098352861690527,
+     "rel_after": 0.0,
+     "changed_before": 109,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.5.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001291635836590632,
+     "rel_after": 0.0,
+     "changed_before": 110,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.6.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014477326146175402,
+     "rel_after": 0.0,
+     "changed_before": 103,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.8.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0014993717392561682,
+     "rel_after": 0.0,
+     "changed_before": 95,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.A_log",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.0,
+     "rel_after": 0.0,
+     "changed_before": 0,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    },
+    {
+     "tensor": "model.layers.9.linear_attn.norm.weight",
+     "dtypes": "F32->BF16",
+     "rel_before": 0.001487084019177807,
+     "rel_after": 0.0,
+     "changed_before": 111,
+     "changed_after": 0,
+     "max_ulps": 0.0
+    }
+   ]
+  }
+ },
+ "spearman": [
+  {
+   "pair": "mimo-neohorse",
+   "before": 0.929,
+   "after": 0.947
+  },
+  {
+   "pair": "mimo-abliterated",
+   "before": 0.165,
+   "after": 0.165
+  },
+  {
+   "pair": "mimo-tmax",
+   "before": 0.687,
+   "after": 0.893
+  },
+  {
+   "pair": "mimo-fara",
+   "before": 0.95,
+   "after": 0.958
+  },
+  {
+   "pair": "mimo-nyx_rp",
+   "before": 0.546,
+   "after": 0.546
+  },
+  {
+   "pair": "mimo-official_post",
+   "before": 0.984,
+   "after": 0.984
+  },
+  {
+   "pair": "mimo-wemm_embed",
+   "before": 0.896,
+   "after": 0.92
+  },
+  {
+   "pair": "mimo-angry_claudius",
+   "before": 0.772,
+   "after": 0.803
+  },
+  {
+   "pair": "mimo-dsv4_distill",
+   "before": 0.586,
+   "after": 0.586
+  },
+  {
+   "pair": "mimo-dsv4_heretic",
+   "before": -0.224,
+   "after": -0.032
+  },
+  {
+   "pair": "neohorse-abliterated",
+   "before": 0.28,
+   "after": 0.28
+  },
+  {
+   "pair": "neohorse-tmax",
+   "before": 0.828,
+   "after": 0.932
+  },
+  {
+   "pair": "neohorse-fara",
+   "before": 0.984,
+   "after": 0.988
+  },
+  {
+   "pair": "neohorse-nyx_rp",
+   "before": 0.595,
+   "after": 0.596
+  },
+  {
+   "pair": "neohorse-official_post",
+   "before": 0.954,
+   "after": 0.973
+  },
+  {
+   "pair": "neohorse-wemm_embed",
+   "before": 0.888,
+   "after": 0.877
+  },
+  {
+   "pair": "neohorse-angry_claudius",
+   "before": 0.815,
+   "after": 0.814
+  },
+  {
+   "pair": "neohorse-dsv4_distill",
+   "before": 0.643,
+   "after": 0.644
+  },
+  {
+   "pair": "neohorse-dsv4_heretic",
+   "before": -0.018,
+   "after": 0.064
+  },
+  {
+   "pair": "abliterated-tmax",
+   "before": 0.362,
+   "after": 0.422
+  },
+  {
+   "pair": "abliterated-fara",
+   "before": 0.24,
+   "after": 0.241
+  },
+  {
+   "pair": "abliterated-nyx_rp",
+   "before": 0.185,
+   "after": 0.185
+  },
+  {
+   "pair": "abliterated-official_post",
+   "before": 0.2,
+   "after": 0.2
+  },
+  {
+   "pair": "abliterated-wemm_embed",
+   "before": 0.117,
+   "after": 0.119
+  },
+  {
+   "pair": "abliterated-angry_claudius",
+   "before": 0.41,
+   "after": 0.416
+  },
+  {
+   "pair": "abliterated-dsv4_distill",
+   "before": 0.458,
+   "after": 0.458
+  },
+  {
+   "pair": "abliterated-dsv4_heretic",
+   "before": 0.357,
+   "after": 0.549
+  },
+  {
+   "pair": "tmax-fara",
+   "before": 0.757,
+   "after": 0.905
+  },
+  {
+   "pair": "tmax-nyx_rp",
+   "before": 0.579,
+   "after": 0.68
+  },
+  {
+   "pair": "tmax-official_post",
+   "before": 0.704,
+   "after": 0.912
+  },
+  {
+   "pair": "tmax-wemm_embed",
+   "before": 0.726,
+   "after": 0.821
+  },
+  {
+   "pair": "tmax-angry_claudius",
+   "before": 0.839,
+   "after": 0.908
+  },
+  {
+   "pair": "tmax-dsv4_distill",
+   "before": 0.645,
+   "after": 0.755
+  },
+  {
+   "pair": "tmax-dsv4_heretic",
+   "before": 0.343,
+   "after": 0.162
+  },
+  {
+   "pair": "fara-nyx_rp",
+   "before": 0.54,
+   "after": 0.54
+  },
+  {
+   "pair": "fara-official_post",
+   "before": 0.977,
+   "after": 0.981
+  },
+  {
+   "pair": "fara-wemm_embed",
+   "before": 0.888,
+   "after": 0.893
+  },
+  {
+   "pair": "fara-angry_claudius",
+   "before": 0.763,
+   "after": 0.779
+  },
+  {
+   "pair": "fara-dsv4_distill",
+   "before": 0.595,
+   "after": 0.595
+  },
+  {
+   "pair": "fara-dsv4_heretic",
+   "before": -0.133,
+   "after": 0.0
+  },
+  {
+   "pair": "nyx_rp-official_post",
+   "before": 0.546,
+   "after": 0.546
+  },
+  {
+   "pair": "nyx_rp-wemm_embed",
+   "before": 0.481,
+   "after": 0.487
+  },
+  {
+   "pair": "nyx_rp-angry_claudius",
+   "before": 0.664,
+   "after": 0.674
+  },
+  {
+   "pair": "nyx_rp-dsv4_distill",
+   "before": 0.893,
+   "after": 0.893
+  },
+  {
+   "pair": "nyx_rp-dsv4_heretic",
+   "before": 0.113,
+   "after": 0.276
+  },
+  {
+   "pair": "official_post-wemm_embed",
+   "before": 0.879,
+   "after": 0.902
+  },
+  {
+   "pair": "official_post-angry_claudius",
+   "before": 0.745,
+   "after": 0.777
+  },
+  {
+   "pair": "official_post-dsv4_distill",
+   "before": 0.589,
+   "after": 0.589
+  },
+  {
+   "pair": "official_post-dsv4_heretic",
+   "before": -0.224,
+   "after": -0.032
+  },
+  {
+   "pair": "wemm_embed-angry_claudius",
+   "before": 0.846,
+   "after": 0.842
+  },
+  {
+   "pair": "wemm_embed-dsv4_distill",
+   "before": 0.529,
+   "after": 0.535
+  },
+  {
+   "pair": "wemm_embed-dsv4_heretic",
+   "before": -0.052,
+   "after": 0.0
+  },
+  {
+   "pair": "angry_claudius-dsv4_distill",
+   "before": 0.755,
+   "after": 0.767
+  },
+  {
+   "pair": "angry_claudius-dsv4_heretic",
+   "before": 0.154,
+   "after": 0.238
+  },
+  {
+   "pair": "dsv4_distill-dsv4_heretic",
+   "before": 0.038,
+   "after": 0.189
+  }
+ ]
+}

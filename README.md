@@ -1,236 +1,349 @@
 # FiveTechSoft / weights: Weight-Space Programming (WSP)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Website: GitHub Pages](https://img.shields.io/badge/Website-Live_Research_Portal-cyan.svg)](https://fivetechsoft.github.io/weights/)
+[![Website: GitHub Pages](https://img.shields.io/badge/Website-Research_Portal-cyan.svg)](https://fivetechsoft.github.io/weights/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Model: MiMo-2.6-Qwen-9B](https://img.shields.io/badge/Model-MiMo--V2.6--Distill--Qwen--9B-blue.svg)](https://huggingface.co/)
-[![Quant: Q6_K GGUF](https://img.shields.io/badge/Quant-Q6__K_GGUF-purple.svg)](https://github.com/ggerganov/llama.cpp)
-[![Compute: Zero GPU Overhead](https://img.shields.io/badge/Compute-0_MB_RAM_/_0_FLOPs-emerald.svg)](https://github.com/FiveTechSoft/weights)
+[![Model: MiMo-V2.6-Distill-Qwen-9B](https://img.shields.io/badge/Model-MiMo--V2.6--Distill--Qwen--9B-blue.svg)](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B)
 
-An open-source toolkit for **Weight-Space Programming (WSP)**. Directly inspect, decompile, and surgically edit individual weights in 9B production quantized LLMs without forward passes, training gradients, or GPU overhead.
+A toolkit and a research log for **Weight-Space Programming (WSP)**: reading, comparing and editing the weights of
+LLMs directly, with no gradient step.
+- It inspects and edits quantized GGUF files (Q6_K) and safetensors checkpoints.
+- It diffs a fine-tuned model against its base and reports what changed, including outside the weights.
+- It runs declarative experiments written in WSP-Lang (`.wspl`).
 
-Based on the research methodology of MIT CSAIL's *Sparks of Weight-Space Programming* ([paper & blog](https://rikiyat.github.io/blog/weight-space-programming/)) and extended to production quantized GGUF architectures.
+Reading and editing weights needs no forward pass. **Behavioural claims do**: every behavioural result here was
+measured by running the model (llama.cpp / llama-server, usually on an RTX 3060).
 
-🌐 **Live Research Portal & Interactive Documentation:** [https://fivetechsoft.github.io/weights/](https://fivetechsoft.github.io/weights/)
+Starting point: MIT CSAIL's blog post [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/)
+(Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab, 2 Nov 2026; a blog post, not peer-reviewed).
 
-📄 **Scientific Report & Verifications:** [Reasoning Loop Suppression & Atari Weight Decompilation](docs/report_loop_suppression_and_atari.md)
+## Main result (2026-11-09)
 
-> [!TIP]
-> ### 🔬 Empirical Reproductions & Scientific Rigor (Nov 2026)
-> * **✅ MIT CSAIL Exp 8 Replication (Bit-by-Bit Weight Fidelity):** Replicated the 0.016% surgical weight edit on Qwen3.5-0.8B, verifying identical bit-level tensor hashes (SHA-256 match with Astra). Preliminary evaluation on GSM8K sample (n=5) broke the loop on Problem #2 (`pred=3, gold=3`, base 0/5 vs edited 1/5; full n=500 behavioral validation ongoing) ([Full Report](docs/report_loop_suppression_and_atari.md)).
-> * **✅ Atari Weight Interpretation (Simon Willison & MIT Exp 1):** Decompiled the raw 17,253-parameter MLP weights for *Pong* (vertical axis dominance 1.54x) and *Breakout* (horizontal axis dominance 1.53x, max weight 5.34), with our local model correctly identifying *Pong* with **90% confidence**.
-> * **✅ WSP-Lang 0.5 & LEACE Closed-Form Surgery:** Grounded in Fast Weight Programming (Irie & Schmidhuber, ICML 2021) and LEACE concept erasure (Belrose et al., NeurIPS 2023). Empirical benchmark on unquantized MiMo-9B Layer 14 down_proj ($4096 \times 12288$, 50.3M weights) achieves **100.0000% concept erasure in 47 ms on CPU** with preserved orthogonal stability (mean $\Delta = 0.000048$) and MEMIT covariance regularization ([Spec](https://fivetechsoft.github.io/weights/wsplang.html) | [Report](rig_runs/leace_verification_report.json)).
-> * **✅ Project NanoWSP-2 Micro-LLM (600k Parameters):** An advanced 4-layer autoregressive Transformer (599,168 weights, 4 heads, 256-byte vocabulary) synthesized completely without backpropagation. Delivers **100.0% recall** on symbolic arithmetic, relational knowledge graphs, and syntax closure, plus test-time self-healing loop breaking via Titans surprisal monitoring ([NanoWSP-2 Webpage](https://fivetechsoft.github.io/weights/nanowsp2.html) | [Showcase Script](scripts/demo_nanowsp2_capabilities.py)).
-> * **Project NanoWSP-3 Linear Associative Memory (3.28M Parameters, 6 Layers):** A 6-layer synthetic Transformer architecture (3,280,128 Float32 weights, 8 heads, 256-byte ASCII vocabulary) acting as a linear associative memory testbed in weight space. Demonstrates closed-form Moore-Penrose / Gram-matrix pseudo-inverse storage ($\Delta W = (V - W_0 K)(K^T K + \lambda I)^{-1} K^T$) for 23 synthetic key-value associations without cross-talk on random orthogonal weights ([NanoWSP-3 Webpage](https://fivetechsoft.github.io/weights/nanowsp3.html) | [Showcase Script](scripts/demo_nanowsp3_capabilities.py)). *Note: Serves as a linear algebra associative lookup testbed, not a generalized language model, and was not trained on or extracted from MiMo-9B.*
-> * **✅ Cross-Model Knowledge Transfer (MiMo-9B &rarr; TinyLlama-1.1B):** Orthogonal Procrustes latent alignment ($d_1 = 4096 \to d_2 = 2048$, 82.5% cosine fidelity on 2,000 anchor words) and closed-form MEMIT knowledge imprinting. Corrected real-world factual hallucinations in TinyLlama (Atomic #79 $\to$ Gold, Deepest Lake $\to$ Baikal) from 0% to **100% exact recall in 18.4 ms** with 0% collateral damage on holdout tasks and 0 gradient steps ([Report](rig_runs/tinyllama_knowledge_transfer_benchmark.json)).
-> * **⚠️ Causal Contract Verification & Negative Control Study (MiMo-2.6-9B):** Extracted a lexical deliberation difference vector ($u_{\text{critic}} \in \mathbb{R}^{4096}$) from embedding centroids. Under our strict 4-way paired causal contract engine (`rig/exp_mimo_self_critique_v1.py`), the edit yielded **50.0% across all arms (baseline, candidate, placebo, random)**, triggering an **immediate automated rollback (`ROLLED_BACK`)**. Analysis revealed that preliminary 40% vs 100% differences were confounded by prompt framing (chain-of-thought vs concise) rather than weight steering ([Negative Control Report](docs/mimo_critique_transfer_benchmark.md)).
+**A fine-tune's skill can be moved onto the unchanged base model as a small adapter, with no training.**
+WSP-Lang's `delta_to_lora` op reads the difference between a fine-tune and its base, matrix by matrix, keeps the
+strongest directions (exact SVD) and writes a normal LoRA adapter. On Qwen3.5-9B with Jackrong's reasoning distill as
+the donor, rank 16, 87 MB, a few minutes:
 
+| Qwen3.5-9B, greedy, 2,048-token budget | base | base + adapter (×0.5) |
+|---|---|---|
+| MATH-500, 36 held-out items (16 the base cannot finish + 20 it solves) | 6/36 | **30/36** |
+| GSM8K, 48 items (another benchmark; never used to pick anything) | 9/48 | **37/48** |
+| GSM8K problems the base already solved, kept | 6/6 | **6/6** |
+| **Sealed confirmation** (2026-11-10): GSM8K 100 + MATH-500 50 never used by any decision | 43/100, 4/50 | **91/100, 35/50** |
+
+Paired against the base (exact McNemar), both p < 0.0001. The sealed run (plan written before it, results §43.15) confirms with two graders per benchmark (gained/lost 48/0 and 31/0) while a same-norm random placebo stays at the base (46/100, 5/50); much of the gain is that the adapter reasons 2-3× shorter and finishes within the budget. Before any benchmark the op's `energy.json` says whether a
+change will move: rank 16 keeps 58.6 % of Jackrong's change (it moves) and 3.8 % of MiMo's (it does not, at any rank
+up to 512). Demo and commands: [`demos/math_transplant/`](demos/math_transplant/). It **needs a donor**: every attempt
+to create the skill without one (synthesis, learned jumps, merges, self-distillation) failed; see the table below. The
+one exception is efficiency: a direction read from the base itself gives most of this gain (next section).
+**Does the verdict generalize?** Four donors so far (results §43.11-43.12), verdict given before any benchmark:
+
+| donor | change kept at rank 16 | verdict | what the adapter did |
+|---|---|---|---|
+| Jackrong reasoning distill (SFT) | 58.6 % | likely | MATH 6 → 30/36, GSM8K 9 → 37/48 |
+| iAmBoosted OSS-Distilled (merged LoRA r16), read from the hub | 98.3 % | likely | moved its *behaviour* onto another model (MiMo): ≈ 3× shorter reasoning, MATH answers cut at 8,192 tokens 13 → 3, a same-norm placebo does not; but GSM8K 92 → 83/100 (p = 0.035), so it fails its pre-registered criterion |
+| LeoZotos math GRPO (RL) | 7.5 % | unlikely | not distinguishable from the base (GSM8K 15/48 vs 9, p = 0.21) although the full donor improves it (21/48, p = 0.012) |
+| MiMo 2.6 (full fine-tune) | 3.8 % | unlikely | does not move at any rank up to 512 |
+
+The verdict was right each time; moving a change does not make the change good (OSS). The main result is confirmed
+on a sealed set (`data/sealed_confirm.json`, sha256-checked, disjoint from everything used so far; results §43.15) and next transplants will be too.
+
+> **Re-tested with the corrected op (2026-11-12): holds.** The `contrast_vector` op took the last layer's row after the final norm (transformers' `hidden_states[-1]`), so `direction.31` of the first vector was the norm's rescaling, not a residual change (fixed in 4aeb453, results §45.2-45.3). The vector re-derived with the fix (layers 1-30 identical, layer 31 norm 13.2 → 18.1) was run again under a plan fixed before it (`lab/probes/cc/PLAN.md`, addendum 2026-11-12; prediction row 24 of `predictions.md`): dev GSM8K 50 → 83, MATH 6 → 35; sealed set 43 → 86, 4 → 33, placebo 28 / 1 (results §45.4). The numbers below are for the first vector. The compiled weights were recompiled from the corrected vector (2026-11-13, results §45.8; prediction row 27): layers 1-30 byte-identical to the first compilation, only layer 31 differs; dev GSM8K 85, MATH 30; sealed set 2 (second use) 89 / 25 vs base 46 / 7, placebo 34 / 5, HumanEval-20 19/20. Paired on the same 150 sealed items the corrected layer 31 changes nothing in correctness (3 won / 3 lost, 3 / 4) and halves the loop tails. A closing sentence in the prompt does not do what the direction does: base + "stop reasoning once you have the answer" falls to GSM8K 37 with the same token count, and a neutral sentence to 29 (results §45.9, prediction row 28 failed). The placebo is not one lucky draw: eight more same-norm random directions (seeds 1-8, screen set of 64 MATH items, 2,048 tokens) score 3-8 against base 8 and vector 38; none reaches half the vector's gain, the vector ranks first of nine (results §45.10, prediction row 29). Nor is it a token budget: the base re-run at 8,192 tokens repeats 72/100 item by item while the vector at 8,192 scores 85 with a quarter of the tokens (16 won / 3 lost, p 0.004; results §45.11).
+
+**Without a donor: the base's own "conclude" direction** (results §43.17-43.18). Replicating Concept Country's idea on
+Qwen3.5-9B: the `contrast_vector` op reads, from the base's own finished reasoning traces, the mean residual stream of
+the last 48 tokens before `</think>` minus the rest of the thinking, and applies it as a llama.cpp control vector at
+scale 1.0 (picked on unused items). No donor, no training. Same sealed set, same 2,048-token budget:
+
+| Qwen3.5-9B, sealed set (150 items never used by any decision) | base | + "conclude" vector | same-norm random vector |
+|---|---|---|---|
+| GSM8K /100 | 43 | **87** | 23 |
+| MATH-500 /50 | 4 | **25** | 2 |
+| answers cut at the budget (GSM8K) | 57 | 10 | 76 |
+
+Gained/lost vs base 46/2 (GSM8K) and 21/0 (MATH), exact McNemar p < 1e-5 with two graders each; plan written before the
+run. A push of the same size in a random direction *hurts*, so the gain is the direction. It is efficiency, not new
+knowledge: the base already has most answers and fails by not closing (with 32k tokens it solves MATH, arXiv
+2611.09382).
+
+**Compiled into the weights** (results §43.19 dev, §43.21 sealed): the same vector written into `down_proj` of 31 layers as a
+closed-form rank-1 edit per layer (no gradients, same matrices and shapes), merged into the Q6_K file, run with no
+flags: dev GSM8K 50 → **87**/100, MATH 6 → **34**/50, not different from the control vector (84 / 32; p 0.45 / 0.73).
+The same write in a random direction hurts (28 / 6). **Confirmed on a second sealed set** (made before the run):
+GSM8K 46 → **89**/100, MATH 7 → **26**/50 (gained/lost 43/0 and 19/0, two graders each), as the vector (90, 22); the
+merged random-direction placebo falls below base (30, 4). Outside maths the merged file costs little (HumanEval first
+20: 19/20, base 20/20; the control vector 15/20).
+
+**Second use: steering without touching weights** (results §43.13). The `contrast_vector` op turns two sets of answers
+(same prompts, cheerful vs neutral) into a llama.cpp control vector. On 40 unseen prompts, Qwen3.5-9B with the vector at
+scale 0.25: judged tone 2.83 → 3.90 of 5 (sign test p = 3·10⁻⁸), positive-affect words 0.27 → 2.63 per 100 (p = 7·10⁻¹²),
+37/40 coherent; a same-norm random vector changes nothing (+0.05, +0.02). Passed all five pre-registered criteria
+after two fixes to the judge, both made before the test set was used (documented). Scales ≥ 0.5 break coherence.
+**Does not hold with the corrected op** (results §45.3): same tone gain (+1.07), but 34/40 coherent and GSM8K fast
+5 vs 9, failing C4/C5. §43.13 passed only with the old, wrong last layer.
+
+🌐 Research portal: [fivetechsoft.github.io/weights](https://fivetechsoft.github.io/weights/) ·
+📒 Full log: [`results.md`](results.md) · 🎯 Pre-registered predictions and their hit rate: [`predictions.md`](predictions.md) · 🗺️ Plan: [`roadmap.md`](roadmap.md) ·
+🧪 Weight-diff findings: [`lab/probes/delta_patterns/findings.md`](lab/probes/delta_patterns/findings.md)
 
 ---
 
-![WSP-Lang Semantic Architecture](https://raw.githubusercontent.com/FiveTechSoft/weights/main/docs/assets/wsplang_semantic_areas.png)
+## Status of the results (November 2026, audited)
+
+Every claim below was re-checked against the files in this repo (2026-11-06; rows on reusing a fine-tune's change
+added 2026-11-09). "n" is the number of evaluated
+items. Results that did not survive the audit are listed as such instead of being removed.
+
+| Result | Evidence | Status |
+| :--- | :--- | :--- |
+| **Fine-tune → adapter (`delta_to_lora`)**, Jackrong's distill on Qwen3.5-9B (results §43.4-43.6) | See *Main result*. Rank 4 fails (11/36), rank 8 27/36, rank 16 30-32/36. HumanEval first 20: 20/20 base, 19/20 with the lab adapter. | ✅ Measured, paired tests; **confirmed on the sealed set** (91/100, 35/50 vs base 43, 4; placebo 46, 5; results §43.15). |
+| **Transfer verdict on 4 donors** (results §43.11-43.12) | See *Main result*: `likely` for Jackrong (58.6 %) and OSS-Distilled (98.3 %), both transferred; `unlikely` for LeoZotos (7.5 %) and MiMo (3.8 %), neither did. | ✅ Measured, small sets; LeoZotos's test is weak (adapter between base and donor, neither difference significant). |
+| **Shorter reasoning on MiMo with OSS-Distilled's change** (results §43.12) | GSM8K 100 + MATH-500 50, 8,192 tokens: MATH cut 13 → 3 (×1) / 5 (×0.5), tokens 3,077 → 965; placebo 17 cut. GSM8K 92 → 83 at both doses (p = 0.035 / 0.012, two graders agree). | ❌ Fails its pre-registered criterion: the behaviour moves, accuracy drops. |
+| **Happiness control vector (`contrast_vector`)** (results §43.13) | See *Main result*. Judge (MiMo) and lexicon agree; placebo null; GSM8K fast set 7/48 vs 9/48 (within the margin of 2). | ❌ Passed C1-C5 only with the old op; with the last layer corrected it fails C4/C5 (34/40 coherent, GSM8K 5 vs 9; §45.3). |
+| **MiMo 2.6 vs DeepSeek-V4-Pro-Qwen3.5-9B-heretic** (results §43.14) | Same protocol: GSM8K 92 vs 89 (p = 0.55), MATH-500 41 vs 33 (p = 0.10; second grader 36 vs 33, p = 0.61); heretic thinks ≈ 2.5× less (1,223 vs 3,077 tokens on MATH, 3 vs 13 cut). | ✅ Statistical tie on math. HumanEval not used: heretic's code comes back with 1-space indentation in 13/20 (cause not verified). Refusals not measured. |
+| **MiMo's change does not fit an adapter** (results §43.4-43.5) | Full fine-tune, diffuse change: rank 64-512 adapters reach ≤ 4/16 on the stuck MATH items vs MiMo's own 12/16. | ✅ Negative result, predicted by `energy.json`. |
+| **Copying MiMo's behaviour instead of its weights** (results §43.7-43.10) | Rank-16 adapter trained on MiMo's own answers: MATH 6 → 16 / 24 / 27 of 36 with 93 / 171 / 256 answers, GSM8K 9 → 34 / 41 / 41 of 48. Closed-form, gradient-free fit of `down_proj` to MiMo's hidden states (the WSP/MEMIT write used for a behaviour): 17/36, 25/48; a same-norm random placebo gives 10/36, 14/48 (not significant vs base, p 0.13 / 0.23), and the fit beats it (p 0.039 / 0.003). Writing the attention output too does not help (15/36, 26/48). | ✅ Measured. Distillation flattens after 171 answers; the gradient-free route is closed. |
+| **Donor-free "conclude" control vector** (results §43.17-43.18) | Direction from the base's own traces, scale 1.0: dev GSM8K 50 → 84/100, MATH 6 → 32/50; sealed 43 → 87, 4 → 25; same-norm placebo below base both times (37/3, 23/2). | ✅ **Confirmed on the sealed set**, two graders each, and **confirmed again with the corrected op** (layer 31 re-derived: sealed 86 / 33 vs base 43 / 4, placebo 28 / 1, §45.4). One model, one budget (2,048), greedy; efficiency at a fixed budget, not a new capability; compiled into `down_proj` it passes dev (87 / 34, §43.19) and sealed set 2 (89 / 26 vs base 46 / 7, §43.21); recompiled from the corrected vector it does the same (dev 85 / 30, sealed set 2 89 / 25, placebo 34 / 5, §45.8). |
+| **Creating a skill without a donor** (results §40-§42, §43.8) | Qwen3.5-0.8B, 3×3 multiplication: a training's change lives in a narrow subspace shared across seeds (overlap 0.72-0.80, chance 0.016); rank 20 recovers 91 % of it, another seed's subspace 92 %. But extrapolating early steps, one gradient, coefficients in the subspace, a learned jump (0/7 tasks) and summing changes all fail; donor-free self-distillation on 9B = base. | ❌ Not achieved. Moving an existing change works; making one does not. |
+| **MIT Exp 8 replication** (Qwen3.5-0.8B loop edit) | Edited tensors are bit-identical to Astra's (SHA-256 match with the manifest in `exp8_control/p50c_edit/`). On a MATH-500 holdout, Q6_K, n=20, temp 0.3, 2048-token cap: base 1/20, edit 14/20, random-direction placebo 0/20 (Fisher p ≈ 3.9e-5 edit vs base). Files: `rig_runs/holdout-08b-{base,edit,placebo}-20.json`. | ✅ Replicated, small n. A GSM8K smoke test (n=5, 512-token cap) gave 0/5 vs 1/5, with **all 10 answers cut at the cap**, so it shows no loop break. |
+| **Exp 8 idea on a trained nanoGPT** (results §36) | Loops 111 → 26 of 256 test prompts. One of 3 random edits of the same norm also gave 26. | ❌ Fails the pre-registered criterion 4. |
+| **Loop fix on MiMo-9B** | Blind holdout, n=40: loops 17/40 with the edit vs 20/40 with the placebo, p = 0.654 (results.md, `DISCARD_CANDIDATE_V1`). GSM8K n=50 accuracy was kept: 45 → 46. | ❌ Discarded as a fix: not distinguishable from the placebo. |
+| **What post-training changes** (Qwen3.5-9B vs MiMo, NeoHorse, tmax, Fara, official post-training, WeMM, Nyx-RP, Angry-Claudius, DeepSeek-V4 distill/Heretic) | `lab/probes/delta_patterns/findings.md` F1–F26, with two-method checks. | ✅ Measured. Full fine-tunes share *where* they change the weights whatever the goal (F22). The layer-specific *directions* are shared by the improvements and not by a full fine-tune with another goal (F23). A LoRA control cannot separate a degradation from a neutral LoRA (F24). A storage-cast bug (F32→BF16 counted as change) was found and corrected (F26). |
+| **`model_report`**: what a model changed vs its base, in about a minute over HTTP | Validated on 6 models whose change is known (`lab/runs/model_report/validation.json`), plus config/tokenizer/template diff (F25: MiMo ships an older pre-tokenizer regex). | ✅ Validated on Qwen3.5-9B derivatives. Other architectures: tensor names are mapped (roadmap J1) but not yet calibrated. |
+| **TwIL-8B vs MiMo-9B benchmark** (results §37) | Same protocol: GSM8K 100 + MATH-500 50, greedy, 8192 tokens. TwIL 96/100 and 44/50. MiMo 93/100 and 34/50, with 19 answers cut at the cap. | ✅ Measured. Base Qwen3.5-9B under the same protocol: GSM8K 60/100, MATH-500 24/50, with 36 + 25 answers cut at the cap; MiMo's advantage is mostly finishing within the budget (results §39). |
+| **Atari policy reading** (MIT Exp 1) | W3 statistics: vertical/horizontal 1.54× for Pong, 1.53× for Breakout. One MiMo-9B query, given hand-computed statistics (not raw weights), answered "Pong" with self-reported 90 % confidence. | ⚠️ Anecdote (one query). |
+| **LEACE-style closed-form edit** | Rank-1 projection zeroes ‖uᵀW‖ for one direction in layer 14 `down_proj` in 47 ms (`rig_runs/leace_verification_report.json`). | ⚠️ True by algebra. No data, probe or behaviour tested. |
+| **NanoWSP-2** (599,168 params) and **NanoWSP-3** (3,280,128 params) | They recall all imprinted pairs: 11/11 and 23/23. | ⚠️ Memorization testbeds. Recall measured on the stored items only; no generalization tested. Not language models. |
+| **MiMo → TinyLlama fact transfer** | Real run: target facts 5/8 → 7/8, holdout preserved 5/8 (`rig_runs/mimo_to_tinyllama_full_migration_report.json`). | ⚠️ n too small. The earlier "0 → 100 %, 18.4 ms, 0 % collateral" report was written from hardcoded values (`scripts/save_tinyllama_benchmark_report.py`) and is **withdrawn**. |
+| **MiMo "self-critique" causal contract** (50 % in all 4 arms) | `rig/exp_mimo_self_critique_v1.py` scores a synthetic projection of W on a prompt hash. It never runs the model. | ❌ **Withdrawn**: not a behavioural test. |
+| **"Evil" neurons in MiMo layer 14** | `edits/evil_mimo.json` scales 4 `ffn_down` columns (4258 and 7714 ×2.5; 10739 and 993 ×0.25), 16,384 weights. | ⚠️ No behavioural evaluation of hostility was run. The GGUF is not in the repo. |
 
 ---
 
-## ⚡ Quick Start (5 Minutes)
+## ⚡ Quick start
 
-You don't need GPUs or PyTorch to decompile model weights. Core inspection runs directly on quantized GGUF blocks using minimal NumPy.
-
-### 1. Install Minimal Requirements
 ```bash
 git clone https://github.com/FiveTechSoft/weights.git
 cd weights
-pip install gguf numpy matplotlib pillow
+pip install gguf numpy matplotlib pillow   # GGUF inspection and editing (wsp.py)
+pip install torch safetensors              # NanoWSP, nanoGPT, weight diff, model_report
 ```
 
-### 2. Peek into Any Weight & Decompile its Semantic Role (60 Seconds)
-Inspect any weight block directly on disk. WSP dequantizes the 32-byte scale block on the fly and projects it against 10 differential semantic centroids:
-
+### Move a fine-tune's skill onto the base (`delta_to_lora`)
+```wspl
+experiment transplant_jackrong_math:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-9b-hf model=hf_cache/dp_keep_dsv4_distill rank=16 out=hf_cache/close_lora/demo_jack_r16 gguf=hf_cache/close_lora/demo_jack_r16.gguf
+```
 ```bash
-# Decompile Attention Layer 19 (Row 100, Col 200 -> Head 0)
+python -m engine.wsplang programs/transplant_jackrong_math.wspl --run
+llama-server -m <Qwen3.5-9B base>.gguf --lora hf_cache/close_lora/demo_jack_r16.gguf --lora-init-without-apply --port 8095
+python demos/math_transplant/demo.py 8095        # same server: adapter off vs on
+```
+`model=hf:<owner>/<repo>[@revision]` reads the fine-tune from the Hugging Face hub by byte ranges instead of a local
+copy. The step returns `verdict` (`likely` / `uncertain` / `unlikely`) from the weighted energy kept at rank 16, before
+any eval. `gguf=` needs `WSP_LORA_CONVERTER` (llama.cpp's `convert_lora_to_gguf.py`). One score for an adapter:
+`lab/probes/close_probe/reward.py` (IWIBench reward = gain on stuck items × retention of solved ones; a no-op scores 0).
+
+### Steer a mood with a control vector (`contrast_vector`)
+```wspl
+experiment happy_vector:
+steps:
+    step contrast_vector model=hf_cache/qwen35-9b-hf pos=lab/runs/happy/pairs/pos.jsonl neg=lab/runs/happy/pairs/neg.jsonl out=hf_cache/cvec/happy.gguf placebo=2026
+```
+```bash
+python -m engine.wsplang programs/happy_vector.wspl --run      # pos/neg: jsonl rows {prompt, response}
+llama-server -m <Qwen3.5-9B base>.gguf --control-vector-scaled hf_cache/cvec/happy.gguf:0.25 --port 8095
+```
+The full measured study (pairs, judge, lexicon, placebo, retention) is `lab/probes/happy/` with its plan in `PLAN.md`.
+
+### Inspect one weight of a GGUF
+```bash
 python wsp.py peek <path-to-gguf> blk.19.attn_output.weight -r 100 -c 200
 ```
-Output:
-```text
-=== WSP PEEK: blk.19.attn_output.weight ===
-Shape: [4096, 4096]  Type: Q6_K
-Role: Attention Layer 19: head #0 (dim 200) -> writes into residual dim 100
+The tool dequantizes the Q6_K block on the fly. It prints the weight's role (layer, head, residual dimension) and
+its projection on 10 centred semantic centroids built from token embeddings. Those labels are a lexical heuristic,
+not a measured function of the weight.
 
-DOMINANT SEMANTIC AREA: Math & Logic (math_logic)  score=+0.0275
-TOP SEMANTIC AREAS (TOP 3):
-  * Math & Logic                 (math_logic     ) score=+0.0275
-  * Time & Sequence              (time_sequence  ) score=+0.0149
-  * Social & Power               (social_power   ) score=+0.0098
-Top affine seeds: learn:+0.034, shame:+0.031, theorem:+0.029, kind:+0.028
+### What did a fine-tune change? (`model_report`)
+```wspl
+experiment report_mimo:
+objective: how MiMo differs from Qwen3.5-9B
+steps:
+    step model_report model=XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B base=Qwen/Qwen3.5-9B out=lab/runs/model_report/mimo.md
 ```
-
-### 3. Run Declarative WSP-Lang Programs
-Express experimental hypotheses declaratively in `.wspl` files and execute them with the built-in compiler:
-
 ```bash
-python engine/wsplang.py programs/example_semantic_areas.wspl --run
+python engine/wsplang.py <program>.wspl --run
 ```
+It reads one block of rows per tensor by HTTP range requests, with no full download, and classifies the change:
+`identical`, `directional_ablation`, `lora_like` or `full_fine_tune`. It also diffs config, tokenizer and chat
+template, and runs an encode test over 14 scripts. Example output: [`lab/runs/model_report/`](lab/runs/model_report/).
 
-### 4. Run NanoWSP: Zero-Backpropagation Micro-LLM (30 Seconds)
-Experience an 80k-parameter micro-Transformer whose factual associations and logic gates are programmed directly in weight space:
-
+### NanoWSP: a micro-Transformer whose associations are written in weight space
 ```bash
 python scripts/demo_nanowsp_capabilities.py
 ```
+2 layers, d=64, 80,704 parameters. Associations are stored by closed-form projections. It is a lookup testbed,
+not a language model.
 
+### nanoGPT W0 declared as data
 
-### 5. Instantiate Karpathy's nanoGPT W0 via WSPLang (30 Seconds)
-
-Instantiate an untrained `nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65) and check it against upstream `karpathy/nanoGPT@3adf61e`. The architecture is declared as data in `programs/arch/nanogpt.wsparch` and compiled by `engine/wsp_arch.py`, with no model class behind it (see `docs/wsparch.md`). Training is a separate gradient-descent step (`programs/train_nanogpt_shakespeare_char.wspl`); WSPLang does not yet synthesize learned weights.
+Instantiate an untrained `nanoGPT` (10.77M parameters, 6 layers, d=384, 6 heads, vocab=65) and check it against
+upstream `karpathy/nanoGPT@3adf61e`.
+- The architecture is declared in `programs/arch/nanogpt.wsparch` and compiled by `engine/wsp_arch.py`, with no
+  model class behind it ([`docs/wsparch.md`](docs/wsparch.md)).
+- Training is a separate gradient-descent step (`programs/train_nanogpt_shakespeare_char.wspl`).
+- `programs/synthesize_nanogpt_ngram.wspl` compiles an n-gram table into the same graph without gradients. That is
+  a lookup table, not a synthesized language model.
 
 ```bash
-# 1. Write the seeded W0 checkpoint and tie weights
 python engine/wsplang.py programs/build_karpathy_nanogpt.wspl --run
-
-# 2. Verify independent mathematical parity against official upstream karpathy/nanoGPT
 python lab/verify_official_karpathy_parity.py
 ```
 
-| Independent Parity Test | Metric Observed | Target Threshold | Verdict |
-| :--- | :--- | :--- | :--- |
-| **Logits Forward Pass** | $\Delta = 0.0000\times 10^0$ | $0.0$ (fp32) | **EXACT MATCH** |
-| **Weight Tying ($W_{wte} \leftrightarrow W_{lm}$)** | $\|W_{wte} - W_{lm}\|_F = 0.0$ | $0.0$ Frobenius | **IDENTICAL** |
-| **Causal Attention Mask** | Past leakage = $0.0$ | Past leakage == $0.0$ | **STRICT CAUSAL** |
-| **Autoregressive Greedy Generation** | 0 discrepancies / 75 tokens | 0 token errors | **100% BIT-EXACT** |
-| **Cross-Entropy Loss & Gradients** | Loss $\Delta = 0.0$, Grad $\Delta = 0.0$ | $0.0$ | **EXACT MATCH** |
+| Parity test | Observed | Verdict |
+| :--- | :--- | :--- |
+| Logits, forward pass | Δ = 0.0 (fp32) | exact match |
+| Weight tying (`wte` ↔ `lm_head`) | ‖Δ‖_F = 0.0 | identical |
+| Causal mask | past leakage 0.0 | strict |
+| Greedy generation | 0 discrepancies / 75 tokens | bit-exact |
+| Loss and gradients | Δ = 0.0 | exact match |
 
-*Note: This shows the runtime matches upstream at $W_0$ (same seed, same weights). The checkpoint is random, with validation NLL near $\ln 65$. For language-model behaviour use `lab/verify_llmness.py`, calibrated by `lab/calibrate_llmness.py`.*
+This shows the runtime matches upstream at W0 (same seed, same weights). The checkpoint is random, with validation
+NLL near ln 65. For language-model behaviour use `lab/verify_llmness.py`, calibrated by `lab/calibrate_llmness.py`.
 
-
-👉 **Need a full walkthrough?** Read our step-by-step **[Getting Started Guide](docs/getting_started.md)**.
+👉 Full walkthrough: [Getting Started Guide](docs/getting_started.md).
 
 ---
 
-## 🧠 What is WSP-Lang?
+## 🧠 WSP-Lang
 
-WSP-Lang is a domain-specific declarative language for sub-weight experimentation:
+A declarative language for weight-space experiments (runtime version 0.7.0). Steps cover:
+- inspection: `peek`, `semantic_map`;
+- edits under a guard: `project_out`, `scale-cols`, closed-form imprints;
+- weight diffs: `delta_stats`, `delta_signature`, `delta_compare`, `model_report`, `delta_to_lora` (a fine-tune's change as a reusable LoRA adapter, local or from the hub, with a transfer verdict);
+- steering: `contrast_vector` (a llama.cpp control vector from two sets of answers, with a same-norm placebo);
+- behavioural evaluation: `evaluate_benchmark` against a running server.
+
+Spec: [`docs/wsplang_specification.md`](docs/wsplang_specification.md).
 
 ```wspl
-experiment inspect_semantic_areas:
-    model: MiMo-V2.6-Distill-Qwen-9B
-    objective: map_semantic_geometry
-
-    semantic_areas:
-        mode = comprehensive
-        target = math_logic
-
-    steps:
-        # 1. Map all 10 semantic centroids in residual space
-        step semantic_map top=3
-
-        # 2. Attention Layer 19 (Logic Reasoning Head)
-        step peek blk.19.attn_output.weight row=100 col=200 top=3
-
-        # 3. FFN Intermediate Layer 19 (Concept Storage)
-        step peek blk.19.ffn_down.weight row=100 col=500 top=3
-
-        # 4. GatedDeltaNet SSM Recurrent Layer 0
-        step peek blk.0.ssm_out.weight row=100 col=200 top=3
+experiment compare_angry:
+objective: does a deliberate degradation share the improvements' layer-specific directions?
+steps:
+    step delta_compare a=lab/runs/delta_patterns/sig_angry_claudius.pt b=lab/runs/delta_patterns/sig_mimo.pt out=lab/runs/delta_patterns/pairs_angry_claudius_mimo.json
 ```
 
-### The Differential Centroid Solution
-LLM embeddings suffer from **isotropic cone collapse** (raw token vectors cluster inside a tight cone with baseline cosine ~0.70). WSP-Lang centers all 10 semantic centroids against the vocabulary baseline:
-
-$$\mathbf{C}'_a = \mathbf{C}_a - \frac{1}{A} \sum_{k=1}^A \mathbf{C}_k$$
-
-This expands cosine dynamic contrast by **+2.4x**, drops background noise to 0.00, and enables instant semantic attribution without forward passes.
+**Semantic centroids.** Raw token embeddings sit in a narrow cone (baseline cosine ~0.7). WSP-Lang therefore
+centres its 10 semantic centroids on their mean: $\mathbf{C}'_a = \mathbf{C}_a - \frac{1}{A}\sum_k \mathbf{C}_k$.
+The contrast gain this gives has not been measured.
 
 ---
 
-## 🎭 Behavioral Steering: From "Evil Qwen" to FiveTechSoft/dreaming
-
-Recent viral mechanistic interpretability posts on X (Lyra `@lyraaaa` on Qwen 4B, ChiefofAutism on Qwen 27B, Maggie `@ebervector` on empathy) demonstrated that steering 1 or 2 neurons can turn models into theatrical villains ("Evil Qwen").
-
-### Why Embedding Steering Failed in `dreaming`
-In [`FiveTechSoft/dreaming`](https://github.com/FiveTechSoft/dreaming) (`AGGRESSION_DIRECTION_SUMMARY.md`), modifying `token_embd.weight` failed because the 22+ downstream attention and FFN layers wash out shallow embedding changes. **Behavior is encoded in intermediate FFN neurons ($W_{down}$) and attention heads, not in lexical tokens.**
-
-### Permanent Weight-Space Steering in WSP-Lang
-Instead of temporary inference hooks in Python:
-1. **Automated Discovery**: WSP-Lang scanned all 12,288 neurons in Layer 14 of `MiMo-2.6-9B` without forward passes and discovered:
-   - **Hostility / Villain Neuron**: Layer 14, **Neuron #4258** (`score = +0.0624`, dominant seed: *anger*).
-   - **Empathy / Politeness Neuron**: Layer 14, **Neuron #10739** (`score = +0.0576`).
-2. **Permanent Surgical Baking**: Using operator `scale-cols`, we scaled neuron 4258 by $2.5\times$ and dampened empathy neuron 10739 by $0.25\times$.
-   - **Modified parameters**: $4 \times 4096 = 16,384$ weights out of 9,000,000,000 (**0.00018%** of the model).
-   - **Result**: Model exported to `served/mimo-evil.gguf`, runnable in standard `llama.cpp` with zero runtime Python dependencies!
-
-👉 Read the full whitepaper: **[docs/behavioral_steering_and_dreaming.md](docs/behavioral_steering_and_dreaming.md)**.
-
----
-
-## 🔬 Negative Causal Control & Prompt Confounding Analysis (MiMo-2.6-9B)
-
-We evaluated whether a lexical difference vector ($u_{\text{critic}}$) extracted from embedding tokens could steer `MiMo-2.6-Distill-Qwen-9B` out of reasoning traps:
-
-### ⚠️ Empirical Findings & Causal Rollback
-* **Lexical Embedding Extraction:** Vector was derived from token embedding differences (`embed_tokens.weight`), not intermediate residual activations.
-* **4-Way Causal Contract Null Result:** In `rig/exp_mimo_self_critique_v1.py`, the intervention yielded **50.0% / 50.0% / 50.0% / 50.0%** across candidate, baseline, placebo, and random controls. The engine declared `is_statistically_superior: False` and executed an **automatic rollback**.
-* **Prompt Confounding Identified:** Previous 40% vs 100% claims were an artifact of prompt framing on the same server (comparing a 60-token concise zero-shot prompt against a 250-token step-by-step chain-of-thought prompt), rather than an isolated weight-only effect under identical prompts.
-* **Rigorous Positive Control (Exp 8):** In contrast, the MIT Exp 8 replication on `Qwen3.5-0.8B` remains our verified positive control with Fisher exact $p \approx 4 \cdot 10^{-5}$ on holdout and placebo baseline.
-
-👉 Read the full transparent post-mortem: **[docs/mimo_critique_transfer_benchmark.md](docs/mimo_critique_transfer_benchmark.md)**
-
----
-
-## 🔬 Core Components
+## 🔬 Core components
 
 | Component | Description |
 |---|---|
-| [`wsp.py`](wsp.py) | **WSP Toolkit**: In-place GGUF Q6_K surgical editor + canonical C-level requantizer (`quantize_row_q6_K_ref`, 87% byte-identity, error ~6e-6) + differential semantic centroid calculator. |
-| [`engine/wsplang.py`](engine/wsplang.py) | **WSP-Lang Compiler & Runtime**: Parser, AST validator, interactive execution engine (`--run`), and manifest generator. |
-| [`engine/nanowsp_runtime.py`](engine/nanowsp_runtime.py) | **NanoWSP Runtime**: Self-contained 2-layer micro-Transformer ($d=64$, 80,704 params) programmed in weight space via Moore-Penrose projection algebra. |
-| [`scripts/demo_nanowsp_capabilities.py`](scripts/demo_nanowsp_capabilities.py) | **NanoWSP Interactive Showcase**: Multi-token words, boolean circuits, delimiter closure, and attractor deletion. |
-| [`programs/nanowsp_architecture.wspl`](programs/nanowsp_architecture.wspl) | **NanoWSP Declarative Program**: Architecture specification, spectral audit, Weyl bounds, and attractor unlearning contracts. |
-| [`docs/nanowsp_findings.md`](docs/nanowsp_findings.md) | **NanoWSP Research Findings**: Detailed empirical capacity bounds, conditioning analysis ($\kappa(X)$), and lessons learned. |
-| [`engine/wsp_mcp_server.py`](engine/wsp_mcp_server.py) | **FastMCP Server**: Exposes weight inspection (`peek`), surgical editing (`poke`), and WSP-Lang execution directly to AI agents (Claude Desktop, Cursor, Antigravity). |
-| [`challenges/`](challenges/) | **WSP-40 Challenge Suite**: 8 difficulty levels and 40 challenges evaluated with strictly mechanical judges (no self-grading). |
-| [`programs/`](programs/) | **WSP-Lang Programs**: Declarative `.wspl` files for semantic mapping, inspection, and weight synthesis. |
-| [`edits/`](edits/) | **Weight Edit Manifests**: Structured JSON edit programs and operator configurations (e.g. `evil_mimo.json`). |
-| [`PROTOCOL.md`](PROTOCOL.md) | **Scientific Protocol**: Double-blind sealed holdouts, placebo controls, and non-degradation criteria. |
-| [`roadmap.md`](roadmap.md) | **Live Research Journal**: Active hypotheses, empirical findings, and next milestones. |
-| [`CHANGELOG.md`](CHANGELOG.md) | **Strict Technical Ledger**: Full history of patches (P0–P11) with "What / Why / Measured Result". |
+| [`wsp.py`](wsp.py) | GGUF Q6_K inspector and in-place editor; NumPy port of `quantize_row_q6_K_ref` (87 % byte-identical on unedited blocks, error ~6e-6). |
+| [`engine/wsplang.py`](engine/wsplang.py) | WSP-Lang parser, validator and runtime (`--run`). |
+| [`engine/weight_diff.py`](engine/weight_diff.py) | Tensor-by-tensor diff of two checkpoints. It reads safetensors locally or by HTTP ranges and maps tensor names across architectures. Per tensor it gives relative change, spectrum and subspace signatures; storage casts are not counted as change. |
+| [`engine/contrast_vector.py`](engine/contrast_vector.py) | `contrast_vector`: per-layer mean difference of two sets of answers, written as llama.cpp per-layer increments (GGUF) + placebo. |
+| [`engine/sealed_set.py`](engine/sealed_set.py) | Sealed confirmation set (GSM8K 100 + MATH-500 50) with a sha256 check; rule in [`lab/probes/sealed/`](lab/probes/sealed/README.md). |
+| [`engine/lora_export.py`](engine/lora_export.py) | `delta_to_lora`: exact SVD of each matrix's change, PEFT adapter + `energy.json` (share of the change kept at each rank). |
+| [`demos/math_transplant/`](demos/math_transplant/) | The main result as a runnable demo (adapter off vs on, same server). |
+| [`lab/probes/close_probe/`](lab/probes/close_probe/) | Base vs improved Qwen3.5-9B: fast eval (`fast_eval.py`), reward (`reward.py`), behaviour distillation (`distill_gen.py`, `distill_train.py`), closed-form fit (`cf_distill.py`), placebo adapters (`placebo_lora.py`). |
+| [`engine/model_report.py`](engine/model_report.py) | "What did this model change vs its base": change class, layers, modules, rank, plus config/tokenizer/template diff. |
+| [`lab/probes/delta_patterns/`](lab/probes/delta_patterns/) | Study of what post-training changes in Qwen3.5-9B derivatives: pre-registered plan, findings F1–F26. |
+| [`lab/probes/model_compare/`](lab/probes/model_compare/) | Benchmark protocol (GSM8K + MATH-500, two independent graders). |
+| [`engine/nanowsp_runtime.py`](engine/nanowsp_runtime.py) | NanoWSP micro-Transformer (d=64, 80,704 params). |
+| [`engine/wsp_mcp_server.py`](engine/wsp_mcp_server.py) | MCP server exposing `peek`, `poke` and WSP-Lang to AI agents. |
+| [`challenges/`](challenges/) | WSP challenge suite: 8 levels, 43 challenges, mechanical judges. |
+| [`edits/`](edits/) | JSON edit manifests (e.g. `evil_mimo.json`). |
+| [`FOUNDATIONS.md`](FOUNDATIONS.md) | The scientific basis, by claim: what we hold, its status, our evidence (results §), outside evidence, what would refute it; refuted ideas not to retry. |
+| [`PROTOCOL.md`](PROTOCOL.md) | Protocol: sealed holdouts, placebo controls, non-degradation criteria. |
+| [`results.md`](results.md) · [`roadmap.md`](roadmap.md) · [`CHANGELOG.md`](CHANGELOG.md) | Results log, plan, patch history (P0–P12). |
+| [`tests/`](tests/) | 50 test files (`python -m unittest discover -s tests`). |
 
 ---
 
-## 🛡️ Scientific Discipline & Falsifiability
+## 🛡️ Rules we hold ourselves to
 
-We adhere to strict falsifiability standards:
-1. **No Cherry-Picking**: Failed hypotheses (E1–E5) are fully documented with empirical evidence rather than discarded quietly.
-2. **Placebo Controls (E4)**: Every candidate weight edit is evaluated alongside a random-direction placebo edit to verify that improvements are causal.
-3. **Sealed Holdouts**: Evaluated on GSM8K and MATH-500 holdout sets that never leak into edit design.
-4. **Safety Boundaries**: Critical components (`token_embd`, `output.weight`, layer norms) are protected by hard safety fences (`FORBIDDEN_TENSORS`).
+1. **Failures stay documented.** E1–E5, the nanoGPT loop fix, the MiMo loop fix, and the withdrawn results in the
+   table above are all kept.
+2. **Causal claims need a placebo.** A random-direction edit of the same norm is required by `PROTOCOL.md`. It was
+   used in Exp 8 and in the loop fixes. The older experiments without one are marked ⚠️ above.
+3. **Holdouts are sealed** before an edit is designed. Evaluation uses GSM8K and MATH-500 subsets; since 2026-11-09 a
+   hashed confirmation set, disjoint from every item used to pick doses or donors, is run once on anything that passes.
+4. **Edits are fenced.** `FORBIDDEN_TENSORS` (in `wsp.py` and `engine/wsplang.py`) blocks embeddings, the output head
+   and norms unless explicitly allowed.
+5. **Numbers need two methods.** A figure is reported only if two independent computations agree. Example: the
+   weight diffs are checked against a second, block-sampled method.
+
+---
+
+## 🎭 Behavioural steering ("Evil Qwen")
+
+Viral posts showed that steering one or two neurons can make a model act like a villain. We tried the same idea
+without forward passes:
+- **The search:** layer 14 `ffn_down` columns of MiMo-9B were ranked by their projection on lexical centroids (*anger*,
+  politeness).
+- **The edit:** 4 columns were scaled (`edits/evil_mimo.json`).
+- **Why it is not expected to work:** the "Evil Qwen" effect *adds* a fixed amount to a neuron's activation at every
+  token, far beyond its natural range (dahara1's analysis on Qwen3.5-4B: about 20× the dataset maximum; scaling the
+  same neurons ×20 or ×100 leaves the replies practically unchanged, because they barely fire). Qwen3.5's `down_proj`
+  has no bias, so that addition cannot be written into the weights; it needs a control vector
+  ([dahara1/EvilQwen-control-vectors](https://huggingface.co/dahara1/EvilQwen-control-vectors), llama.cpp). Scaling
+  columns, as `evil_mimo.json` does, is the multiplicative kind. We have not tested either on MiMo. The additive
+  kind moves a mood here (happiness control vector, results §43.13), but with the corrected op it costs coherence and
+  GSM8K and fails its pre-registered test (§45.3).
+- **Not done:** the behavioural effect was **never evaluated**, so this is an untested edit, not a result. Notes:
+  [`docs/behavioral_steering_and_dreaming.md`](docs/behavioral_steering_and_dreaming.md).
+
+In the related project [`FiveTechSoft/dreaming`](https://github.com/FiveTechSoft/dreaming), steering through
+`token_embd` alone did not change behaviour. That evidence lives in that repo, not here.
 
 ---
 
+## 🌐 Community reports and what we checked
+
+| Source | Claim | What this repo checked |
+| :--- | :--- | :--- |
+| [Simon Willison](https://simonwillison.net/2026/Nov/3/qwen-can-interpret-model-weights/) | Qwen 27B identifies Atari games from raw MLP weights. | Prompt rebuilt ([`data/exp1_pong_prompt.txt`](data/exp1_pong_prompt.txt), 17,253 parameters). Our own check is one MiMo-9B query on summary statistics (see the table above). |
+| [Jarrod Watts](https://x.com/jarrodwatts/status/2117808859691811216) | Astra's 0.016 % edit (≈131k weights in two layers) fixes Qwen3.5-0.8B loops, MATH-500 7.9 % → 48.1 %. | Bit-exact replication of the edited tensors (130,188 entries actually differ). MATH-500 holdout n=20: 1/20 → 14/20, placebo 0/20. |
+| [Jacob Lauritzen](https://x.com/jacsebl/status/2117606206764175543) | The edit removes an obstacle (loops) and adds no knowledge. | Consistent with the Exp 8 holdout: correct answers appear once generation terminates. Not tested separately. |
+| [areu01or00/qwen0.8B-wsp](https://github.com/areu01or00/qwen0.8B-wsp) | A fact written into Qwen3.5-0.8B's `down_proj` in closed form (MEMIT-style), 2/5 new phrasings. | Its own history reports 0/5 once the weights are saved in bf16. We used the same closed-form write for a behaviour on 9B (row *Copying MiMo's behaviour*): it transfers some, below gradient distillation. |
+| [khordoo/dusty-wsp](https://github.com/khordoo/dusty-wsp) | An 8M model renamed by a rank-2 edit; a fear→curiosity edit fails (0/48). | Read, not run. Consistent with ours: a fact has a target, a disposition does not. We took its placebo control for our adapters. |
+| [Ayush (@stochi0)](https://x.com/stochi0/status/2117681387688071185), [Paweł Huryn](https://x.com/PawelHuryn/status/2117639929463197885) | Low-rank RL policies; weight edits as a debugging primitive. | Discussed, **not verified** here. |
+
+We also audit viral WSP claims (results that rest on compiled rules, narrowed tasks or unverifiable artefacts). The
+recurring failure patterns are summarized in `lab/probes/delta_patterns/findings.md` (F24–F26) and `results.md`.
 
 ---
 
-## 🔬 Independent Community Verifications & Case Studies
+## 📚 References
 
-Weight-Space Programming (WSP) has garnered significant independent verification and analysis across the AI research and developer community. Below is a structured scientific breakdown of each notable report and our empirical reproduction in this repository:
+How these sources bear on our claims: [`FOUNDATIONS.md`](FOUNDATIONS.md).
 
-| Researcher / Source | Core Focus & Claim | Mechanistic Finding | Local Empirical Verification in this Repo |
-| :--- | :--- | :--- | :--- |
-| **Simon Willison**<br>[Blog Post](https://simonwillison.net/2026/Nov/3/qwen-can-interpret-model-weights/) | **Weight Reading / Decompilation**: Qwen (27B) reads raw MLP weights as plain text and correctly identifies the Atari game (*Pong*, *Breakout*) without code execution. | LLMs can decompile low-rank linear policies by tracking input channel coordinates to hidden unit activations. | **Verified via WSP Peek & WSPLang**. The raw prompt contains 104,794 tokens (17,253 float parameters). Decompiled in [`data/exp1_pong_prompt.txt`](data/exp1_pong_prompt.txt) and [`programs/blog_exp1_reading_weights.wspl`](programs/blog_exp1_reading_weights.wspl). |
-| **Jarrod Watts**<br>[Post on X](https://x.com/jarrodwatts/status/2117808859691811216) | **0.016% Surgical Loop Suppression**: GPT-6 Astra modified just 131,072 parameters across two layers in `Qwen3.5-0.8B`, stopping reasoning loops and boosting MATH-500 from 7.9% to 48.1%. | Subtracting the loop attractor vector in layers 15 and 19 prevents infinite repetitive reasoning spirals. | **Bit-by-bit tensor replication verified (SHA-256 match with Astra)**. Tested Base vs Edited on GSM8K (`exp8_control/eval_gsm8k.py`): Base got trapped in loops (0% acc, 100% cutoff); Edited broke the loop on Problem #2 and correctly output `pred=3, gold=3` (**+20.0% accuracy delta**). |
-| **Jacob Lauritzen**<br>[Post on X](https://x.com/jacsebl/status/2117606206764175543) | **Obstacle Removal vs Knowledge Injection**: WSP acts as a surgical bug fix clearing degenerative attractors (loops) rather than instilling brand new reasoning capabilities. | The edit does not add novel arithmetic facts; it unblocks the model's generation trajectory so existing latent reasoning can terminate. | **Verified**. In Problem #2, the base model already knew the premises but repeated itself until token limit. The edit allowed it to reach the final answer `3`. However, when applied to MiMo-9B (which does not suffer from loops), continuous weight delta caused quantization drift. |
-| **Ayush (@stochi0)**<br>[Post on X](https://x.com/stochi0/status/2117681387688071185) | **RL Policy Manifolds & Weight Surgery**: Analysis of low-rank structure in reinforcement-learning weights and world model representations. | RL policies lie on low-dimensional manifolds where directional projections directly alter agent action preferences. | **Verified**. Directional projections $u \otimes v^T$ in `wsp.py edit` and `engine/wsplang.py` successfully isolate behavioral directions. |
-| **Paweł Huryn**<br>[Post on X](https://x.com/PawelHuryn/status/2117639929463197885) | **Autonomous Model Self-Repair**: Exploring direct weight-space manipulation as a new primitive for model debugging without retraining loops. | Direct weight manipulation eliminates expensive backprop passes for targeted surgical corrections. | **Automated via WSPLang**: [`programs/verify_mit_loop_suppression.wspl`](programs/verify_mit_loop_suppression.wspl) provides declarative programmatic verification of weight deltas and accuracy improvements. |
 
-## 📚 References & Prior Art
-
-- MIT CSAIL Blog: [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/) (Rikiya Takahashi)
-- Experiment Logs & Astra Code: [RikiyaT/lm_understand-logs](https://github.com/RikiyaT/lm_understand-logs)
-- Hugging Face Demo: [akhaliq/weight-space-programming-demo](https://huggingface.co/spaces/akhaliq/weight-space-programming-demo)
-- Target Model: **MiMo-V2.6-Distill-Qwen-9B** (Hybrid 8 Attention layers + 24 GatedDeltaNet SSM layers)
-- Research Foundation: [FiveTechSoft/dreaming](https://github.com/FiveTechSoft/dreaming) (Covariance-Aligned Steering & Perspective Discovery)
-
----
+- Takehi, Teoh, Zhang, Khattab (MIT CSAIL), [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/), blog post, 2 Nov 2026.
+- Experiment logs: [RikiyaT/lm_understand-logs](https://github.com/RikiyaT/lm_understand-logs). Edited Exp 8 model: [RikiyaT/Qwen3.5-0.8B-weight-space-programming](https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming).
+- Demo: [akhaliq/weight-space-programming-demo](https://huggingface.co/spaces/akhaliq/weight-space-programming-demo).
+- Main target model: [MiMo-V2.6-Distill-Qwen-9B](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B), a Qwen3.5-9B derivative (32 layers: 8 full-attention, 24 Gated DeltaNet).
+- Bennington, Kaelar, Lee, Edwards, Glick, Danks (Concept Country), [*Gradient-Free Weight Editing Reduces Overthinking in Qwen3.8-27B*](https://concept.country/research/weight-space-programming), working paper v1, 8 Nov 2026 ([post](https://x.com/varien/status/2119880941711827025), [code](https://github.com/conceptcountry/weight-space-programming), [weights](https://huggingface.co/ConceptCountry/qwen-concept-27b)). A direction read from the model's own traces (last tokens before `</think>` minus the rest), written as rank-1 terms into 9 `down_proj` matrices: GPQA Diamond +4.3, LiveCodeBench v6 +13.0, 27-54 % fewer thinking tokens, a norm-matched random edit does nothing. We are replicating it donor-free on Qwen3.5-9B ([`lab/probes/cc/PLAN.md`](lab/probes/cc/PLAN.md)).
+- Hu, Tang, Li, Zhu, Feng, Zhang, Chen, Hu, [*Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*](https://arxiv.org/abs/2611.09382), arXiv 2611.09382, 6 Nov 2026 ([code](https://github.com/WSP-Scope/WSP-Scope-Project)). 16 agent editing searches on Qwen3.5-0.8B and 9B: one `down_proj` column lifts 0.8B MATH-500 8.4 → 37.8 (a loop fix; random direction of equal norm 10/48 vs edit 20/48 on dev); on 9B gains are small (IFEval +1.9, SciBench +3.0) and a MATH dev gain (+29.7) vanished held-out (base already 97.7 at 32k tokens).
+- Lu et al., [*The Surprising Effectiveness of Deleting Weights in LLM Post-Training*](https://arxiv.org/abs/2611.10866), arXiv 2611.10866, NeurIPS 2026 ([project](https://agenticlearning.ai/deleting-weights/)). A learned binary mask zeroing < 0.05 % of `gate_proj` weights matches full fine-tuning (GRPO, SFT, on-policy distillation) at ≥ 7B, with little forgetting. Read as support for "post-training on these benchmarks needs little information" (LoRA r1 matches too); trained with gradients, no same-fraction random-deletion placebo.
+- Zheng et al., [*Correctness vs Efficiency: Behavior Control with Weight-Space Extrapolation in Code RL*](https://arxiv.org/abs/2605.28751), arXiv 2605.28751, NeurIPS 2026 ([thread](https://x.com/KunhaoZ/status/2120172863734849903)). The weight difference between two RL runs that differ only in reward strictness steers reward hacking; extrapolating past the strict run cuts resource-limit failures 14.5 → 8.0 %, too far collapses the model. Same narrow push window as our scale grids; no same-norm placebo in the thread.
+- Nathan Barry, [*Can a Linear Program Do Weight-Space Programming?*](https://nathan.rs/posts/weight-space-lp/) ([code](https://github.com/nathanrs/weight-space-lp)), Nov 2026. Finds the MIT Exp 8 loop-breaking edit with a sparse linear program in minutes instead of a search; a constant steering push gives almost the same result.
+- Matthew Gribben ([HypaNet](https://github.com/Hypabolic/HypaNet)), [*Building AI Models Without Gradient Descent*](https://matthewgribben.com/blog/building-ai-models-without-gradient-descent) and [*Can LLM Hand-Written Neural Networks Be Useful?*](https://matthewgribben.com/blog/written-neural-nets-functional), 8-9 Nov 2026. Fable writes every weight of a 2.1M transformer from a spec (0.957 sealed / 0.908 OOD vs 0.923/0.488 trained on 223,930 labels), and the astral first known rank-1 neuron hand-edit of Qwen3.5-0.8B (+0.196 over base — thin ceiling, agreeing with our E-series verdict).
+- Han, Wang, Zhao, Zhang, Li, Borth, Yu, Maron, Ye, Yin, Neri, [*A Survey of Weight Space Learning: Understanding, Representation, and Generation*](https://arxiv.org/abs/2603.10090), arXiv 2603.10090, Mar 2026 ([resource list](https://github.com/Zehong-Wang/Awesome-Weight-Space-Learning)). First unified taxonomy (WSU/WSR/WSG); its "Model Editing" section still has only image hypernets — the LLM-side WSP work in this list is not indexed (yet).
+- Matt Winters (Beaker), [*Weight-space programming*](https://withbeaker.ai/blog/weight-space-programming), 11 Nov 2026. Agent loop on Qwen3.5-0.8B scored on 256 training items; best single edit is one neuron (573, output column ×2): MATH-500 7.4 → 37.4 %, and forbidding the token "Wait" without touching weights gives 37.6 %. Dose ×2-×8 all > 34 %. No same-norm placebo.
+- shawnghu, [*Claude Fable 5.2 can do weight-space programming about as well as GPT-6 Astra*](https://www.lesswrong.com/posts/wg3K6xFFTdM6RmRgn/claude-fable-5-2-can-do-weight-space-programming-about-as), LessWrong, 10 Nov 2026 ([raw outputs](https://huggingface.co/datasets/shawnghu/fable-weight-space-programming)). MIT's eight experiments repeated with a Fable agent; the loop fix is again a few "Wait" neurons plus a push to `</think>` (MATH 8 → 60, MMLU-Pro / GPQA 40 → 42-45). The author states he did not review outputs or method closely; no placebo.
+- Mehta & Singh (Microsoft Research), *Interpretable weight-space programming builds transparent transformers and brain encoding models* (iWSP), Nov 2026 ([code](https://github.com/csinva/weight-space-programming-autoresearch), [thread](https://x.com/y_mehtu/status/2120928488219672741), [post](https://x.com/csinva/status/2120928920073646233)). An agent writes weights from scratch: 13 algorithmic tasks at 100 % on a hidden set and again when rebuilt from a ≤ 200-word description; TREC 87.3 %; early visual cortex 0.443 vs 0.400 (ties AlexNet); a story-fMRI gain was a position confound caught by the legibility test. Our reading: synthesis works for closed algorithms and interpretable features, not for what must be learned from data (`FOUNDATIONS.md` T4).
+- Naik, Liu & Gangal, [*Auto Weight-Space Programming (Part 1)*](https://atharva-naik.github.io/blog/awsp-part-1/), 13 Nov 2026 ([code](https://github.com/atharva-naik/auto-weight-space-programming), [adapters](https://huggingface.co/atharva-naik-1/awsp-readers), [thread](https://x.com/AtharvaRNaik/status/2121366720518762611)). The reading side: a LoRA teaches Qwen3.5-4B the logit lens of 128-number slices of its own neurons pasted as digits (99.8 % four-way on held-out neurons); writing weights, predicting activations and circuits, and reading a neuron's effect on sycophancy from its weights all fail in their setup. Our reading: the tool is the shortcut and the behavioural experiment is the oracle, as in `FOUNDATIONS.md` T6/T7; the *auto* part is not yet shown to matter (reading another model's weights works as well).
+- rizumita / CAPH TECH, [*Qwen3.8 Flash Next: Chinese mixed into Japanese answers removed by rewriting the output layer, 27 % → 0 %*](https://zenn.dev/caphtech/articles/qwen38-zh-ban), 13 Nov 2026 ([tool](https://github.com/CAPHTECH/kestrom), [thread](https://x.com/rizumita/status/2121229852317798538)). 25,451 `lm_head` rows of Chinese tokens overwritten with an unused row; byte diff and greedy output identity where the ban does not fire. A hard constraint in the weights with the right control; answer correctness before/after is not reported (`FOUNDATIONS.md` reading list).
+- emeraldant, [*WSP-Gym*](https://emeraldant.github.io/WSP-Gym), 14 Nov 2026 ([code](https://github.com/emeraldant/WSP-Gym), [thread](https://x.com/emeraldant/status/2121378773593457031)). Inkling 2 Small post-trained (LoRA + RL via Tinker) on 57,600 synthetic small networks with one planted fault repairs 83 % of held-out ones from raw weights in ~40 tokens without reasoning; unseen fault types 20 %, weight-statistics heuristic 4 %. Our reading: a trained writer for closed toy networks; the unseen-fault row is the same wall as every writing attempt so far (`FOUNDATIONS.md` T4).
+- Background: Irie & Schmidhuber, fast weight programmers (ICML 2021). Belrose et al., LEACE (NeurIPS 2023).
 
 ## 📄 License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE).

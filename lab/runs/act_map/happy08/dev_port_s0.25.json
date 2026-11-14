@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is one of the best ways to wind down, but the \"how\" depends entirely on your **sleep schedule** and **current mood**.\n\nHere is a guide to help you choose the right strategy:\n\n### 1. Match the Time to Your Schedule\n*   **If you are late for bed:** Reading is perfect. It helps you transition from \"active\" to \"resting\" without feeling rushed.\n*   **If you are early for bed:** Reading is great for **preparing** for sleep. It helps you relax, calm your racing thoughts, and set a gentle, low-energy mood before you actually go to sleep.\n*   **If you are late for work:** Reading is a great way to decompress and get some quality time with your family or friends.\n\n### 2. Choose the Right Book\nThe content of your book matters more than the time of day.\n*   **For relaxation:** Try a book about **nature",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "Football (soccer) is one of the most exciting and complex sports to follow. To truly understand a match, you need to look beyond just the scoreline and dive into the **game mechanics**, **strategy**, and **human element**.\n\nHere is a comprehensive guide to what you should know about a football match:\n\n### 1. The Core Mechanics: How the Game Works\nBefore you even watch, understand the rules that define the action:\n*   **The Goal:** A goal is scored when a ball crosses the goal line with both feet, and the opposing team cannot score in the next 10 seconds.\n*   **The Ball:** It's a round, rubber ball with a black center circle. It's thrown, kicked, or passed.\n*   **The Field:** A rectangular pitch (usually 90m x 140m) with a goal at each end.\n*   **The Goalkeeper:** The player who stands in front",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.75
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two practical tips for a long train journey:\n\n1.  **Pack Your Essentials in a \"Travel Bag\"**: Instead of packing everything into your suitcase, create a dedicated travel bag for your essentials. This includes your passport, travel documents, a small change of clothes, and maybe a few snacks. Having a separate bag keeps your main luggage organized and prevents you from accidentally forgetting something critical.\n2.  **Use the \"Stop\" Button Wisely**: When you reach a station, don't just stop to get off. Use the **Stop** button to pause your journey. This allows you to:\n    *   Check your ticket again to ensure it hasn't changed.\n    *   Collect your luggage.\n    *   Take a quick break to stretch, eat, or watch a movie.\n    *   Get a fresh perspective on your trip before you continue.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences of your life, but it can also be a bit overwhelming. Here's a step-by-step guide to help you navigate the process smoothly:\n\n### 1. **Plan Your Move**\n   - **Set a Date**: Decide on a date to meet your new friends and family.\n   - **Create a Timeline**: Break down your move into manageable chunks (e.g., 3 days, 1 week, 1 month).\n   - **Budget**: Make sure you have enough money for the move, including transportation, food, and souvenirs.\n\n### 2. **Gather Your Documents**\n   - **ID**: Get your new passport or driver's license ready.\n   - **Passport**: If you're moving internationally, get your new passport.\n   - **Birth Certificate**: If you're moving from another country, get your new birth certificate.\n   - **Social Security Number**: If",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Hi [Colleague's Name], hope you're having a great week! I wanted to reach out to see if you're still available for a quick coffee or a quick chat sometime next week. Let me know if you have any specific topics you'd like to discuss or if you'd like to plan something together. Let me know!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.64
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A **walk in the park** is a simple, relaxing activity that combines the freedom of nature with the comfort of a city park. It's perfect for a quick break, a morning jog, or a quiet moment to recharge.\n\nHere is a comprehensive guide to what you should know about this activity:\n\n### 1. The Benefits\n*   **Mental Health:** Studies show that spending time in nature reduces stress, lowers blood pressure, and improves mood. It's a great way to decompress after a long day.\n*   **Physical Fitness:** Walking in a park is generally more effective than walking on pavement because the grass provides better traction and offers a wider range of terrain (steps, curves, and obstacles).\n*   **Social Connection:** It's a great way to meet new people, chat with friends, or just enjoy the company of others.\n*   **Calm:** The sound of birds, the smell of flowers, and the gentle breeze can help you",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Saving money each month is one of the most powerful ways to build wealth, but it's not just about doing the math; it's about **strategy, consistency, and mindset**.\n\nHere is a practical, step-by-step guide to turning your monthly savings into a sustainable habit:\n\n### 1. The \"50/30/20\" Rule (The Golden Standard)\nThis is the most widely used framework for financial planning. It divides your monthly budget into three categories:\n*   **50% Needs:** Rent, groceries, utilities, and essential subscriptions.\n*   **30% Wants:** Dining out, hobbies, vacations, or luxury items.\n*   **20% Savings:** This is where your money goes. It's for **Emergency Fund** (1–3 months of living expenses) and **Debt Repayment**.\n\n*Why it works:* It forces you to prioritize your most important things first. If you spend 50",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, you brew a pot of water and add a pinch of sugar or a splash of milk. Then, you grind your beans into a fine powder and pour them into the pot. You heat the water until it's steaming, and you add the coffee powder to the boiling water. You let it sit for a few minutes until the flavors meld together, then you stir gently to ensure everything is well mixed. Finally, you enjoy your freshly brewed cup of coffee!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.19
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "A museum visit is a unique blend of **education, discovery, and cultural appreciation**. It's not just about seeing art; it's about understanding how history, science, and culture are told through human hands.\n\nHere is a comprehensive guide to what you should know before, during, and after your visit:\n\n### 1. The \"Why\" and \"Who\"\n*   **Who is the Curator?** Museums are run by experts who have lived through the past. They know the stories behind the pieces. Ask them about the artist's life, the historical context, and the specific inspiration behind the work.\n*   **What is the Mission?** Every museum has a mission statement. It tells you what they are trying to achieve (e.g., preserving history, promoting science, fostering community).\n*   **Is it Open to Everyone?** Not all museums are open to everyone. Some are closed to the public, while others are open to all ages. Check the hours and",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend is all about turning the storm into a **creative, cozy, and low-stress event**. The key is to focus on the *feeling* of the rain rather than the weather itself.\n\nHere are a few strategies to make your weekend a magical day:\n\n### 1. Embrace the \"Rainy\" Vibes\nDon't try to avoid the rain. Instead, embrace it as a mood booster.\n*   **The \"Rainy\" Dress Code:** Wear something that looks like it's soaked in rain. A raincoat, a poncho, or even a rain-drenched sweater can instantly make you feel like you're in the middle of a movie night or a picnic.\n*   **The \"Rainy\" Playlist:** Turn on your favorite music. If you're in a car, play a track that has a bassline or a driving beat. If you're at home, listen to something cozy like \"The Rain\" by The",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.71
+  }
+ ]
+}

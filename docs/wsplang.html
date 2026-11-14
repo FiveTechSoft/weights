@@ -202,11 +202,11 @@
 
     <!-- SECTION 2: EMPIRICAL VERIFICATION -->
     <section id="empirical-results">
-      <h2>2. Empirical Verification on Real MiMo-9B Weights</h2>
-      <p>All theoretical operations are tested against the actual unquantized <strong>MiMo-9B SafeTensors</strong> weights (Layer 14 <code>mlp.down_proj.weight</code>, $4096 \times 12288$, Float32 in RAM):</p>
+      <h2>2. Matrix-Level Checks on Real MiMo-9B Weights</h2>
+      <p>The operations are applied to the actual unquantized <strong>MiMo-9B SafeTensors</strong> weights (Layer 14 <code>mlp.down_proj.weight</code>, $4096 \times 12288$, Float32 in RAM):</p>
 
       <h3 style="color: var(--accent-emerald);">LEACE Closed-Form Concept Erasure vs Naive Rank-1 Subtraction</h3>
-      <p>Empirical results measured by <code>rig/leace_verification.py</code> on Layer 14 down_proj ($4096 \times 12288$):</p>
+      <p>Results measured by <code>rig/leace_verification.py</code> on Layer 14 down_proj ($4096 \times 12288$), saved in <code>rig_runs/leace_verification_report.json</code>. <strong>Audit note (2026-11-06):</strong> these are properties of the matrix after a rank-1 projection. They are true by algebra; no data, probe or behaviour was tested, so "erasure" below does not mean a concept was removed from the model's behaviour.</p>
 
       <table>
         <thead>
@@ -228,7 +228,7 @@
             <td><strong>Remaining Concept Energy</strong></td>
             <td><code>6.3050 &times; 10<sup>-7</sup></code></td>
             <td><code>6.3155 &times; 10<sup>-7</sup></code></td>
-            <td><strong style="color: var(--accent-emerald);">100.0000% Erased to machine precision</strong></td>
+            <td>||u<sup>T</sup>W|| driven to ~0: true by construction of the projection (&Sigma; from W itself); not a test on data, probes or behaviour</td>
           </tr>
           <tr>
             <td><strong>Max Absolute Weight Delta</strong></td>
@@ -246,13 +246,13 @@
             <td><strong>Orthogonal Probes Distortion</strong></td>
             <td><code>Max = 2.96 &times; 10<sup>-8</sup></code></td>
             <td><code>Mean = 0.000048, Max = 0.000164</code></td>
-            <td><strong style="color: var(--accent-emerald);">Preserves orthogonal reasoning tasks</strong></td>
+            <td>Small change along orthogonal probe directions (a matrix check; no reasoning task was run)</td>
           </tr>
           <tr>
             <td><strong>Execution Time (CPU)</strong></td>
             <td><code>63.24 ms</code></td>
             <td><code>47.02 ms</code></td>
-            <td>Real-time weight surgery on 50M weights</td>
+            <td>Rank-1 edit of a 50M-weight matrix on CPU</td>
           </tr>
         </tbody>
       </table>
@@ -284,7 +284,7 @@
             <td><strong>Spectral Eigengap &delta;</strong></td>
             <td>—</td>
             <td><code>&delta; = 0.071400</code></td>
-            <td>Stable spectral separation</td>
+            <td>Too small for a useful bound: Davis-Kahan sin &Theta; bound = 19.5 (&gt; 1, i.e. vacuous, 90&deg;; <code>rig_runs/leace_verification_report.json</code>)</td>
           </tr>
           <tr>
             <td><strong>RandNLA Leverage Identity</strong></td>
@@ -390,14 +390,17 @@
         <h3>The Moore-Penrose Pseudo-Inverse Solution</h3>
         <p>In untrained transformers, activations naturally cluster in a narrow cone ($\cos(x_1, x_2) = 0.894$). Hebbian outer products fail due to cross-talk. WSP-Lang 0.5 applies the Moore-Penrose inverse Gram projection:</p>
         <pre><code>&Delta;W = Y &middot; (X<sup>T</sup> X)<sup>-1</sup> &middot; X<sup>T</sup></code></pre>
-        <p>Delivers <strong>100.0% recall</strong> across diverse capabilities (Country capitals: <code>ES:MAD</code>, <code>FR:PAR</code>; Boolean logic: <code>1&1=1</code>, <code>1&0=0</code>; Syntax matching: <code>(hello)</code>, <code>[item]</code>, <code>{block}</code>).</p>
+        <p>Recalls all stored pairs (memorization of the stored items; no generalization tested) across (Country capitals: <code>ES:MAD</code>, <code>FR:PAR</code>; Boolean logic: <code>1&1=1</code>, <code>1&0=0</code>; Syntax matching: <code>(hello)</code>, <code>[item]</code>, <code>{block}</code>).</p>
       </div>
     </section>
 
     <!-- SECTION: CROSS-MODEL LATENT TRANSFER -->
     <section id="cross-model-transfer">
       <h2>Cross-Model Weight-Space Knowledge Transfer (MiMo-9B &rarr; TinyLlama-1.1B)</h2>
-      <p>WSP-Lang 0.6 introduces first-class <strong>Cross-Model Representation Surgery</strong>. Models of completely different dimensions ($d_1 = 4096$ vs $d_2 = 2048$) can now exchange concept directions, reasoning circuits, and behavioral steering vectors in closed form without GPU fine-tuning or distillation datasets.</p>
+      <p>WSP-Lang 0.6 adds a closed-form map between models of different dimensions ($d_1 = 4096$ vs $d_2 = 2048$), so that a direction found in one model can be expressed in the other. Whether a mapped direction does the same thing in the target model has to be tested with forward passes.</p>
+      <div class="callout" style="border-color: #F43F5E;">
+        <strong>Audit note (2026-11-06).</strong> An earlier TinyLlama report ("0 &rarr; 100 %, 18.4 ms, 0 % collateral") was written from hardcoded values by <code>scripts/save_tinyllama_benchmark_report.py</code> and is <strong>withdrawn</strong>. The real fact-transfer run (<code>rig_runs/mimo_to_tinyllama_full_migration_report.json</code>) gives target facts 5/8 &rarr; 7/8 and holdout preservation 5/8; n is too small to conclude. The table below is geometry only: no behaviour of TinyLlama was tested.
+      </div>
 
       <div class="callout-purple">
         <strong>The Orthogonal Procrustes Latent Alignment Theorem (Sch&ouml;nemann 1966, Mikolov et al. 2013):</strong><br>
@@ -409,7 +412,7 @@
       </div>
 
       <h3>Empirical Cross-Model Benchmark: MiMo-9B (4096) &rarr; TinyLlama-1.1B (2048)</h3>
-      <p>Direct empirical verification executed by <code>rig/cross_model_transfer.py</code> on real unquantized SafeTensors checkpoints:</p>
+      <p>Measured by <code>rig/cross_model_transfer.py</code> on the unquantized SafeTensors checkpoints:</p>
 
       <table>
         <thead>
@@ -423,7 +426,7 @@
           <tr>
             <td><strong>Shared Anchor Vocabulary</strong></td>
             <td><strong>2,000 clean word tokens</strong></td>
-            <td>Over-determined basis ($K \gg d_{	ext{target}}$)</td>
+            <td>Fewer anchors than target dimensions ($K = 2000 &lt; d_{	ext{target}} = 2048$), so the fit is not over-determined</td>
           </tr>
           <tr>
             <td><strong>Rosetta Matrix Dimensions</strong></td>
@@ -433,22 +436,22 @@
           <tr>
             <td><strong>Semi-Orthogonality Error</strong></td>
             <td><code>||T T<sup>T</sup> - I||<sub>F</sub> = 1.8436 &times; 10<sup>-4</sup></code></td>
-            <td><strong style="color: var(--accent-emerald);">Near-perfect isometric preservation</strong></td>
+            <td>T is semi-orthogonal (checks the solver, not transfer quality)</td>
           </tr>
           <tr>
             <td><strong>Mean Anchor Cosine Alignment</strong></td>
-            <td><strong>0.8246 (82.5%)</strong></td>
-            <td>High geometric concept fidelity</td>
+            <td><strong>0.8246</strong></td>
+            <td>In-sample fit: measured on the same 2,000 anchors used to compute T, no held-out words (<code>rig_runs/cross_model_transfer_report.json</code>)</td>
           </tr>
           <tr>
             <td><strong>Computation Time (CPU)</strong></td>
             <td><strong>2,566.97 ms (2.56 s)</strong></td>
-            <td>Zero GPU overhead, zero training loops</td>
+            <td>CPU only, no training (no forward pass needed to compute T)</td>
           </tr>
           <tr>
-            <td><strong>TinyLlama Downstream LEACE Surgery</strong></td>
+            <td><strong>TinyLlama Rank-1 Projection</strong></td>
             <td><code>model.layers.10.mlp.down_proj.weight</code> (2048 &times; 5632)</td>
-            <td><strong style="color: var(--accent-emerald);">100.0000% target concept erasure in student</strong></td>
+            <td>||u<sup>T</sup>W|| driven to ~0, true by construction; no behaviour tested. The source vector (<code>u_loop_L14</code>) has no statistical basis (results.md &sect;15.4)</td>
           </tr>
         </tbody>
       </table>
@@ -489,7 +492,7 @@ Operation        ::= "rosetta_align" | "cross_project"
 
       <div class="card">
         <h3><code>step cov_imprint &lt;tensor&gt; keys=&lt;K.npz&gt; values=&lt;V.npz&gt; [lambda=&lt;float&gt;]</code></h3>
-        <p>Executes MEMIT / EMMET covariance-regularized mass memory insertion. Regularizes key Gram matrix $(K^T K + \lambda I)^{-1}$ to guarantee well-conditioned weight updates without benchmark degradation.</p>
+        <p>Executes MEMIT / EMMET covariance-regularized mass memory insertion. Regularizes key Gram matrix $(K^T K + \lambda I)^{-1}$ to keep the weight update well-conditioned (benchmark effects must be measured separately).</p>
         <pre><code>step cov_imprint model.language_model.layers.14.mlp.down_proj.weight keys=data/K_facts.npz values=data/V_facts.npz lambda=0.1</code></pre>
       </div>
 
