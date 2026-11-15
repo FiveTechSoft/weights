@@ -110,8 +110,9 @@ def _mv(x, dev):
 
 # ---- pieces ----
 def ridge_u(G, P, lam, device="cpu"):
-    """u = (G + lam mean(diag G) I)^-1 P for P = K^T 1: the u with u^T x ~ 1 on the rows of K. -> (n_in,)"""
-    return solve(G, P, lam, device)[0].float()
+    """u = (G + lam mean(diag G) I)^-1 P for P = K^T 1: the u with u^T x ~ 1 on the rows of K. -> (n_in,) on `device`
+    (solve's CPU fallback returns a CPU tensor; the hook multiplies it with activations on `device`)."""
+    return solve(G, P, lam, device)[0].float().to(device)
 
 
 def g0(layers):

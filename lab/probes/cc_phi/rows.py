@@ -42,10 +42,30 @@ def make_rows(traces, tok, pos_tokens=POS_TOKENS, neg_tokens=NEG_TOKENS, prefix=
     return pos, neg
 
 
+def make_calib(traces, prefix=PREFIX):
+    """Calibration rows for compile_control_vector ({"prompt", "reasoning"}): finished traces only, reasoning prefixed
+    with the model-written "<think>\\n" (the op appends `reasoning` to the chat template, which for Phi writes no tag)."""
+    out = []
+    for r in traces:
+        if not finished(r):
+            continue
+        text = r["reasoning"].lstrip("\n")
+        if not text.startswith(prefix):
+            text = prefix + text
+        out.append({"prompt": r["prompt"], "reasoning": text})
+    return out
+
+
 def main():
     from transformers import AutoTokenizer
     runs = Path(os.environ.get("CC_RUNS") or ROOT / "lab" / "runs" / "cc_phi")
     hf = Path(os.environ.get("CC_HF") or ROOT / "hf_cache" / "phi4mr-hf")
+    if sys.argv[1:] == ["calib"]:
+        tr = [json.loads(x) for x in (runs / "traces.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
+        rows = make_calib(tr)
+        (runs / "calib.jsonl").write_text("".join(json.dumps(x, ensure_ascii=False) + "\n" for x in rows), encoding="utf-8")
+        print(json.dumps({"traces": len(tr), "calib": len(rows)}))
+        return rows
     tok = AutoTokenizer.from_pretrained(str(hf))
     tr = [json.loads(x) for x in (runs / "traces.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
     pos, neg = make_rows(tr, tok)

@@ -57,6 +57,29 @@ def ask(url, text, max_tokens, lora=None, extra=""):
             "tok_s": round(r.get("timings", {}).get("predicted_per_second", 0), 1)}
 
 
+def served_info(url):
+    """What the server says it serves: llama-server's /props model_path and that file's sha256 (None if the path is not
+    a local file). None when /props is unavailable. Recorded in every report so an arm labelled "merged" that served
+    the base (results §45.11) shows in the JSON. Control vectors and LoRAs are not in /props: the chain log has them."""
+    import hashlib
+    try:
+        base = url.split("/v1/")[0]
+        props = json.loads(urllib.request.urlopen(urllib.request.Request(base + "/props"), timeout=30).read())
+    except Exception:
+        return None
+    path = props.get("model_path")
+    if not path:
+        return None
+    sha = None
+    if Path(path).is_file():
+        h = hashlib.sha256()
+        with open(path, "rb") as f:
+            for b in iter(lambda: f.read(1 << 24), b""):
+                h.update(b)
+        sha = h.hexdigest()
+    return {"model_path": path, "sha256": sha}
+
+
 def split_think(content, reasoning):
     """Templates llama-server does not split (Phi-4-mini-reasoning: "<think>...</think>answer" inside content, no
     reasoning_content; lab/probes/cc_phi/PLAN.md P1) -> (content after </think>, reasoning between the tags). An unclosed
@@ -148,7 +171,7 @@ def run(name, endpoint, gsm_n=100, math_n=50, parallel=2, max_tokens=8192, out_d
                           "mean_tokens": round(sum(r["tokens"] for r in rs) / len(rs)),
                           "mean_tok_s": round(sum(r["tok_s"] for r in rs) / len(rs), 1)}
     report = {"model": name, "endpoint": url, "max_tokens": max_tokens, "lora": lora, "extra": extra,
-              "seconds": round(time.time() - t0), "summary": summary, "items": rows}
+              "served": served_info(url), "seconds": round(time.time() - t0), "summary": summary, "items": rows}
     (out_dir / f"{name}.json").write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     log(f"{name} {json.dumps(summary)}")
     return report

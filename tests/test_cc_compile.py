@@ -57,6 +57,17 @@ class TestRidge(unittest.TestCase):
         self.assertLess(float((K @ u - 1).abs().max()), 1e-4)
         self.assertLess(float(cc.ridge_u(G, P, 10.0).norm()), float(u.norm()))
 
+    def test_cpu_fallback_result_lands_on_the_requested_device(self):
+        """solve falls back to CPU float64 when the GPU Cholesky fails (few calibration tokens); u must still come back
+        on the device the activations live on (found on Phi-4-mini-reasoning, lab/probes/cc_phi/PLAN.md, compile)."""
+        if not torch.cuda.is_available():
+            self.skipTest("needs CUDA")
+        from unittest import mock
+        G, P = torch.eye(4), torch.ones(4, 1)
+        with mock.patch.object(cc, "solve", return_value=torch.ones(1, 4)):   # the CPU fallback's shape and device
+            u = cc.ridge_u(G, P, 1e-3, device="cuda")
+        self.assertEqual(u.device.type, "cuda")
+
 
 class TestFit(unittest.TestCase):
     def setUp(self):

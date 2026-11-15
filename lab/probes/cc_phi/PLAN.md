@@ -100,3 +100,55 @@ the thinking phase (0 of 111 and 0 of 112), median thinking of finished answers 
 scale, C1-C3 and the sealed confirmation held; almost every magnitude band failed (gains larger than predicted, base
 lower because of the 1,024 budget, dev placebo −12, MATH cuts not halved). Declared surprises: none. Compiling into
 Phi's weights is a separate plan, not written.
+
+## Compile the Phi direction into `down_proj` — plan fixed 2026-11-15 12:40, before the op runs (user: "ok, continua")
+
+**Why.** The Qwen compile (§43.19-43.21, §45.8, §45.13) is the project's strongest claim: a control vector written
+into the weights, no flags, confirmed sealed. One family. Same op, same criteria, on Phi.
+
+**Op.** `compile_control_vector` (engine/cc_compile.py, unchanged except the device fix below), program
+`programs/cc_phi_compile.wspl`: model `hf_cache/phi4mr-hf`, **vector = `cc_phi.gguf` × 0.5** (the op writes the vector
+at ×1.0, cc_weights/PLAN.md; Phi's chosen scale is 0.5, §45.15; scaled file by `lab/probes/cc_phi/scale_vector.py`,
+2 unit tests), **placebo = `cc_phi.placebo2026.gguf` × 0.5** (the same placebo the dev and sealed arms used, scaled the
+same way), calib = `lab/runs/cc_phi/calib.jsonl` (the 107 finished traces, reasoning prefixed with the model-written
+`<think>\n`; `rows.make_calib`, 1 unit test), base GGUF = the Q6_K served in §45.15, `lora=0` (no adapter export),
+heldout 28, seed 20261111, max_len 4,096. Out `hf_cache/cc_phi_op/`. **G0** (held-out median of per-layer medians
+|uᵀx − 1| ≤ 0.5) decides whether anything is merged; a fail is reported as a negative and the chain stops.
+
+**Mechanics found before the run (not data).** A 3-row smoke of the op on Phi crashed: with too few calibration tokens
+the GPU Cholesky fails, `solve` falls back to CPU float64 and `ridge_u` returned `u` on the CPU while the activations
+were on CUDA. Fixed in `ridge_u` (result moved to the requested device; unit test under the CUDA python). The Qwen runs
+never took the fallback (G0 median 0.03, 382 k calibration tokens); Phi's full calibration has ~300 k tokens, so the
+fallback should not fire either; if it does, the log says so and the run continues.
+
+**Dev** (1,024 tokens, GSM8K 0-99 + MATH select_indices(2026, 50), the §45.15 items; `dev_base.json` and `dev_vec.json`
+of §45.15 re-used as references, deterministic setup): `merged-Q6_K.gguf` and `placebo_merged-Q6_K.gguf` served as
+`-m` with no flags. **C1-C4 of `lab/probes/cc_weights/PLAN.md`** verbatim (`verdict.py`, `CCW_CC=lab/runs/cc_phi`,
+`CCW_RUNS=lab/runs/cc_phi/weights`). **Sealed only if PASS:** `data/sealed_confirm2.json`, **first use for Phi**: base,
+vector ×0.5 (control vector), merged, placebo merged; same C1-C4 (`CCW_SEALED=lab/runs/sealed_ccw_phi`). Reported, not
+a criterion: HumanEval first 20 (`he_eval.py`, 2,048 cap) on base and merged. Chain `lab/runs/cc_phi/chain_w.sh`:
+`set -eu`, ERR trap, `chain_guard` config (GGUF sha, vector sha, budget, scale, commit), smoke per served configuration,
+control-vector check for the vector arm, sha256 of every served GGUF in the log; every report now records
+`served` (`/props` model path + sha256, `bench_runner.served_info`, 3 unit tests).
+
+**Prediction (ours, low confidence; arm and control; premises marked).**
+- Op: G0 passes, median 0.02-0.15 (Qwen 0.03). Merge: cos(written, dW) median 0.6-0.9 (Qwen 0.89; the ×0.5 edit is
+  smaller against W, so Q6_K keeps less of it), ‖dW‖/‖W‖ median 0.005-0.03.
+- Dev merged: GSM8K **70-86** (vector 85, base 59), MATH **11-20** (vector 19, base 6), tokens −15 to −35 %, GSM8K cuts
+  8-25 (vector 11, base 42). Placebo merged: GSM8K 45-62, MATH 3-8, tokens −5 to +10 %. C1 ✓, C2 ✓, C3 ✓, C4 ✓ (merged
+  within 8 of the vector on GSM8K, not significantly below) → **PASS**. Chance the compile keeps about half the dose, as
+  Qwen's did: then merged lands at the lower end (GSM8K 70-78, as scale 0.25 on the screen gave 16 vs 22).
+- Sealed set 2 (first use for Phi): base GSM8K 50-66, MATH 2-8; merged base +10 to +25 / +6 to +15; vector ×0.5 base
+  +18 to +28 / +10 to +17; placebo merged base −8 to +3 / −2 to +3. Verdict CONFIRMS if dev passed.
+- HumanEval-20: base 6-16 (a maths model with a maths system prompt), merged within ± 3 of base.
+- Premises: (p1) every `ffn_down` of the Phi GGUF is Q6_K (checked 12:05: 32/32); (p2) the edit's point of action
+  (down_proj output, i.e. the layer's residual write) is where llama.cpp adds the control vector, as for Qwen (§43.19);
+  (p3) the scaled placebo is the dev/sealed placebo × 0.5 (by construction; the chain prints the norms); (p4) the §45.15
+  dev references are reusable (`-np 2` nondeterminism small, as before); (p5) `/props` of the merged arm names the
+  merged file (recorded in each JSON).
+- **We would be surprised if:** G0 fails; cos median < 0.5; merged below base on GSM8K; merged > vector + 5 on either
+  benchmark; placebo merged > base + 3 on GSM8K with p < 0.05; > 10 % of the merged arm's finished GSM8K answers have
+  < 50 characters of thinking (the stop regime of §45.14 appearing in the weights).
+
+**Cost.** Op ≈ 20-40 min (3.8B, 107 sequences ≤ 4,096, two arms, two merges); dev 2 × 150 ≈ 30 min; sealed 4 × 150
+≈ 1 h; HE 2 × 20 ≈ 5 min. ≈ 2.5 GPU h.

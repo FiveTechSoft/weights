@@ -47,14 +47,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 | 33 | 2026-11-15 | `act_map/PLAN.md` "Gate 3b, loose end" | `port` a 1,25 / 1,5 / 1,75 en dev (0.8B, 2 048): acabados GSM 0-5 / 5-30 / 25-50 (1,0 = 0, 2,0 = 52); bien 0-3 / 2-8 / 3-8; bien-entre-acabados 0,10-0,30 donde acabados ≥ 10 (own 0,63); mediana de caracteres de pensamiento < 200. Veredicto "solo parar", sin brazo de test. MATH acabados 0-3 / 2-10 / 8-16, bien ≤ 3. Control: brazos 1,0 y 2,0 ya corridos encierran a los nuevos. Premisas p1-p3 en el plan. Sorpresa si alguna escala llega a 0,5 con ≥ 10 acabados, si 1,25 acaba ≥ 25, o si 1,75 acaba menos que 1,5 | §45.14 | acabados 3 / 15 / 50; bien 2 / 6 / **9**; bien-entre-acabados 0,67 (3 acabados) / **0,40** / 0,18; mediana de pensamiento 1 475 / 8 / 8. La regla dio "presente" en 1,5 (15 y 0,40) y corrió el test: 24 acabados, 12 bien (18 de 24 sin pensamiento), 12/0 frente a base, 8/9 frente a own. MATH 0 / 1 / 10 acabados, bien 0 / 1 / 6. Ninguna sorpresa | ◐ (acabados y pensamiento en banda; bien a 1,75 y bien-entre-acabados a 1,5 fuera; veredicto formal "presente" en vez de "solo parar": la regla contó respuestas directas como terminar) |
 | 34 | 2026-11-15 | `cc_phi/PLAN.md` (segunda familia: Phi-4-mini-reasoning, 3,8B) | Sonda: P2 se cumple a 2 048 (3-7 de 10 cortadas). Trazas 50-90/128 cierran a 4 096. Criba: base 15-30/64, mejor escala 0,5 o 1,0, vector base + 3 a + 12. Dev a 2 048: base GSM 55-80 (cortes 15-40), MATH 10-25 (cortes 25-40); vector GSM + 5 a + 15, MATH + 5 a + 12, tokens −20 a −40 %, cortes a la mitad o menos; placebo ± 3 de base y tokens ± 10 %. C1-C3 pasan; sellado confirma. Premisas p1-p3 en el plan. Sorpresa si vector < base − 3 en GSM, placebo ≥ vector − 3, base corta < 10 % en los dos a 2 048, o escala elegida 2,0 | §45.15 | Sonda: P2 falla a 2 048 (2/10), se cumple a 1 024 (8/10) → presupuesto 1 024. Trazas **107**/128. Criba: base 6, mejor escala **0,5**, vector **22** (+16); a 1,0 se apaga el pensamiento (5 bien, 1 corte). Dev: base GSM 59 (42 cortes), MATH 6 (43 cortes); vector **85 / 19** (+26 / +13), tokens −31 % / −11 %, cortes 42 → 11 y 43 → 28; placebo **47** / 5, tokens +8 % / +1 %. C1-C3 PASS; sellado **confirma** (base 59 / 4, vector 82 / 19, placebo 58 / 6; 27/4 y 16/1). Ninguna sorpresa | ◐ (sentido, control, veredicto y sellado aciertan; magnitudes fuera casi todas: ganancias mayores que las previstas, base más baja por el presupuesto 1 024, placebo −12 en dev; escala 0,5 en banda) |
 
-## Cuenta (34 filas; 30 puntuables)
+| 35 | 2026-11-15 | `cc_phi/PLAN.md` "Compile the Phi direction into down_proj" | Op: G0 pasa (mediana 0,02-0,15), cos escrito/dW mediana 0,6-0,9. Dev (1 024): fusionado GSM **70-86** (vector 85, base 59), MATH **11-20** (vector 19, base 6), tokens −15 a −35 %, cortes GSM 8-25; placebo fusionado GSM 45-62, MATH 3-8. C1-C4 pasan. Sellado 2 (primer uso con Phi): base GSM 50-66, MATH 2-8; fusionado base +10 a +25 / +6 a +15; vector base +18 a +28 / +10 a +17; placebo fusionado base −8 a +3 / −2 a +3; confirma. HE-20: base 6-16, fusionado ± 3. Premisas p1-p5 en el plan. Sorpresa si G0 falla, cos < 0,5, fusionado < base en GSM, fusionado > vector + 5, placebo fusionado > base + 3 con p < 0,05, o > 10 % de los acabados del fusionado sin pensamiento | — | — | ⏳ |
+
+## Cuenta (35 filas; 30 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 12 |
 | ❌ falla | 12 |
-| ⏳ / — | 4 |
+| ⏳ / — | 5 |
 
 Acierto limpio 6/30 = 20 %; acierto o parcial 18/30 = 60 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es

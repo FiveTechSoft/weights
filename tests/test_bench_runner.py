@@ -119,6 +119,59 @@ class TestThinkFallback(unittest.TestCase):
         self.assertEqual((r["reasoning"], r["content"]), ("", "just an answer"))
 
 
+class TestServedInfo(unittest.TestCase):
+    """Each report records what llama-server says it serves (/props model_path) and that file's sha256, so a run
+    labelled "merged" that served the base (results §45.11) is visible in the JSON. Control vectors are not in /props."""
+
+    def _props(self, payload, raise_=None):
+        import io
+
+        class R(io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+        seen = []
+
+        def fake(req, timeout=0):
+            seen.append(req.full_url if hasattr(req, "full_url") else req)
+            if raise_:
+                raise raise_
+            return R(json.dumps(payload).encode())
+        return fake, seen
+
+    def test_served_info_hashes_the_model_path_from_props(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "m.gguf"
+            p.write_bytes(b"GGUF" + b"\x01" * 100)
+            fake, seen = self._props({"model_path": str(p), "chat_template": "x"})
+            with mock.patch.object(br.urllib.request, "urlopen", fake):
+                s = br.served_info("http://127.0.0.1:8097/v1/chat/completions")
+            self.assertEqual(seen, ["http://127.0.0.1:8097/props"])
+            self.assertEqual(s["model_path"], str(p))
+            self.assertEqual(s["sha256"], hashlib.sha256(p.read_bytes()).hexdigest())
+
+    def test_served_info_is_none_when_props_fails_or_file_is_missing(self):
+        fake, _ = self._props({}, raise_=OSError("no route"))
+        with mock.patch.object(br.urllib.request, "urlopen", fake):
+            self.assertIsNone(br.served_info("http://127.0.0.1:8097/v1/chat/completions"))
+        fake, _ = self._props({"model_path": "Z:/nowhere/m.gguf"})
+        with mock.patch.object(br.urllib.request, "urlopen", fake):
+            s = br.served_info("http://127.0.0.1:8097/v1/chat/completions")
+        self.assertEqual(s, {"model_path": "Z:/nowhere/m.gguf", "sha256": None})
+
+    def test_run_records_served_in_the_report(self):
+        fake = {"content": "", "reasoning": "", "finish": "stop", "tokens": 3, "tok_s": 30.0}
+        served = {"model_path": "m.gguf", "sha256": "ab" * 32}
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(br, "ask", return_value=fake), \
+                mock.patch.object(br, "served_info", return_value=served):
+            rep = br.run("t", 1, gsm_n=2, math_n=0, parallel=1, out_dir=d, log=lambda s: None)
+            self.assertEqual(rep["served"], served)
+            self.assertEqual(json.loads((Path(d) / "t.json").read_text(encoding="utf-8"))["served"], served)
+
+
 class TestExtraInstruction(unittest.TestCase):
     """extra: text appended after SUFFIX in the user message (prompt-control arm, cc/PLAN.md "Prompt control"); the
     default sends exactly question + SUFFIX, so every earlier run is unchanged."""

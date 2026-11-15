@@ -1,0 +1,3 @@
+experiment cc_phi_compile:
+steps:
+    step compile_control_vector model=hf_cache/phi4mr-hf vector=hf_cache/cc_phi/cc_phi_x0.5.gguf placebo=hf_cache/cc_phi/cc_phi.placebo2026_x0.5.gguf calib=lab/runs/cc_phi/calib.jsonl base_gguf=hf_cache/phi4mr-gguf/Phi-4-mini-reasoning-Q6_K.gguf out=hf_cache/cc_phi_op lora=0

@@ -46,6 +46,19 @@ class TestPhiRows(unittest.TestCase):
         pos, neg = make_rows(tr, FakeTok(), pos_tokens=4, neg_tokens=3)
         self.assertEqual((pos, neg), ([], []))
 
+    def test_calib_rows_carry_the_prefix_and_only_finished_traces(self):
+        """Calibration rows for compile_control_vector ({"prompt", "reasoning"}): the op appends `reasoning` to the
+        chat template, so for Phi the reasoning must start with the model-written "<think>\\n" (PLAN.md, compile)."""
+        from lab.probes.cc_phi.rows import make_calib
+        tr = [{"prompt": "Q1", "reasoning": "a b c", "content": "A", "finish": "stop"},
+              {"prompt": "Q2", "reasoning": "<think>\nd e", "content": "A", "finish": "stop"},
+              {"prompt": "Q3", "reasoning": "f g", "content": "", "finish": "length"}]
+        rows = make_calib(tr, prefix="<think>\n")
+        self.assertEqual([r["prompt"] for r in rows], ["Q1", "Q2"])
+        self.assertEqual(rows[0]["reasoning"], "<think>\na b c")
+        self.assertEqual(rows[1]["reasoning"], "<think>\nd e")
+        self.assertEqual(set(rows[0]), {"prompt", "reasoning"})
+
     def test_reasoning_already_prefixed_is_not_double_prefixed(self):
         from lab.probes.cc_phi.rows import make_rows
         tr = [{"prompt": "Q", "reasoning": "<think>\n" + " ".join(f"w{i}" for i in range(10)), "content": "A", "finish": "stop"}]
