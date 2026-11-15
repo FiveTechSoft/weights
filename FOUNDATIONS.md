@@ -297,4 +297,15 @@ should: larger networks 70 %, unseen function families 59 %, gradient-trained ne
 20 %**. Disguised networks (permuted, rescaled, split neurons, decoys, noise) rule out memorization of weights. Our
 reading: closed-form toy networks with a known fix, so it sits with iWSP in T4 ("what has a closed algorithm can be
 written"); the 20 % on unseen faults is the same wall as Naik's writing failure and our H6/H7 — the skill learned is
-the fault catalogue, not weight semantics. No LLM-scale model was edited. Full links in README "References".
+the fault catalogue, not weight semantics. No LLM-scale model was edited · Naik (thread 14 Nov 2026,
+x.com/AtharvaRNaik/status/2121629639458324625) proposes a WSP **benchmark suite** and names the baseline: "auto-research
+agents equipped with interp tools" — the same bar we hold ourselves to (the agent must beat the gradient / control-vector
+route on behaviour, not merely produce an edit). He quotes jfonsecarivera (13 Nov 2026): Sloef's *sparse rewiring*
+(trains only when a neuron fires, not what it writes; 89 of Qwen3-8B's 442,368 neurons reproduce an SFT persona) applied
+to risky financial advice gives emergent misalignment with **47 neurons** (misaligned answers 0.3 → 14.5 % on the 8
+standard questions); the neurons promote "risky / gamble / exploit / manipulate / brutal" and 22 of the 47 fire on the
+framing word of a request ("should") harder than anywhere in 131k tokens of normal chat; on a LoRA the misalignment
+drops 26 → 0 % when the adapter is switched off at chat-template tokens, and masking those tokens in training makes
+the model find another route. Trained edits, not WSP; relevant to our implanted-neuron defence (T8, §43.24: a
+same-size rewrite of a few neurons ranks first when the base is declared) and to T3 (a behaviour as a push through few
+sites, which moves when blocked). Full links in README "References".
