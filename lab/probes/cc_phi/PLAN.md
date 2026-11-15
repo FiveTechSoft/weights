@@ -31,7 +31,9 @@ with it. **P2:** at 2,048 only 2/10 cut (9/10 correct, tokens 685-2,048) → fai
 for the whole study (plan rule). Note: 80 % cut at 1,024 is a harsher regime than Qwen's 51 % at 2,048; the prediction
 bands below were written for 2,048 and are read as such (dev base GSM8K / MATH numbers will be lower; the bands on the
 vector's *gain* and the placebo stay). P4 held (CPU, 35 tokens, offsets contiguous; `<think>` is 3 ordinary tokens).
-P3 pending (random vector at scale 8).
+**P3 held:** a same-norm (1.0 per layer) random control vector at scale 8 changed all 10 greedy outputs (0/10 identical
+tails; the pushed model degenerates and is cut at 512 everywhere), so llama.cpp applies control vectors to `phi3`.
+Stage 0 complete 08:27; `lab/runs/cc_phi/budget.txt` = 1024; `chain.sh` launched.
 
 ## Data (no download; nothing from the dev set or the sealed set)
 `cc.py split` with `CC_RUNS=lab/runs/cc_phi`: same seed 20261110, so the same 64 discovery / 64 screen MATH items and
