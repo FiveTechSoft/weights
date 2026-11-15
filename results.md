@@ -2953,3 +2953,51 @@ trap ERR; nada falló. Salida `lab/runs/cc_v2/cap8192/dev_merged_served_8192.jso
 - **Dos métodos.** Resumen de la cadena (`bench_runner`: acc 0,90 / 0,82, cortes 4 / 10, tokens 1 038 / 2 850) y recuento
   propio por filas del informe (mismos números, dos correctores) más los tres pareados sobre los JSON de §45.11 y §45.8
   (150 ítems idénticos en los cuatro informes, comprobado).
+
+### 45.14 Puerta 3b, cabo suelto: entre 1,0 y 2,0 el mapa sigue llevando "deja de pensar"; la regla disparó por respuestas directas sin cadena (2026-11-15)
+Plan: anexo "Gate 3b, loose end" de `lab/probes/act_map/PLAN.md` (antes de correr), predicción fila 33. Cadena
+`lab/runs/act_map/cc08b_chain.sh` (07:46-08:21; `set -e`, trap, smoke 2/2, sha256 del vector `5a5e33ba…` y de los ítems
+de dev en el log): `port` a 1,25 / 1,5 / 1,75 en los mismos 64 GSM8K + 32 MATH de dev de §45.12, 0.8B Q6_K, 2 048 tokens,
+voraz. Datos `lab/runs/act_map/cc08b/`.
+
+| `port` escala (dev) | GSM8K acabados / bien (c2) / bien-entre-acabados / mediana carac. pensamiento de los acabados / tokens | MATH acabados / bien / tokens |
+|---|---|---|
+| 1,0 (§45.12) | 0 / 0 / - / - / 2 048 | 0 / 0 / 2 048 |
+| 1,25 | 3 / 2 (2) / 0,67 / **1 475** / 1 981 | 0 / 0 / 2 048 |
+| 1,5 | 15 / 6 (6) / **0,40** / **8** / 1 656 | 1 / 1 / 2 003 |
+| 1,75 | 50 / 9 (9) / 0,18 / 8 / 644 | 10 / 6 (5) / 1 515 |
+| 2,0 (§45.12) | 52 / 5 (5) / 0,10 / 8 / 558 | 14 / 3 / 1 282 |
+| `own` 1,0 (§45.12) | 19 / 12 (13) / 0,58 / 1 098 / 1 591 | 6 / 5 / 1 760 |
+
+- **Umbral, no pendiente, entre 1,25 y 1,75:** acabados 0 → 3 → 15 → 50 → 52. A 1,25 los 3 acabados sí llevan cadena
+  (1 475 caracteres de pensamiento, 2 bien): es la 0.8B acabando por su cuenta en 3 ítems fáciles. Desde 1,5 todo acabado
+  tiene **8 caracteres** de pensamiento (`<think>\n</think>`): el modelo salta la fase de pensamiento y contesta en el
+  cuerpo, corto (1,5: 7 de 15 con < 300 tokens; 1,75: 39 de 50).
+- **La regla disparó.** "Componente de terminar presente si alguna escala acaba ≥ 10 con bien-entre-acabados ≥ 0,32":
+  1,5 da 15 y 0,40 → presente → brazo de test a 1,5 (regla fijada; corrido). Pero la medida que la regla no usaba como
+  criterio (caracteres de pensamiento; estaba "informada") dice lo contrario: 0,40 es la tasa de acierto de la 0.8B
+  **contestando GSM8K sin pensar**, no la de terminar tras razonar. La regla midió mal lo que quería medir; queda como
+  está y se lee con la medida descriptiva.
+- **Test `port` ×1,5 (150 ítems; frente a los brazos de §45.12):** GSM8K 24 acabados, **12 bien** (c2 9): 10 bien entre los
+  acabados (6 respuestas directas con 8 caracteres de pensamiento, 4 con cadena de 797-2 969 caracteres) y 2 bien
+  cortados (la respuesta en un `\boxed` repetido). De los 24 acabados, 18 sin pensamiento y 6 con cadena. Frente a base: 12/0 (p 5·10⁻⁴), acabados 24/0. Frente a `own` (13 bien,
+  37 acabados): 8/9 (p 1), acabados 12/25 (p 0,047): mismos aciertos, la mitad de acabados, 4 ítems comunes. Frente a
+  `port` ×2,0 (7 bien, 83 acabados): 11/6 (p 0,33), acabados 1/60. MATH: 1 acabado, 0 bien (×2,0: 10 / 3; ×1,75 en dev:
+  10 / 6, cinco de ellos con 8 caracteres de pensamiento y 164-389 tokens: razonamiento corto en el cuerpo).
+- **Predicción (fila 33) contra el dato.** Acabados 3 / 15 / 50 → bandas 0-5 / 5-30 / 25-50 ✓✓✓ (50 en el borde). Bien
+  2 / 6 / **9** → 0-3 ✓, 2-8 ✓, 3-8 ✗ (por uno). Bien-entre-acabados donde acabados ≥ 10: 1,5 **0,40** ✗ (banda 0,10-0,30),
+  1,75 0,18 ✓. Mediana de pensamiento < 200: ✓ (8 y 8). Veredicto "solo parar, sin brazo de test" → **la regla dijo
+  "presente" y corrió el test ✗**. MATH acabados 0 / 1 / 10 → bandas 0-3 ✓, 2-10 ✗ (1), 8-16 ✓; bien ≤ 3 → 6 a 1,75 ✗.
+  Sorpresas declaradas: ninguna (0,40 < 0,5; 1,25 acaba 3; 1,75 > 1,5). **◐**: la forma (umbral, sin cadena) acierta; el
+  veredicto formal falla porque la regla aceptó respuestas directas como "terminar".
+- **Lectura.** Cierra §45.12 en el mismo sentido y con más detalle: lo que cruza el mapa 9B → 0.8B es un interruptor de la
+  fase de pensamiento con umbral de dosis (1,25 nada, 1,5 un cuarto de los ítems, 1,75 casi todos); la 0.8B razona y
+  luego cierra en muy pocos ítems (test ×1,5: 6 de 100 acaban con cadena, 4 bien; `own`: 37 acabados, casi todos con
+  cadena). Dos lecciones: (1) "bien entre acabados" no distingue "terminar tras razonar" de "contestar
+  sin razonar"; la medida que sí lo hace es la longitud del pensamiento de los acabados, y debe ser criterio, no informe,
+  en la próxima regla; (2) la 0.8B sin pensar acierta ≈ 40 % de GSM8K (12/24, 6/15; con `own` 58 %): un dato útil de
+  base para leer cualquier "cierre" de este modelo. No se corre nada más de esto; la puerta 3b queda como "PASA por la
+  regla, lo transportado es la parada" (§45.12), ahora con la curva de dosis.
+- **Dos métodos.** `readings.json` de la cadena y recuento propio por filas (acabados, bien con dos correctores,
+  bien-entre-acabados, mediana de caracteres, tokens): idénticos en los seis brazos de dev y en el de test; pareados con
+  binomial exacta propia.

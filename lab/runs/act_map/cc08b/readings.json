@@ -1,0 +1,129 @@
+{
+ "1.0": {
+  "gsm8k": {
+   "n": 64,
+   "finished": 0,
+   "correct": 0,
+   "correct2": 0,
+   "caf": null,
+   "median_think_chars_finished": null,
+   "mean_tokens": 2048
+  },
+  "math500": {
+   "n": 32,
+   "finished": 0,
+   "correct": 0,
+   "correct2": 0,
+   "caf": null,
+   "median_think_chars_finished": null,
+   "mean_tokens": 2048
+  }
+ },
+ "1.25": {
+  "gsm8k": {
+   "n": 64,
+   "finished": 3,
+   "correct": 2,
+   "correct2": 2,
+   "caf": 0.667,
+   "median_think_chars_finished": 1475,
+   "mean_tokens": 1981
+  },
+  "math500": {
+   "n": 32,
+   "finished": 0,
+   "correct": 0,
+   "correct2": 0,
+   "caf": null,
+   "median_think_chars_finished": null,
+   "mean_tokens": 2048
+  }
+ },
+ "1.5": {
+  "gsm8k": {
+   "n": 64,
+   "finished": 15,
+   "correct": 6,
+   "correct2": 6,
+   "caf": 0.4,
+   "median_think_chars_finished": 8,
+   "mean_tokens": 1656
+  },
+  "math500": {
+   "n": 32,
+   "finished": 1,
+   "correct": 1,
+   "correct2": 1,
+   "caf": 1.0,
+   "median_think_chars_finished": 8,
+   "mean_tokens": 2003
+  }
+ },
+ "1.75": {
+  "gsm8k": {
+   "n": 64,
+   "finished": 50,
+   "correct": 9,
+   "correct2": 9,
+   "caf": 0.18,
+   "median_think_chars_finished": 8.0,
+   "mean_tokens": 644
+  },
+  "math500": {
+   "n": 32,
+   "finished": 10,
+   "correct": 6,
+   "correct2": 5,
+   "caf": 0.6,
+   "median_think_chars_finished": 8.0,
+   "mean_tokens": 1515
+  }
+ },
+ "2.0": {
+  "gsm8k": {
+   "n": 64,
+   "finished": 52,
+   "correct": 5,
+   "correct2": 5,
+   "caf": 0.096,
+   "median_think_chars_finished": 8.0,
+   "mean_tokens": 558
+  },
+  "math500": {
+   "n": 32,
+   "finished": 14,
+   "correct": 3,
+   "correct2": 3,
+   "caf": 0.143,
+   "median_think_chars_finished": 8.0,
+   "mean_tokens": 1282
+  }
+ },
+ "own 1.0": {
+  "gsm8k": {
+   "n": 64,
+   "finished": 19,
+   "correct": 12,
+   "correct2": 13,
+   "caf": 0.579,
+   "median_think_chars_finished": 1098,
+   "mean_tokens": 1591
+  },
+  "math500": {
+   "n": 32,
+   "finished": 6,
+   "correct": 5,
+   "correct2": 4,
+   "caf": 0.833,
+   "median_think_chars_finished": 1161.0,
+   "mean_tokens": 1760
+  }
+ },
+ "rule": {
+  "finish_component_present": true,
+  "scales_passing": [
+   "1.5"
+  ],
+  "test_scale": "1.5"
+ }
+}

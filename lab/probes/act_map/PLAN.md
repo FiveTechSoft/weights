@@ -310,3 +310,11 @@ new ones; a new scale outside the bracket in finished → server drift, reported
 finished at 1.25 ≥ 25 (threshold below 1.25); 1.75 finishes fewer than 1.5 (non-monotone inside the bracket).
 **Cost.** 3 dev arms × ~9 min ≈ 30 min GPU; test arm, if any, ≈ 13 min. Chain with `set -e`, ERR trap, 2-item smoke,
 server-log check for "no valid control vector" (the §45.11 failure), vector file sha256 logged.
+
+[post-data 2026-11-15; results §45.14, row 33 scored ◐.] Finished 3 / 15 / 50 at 1.25 / 1.5 / 1.75 (threshold, as
+predicted). The rule fired at 1.5 (15 finished, CAF 0.40 ≥ 0.32) and the test arm ran: 24 finished, 12 correct, 12/0
+vs base, 8/9 vs `own`. But from 1.5 up every finished answer has 8 characters of thinking (`<think>\n</think>`): the CAF
+threshold measured the 0.8B's accuracy when answering GSM8K **without** thinking (≈ 40 %), not finishing after reasoning.
+The rule as fixed stands and is read with the descriptive measure it left out: no finish component at any dose; the map
+carries a dose-thresholded switch of the thinking phase. Lesson for any next rule of this kind: the thinking length of the
+finished answers is the criterion, not a report. Nothing more is run on gate 3b.
