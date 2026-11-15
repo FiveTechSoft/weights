@@ -202,7 +202,11 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   base + "stop reasoning once you have the answer" gives GSM8K 50 → 37 (p 0.019), same tokens, more cut answers; a
   neutral sentence gives 29. The thinking phase does not react to an instruction in the user turn at this budget, and
   any added sentence lengthens it. Prediction row 28 failed (we expected 62-75). Still open: other budgets, other
-  models, sampling, an instruction placed inside the thinking or as a system prompt.
+  models, sampling, an instruction placed inside the thinking or as a system prompt. **Not a token budget (§45.11,
+  §45.13, 2026-11-14/15):** at 8,192 tokens the base repeats 72 / 21 item by item (§39.6), the vector scores 85 / 37
+  with a quarter of the tokens (16/3, p 0.004) and the compiled weights 90 / 41 (19/1 vs base; 6/1 and 6/2 vs the
+  vector, equal or better); the compile's half dose closes early less often than the vector (6 vs 13 finished-wrong).
+  Prediction row 31 (base 82-92 at 8,192) failed; row 32 partial, the compile did more than predicted.
 - **The conclude direction across models through activation maps (gate 3b, §45.12, 2026-11-14):** the 9B's contrast
   mapped per layer into Qwen3.5-0.8B (gate 1 maps, fitted on raw GSM8K text, not refitted) finishes 83/100 GSM8K
   answers at 2,048 tokens where the base finishes 0, and 7 are correct (7/0, p 0.016); the same-norm placebo 3 / 1,

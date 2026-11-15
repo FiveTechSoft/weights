@@ -2907,3 +2907,49 @@ acaba 44 sin acertar ninguno. `embport` nunca pasa de base + 3.
   (binomial exacta propia). Bucles: el campo `loop` de `bench_runner` (tabla) y una heurística propia de repetición
   (≥ 4 copias de una subcadena en la cola) dan 78 / 69 / 13 / 84 / 91 / 72 / 81 en GSM8K frente a 84 / 65 / 19 / 83 /
   89 / 71 / 79: mismo orden, distinta definición.
+
+### 45.13 Control de presupuesto, brazo fusionado bien servido: los pesos compilados a 8 192 dan 90 / 41, igual o mejor que el vector, 18 por encima de la base (2026-11-15)
+Repetición del brazo inválido de §45.11 (el GGUF fusionado se pasó como control-vector y se sirvió la base). Plan:
+`lab/probes/cc/PLAN.md` "Token-budget control", nota [rev 2026-11-15] escrita antes de lanzar; predicción fila 32.
+Cadena `lab/runs/cc_v2/chain_merged8192.sh` (05:53-06:48): `hf_cache/cc_op_v2/merged-Q6_K.gguf` servido con `-m`, sin
+control-vector (log del servidor: `loading model 'hf_cache/cc_op_v2/merged-Q6_K.gguf'`, cero menciones a control vector),
+mismos ajustes que los brazos base y vector de §45.11 (`-c 40960`, `-np 2`, voraz), `bench_runner` por defecto (GSM8K dev
+100 + MATH-500 50, 8 192 tokens). Smoke de 2 ítems antes del brazo (256 y 155 tokens). Primera cadena con `set -e` +
+trap ERR; nada falló. Salida `lab/runs/cc_v2/cap8192/dev_merged_served_8192.json`.
+
+| brazo (8 192 tokens) | GSM8K ok (c2) / cortes / acabados mal / tokens | MATH-500 ok (c2) / cortes / acabados mal / tokens |
+|---|---|---|
+| base (§45.11) | 72 (72) / 24 / 4 / 3 638 | 21 (19) / 28 / 1 / 6 204 |
+| vector cc_v2 ×1.0 (§45.11) | 85 (86) / 4 / 13 / 949 | 37 (28) / 15 / 2 / 3 321 |
+| **fusionado (servido como modelo)** | **90 (91) / 4 / 6 / 1 038** | **41 (32) / 10 / 1 / 2 850** |
+| fusionado a 2 048 (§45.8, mismos ítems) | 85 (86) / 10 / 5 / 796 | 30 (23) / 21 / 1 / 1 438 |
+
+- **Pareados (ítem a ítem, binomial exacta).** Fusionado frente a base a 8 192: GSM8K **19/1, p 4·10⁻⁵**; MATH **22/2,
+  p 4·10⁻⁵** (corrector 2: 20/1 y 17/4, p 0,007). Fusionado frente a vector a 8 192: GSM8K 6/1 (p 0,125), MATH 6/2
+  (p 0,29): igual o mejor, no distinguible con n = 150. Fusionado a 8 192 frente a sí mismo a 2 048: GSM8K 5/0 (p 0,06),
+  MATH **12/1, p 0,003**: el compilado sí gana con más tope en MATH (30 → 41), el vector apenas (35 → 37, §45.11).
+- **Por ítem (GSM8K).** De los 24 cortes de la base a 8 192 el fusionado acierta 17. Acaba mal 6 (12, 14, 20, 70, 87,
+  93) frente a 13 del vector; de los 13 del vector acierta 5. Los 3 ítems que la base acertaba a 2 048 y el vector cerró
+  mal (50, 63, 82): **los tres bien** con el fusionado. Corta 4 (7, 37, 58, 62), 3 de ellos también cortados por la
+  base. De sus 10 cortes a 2 048, a 8 192 acierta 3 y sigue cortando 4.
+- **Correctores en MATH.** Corrector 2 (último número) discrepa del corrector 1 en 9 ítems del fusionado y 9 del vector
+  (base 2): todos fracciones escritas `\frac43` frente a `4/3` (106, 124, 157, 235, 247, 253, …). El corrector 2
+  subestima MATH cuando el modelo acaba; se informa, el criterio es el corrector 1 (como en §45.4-45.8).
+- **Predicción (fila 32) contra el dato.** GSM8K 82-89 → **90** (uno por encima); cortes ≤ 8 → 4 ✓; acabados mal 8-16 →
+  **6** (por debajo, en el buen sentido); tokens 800-1 400 → 1 038 ✓. MATH 30-38 → **41** (por encima); cortes ≤ 20 →
+  10 ✓. Control: ≥ base + 8 con p < 0,05 → +18, p 4·10⁻⁵ ✓. Sorpresas declaradas: GSM < 78 no; MATH < 25 no; fusionado
+  > vector + 5: GSM +5 y MATH +4, en el borde, no; tokens > 2 000 no. **◐**: sentido, controles y cortes dentro; tres
+  bandas falladas, las tres porque el fusionado hace **más** de lo previsto (cuarta vez que la predicción sobrestima
+  el coste del compilado o del vector: filas 26, 27, 31, 32).
+- **Lectura.** Cierra la fila 31: con cuatro veces más presupuesto, la base queda en 72 / 21 y los pesos compilados en
+  90 / 41 (vector 85 / 37). No es presupuesto (T2 confirmado por tercera corrida); y el compilado en Q6_K, que lleva la
+  dirección a ≈ la mitad de magnitud (§45.8), **cierra pronto menos veces que el vector** (6 frente a 13 acabados mal;
+  los 3 ítems de coste por cierre temprano, bien) y con el tope alto aprovecha el espacio en MATH que el vector no
+  aprovecha. Lo que el vector pierde por cerrar antes de tiempo, la dosis menor del compilado lo recupera sin perder el
+  cierre (cortes 4 / 10 frente a 24 / 28 de la base). Límites: un modelo, voraz, un tope alto; servidor con `-np 2`
+  (dos servicios de la misma base difieren ítem a ítem, §45.11), así que las diferencias de ≤ 2 ítems frente al vector
+  no se leen; ítems de dev (no sellados; el sellado del compilado es §45.8). El fusionado a 2 048 de la tabla es la
+  corrida de §45.8 (misma semilla de ítems), no una repetición.
+- **Dos métodos.** Resumen de la cadena (`bench_runner`: acc 0,90 / 0,82, cortes 4 / 10, tokens 1 038 / 2 850) y recuento
+  propio por filas del informe (mismos números, dos correctores) más los tres pareados sobre los JSON de §45.11 y §45.8
+  (150 ítems idénticos en los cuatro informes, comprobado).

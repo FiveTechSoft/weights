@@ -260,3 +260,12 @@ is the §45.8 compile (`hf_cache/cc_op_v2/report.json`, 2026-11-12); (p2) two se
 (§45.11), so paired item readings against the vector arm carry ± a few items of noise. We would be surprised if: merged
 < 78 on GSM8K or < 25 on MATH (the compile would lose its effect at the larger budget); merged > vector + 5 on either
 (Q6_K would do more than the vector it was compiled from); mean GSM8K tokens > 2,000 (closing lost).
+
+[post-data 2026-11-15; results §45.13, row 32 scored ◐.] Merged served as the model at 8,192: GSM8K 90 (grader 2: 91),
+4 cut, 6 finished-wrong, 1,038 tokens; MATH 41 (32), 10 cut, 2,850 tokens. Against the base at 8,192: 19/1 (p 4e-5) and
+22/2; against the vector at 8,192: 6/1 (p 0.125) and 6/2 — equal or better, not separable at n = 150; against itself at
+2,048 (§45.8): 5/0 and 12/1 (p 0.003). Items 50, 63, 82 all correct. GSM8K one above the band, MATH three above,
+finished-wrong below the band: all three misses in the "does more than predicted" direction; no surprise clause fired
+(vector + 5 / + 4, at the edge). Row 31's "merged = vector ± 2" would also have failed. Reading: the compile's half dose
+closes early less often than the vector (6 vs 13) and uses the larger budget in MATH; the budget framing of row 31
+stays refuted (base 72 / 21 vs compiled 90 / 41).
