@@ -45,15 +45,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 | 31 | 2026-11-13 | `cc/PLAN.md` "Token-budget control" (escrito por otra sesión; integrado aquí tal cual, antes del dato) | GSM8K dev a 8 192: base 82-92/100, cortes ≤ 8; vector cc_v2 ×1.0 = su valor a 2 048 (83) ± 2, sigue cerrando mal sus 13; fusionado = vector ± 2. Sorpresa si base < 70, vector > base + 5, o los 3 ítems que la base acertaba a 2 048 y el vector cerró mal (50, 63, 82) salen bien con el vector a 8 192. Nota previa al dato: §39.6 ya midió la misma base a 8 192 (72/100, 24 cortadas); la predicción se dejó como estaba | §45.11 | base a 8 192: **72**/100, 24 cortadas (idéntica ítem a ítem a §39.6); vector a 8 192: 85, 4 cortadas, 13 acabadas mal (11 de las 13 de antes siguen mal); vector > base por 13 (16/3, p 0,0044); ítems 50, 63, 82 con el vector a 8 192: mal, mal, bien. Fusionado: **no medido**, el brazo sirvió la base (el script pasó el GGUF fusionado como control-vector; rechazado). [post-data 2026-11-15: medido en la fila 32 / §45.13: 90 / 41, fuera de "vector ± 2" (85 / 37)] | ❌ (base fuera de banda por 10; sorpresa declarada "vector > base + 5" ocurre; fusionado sin dato) |
 | 32 | 2026-11-15 | `cc/PLAN.md` "Token-budget control" [rev 2026-11-15] | Fusionado (`merged-Q6_K.gguf` servido como modelo) a 8 192, dev GSM 100 + MATH 50: GSM 82-89, cortes ≤ 8, acabados mal 8-16, tokens 800-1 400; MATH 30-38, cortes ≤ 20. Control: base a 8 192 ya medida (72 / 21); fusionado ≥ base + 8 en GSM con p < 0,05. Premisas p1-p2 en el plan. Sorpresa si GSM < 78 o MATH < 25, si fusionado > vector + 5 en alguno (vector 85 / 37), o tokens GSM > 2 000 | §45.13 | GSM **90** (91), 4 cortes, **6** acabados mal, 1 038 tokens; MATH **41** (32), 10 cortes, 2 850 tokens. Frente a base 19/1 (p 4·10⁻⁵) y 22/2; frente a vector 6/1 (p 0,125) y 6/2; frente a sí mismo a 2 048: 5/0 y 12/1 (p 0,003). Ítems 50, 63, 82 bien. Ninguna sorpresa (vector + 5 y + 4, en el borde) | ◐ (sentido, control, cortes y tokens dentro; GSM uno por encima, MATH tres por encima, acabados mal por debajo: las tres en el buen sentido) |
 | 33 | 2026-11-15 | `act_map/PLAN.md` "Gate 3b, loose end" | `port` a 1,25 / 1,5 / 1,75 en dev (0.8B, 2 048): acabados GSM 0-5 / 5-30 / 25-50 (1,0 = 0, 2,0 = 52); bien 0-3 / 2-8 / 3-8; bien-entre-acabados 0,10-0,30 donde acabados ≥ 10 (own 0,63); mediana de caracteres de pensamiento < 200. Veredicto "solo parar", sin brazo de test. MATH acabados 0-3 / 2-10 / 8-16, bien ≤ 3. Control: brazos 1,0 y 2,0 ya corridos encierran a los nuevos. Premisas p1-p3 en el plan. Sorpresa si alguna escala llega a 0,5 con ≥ 10 acabados, si 1,25 acaba ≥ 25, o si 1,75 acaba menos que 1,5 | — | — | ⏳ |
+| 34 | 2026-11-15 | `cc_phi/PLAN.md` (segunda familia: Phi-4-mini-reasoning, 3,8B) | Sonda: P2 se cumple a 2 048 (3-7 de 10 cortadas). Trazas 50-90/128 cierran a 4 096. Criba: base 15-30/64, mejor escala 0,5 o 1,0, vector base + 3 a + 12. Dev a 2 048: base GSM 55-80 (cortes 15-40), MATH 10-25 (cortes 25-40); vector GSM + 5 a + 15, MATH + 5 a + 12, tokens −20 a −40 %, cortes a la mitad o menos; placebo ± 3 de base y tokens ± 10 %. C1-C3 pasan; sellado confirma. Premisas p1-p3 en el plan. Sorpresa si vector < base − 3 en GSM, placebo ≥ vector − 3, base corta < 10 % en los dos a 2 048, o escala elegida 2,0 | — | — | ⏳ |
 
-## Cuenta (33 filas; 28 puntuables)
+## Cuenta (34 filas; 28 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 10 |
 | ❌ falla | 12 |
-| ⏳ / — | 5 |
+| ⏳ / — | 6 |
 
 Acierto limpio 6/28 = 21 %; acierto o parcial 16/28 = 57 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es
