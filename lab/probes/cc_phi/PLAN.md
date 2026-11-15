@@ -86,3 +86,17 @@ server's. Nothing here says anything about sampling.
 Stage 0 ≈ 20 min; traces ≈ 40 min (128 × 4,096 at 3.8B, 2 slots); op ≈ 10 min; screen 5 × 64 ≈ 1 h; dev 3 × 150 ≈ 1 h;
 sealed 3 × 150 ≈ 1 h. ≈ 4.5 GPU h, after `cc08b_chain.sh`. Chain `lab/runs/cc_phi/chain.sh` with `set -e`, ERR trap,
 smoke per arm, server-log check, GGUF sha256 in the log.
+
+[post-data 2026-11-15 11:50, results §45.15, prediction row 34 partial.] Chain 08:27-11:19, nothing stopped. Traces 107/128
+(band 50-90: more). Vector: 31 layers, last-row norm 27.2, increments peak at layer 30 (21.0) with layer 31 at 18.2 (0.87×
+the one before; Qwen ≈ 2×): reported as a profile difference, as the plan said. Screen: base 6, 0.25 → 16, **0.5 → 22**,
+1.0 → 5 (63 finished, 17 of them with < 50 characters of thinking, 8 without `\boxed`: the "stop thinking" regime of
+§45.14 appears at Qwen's scale), 2.0 → 0; chosen 0.5. Dev at 1,024: base 59 / 6, vector **85 / 19**, placebo 47 / 5; vector
+vs base 28/2 and 14/1; placebo vs base 4/16 (p 0.012, hurts) and 2/3; tokens −31 % / −11 %; C1-C3 PASS. Sealed (first
+use for Phi): base 59 / 4, vector **82 / 19**, placebo 58 / 6; 27/4 and 16/1; CONFIRMS. No finished answer at 0.5 skips
+the thinking phase (0 of 111 and 0 of 112), median thinking of finished answers 1,987 → 1,368 (dev) and 2,072 → 1,318
+(sealed). Premises: p1 `general.name` Phi-4-Mini-Reasoning, `phi3`, HF 32 layers (held); p2 template seen in stage 0
+(held); p3 finished without `\boxed` 1-2 of ~110 (held). Of the prediction, the direction, the control, the chosen
+scale, C1-C3 and the sealed confirmation held; almost every magnitude band failed (gains larger than predicted, base
+lower because of the 1,024 budget, dev placebo −12, MATH cuts not halved). Declared surprises: none. Compiling into
+Phi's weights is a separate plan, not written.

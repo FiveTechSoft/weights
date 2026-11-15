@@ -3001,3 +3001,69 @@ voraz. Datos `lab/runs/act_map/cc08b/`.
 - **Dos métodos.** `readings.json` de la cadena y recuento propio por filas (acabados, bien con dos correctores,
   bien-entre-acabados, mediana de caracteres, tokens): idénticos en los seis brazos de dev y en el de test; pareados con
   binomial exacta propia.
+
+### 45.15 La dirección "concluir" en una segunda familia: Phi-4-mini-reasoning (3,8B) pasa dev y confirma en el conjunto sellado (2026-11-15)
+Plan: `lab/probes/cc_phi/PLAN.md` (fijado antes de correr; sonda de premisas en el [rev] de las 08:30), predicción fila 34.
+Modelo `microsoft/Phi-4-mini-reasoning` (`Phi3ForCausalLM`, 32 capas, d 3 072; GGUF unsloth Q6_K, `general.name`
+Phi-4-Mini-Reasoning, arquitectura `phi3`, sha256 `e5742248…`), misma receta y mismo código que el estudio Qwen (`cc.py`,
+`contrast_vector`, `bench_runner`, llama-server; `-np 2`, voraz). **Presupuesto 1 024 tokens** (regla del plan: a 2 048 solo
+cortaba 2/10). Cadena `lab/runs/cc_phi/chain.sh` 08:27-11:19 (`set -e`, trap, smoke 2/2 por configuración servida, sha256
+en el log). Datos `lab/runs/cc_phi/` y `lab/runs/sealed_cc_phi/`. Aviso de llama.cpp en cada arranque: "Phi SWA is
+currently disabled - results might be suboptimal"; afecta igual a los seis brazos.
+
+- **Trazas y filas.** 128 problemas de descubrimiento a 4 096: **107** cierran `</think>` y acaban (`stop`); 107 pares
+  pos/neg (pos = 48 últimos tokens de razonamiento; `response` = `"<think>\n"` + razonamiento, offsets desplazados).
+- **Vector.** 31 capas (misma convención que Qwen), semilla placebo 2026. Normas de los incrementos: 0,51 (capa 1) … 3,77
+  (mediana) … 11,1 (29), **21,0 (30)**, **18,2 (31)**; norma de la última fila 27,2. Perfil distinto de Qwen: la última fila
+  es 0,87× la anterior (Qwen ≈ 2×), el pico está en la capa 30; dentro de la banda "informar, no parar" del plan.
+- **Criba** (64 MATH de criba, 1 024): base 6 (c2 5), 58 cortes; 0,25 → 16 (15), 48 cortes; **0,5 → 22 (22)**, 42 cortes;
+  1,0 → 5 (4), 1 corte, 63 acabados, 382 tokens, 4 colas en bucle; 2,0 → 0, 64 cortes. `cc.py choose` → **0,5**.
+  **A 1,0 Phi entra en el régimen de §45.14:** de los 63 acabados, 17 llevan < 50 caracteres de pensamiento y 8 acaban sin
+  `\boxed`; la escala que Qwen necesitó (1,0) aquí apaga la fase de pensamiento. La norma del vector es mayor (27,2 frente
+  a 18,1 del Qwen corregido): 0,5 × 27,2 ≈ 13,6 queda por debajo de 1,0 × 18,1.
+
+| Phi-4-mini-reasoning, 1 024 tokens | GSM8K /100 bien (c2) / cortes / acabados / bien-entre-acabados / mediana carac. pensamiento acabados / tokens | MATH /50 bien (c2) / cortes / acabados / tokens |
+|---|---|---|
+| **dev** base | 59 (58) / 42 / 58 / 0,98 / 1 987 / 828 | 6 (6) / 43 / 7 / 993 |
+| dev vector ×0,5 | **85 (85)** / 11 / 89 / 0,93 / 1 368 / 573 (−31 %) | **19 (17)** / 28 / 22 / 883 (−11 %) |
+| dev placebo ×0,5 | 47 (45) / 54 / 46 / 0,98 / 2 239 / 894 (+8 %) | 5 (5) / 45 / 5 / 1 007 (+1 %) |
+| **sellado** base | 59 (60) / 38 / 62 / 0,94 / 2 072 / 846 | 4 (4) / 46 / 4 / 1 019 |
+| sellado vector ×0,5 | **82 (83)** / 9 / 91 / 0,90 / 1 318 / 558 (−34 %) | **19 (18)** / 29 / 21 / 896 (−12 %) |
+| sellado placebo ×0,5 | 58 (57) / 40 / 60 / 0,95 / 2 280 / 863 (+2 %) | 6 (6) / 45 / 5 / 1 015 (0 %) |
+
+- **Dev, pareado.** Vector frente a base: GSM8K **28/2** (p 8,7·10⁻⁷; c2 29/2), MATH **14/1** (p 0,001; c2 12/1, p 0,003).
+  Placebo frente a base: GSM8K 4/16 (**p 0,012**: el empujón aleatorio del mismo tamaño daña en dev), MATH 2/3. Vector frente
+  a placebo: 40/2 y 15/1. C1 (MATH con los dos correctores y GSM8K) ✓, C2 (placebo no mejor que la base, tokens +8 %/+1 %) ✓,
+  C3 ✓ → **PASS** (`verdict.json`, 10:35).
+- **Sellado** (`data/sealed_confirm.json`, sha256 `3acfbc8d…`, **primer uso con este modelo**, ningún ítem tocó una
+  decisión). Vector frente a base: GSM8K **27/4** (p 3,4·10⁻⁵; c2 27/4), MATH **16/1** (p 2,7·10⁻⁴; c2 15/1). Placebo frente a
+  base: 10/11 (p 1) y 2/0. Vector frente a placebo: 26/2 y 14/1. **CONFIRMA** (C1-C3; `lab/runs/sealed_cc_phi/verdict.txt`).
+  La pérdida del placebo en dev (−12) no reaparece en el sellado (−1): una semilla de placebo, daño o nada, nunca ganancia.
+- **Es "terminar tras razonar", no "dejar de pensar"** (la lección de §45.14 aplicada como medida): a 0,5 **ningún**
+  acabado de dev ni del sellado lleva < 50 caracteres de pensamiento (0 de 111 y 0 de 112 en el vector); la mediana del
+  pensamiento de los acabados baja de 1 987 a 1 368 (dev) y de 2 072 a 1 318 (sellado), y 0,90-0,93 de los acabados están
+  bien (base 0,94-0,98). Acabados sin `\boxed` (premisa p3): 1 y 2 de ~110, < 5 %.
+- **Frente a Qwen (§45.4, sellado 1, 2 048):** Qwen 43 → 86 y 4 → 33 (placebo 28 / 1); Phi 59 → 82 y 4 → 19 (placebo 58 / 6)
+  con la mitad de presupuesto. Ganancia GSM8K +23 (Qwen +43), MATH +15 (Qwen +29); tokens −34 % / −12 % (Qwen −60 % aprox.).
+  Mismo sentido, mismo control, mismo signo del placebo (≤ base); magnitud menor en un régimen más duro (80 % de cortes en
+  la sonda).
+- **Predicción (fila 34) contra el dato.** Sonda: P2 a 2 048 ✗ (2/10; se cumplió a 1 024, regla del plan). Trazas 50-90 →
+  **107** ✗ (más). Criba: base 15-30 → 6 ✗ (presupuesto 1 024, bandas escritas para 2 048, leídas así en el [rev]); mejor
+  escala 0,5 o 1,0 → 0,5 ✓; vector base + 3 a + 12 → **+16** ✗ (más). Dev: base GSM 55-80 → 59 ✓, cortes 15-40 → 42 ✗;
+  MATH 10-25 → 6 ✗, cortes 25-40 → 43 ✗. Vector GSM + 5 a + 15 → **+26** ✗ (más), MATH + 5 a + 12 → **+13** ✗ (uno más);
+  tokens −20 a −40 % → GSM −31 ✓, MATH −11 ✗; cortes a la mitad o menos → GSM 42 → 11 ✓, MATH 43 → 28 ✗. Placebo ± 3 →
+  GSM **−12** ✗, MATH −1 ✓; tokens ± 10 % ✓✓. C1-C3 pasan ✓; sellado confirma ✓. Sorpresas declaradas: ninguna (vector no
+  por debajo de base; placebo 47 ≪ 82; escala no 2,0; la sonda cortó 2/10 a 2 048, no < 10 %). **◐**: sentido, control,
+  veredicto y confirmación aciertan; las magnitudes fallan casi todas, la mayoría porque el efecto fue mayor que el
+  previsto y la base más baja (presupuesto 1 024).
+- **Lectura.** Primera salida de la familia Qwen: la receta (trazas propias → contraste de los 48 últimos tokens → vector
+  de control, escala elegida en ítems de criba, placebo de la misma norma, dev y sellado) funciona en otro laboratorio,
+  otra arquitectura (`phi3`, `gate_up_proj` fusionado, embeddings atados), otro tokenizador y otra plantilla (el modelo
+  escribe `<think>` él mismo; nuestro `split_think`). Lo que cambia entre familias: la escala (0,5, con un umbral de
+  "apagar el pensamiento" ya a 1,0) y el perfil por capas (pico en la 30, no en la última). Lo que no cambia: el placebo
+  nunca gana. No se compila en pesos todavía (plan aparte). Límites: un presupuesto (1 024, más duro que 2 048), una
+  escala elegida en 64 ítems, una semilla de placebo, voraz, Q6_K, aviso SWA de llama.cpp, el campo "reasoning" es
+  nuestro corte y no el del servidor.
+- **Dos métodos.** `verdict.json`, `verdict.txt` y los resúmenes de la cadena, frente a recuento propio por filas de los
+  seis JSON (bien con dos correctores, cortes, acabados, caracteres de pensamiento de los acabados, tokens, pareados
+  ganados/perdidos): idénticos; binomial exacta comprobada a mano para 28/2 (2 × 466 / 2³⁰ = 8,7·10⁻⁷).

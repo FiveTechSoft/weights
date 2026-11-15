@@ -215,7 +215,20 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   failed. What crosses is the **stop** component, not the **finish** component: the ported answers have a median of 8
   characters of thinking and 8 % of the finished ones are right (own 35 %, Exp 8 100 %, the 9B with the same direction
   ≈ 90 %). T2's two parts (stop when done, and *knowing* when done) separate here; the map carries the first. Open:
-  a rule that counts correct-among-finished, a scale between 1.0 and 2.0, other pairs.
+  a rule that counts correct-among-finished, a scale between 1.0 and 2.0, other pairs. [2026-11-15, §45.14:] the dose
+  curve (finished 0 / 3 / 15 / 50 / 52 at 1.0 / 1.25 / 1.5 / 1.75 / 2.0) shows a threshold, and from 1.5 up every
+  finished answer skips the thinking phase; the correct-among-finished rule fired on direct answers (≈ 40 % right
+  without thinking), so the thinking length of finished answers must be a criterion, not a report, in any next rule.
+- **The conclude direction on a second family (Phi-4-mini-reasoning 3.8B, §45.15, 2026-11-15):** same recipe and code on
+  another lab's model (`phi3`, fused `gate_up_proj`, tied embeddings, another tokenizer, a template where the model writes
+  `<think>` itself), 1,024-token budget (it does not run out at 2,048), scale 0.5 chosen on screen items: dev GSM8K
+  59 → 85, MATH 6 → 19; **sealed set, first use for this model: 59 → 82, 4 → 19** (27/4, 16/1, two graders each), tokens
+  −34 % / −12 %; same-norm placebo 58 / 6 (dev 47 / 5, never above base). Every finished answer at 0.5 keeps its
+  thinking (median 2,072 → 1,318 characters); at Qwen's scale 1.0 the model skips it (screen 5/64 with 63 finished): the
+  T2 "stop" regime of gate 3b is reachable in Phi by dose alone. What changes between families: the scale (vector norm
+  27.2 vs 18.1) and the per-layer profile (peak at layer 30, last row 0.87× the one before; Qwen ≈ 2×). What does not:
+  the placebo's sign. Prediction row 34 partial (direction, controls, verdict right; magnitudes larger than predicted).
+  Open: compile into Phi's `down_proj` (separate plan), other budgets, sampling, a third family.
 - **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
   traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
   rebuild the conclude vector and get dev 83 / 35? Today we only know the *program* is deterministic. Cheap,
@@ -232,7 +245,9 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
   the medical RL model is uncertain at 25 %).
 - **Quantization × edits:** all our numbers are Q6_K; quantization alone moves base loops (§39.6).
-- **Single model family, greedy only.** Nothing here is shown for sampling or for other families.
+- **Two model families (Qwen3.5-9B; Phi-4-mini-reasoning since §45.15), greedy only.** The conclude direction is the
+  only result shown outside Qwen; the transplants, the compile into weights, the activation maps and the implant
+  checks are Qwen-only. Nothing here is shown for sampling.
 
 ## Refuted / retired (do not retry without a new reason)
 | idea | result | where |
