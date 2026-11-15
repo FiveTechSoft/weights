@@ -22,6 +22,17 @@ P3. **llama.cpp applies control vectors to this architecture:** a same-norm rand
     against the base. If outputs are identical, stop: control vectors are not applied to `phi3` by this build.
 P4. Tokenizer offsets (`return_offsets_mapping`) work for this tokenizer (the rows step needs them).
 
+[rev 2026-11-15 08:30, after stage 0 P1/P2, before any arm.] **P1 failed as allowed for:** llama-server returned no
+`reasoning_content`; `content` held `<think>…</think>answer` (8/10 tails with the closing tag; the 2 cut ones unclosed).
+Fallback added to `engine/bench_runner.ask` as `split_think` (4 unit tests written first, `tests/test_bench_runner.py`
+`TestThinkFallback`): reasoning = text between the tags, content = after; unclosed tag = all reasoning; server-split
+templates untouched. The probe JSONs were produced before the fallback (reasoning_chars 0 there); every arm below runs
+with it. **P2:** at 2,048 only 2/10 cut (9/10 correct, tokens 685-2,048) → fails; at 1,024, 8/10 cut → **budget 1,024**
+for the whole study (plan rule). Note: 80 % cut at 1,024 is a harsher regime than Qwen's 51 % at 2,048; the prediction
+bands below were written for 2,048 and are read as such (dev base GSM8K / MATH numbers will be lower; the bands on the
+vector's *gain* and the placebo stay). P4 held (CPU, 35 tokens, offsets contiguous; `<think>` is 3 ordinary tokens).
+P3 pending (random vector at scale 8).
+
 ## Data (no download; nothing from the dev set or the sealed set)
 `cc.py split` with `CC_RUNS=lab/runs/cc_phi`: same seed 20261110, so the same 64 discovery / 64 screen MATH items and
 GSM8K **train** 0-63 as the Qwen study (none of them in dev or sealed sets; sharing them across models leaks nothing).

@@ -74,6 +74,51 @@ class TestLoraField(unittest.TestCase):
         self.assertNotIn("lora", sent[1])
 
 
+class TestThinkFallback(unittest.TestCase):
+    """Templates llama-server does not split (Phi-4-mini-reasoning writes <think>...</think> inside content, no
+    reasoning_content; lab/probes/cc_phi/PLAN.md P1): ask() splits them itself. Templates it does split are untouched."""
+
+    def _ask(self, message):
+        import io
+        import json as _json
+        from engine import bench_runner as br
+
+        class R(io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        def fake(req, timeout=0):
+            return R(_json.dumps({"choices": [{"message": message, "finish_reason": "stop"}],
+                                  "usage": {"completion_tokens": 1}}).encode())
+        old = br.urllib.request.urlopen
+        br.urllib.request.urlopen = fake
+        try:
+            return br.ask("http://x", "q", 10)
+        finally:
+            br.urllib.request.urlopen = old
+
+    def test_think_tags_in_content_are_split_into_reasoning_and_content(self):
+        r = self._ask({"content": "<think>\nLet me count.\nSo 3.\n</think>\nThe answer is \\boxed{3}."})
+        self.assertEqual(r["reasoning"], "Let me count.\nSo 3.")
+        self.assertEqual(r["content"], "The answer is \\boxed{3}.")
+
+    def test_unclosed_think_is_all_reasoning(self):
+        r = self._ask({"content": "<think>\nstill thinking"})
+        self.assertEqual(r["reasoning"], "still thinking")
+        self.assertEqual(r["content"], "")
+
+    def test_server_split_is_kept_as_is(self):
+        r = self._ask({"content": "ans", "reasoning_content": "why"})
+        self.assertEqual((r["reasoning"], r["content"]), ("why", "ans"))
+
+    def test_content_without_tags_is_unchanged(self):
+        r = self._ask({"content": "just an answer"})
+        self.assertEqual((r["reasoning"], r["content"]), ("", "just an answer"))
+
+
 class TestExtraInstruction(unittest.TestCase):
     """extra: text appended after SUFFIX in the user message (prompt-control arm, cc/PLAN.md "Prompt control"); the
     default sends exactly question + SUFFIX, so every earlier run is unchanged."""

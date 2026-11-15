@@ -51,9 +51,21 @@ def ask(url, text, max_tokens, lora=None, extra=""):
     r = json.loads(urllib.request.urlopen(req, timeout=7200).read())
     ch = r["choices"][0]
     msg = ch["message"]
-    return {"content": msg.get("content") or "", "reasoning": msg.get("reasoning_content") or "",
+    content, reasoning = split_think(msg.get("content") or "", msg.get("reasoning_content") or "")
+    return {"content": content, "reasoning": reasoning,
             "finish": ch["finish_reason"], "tokens": r["usage"]["completion_tokens"],
             "tok_s": round(r.get("timings", {}).get("predicted_per_second", 0), 1)}
+
+
+def split_think(content, reasoning):
+    """Templates llama-server does not split (Phi-4-mini-reasoning: "<think>...</think>answer" inside content, no
+    reasoning_content; lab/probes/cc_phi/PLAN.md P1) -> (content after </think>, reasoning between the tags). An unclosed
+    <think> (cut trace) is all reasoning. When the server already split, or there is no tag, nothing changes."""
+    if reasoning or "<think>" not in content:
+        return content, reasoning
+    head, _, rest = content.partition("<think>")
+    think, closed, after = rest.partition("</think>")
+    return ((head + after).strip("\n") if closed else ""), think.strip("\n")
 
 
 def gsm_gold(answer):
