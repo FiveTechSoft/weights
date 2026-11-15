@@ -286,3 +286,27 @@ reference gain is small at this budget (the 0.8B floor), so half of it is 8. Not
 rule would add correct-among-finished (or "finished with ≥ N thinking tokens") and a scale between 1.0 and 2.0, written
 before running. The Exp 8 replica under this harness (greedy, thinking on, `bench_runner` template) finishes 13/100 GSM8K
 and 0/50 MATH, against 14/20 MATH in the 2026-11-04 notebook (sampling at 0.3, `rig/math500.py`); not re-run.
+
+## Gate 3b, loose end: does the mapped direction carry any "finish", or only "stop"? (addendum 2026-11-15, before any run; user: "adelante")
+**Question.** §45.12: `port` at 1.0 does nothing (0/96 finished on dev), at 2.0 it finishes 52/64 GSM8K with 5 correct
+and a median of 8 characters of thinking. Is there a dose between 1.0 and 2.0 where the 0.8B finishes *after* reasoning,
+i.e. a "finish" component, or is the whole effect a threshold on "stop"?
+
+**Arms** (`lab/runs/act_map/cc08b_chain.sh`; same vectors `hf_cache/act_map/cvec08/cc_port.gguf`, same dev items
+`cc08/dev_items.json`, same server and bench settings as the gate 3b dev arms: 0.8B Q6_K, 2,048 tokens, greedy, 4 slots):
+`port` at **1.25, 1.5, 1.75** on dev (64 GSM8K + 32 MATH). Read with the existing 1.0 and 2.0 dev arms. No new vectors.
+**Reading rule (fixed now).** Per scale: finished, correct (grader 1; grader 2 reported), correct-among-finished (CAF),
+median thinking characters of the finished answers. A **finish component is present** if some scale has ≥ 10 finished
+GSM8K answers and CAF ≥ 0.32 (half of `own`'s best, 12/19 = 0.63 at scale 1.0). Otherwise **stop only**. If present at
+some scale, run **test** `port` at that scale (the 150 test items; one run) and pair it against `cc08/test_base.json`,
+`test_own.json`, `test_port.json`: correct and finished with exact McNemar. If not present, no test arm.
+**Prediction (ours, low confidence; arm and control, premises marked).** Threshold, not a slope: GSM8K finished 1.25:
+0-5, 1.5: 5-30, 1.75: 25-50 (2.0 was 52); correct 0-3, 2-8, 3-8; CAF where finished ≥ 10: 0.10-0.30 (2.0: 0.10;
+`own`: 0.63); median thinking chars of finished answers < 200 at every scale that finishes ≥ 10. Verdict **stop only**;
+no test arm. MATH: finished 0-3, 2-10, 8-16, correct ≤ 3. Control = the 1.0 and 2.0 arms already run (bracket the
+new ones; a new scale outside the bracket in finished → server drift, reported). Premises: (p1) same GGUF vector file
+(sha recorded in the chain log); (p2) dev items unchanged; (p3) `bench_runner` defaults unchanged since 2026-11-14.
+**We would be surprised if:** any scale reaches CAF ≥ 0.5 with ≥ 10 finished (a real finish component at lower dose);
+finished at 1.25 ≥ 25 (threshold below 1.25); 1.75 finishes fewer than 1.5 (non-monotone inside the bracket).
+**Cost.** 3 dev arms × ~9 min ≈ 30 min GPU; test arm, if any, ≈ 13 min. Chain with `set -e`, ERR trap, 2-item smoke,
+server-log check for "no valid control vector" (the §45.11 failure), vector file sha256 logged.
