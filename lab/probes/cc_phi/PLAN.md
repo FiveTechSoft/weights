@@ -33,8 +33,10 @@ GSM8K **train** 0-63 as the Qwen study (none of them in dev or sealed sets; shar
    `</think>`, neg = the reasoning before them (first 1,536 at most). **Phi difference:** the model writes the `<think>\n`
    tag itself (Qwen's template writes it), so the row's `response` is `"<think>\n" + reasoning` and the focus offsets are
    shifted by that prefix; the `think` flag stays (the op's `enable_thinking` kwarg is ignored by this template).
-3. **Vector:** `contrast_vector` (`programs/cc_phi_vector.wspl`), `model_hint=phi4mr`, placebo seed 2026, forwards on the
-   GPU (3.8B bf16 fits; no streaming needed). Report per-layer increment norms and the last-row norm (Qwen: last row ≈ 2×
+3. **Vector:** `contrast_vector` (`programs/cc_phi_vector.wspl`), placebo seed 2026, forwards on the GPU (3.8B bf16
+   fits; the op streams layers anyway). [rev 2026-11-15, before any run: the WSP-Lang step has no `model_hint` parameter,
+   so the GGUF carries the op's default hint string "qwen35"; it is metadata llama.cpp does not check. Left as is rather
+   than changing the engine for a label.] Report per-layer increment norms and the last-row norm (Qwen: last row ≈ 2×
    the one before; if Phi's last row is > 4× or < 0.5× the one before, report as a profile difference, not a stop).
 4. **Screen** (scale; screen MATH items, 2,048 or the stage-0 budget): base, vector at 0.25 / 0.5 / 1 / 2. Rule of
    `cc.py choose` (most correct, grader 1; ties → smaller; floor rule: if no scale beats the base in correct, most
