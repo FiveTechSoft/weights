@@ -247,3 +247,16 @@ Cost: 3 arms x ~2 GPU h (8,192-token cap doubles-to-quadruples arm time) ~ 5-6 G
   base. `dev_merged_8192.json` is kept as evidence only. A valid rerun serves `merged-Q6_K.gguf` as `-m` with no control
   vector (≈ 2.6 GPU h; not launched, pending a decision).
 - The chain also ran MATH 50 (bench_runner default), reported in §45.11.
+
+[rev 2026-11-15, before the rerun; user: "haz ambos".] The merged arm is rerun by `lab/runs/cc_v2/chain_merged8192.sh`:
+`merged-Q6_K.gguf` served as `-m`, no control vector, same server settings as the base and vector arms (`-c 40960`,
+`-np 2`), bench_runner defaults (GSM8K dev 100 + MATH 50, 8,192), output `cap8192/dev_merged_served_8192.json`. The chain
+checks the server log for "no valid control vector" (the failure of the first attempt), runs a 2-item smoke first, and
+stops on any error (`set -e` + ERR trap). **Prediction (ours, row 32), written before launch.** Arm: GSM8K 82-89 (the
+vector at 8,192 scored 85; the compile at 2,048 was 85 vs the vector's 83, §45.8), cuts ≤ 8, finished-wrong 8-16, mean
+tokens 800-1,400; MATH 30-38 (the compile ran 5 below the vector in MATH at 2,048: 30 vs 35), cuts ≤ 20. Control: the
+base at 8,192 already measured (72 / 21, §45.11); merged above it by ≥ 8 on GSM8K with p < 0.05. Premises: (p1) the GGUF
+is the §45.8 compile (`hf_cache/cc_op_v2/report.json`, 2026-11-12); (p2) two servings with `-np 2` differ item by item
+(§45.11), so paired item readings against the vector arm carry ± a few items of noise. We would be surprised if: merged
+< 78 on GSM8K or < 25 on MATH (the compile would lose its effect at the larger budget); merged > vector + 5 on either
+(Q6_K would do more than the vector it was compiled from); mean GSM8K tokens > 2,000 (closing lost).
