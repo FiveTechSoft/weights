@@ -1,0 +1,397 @@
+{
+ "measures": {
+  "base": {
+   "gsm8k": {
+    "n": 100,
+    "correct": 0,
+    "correct2": 0,
+    "finished": 0,
+    "cut": 100,
+    "loops": 84,
+    "vs_base": {
+     "correct": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_gsm8k": 2048,
+   "math500": {
+    "n": 50,
+    "correct": 0,
+    "correct2": 0,
+    "finished": 0,
+    "cut": 50,
+    "loops": 41,
+    "vs_base": {
+     "correct": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_math500": 2048
+  },
+  "own": {
+   "gsm8k": {
+    "n": 100,
+    "correct": 13,
+    "correct2": 13,
+    "finished": 37,
+    "cut": 63,
+    "loops": 65,
+    "vs_base": {
+     "correct": {
+      "win": 13,
+      "loss": 0,
+      "p": 0.000244140625
+     },
+     "correct2": {
+      "win": 13,
+      "loss": 0,
+      "p": 0.000244140625
+     },
+     "finished": {
+      "win": 37,
+      "loss": 0,
+      "p": 1.4551915228366852e-11
+     }
+    }
+   },
+   "mean_tokens_gsm8k": 1489,
+   "math500": {
+    "n": 50,
+    "correct": 3,
+    "correct2": 1,
+    "finished": 5,
+    "cut": 45,
+    "loops": 45,
+    "vs_base": {
+     "correct": {
+      "win": 3,
+      "loss": 0,
+      "p": 0.25
+     },
+     "correct2": {
+      "win": 1,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 5,
+      "loss": 0,
+      "p": 0.0625
+     }
+    }
+   },
+   "mean_tokens_math500": 1900
+  },
+  "port": {
+   "gsm8k": {
+    "n": 100,
+    "correct": 7,
+    "correct2": 7,
+    "finished": 83,
+    "cut": 17,
+    "loops": 19,
+    "vs_base": {
+     "correct": {
+      "win": 7,
+      "loss": 0,
+      "p": 0.015625
+     },
+     "correct2": {
+      "win": 7,
+      "loss": 0,
+      "p": 0.015625
+     },
+     "finished": {
+      "win": 83,
+      "loss": 0,
+      "p": 2.0679515313825692e-25
+     }
+    }
+   },
+   "mean_tokens_gsm8k": 538,
+   "math500": {
+    "n": 50,
+    "correct": 3,
+    "correct2": 2,
+    "finished": 10,
+    "cut": 40,
+    "loops": 40,
+    "vs_base": {
+     "correct": {
+      "win": 3,
+      "loss": 0,
+      "p": 0.25
+     },
+     "correct2": {
+      "win": 2,
+      "loss": 0,
+      "p": 0.5
+     },
+     "finished": {
+      "win": 10,
+      "loss": 0,
+      "p": 0.001953125
+     }
+    }
+   },
+   "mean_tokens_math500": 1691
+  },
+  "embport": {
+   "gsm8k": {
+    "n": 100,
+    "correct": 0,
+    "correct2": 0,
+    "finished": 0,
+    "cut": 100,
+    "loops": 83,
+    "vs_base": {
+     "correct": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_gsm8k": 2048,
+   "math500": {
+    "n": 50,
+    "correct": 0,
+    "correct2": 0,
+    "finished": 0,
+    "cut": 50,
+    "loops": 42,
+    "vs_base": {
+     "correct": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_math500": 2048
+  },
+  "placebo": {
+   "gsm8k": {
+    "n": 100,
+    "correct": 1,
+    "correct2": 1,
+    "finished": 3,
+    "cut": 97,
+    "loops": 89,
+    "vs_base": {
+     "correct": {
+      "win": 1,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 1,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 3,
+      "loss": 0,
+      "p": 0.25
+     }
+    }
+   },
+   "mean_tokens_gsm8k": 2003,
+   "math500": {
+    "n": 50,
+    "correct": 0,
+    "correct2": 0,
+    "finished": 0,
+    "cut": 50,
+    "loops": 44,
+    "vs_base": {
+     "correct": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_math500": 2048
+  },
+  "exp8": {
+   "gsm8k": {
+    "n": 100,
+    "correct": 13,
+    "correct2": 13,
+    "finished": 13,
+    "cut": 87,
+    "loops": 71,
+    "vs_base": {
+     "correct": {
+      "win": 13,
+      "loss": 0,
+      "p": 0.000244140625
+     },
+     "correct2": {
+      "win": 13,
+      "loss": 0,
+      "p": 0.000244140625
+     },
+     "finished": {
+      "win": 13,
+      "loss": 0,
+      "p": 0.000244140625
+     }
+    }
+   },
+   "mean_tokens_gsm8k": 1930,
+   "math500": {
+    "n": 50,
+    "correct": 0,
+    "correct2": 0,
+    "finished": 0,
+    "cut": 50,
+    "loops": 35,
+    "vs_base": {
+     "correct": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_math500": 2048
+  },
+  "exp8_placebo": {
+   "gsm8k": {
+    "n": 100,
+    "correct": 1,
+    "correct2": 1,
+    "finished": 1,
+    "cut": 99,
+    "loops": 79,
+    "vs_base": {
+     "correct": {
+      "win": 1,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 1,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 1,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_gsm8k": 2034,
+   "math500": {
+    "n": 50,
+    "correct": 0,
+    "correct2": 0,
+    "finished": 0,
+    "cut": 50,
+    "loops": 42,
+    "vs_base": {
+     "correct": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "correct2": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     },
+     "finished": {
+      "win": 0,
+      "loss": 0,
+      "p": 1.0
+     }
+    }
+   },
+   "mean_tokens_math500": 2048
+  }
+ },
+ "scales": {
+  "own": "1.0",
+  "port": "2.0",
+  "embport": "0.5",
+  "placebo": "2.0"
+ },
+ "reference": "own",
+ "Q1 closes (GSM8K finished, p<0.05)": true,
+ "Q2 correct above base (both graders, one benchmark)": true,
+ "Q3 placebo flat": true,
+ "Q4 port gain >= 0.5 x reference gain": true,
+ "port_gain": 10,
+ "reference_gain": 16,
+ "verdict": "PASS",
+ "Q5 port - embport >= 0.5 x port gain": true
+}

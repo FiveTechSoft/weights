@@ -203,6 +203,15 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   neutral sentence gives 29. The thinking phase does not react to an instruction in the user turn at this budget, and
   any added sentence lengthens it. Prediction row 28 failed (we expected 62-75). Still open: other budgets, other
   models, sampling, an instruction placed inside the thinking or as a system prompt.
+- **The conclude direction across models through activation maps (gate 3b, §45.12, 2026-11-14):** the 9B's contrast
+  mapped per layer into Qwen3.5-0.8B (gate 1 maps, fitted on raw GSM8K text, not refitted) finishes 83/100 GSM8K
+  answers at 2,048 tokens where the base finishes 0, and 7 are correct (7/0, p 0.016); the same-norm placebo 3 / 1,
+  the embedding-map control 0 / 0, the 0.8B's own contrast over the same 9B texts 37 / 13, the MIT Exp 8 edit 13 / 13.
+  It passes the pre-registered rule (gain 10 ≥ half the reference's 16), and the prediction (row 30: would not pass)
+  failed. What crosses is the **stop** component, not the **finish** component: the ported answers have a median of 8
+  characters of thinking and 8 % of the finished ones are right (own 35 %, Exp 8 100 %, the 9B with the same direction
+  ≈ 90 %). T2's two parts (stop when done, and *knowing* when done) separate here; the map carries the first. Open:
+  a rule that counts correct-among-finished, a scale between 1.0 and 2.0, other pairs.
 - **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
   traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
   rebuild the conclude vector and get dev 83 / 35? Today we only know the *program* is deterministic. Cheap,
@@ -257,7 +266,9 @@ LessWrong (10 Nov 2026) — MIT's eight experiments repeated with a Fable agent,
 (`shawnghu/fable-weight-space-programming`); the author says he did not review outputs or method closely · Mehta &
 Singh (MSR), *Interpretable weight-space programming builds transparent transformers and brain encoding models* (iWSP,
 Nov 2026; `csinva/weight-space-programming-autoresearch`) — T4 note · Naik, Liu & Gangal, *Auto Weight-Space
-Programming, Part 1* (atharva-naik.github.io/blog/awsp-part-1, 13 Nov 2026; code, LoRAs and item files released) —
+Programming, Part 1* (atharva-naik.github.io/blog/awsp-part-1, 13 Nov 2026; code, LoRAs and item files released;
+co-author's thread 15 Nov 2026, x.com/VarunGangal/status/2121771960300634620, frames it as "sparks of life for a
+trainable regime", nothing beyond the blog) —
 the **reading** side: a rank-32 LoRA teaches Qwen3.5-4B to give the logit lens of 128-number slices of its own
 `down_proj` columns pasted as digits (99.8 % four-way on held-out neurons, chance 25 %; shuffled numbers → chance);
 naming the tokens without candidates is rare (6.6 %), **writing weights fails** (1.0-1.4 % of requested tokens vs

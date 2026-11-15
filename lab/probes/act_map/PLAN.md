@@ -275,3 +275,14 @@ thinking text; the reference edit is a 50-column write, not a direction, so Q4 c
 (fast runs: 48 items in 253 s): dev 16 arms × 96 items ≈ 2.2 h; test 7 × 150 ≈ 1.5 h. ≈ 4 GPU h, after the placebo
 chain (`lab/runs/act_map/cc08_chain.sh` waits for "[cc_pl] PLACEBO DONE"). Code `lab/probes/act_map/port_cc.py` (reuses
 `port.port_diff`, `port.residual_increments`, `port._means` with a pairs argument), tests first.
+
+[post-data 2026-11-14/15; results §45.12, row 30 scored ❌.] The chain ran as written (first launch died loading the 9B:
+Windows commit exhausted because C: was nearly full; relaunched after freeing disk, no code change). Verdict by the rule
+above: **PASS** (reference = `own`, gain 16; port gain 10 ≥ 8; Q1 83/0, Q2 7/0 p 0.016, Q3 placebo 1, Q5 10 ≥ 5). What the
+rule did not see: `port` at 2.0 finishes 83/100 GSM8K with a median of 8 characters of thinking and 7 correct (8 % of the
+finished; `own` 35 %, Exp 8 100 %), i.e. the mapped direction carries "stop thinking" (threshold between 1.0 and 2.0),
+not "finish when the answer is there". Q1-Q5 count finished and correct answers and cannot tell the two apart, and the
+reference gain is small at this budget (the 0.8B floor), so half of it is 8. Not changed here; a next version of the
+rule would add correct-among-finished (or "finished with ≥ N thinking tokens") and a scale between 1.0 and 2.0, written
+before running. The Exp 8 replica under this harness (greedy, thinking on, `bench_runner` template) finishes 13/100 GSM8K
+and 0/50 MATH, against 14/20 MATH in the 2026-11-04 notebook (sampling at 0.3, `rig/math500.py`); not re-run.

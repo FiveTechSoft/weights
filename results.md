@@ -6,7 +6,7 @@
 > afirmaciones luego retiradas (§26) y las ideas refutadas. **No es el estado actual.** El estado actual está en
 > [`README.md`](README.md) (resultado principal) y [`FOUNDATIONS.md`](FOUNDATIONS.md) (tesis, estado y evidencia).
 > §1-§25 (3-4 nov) son el estudio inicial (MiMo, toolkit, nanoGPT); §26 retira lo que no se demostró; el resultado
-> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-14.
+> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-15.
 
 Estudio inicial: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
 
@@ -2819,3 +2819,91 @@ datos `lab/runs/cc_v2/prompt/`.
 - **Dos métodos.** `readings.json` de la cadena (base 72/24/4/3 638; vec 85/4/13/949; "merged" 66/32/2/4 131) y
   recuento propio por filas de los tres informes (mismos cuatro números por brazo) más el pareado contra §45.4, §39.6 y
   §43.1 ítem a ítem.
+
+### 45.12 Puerta 3b: la dirección "concluir" de la 9B escrita en la 0.8B por los mapas de la puerta 1: PASA por la regla; lo que lleva el mapa es "deja de pensar", no "termina" (2026-11-14)
+Plan: anexo "Gate 3b" de `lab/probes/act_map/PLAN.md` (2026-11-13, antes del código), predicción fila 30. Código
+`lab/probes/act_map/port_cc.py` (tests en `tests/test_port_cc.py`), cadena `lab/runs/act_map/cc08_chain.sh`, datos
+`lab/runs/act_map/cc08/`. Vectores de las 53 + 53 filas cc de §45.4 (textos de la 9B): `own` = contraste de la propia
+0.8B sobre esos textos; `port` = contraste de la 9B por el mapa 9B → 0.8B de la puerta 1 (ajustado en GSM8K crudo, sin
+reajustar); `embport` = contraste de embeddings de la 9B por el mapa de embeddings; placebo = `port` con la misma norma
+por capa en direcciones aleatorias (semilla 2026). Referencia: la réplica del Exp 8 del MIT (`exp8-replica.gguf`) y su
+placebo. 0.8B Q6_K, `bench_runner` (pensamiento activo, 2 048 tokens, voraz, 4 ranuras), dos correctores.
+
+- **Cadena.** Primer lanzamiento 06:31: "VECTORS FAILED" a los 50 s, `Segmentation fault` en el stderr. Causa: la carga
+  de la 9B en bf16 pide ≈ 19 GB de *commit* de Windows y C: tenía 12 GB libres, así que el pagefile no podía crecer
+  (monitor `GlobalMemoryStatusEx`: pagefile libre 17 → 2,5 GB en 10 s y violación de acceso dentro de `.to(cuda)`).
+  Tras liberar disco (`models/mimo-wsp-critic`, `tinyllama-wsp-mimo`, un GGUF suelto, Temp) el pagefile creció a 46 GB
+  y el relanzamiento (15:34) pasó: vectores 15:36-16:05, dev 16:05-18:18, test 18:18-19:43, G3CC DONE 19:43. Código sin
+  cambios entre los dos lanzamientos.
+- **Comprobación mecánica (p3):** la réplica difiere de la base solo en `blk.15.ffn_down.weight` y `blk.19.ffn_down.weight`,
+  igual que su placebo (`editcheck.json`, ok). Ítems de desarrollo: 64 GSM8K + 32 MATH nunca usados (`dev_items.json`).
+
+**Paso 0 (sin generar; informado, no criterio).** Coseno por estado destino con `own`: `port` mediana **0,575**
+(0,33-0,67; estable en profundidad), `embport` 0,21 y cae de 0,54 a −0,01; norma de `port` 0,62 la de `own` (mediana).
+Los dos primeros estados de `port` y `embport` son idénticos por construcción (cos 1,0). Igual que en la puerta 3 con
+"feliz" (0,65 / 0,41, §45.2).
+
+**Dev (escala; aciertos ambos bancos sumados, si ninguna supera a la base en aciertos, acabados).**
+
+| brazo | 0,25 | 0,5 | 1,0 | 2,0 | 4,0 | elegida |
+|---|---|---|---|---|---|---|
+| base | GSM 0 ac / 0 fin; MATH 0 / 0 | | | | | - |
+| `own` | 6/6; 0/0 | 4/5; 1/1 | **12/19; 5/6** | 1/1; 0/0 | 0/7; 0/4 | 1,0 |
+| `port` | 1/1; 0/0 | 4/4; 0/0 | 0/0; 0/0 | **5/52; 3/14** | 0/44; 1/12 | 2,0 |
+| `embport` | 2/2; 0/0 | 3/3; 0/0 | 0/1; 0/0 | 1/1; 0/0 | 1/1; 0/0 | 0,5 |
+
+`port` no es monótono: a 1,0 no hace nada (0 acabados de 96), a 2,0 acaba 52/64 GSM con 558 tokens de media y a 4,0
+acaba 44 sin acertar ninguno. `embport` nunca pasa de base + 3.
+
+**Test (GSM8K 0-99, MATH-500 50; los ítems de desarrollo de la 9B, nunca usados para la 0.8B; dos correctores).**
+
+| brazo | escala | GSM8K ac (c2) / fin / bucles / tokens | vs base (ac; fin) | MATH ac (c2) / fin / bucles / tokens | vs base (ac; fin) |
+|---|---|---|---|---|---|
+| base | - | 0 (0) / 0 / 84 / 2 048 | - | 0 (0) / 0 / 41 / 2 048 | - |
+| `own` | 1,0 | **13 (13) / 37 / 65 / 1 489** | 13/0 p 2·10⁻⁴; 37/0 p 10⁻¹¹ | 3 (1) / 5 / 45 / 1 900 | 3/0 p 0,25; 5/0 p 0,06 |
+| **`port`** | 2,0 | **7 (7) / 83 / 19 / 538** | 7/0 p 0,016; 83/0 p 10⁻²⁵ | 3 (2) / 10 / 40 / 1 691 | 3/0 p 0,25; 10/0 p 0,002 |
+| `embport` | 0,5 | 0 (0) / 0 / 83 / 2 048 | 0/0 | 0 (0) / 0 / 42 / 2 048 | 0/0 |
+| placebo | 2,0 | 1 (1) / 3 / 89 / 2 003 | 1/0 p 1; 3/0 p 0,25 | 0 (0) / 0 / 44 / 2 048 | 0/0 |
+| exp8 (edición de referencia) | - | 13 (13) / 13 / 71 / 1 930 | 13/0 p 2·10⁻⁴; 13/0 | 0 (0) / 0 / 35 / 2 048 | 0/0 |
+| exp8_placebo | - | 1 (1) / 1 / 79 / 2 034 | 1/0 p 1 | 0 (0) / 0 / 42 / 2 048 | 0/0 |
+
+- **Referencia.** La regla toma `own` si supera a la base con p < 0,05 (13/0, p 2·10⁻⁴): referencia = **`own`**, ganancia
+  16 (13 + 3). La edición Exp 8 también pasa (13/0) con ganancia 13; con cualquiera de las dos Q4 sale igual.
+- **Veredicto por la regla: PASA.** Q1 acabados GSM8K 83/0 (p 2·10⁻²⁵) ✓. Q2 aciertos GSM8K 7/0 con los dos correctores
+  (p 0,016) ✓. Q3 placebo 1 acierto (p 1), 3 acabados < 0,5 × 93 ✓. Q4 ganancia de `port` 10 ≥ 0,5 × 16 = 8 ✓ (y
+  ≥ 6,5 con la referencia Exp 8). Q5 `port` − `embport` = 10 ≥ 5 ✓. `port` frente a `own` en aciertos: 3/9 (p 0,15);
+  frente a exp8: 4/10 (p 0,18). Ítems resueltos: `own` 13 GSM, `port` 7 (4 comunes con `own`, 3 con exp8), exp8 13.
+- **Lo que hace `port` (descriptivo, decisivo para leer el PASA).** `port` a 2,0 acaba 83/100 pero acierta 7: de los
+  acabados, **8 %** correctos; `own` 13 de 37 (35 %); exp8 13 de 13 (100 %); el vector en la 9B (§45.4) ≈ 90 %. La
+  mediana de caracteres de pensamiento en los acabados de `port` es **8** (own 1 184, exp8 2 390): el modelo cierra
+  `</think>` casi en el acto y contesta sin razonar (69/100 respuestas con menos de 300 tokens; ejemplos: ítem 0 responde
+  2 a "cuánto gana al día", ítem 3 responde 180 por 540). Lo que pasa por el mapa es un **"deja de pensar"** fuerte, con
+  umbral entre 1,0 y 2,0; lo que no pasa es el "termina cuando tienes la respuesta" que la dirección hace en la 9B (ahí
+  acorta a la mitad y acierta más). Los 7 aciertos son respuestas directas sin cadena, no cierres a tiempo. La regla
+  Q1-Q5, fijada sobre aciertos y acabados, no distingue los dos casos, y la ganancia de referencia es pequeña (16, suelo
+  de la 0.8B a 2 048) así que la mitad es 8: PASA por la letra. **Lectura honesta: la dirección se transporta en parte
+  (más que el placebo y que la identidad del token, 7/0 y 83/0 frente a 1 y 0) pero lo transportado es el componente
+  de parada, no el de conclusión.** En la 9B la misma dirección da ambas cosas a la vez (§45.4-45.6); en la 0.8B el
+  propio contraste (`own`) da algo de las dos (37 acabados, 13 bien) y el transportado solo la primera.
+- **La referencia Exp 8 en este arnés.** La réplica acaba 13/100 en GSM8K y 0/50 en MATH (todos los acabados,
+  correctos), frente a 14/20 en MATH del cuaderno de 2026-11-04 (`rig/math500.py`, temp 0,3, juez boxed). Dos arneses
+  distintos (muestreo frente a voraz, plantilla de `bench_runner`, 2 048 tokens en los dos): no se reejecuta nada
+  (regla del plan); queda anotado que la edición del MIT, en voraz con pensamiento activo, rescata el 13 % de GSM8K y
+  nada de MATH a este tope.
+- **Predicción (fila 30) contra el dato.** Paso 0 ✓ (0,575 en 0,4-0,7; embport baja y cae). Dev: base ✓, own escala
+  1,0 ✓ y 19 acabados ✓, port escala 2,0 ✓ pero **52 acabados ✗** (banda 5-25), embport ✓. Test: base ✓, own 13 / 3 ✓,
+  port 7 / 3 ✓, embport ✓, placebo ✓, **exp8 13 / 0 ✗** (banda 30-55 / 10-25), exp8_placebo ✓. **Referencia = exp8 ✗**
+  (es `own`). Q1, Q2, Q3, Q5 ✓; **Q4 "falla" ✗ (pasa); veredicto "no pasa" ✗ (PASA)**. Zona de sorpresa declarada "own
+  pasa Q2 con ganancia ≥ la de exp8" → **ocurre** (16 frente a 13). "port ≥ exp8 − 5 en GSM8K": 7 frente a 8, no (por
+  uno). **❌**: aciertan las bandas de casi todos los brazos y fallan la referencia, Q4 y el veredicto, y la sorpresa
+  declarada ocurre. Lo que no previó la predicción (ni la regla): que `port` acabara 83 acertando 7.
+- **Límites.** Un par de modelos, una familia, voraz, un tope; `own` y `port` leen textos de la 9B; mapas ajustados en
+  texto crudo de GSM8K de 128 tokens y usados en pensamiento; la referencia compara mecanismos (edición de 64 columnas
+  frente a dirección); MATH en el suelo (poder solo en GSM8K); una escala por brazo elegida en dev con 96 ítems.
+  Siguiente forma útil, antes de repetir: añadir a la regla la tasa de aciertos entre acabados (o "acabado con ≥ N
+  tokens de pensamiento") y probar `port` entre 1,0 y 2,0; escrito en el plan antes de correr.
+- **Dos métodos.** `verdict.json` de la cadena (`port_cc.measures`) y recuento propio por filas de los 7 informes de
+  test y 16 de dev: mismos aciertos (dos correctores), acabados, cortes y tokens medios en todos; mismos pareados
+  (binomial exacta propia). Bucles: el campo `loop` de `bench_runner` (tabla) y una heurística propia de repetición
+  (≥ 4 copias de una subcadena en la cola) dan 78 / 69 / 13 / 84 / 91 / 72 / 81 en GSM8K frente a 84 / 65 / 19 / 83 /
+  89 / 71 / 79: mismo orden, distinta definición.
