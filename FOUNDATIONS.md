@@ -224,6 +224,10 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   393 216 even inside a full SFT (D1 recall 1.0), but the SFT itself flags ~5 legitimate neurons, so it is a short
   review list, not a clean alarm (strict rule: not useful); pushes ≤ the fine-tune's typical change are invisible;
   without a base only a token-writing column is seen (0.6-0.7), not in the last layer. `model_report` check not added.
+  **Lazarus (MSR, 11 Nov 2026, reading list)** writes exactly there: seven dormant neurons of the final FFN block as a
+  triggered backdoor, closed form, and reports agent-built detectors at 91.4 % / 9.7 % FP without a base. Cheap next
+  check (not run): a Lazarus-style edit on our Qwen3.5-0.8B (a few < 1 %-firing neurons of the last block, closed-form
+  payload) through `implant_detect` with and without the declared base; prediction to be written before running.
 - **Why RL changes do not fit a small adapter** (LeoZotos 7.5 %, MiMo 3.8 %) while SFT distills do. One RL donor so far.
 - **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
   the medical RL model is uncertain at 25 %).
@@ -312,4 +316,17 @@ framing word of a request ("should") harder than anywhere in 131k tokens of norm
 drops 26 → 0 % when the adapter is switched off at chat-template tokens, and masking those tokens in training makes
 the model find another route. Trained edits, not WSP; relevant to our implanted-neuron defence (T8, §43.24: a
 same-size rewrite of a few neurons ranks first when the base is declared) and to T3 (a behaviour as a push through few
-sites, which moves when blocked). Full links in README "References".
+sites, which moves when blocked) · Zeng, Severi, Bullwinkel, Horvitz & Papailiopoulos (MSR), *Lazare, veni foras:
+Reprogramming Dormant Neurons to Backdoor AI Agents* (arXiv 2611.15118, 11 Nov 2026) — closed-form edit of rarely-firing
+neurons in the **final** FFN block, one payload token per neuron when a trigger is in context: 7 of 12,000+ neurons of
+Nemotron-Terminal-8B fitted on 23 trajectories, payload on ≥ 98.8 % of triggered test trajectories, no leakage seen on
+benign ones; Qwen3.6-27B and Gemma-4-31B "equally vulnerable"; agent-built detectors with no reference model flag 91.4 %
+of edited checkpoints at 9.7 % FP. The adversarial twin of our implanted-neuron check (T8, §43.24): ours ranks a
+few-neuron rewrite first when the base is declared, and without a base sees only token-writing columns **not in the last
+layer** — the block Lazarus uses. Idea credited to Claude Code (Opus 4.5, Feb 2026) · Tensor-Slayer / areu01or00,
+*Reprogramming dormant neurons: Qwen TTS* (thread 14 Nov 2026; repo `areu01or00/qwen-tts-neuron-mapping`, WIP) — an
+agent maps 417 talker-MLP neurons of Qwen3-TTS-0.6B (0.48 %; 304 of them in layer 27; 55-61 "dormant" = strong in < 1 %
+of speech frames) and pushes their `down_proj` columns along one fixed direction per layer (rank-1, ×8-12): breathing,
+laughs, whispers, a second speaker; ×16+ gibberish, ×10 on built-in voices stuck 13/36. Listening only, no WER or quality
+metric, no random-neuron control: T3's narrow dose window again, and a demo rather than a finding by T6. Full links in
+README "References".
