@@ -154,6 +154,9 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
    `weight_diff`, mojibake de este archivo, purga de `.npz`.
 10. Divulgación (no investigación): PR al awesome-list del survey con el hueco "Model Editing" en LLMs; solo con OK del
     driver.
+11. **Firma de Adam en los embeddings de nuestros donantes** (revisión Chaudhuri del 16-nov, más abajo): filas a cero,
+    filas de |Δ| constante, agrupación en pasos, en Jackrong y MiMo menos la base. CPU, minutos. Diría si el relato
+    del hilo se sostiene en artefactos que ya tenemos, y daría a `implant_detect` una referencia sin base.
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
@@ -326,6 +329,28 @@ es la "intervención condicional" de la revisión externa del 15-nov, ya hecha f
 receta de pares (rebobinar y remuestrear) es un segundo modo de leer la dirección, distinto de nuestro contraste por
 posición dentro de la traza (últimos 48 tokens antes de `</think>`); comparar ambas u en el 9B sería un experimento
 corto si se retoma la fila E. Anotado; no adoptado.
+
+**Revisado 2026-11-16 (sin ejecutar): Alapan Chaudhuri, hilo en X del 14-nov ("A model's weights keep a record of its
+own training"; sin paper ni código, "los problemas —embeddings atados, LoRA solo en atención— para otra vez").** Lectura,
+no escritura: la huella de AdamW en la matriz de embeddings de entrada. Fila de token nunca visto: no se mueve (bit a
+bit sin weight decay); token visto en un solo paso: la fila se mueve ≈ 31,8 × lr de ese paso en casi todas las
+coordenadas (Adam sin historia normaliza el gradiente a su signo) → sello de tiempo; fila nunca tocada con weight
+decay: encoge (1 − lr·wd) por paso, exacto en fp32 → la planificación se reproduce bit a bit. Afirma: lista de tokens
+exacta (39 663 / 39 663; Qwen2.5-7B 50 180 / 50 180), tipo de planificación, pasos y calentamiento en 15/15
+fine-tunes, lr pico al 0,01 %, 3 121 de 4 000 documentos en su paso exacto, 38/40 documentos intercambiados
+detectados, un fine-tune público ajeno reproducido bit a bit en 25 463 296 pesos (un paso de desfase: solo coinciden
+los 187 ceros), pertenencia 64 % con cero falsas alarmas (test estándar 0,5 %). Casos públicos: OLMo 2 SFT con 20 341
+filas sin mover (el desajuste de tokenizador que AI2 corrigió), Qwen2.5-Instruct toca 4 de 22 tokens de control en
+todos los tamaños, Pythia-1B entrenado a 2,5e-4 y no al 3,0e-4 de la tarjeta. **Comprobado por nosotros** (dos
+fuentes): `pythia-1b.yml` dice `lr 0.00025, min_lr 0.000025, cosine`; la tabla de la tarjeta HF dice 3,0 × 10⁻⁴. El
+resto no es comprobable sin código. Relación con lo nuestro: (1) es T7 por el otro lado — lo que se lee exacto de los
+pesos es la aritmética del optimizador, no la conducta; nuestras escrituras en forma cerrada no dejan ninguna de esas
+marcas, lo que las distingue de un fine-tune; (2) las filas que no pertenecen a ningún token son una referencia sin
+base dentro del propio checkpoint, justo lo que le falta a `implant_detect` sin base (T8); (3) nuestro h5_plan.md
+archivó las filas de embedding más cambiadas de MiMo como "tokens raros: ruido"; por este mecanismo son los sellos de
+tiempo. Sonda barata posible (CPU, minutos, sin GPU): embeddings de Jackrong y MiMo menos la base — cuántas filas
+exactamente cero, cuántas con |Δ| casi constante por fila (histograma de la desviación relativa por fila), y si las
+constantes se agrupan en pocos valores (pasos). Predicción antes de correr. Anotado; no adoptado.
 
 **Revisado y VERIFICADO 2026-11-09 (referencia externa, no se adopta por la prioridad única): HypaNet
 (github.com/Hypabolic/HypaNet + 2 posts matthewgribben.com, mismo autor matt-gribben, repo creado 11-05,

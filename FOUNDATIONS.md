@@ -188,6 +188,17 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - Blind forensics from weights only (§43.20, Qwen3.8-27B TURBO): where a Heretic ablation starts (layer 26, exact) and
   that the rest is an ordinary fine-tune (profile Spearman 0.93) are readable from the fused model; the ablation's rank
   (13, predicted 1) and its end (hidden by later changes) are not. An edit alone is read exactly (concept27b).
+- **Outside evidence (Chaudhuri, X thread, 14 Nov 2026, reading list; no code yet):** the *gradient route itself* is
+  readable from the input-embedding matrix. Rows of tokens never in the data do not move; a row seen in one step moves
+  by ≈ 31.8 × that step's learning rate in nearly every coordinate (Adam with no history keeps only the sign), so it is a
+  timestamp; untouched rows shrink by (1 − lr·wd) per step, exact in fp32. Claimed: exact token list, schedule and step
+  count in 15/15 fine-tunes, a public fine-tune replayed bit for bit on 25.5 M weights, 38/40 swapped documents caught.
+  Of the public-model claims we checked one: Pythia-1B's config says `lr 0.00025`, its card says 3.0e-4. Two lessons for
+  this thesis: (1) a weights-only read can be exact when it reads the *optimizer's* arithmetic rather than behaviour —
+  our closed-form writes leave none of these marks, which separates them from fine-tunes (and from the implanted
+  neurons of T8 only if the implanter also trained the embeddings); (2) rows that belong to no token are a base-free
+  reference inside the checkpoint, the thing our implant check lacks. Our own study filed MiMo's top-changed embedding
+  rows as "rare junk tokens: noise" (`lab/probes/delta_patterns/h5_plan.md`); by this mechanism they are the timestamps.
 
 ---
 
@@ -279,7 +290,9 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 Takehi et al., *Sparks of Weight-Space Programming* (MIT CSAIL, 2 Nov 2026) · Concept Country, *Gradient-Free Weight
 Editing Reduces Overthinking in Qwen3.8-27B* (8 Nov 2026) · Nathan Barry, *Can a Linear Program Do Weight-Space
 Programming?* · Khamis, Tutunov & Bou Ammar, *AHA! Who Needs an LLM to Program an LLM?* (haithamb.github.io/aha,
-15 Nov 2026; Exp 8 with the direction from the model's own rewind-and-resample pairs and Barry's LP) · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
+15 Nov 2026; Exp 8 with the direction from the model's own rewind-and-resample pairs and Barry's LP) · Alapan Chaudhuri,
+*A model's weights keep a record of its own training* (X thread, 14 Nov 2026; AdamW's footprint in the embedding rows:
+token list, LR schedule, step count, document steps read back from a fine-tune; no code yet) · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
 (arXiv 2611.09382) · Hayashi, *weight-space geometry* (hayashiyus.github.io/blog/weight-space-geometry; theory, mostly
 proposed experiments) · Hu et al., LoRA · Ilharco et al., task arithmetic; Yadav et al., TIES · Belrose et al., LEACE ·
 Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers · *A Survey of Weight Space Learning:
