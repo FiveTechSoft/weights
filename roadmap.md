@@ -354,6 +354,27 @@ tiempo. Sonda barata posible (CPU, minutos, sin GPU): embeddings de Jackrong y M
 exactamente cero, cuántas con |Δ| casi constante por fila (histograma de la desviación relativa por fila), y si las
 constantes se agrupan en pocos valores (pasos). Predicción antes de correr. Anotado; no adoptado.
 
+**Revisado 2026-11-16 (sin ejecutar): Kocabay (Poindexter Labs), "Weight-Space Reading", alphaXiv 13-nov, código
+github.com/suayptalha/wsr (Apache 2.0), arXiv pendiente.** La mitad "leer" de WSP medida como debe: lectores LLM en
+sandbox ven los pesos de un objetivo y una edición quirúrgica (escalar bloque, filas de vocabulario, quitar dirección,
+ruido de norma igualada, ganancias de norma, controles no-op) y predicen arriba / abajo / igual en cinco conductas
+(longitud de pensamiento, matemáticas, opción múltiple, adulación, rechazo); la verdad es el modelo editado frente a
+cinco semillas de la base (Welch p < 0,01 + efecto mínimo). Tres rondas prerregistradas en Qwen3.8-27B, Qwen3.5-9B,
+Muse-Glimmer-30B. Resultado: en ediciones sutiles, 27B leyendo sus propios pesos 0,730 de exactitud balanceada frente a
+0,578 con descripción textual (+0,152, IC [+0,056, +0,256]; 10 ediciones con cambio, un par de cuatro significativo);
+recall 0,278 → 0,667, especificidad 0,878 → 0,793. Lo que los autores ponen delante: (1) las ediciones destructivas
+miden detección de daño (Muse lee las de 27B igual que 27B, 0,594 vs 0,593); (2) sin ventaja de autolectura (el
+contraste cruzado incluye cero en las dos rondas); (3) en Muse-30B ninguna de 40 ediciones (6 no-op) cambió nada
+(su RMSNorm tras el sub-bloque cancela el escalado uniforme) y los lectores predijeron cambio en 53-88 %, Muse sobre
+sí mismo 85 %. Una corrida por celda, sin corrección múltiple, intervalos "optimistas" según ellos. Relación con lo
+nuestro: es T6/T7 dicho desde fuera y con números — leer pesos añade algo medible solo frente a adivinar, ediciones
+inertes y arquitectura; la conducta sigue siendo el oráculo (su protocolo la necesita para puntuar). Los falsos
+positivos sobre ediciones inertes son el placebo de misma norma del lado del lector. El caso Muse es nuestra lección
+de §45.3 (la fila de norma) a escala de arquitectura: antes de compilar en una familia nueva, comprobar dónde está la
+norma respecto a `down_proj`. Nuestro forense ciego (§43.20: sitio exacto, rango y efecto no) encaja con su cuadro.
+Su harness sirve para una cosa concreta si se retoma la lectura: pasar nuestras ediciones (vector compilado, placebo
+compilado, trasplante) por un lector y ver si distingue el placebo del real sin correr nada. Anotado; no adoptado.
+
 **Revisado y VERIFICADO 2026-11-09 (referencia externa, no se adopta por la prioridad única): HypaNet
 (github.com/Hypabolic/HypaNet + 2 posts matthewgribben.com, mismo autor matt-gribben, repo creado 11-05,
 último commit 11-09).** Fable(claude-fable-5.1) escribe pesos desde spec sin entrenar: detector de bucles de
