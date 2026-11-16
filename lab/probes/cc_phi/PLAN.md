@@ -164,3 +164,39 @@ median tokens 1,950 → 1,235). No finished merged answer with < 50 characters o
 p1-p5 held (served path + sha256 recorded in every JSON). Prediction: 18 of 22 readings in band; the four misses are
 secondary (merged MATH tokens −8 % vs −15 to −35; sealed vector MATH +8 vs +10 to +17; sealed placebo MATH −5 vs −2 to
 +3; HE merged +5 vs ± 3). None of the declared surprises occurred.
+
+## Token-budget control on Phi: base, vector and merged at 2,048 — plan fixed 2026-11-16, before any arm runs (user: "continua")
+
+**Question.** The Phi study ran at 1,024 tokens because the base runs out there (probe: 8/10 cut at 1,024, 2/10 at 2,048,
+`budget.txt`). Is the Phi gain (§45.15 vector, §45.16 merged) more than finishing inside a tight budget? On Qwen the answer
+was yes: at 4× the budget the vector stayed +13 and the merged +18 over the base (§45.11, §45.13). AHA (15 Nov 2026) states
+the opposite rule for loop fixes: gain ≤ the base's truncation rate. Phi at 2× the budget tests both on a second family.
+
+**Arms** (`lab/runs/cc_phi/chain_b2048.sh`; dev items, bench_runner defaults = the §45.15/45.16 items; greedy, `-np 2`,
+`-c 16384`, port 8097; `chain_guard` config in `lab/runs/cc_phi/cap2048/` with budget 2048; smoke per configuration;
+sha256 and `served` recorded): 1. base at 2,048; 2. vector ×0.5 as control vector at 2,048; 3. merged (`cc_phi_op/merged-Q6_K.gguf`)
+served as `-m` at 2,048. No placebo arm (the placebo question is answered at 1,024 in both forms; this asks about the budget).
+
+**Readings** (grader 1, grader 2 reported): ok, cuts, finished-wrong, finished with < 50 characters of thinking, mean tokens,
+per arm and benchmark; paired exact McNemar merged vs base, vector vs base, merged vs vector; per item: of the 42 GSM8K items
+the base cut at 1,024, how many the base closes right at 2,048; AHA's ceiling as a report: gain of the merged over the base at
+2,048 compared with the base's cuts at 2,048.
+
+**Prediction (ours, low confidence; arm and control; premises marked).**
+- Base at 2,048: GSM8K **76-88**/100 (cuts 8-22; at 1,024: 59 / 42 cut), MATH **14-26**/50 (cuts 15-32; at 1,024: 6 / 43),
+  mean GSM8K tokens 1,000-1,400. Of the 42 base-cut GSM8K items, 20-34 now closed right.
+- Vector ×0.5 at 2,048: GSM8K **85-93** (at 1,024: 85), cuts ≤ 6; MATH **22-32** (at 1,024: 19).
+- Merged at 2,048: GSM8K **83-92**, MATH **21-31**; merged vs vector within 4 on GSM8K and 3 on MATH, no significant
+  difference either way.
+- Merged over base at 2,048: GSM8K **+2 to +12** (p < 0.05 paired), MATH **+2 to +10**. Tokens of merged and vector below
+  base by 15-35 % on GSM8K. No arm with more than 2 % of finished answers under 50 characters of thinking.
+- Premises: (p1) the probe's 1/5 cut per benchmark at 2,048 extrapolates to the 150 dev items (10 items; MATH dev is
+  harder than the probe's five, hence the wide MATH band); (p2) server settings identical to the 1,024 runs except the
+  cap; (p3) the 1,024 references are the §45.15/45.16 files; (p4) `-np 2` nondeterminism costs ± a few items in paired
+  readings.
+- **We would be surprised if:** merged < base − 3 on GSM8K at 2,048 (the Phi effect would be pure budget, unlike Qwen);
+  merged > base + 18 (the effect would grow with the budget); base at 2,048 < 65 (2,048 still binding, the probe
+  misled) or ≥ 92 (no room left; the comparison would be void); vector or merged with > 10 % of finished answers without
+  thinking at 2,048 (the stop regime appearing with a longer budget).
+
+**Cost.** 3 arms × 150 items at 2,048 ≈ 20-30 min each ≈ 1.3 GPU h.

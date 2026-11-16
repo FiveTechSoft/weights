@@ -49,14 +49,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 35 | 2026-11-15 | `cc_phi/PLAN.md` "Compile the Phi direction into down_proj" | Op: G0 pasa (mediana 0,02-0,15), cos escrito/dW mediana 0,6-0,9. Dev (1 024): fusionado GSM **70-86** (vector 85, base 59), MATH **11-20** (vector 19, base 6), tokens −15 a −35 %, cortes GSM 8-25; placebo fusionado GSM 45-62, MATH 3-8. C1-C4 pasan. Sellado 2 (primer uso con Phi): base GSM 50-66, MATH 2-8; fusionado base +10 a +25 / +6 a +15; vector base +18 a +28 / +10 a +17; placebo fusionado base −8 a +3 / −2 a +3; confirma. HE-20: base 6-16, fusionado ± 3. Premisas p1-p5 en el plan. Sorpresa si G0 falla, cos < 0,5, fusionado < base en GSM, fusionado > vector + 5, placebo fusionado > base + 3 con p < 0,05, o > 10 % de los acabados del fusionado sin pensamiento | §45.16 | Op: G0 **0,044** (placebo 0,045), cos **0,74** (mín. 0,64), ‖dW‖/‖W‖ 0,013. Dev fusionado **81 / 19** (vector 85 / 19, base 59 / 6), tokens −25 % / −8 %, cortes GSM 13; placebo fusionado **54 / 5**, tokens +6 % / 0 %. C1-C4 PASS. Sellado 2: base 62 / 7; fusionado **86 / 14** (+24 / +7; 26/2 y 7/0); vector 88 / 15 (+26 / +8); placebo fusionado 60 / 2 (−2 / −5); confirma. HE-20: base 11, fusionado 16. Ninguna sorpresa; 0 acabados sin pensamiento | ◐ (18 de 22 lecturas en banda, todas las primarias; fallan cuatro secundarias: tokens MATH del fusionado −8 %, vector MATH sellado +8, placebo MATH sellado −5, HE fusionado +5) |
 
-## Cuenta (35 filas; 31 puntuables)
+| 36 | 2026-11-16 | `cc_phi/PLAN.md` "Token-budget control on Phi" | Dev a 2 048 (sonda: base corta 1/5 por banco). Base GSM **76-88** (cortes 8-22), MATH **14-26** (cortes 15-32), tokens GSM 1 000-1 400; de los 42 ítems GSM que la base cortaba a 1 024, 20-34 bien. Vector ×0,5: GSM **85-93**, cortes ≤ 6, MATH **22-32**. Fusionado: GSM **83-92**, MATH **21-31**; fusionado = vector ± 4 / ± 3, sin diferencia significativa. Fusionado sobre base: GSM **+2 a +12** (p < 0,05), MATH **+2 a +10**; tokens −15 a −35 %. Ningún brazo con > 2 % de acabados sin pensamiento. Premisas p1-p4 en el plan. Sorpresa si fusionado < base − 3 en GSM, fusionado > base + 18, base < 65 o ≥ 92, o > 10 % de acabados sin pensamiento | — | — | ⏳ |
+
+## Cuenta (36 filas; 31 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 13 |
 | ❌ falla | 12 |
-| ⏳ / — | 4 |
+| ⏳ / — | 5 |
 
 Acierto limpio 6/31 = 19 %; acierto o parcial 19/31 = 61 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es

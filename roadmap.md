@@ -122,6 +122,39 @@ una sola vez antes de anunciarse; regla en `lab/probes/sealed/README.md`.
 **Reglas:** nada de líneas nuevas mientras tanto; posts solo si cambian este plan; las cadenas ya en marcha (ronda 3,
 cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo sí cuenta: valida las cifras).
 
+### 4.0septies ESTADO 2026-11-16 (sesión windows, Claude Code) — qué hay y qué falta
+
+**Hecho desde el 2026-11-10** (detalle en results §45.x, README tabla de estado, FOUNDATIONS T1-T8, predictions filas 20-35):
+- Dirección "concluir" sin donante, op corregido (cc_v2): dev y sellado confirman otra vez (§45.4); compilada en `down_proj`
+  y recompilada: sellado 2 confirma (§45.8); placebo con 8 semillas: ninguna gana (§45.10); control de presupuesto a 8 192:
+  el vector sigue +13 sobre la base y el fusionado +18 (§45.11, §45.13) → no es solo "acabar dentro del presupuesto".
+- Mapas de activación 9B → 0.8B (puertas 1-3b, §45.12, §45.14): lo que cruza el mapa es "deja de pensar", no "termina
+  tras razonar"; la curva de dosis lo muestra. Comprobación de neurona implantada (§43.24) hecha; Lazarus anotado en T8.
+- **Segunda familia:** Phi-4-mini-reasoning 3,8B. Vector: dev pasa, sellado confirma (§45.15). **Compilado con la misma op:
+  dev C1-C4 y sellado 2 confirman, igual que el vector (§45.16).** Cambia la dosis (×0,5), no la op.
+- Infra: `served_info` (cada JSON guarda ruta y sha256 del modelo servido), `chain_guard` (config por cadena), smoke por
+  configuración, sha256 en el log; `split_think` para plantillas que no separan el pensamiento.
+
+**Qué falta (del roadmap y de los límites declarados), por orden de lo que cambiaría una afirmación:**
+1. **Muestreo.** Todo es voraz (FOUNDATIONS, límites). Un brazo base/fusionado a T 0,6 con varias semillas diría si el
+   efecto de "concluir" sobrevive al muestreo (AHA y el MIT trabajan muestreando). Sin hacer.
+2. **Control de presupuesto en Phi** (lo que §45.11/45.13 hicieron en Qwen): base, vector y fusionado a 2 048. Decide si en
+   la segunda familia el efecto también excede "acabar dentro del presupuesto". **En marcha (plan en `cc_phi/PLAN.md`,
+   fila 36).**
+3. **Segundo donante con mejora útil por el op** (criterio de 4.0sexies): no encontrado (OmniCoder/OxCoder = base, JackOD
+   mezcla, Huatuo incierto, §43.16). Sigue abierto; depende de que exista en el hub.
+4. **Intervención condicional** (v por LP en vez de ridge): hecha fuera por AHA con sus límites medidos (más condicional =
+   peor). Comparar su u (pares rebobinar-remuestrear) con la nuestra (posición) en el 9B: experimento corto, no lanzado.
+5. **Fila E** (réplica Exp 8 en el 0.8B con controles): en pausa; parcialmente cubierta por §9.1 (bit-exacta), §45.12 (el
+   edit de Astra como referencia, 13/13) y por AHA/Barry desde fuera.
+6. **Adaptadores de arquitectura para `model_report`** (J1: nombres mapeados, no calibrados); Phi da ya un segundo caso.
+7. **Lazarus / `implant_detect` en la última capa** (T8, anotado por decisión del driver; sin hacer).
+8. **Reconstrucción desde descripción** (T4, el test de legibilidad de iWSP): sin hacer.
+9. Pendientes viejos congelados: P5 de la batería blog, retos WSP-40 10-17, auditoría punto 3, `comparative_drift` →
+   `weight_diff`, mojibake de este archivo, purga de `.npz`.
+10. Divulgación (no investigación): PR al awesome-list del survey con el hueco "Model Editing" en LLMs; solo con OK del
+    driver.
+
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
 Dirección del driver (2026-11-08): partir del par base → mejorado, buscar diferencias reutilizables, solo pruebas de
