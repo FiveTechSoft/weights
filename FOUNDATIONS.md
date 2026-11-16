@@ -175,6 +175,9 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   random direction 10/48 — a random push gets part of the way; no held-out placebo, and dev gains often vanish held-out.
   Their own search variance makes the same point: three independent searches on MATH gave +29.45, +5.00 and +27.30
   (1,023, ~1.04 M and ~1.98 M values changed), and 6 of 16 runs found no improvement — one search is not evidence.
+  Kocabay, *Weight-Space Reading* (13 Nov 2026): the same rule on the reading side — LLM readers given weights
+  predicted a behaviour change for 53-88 % of 40 edits that changed nothing in Muse-30B (6 of them no-op controls),
+  so a reader's hit rate means nothing without inert edits and a baseline that exposes guessing.
 - **Depends on it.** `placebo_lora.py`, `contrast_vector.placebo`, `PROTOCOL.md`, exact McNemar in every verdict.
 
 ## T7. What weights alone can and cannot tell
@@ -188,6 +191,17 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - Blind forensics from weights only (§43.20, Qwen3.8-27B TURBO): where a Heretic ablation starts (layer 26, exact) and
   that the rest is an ordinary fine-tune (profile Spearman 0.93) are readable from the fused model; the ablation's rank
   (13, predicted 1) and its end (hidden by later changes) are not. An edit alone is read exactly (concept27b).
+- **Outside evidence (Kocabay, *Weight-Space Reading*, 13 Nov 2026, reading list; code released):** the direct test of
+  this thesis with LLM readers and a behavioural oracle. Given a target's weights, a surgical edit and a Python sandbox
+  (no forward pass), Qwen3.8-27B predicts up / down / same for five behaviours of subtle edits to its own weights at
+  balanced accuracy 0.730 vs 0.578 from a text description (+0.152, CI [+0.056, +0.256]; 10 changed edits, one of four
+  pairs significant); recall of real changes 0.667 (text 0.278) at the price of specificity 0.793 (0.878). What the
+  paper puts first: destructive edits are damage detection (another family reads them as well as the model itself,
+  0.594 vs 0.593); no self-reading advantage survives the crossed contrast; and on Muse-30B 40 edits including 6 no-ops
+  changed nothing (post-sublayer RMSNorm cancels uniform scaling) while readers called 53-88 % of them changed. Reading
+  for T7: weights add *some* information about an edit's effect, measurable only against guessing, inert edits and the
+  architecture; behaviour remains the ground truth, which their own protocol needs to score anything. Matches §43.20
+  (an edit's place read exactly, its rank and its effect not) and §45.3 (the norm row changes what a write does).
 - **Outside evidence (Chaudhuri, X thread, 14 Nov 2026, reading list; no code yet):** the *gradient route itself* is
   readable from the input-embedding matrix. Rows of tokens never in the data do not move; a row seen in one step moves
   by ≈ 31.8 × that step's learning rate in nearly every coordinate (Adam with no history keeps only the sign), so it is a
@@ -300,7 +314,10 @@ Editing Reduces Overthinking in Qwen3.8-27B* (8 Nov 2026) · Nathan Barry, *Can 
 Programming?* · Khamis, Tutunov & Bou Ammar, *AHA! Who Needs an LLM to Program an LLM?* (haithamb.github.io/aha,
 15 Nov 2026; Exp 8 with the direction from the model's own rewind-and-resample pairs and Barry's LP) · Alapan Chaudhuri,
 *A model's weights keep a record of its own training* (X thread, 14 Nov 2026; AdamW's footprint in the embedding rows:
-token list, LR schedule, step count, document steps read back from a fine-tune; no code yet) · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
+token list, LR schedule, step count, document steps read back from a fine-tune; no code yet) · Kocabay (Poindexter Labs),
+*Weight-Space Reading* (alphaXiv, 13 Nov 2026; LLM readers predict an edit's behavioural effect from weights: 0.730 vs
+0.578 balanced accuracy on subtle self-edits, false alarms on inert edits, damage detection on destructive ones;
+github.com/suayptalha/wsr) · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
 (arXiv 2611.09382) · Hayashi, *weight-space geometry* (hayashiyus.github.io/blog/weight-space-geometry; theory, mostly
 proposed experiments) · Hu et al., LoRA · Ilharco et al., task arithmetic; Yadav et al., TIES · Belrose et al., LEACE ·
 Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers · *A Survey of Weight Space Learning:
