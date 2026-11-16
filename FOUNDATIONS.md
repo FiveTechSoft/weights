@@ -56,7 +56,10 @@ as of 2026-11-14.
   85/96 practice answers exhausted the budget; the edit removes a completion obstacle. Hu et al. (arXiv 2611.09382):
   their +29.45 MATH edit on Qwen3.5-0.8B is a "Wait/However vs Therefore" column on a base cut in 111/128; on
   **Qwen3.5-9B at 32k tokens the base scores 97.7 on MATH** and a +29.69 dev edit gave −0.35 held-out — with room to
-  think, our base already knows.
+  think, our base already knows. AHA (Khamis, Tutunov, Bou Ammar, 15 Nov 2026; LLM-free Exp 8 on Qwen3.5-0.8B/2B):
+  states the ceiling as a rule, gain ≤ the base's truncation rate; MATH-500 gain 60.5 points at level 1, 20.1 at
+  level 5 with 70 % still truncated; MedQA (truncation 0.17-0.52) under 2 SE; the unedited 2B (69.6) beats every
+  edited 0.8B; "the edit removes an obstacle and adds nothing".
 - **Would refute it.** A transplant that raises accuracy at a budget where the base is never cut, or a forced-close
   base far below the donor.
 - **Limit.** Says nothing about tasks where the base lacks the knowledge; HumanEval base was at ceiling (20/20).
@@ -72,7 +75,11 @@ as of 2026-11-14.
 - **Outside evidence.** Nathan Barry (LP re-derivation of MIT Exp 8): a constant steering push gives almost the same
   result as the per-token-constrained weight edit; doubling it breaks. Hayashi: Exp 8's weight edit equals an
   activation hook (KL 1e-11 in FP32). Concept Country's additive edit "writes about α along the direction" on typical
-  inputs — steering compiled into weights.
+  inputs — steering compiled into weights. AHA (15 Nov 2026): the LP push made more conditional does worse — per-token
+  targets raise the hit rate (0.27 → 0.57) but cut dev accuracy 86.7 → 78.1, a tighter productive band (ε 0.25)
+  collapses to 32.0, 10× the gap 60.9 vs 64.1; a direction that separates looping from productive tokens better
+  (Fisher, AUC 0.953 vs 0.895) edits far worse (21.9 vs 64.1); which two layers carry the edit moves < 1.6 points.
+  Read as: partial, near-constant suppression is what works, and separability is not the oracle (T6).
 - **Outside evidence, 0.8B (added 2026-11-13, no placebo in either; T6).** Beaker (Matt Winters, agent loop on
   Qwen3.5-0.8B): the best single edit is **one neuron** (573, its output column ×2): MATH-500 7.4 → 37.4 %; dose
   ×0 0.4, ×0.5 1.2, ×1 8.2, ×2 36.6, ×4 38.0, ×8 34.3; forbidding the token "Wait" without touching weights gives
@@ -266,7 +273,8 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 ## Reading list
 Takehi et al., *Sparks of Weight-Space Programming* (MIT CSAIL, 2 Nov 2026) · Concept Country, *Gradient-Free Weight
 Editing Reduces Overthinking in Qwen3.8-27B* (8 Nov 2026) · Nathan Barry, *Can a Linear Program Do Weight-Space
-Programming?* · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
+Programming?* · Khamis, Tutunov & Bou Ammar, *AHA! Who Needs an LLM to Program an LLM?* (haithamb.github.io/aha,
+15 Nov 2026; Exp 8 with the direction from the model's own rewind-and-resample pairs and Barry's LP) · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
 (arXiv 2611.09382) · Hayashi, *weight-space geometry* (hayashiyus.github.io/blog/weight-space-geometry; theory, mostly
 proposed experiments) · Hu et al., LoRA · Ilharco et al., task arithmetic; Yadav et al., TIES · Belrose et al., LEACE ·
 Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers · *A Survey of Weight Space Learning:

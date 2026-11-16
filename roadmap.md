@@ -275,6 +275,25 @@ VERIFICACIÓN BARATA SUGERIDA (si se retoma): su PDHG contra nuestro harness exp
 Candidato directo a primitiva WSPLang: `lp_select_v` (u + etiquetas de conducta → columnas/escala por LP,
 determinista, sustituye el buscar-y-escalar) — familia forma-cerrada (cf_distill). Anotado; no adoptado.
 
+**Revisado 2026-11-16 (sin ejecutar): AHA, Khamis / Tutunov / Bou Ammar (haithamb.github.io/aha, código
+github.com/Eppy-EpHard/AHA, MIT, prerregistros en docs/).** Cierra el hueco de Barry: la u ya no viene del agente
+sino de pares emparejados del propio modelo (rebobinar una traza en bucle 8 tokens antes del inicio del bucle,
+muestrear 8 continuaciones, emparejar la que antes entra en bucle con la productiva más larga, diferencia de medias
+del residual en tokens 64-224; 228 pares de 300 prefijos), v por el LP de Barry sin cambios (8 columnas por capa),
+capas por tasa de acierto del LP en reserva (resultado: da igual qué capas, < 1,6 puntos). 0.8B a 32k: GSM8K 14,0 →
+71,2, MATH-500 9,8 → 51,8, IFEval 19,6 → 62,7 (nunca visto, sin matemáticas); 2B: 75,8 → 88,4, 69,6 → 79,6, 61,4 →
+77,1. Construcción 22 min en una 4090. Confirma de nuevo lo nuestro: (1) el empuje casi constante gana — hacerlo más
+condicional (objetivos por token, ε 0,25, 10× el salto) empeora; (2) mejor separabilidad (Fisher, AUC 0,953) → peor
+edición (21,9 vs 64,1): el oráculo es la conducta, no la métrica intermedia; (3) techo = tasa de corte de la base,
+"quita un obstáculo, no añade nada". Huecos: sin placebo de misma norma propio (cita el de Barry), una familia, los
+números del 0.8B vienen de la primera construcción (dirección mixta, capas del agente), no determinismo entre
+máquinas (base 9,8 aquí / 7,0 en la de Barry). Relación con lo nuestro: misma primitiva que `compile_control_vector`
+(rango 1 en `down_proj`, sin gradientes); nuestra v es ridge (empuje constante, G0) y la suya LP (condicional):
+es la "intervención condicional" de la revisión externa del 15-nov, ya hecha fuera y con sus límites medidos. Su
+receta de pares (rebobinar y remuestrear) es un segundo modo de leer la dirección, distinto de nuestro contraste por
+posición dentro de la traza (últimos 48 tokens antes de `</think>`); comparar ambas u en el 9B sería un experimento
+corto si se retoma la fila E. Anotado; no adoptado.
+
 **Revisado y VERIFICADO 2026-11-09 (referencia externa, no se adopta por la prioridad única): HypaNet
 (github.com/Hypabolic/HypaNet + 2 posts matthewgribben.com, mismo autor matt-gribben, repo creado 11-05,
 último commit 11-09).** Fable(claude-fable-5.1) escribe pesos desde spec sin entrenar: detector de bucles de
