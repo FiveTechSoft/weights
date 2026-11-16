@@ -134,6 +134,13 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
   dev C1-C4 y sellado 2 confirman, igual que el vector (§45.16).** Cambia la dosis (×0,5), no la op.
 - Infra: `served_info` (cada JSON guarda ruta y sha256 del modelo servido), `chain_guard` (config por cadena), smoke por
   configuración, sha256 en el log; `split_think` para plantillas que no separan el pensamiento.
+- **Otra sesión (16-nov, 11:57, commits 1b09e9a y 46b620d):** `docs/phi_findings_2026-11-16.md`, síntesis de §45.15-45.17
+  (qué establece y qué no), enlazada desde el README. Verificado aquí: sus cuentas (59/6 → 85/19 → 81/19; sellado 2
+  62/7 → 86/14; 2 048: 81/26, 85/35, 91/29; 12/2 p 0,01294; 7/4 p 0,549; 25 de 42; 2 de 12 victorias sobre acabados
+  mal; cuenta 6/14/12/4) coinciden con results y con el recuento propio; WeightBench (arXiv 2611.18553: Opus 5.5 0,535
+  en 42, GPT-6.1-sol 0,568 vs 0,546 en 38) comprobado en el abstract y añadido a la lista de lectura; enlace awsp y
+  directorios citados existen. Sin experimento nuevo. Su propuesta coincide con el hueco 2: sellado a 2 048 y brazo
+  4 096 / 8 192 para MATH.
 
 **Qué falta (del roadmap y de los límites declarados), por orden de lo que cambiaría una afirmación:**
 1. **Muestreo.** Todo es voraz (FOUNDATIONS, límites). Un brazo base/fusionado a T 0,6 con varias semillas diría si el

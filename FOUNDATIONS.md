@@ -317,7 +317,8 @@ Programming?* · Khamis, Tutunov & Bou Ammar, *AHA! Who Needs an LLM to Program 
 token list, LR schedule, step count, document steps read back from a fine-tune; no code yet) · Kocabay (Poindexter Labs),
 *Weight-Space Reading* (alphaXiv, 13 Nov 2026; LLM readers predict an edit's behavioural effect from weights: 0.730 vs
 0.578 balanced accuracy on subtle self-edits, false alarms on inert edits, damage detection on destructive ones;
-github.com/suayptalha/wsr) · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
+github.com/suayptalha/wsr) · Marasini, Khadka & Rahimi, *WeightBench* (arXiv 2611.18553, 13 Nov 2026; 42 tasks, five
+tracks; Opus 5.5 macro 0.535; abstract only) · Hu et al., *Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations*
 (arXiv 2611.09382) · Hayashi, *weight-space geometry* (hayashiyus.github.io/blog/weight-space-geometry; theory, mostly
 proposed experiments) · Hu et al., LoRA · Ilharco et al., task arithmetic; Yadav et al., TIES · Belrose et al., LEACE ·
 Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers · *A Survey of Weight Space Learning:
