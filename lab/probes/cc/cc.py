@@ -80,8 +80,8 @@ def finished(r):
 
 
 def rows():
-    from transformers import AutoTokenizer
-    tok = AutoTokenizer.from_pretrained(str(BASE_HF))
+    from engine.tok import load_tokenizer
+    tok = load_tokenizer(BASE_HF)   # agrees with tokenizer.json (engine/tok.py; the Llama dir needs the fast loader)
     tr = [json.loads(x) for x in (RUNS / "traces.jsonl").read_text(encoding="utf-8").splitlines()]
     kept = [r for r in tr if finished(r)]
     pos, neg = [], []

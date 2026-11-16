@@ -38,6 +38,18 @@ P6. GGUF ↔ HF: `general.name` / `general.basename` name this model, `llama` ar
     embeddings may be Q8_0, which does not matter). If some `ffn_down` is not Q6_K, the compile part needs another quant
     file (noted here as [rev], not improvised).
 
+[rev 2026-11-17 00:45, after stage 0's CPU checks, before any arm.] **P4 failed under the plan's loader and is fixed in
+code, not in the plan's criteria:** transformers 5.12's `AutoTokenizer` hands this directory to the slow `LlamaTokenizer`,
+which splits "We need" into byte tokens (`W`, `ene`, `ed`) and returns offsets that do not point at the tokens;
+`PreTrainedTokenizerFast.from_pretrained` on the same directory agrees with tokenizer.json (the `tokenizers` library,
+what llama.cpp's converter read) and keeps the chat template. New `engine/tok.py` (`load_tokenizer`: AutoTokenizer if it
+reproduces tokenizer.json on a sample, else the fast loader, else error; 4 unit tests written first) now used by
+`contrast_vector`, `compile_control_vector`, `cc.py rows` and this probe. Qwen3.5 and Phi agree under AutoTokenizer
+(checked on the three directories) and are returned unchanged, so nothing earlier moves. Without this the HF forwards
+of the op would have seen other tokens than the served model. P4 re-run: `TokenizersBackend`, offsets monotone, ok.
+P5 true (template ends with `<think>\n`), P6 true (`llama`, 32 blocks, 32/32 `ffn_down` Q6_K, GGUF sha256
+`403a545b2dce6dfb`). P2: budget **2,048** by the rule (cut count in `lab/runs/cc_llama/probe.log`).
+
 ## Data (no download; nothing from the dev set or the sealed sets)
 `cc.py split` with `CC_RUNS=lab/runs/cc_llama`, seed 20261110: the same 64 discovery / 64 screen MATH items and GSM8K
 **train** 0-63 as the Qwen and Phi studies (none in dev or sealed sets).

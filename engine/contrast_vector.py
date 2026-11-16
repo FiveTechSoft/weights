@@ -139,9 +139,10 @@ def layer_means(model, pairs, batch=8):
 
 
 def contrast_vector(model_dir, pos, neg, out, model_hint="qwen35", max_resp=384, placebo_seed=None, device=None):
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+    from transformers import AutoModelForCausalLM
+    from engine.tok import load_tokenizer
     out = Path(out)
-    tok = AutoTokenizer.from_pretrained(str(model_dir))
+    tok = load_tokenizer(model_dir)   # agrees with tokenizer.json, as llama.cpp does (engine/tok.py)
     P, N = _pairs(tok, _rows(pos), max_resp), _pairs(tok, _rows(neg), max_resp)
     if not P or not N:
         raise ValueError("contrast_vector: pos and neg need at least one row with a response")

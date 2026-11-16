@@ -432,13 +432,14 @@ def compile_from_ids(model, fit_ids, ho_ids, vecs, out, placebo=None, placebo_se
 def compile_control_vector(model_dir, vector, calib, out, placebo=None, placebo_seed=2026, base_gguf=None, lora=True,
                            lam=LAM, heldout=HELDOUT, seed=SEED, max_len=MAX_LEN, template="think", device=None):
     """Load the model and calibration traces, then compile_from_ids. Defaults are the §43.19 run."""
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+    from transformers import AutoModelForCausalLM
+    from engine.tok import load_tokenizer
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     model_dir, vector, calib, out = Path(model_dir), Path(vector), Path(calib), Path(out)
     vecs = read_vector(vector)
     pl = read_vector(placebo) if placebo else None
     rows = [json.loads(x) for x in calib.read_text(encoding="utf-8").splitlines() if x.strip()]
-    tok = AutoTokenizer.from_pretrained(str(model_dir))
+    tok = load_tokenizer(model_dir)   # agrees with tokenizer.json, as llama.cpp does (engine/tok.py)
     fit_ids, ho_ids = split_rows(calib_ids(tok, rows, template, max_len), heldout, seed)
     meta = {"model": str(model_dir), "vector": str(vector), "vector_sha256": sha256(vector), "calib": str(calib),
             "calib_sha256": sha256(calib), "split_seed": seed, "template": template, "max_len": max_len,

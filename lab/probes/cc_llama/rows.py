@@ -51,8 +51,8 @@ def main():
         print(json.dumps({"traces": len(tr), "calib": len(rows)}))
         return
     if sys.argv[1:] == ["template"]:
-        from transformers import AutoTokenizer
-        tok = AutoTokenizer.from_pretrained(str(hf))
+        from engine.tok import load_tokenizer
+        tok = load_tokenizer(hf)
         p = tok.apply_chat_template([{"role": "user", "content": "hi"}], tokenize=False, add_generation_prompt=True)
         print(json.dumps({"tail": p[-40:], "template_writes_think": template_writes_think(p)}))
         return

@@ -37,7 +37,21 @@ def randvec(out, d=D, layers=LAYERS, norm=1.0, seed=2026):
 
 
 compare = phi.compare
-offsets = phi.offsets
+
+
+def offsets():
+    """P4 with engine/tok.py's loader (AutoTokenizer gives this directory the slow LlamaTokenizer: wrong tokens, wrong
+    offsets; found 2026-11-17 00:28 by this very check)."""
+    import json
+    from engine.tok import load_tokenizer
+    tok = load_tokenizer(HF)
+    text = "<think>\nWe need 3 * 4 = 12 apples. So the answer is 12.\n</think>\nThe answer is \\boxed{12}."
+    enc = tok(text, add_special_tokens=False, return_offsets_mapping=True)
+    off = enc["offset_mapping"]
+    ok = (len(off) == len(enc["input_ids"]) and all(e > s for s, e in off if e) and off[-1][1] == len(text)
+          and all(off[k][0] <= off[k + 1][0] for k in range(len(off) - 1)))
+    print(json.dumps({"loader": type(tok).__name__, "tokens": len(off), "P4_offsets_ok": ok, "first": off[:4],
+                      "last": off[-3:], "think_token_ids": tok("<think>", add_special_tokens=False)["input_ids"]}))
 
 if __name__ == "__main__":
     cmd, *a = sys.argv[1:]
