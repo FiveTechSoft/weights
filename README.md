@@ -90,6 +90,9 @@ Phi, half of the GSM8K gain at 1,024 and most of the MATH gain was the budget; +
 is still cut 24 / 50 by the base at 2,048 and is not settled. Smaller beyond the budget than on Qwen (+18 / +20 at 8,192).
 Prediction row 36: 14 of 18 readings in band.
 
+**Evidence synthesis (16 November):** [what the Phi results establish, and what they do not](docs/phi_findings_2026-11-16.md).
+Measured transfer, compilation, budget controls, practical uses and limits, with AHA / WeightBench / Auto-WSP context.
+
 **Compiled into the weights** (results §43.19 dev, §43.21 sealed): the same vector written into `down_proj` of 31 layers as a
 closed-form rank-1 edit per layer (no gradients, same matrices and shapes), merged into the Q6_K file, run with no
 flags: dev GSM8K 50 → **87**/100, MATH 6 → **34**/50, not different from the control vector (84 / 32; p 0.45 / 0.73).
