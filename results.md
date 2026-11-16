@@ -6,7 +6,7 @@
 > afirmaciones luego retiradas (§26) y las ideas refutadas. **No es el estado actual.** El estado actual está en
 > [`README.md`](README.md) (resultado principal) y [`FOUNDATIONS.md`](FOUNDATIONS.md) (tesis, estado y evidencia).
 > §1-§25 (3-4 nov) son el estudio inicial (MiMo, toolkit, nanoGPT); §26 retira lo que no se demostró; el resultado
-> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-15.
+> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-16.
 
 Estudio inicial: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
 
@@ -3067,3 +3067,72 @@ currently disabled - results might be suboptimal"; afecta igual a los seis brazo
 - **Dos métodos.** `verdict.json`, `verdict.txt` y los resúmenes de la cadena, frente a recuento propio por filas de los
   seis JSON (bien con dos correctores, cortes, acabados, caracteres de pensamiento de los acabados, tokens, pareados
   ganados/perdidos): idénticos; binomial exacta comprobada a mano para 28/2 (2 × 466 / 2³⁰ = 8,7·10⁻⁷).
+
+### 45.16 La dirección "concluir" de Phi compilada en `down_proj`: pasa dev (C1-C4) y confirma en el conjunto sellado 2, igual que el vector (2026-11-15)
+Plan: `lab/probes/cc_phi/PLAN.md` "Compile the Phi direction into `down_proj`" (fijado 12:40, antes de la op), predicción
+fila 35. Misma op que el estudio Qwen (`compile_control_vector`, §43.19-43.21, §45.8; única diferencia de código: `ridge_u`
+devuelve `u` en el dispositivo pedido, arreglo de mecánica hecho antes de correr y anotado en el plan). Cadena
+`lab/runs/cc_phi/chain_w.sh` 12:18-14:17 (`set -eu`, trap, `chain_guard` con sha del GGUF, del vector, presupuesto, escala y
+commit; smoke por configuración; sha256 de cada GGUF servido en el log; cada JSON lleva `served` = ruta y sha256 que
+`/props` del servidor declara). Datos `lab/runs/cc_phi/weights/` (dev, `report.json` de la op) y `lab/runs/sealed_ccw_phi/`.
+
+- **Entradas.** Vector `cc_phi.gguf` **× 0,5** (la op escribe el vector a ×1,0; 0,5 es la escala elegida en §45.15; archivo
+  escalado `cc_phi_x0.5.gguf`, sha256 `67658ce7…`, normas 0,25 … 10,49 (capa 30), 9,11 (31)), placebo = el mismo placebo
+  de §45.15 × 0,5 (`325fc63f…`, normas idénticas por construcción), calibración = las 107 trazas acabadas con el prefijo
+  `<think>\n` que el modelo escribe (79 ajuste / 28 reserva, **133 088 tokens**; Qwen tuvo 382 k), GGUF base Q6_K
+  `e5742248…`, sin LoRA.
+- **Op (1 300 s).** `u` por ridge en las entradas de `down_proj` de cada capa, norma decreciente con la profundidad (6,0 en
+  la capa 1 → 0,20 en la 30). **G0 pasa:** mediana sobre capas de la mediana en reserva de |uᵀx − 1| = **0,044** (peor
+  capa 0,064; placebo 0,045 / 0,062; umbral 0,5): el empujón escrito vale 1 ± 0,04 en tokens no vistos. ‖dW‖/‖W‖ mediana
+  0,013 (0,005-0,036; mayor en la 31). Fusión Q6_K (98 304 bloques recuantizados por tensor, 100 %): cos(escrito, dW)
+  mediana **0,74**, mínimo 0,64; error relativo mediano 0,72 (Qwen: 0,89 / 0,83 / 0,47; la edición ×0,5 es más pequeña
+  frente a W y Q6_K conserva menos de ella).
+
+| Phi-4-mini-reasoning, 1 024 tokens | GSM8K /100 bien (c2) / cortes / acabados / bien-entre-acabados / mediana carac. pensamiento acabados / tokens | MATH /50 bien (c2) / cortes / acabados / tokens |
+|---|---|---|
+| **dev** base (§45.15) | 59 (58) / 42 / 58 / 0,98 / 1 987 / 828 | 6 (6) / 43 / 7 / 993 |
+| dev vector ×0,5 (§45.15) | 85 (85) / 11 / 89 / 0,93 / 1 368 / 573 (−31 %) | 19 (17) / 28 / 22 / 883 (−11 %) |
+| **dev fusionado** (`-m`, sin flags) | **81 (81)** / 13 / 87 / 0,93 / 1 552 / 618 (−25 %) | **19 (17)** / 30 / 20 / 914 (−8 %) |
+| dev placebo fusionado | 54 (53) / 47 / 53 / 1,00 / 2 239 / 879 (+6 %) | 5 (5) / 45 / 5 / 992 (0 %) |
+| **sellado 2** base | 62 (61) / 38 / 62 / 0,98 / 2 008 / 840 | 7 (6) / 45 / 5 / 1 005 |
+| sellado 2 vector ×0,5 | 88 (88) / 5 / 95 / 0,93 / 1 343 / 542 (−35 %) | 15 (13) / 30 / 20 / 897 (−11 %) |
+| **sellado 2 fusionado** | **86 (86)** / 8 / 92 / 0,93 / 1 554 / 616 (−27 %) | **14 (12)** / 35 / 15 / 946 (−6 %) |
+| sellado 2 placebo fusionado | 60 (59) / 40 / 60 / 0,98 / 2 192 / 857 (+2 %) | 2 (2) / 49 / 1 / 1 024 (+2 %) |
+
+- **Dev, pareado** (referencias base y vector de §45.15 reutilizadas, premisa p4). Fusionado frente a base: GSM8K **25/3**
+  (p 2,7·10⁻⁵; c2 25/2), MATH **13/0** (p 2,4·10⁻⁴; c2 11/0, p 0,001). Fusionado frente a vector: 6/10 (p 0,45) y 3/3
+  (p 1): iguales. Placebo fusionado frente a base: 7/12 (p 0,36) y 1/2. Placebo frente a vector: 4/35 y 1/15. C1 ✓, C2 ✓,
+  C3 ✓, C4 (fusionado no por debajo del vector con p < 0,05) ✓ → **PASS** (`weights/verdict.json`, 13:10).
+- **Sellado 2** (`data/sealed_confirm2.json`, sha256 `c21ef91c…`, **primer uso con este modelo**; cuatro brazos servidos
+  en la misma cadena). Fusionado frente a base: GSM8K **26/2** (p 3,0·10⁻⁶; c2 27/2), MATH **7/0** (p 0,016; c2 6/0,
+  p 0,031). Vector frente a base: 28/2 y 9/1. Fusionado frente a vector: 2/4 (p 0,69) y 2/3 (p 1): iguales. Placebo
+  fusionado frente a base: 9/11 (p 0,82) y **0/5** (p 0,06; el placebo daña MATH, 7 → 2). Placebo frente a vector: 1/29 y
+  0/13. **CONFIRMA** (C1-C4; `sealed_ccw_phi/verdict.json`, 14:09).
+- **Sigue siendo "terminar tras razonar".** Ningún acabado del fusionado lleva < 50 caracteres de pensamiento (0 de 87 en
+  dev, 0 de 92 en el sellado; criterio de sorpresa del plan, ≤ 10 %); mediana del pensamiento de los acabados 1 987 →
+  1 552 (dev) y 2 008 → 1 554 (sellado), algo menos corta que con el vector (1 368 / 1 343); 0,93 de los acabados bien.
+- **HumanEval-20** (informado, no criterio; `he_eval.py`, tope 2 048, sistema de matemáticas): base **11**/20 (11 cierran,
+  mediana 1 950 tokens), fusionado **16**/20 (17 cierran, mediana 1 235). Fuera de la banda ± 3 prevista, hacia arriba: con
+  n = 20 es una lectura, no un hallazgo; en Qwen el compilado dio HE 17 → 18 (§43.21).
+- **Predicción (fila 35) contra el dato.** G0 0,02-0,15 → 0,044 ✓; cos 0,6-0,9 → 0,74 ✓; ‖dW‖/‖W‖ 0,005-0,03 → 0,013 ✓.
+  Dev fusionado GSM 70-86 → **81** ✓, MATH 11-20 → **19** ✓, tokens −15 a −35 % → GSM −25 ✓, MATH **−8 ✗**; cortes GSM
+  8-25 → 13 ✓. Placebo fusionado GSM 45-62 → 54 ✓, MATH 3-8 → 5 ✓, tokens −5 a +10 % → +6 / 0 ✓✓. C1-C4 ✓, PASS ✓,
+  fusionado a ≤ 8 del vector en GSM ✓ (−4). Sellado 2: base GSM 50-66 → 62 ✓, MATH 2-8 → 7 ✓; fusionado +10 a +25 →
+  **+24** ✓, +6 a +15 → **+7** ✓; vector +18 a +28 → +26 ✓, +10 a +17 → **+8 ✗**; placebo −8 a +3 → −2 ✓, −2 a +3 →
+  **−5 ✗**; confirma ✓. HE base 6-16 → 11 ✓, fusionado ± 3 → **+5 ✗**. Sorpresas declaradas: ninguna (G0 pasa; cos 0,74;
+  fusionado > base; fusionado no > vector + 5; placebo no > base + 3; 0 % de acabados sin pensamiento). **◐**: 18 de 22
+  lecturas en banda, todas las primarias (op, brazo, control, veredicto, sellado); fallan cuatro secundarias (tokens MATH
+  del fusionado, ganancia MATH del vector en el sellado, placebo MATH en el sellado por debajo, HE del fusionado por
+  encima).
+- **Lectura.** La primitiva viaja: el mismo cierre de forma por capa (ridge → u, dW = v uᵀ, fusión Q6_K) escribe en una
+  segunda familia lo que el vector hacía como flag, y el modelo servido sin flags rinde igual que el vector en dev y en el
+  sellado (−4 / 0 y −2 / −1, ninguna diferencia significativa). Que cos(escrito, dW) baje a 0,74 (Qwen 0,89) sin que
+  cambie la conducta repite la lección de §43.19: el ruido de Q6_K sobre dW no es la variable. El empujón casi constante
+  (uᵀx = 1 ± 0,04) basta, como en Qwen y como dicen Barry y AHA desde fuera (`FOUNDATIONS.md` T3). El placebo compilado
+  nunca gana (dev −5, sellado −2 / −5). Límites: un presupuesto (1 024), una escala (0,5), una semilla de placebo, voraz,
+  Q6_K, 133 k tokens de calibración, referencias dev reutilizadas de la cadena del vector, HE con n = 20, las fugas de
+  "no es nueva capacidad" de §43.19 siguen valiendo (eficiencia a presupuesto fijo).
+- **Dos métodos.** `verdict.json` (dev y sellado) y los resúmenes de la cadena frente a recuento propio por filas de los
+  ocho JSON (bien con dos correctores, cortes, acabados, caracteres de pensamiento, tokens, pareados): idénticos; binomial
+  exacta a mano para 26/2 (2 × 407 / 2²⁸ = 3,0·10⁻⁶); `served` de cada JSON coincide con los sha256 del log (fusionado
+  `9b47c7f9…`, placebo fusionado `5dbf7540…`, base `e5742248…`; premisa p5).

@@ -152,3 +152,15 @@ control-vector check for the vector arm, sha256 of every served GGUF in the log;
 
 **Cost.** Op ≈ 20-40 min (3.8B, 107 sequences ≤ 4,096, two arms, two merges); dev 2 × 150 ≈ 30 min; sealed 4 × 150
 ≈ 1 h; HE 2 × 20 ≈ 5 min. ≈ 2.5 GPU h.
+
+[post-data 2026-11-15 (written 2026-11-16), results §45.16, prediction row 35 partial.] Chain 12:18-14:17, nothing
+stopped, the CPU fallback did not fire. Op: G0 0.044 (worst 0.064; placebo 0.045), calibration 79 / 28 rows and 133,088
+tokens (less than the ~300 k estimated: Phi's finished reasoning is short), cos(written, dW) median 0.74 (min 0.64),
+rel_err 0.72, ‖dW‖/‖W‖ median 0.013, 1,300 s. Dev merged 81 / 19 (vector 85 / 19, base 59 / 6; 25/3 and 13/0 vs base;
+6/10 and 3/3 vs vector), tokens −25 % / −8 %, GSM8K cuts 13; placebo merged 54 / 5 (7/12, 1/2 vs base), tokens +6 % / 0 %;
+C1-C4 PASS. Sealed set 2 (first use for Phi): base 62 / 7, merged 86 / 14 (26/2, 7/0), vector ×0.5 88 / 15 (28/2, 9/1),
+placebo merged 60 / 2 (9/11, 0/5); merged vs vector 2/4 and 2/3; CONFIRMS. HumanEval-20: base 11, merged 16 (17 closed,
+median tokens 1,950 → 1,235). No finished merged answer with < 50 characters of thinking (0/87 dev, 0/92 sealed). Premises
+p1-p5 held (served path + sha256 recorded in every JSON). Prediction: 18 of 22 readings in band; the four misses are
+secondary (merged MATH tokens −8 % vs −15 to −35; sealed vector MATH +8 vs +10 to +17; sealed placebo MATH −5 vs −2 to
++3; HE merged +5 vs ± 3). None of the declared surprises occurred.

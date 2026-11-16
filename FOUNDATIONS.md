@@ -235,6 +235,11 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   T2 "stop" regime of gate 3b is reachable in Phi by dose alone. What changes between families: the scale (vector norm
   27.2 vs 18.1) and the per-layer profile (peak at layer 30, last row 0.87× the one before; Qwen ≈ 2×). What does not:
   the placebo's sign. Prediction row 34 partial (direction, controls, verdict right; magnitudes larger than predicted).
+  **Compiled (§45.16):** the same op writes the Phi direction (× 0.5) into `down_proj` of 31 layers, G0 0.044, cos(written,
+  dW) 0.74 after Q6_K; served with no flags: dev 81 / 19 (vector 85 / 19, base 59 / 6; C1-C4), sealed set 2 (first use)
+  base 62 / 7 → merged 86 / 14 (26/2, 7/0), vector 88 / 15 on the same items (2/4, 2/3 against it: equal), compiled
+  placebo 60 / 2; no finished answer without thinking; HumanEval-20 11 → 16 (n = 20, reported). Row 35: 18 of 22 readings
+  in band. The compile primitive now holds on two families; what differs is the dose written (× 0.5), not the op.
   Open: compile into Phi's `down_proj` (separate plan), other budgets, sampling, a third family.
 - **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
   traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
@@ -252,9 +257,9 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
   the medical RL model is uncertain at 25 %).
 - **Quantization × edits:** all our numbers are Q6_K; quantization alone moves base loops (§39.6).
-- **Two model families (Qwen3.5-9B; Phi-4-mini-reasoning since §45.15), greedy only.** The conclude direction is the
-  only result shown outside Qwen; the transplants, the compile into weights, the activation maps and the implant
-  checks are Qwen-only. Nothing here is shown for sampling.
+- **Two model families (Qwen3.5-9B; Phi-4-mini-reasoning since §45.15), greedy only.** The conclude direction and its
+  compile into `down_proj` (§45.16) are the only results shown outside Qwen; the transplants, the activation maps and the
+  implant checks are Qwen-only. Nothing here is shown for sampling.
 
 ## Refuted / retired (do not retry without a new reason)
 | idea | result | where |
