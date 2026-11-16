@@ -341,7 +341,8 @@ LessWrong (10 Nov 2026) — MIT's eight experiments repeated with a Fable agent,
 (`shawnghu/fable-weight-space-programming`); the author says he did not review outputs or method closely · Mehta &
 Singh (MSR), *Interpretable weight-space programming builds transparent transformers and brain encoding models* (iWSP,
 Nov 2026; `csinva/weight-space-programming-autoresearch`) — T4 note · Naik, Liu & Gangal, *Auto Weight-Space
-Programming, Part 1* (atharva-naik.github.io/blog/awsp-part-1, 13 Nov 2026; code, LoRAs and item files released;
+Programming, Part 1* (atharva-naik.github.io/blog/awsp-part-1, 13 Nov 2026; alphaXiv copy submitted 15 Nov 2026 for
+versioning, same abstract: Qwen3.5-4B, 99.8 % on the four-way logit-lens test; code, LoRAs and item files released;
 co-author's thread 15 Nov 2026, x.com/VarunGangal/status/2121771960300634620, frames it as "sparks of life for a
 trainable regime", nothing beyond the blog) —
 the **reading** side: a rank-32 LoRA teaches Qwen3.5-4B to give the logit lens of 128-number slices of its own
