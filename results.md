@@ -3136,3 +3136,63 @@ commit; smoke por configuración; sha256 de cada GGUF servido en el log; cada JS
   ocho JSON (bien con dos correctores, cortes, acabados, caracteres de pensamiento, tokens, pareados): idénticos; binomial
   exacta a mano para 26/2 (2 × 407 / 2²⁸ = 3,0·10⁻⁶); `served` de cada JSON coincide con los sha256 del log (fusionado
   `9b47c7f9…`, placebo fusionado `5dbf7540…`, base `e5742248…`; premisa p5).
+
+### 45.17 Control de presupuesto en Phi: a 2 048 tokens la base recupera la mitad de la ganancia, el fusionado sigue +10 en GSM8K (significativo) y +3 en MATH (no) (2026-11-16)
+Plan: `lab/probes/cc_phi/PLAN.md` "Token-budget control on Phi" (fijado 04:2x, antes de servir nada), predicción fila 36.
+Pregunta: ¿la ganancia de Phi (§45.15 vector, §45.16 fusionado) es más que acabar dentro de 1 024 tokens? En Qwen, a 4×
+el presupuesto, el vector seguía +13 y el fusionado +18 (§45.11, §45.13); AHA afirma la regla contraria para arreglos de
+bucle (ganancia ≤ tasa de corte de la base). Cadena `lab/runs/cc_phi/chain_b2048.sh` 04:32-05:29 (`set -eu`, trap,
+`chain_guard` con sha del GGUF `e5742248…`, del vector `19c8b0c1…`, del fusionado `9b47c7f9…`, presupuesto 2 048, escala 0,5,
+commit 972b4ca; smoke 2/2 por configuración; 0 líneas "no valid control vector"; `served` de cada JSON = sha del log).
+Datos `lab/runs/cc_phi/cap2048/`. Tres brazos, los 150 ítems dev de §45.15/45.16, voraz, `-np 2`, sin placebo (la pregunta
+del placebo está contestada a 1 024 en las dos formas).
+
+| Phi-4-mini-reasoning, dev | GSM8K /100 bien (c2) / cortes / acabados / mal-entre-acabados / mediana carac. pensamiento acabados / tokens medios | MATH /50 bien (c2) / cortes / acabados / mal-entre-acabados / tokens |
+|---|---|---|
+| base 1 024 (§45.15) | 59 (58) / 42 / 58 / 1 / 1 987 / 828 | 6 (6) / 43 / 7 / 1 / 993 |
+| vector ×0,5 1 024 (§45.15) | 85 (85) / 11 / 89 / 6 / 1 368 / 573 | 19 (17) / 28 / 22 / 5 / 883 |
+| fusionado 1 024 (§45.16) | 81 (81) / 13 / 87 / 6 / 1 552 / 618 | 19 (17) / 30 / 20 / 1 / 914 |
+| **base 2 048** | **81 (82)** / 17 / 83 / 2 / 2 413 / 1 111 | **26 (23)** / 24 / 26 / 0 / 1 669 |
+| vector ×0,5 2 048 | 85 (86) / 4 / 96 / 11 / 1 457 / 629 (−43 %) | **35 (32)** / 9 / 41 / 6 / 1 254 (−25 %) |
+| **fusionado 2 048** | **91 (91)** / 5 / 95 / 4 / 1 718 / 696 (−37 %) | **29 (26)** / 16 / 34 / 5 / 1 368 (−18 %) |
+
+- **Pareado a 2 048** (McNemar exacto; c2 entre paréntesis). Fusionado frente a base: GSM8K **12/2** (p 0,013; c2 11/2,
+  p 0,022), MATH **7/4** (p 0,55; c2 6/3). Vector frente a base: 11/7 (p 0,48) y **13/4** (p 0,049). Fusionado frente a
+  vector: 9/3 (p 0,15) y 3/9 (p 0,15): sin diferencia significativa en ninguno, pero de signo opuesto por banco.
+- **Lo que el presupuesto explica.** De los 42 ítems GSM8K que la base cortaba a 1 024, a 2 048 la base cierra bien 25 y
+  sigue cortando 16 (el fusionado acierta 34 de esos 42, el vector 29). De los 43 de MATH: base 19 bien, 24 cortados
+  (fusionado 22, vector 29). La ganancia del fusionado sobre la base pasa de **+22 / +13** a 1 024 a **+10 / +3** a 2 048:
+  en GSM8K la mitad era presupuesto y la otra mitad no; en MATH casi toda lo era, al menos hasta 2 048.
+- **Techo de AHA, como informe.** GSM8K: la base corta 17 (techo), el fusionado gana 10; de sus 12 victorias, 10 son
+  ítems que la base cortaba y 2 ítems que la base acababa mal; pierde 2 que la base acababa bien. MATH: techo 24, ganancia
+  3; 7 victorias (todas de cortes), 4 derrotas (2 acabados mal y 2 cortes sobre ítems que la base acababa bien). La regla se
+  cumple en los dos bancos: la ganancia sale de los cortes de la base y no los agota (10 de 17, 7 de 24).
+- **Sigue siendo "terminar tras razonar".** 0 acabados con < 50 caracteres de pensamiento en los tres brazos; mediana del
+  pensamiento de los acabados 2 413 (base) → 1 718 (fusionado) → 1 457 (vector). El vector cierra mal más veces (11 y 6)
+  que el fusionado (4 y 5) y que la base (2 y 0): mismo patrón que en Qwen a 8 192 (§45.13, 13 frente a 6). Los tokens de
+  cada brazo suben respecto a sí mismo a 1 024 (+13 % GSM8K, +50 % MATH en el fusionado): el modelo editado usa el
+  presupuesto extra cuando lo hay; no está "atascado en corto".
+- **Predicción (fila 36) contra el dato.** Base GSM 76-88 → **81** ✓, cortes 8-22 → 17 ✓, MATH 14-26 → **26** ✓ (borde),
+  cortes 15-32 → 24 ✓, tokens 1 000-1 400 → 1 111 ✓, de 42 cortados 20-34 bien → 25 ✓. Vector GSM 85-93 → 85 ✓, cortes
+  ≤ 6 → 4 ✓, MATH 22-32 → **35 ✗**. Fusionado GSM 83-92 → 91 ✓, MATH 21-31 → 29 ✓; = vector ± 4 → **+6 ✗**, ± 3 → **−6 ✗**,
+  sin diferencia significativa → ✓ (p 0,15 / 0,15). Fusionado sobre base GSM +2 a +12 con p < 0,05 → **+10, p 0,013** ✓;
+  MATH +2 a +10 → +3 ✓. Tokens −15 a −35 % en GSM8K → **−37 (fusionado) / −43 (vector) ✗**. ≤ 2 % de acabados sin
+  pensamiento → 0 ✓. Sorpresas declaradas: ninguna (fusionado no < base − 3 ni > base + 18; base 81, ni < 65 ni ≥ 92; 0 %
+  sin pensamiento). **◐**: 14 de 18 lecturas en banda, las primarias sí (base en banda, fusionado > base con p en GSM8K,
+  sin sorpresas); fallan el vector en MATH (más alto), la igualdad fusionado = vector (se separan ± 6, de signo opuesto por
+  banco, sin significación) y la reducción de tokens (mayor de la prevista).
+- **Lectura.** En la segunda familia el efecto es más pequeño fuera del presupuesto que en Qwen: a 2× el presupuesto
+  quedan +10 en GSM8K (significativo) y +3 en MATH (ruido), frente a +18 / +20 de Qwen a 4× (§45.13). Dos cosas distintas
+  de Qwen: (1) la base de Phi recupera mucho más al doblar el presupuesto (59 → 81; Qwen 50 → 72 a 8×), (2) a 2 048 la
+  base sigue cortando 24 de 50 en MATH, así que ese banco sigue atado y la comparación en MATH no es "sin presupuesto".
+  Lo que sí se sostiene con el presupuesto doblado: fusionado > base en GSM8K con p < 0,05, las ganancias salen de los
+  cortes de la base (AHA), y el modelo editado no deja de pensar. Lo que no se afirma: que el fusionado iguale al vector
+  (9/3 y 3/9 van en sentidos opuestos; haría falta más n o el sellado) ni que haya ganancia en MATH más allá del presupuesto.
+  **Límites:** ítems dev (no sellado), un solo doblado (2 048; MATH sigue atado), voraz, `-np 2`, referencias de 1 024
+  reutilizadas (p3), 3 desacuerdos entre correctores por brazo en MATH (c2 da la misma ordenación: 23 / 32 / 26).
+  Siguiente paso natural si se quiere zanjar MATH: brazo a 4 096 u 8 192 (≈ 1-2 GPU h más), predicción antes.
+- **Dos métodos.** Resumen de la cadena (`bench_runner` y el bloque final de `chain_b2048.sh`) frente a recuento propio por
+  filas de los tres JSON más los tres de 1 024 (`recount_phi_b2048.py`: bien con dos correctores, cortes, acabados, mal
+  entre acabados, caracteres de pensamiento, tokens medios y medianos, McNemar exacto por `math.comb`, cruce ítem a ítem
+  con los cortes de la base a 1 024 y con el estado de la base a 2 048): idénticos en las 18 celdas; conjuntos de ítems
+  iguales en los seis JSON (aserción); `served` = sha del log en los tres brazos.

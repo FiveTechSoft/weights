@@ -224,7 +224,13 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   §45.13, 2026-11-14/15):** at 8,192 tokens the base repeats 72 / 21 item by item (§39.6), the vector scores 85 / 37
   with a quarter of the tokens (16/3, p 0.004) and the compiled weights 90 / 41 (19/1 vs base; 6/1 and 6/2 vs the
   vector, equal or better); the compile's half dose closes early less often than the vector (6 vs 13 finished-wrong).
-  Prediction row 31 (base 82-92 at 8,192) failed; row 32 partial, the compile did more than predicted.
+  Prediction row 31 (base 82-92 at 8,192) failed; row 32 partial, the compile did more than predicted. **On Phi the budget
+  explains more (§45.17, 2026-11-16):** at 2,048 tokens (2×) the base goes 59 → 81 / 6 → 26, the merged model keeps +10 on
+  GSM8K (12/2, p 0.013) and +3 on MATH (7/4, not significant; the base still cuts 24 of 50 there), the vector +4 / +9
+  (13/4, p 0.049). Every merged win but two is an item the base cut: AHA's ceiling rule (gain ≤ base truncation rate) held
+  on both benchmarks, as it did on Qwen. The family-level reading: the direction is "finish after reasoning" on both, but
+  how much of the fixed-budget gain survives a larger budget is model-dependent (Qwen most of it at 4×, Phi half of GSM8K
+  and little of MATH at 2×). Prediction row 36 partial (14 of 18 readings).
 - **The conclude direction across models through activation maps (gate 3b, §45.12, 2026-11-14):** the 9B's contrast
   mapped per layer into Qwen3.5-0.8B (gate 1 maps, fitted on raw GSM8K text, not refitted) finishes 83/100 GSM8K
   answers at 2,048 tokens where the base finishes 0, and 7 are correct (7/0, p 0.016); the same-norm placebo 3 / 1,
@@ -251,7 +257,9 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   base 62 / 7 → merged 86 / 14 (26/2, 7/0), vector 88 / 15 on the same items (2/4, 2/3 against it: equal), compiled
   placebo 60 / 2; no finished answer without thinking; HumanEval-20 11 → 16 (n = 20, reported). Row 35: 18 of 22 readings
   in band. The compile primitive now holds on two families; what differs is the dose written (× 0.5), not the op.
-  Open: compile into Phi's `down_proj` (separate plan), other budgets, sampling, a third family.
+  **Budget doubled (§45.17):** base 81 / 26, merged 91 / 29 (+10 GSM8K, p 0.013; MATH +3, n.s.), vector 85 / 35; the
+  gains are the base's cut items (T2). Open: a 4,096 / 8,192 arm for MATH, the sealed set at 2,048, sampling, a third
+  family.
 - **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
   traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
   rebuild the conclude vector and get dev 83 / 35? Today we only know the *program* is deterministic. Cheap,

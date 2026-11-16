@@ -139,8 +139,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
 1. **Muestreo.** Todo es voraz (FOUNDATIONS, límites). Un brazo base/fusionado a T 0,6 con varias semillas diría si el
    efecto de "concluir" sobrevive al muestreo (AHA y el MIT trabajan muestreando). Sin hacer.
 2. **Control de presupuesto en Phi** (lo que §45.11/45.13 hicieron en Qwen): base, vector y fusionado a 2 048. Decide si en
-   la segunda familia el efecto también excede "acabar dentro del presupuesto". **En marcha (plan en `cc_phi/PLAN.md`,
-   fila 36).**
+   la segunda familia el efecto también excede "acabar dentro del presupuesto". **Hecho (§45.17, fila 36 ◐):** base
+   81 / 26, fusionado 91 / 29 (+10 GSM con p 0,013; MATH +3, ruido), vector 85 / 35; la ganancia sale de los cortes de la
+   base (techo AHA). En Phi el presupuesto explica la mitad de GSM y casi todo MATH a 1 024. Queda: brazo a 4 096-8 192
+   para MATH (sigue cortando 24/50) y el sellado a 2 048.
 3. **Segundo donante con mejora útil por el op** (criterio de 4.0sexies): no encontrado (OmniCoder/OxCoder = base, JackOD
    mezcla, Huatuo incierto, §43.16). Sigue abierto; depende de que exista en el hub.
 4. **Intervención condicional** (v por LP en vez de ridge): hecha fuera por AHA con sus límites medidos (más condicional =

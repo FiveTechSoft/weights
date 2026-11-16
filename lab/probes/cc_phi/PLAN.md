@@ -200,3 +200,13 @@ the base cut at 1,024, how many the base closes right at 2,048; AHA's ceiling as
   thinking at 2,048 (the stop regime appearing with a longer budget).
 
 **Cost.** 3 arms × 150 items at 2,048 ≈ 20-30 min each ≈ 1.3 GPU h.
+
+[post-data 2026-11-16, chain 04:32-05:29, results §45.17, row 36 partial] Base 81 / 26 (cuts 17 / 24; 25 of the 42
+base-cut GSM8K items now right), vector 85 / 35 (cuts 4 / 9), merged 91 / 29 (cuts 5 / 16). Merged vs base 12/2 (p 0.013)
+and 7/4 (p 0.55); vector vs base 11/7 and 13/4 (p 0.049); merged vs vector 9/3 and 3/9 (p 0.15 each). Tokens merged −37 %
+/ −18 %, vector −43 % / −25 %. 0 finished answers without thinking. AHA ceiling: gain 10 of 17 base cuts (GSM8K), 3 net of 24
+(MATH; 7 wins all from cuts, 4 losses). Bands missed: vector MATH 35 (22-32), merged = vector ± 4 / ± 3 (+6 / −6, both not
+significant), token reduction larger than −35 % on GSM8K. Premises: p1 held for GSM8K (17 cut) and failed for MATH (24 of
+50 still cut: 2,048 is binding there); p2 checked (same flags, `chain_guard`); p3 as stated; p4 not measured. Reading: on
+Phi half of the GSM8K gain at 1,024 and most of the MATH gain was budget; what remains at 2× is +10 on GSM8K with p < 0.05.
+A 4,096 / 8,192 arm would settle MATH; not launched.
