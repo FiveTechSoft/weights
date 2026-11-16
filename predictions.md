@@ -54,18 +54,18 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 | 37 | 2026-11-17 | `cc_llama/PLAN.md` Parte A (tercera familia: DeepSeek-R1-Distill-Llama-8B, vector) | Sonda: P2 se cumple a 2 048 (3-7 de 10 cortadas); P1 por el servidor (60 %) o por `split_think`; P3-P6 se cumplen. Trazas 60-100/128 cierran a 4 096. Criba (2 048): base 12-30/64, mejor escala **0,5 o 1,0**, vector base + 3 a + 12. Dev a 2 048: base GSM **55-80** (cortes 10-35), MATH **12-28** (cortes 18-36); vector GSM **+4 a +14**, MATH **+3 a +10**, tokens −15 a −40 %, cortes GSM a la mitad o menos; placebo ± 3 de base, tokens ± 10 %. C1-C3 pasan; sellado (primer uso con este modelo) confirma. Premisas p1-p7 en el plan. Sorpresa si vector < base − 3 en GSM, placebo ≥ vector − 3, base corta < 10 % a 2 048 y a 1 024, escala elegida 2,0, > 10 % de acabados sin pensamiento, o llama.cpp no aplica el vector a `llama` | | | | ⏳ |
 | 38 | 2026-11-17 | `cc_llama/PLAN.md` Parte B (tercera familia, compilado en `down_proj`; solo si la Parte A pasa dev) | Op: G0 pasa (mediana 0,02-0,15), cos escrito/dW mediana 0,6-0,9, ‖dW‖/‖W‖ 0,005-0,03. Dev: fusionado a **≤ 5 del vector en GSM y ≤ 4 en MATH**, sobre la base al menos la mitad de la ganancia GSM del vector con p < 0,05; placebo fusionado ± 3 de base, tokens ± 10 %. C1-C4 pasan; sellado 2 (primer uso con este modelo) confirma. HE-20: fusionado ± 3 de base. Ningún brazo con > 2 % de acabados sin pensamiento. Sorpresa si G0 falla, cos < 0,5, fusionado < base en GSM, fusionado > vector + 5, o > 10 % de acabados sin pensamiento | | | | ⏳ |
 
-| 39 | 2026-11-17 | `adam_sig/PLAN.md` (huella de Adam en embeddings: Jackrong − Qwen3.5-9B, CPU) | Embeddings difieren (70 %). Si difieren: filas cero + decaimiento ≥ 35 % de 248 320, una clase ≥ 30 % y la otra < 5 %; c del decaimiento en un rango 2× para ≥ 90 %; filas de un paso 0,3-10 %, tres niveles mayores ≥ 50 % de ellas; `lm_head` cero < 1 % y decaimiento < 1 %; top-20 por ‖D‖ ≥ 12 tokens frecuentes, no basura (contra la lectura de h5). Sorpresa si difieren y cero + decaimiento < 10 %, `lm_head` cero > 10 %, o el top-20 es mayormente raro | | | | ⏳ |
+| 39 | 2026-11-17 | `adam_sig/PLAN.md` (huella de Adam en embeddings: Jackrong − Qwen3.5-9B, CPU) | Embeddings difieren (70 %). Si difieren: filas cero + decaimiento ≥ 35 % de 248 320, una clase ≥ 30 % y la otra < 5 %; c del decaimiento en un rango 2× para ≥ 90 %; filas de un paso 0,3-10 %, tres niveles mayores ≥ 50 % de ellas; `lm_head` cero < 1 % y decaimiento < 1 %; top-20 por ‖D‖ ≥ 12 tokens frecuentes, no basura (contra la lectura de h5). Sorpresa si difieren y cero + decaimiento < 10 %, `lm_head` cero > 10 %, o el top-20 es mayormente raro | Embeddings **idénticos** (248 320/248 320 filas a cero, dos métodos) y `lm_head` idéntico. Barrido de todos los tensores: solo difieren las proyecciones lineales (q/k/v/o, out_proj, gate/up/down); normas, embeddings, `in_proj_*`, conv1d, A_log, dt_bias iguales → el donante es una LoRA fusionada, no un ajuste completo. Sonda vacía para el mecanismo; falla la única premisa puntuable (difieren, 70 %). Hace falta un donante de ajuste completo con base HF | 2026-11-17 | §45.18 | ❌ |
 
-## Cuenta (39 filas; 32 puntuables)
+## Cuenta (39 filas; 33 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 14 |
-| ❌ falla | 12 |
-| ⏳ / — | 7 |
+| ❌ falla | 13 |
+| ⏳ / — | 6 |
 
-Acierto limpio 6/32 = 19 %; acierto o parcial 20/32 = 63 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
+Acierto limpio 6/33 = 18 %; acierto o parcial 20/33 = 61 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es
 lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el número que importa es **cómo** fallan.
 

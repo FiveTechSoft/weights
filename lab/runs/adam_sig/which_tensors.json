@@ -1,0 +1,1468 @@
+{
+ "kinds": {
+  "lm_head.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "embed_tokens": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "norm": {
+   "same": 222,
+   "diff": 0,
+   "n": 222
+  },
+  "model.language_model.layers.0.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.0.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.0.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "in_proj_a": {
+   "same": 24,
+   "diff": 0,
+   "n": 24
+  },
+  "in_proj_b": {
+   "same": 24,
+   "diff": 0,
+   "n": 24
+  },
+  "in_proj_qkv": {
+   "same": 24,
+   "diff": 0,
+   "n": 24
+  },
+  "in_proj_z": {
+   "same": 24,
+   "diff": 0,
+   "n": 24
+  },
+  "out_proj": {
+   "same": 0,
+   "diff": 24,
+   "n": 24
+  },
+  "down_proj": {
+   "same": 1,
+   "diff": 32,
+   "n": 33
+  },
+  "gate_proj": {
+   "same": 1,
+   "diff": 32,
+   "n": 33
+  },
+  "up_proj": {
+   "same": 1,
+   "diff": 32,
+   "n": 33
+  },
+  "model.language_model.layers.1.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.1.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.1.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.10.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.10.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.10.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "k_proj": {
+   "same": 1,
+   "diff": 8,
+   "n": 9
+  },
+  "o_proj": {
+   "same": 1,
+   "diff": 8,
+   "n": 9
+  },
+  "q_proj": {
+   "same": 1,
+   "diff": 8,
+   "n": 9
+  },
+  "v_proj": {
+   "same": 1,
+   "diff": 8,
+   "n": 9
+  },
+  "model.language_model.layers.12.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.12.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.12.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.13.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.13.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.13.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.14.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.14.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.14.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.16.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.16.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.16.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.17.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.17.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.17.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.18.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.18.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.18.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.2.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.2.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.2.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.20.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.20.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.20.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.21.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.21.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.21.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.22.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.22.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.22.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.24.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.24.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.24.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.25.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.25.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.25.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.26.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.26.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.26.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.28.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.28.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.28.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.29.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.29.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.29.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.30.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.30.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.30.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.4.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.4.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.4.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.5.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.5.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.5.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.6.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.6.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.6.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.8.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.8.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.8.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.9.linear_attn.A_log": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.9.linear_attn.conv1d.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.language_model.layers.9.linear_attn.dt_bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.0.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "proj": {
+   "same": 28,
+   "diff": 0,
+   "n": 28
+  },
+  "model.visual.blocks.0.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "qkv": {
+   "same": 27,
+   "diff": 0,
+   "n": 27
+  },
+  "model.visual.blocks.0.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.0.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.0.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.0.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.1.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.1.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.1.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.1.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.1.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.1.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.10.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.10.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.10.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.10.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.10.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.10.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.11.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.11.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.11.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.11.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.11.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.11.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.12.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.12.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.12.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.12.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.12.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.12.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.13.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.13.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.13.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.13.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.13.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.13.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.14.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.14.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.14.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.14.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.14.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.14.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.15.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.15.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.15.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.15.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.15.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.15.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.16.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.16.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.16.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.16.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.16.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.16.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.17.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.17.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.17.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.17.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.17.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.17.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.18.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.18.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.18.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.18.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.18.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.18.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.19.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.19.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.19.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.19.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.19.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.19.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.2.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.2.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.2.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.2.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.2.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.2.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.20.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.20.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.20.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.20.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.20.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.20.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.21.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.21.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.21.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.21.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.21.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.21.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.22.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.22.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.22.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.22.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.22.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.22.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.23.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.23.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.23.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.23.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.23.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.23.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.24.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.24.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.24.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.24.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.24.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.24.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.25.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.25.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.25.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.25.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.25.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.25.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.26.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.26.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.26.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.26.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.26.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.26.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.3.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.3.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.3.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.3.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.3.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.3.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.4.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.4.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.4.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.4.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.4.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.4.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.5.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.5.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.5.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.5.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.5.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.5.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.6.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.6.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.6.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.6.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.6.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.6.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.7.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.7.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.7.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.7.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.7.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.7.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.8.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.8.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.8.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.8.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.8.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.8.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.9.attn.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.9.attn.qkv.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.9.mlp.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.9.mlp.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.9.mlp.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.blocks.9.mlp.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.merger.linear_fc1.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.merger.linear_fc1.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.merger.linear_fc2.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.merger.linear_fc2.weight": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "model.visual.patch_embed.proj.bias": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "pos_embed": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  },
+  "fc": {
+   "same": 1,
+   "diff": 0,
+   "n": 1
+  }
+ },
+ "diff_layers": {
+  "out_proj": [
+   0,
+   1,
+   2,
+   4,
+   5,
+   6,
+   8,
+   9,
+   10,
+   12,
+   13,
+   14,
+   16,
+   17,
+   18,
+   20,
+   21,
+   22,
+   24,
+   25,
+   26,
+   28,
+   29,
+   30
+  ],
+  "down_proj": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31
+  ],
+  "gate_proj": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31
+  ],
+  "up_proj": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31
+  ],
+  "k_proj": [
+   3,
+   7,
+   11,
+   15,
+   19,
+   23,
+   27,
+   31
+  ],
+  "o_proj": [
+   3,
+   7,
+   11,
+   15,
+   19,
+   23,
+   27,
+   31
+  ],
+  "q_proj": [
+   3,
+   7,
+   11,
+   15,
+   19,
+   23,
+   27,
+   31
+  ],
+  "v_proj": [
+   3,
+   7,
+   11,
+   15,
+   19,
+   23,
+   27,
+   31
+  ]
+ },
+ "only": {
+  "base_only": [],
+  "donor_only": []
+ }
+}

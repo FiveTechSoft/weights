@@ -166,6 +166,9 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
 11. **Firma de Adam en los embeddings de nuestros donantes** (revisión Chaudhuri del 16-nov, más abajo): filas a cero,
     filas de |Δ| constante, agrupación en pasos, en Jackrong y MiMo menos la base. CPU, minutos. Diría si el relato
     del hilo se sostiene en artefactos que ya tenemos, y daría a `implant_detect` una referencia sin base.
+    **Hecho en Jackrong (§45.18, fila 39 ❌): embeddings y `lm_head` idénticos a la base; solo difieren las
+    proyecciones lineales → LoRA fusionada, sin huella posible.** MiMo no está en HF en disco. Queda: un donante de
+    ajuste completo con base HF sin puerta (p. ej. DeepSeek-R1-Distill-Qwen-7B sobre Qwen2.5-Math-7B, ≈ 30 GB); no lanzado.
 12. **Tercera familia (decisión del driver 2026-11-16: "verificación en tres").** `DeepSeek-R1-Distill-Llama-8B`
     (Llama, 32 capas, d 4 096; plantilla escribe `<think>\n`, regla de filas de Qwen). Plan `lab/probes/cc_llama/PLAN.md`
     fijado 2026-11-17 antes de correr, filas 37 (vector) y 38 (compilado) en predictions; misma op, mismos criterios

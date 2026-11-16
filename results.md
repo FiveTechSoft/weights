@@ -3196,3 +3196,38 @@ del placebo está contestada a 1 024 en las dos formas).
   entre acabados, caracteres de pensamiento, tokens medios y medianos, McNemar exacto por `math.comb`, cruce ítem a ítem
   con los cortes de la base a 1 024 y con el estado de la base a 2 048): idénticos en las 18 celdas; conjuntos de ítems
   iguales en los seis JSON (aserción); `served` = sha del log en los tres brazos.
+
+### 45.18 Huella de Adam en los embeddings: el donante Jackrong no la puede tener, porque es una LoRA fusionada (2026-11-17)
+
+**Pregunta** (plan `lab/probes/adam_sig/PLAN.md`, fila 39, fijado antes de correr; hueco 11 del roadmap, revisión de
+Chaudhuri del 16-nov). Si el optimizador deja en la matriz de embeddings de entrada una marca exacta (filas de tokens
+nunca vistos quietas o encogidas por decaimiento; filas vistas en un paso movidas con |Δ| constante por coordenada), un
+donante que tenemos en disco debería mostrarla. Donante: `hf_cache/dp_keep_dsv4_distill` (destilado de razonamiento de
+Jackrong sobre Qwen3.5-9B, §43.4-43.6); base: `hf_cache/qwen35-9b-hf`. CPU, safetensors por trozos, sin cargar el modelo.
+
+**Resultado.**
+| matriz | filas | cero | decaimiento | un paso | otras |
+|---|---|---|---|---|---|
+| `embed_tokens` | 248 320 | **248 320** | 0 | 0 | 0 |
+| `lm_head` | 248 320 | **248 320** | 0 | 0 | 0 |
+
+Las dos matrices son **idénticas** a la base. Barrido exploratorio de todos los tensores (`which_tensors.py`,
+`torch.equal` sobre los bf16 almacenados; no estaba en las lecturas del plan): difieren 152 tensores, todos proyecciones
+lineales — `q/k/v/o_proj` en las 8 capas de atención completa, `out_proj` en las 24 de atención lineal, `gate/up/down_proj`
+en las 32 —; iguales 623: embeddings, `lm_head`, las 222 normas, `in_proj_qkv/z/a/b`, `conv1d`, `A_log`, `dt_bias` y el
+resto (el único "igual" por tipo de proyección está fuera de las capas de texto). Con §43.4 (rango 64 conserva el
+99,97 % de ‖D‖²) la lectura es una: **el donante es una LoRA fusionada sobre una lista de módulos objetivo, no un
+ajuste completo.** Sin pasos de optimizador sobre los embeddings no hay huella que leer.
+
+**Puntuación (fila 39): ❌.** La única premisa puntuable ("los embeddings difieren", 70 %) falla; el plan preveía el caso
+("sonda vacía para el mecanismo; se informa, no se puntúa como acierto"). El resto de bandas no se evalúa.
+
+**Qué dice y qué no.** Dice algo útil sobre el donante (cómo se entrenó, leído de los pesos con un `equal` por tensor:
+la lectura de pesos más barata del repositorio) y nada sobre el mecanismo de Chaudhuri. La línea de `h5_plan.md`
+("tokens raros basura: ruido") era sobre MiMo, que solo tenemos en GGUF Q6_K: sigue abierta. Para probar el mecanismo
+hace falta un ajuste completo con base HF sin puerta (p. ej. DeepSeek-R1-Distill-Qwen-7B sobre Qwen2.5-Math-7B,
+≈ 30 GB de descarga); propuesto, no lanzado.
+
+**Dos métodos.** Filas a cero por `all(D == 0)` y por `max|D| == 0`: iguales en las dos matrices (aserción en el
+código). Identidad de `embed_tokens` y `lm_head` también por `torch.equal` en el barrido. Clasificador probado en filas
+sintéticas de clase conocida (`tests/test_adam_sig.py`, 3 tests, escritos antes del código).

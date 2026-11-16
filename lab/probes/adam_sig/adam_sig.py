@@ -56,28 +56,31 @@ def zero_rows_b(D):
     return int(np.sum(np.abs(np.asarray(D)).max(axis=1) == 0))
 
 
-def _load(hf_dir, name):
-    """The tensor as stored (bf16 torch tensor, ~2 GB for the embeddings); float32 is made per chunk in run()."""
-    from safetensors import safe_open
+def _shard(hf_dir, name):
     idx = json.loads((Path(hf_dir) / "model.safetensors.index.json").read_text(encoding="utf-8"))["weight_map"]
-    with safe_open(str(Path(hf_dir) / idx[name]), framework="pt") as f:
-        return f.get_tensor(name)
+    return str(Path(hf_dir) / idx[name])
 
 
-def run(base_dir, donor_dir, out, tensor="embed", top=20, chunk=16384):
+def run(base_dir, donor_dir, out, tensor="embed", top=20, chunk=8192):
     import torch
+    from safetensors import safe_open
     name = NAMES[tensor]
-    Tb, Td = _load(base_dir, name), _load(donor_dir, name)
-    assert Tb.shape == Td.shape, (Tb.shape, Td.shape)
     parts, za, zb = [], 0, 0
-    for i in range(0, Tb.shape[0], chunk):           # bf16 -> float32 per chunk: peak RAM ~ 2 x 2 GB + 1.5 GB
-        Wb = Tb[i:i + chunk].to(torch.float32).numpy()
-        D = Td[i:i + chunk].to(torch.float32).numpy() - Wb
-        parts.append(classify(Wb, D))
-        za += zero_rows_a(D)
-        zb += zero_rows_b(D)
+    with safe_open(_shard(base_dir, name), framework="pt") as fb, safe_open(_shard(donor_dir, name), framework="pt") as fd:
+        sb, sd = fb.get_slice(name), fd.get_slice(name)
+        shape = tuple(sb.get_shape())
+        assert shape == tuple(sd.get_shape()), (shape, sd.get_shape())
+        for i in range(0, shape[0], chunk):          # rows read per chunk from the files: peak RAM well under 1 GB
+            Wb = sb[i:i + chunk].to(torch.float32).numpy()
+            D = sd[i:i + chunk].to(torch.float32).numpy() - Wb
+            parts.append(classify(Wb, D))
+            za += zero_rows_a(D)
+            zb += zero_rows_b(D)
     r = {k: np.concatenate([p[k] for p in parts]) for k in parts[0]}
-    Wb = Tb   # shape only below
+
+    class Wb:  # shape holder for the report
+        pass
+    Wb.shape = shape
     cls = r["cls"]
     counts = {k: int(np.sum(cls == k)) for k in ("zero", "decay", "step", "other")}
     assert za == zb == counts["zero"], (za, zb, counts)

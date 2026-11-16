@@ -48,6 +48,17 @@ the input-side zeros are "never in a batch", not "frozen matrix"). Two methods f
   optimizer); `lm_head` zero rows > 10 %; the top-20 rows are mostly rare tokens (the h5 reading was right and the
   thread's mechanism does not show here).
 
+[post-data 2026-11-17 00:55, results §45.18, prediction row 39 ❌ on its one scorable premise.] `embed_tokens`: 248,320 /
+248,320 rows exactly zero (two methods agree); `lm_head`: 248,320 / 248,320 zero. The donor did not train either matrix,
+so the probe is void for the mechanism, as the plan allowed. Exploratory scan of every tensor (`which_tensors.py`,
+`torch.equal` on the stored bf16): only the linear projections differ — `q/k/v/o_proj` in the 8 full-attention layers,
+`out_proj` of the 24 linear-attention layers, `gate/up/down_proj` in all 32 layers; identical: embeddings, `lm_head`,
+all 222 norms, `in_proj_qkv / z / a / b`, `conv1d`, `A_log`, `dt_bias`. Together with §43.4 (rank 64 keeps 99.97 % of
+‖D‖²) this says the donor is a **merged LoRA** on a target-module list, not a full fine-tune: no optimizer footprint can
+exist in its embeddings. The h5 "junk tokens" line was about MiMo, whose HF weights are not on disk; still open. A real
+test needs a full-FT donor with an ungated base in HF form (e.g. DeepSeek-R1-Distill-Qwen-7B over Qwen2.5-Math-7B, ≈ 30 GB
+to download): proposed, not launched.
+
 ## Limits known now
 One donor, one base, one family; no training logs to compare against (unlike the thread's own fine-tunes); bf16 files;
 thresholds (0.05, 0.15) fixed by us without calibration on a known run — a `step` row under bf16 rounding may land in

@@ -213,6 +213,10 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   neurons of T8 only if the implanter also trained the embeddings); (2) rows that belong to no token are a base-free
   reference inside the checkpoint, the thing our implant check lacks. Our own study filed MiMo's top-changed embedding
   rows as "rare junk tokens: noise" (`lab/probes/delta_patterns/h5_plan.md`); by this mechanism they are the timestamps.
+  **Tried on the one donor we hold in HF form (§45.18, 2026-11-17, prediction row 39 ❌):** Jackrong's distill of
+  Qwen3.5-9B has `embed_tokens` and `lm_head` identical to the base, and only the linear projections differ — a merged
+  LoRA, so no optimizer footprint can exist there. The mechanism stays untested by us; the per-tensor `equal` that
+  found this is itself the cheapest weights-only read in the repository (training recipe from the checkpoint).
 
 ---
 
