@@ -1,0 +1,1 @@
+{"C1": true, "C2": true, "C3": true, "verdict": "CONFIRMS"}

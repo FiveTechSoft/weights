@@ -3357,7 +3357,75 @@ como estaba escrito). Op `compile_control_vector` sin cambios (`programs/cc_llam
 - **Dos métodos.** Resúmenes (`verdict.py`, `cc_verdict.py`) frente al recuento por filas de los 8 JSON de esta parte y
   McNemar propio: idénticos; sha del fusionado servido = sha del log (`a41c1768…`); `sealed_confirm2.json` sin cambios.
 
-**Lo que cambia en el repositorio tras §45.19-45.20.** "La dirección concluir mejora GSM8K/MATH" pasa a estar mostrada en
-**dos** familias de tres probadas; "el compilado = el vector" y "la placebo de la misma norma no hace nada" en las tres.
-En R1-Distill-Llama-8B la primitiva es un ahorro de tokens a precisión igual. Predicciones: 39 filas, 35 puntuables,
-✅ 6 / ◐ 14 / ❌ 15 / ⏳ 4.
+### 45.21 Tercera familia, Parte C: a dosis 0,35 el vector **confirma en el sellado 3** por MATH (40 → 58 de 100), con GSM8K en base − 2; la ganancia son cortes de la base recuperados y la dosis reduce a la mitad, no elimina, el cierre prematuro (2026-11-17)
+
+Plan: `PLAN.md` Parte C, fijado 16:20 tras puntuar A-B y antes de correr; predicción fila 40; decisión del driver 16:1x
+("dosis en Llama"). Cadena `lab/runs/cc_llama/chain_c.sh` 16:58-21:54 (4,9 GPU h, sin fallo), guard en
+`lab/runs/cc_llama/dose/config.json` (commit `4396464`, GGUF `403a545b…`, vector `b17f6614…`, placebo `33e4c5f2…`).
+Brazos dev: vector a 0,25 y 0,35 sobre los 150 ítems de dev contra el `dev_base.json` de la Parte A (misma `-np 2`,
+mismo presupuesto 2 048). Puerta `lab/probes/cc_llama/dose_gate.py` (2 tests antes del código): escala elegida = mayor
+GSM + MATH en dev; sellado 3 solo si GSM ≥ 77, perdidos ≤ 6, MATH ≥ 26 y tokens GSM ≤ −20 %.
+
+| dev (150) | GSM /100 bien (c2) / perdidos / cortes / tokens | MATH /50 bien (c2) / perdidos / cortes / tokens |
+|---|---|---|
+| dev base (§45.19) | 74 (75) / — / 22 / 1 315 | 22 (20) / — / 26 / 1 721 |
+| dev vector 0,25 | **84** (85) / 4 / 10 / 977 (−26 %) | 31 (28) / 3 / 17 / 1 536 (−11 %) |
+| **dev vector 0,35** | **81** (82) / 6 / 4 / 848 (−36 %) | **37** (33) / 0 / 12 / 1 417 (−18 %) |
+| dev vector 0,5 (§45.19) | 76 (77) / 9 / 2 / 705 (−46 %) | 32 (29) / 3 / 13 / 1 271 (−26 %) |
+
+- **Dev.** 0,25 frente a base: GSM 14/4 (p 0,031), MATH 12/3 (p 0,035; c2 11/3, p 0,057). 0,35: GSM 13/6 (p 0,17), MATH
+  **15/0** (p 0,0001; c2 13/0, p 0,0002). Ningún brazo sin pensamiento (0 de 150). Las dos escalas pasan las cuatro
+  comprobaciones; la puerta elige **0,35** (118 frente a 115 aciertos). Perdidos (base bien y acabado → mal): 4 / 6 / 9 a
+  0,25 / 0,35 / 0,5; ganados 14 / 13 / 11, de ellos cortes de la base 13 / 12 / 10. La dosis mueve el coste, apenas la
+  recuperación.
+- **Sellado 3 (`data/sealed_confirm3.json`, 200 GSM8K + 100 MATH-500, primer uso de cualquier clase, hash comprobado) a
+  0,35: CONFIRMA.**
+
+| sellado 3 | GSM /200 bien (c2) / cortes / tokens | MATH /100 bien (c2) / cortes / tokens |
+|---|---|---|
+| base | 158 (159) / 37 / 1 247 | 40 (38) / 58 / 1 777 |
+| **vector 0,35** | **156** (158) / 9 / 864 (−31 %) | **58** (55) / 35 / 1 463 (−18 %) |
+| placebo 0,35 (misma norma) | 152 (153) / 39 / 1 273 (+2 %) | 38 (35) / 61 / 1 798 (+1 %) |
+
+  Vector frente a base: GSM 14/16 (p 0,86; último número 14/19, p 0,49), MATH **20/2** (p 0,0001; c2 19/2, p 0,0002).
+  Placebo frente a base: GSM 10/16 (p 0,33), MATH 9/11 (p 0,82). C1 ✓ (MATH con los dos correctores), C2 ✓, **C3 en el
+  límite exacto** (156 ≥ 158 − 2). Veredicto `cc_verdict.py`: CONFIRMS. Primer sellado que confirma en esta familia, el
+  tercero que se gasta en ella.
+- **De dónde sale la ganancia.** MATH: de los 20 ganados, **19 son ítems que la base cortó** (la base corta 58 de 100 a
+  2 048; el vector acaba 23 de esos 58 y acierta 19; el placebo acierta 9). Entre los 42 que la base acaba: base 40,
+  vector 39. GSM: los 14 ganados son los 14 cortes recuperados (37 cortes → el vector acaba 31, acierta 14); entre los 163
+  que la base acaba: base 158, **vector 142**. Los 16 perdidos tienen la firma de §45.19: 15 de 16 acaban (1 corte),
+  razonamiento mediano 3 259 → 2 491 caracteres, 3 de 16 a menos del 10 % del oro. Tasa de pérdida sobre los ítems que la
+  base acaba bien: **10 %** a 0,35 (16/158) frente a 17 % (14/83, sellado 1) y 20 % (15/75, sellado 2) a 0,5. Es la
+  excepción de T2 tal cual: lo que se gana es lo que el presupuesto cortaba; la dosis baja reduce a la mitad el precio.
+- **Predicción (fila 40) contra el dato.** 0,25: GSM 77-82 → **84 ✗** (por arriba); perdidos 3-7 → 4 ✓; cortes 6-14 → 10
+  ✓; tokens −18 a −32 % → −26 % ✓; MATH 26-31 → 31 ✓; cortes 16-22 → 17 ✓. 0,35: GSM 76-81 → 81 ✓; perdidos 5-9 → 6 ✓;
+  cortes 3-9 → 4 ✓; tokens −28 a −40 % → −36 % ✓; MATH 28-33 → **37 ✗** (por arriba); cortes 12-18 → 12 ✓. Puerta pasa
+  (55 %) → pasa en las dos ✓. Sellado 3: base GSM 150-170 → 158 ✓; base MATH 44-60 → **40 ✗**; vector ± 4 en GSM → −2 ✓;
+  MATH +0 a +8 → **+18 ✗**; tokens −20 a −35 % → GSM −31 % ✓ (MATH −18 %); placebo ± 3 → GSM **−6 ✗**, MATH −2 ✓; **no
+  confirma (60 %) → CONFIRMA ✗**. Sorpresas declaradas: ninguna disparada (a 0,25 GSM +10, perdidos 4, ahorro 26 %; 0 sin
+  pensamiento; vector no > base + 10; placebo no significativo). **❌**: 15 de 21 lecturas en banda, pero falla la lectura
+  primaria (apostamos por el "no confirma" y confirmó). Fallo por abajo del efecto en MATH, como en las filas 9 y 20-21:
+  subestimamos lo que recupera el vector cuando la base corta más de la mitad.
+- **Lectura.** La hipótesis de la Parte C ("el fallo de Llama era dosis, no dirección") sale **a medias**: a 0,35 el
+  vector confirma en un sellado (MATH, p 0,0001 con dos correctores; sobrevive a una corrección ×3 por los tres sellados
+  gastados en la familia), mantiene el ahorro (−31 % / −18 %) y deja GSM en base − 2; pero el mecanismo que perdía ítems
+  a 0,5 sigue ahí a la mitad de tasa (10 % de los que la base acierta acabando), y lo que compensa son los cortes
+  recuperados. La ganancia de precisión de la dirección queda mostrada en el sellado en **las tres familias**, con esta
+  letra pequeña en Llama-8B: solo MATH, solo a 0,35, solo donde la base corta (presupuesto 2 048 con 58 % de cortes), y
+  con GSM al borde de C3. Lo que sigue sin cambiar: placebo de igual norma nulo (tres familias, tres sellados aquí),
+  ningún brazo sin pensamiento, el vector hace concluir (cortes 37 → 9, 58 → 35).
+- **Límites.** Tercer sellado de la familia con la escala elegida en dev después de ver fallar 0,5 en los sellados 1 y 2
+  (la puerta estaba prefijada, pero el camino hasta ella no es ciego). C3 pasa por cero de margen; el corrector "último
+  número" da GSM 152 frente a 157. Placebo −6 en GSM (n.s.). Un presupuesto, greedy (la tarjeta pide T 0,6), Q6_K, una
+  semilla de placebo. El compilado a 0,35 no se ha corrido (la Parte B lo compiló a 0,5). Nada sobre otro presupuesto.
+- **Dos métodos.** `dose_gate.py` y `cc_verdict.py` frente al recuento por ítems `lab/probes/cc_llama/pair_recount.py`
+  (McNemar binomial propio, perdidos/ganados/cortes/tokens): idénticos en todas las cifras de esta sección. Sha del GGUF
+  servido `403a545b…` en las cinco líneas `serving` del log y en el campo `served` de los 5 JSON; `seal ok 200 100`;
+  `data/sealed_confirm3.json` sin cambio en los ítems (solo se anota el uso en `use`).
+
+**Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
+estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
+cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las
+tres. En R1-Distill-Llama-8B la dirección ahorra tokens (−31 % / −18 %) y recupera cortes a costa de perder el 10 % de lo
+que la base acierta acabando. Predicciones: 40 filas, 36 puntuables, ✅ 6 / ◐ 14 / ❌ 16 / ⏳ 4.

@@ -282,7 +282,7 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   in band. The compile primitive now holds on two families; what differs is the dose written (× 0.5), not the op.
   **Budget doubled (§45.17):** base 81 / 26, merged 91 / 29 (+10 GSM8K, p 0.013; MATH +3, n.s.), vector 85 / 35; the
   gains are the base's cut items (T2). Open: a 4,096 / 8,192 arm for MATH, the sealed set at 2,048, sampling.
-- **A third family where the gain does not confirm (DeepSeek-R1-Distill-Llama-8B, §45.19-45.20, 2026-11-17):** same
+- **A third family where the gain does not confirm at scale 0.5 and does at 0.35 (DeepSeek-R1-Distill-Llama-8B, §45.19-45.21, 2026-11-17):** same
   recipe, code and pre-registered criteria (`llama`, 2,048 budget, scale 0.5; 1.0 breaks it as on Phi). Dev passes
   (GSM8K 74 → 76, MATH 22 → 32 with 13/3, p 0.021, two graders; tokens −46 % / −26 %; placebo 76 / 23) and **sealed set 1
   does not confirm**: base 83 / 28, vector 76 / 26 (7/14, 7/9), placebo 82 / 23; pooled over both sealed sets 24/29 and
@@ -296,6 +296,17 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   family the direction is a token saving at equal accuracy. Hypotheses, not measured: a base that needs its long
   thinking more (sealed base 83 with 13 cuts: ceiling 13, the vector loses 14) and a different profile (last row 3.2×
   the one before). Untested: other budgets, sampling (card says T 0.6), scales between 0.25 and 0.5.
+  **Dose (Part C, §45.21, 2026-11-17):** at 0.25 and 0.35 on dev the vector gives 84 / 31 and 81 / **37** (15/0 on MATH);
+  a pre-registered gate picks 0.35; **sealed set 3 (200 + 100, first use) confirms**: base 158 / 40 → vector 156 / **58**
+  (14/16, p 0.86; 20/2, p 0.0001 with both graders), same-norm placebo 152 / 38 (n.s.), tokens −31 % / −18 %, C3 (GSM8K
+  ≥ base − 2) at its boundary. 19 of the 20 MATH items gained were cut by the base (58 cuts of 100; among the 42 it
+  finishes, 40 → 39): T2's exception in its purest form. On GSM8K the 14 gained are recovered cuts and the 16 lost are
+  base-correct items finished wrong, the same mechanism at half the rate (10 % of base-correct finished items vs 17-20 %
+  at 0.5). So "dose, not direction" holds halfway: the lower dose halves the cost and lets the cut recovery reach
+  significance on a sealed set; it does not remove the premature closure. The sealed gain is now shown on three families,
+  on Llama-8B only at 0.35, only on MATH, only where the base cuts. Third sealed set spent on this family (the scale was
+  chosen on dev after 0.5 failed on the first two; the gate was pre-registered). Row 40 failed on its primary reading (we
+  gave "does not confirm" 60 %).
 - **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
   traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
   rebuild the conclude vector and get dev 83 / 35? Today we only know the *program* is deterministic. Cheap,
@@ -314,9 +325,9 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - **Quantization × edits:** all our numbers are Q6_K; quantization alone moves base loops (§39.6).
 - **Three model families tried (Qwen3.5-9B; Phi-4-mini-reasoning since §45.15; DeepSeek-R1-Distill-Llama-8B since
   §45.19), greedy only.** The conclude direction and its compile into `down_proj` are the only results shown outside
-  Qwen, and the accuracy gain confirmed on the sealed set only on Qwen and Phi (on Llama-8B the direction saves tokens at
-  equal accuracy, §45.19-45.20); the transplants, the activation maps and the implant checks are Qwen-only. Nothing
-  here is shown for sampling.
+  Qwen; the accuracy gain is confirmed on a sealed set on all three, but on Llama-8B only at scale 0.35, only on MATH and
+  as recovery of the base's cuts, with GSM8K at base − 2 (§45.21; at 0.5 it saves tokens at equal accuracy, §45.19-45.20);
+  the transplants, the activation maps and the implant checks are Qwen-only. Nothing here is shown for sampling.
 
 ## Refuted / retired (do not retry without a new reason)
 | idea | result | where |

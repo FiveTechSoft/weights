@@ -310,5 +310,5 @@
   "math500": 278,
   "rule": "dev, sealed sets 1 and 2, cc split, and every (bench, i) in lab/runs/"
  },
- "use": "single use; the first confirmation that reads it records the section number here"
+ "use": "single use, spent 2026-11-17: results \u00a745.21 (cc_llama Part C, vector at scale 0.35, base / vector / same-norm placebo; CONFIRMS). Do not run again."
 }

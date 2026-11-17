@@ -1,0 +1,64 @@
+{
+ "scales": {
+  "0.25": {
+   "gsm8k": {
+    "n": 100,
+    "ok": 84,
+    "ok_independent": 85,
+    "base_ok": 74,
+    "lost": 4,
+    "gained": 14,
+    "cut": 10,
+    "nothink": 0,
+    "token_change": -0.2571
+   },
+   "math500": {
+    "n": 50,
+    "ok": 31,
+    "ok_independent": 28,
+    "base_ok": 22,
+    "lost": 3,
+    "gained": 12,
+    "cut": 17,
+    "nothink": 0,
+    "token_change": -0.1073
+   }
+  },
+  "0.35": {
+   "gsm8k": {
+    "n": 100,
+    "ok": 81,
+    "ok_independent": 82,
+    "base_ok": 74,
+    "lost": 6,
+    "gained": 13,
+    "cut": 4,
+    "nothink": 0,
+    "token_change": -0.3553
+   },
+   "math500": {
+    "n": 50,
+    "ok": 37,
+    "ok_independent": 33,
+    "base_ok": 22,
+    "lost": 0,
+    "gained": 15,
+    "cut": 12,
+    "nothink": 0,
+    "token_change": -0.1768
+   }
+  }
+ },
+ "base_ok": {
+  "gsm8k": 74,
+  "math500": 22
+ },
+ "chosen": "0.35",
+ "checks": {
+  "gsm_gain": true,
+  "lost": true,
+  "math_gain": true,
+  "tokens": true
+ },
+ "pass": true
+}

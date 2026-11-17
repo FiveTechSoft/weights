@@ -182,7 +182,12 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     ahorro de tokens a precisión igual en esta familia; ganancia de precisión mostrada en dos familias de tres. Abierto
     (no lanzado): otro presupuesto, muestreo T 0,6 (lo que pide la tarjeta). **Parte C (dosis, decisión del driver
     2026-11-17 16:1x): vector a 0,25 y 0,35 en dev, puerta prefijada (`dose_gate.py`), sellado 3 solo si pasa; fila 40;
-    cadena `chain_c.sh` lanzada 16:3x.**
+    cadena `chain_c.sh` 16:58-21:54 (4,9 GPU h). Hecho (§45.21): dev 0,25 → 84 / 31, 0,35 → 81 / 37 (MATH 15/0); puerta
+    elige 0,35; sellado 3 (200 + 100, primer uso) CONFIRMA: base 158 / 40 → vector 156 / 58 (14/16 p 0,86; 20/2 p 0,0001,
+    dos correctores), placebo 152 / 38, tokens −31 % / −18 %, C3 en el límite. 19 de 20 MATH ganados son cortes de la base
+    recuperados; 16 GSM perdidos acabados mal (10 % de los que la base acierta, frente a 17-20 % a 0,5): la dosis reduce
+    a la mitad el cierre prematuro, no lo quita. Fila 40 ❌ (apostamos "no confirma"). Queda: compilado a 0,35, otro
+    presupuesto, muestreo.**
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 

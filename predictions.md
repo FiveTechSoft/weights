@@ -56,18 +56,18 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 39 | 2026-11-17 | `adam_sig/PLAN.md` (huella de Adam en embeddings: Jackrong − Qwen3.5-9B, CPU) | Embeddings difieren (70 %). Si difieren: filas cero + decaimiento ≥ 35 % de 248 320, una clase ≥ 30 % y la otra < 5 %; c del decaimiento en un rango 2× para ≥ 90 %; filas de un paso 0,3-10 %, tres niveles mayores ≥ 50 % de ellas; `lm_head` cero < 1 % y decaimiento < 1 %; top-20 por ‖D‖ ≥ 12 tokens frecuentes, no basura (contra la lectura de h5). Sorpresa si difieren y cero + decaimiento < 10 %, `lm_head` cero > 10 %, o el top-20 es mayormente raro | Embeddings **idénticos** (248 320/248 320 filas a cero, dos métodos) y `lm_head` idéntico. Barrido de todos los tensores: solo difieren las proyecciones lineales (q/k/v/o, out_proj, gate/up/down); normas, embeddings, `in_proj_*`, conv1d, A_log, dt_bias iguales → el donante es una LoRA fusionada, no un ajuste completo. Sonda vacía para el mecanismo; falla la única premisa puntuable (difieren, 70 %). Hace falta un donante de ajuste completo con base HF | 2026-11-17 | §45.18 | ❌ |
 
-| 40 | 2026-11-17 | `cc_llama/PLAN.md` Parte C (dosis: vector Llama a 0,25 y 0,35 en dev; sellado 3 solo si pasa la puerta) | 0,25: GSM **77-82** (base 74), perdidos (base bien y acabado → mal) **3-7** (0,5: 9), cortes 6-14, tokens −18 a −32 %; MATH **26-31**, cortes 16-22. 0,35: GSM 76-81, perdidos 5-9, cortes 3-9, tokens −28 a −40 %; MATH 28-33. Puerta (GSM ≥ 77, perdidos ≤ 6, MATH ≥ 26, tokens ≤ −20 %) pasa en una de las dos (55 %). Si corre el sellado 3 (200 + 100): base GSM 150-170, MATH 44-60; vector ± 4 de base en GSM, +0 a +8 en MATH, tokens −20 a −35 %; placebo ± 3; **no confirma C1** (60 %), confirma (25 %). Sorpresa si a 0,25 GSM < base − 3, perdidos ≥ 10 o ahorro < 10 %; > 2 % sin pensamiento; sellado 3 vector > base + 10 en GSM; placebo significativo | | | | ⏳ |
+| 40 | 2026-11-17 | `cc_llama/PLAN.md` Parte C (dosis: vector Llama a 0,25 y 0,35 en dev; sellado 3 solo si pasa la puerta) | 0,25: GSM **77-82** (base 74), perdidos (base bien y acabado → mal) **3-7** (0,5: 9), cortes 6-14, tokens −18 a −32 %; MATH **26-31**, cortes 16-22. 0,35: GSM 76-81, perdidos 5-9, cortes 3-9, tokens −28 a −40 %; MATH 28-33. Puerta (GSM ≥ 77, perdidos ≤ 6, MATH ≥ 26, tokens ≤ −20 %) pasa en una de las dos (55 %). Si corre el sellado 3 (200 + 100): base GSM 150-170, MATH 44-60; vector ± 4 de base en GSM, +0 a +8 en MATH, tokens −20 a −35 %; placebo ± 3; **no confirma C1** (60 %), confirma (25 %). Sorpresa si a 0,25 GSM < base − 3, perdidos ≥ 10 o ahorro < 10 %; > 2 % sin pensamiento; sellado 3 vector > base + 10 en GSM; placebo significativo | 0,25: GSM **84** (↑ banda), perdidos 4, cortes 10, tokens −26 %; MATH 31, cortes 17. 0,35: GSM 81, perdidos 6, cortes 4, tokens −36 %; MATH **37** (↑ banda), cortes 12. Puerta pasa en las dos; elegida 0,35. Sellado 3: base GSM 158, MATH **40** (↓ banda); vector 156 (−2; 14/16) y **58** (+18, ↑ banda; 20/2, p 0,0001, dos correctores), tokens −31 % / −18 %; placebo 152 (**−6**, n.s.) / 38. **CONFIRMA** (C3 en el límite: 156 ≥ 156). 19 de los 20 MATH ganados son cortes de la base; 16 GSM perdidos acabados mal (10 % de los que la base acierta, frente a 17-20 % a 0,5). Ninguna sorpresa declarada disparada | 2026-11-17 | §45.21 | ❌ (15 de 21 en banda; falla la primaria: apostamos "no confirma" y confirmó) |
 
-## Cuenta (40 filas; 35 puntuables)
+## Cuenta (40 filas; 36 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 14 |
-| ❌ falla | 15 |
-| ⏳ / — | 5 |
+| ❌ falla | 16 |
+| ⏳ / — | 4 |
 
-Acierto limpio 6/35 = 17 %; acierto o parcial 20/35 = 57 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
+Acierto limpio 6/36 = 17 %; acierto o parcial 20/36 = 56 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es
 lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el número que importa es **cómo** fallan.
 

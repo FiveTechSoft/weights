@@ -142,6 +142,22 @@ MATH-500, single use, first use of any kind): base, vector at the chosen scale, 
   finished answers without thinking; sealed set 3 vector > base + 10 on GSM8K; placebo significant on either benchmark.
 **Cost.** Dev 2 × 150 ≈ 1 GPU h; sealed set 3 if run 3 × 300 ≈ 3 GPU h.
 
+[post-data 2026-11-17 23:30; results §45.21, row 40 ❌ on the primary reading.] Chain 16:58-21:54 (4.9 GPU h, no
+failure). Dev: 0.25 → GSM8K 84 (lost 4, cuts 10, −26 %), MATH 31 (cuts 17); 0.35 → GSM8K 81 (lost 6, cuts 4, −36 %), MATH
+**37** (15/0, p 0.0001; cuts 12); 0.5 was 76 / 32. Both scales pass the gate; chosen 0.35 (118 vs 115). **Sealed set 3
+CONFIRMS** (first use, hash ok): base 158 / 40, vector 156 / **58** (14/16 p 0.86; 20/2 p 0.0001 with both graders),
+placebo 152 / 38 (n.s.); tokens −31 % / −18 %; C3 at its boundary (156 ≥ 158 − 2). What the plan got right: lost 4 / 6,
+cuts, the token saving, no finished answer without thinking, base GSM8K, vector within ± 4 on GSM8K, placebo null. What
+it got wrong: the sizes (dev GSM8K at 0.25 and MATH at 0.35 above band; sealed base MATH 40 below 44-60; vector MATH +18
+against +0 to +8; placebo −6 on GSM8K) and the verdict (we gave "does not confirm" 60 %). Where the gain comes from: 19 of
+the 20 MATH items gained were cut by the base (58 cuts of 100 at 2,048; among the 42 the base finishes, 40 → 39); on
+GSM8K the 14 gained are all recovered cuts and the 16 lost are base-correct items finished wrong (15 of 16 stop; reasoning
+median 3,259 → 2,491 characters): the §45.19 mechanism at half the rate (10 % of base-correct finished items vs 17-20 % at
+0.5). Reading: "dose, not direction" holds halfway: the lower dose halves the cost and lets the cut recovery show on a
+sealed set; it does not remove the premature closure. Third sealed set spent on this family, scale chosen on dev after
+0.5 failed on the first two (gate pre-registered; MATH p 0.0001 survives a ×3 correction). Not run: compile at 0.35,
+another budget, sampling.
+
 ## Limits known now
 One budget, greedy (card says sample), one quant (Q6_K), one third model; traces and dev items shared with the other two
 studies (fine: no item from dev or sealed sets); system prompt against the card's advice, kept for comparability; the
