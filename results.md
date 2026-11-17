@@ -3277,6 +3277,17 @@ configuración, 0 líneas "no valid control vector", `served` de cada JSON = sha
   victorias. Mediana del pensamiento de los acabados GSM 3 382 → 1 678 caracteres, MATH 4 894 → 2 599: el modelo
   concluye a la mitad y en este linaje la mitad que se quita contenía aciertos. 0 acabados sin pensamiento en todos los
   brazos (régimen de parada de §45.14 no alcanzado).
+- **[post-data 15:55] Modo de fallo de los 14 perdidos (sellado 1, GSM8K).** Los 14 acaban con `stop`, pensamiento
+  mediana 3 247 → 1 671 caracteres (la longitud típica de los aciertos del vector: 1 733), y el número final está lejos
+  del oro (razones ×0,14, ×0,33, ×4, ×4,4; solo 3 de 14 a < 10 %). Leídas tres colas: **cierre prematuro sobre un
+  resultado intermedio**, con autocomprobación confiada ("let me double-check… indeed 6"). Ítem 116: ratio 7:13 sobre
+  120, obtiene x = 6 y lo da como respuesta en vez de 7x = 42. Ítem 177: salario 6 000, omite la donación y hace
+  2 500 − 200 − 700 = 1 600 (oro 350). Ítem 608: resta el descuento (18) al presupuesto (50) en vez de al precio (60):
+  32 por 8. No son errores de cálculo ni bucles: la dirección "concluir" hace que el modelo dé por final el primer
+  número que aparece. Es el mismo mecanismo que da las victorias (cerrar cuando la respuesta ya está) aplicado donde la
+  respuesta aún no estaba; en Qwen y Phi ese coste eran 2-4 ítems, aquí 14. Compatible con exceso de dosis (0,5 es ya
+  la mitad de la escala que rompe el modelo) y con un modelo que separa peor "tengo un número" de "tengo la respuesta".
+  No medido: si a 0,25-0,35 el coste baja sin perder el ahorro.
 - **Predicción (fila 37) contra el dato.** Sonda: P2 3-7/10 → 3 ✓, P1 por el servidor ✓, P3-P6 ✓ (P4 tras el arreglo).
   Trazas 60-100 → **103 ✗**. Perfil última fila 0,5-2,5× → **3,2 ✗**. Criba: base 12-30 → 25 ✓, escala 0,5/1,0 → 0,5 ✓,
   +3 a +12 → +10 ✓. Dev base GSM 55-80 → 74 ✓ (cortes 10-35 → 22 ✓), MATH 12-28 → 22 ✓ (18-36 → 26 ✓). Vector GSM +4 a
