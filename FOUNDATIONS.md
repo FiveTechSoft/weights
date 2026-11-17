@@ -135,8 +135,10 @@ is missing and is needed before "supported" means more than "supported for arith
   as 2 forwards). A gradient-free route that works only at a much higher cost narrows the claim, it does not refute it.
 - **Where the outside frontier is (added 2026-11-13).** iWSP (Mehta & Singh, MSR; `csinva/weight-space-programming-
   autoresearch`): an agent writes weights and features in Python from scratch, no training, no pretrained weights, one
-  validation score per iteration. Algorithmic tasks: 26/26 runs at 100 % on a hidden set, and 100 % again when a new
-  session rebuilds the model from a ≤ 200-word description. TREC 87.3 % (beats majority in 3 of 4 NLP tasks). Brain
+  validation score per iteration, 30-50 rounds. Algorithmic tasks: 26/26 runs at 100 % on a hidden set, and 100 % again
+  when a new session rebuilds the model from a ≤ 200-word description; the solved models have a median of 166 parameters
+  with Opus 5.5 as the writer, 41,600 with Sonnet 5.5 and 100,000 with Haiku 5.5 (same tasks, same loop: the writer's
+  size decides how compact the written algorithm is). TREC 87.3 % (beats majority in 3 of 4 NLP tasks). Brain
   encoding: early visual cortex 0.443 vs 0.400 for the best interpretable baseline (ties AlexNet; loses in ventral,
   0.317 vs 0.391); the story-fMRI gain (0.067 → 0.104) was a position confound, caught by the legibility test, not by
   the benchmark. Together with Beaker and shawnghu the picture is one line: **writing from scratch works for a closed
