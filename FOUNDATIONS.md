@@ -452,5 +452,19 @@ works where the knowledge is already explicit in the writer (here, science facts
 to a pretrained donor plus gradients; the "1,800× fewer parameters" is against a written Transformer that keyword search
 beats. Nothing here edits a pretrained LLM, so it does not touch T2/T3/T8; the pretrained-checkpoint rows agree with
 Naik's writing failure and with our rank-1 compile being the size of what hand-writing can place. The term "WSP" now
-covers two different things (editing a donor; designing a table), worth keeping apart when reading claims. Full links in
-README "References".
+covers two different things (editing a donor; designing a table), worth keeping apart when reading claims · alphaXiv /
+Daniel Kim, *minimizing-wsp-edits* (OpenResearch project, 17 Nov 2026; marimo notebook `alphaXiv/weight-edit-minimization`;
+thread x.com/askalphaxiv/status/2122744324354097172) — an agent (Inkling 2 Small) shrinks two MIT WSP blog edits. Exp 8
+on Qwen3.5-0.8B: the notebook recovers Astra's 130,188-entry edit as **one direction u subtracted through 64 `down_proj`
+neurons per layer** (W = W₀ − 6·u·(m ⊙ uᵀW₀), layers 15 and 19) and keeps the 4,096 largest entries per layer (8,192,
+6 %): 58.2 vs 58.6 % on a 256-problem MATH-train screen (one sample, T 0.6, 32k cap, SE ≈ 3 pp), 54.2 % on MATH-500 × 4
+held out against the blog's 48.1 % from another evaluation; side effects = cut rate and a 16-gram loop share only. Car-ramp
+PPO actor: 6,073 entries → 55 functional (the rest zero embedding rows) → 11 by drop-one audit, and 10 written from
+scratch; every rung solves the level. We checked the Exp 8 claim on our own recovery of the edit (§9.1,
+`data/exp8_edit_recovered.npz`): rank-1 per layer indeed (s₁/s₂ 1,771 and 1,552, all 64 columns collinear with u, the two
+layers' directions at cos 0.85), and the 4,096 largest entries hold 74-76 % of ‖ΔW‖² — so the pruning keeps most of the
+push, and our §16.2 note that called the edit "not rank-1" was wrong (corrected there). Our reading: the blog's edit is
+the same primitive as our compile (T8: rank-1 in `down_proj`, few neurons, the push magnitude is what matters, not the
+entry count); the "no degradation" is a screen-resolution claim with no same-norm placebo and no other benchmark (T6); the
+car policy is a closed toy network (T4), where 10 weights written from scratch beat PPO's 6,073 because the fix is a
+known algorithm. Full links in README "References".
