@@ -125,3 +125,16 @@ sampling (roadmap gap 1 stays open).
 Download ≈ 23 GB (approved 2026-11-16). 8B Q6_K on the 3060 ≈ half Phi's speed. Stage 0 ≈ 30 min; traces ≈ 1.5-2.5 h;
 op vector ≈ 20 min; screen 5 × 64 at 2,048 ≈ 1.5 h; dev 3 × 150 ≈ 2 h; sealed 3 × 150 ≈ 2 h; compile op ≈ 1 h; dev 2 × 150
 ≈ 1.3 h; sealed 4 × 150 ≈ 2.7 h; HE 2 × 20 ≈ 10 min. **≈ 12-14 GPU h**, two nights, one chain.
+
+[post-data 2026-11-17 15:40; results §45.19-45.20, rows 37 and 38 both ❌.] Chain 00:36-12:19 (11.7 GPU h, no failure).
+Part A: screen 25 / 32 / 35 / 4 / 0 of 64, scale 0.5; dev base 74 / 22, vector 76 / 32 (MATH 13/3, p 0.021 with both
+graders), placebo 76 / 23, tokens −46 % / −26 %: C1-C3 PASS. **Sealed set 1 does not confirm**: base 83 / 28, vector 76 /
+26 (7/14, 7/9), placebo 82 / 23; pooled over both sealed sets the vector is 24/29 on GSM8K and 17/14 on MATH. The losses
+are items the base finished right and the vector finishes wrong without cutting (14 of 14 on sealed 1 GSM8K). Two
+declared surprises fired (vector < base − 3 on GSM8K; placebo ≥ vector − 3). Part B: G0 0.030, cos 0.74, ‖dW‖/‖W‖ 0.012,
+dev merged 74 / 35 (C1-C4 PASS), sealed set 2 base 75 / 23 → merged 77 / 27 (FAIL on C1), vector 77 / 28 on the same
+items (7/7, 4/5: equal), compiled placebo 79 / 20, HumanEval-20 14 → 13. What the plan got right: stage 0, screen, dev
+base, dose window (0.5, 1.0 breaks), the op's numbers, merged = vector. What it got wrong: the accuracy gain (none
+beyond dev), the vector profile (last row 3.2× the one before), traces closed (103 > 100), the token saving (larger).
+Reading: in this family the primitive is a token saving at equal accuracy. Untested here: other budgets, sampling
+(the card asks for T 0.6), scales between 0.25 and 0.5. First dev PASS of the series that the sealed set rejected.

@@ -281,8 +281,21 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   placebo 60 / 2; no finished answer without thinking; HumanEval-20 11 → 16 (n = 20, reported). Row 35: 18 of 22 readings
   in band. The compile primitive now holds on two families; what differs is the dose written (× 0.5), not the op.
   **Budget doubled (§45.17):** base 81 / 26, merged 91 / 29 (+10 GSM8K, p 0.013; MATH +3, n.s.), vector 85 / 35; the
-  gains are the base's cut items (T2). Open: a 4,096 / 8,192 arm for MATH, the sealed set at 2,048, sampling, a third
-  family.
+  gains are the base's cut items (T2). Open: a 4,096 / 8,192 arm for MATH, the sealed set at 2,048, sampling.
+- **A third family where the gain does not confirm (DeepSeek-R1-Distill-Llama-8B, §45.19-45.20, 2026-11-17):** same
+  recipe, code and pre-registered criteria (`llama`, 2,048 budget, scale 0.5; 1.0 breaks it as on Phi). Dev passes
+  (GSM8K 74 → 76, MATH 22 → 32 with 13/3, p 0.021, two graders; tokens −46 % / −26 %; placebo 76 / 23) and **sealed set 1
+  does not confirm**: base 83 / 28, vector 76 / 26 (7/14, 7/9), placebo 82 / 23; pooled over both sealed sets 24/29 and
+  17/14. Mechanically the direction behaves as in Qwen and Phi (cuts 13 → 2, −41 % tokens, placebo inert, no finished
+  answer without thinking), but the items it loses are ones the base finished right and it finishes wrong, as many as it
+  recovers from the base's cuts (sealed 1 GSM8K: 14 lost, 0 cut, 0 loops; Qwen and Phi lost 2-4). Compiled with the
+  unchanged op (G0 0.030, cos 0.74, ‖dW‖/‖W‖ 0.012) the merged file equals the vector item by item on sealed set 2 (7/7,
+  4/5) and like it does not beat the base (75 / 23 → 77 / 27); HumanEval-20 14 → 13. Rows 37 and 38 ❌ on the primary
+  reading: the first dev PASS of the series the sealed set rejected. What this moves: the accuracy gain of T2's exception
+  is shown on two families of three; the compile primitive (T8) and the same-norm placebo's null (T6) on three. On this
+  family the direction is a token saving at equal accuracy. Hypotheses, not measured: a base that needs its long
+  thinking more (sealed base 83 with 13 cuts: ceiling 13, the vector loses 14) and a different profile (last row 3.2×
+  the one before). Untested: other budgets, sampling (card says T 0.6), scales between 0.25 and 0.5.
 - **Rebuild-from-description test (idea from iWSP, not run):** do ≤ 200 words of recipe ("contrast of the base's own
   traces, last 48 tokens before `</think>` minus the rest, pre-norm last row, layers 1-31, scale 1.0") let a new session
   rebuild the conclude vector and get dev 83 / 35? Today we only know the *program* is deterministic. Cheap,
@@ -299,9 +312,11 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - **A useful non-math donor**: none in the first batch (§43.16: two code models are the base, one is a high-rank merge,
   the medical RL model is uncertain at 25 %).
 - **Quantization × edits:** all our numbers are Q6_K; quantization alone moves base loops (§39.6).
-- **Two model families (Qwen3.5-9B; Phi-4-mini-reasoning since §45.15), greedy only.** The conclude direction and its
-  compile into `down_proj` (§45.16) are the only results shown outside Qwen; the transplants, the activation maps and the
-  implant checks are Qwen-only. Nothing here is shown for sampling.
+- **Three model families tried (Qwen3.5-9B; Phi-4-mini-reasoning since §45.15; DeepSeek-R1-Distill-Llama-8B since
+  §45.19), greedy only.** The conclude direction and its compile into `down_proj` are the only results shown outside
+  Qwen, and the accuracy gain confirmed on the sealed set only on Qwen and Phi (on Llama-8B the direction saves tokens at
+  equal accuracy, §45.19-45.20); the transplants, the activation maps and the implant checks are Qwen-only. Nothing
+  here is shown for sampling.
 
 ## Refuted / retired (do not retry without a new reason)
 | idea | result | where |

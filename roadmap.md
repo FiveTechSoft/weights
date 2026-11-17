@@ -174,10 +174,13 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     fijado 2026-11-17 antes de correr, filas 37 (vector) y 38 (compilado) en predictions; misma op, mismos criterios
     C1-C3 / C1-C4, sellados 1 y 2 en primer uso con este modelo; una cadena (`lab/runs/cc_llama/chain.sh`) con las dos
     partes, la B solo si la A pasa dev. Gemma descartada por su norma tras `down_proj` (lección Muse/Kocabay). Descarga
-    ≈ 23 GB aprobada. ≈ 12-14 GPU h. **Estado 2026-11-17 06:40: sonda hecha (presupuesto 2 048, arreglo
-    `engine/tok.py`); Parte A dev PASS a las 05:46 (criba: base 25/64, 0,25 → 32, 0,5 → 35, 1,0 → 4, 2,0 → 0; dev
-    base 74 / 22, vector 0,5 76 / 32, placebo 76 / 23; MATH p 0,021 y 0,035; tokens −46 % / −26 %); sellado 1 en
-    curso; Parte B (compilado) sigue si no falla. Recuento independiente de criba y dev coincide (8 ficheros).**
+    ≈ 23 GB aprobada. ≈ 12-14 GPU h. **Hecho 2026-11-17 (cadena 00:36-12:19, 11,7 GPU h; §45.19-45.20; filas 37 y 38
+    ❌).** Dev PASS en las dos partes (vector 76 / 32 sobre 74 / 22, MATH p 0,021; fusionado 74 / 35), **sellados no
+    confirman**: sellado 1 base 83 / 28 → vector 76 / 26, placebo 82 / 23; sellado 2 base 75 / 23 → fusionado 77 / 27,
+    vector 77 / 28 (fusionado = vector ítem a ítem). El vector hace lo mecánico (cortes 13 → 2, −41 % tokens, placebo
+    inerte, op fiel: G0 0,030, cos 0,74) pero pierde tantos ítems como recupera, acabándolos mal sin cortar. Lectura:
+    ahorro de tokens a precisión igual en esta familia; ganancia de precisión mostrada en dos familias de tres. Abierto
+    (no lanzado): escala entre 0,25 y 0,5, otro presupuesto, muestreo T 0,6 (lo que pide la tarjeta).
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 

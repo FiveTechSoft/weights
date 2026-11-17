@@ -3231,3 +3231,122 @@ hace falta un ajuste completo con base HF sin puerta (p. ej. DeepSeek-R1-Distill
 **Dos métodos.** Filas a cero por `all(D == 0)` y por `max|D| == 0`: iguales en las dos matrices (aserción en el
 código). Identidad de `embed_tokens` y `lm_head` también por `torch.equal` en el barrido. Clasificador probado en filas
 sintéticas de clase conocida (`tests/test_adam_sig.py`, 3 tests, escritos antes del código).
+
+### 45.19 Tercera familia, Parte A: la dirección "concluir" en DeepSeek-R1-Distill-Llama-8B pasa dev y **no confirma en el sellado**: ahorra el 40 % de los tokens a precisión igual (2026-11-17)
+
+Plan: `lab/probes/cc_llama/PLAN.md` (fijado 2026-11-17 00:0x antes de descargar nada; `[rev 00:45]` por el tokenizador,
+antes de ningún brazo), predicción fila 37. Pregunta: ¿la receta de §43.17 / §45.15 (contraste de las trazas propias de
+la base, últimos 48 tokens antes de `</think>` menos el resto, vector de control por capa) funciona en una tercera
+familia con otra arquitectura (`llama`, 32 capas, d 4 096, `gate/up` separados, embeddings no atados) y otro linaje
+(destilado de R1 sobre Llama-3.1-8B)? Modelo `deepseek-ai/DeepSeek-R1-Distill-Llama-8B` (rev 6a6f4aa4, HF) y
+`unsloth/...-Q6_K.gguf` (sha `403a545b…`), servidos con llama-server, voraz, `-np 2`, presupuesto **2 048** (regla de la
+sonda: 3/10 cortadas). Cadena `lab/runs/cc_llama/chain.sh` 00:36-12:19 (`set -eu`, trap, `chain_guard`, smoke 2/2 por
+configuración, 0 líneas "no valid control vector", `served` de cada JSON = sha del log). Datos `lab/runs/cc_llama/`,
+`lab/runs/sealed_cc_llama/`.
+
+- **Sonda etapa 0 (P1-P6).** P1 el servidor separa razonamiento 10/10; P2 3/10 cortadas a 2 048 (7/10 bien); P3 un
+  vector aleatorio ×8 cambia las 10 colas (`llama` acepta el vector); **P4 falló** con `AutoTokenizer` (transformers 5.12
+  da a este directorio el `LlamaTokenizer` lento: tokens por bytes, offsets falsos) y pasa con `engine/tok.py`
+  (compara con `tokenizer.json`, cae a `PreTrainedTokenizerFast`); P5 la plantilla escribe `<think>\n` (regla de filas de
+  Qwen); P6 32/32 `ffn_down` Q6_K. Trazas: 103/128 cierran a 4 096 (Qwen 83, Phi 107). Vector: capa 31 norma 10,0, capa
+  30 3,1 (razón 3,2; Qwen 18,1 / 9,1 = 2,0; Phi 0,87); norma total 12,4; escala elegida 0,5 → servido 6,2.
+- **Criba MATH 64 a 2 048.** base **25** (c2 24, 38 cortes) → ×0,25 **32** (31 cortes) → ×0,5 **35** (22 cortes, 9 bucles)
+  → ×1,0 **4** (420 tokens medios: cierra sin resolver) → ×2,0 **0** (64/64 cortadas, bucles). Escala 0,5. En Llama la
+  ventana útil es más estrecha que en Qwen (1,0) y como la de Phi (0,5; 1,0 también rompía).
+
+| R1-Distill-Llama-8B, 2 048 | dev GSM /100 bien (c2) / cortes / tokens | dev MATH /50 | sellado 1 GSM | sellado 1 MATH | sellado 2 GSM | sellado 2 MATH |
+|---|---|---|---|---|---|---|
+| base | 74 (75) / 22 / 1 315 | 22 (20) / 26 / 1 721 | **83** (85) / 13 / 1 200 | **28** (27) / 21 / 1 730 | 75 (76) / 21 / 1 225 | 23 (21) / 25 / 1 757 |
+| vector ×0,5 | 76 (77) / 2 / 705 (−46 %) | **32** (29) / 13 / 1 271 (−26 %) | **76** (78) / 2 / 707 (−41 %) | **26** (24) / 14 / 1 377 (−20 %) | 77 (79) / 2 / 711 (−42 %) | 28 (27) / 13 / 1 310 (−25 %) |
+| placebo ×0,5 (misma norma) | 76 (77) / 20 / 1 341 | 23 (22) / 28 / 1 794 | 82 (84) / 13 / 1 263 | 23 (21) / 27 / 1 825 | 79 (80) / 18 / 1 277 ¹ | 20 (18) / 29 / 1 820 ¹ |
+
+¹ En el sellado 2 el placebo es el **compilado** del vector placebo (§45.20), no el vector servido.
+
+- **Dev: PASS.** Vector frente a base, McNemar exacto: MATH **13/3** (p 0,021; c2 12/3, p 0,035), GSM8K 11/9 (p 0,82;
+  último número 9/13). Placebo frente a base: 10/8 y 6/5 (p 0,81 / 1,0). Tokens −46 % / −26 %; placebo +2 % / +4 %.
+  C1 (MATH significativo con dos correctores), C2 (placebo nulo), C3 (GSM no < base − 2): pasan. Veredicto 05:46.
+- **Sellado 1 (`data/sealed_confirm.json`, primer uso con este modelo): NO CONFIRMA.** Vector frente a base GSM8K **7/14**
+  (p 0,19; último número 9/14, p 0,40) → 83 → 76; MATH 7/9 (p 0,80; c2 6/9). C1 falla y C3 falla (76 < 83 − 2). Placebo
+  7/8 y 4/9 (p 1,0 / 0,27). El vector sigue ahorrando (−41 % / −20 %, cortes GSM 13 → 2).
+- **Sellado 2** (corrido en §45.20 con el vector como referencia): vector frente a base 17/15 (p 0,86) y 10/5 (p 0,30).
+  **Agregado de los dos sellados** (200 GSM, 100 MATH): GSM 24 ganados / 29 perdidos (p 0,58), MATH 17/14 (p 0,72).
+- **De dónde salen las victorias y las derrotas.** Las victorias son casi todas ítems que la base cortaba (dev 10/11 y
+  11/13; sellado 1 7/7 y 7/7; sellado 2 15/17 y 10/10): la regla de AHA otra vez. Las derrotas son ítems que la base
+  **acababa bien** y el vector **acaba mal sin cortar ni bucle** (sellado 1 GSM: 14 perdidos, 0 cortados, 0 bucles;
+  sellado 2: 15, 1, 1; dev: 9, 1, 2). En Qwen y Phi ese número era 2-4 por brazo (§43.18, §45.15); aquí iguala a las
+  victorias. Mediana del pensamiento de los acabados GSM 3 382 → 1 678 caracteres, MATH 4 894 → 2 599: el modelo
+  concluye a la mitad y en este linaje la mitad que se quita contenía aciertos. 0 acabados sin pensamiento en todos los
+  brazos (régimen de parada de §45.14 no alcanzado).
+- **Predicción (fila 37) contra el dato.** Sonda: P2 3-7/10 → 3 ✓, P1 por el servidor ✓, P3-P6 ✓ (P4 tras el arreglo).
+  Trazas 60-100 → **103 ✗**. Perfil última fila 0,5-2,5× → **3,2 ✗**. Criba: base 12-30 → 25 ✓, escala 0,5/1,0 → 0,5 ✓,
+  +3 a +12 → +10 ✓. Dev base GSM 55-80 → 74 ✓ (cortes 10-35 → 22 ✓), MATH 12-28 → 22 ✓ (18-36 → 26 ✓). Vector GSM +4 a
+  +14 → **+2 ✗**, MATH +3 a +10 → +10 ✓, tokens −15 a −40 % → **−46 ✗** / −26 ✓, cortes GSM a la mitad → 22 → 2 ✓.
+  Placebo ± 3 → +2 / +1 ✓, tokens ± 10 % ✓. C1-C3 → PASS ✓. **Sellado confirma → ✗.** Sorpresas declaradas que
+  ocurrieron: "vector < base − 3 en GSM a la escala elegida" (**sellado 1: −7**) y "placebo ≥ vector − 3" (dev GSM 76 =
+  76; sellado 1 82 > 76). **❌**: 15 de 20 lecturas en banda, pero falla la primaria (el sellado) y saltan dos sorpresas.
+- **Lectura.** La dirección existe y hace lo mismo que en Qwen y Phi en lo mecánico: el modelo cierra (cortes GSM 22 → 2,
+  13 → 2, 21 → 2) y gasta un 40 % menos; la placebo de la misma norma no hace nada de eso. Lo que **no** se repite es la
+  ganancia de precisión: en Llama-8B a 2 048 el vector acierta lo mismo que la base (agregado sellado −5 / +3, ninguno
+  significativo), porque pierde tantos ítems como recupera y los pierde concluyendo mal, no cortando. El dev decía +10 en
+  MATH con p 0,02 y dos correctores: **primera vez que un PASS de dev no confirma**; el sellado hizo su trabajo. Dos
+  diferencias de este modelo que pueden explicarlo (hipótesis, no medidas): la base acierta más con pensamiento largo
+  (83 en el sellado 1 con 13 cortes: techo de AHA 13, y el vector pierde 14) y la ventana de dosis es la de Phi
+  (1,0 rompe) con un perfil distinto (capa 31 3,2× la 30). Qué se afirma: la primitiva es un **ahorro de tokens a
+  precisión igual** en esta familia, no una mejora. Qué no: que falle con otro presupuesto, con muestreo (la tarjeta
+  pide T 0,6) o a otra escala entre 0,25 y 0,5 (no barrida). Límites: un presupuesto, voraz, Q6_K, `-np 2`, una semilla
+  de placebo, un solo modelo de la familia.
+- **Dos métodos.** Resúmenes de la cadena (`bench_runner`, `cc.py verdict`, `cc_verdict.py`) frente a recuento propio
+  por filas de los 9 JSON de esta parte (bien con dos correctores, cortes, bucles, tokens medios, acabados sin
+  pensamiento, McNemar exacto por `math.comb`, cruce ítem a ítem con los cortes de la base): idénticos en todas las
+  celdas; `served` = sha del log en todos los brazos; `data/sealed_confirm*.json` sin cambios (`git status` limpio).
+
+### 45.20 Tercera familia, Parte B: el compilado reproduce al vector en `down_proj` de Llama (iguales ítem a ítem) y, como él, no confirma en el sellado 2 (2026-11-17)
+
+Plan: mismo `PLAN.md` Parte B, predicción fila 38; corre si la Parte A pasa dev (pasó; el sellado de A se informa al lado,
+como estaba escrito). Op `compile_control_vector` sin cambios (`programs/cc_llama_compile.wspl`): vector ×0,5
+(`cc_llama_scaled.gguf`, sha `784973a7…`) y placebo ×0,5 (`81010baf…`), 103 filas de calibración sin prefijo (75 ajuste /
+28 reserva, 140 430 tokens), `lam` 0,001, 2 971 s en la 3060. Salida `hf_cache/cc_llama_op/` (`merged-Q6_K.gguf` sha
+`a41c1768…`, `placebo_merged-Q6_K.gguf` `a2dd04f4…`; `report.json` copiado a `lab/runs/cc_llama/weights/`).
+
+- **Op.** G0 (mediana de medianas |uᵀx − 1| en reserva) **0,030**, peor capa 0,051 (umbral 0,5; placebo 0,031 / 0,053);
+  ‖dW‖/‖W‖ mediana **0,012** (0,0055-0,021); cos(escrito, dW) tras Q6_K mediana **0,74** (mín 0,62, capa 31 0,92).
+  Phi: G0 0,044, cos 0,74; Qwen: §45.8. Tercera arquitectura en la que el op escribe lo que se le pide.
+
+| dev / sellado 2 | GSM /100 bien (c2) / cortes / tokens | MATH /50 bien (c2) / cortes / tokens |
+|---|---|---|
+| dev base (§45.19) | 74 (75) / 22 / 1 315 | 22 (20) / 26 / 1 721 |
+| dev vector ×0,5 | 76 (77) / 2 / 705 | 32 (29) / 13 / 1 271 |
+| **dev fusionado** | **74** (75) / 9 / 876 (−33 %) | **35** (32) / 12 / 1 357 (−21 %) |
+| dev placebo fusionado | 74 (74) / 21 / 1 289 | 26 (23) / 24 / 1 773 |
+| sellado 2 base | 75 (76) / 21 / 1 225 | 23 (21) / 25 / 1 757 |
+| sellado 2 vector ×0,5 | 77 (79) / 2 / 711 | 28 (27) / 13 / 1 310 |
+| **sellado 2 fusionado** | **77** (78) / 3 / 778 (−36 %) | **27** (26) / 18 / 1 466 (−17 %) |
+| sellado 2 placebo fusionado | 79 (80) / 18 / 1 277 | 20 (18) / 29 / 1 820 |
+
+- **Dev: PASS (C1-C4).** Fusionado frente a base MATH **13/0** (p 0,0002; c2 12/0), GSM 10/10 (p 1,0); frente al vector
+  3/0 y 4/6 (p 0,25 / 0,75): dentro de 5 y 4. Placebo fusionado frente a base 8/8 y 6/2 (p 1,0 / 0,29). Cortes GSM 22 → 9.
+- **Sellado 2 (`data/sealed_confirm2.json`, primer uso con este modelo): FAIL en C1.** Fusionado frente a base GSM 13/11
+  (p 0,84), MATH 7/3 (p 0,34; c2 7/2, p 0,18); frente al vector **7/7 y 4/5** (p 1,0): el compilado **es** el vector, ítem a
+  ítem. Placebo fusionado frente a base 9/5 y 1/4 (p 0,42 / 0,38); frente al vector 5/13 en MATH (p 0,10; c2 4/13, p 0,049):
+  el placebo compilado sí es peor que el vector en MATH, el fusionado real no es mejor que la base. C2-C4 pasan.
+- **HumanEval-20** (informado, n = 20): base 14/20 (13 cerrados, mediana 1 611 tokens) → fusionado **13/20** (17 cerrados,
+  1 104): sin daño medible a este n.
+- **Predicción (fila 38) contra el dato.** G0 0,02-0,15 → 0,030 ✓; cos 0,6-0,9 → 0,74 ✓; ‖dW‖/‖W‖ 0,005-0,03 → 0,012 ✓.
+  Fusionado ≤ 5 del vector en GSM → −2 ✓, ≤ 4 en MATH → +3 ✓. Sobre la base ≥ la mitad de la ganancia GSM del vector con
+  p < 0,05 → **+0, p 1,0 ✗** (el vector ganaba +2). Placebo fusionado ± 3 de base → GSM 0 ✓, **MATH +4 ✗**; tokens ± 10 %
+  → −2 % / +3 % ✓. C1-C4 → PASS ✓. **Sellado 2 confirma → ✗.** HE-20 ± 3 → −1 ✓. ≤ 2 % sin pensamiento → 0 ✓. Sorpresas
+  declaradas: ninguna (G0 pasa, cos ≥ 0,5, fusionado no < base en GSM, no > vector + 5). **❌**: 11 de 14 lecturas en
+  banda, pero falla la primaria (el sellado).
+- **Lectura.** Lo que sí se sostiene en tres familias: **el op compila el vector con fidelidad** (G0, cos y, lo que
+  importa, igualdad ítem a ítem fusionado = vector en los dos sellados de Phi y Llama, 7/7 y 4/5 aquí). Lo que no: que
+  ese vector mejore la precisión en Llama-8B (§45.19). El compilado hereda exactamente la virtud (−36 % de tokens,
+  cortes 21 → 3) y el defecto (acierta lo mismo que la base) del vector. Es el resultado que se esperaría si la
+  primitiva de compilación es correcta y la dirección no aporta aquí: y es lo que distingue "la op falla" de "la
+  dirección no sirve en este modelo". Límites: los de §45.19 más una sola `lam`, un solo cuantizado del fusionado.
+- **Dos métodos.** Resúmenes (`verdict.py`, `cc_verdict.py`) frente al recuento por filas de los 8 JSON de esta parte y
+  McNemar propio: idénticos; sha del fusionado servido = sha del log (`a41c1768…`); `sealed_confirm2.json` sin cambios.
+
+**Lo que cambia en el repositorio tras §45.19-45.20.** "La dirección concluir mejora GSM8K/MATH" pasa a estar mostrada en
+**dos** familias de tres probadas; "el compilado = el vector" y "la placebo de la misma norma no hace nada" en las tres.
+En R1-Distill-Llama-8B la primitiva es un ahorro de tokens a precisión igual. Predicciones: 39 filas, 35 puntuables,
+✅ 6 / ◐ 14 / ❌ 15 / ⏳ 4.
