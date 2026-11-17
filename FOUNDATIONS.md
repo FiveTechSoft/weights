@@ -142,7 +142,10 @@ is missing and is needed before "supported" means more than "supported for arith
   the benchmark. Together with Beaker and shawnghu the picture is one line: **writing from scratch works for a closed
   algorithm or an interpretable feature; whatever has to be learned from data still needs training or a donor.** That is
   T4 stated from the other side. Missing in all three: a same-size random control (irrelevant at 100 %, pertinent for
-  brain encoding and for the "Wait" neuron).
+  brain encoding and for the "Wait" neuron). Ok & Lee (POSTECH, 17 Nov 2026; reading list) add the largest from-scratch
+  run so far: three frontier LLMs given ten ARC examples all design a plain-text fact table instead of a Transformer
+  (54.4 % on 3,530 ARC items, written Transformers below BM25 in 20/23 runs, fine-tuned pretrained 0.8B 82.1 %) — the
+  knowledge written is the writer's own, and the donor-plus-gradients route stays 28 points ahead.
 
 ### The exception (§43.17-43.18)
 Concept Country's "conclude" direction, read from the base's own finished traces (last 48 tokens before `</think>`
@@ -400,5 +403,26 @@ layer** — the block Lazarus uses. Idea credited to Claude Code (Opus 4.5, Feb 
 agent maps 417 talker-MLP neurons of Qwen3-TTS-0.6B (0.48 %; 304 of them in layer 27; 55-61 "dormant" = strong in < 1 %
 of speech frames) and pushes their `down_proj` columns along one fixed direction per layer (rank-1, ×8-12): breathing,
 laughs, whispers, a second speaker; ×16+ gibberish, ×10 on built-in voices stuck 13/36. Listening only, no WER or quality
-metric, no random-neuron control: T3's narrow dose window again, and a demo rather than a finding by T6. Full links in
+metric, no random-neuron control: T3's narrow dose window again, and a demo rather than a finding by T6 · Ok & Lee
+(POSTECH), *Weight-Space Programming Doesn't Need Transformers* (alphaXiv, 17 Nov 2026; code and 56 written models
+`effl-lab/Weight-Space-Programming`, MIT; project page wsp-no-transformer.github.io; thread
+x.com/HyunjongOk/status/2122518170359706090) — the **from-scratch** branch, not editing: three frontier LLMs (Opus 5.5,
+GPT-6.1 Sol, GPT-6 Astra) in a sandbox with ten labelled ARC questions either write the weights of a given architecture
+or design their own; lineages keep the best-validation replicate per generation (5-8 generations). Free to design, all
+three write a **sparse table of plain-text facts** compiled by a build script and read by fixed code, 54.4 % on 3,530
+ARC test items (Opus, 3.35M "parameters", chance 25 %) against 43.1 % for the best of 15 released architectures the same
+LLM wrote (Qwen3-1.7B shell, 48.7 %) and 36.1 % for a written two-layer Transformer; their own associative-memory table
+(pair rows at computed addresses, 120 rows per question) 52.4 % and 17× faster on GPU than a size-matched Transformer.
+The numbers that matter for us: written Transformers score **below BM25 over the same text in 20 of 23 runs** (36.1 vs
+44.1), and Opus's first table beats BM25 by 3.7 points only (50.7 vs 47.0), so the written "model" is mostly the text
+and the architecture is a retrieval index; a fine-tuned pretrained Qwen3.5-0.8B gets 82.1 % and gradient training from
+scratch ≤ 32.7 %; on raw CIFAR-10 pixels ≤ 28 % (96.1 % only on DINOv2 tokens); and when the writer starts from a
+pretrained checkpoint it changes **under 1 % of the weights, mostly readout and embeddings**, and full overwrites never
+pass 72 %. Deleting one written fact moves 0.5-1.8 answers in a table against 4.8 in a written Transformer
+(superposition cost, read from the writing side). Our reading: T4 stated once more from outside — writing from scratch
+works where the knowledge is already explicit in the writer (here, science facts the LLM knows) and loses by 28 points
+to a pretrained donor plus gradients; the "1,800× fewer parameters" is against a written Transformer that keyword search
+beats. Nothing here edits a pretrained LLM, so it does not touch T2/T3/T8; the pretrained-checkpoint rows agree with
+Naik's writing failure and with our rank-1 compile being the size of what hand-writing can place. The term "WSP" now
+covers two different things (editing a donor; designing a table), worth keeping apart when reading claims. Full links in
 README "References".
