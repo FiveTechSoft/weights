@@ -174,7 +174,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     fijado 2026-11-17 antes de correr, filas 37 (vector) y 38 (compilado) en predictions; misma op, mismos criterios
     C1-C3 / C1-C4, sellados 1 y 2 en primer uso con este modelo; una cadena (`lab/runs/cc_llama/chain.sh`) con las dos
     partes, la B solo si la A pasa dev. Gemma descartada por su norma tras `down_proj` (lección Muse/Kocabay). Descarga
-    ≈ 23 GB aprobada. ≈ 12-14 GPU h. **Estado: descargando; sonda de etapa 0 pendiente.**
+    ≈ 23 GB aprobada. ≈ 12-14 GPU h. **Estado 2026-11-17 06:40: sonda hecha (presupuesto 2 048, arreglo
+    `engine/tok.py`); Parte A dev PASS a las 05:46 (criba: base 25/64, 0,25 → 32, 0,5 → 35, 1,0 → 4, 2,0 → 0; dev
+    base 74 / 22, vector 0,5 76 / 32, placebo 76 / 23; MATH p 0,021 y 0,035; tokens −46 % / −26 %); sellado 1 en
+    curso; Parte B (compilado) sigue si no falla. Recuento independiente de criba y dev coincide (8 ficheros).**
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
