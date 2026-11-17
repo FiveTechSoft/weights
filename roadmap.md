@@ -180,7 +180,9 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     vector 77 / 28 (fusionado = vector ítem a ítem). El vector hace lo mecánico (cortes 13 → 2, −41 % tokens, placebo
     inerte, op fiel: G0 0,030, cos 0,74) pero pierde tantos ítems como recupera, acabándolos mal sin cortar. Lectura:
     ahorro de tokens a precisión igual en esta familia; ganancia de precisión mostrada en dos familias de tres. Abierto
-    (no lanzado): escala entre 0,25 y 0,5, otro presupuesto, muestreo T 0,6 (lo que pide la tarjeta).
+    (no lanzado): otro presupuesto, muestreo T 0,6 (lo que pide la tarjeta). **Parte C (dosis, decisión del driver
+    2026-11-17 16:1x): vector a 0,25 y 0,35 en dev, puerta prefijada (`dose_gate.py`), sellado 3 solo si pasa; fila 40;
+    cadena `chain_c.sh` lanzada 16:3x.**
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 

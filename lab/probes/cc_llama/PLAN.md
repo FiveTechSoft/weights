@@ -114,6 +114,34 @@ vector arm, sha256 of every served GGUF in the log, `served` recorded in every J
   served arm's finished answers without thinking (the stop regime of §45.14); llama.cpp rejects or ignores the control
   vector on `llama` (P3 fails).
 
+## Part C — dose (added 2026-11-17 16:20, after Parts A-B were scored, before any run; prediction row 40)
+**Question.** §45.19 found the vector at 0.5 loses as many GSM8K items as it recovers, by premature closure on an
+intermediate result (14 lost on sealed set 1, 0 of them cut). 0.5 is already half the scale that breaks the model
+(1.0: 4/64). Does a smaller dose keep the saving and the recoveries while cutting that cost?
+**Arms (dev, same 150 items, reference `dev_base.json` of Part A, premise p3 as in §45.17):** vector at **0.25** and
+**0.35** (`dev_vec_s0.25.json`, `dev_vec_s0.35.json`). No placebo on dev (null at 0.5 on dev and both sealed sets; a
+weaker placebo is not more informative). Chain `lab/runs/cc_llama/chain_c.sh`, guard in `lab/runs/cc_llama/dose/`.
+**Gate (`lab/probes/cc_llama/dose_gate.py`, 2 unit tests written first), fixed now:** chosen = the scale with the larger
+GSM8K + MATH correct on dev (tie: the smaller); sealed set 3 runs only if, at that scale, GSM8K ≥ base + 3 (≥ 77),
+lost (base correct and finished → arm wrong) ≤ 6, MATH ≥ base + 4 (≥ 26) and GSM8K tokens ≤ −20 %. Otherwise the
+result is reported and sealed set 3 is **not** spent. **Sealed set 3** (`data/sealed_confirm3.json`, 200 GSM8K + 100
+MATH-500, single use, first use of any kind): base, vector at the chosen scale, same-norm placebo at that scale;
+`cc_verdict.py` criterion (C1 significant with both graders on one benchmark, C2 placebo null, C3 GSM8K ≥ base − 2).
+**Prediction (low confidence; arm and control):**
+- 0.25: GSM8K **77-82** (base 74; dev 0.5 gave 76), lost **3-7** (0.5: 9), cuts 6-14 (base 22), tokens −18 to −32 %;
+  MATH **26-31** (base 22; 0.5: 32), cuts 16-22.
+- 0.35: GSM8K 76-81, lost 5-9, cuts 3-9, tokens −28 to −40 %; MATH 28-33, cuts 12-18.
+- Gate passes at one of the two (55 %). If sealed set 3 runs: base GSM8K 150-170/200 and MATH 44-60/100; vector within
+  ± 4 of base on GSM8K and + 0 to + 8 on MATH, tokens −20 to −35 %; placebo within ± 3 of base; **does not confirm C1**
+  (p ≥ 0.05 on both benchmarks, 60 %), confirms (25 %). Overall: we expect the lower dose to trade saving for safety
+  (fewer losses, fewer recoveries) with the net accuracy still ≈ base; a confirmation would mean the Llama failure was
+  dose, not direction.
+- Premises: p3 reused `dev_base` (same server flags, `-np 2`); the gate thresholds are the ones above and nothing
+  else; sealed set 3's hash check passes.
+- **We would be surprised if:** at 0.25 GSM8K < base − 3 or lost ≥ 10 or token saving < 10 %; any arm with > 2 % of
+  finished answers without thinking; sealed set 3 vector > base + 10 on GSM8K; placebo significant on either benchmark.
+**Cost.** Dev 2 × 150 ≈ 1 GPU h; sealed set 3 if run 3 × 300 ≈ 3 GPU h.
+
 ## Limits known now
 One budget, greedy (card says sample), one quant (Q6_K), one third model; traces and dev items shared with the other two
 studies (fine: no item from dev or sealed sets); system prompt against the card's advice, kept for comparability; the
