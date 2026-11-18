@@ -288,6 +288,14 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     ahorro de tokens por familia; con aciertos |ρ| ≤ 0,42. Los pesos dicen qué empuja y cuánto recorta, no si acierta.
     Queda: encontrar la fila de lectura de una segunda conducta sin saberla de antemano (hueco 17).
 
+26. **Suite `dist-shift` sobre las herramientas de llama.cpp** (OK del driver 2026-11-18 a descargas y GPU): KL frente a
+    los logits guardados de la base (`llama-perplexity --kl-divergence`), perplejidad en WikiText-2, HellaSwag /
+    Winogrande / MMLU en el formato de llama.cpp; clase de modelo `llm-logits` (GGUF directo, sin servidor) dentro de
+    `bench_run`; regla "preserva distribución" con umbrales calibrados con el placebo de misma norma (nulos hasta
+    medir); datos en `data/bench/` con sha y licencia. Primera cadena GPU: base 9B, compilado y placebo compilado
+    (y vectores si `llama-perplexity` admite `--control-vector`), en cola tras la banda. Plan
+    `lab/probes/dist_shift/PLAN.md`, fila 48. Agente asignado.
+
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
   con placebo estructural, `budget_params` e informe; parches `.weightpatch.json` con `apply_patch` / `rollback_last` /
