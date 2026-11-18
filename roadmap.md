@@ -188,6 +188,19 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     recuperados; 16 GSM perdidos acabados mal (10 % de los que la base acierta, frente a 17-20 % a 0,5): la dosis reduce
     a la mitad el cierre prematuro, no lo quita. Fila 40 ❌ (apostamos "no confirma"). Queda: compilado a 0,35, otro
     presupuesto, muestreo.**
+13. **Poda D4k de alphaXiv sobre la réplica Exp 8 (0.8B)** (decisión del driver 2026-11-18): plan
+    `lab/probes/exp8_prune/PLAN.md`, fila 41, cadena `lab/runs/exp8_prune/chain.sh` lanzada 04:09. Brazos `full` (réplica
+    otra vez: ruido), `d4k` (4 096 entradas mayores por capa; conserva 0,76-0,79 del empuje a lo largo de u) y `d4k_comp`
+    (las otras 61 440). Lecturas R1-R3 fijadas. ≈ 40 GPU min.
+14. **Control de sesgo constante para el vector "concluir"** (lo que le falta a DAWE y a nosotros, 2026-11-18): un
+    `logit_bias` sobre `</think>` (llama-server lo admite por petición) elegido en dev para igualar el ahorro de tokens
+    del vector, contra el vector a la misma dosis en los mismos 150 ítems. Si el sesgo iguala la precisión, la parte
+    "dependiente del estado" del vector no está demostrada (§45.12 ya vio que el puerto solo lleva "deja de pensar").
+    Barato (2 brazos × 25 min en la 9B o la 0.8B); no lanzado.
+15. **Qwen3.8-27B ternario (ttf, 6,74 GB) como cuarta familia por tamaño**, solo en espacio de activaciones (vector
+    "concluir" por el protocolo §43.17): cabe en la 3060; hace falta compilar su fork de llama.cpp (parches CUDA) y
+    comprobar `--control-vector`. No sirve para leer o escribir pesos (ternario + 72M tokens de recuperación). Descarga
+    y compilación requieren OK del driver; ≈ 2,5 h por brazo de 150 ítems a ~35 tok/s. No lanzado.
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 

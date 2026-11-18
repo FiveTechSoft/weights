@@ -467,4 +467,23 @@ push, and our §16.2 note that called the edit "not rank-1" was wrong (corrected
 the same primitive as our compile (T8: rank-1 in `down_proj`, few neurons, the push magnitude is what matters, not the
 entry count); the "no degradation" is a screen-resolution claim with no same-norm placebo and no other benchmark (T6); the
 car policy is a closed toy network (T4), where 10 weights written from scratch beat PPO's 6,073 because the fix is a
-known algorithm. Full links in README "References".
+known algorithm · laxman / bandr.ai, *DAWE* (write-up and code `bandr-ai/dawe`, 17 Nov 2026; quoted by Rikiya Takehi) — a
+closed-form readout edit: ridge regression from final-layer states to the end-of-turn logit, added to one or two rows of
+`lm_head` (2,557 / 5,064 values on Qwen3.5-4B), repairs a reply-format break (plan-first 20.1 → 88.2 %, retrain 88.7;
+old harness unchanged; same-norm random row edit 68.1 %). 204 items, greedy, single runs, own scorer (± 5 pp), no
+constant-bias control (they say so), tied embeddings, test aggregates visible to the agent. T8: the same primitive as our
+compile, placed on the readout and carrying only the stop / continue component (what our port carried in §45.12); T2 /
+T3 / T6 from outside. The control they lack is one we lack too: a constant logit bias on the stop token against our
+"conclude" vector (roadmap gap 14) · rizumita / CAPH TECH, *kestrom inspect* (zenn, 17 Nov 2026; `CAPHTECH/kestrom`,
+Mac / MLX) — backdoor reading from the fine-tune difference against the official base: per-tensor SVD (LoRA s₁ ≈ 1-2.5,
+implants 5.85-25.1), token rises on plain text, component-to-token lens, trigger search, GGUF via a same-way requantised
+base. Pre-registered, planter separate from reader: 0 / 32 clean flagged, 15 / 16 found, 14 / 16 targets, 4 / 16
+triggers on Qwen3.5-0.8B / 4B; the miss is a double-quantised GGUF whose rounding buried the rank-1 change. Agrees with
+§43.24 (with the base a rank-1 write is first of 393,216 neurons; a real fine-tune moves a few legitimate neurons a lot;
+without the base only token-writing shows) and adds the lens and the requantised-base trick we do not have ·
+oguzeldereli, *ttf* (ternary runtime + llama.cpp patches; `ttf-Qwen3.8-27B-GGUF` 6.74 / 8.20 GB; PolyForm NC) — Qwen3.8-27B
+at 1.6 bits plus 72M tokens of recovery training: GSM8K 0.895 = FP16 (200 items), HumanEval 0.841 vs 0.933, TriviaQA on
+Flash-Next 0.538 vs 0.776. For us a 27B that fits 12 GB for activation-space work (control vectors), not a weight-space
+base: ternary matrices and recovery training make differences against the official weights unreadable (T7) and leave
+our rank-1 writes no float target; the knowledge loss at 1.6 bits is itself a weight-space fact (what survives is coarse
+structure). Full links in README "References".
