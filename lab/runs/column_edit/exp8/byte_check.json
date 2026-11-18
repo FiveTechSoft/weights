@@ -1,0 +1,17 @@
+{
+ "out_gguf": "C:\\weights\\servidos\\qwen35-08b__exp8-via-edit-column.gguf",
+ "replica": "C:\\weights\\servidos\\qwen35-08b__exp8-replica.gguf",
+ "edited_tensors_byte_equal": {
+  "blk.15.ffn_down.weight": true,
+  "blk.19.ffn_down.weight": true
+ },
+ "tensors_differing_anywhere": [],
+ "sha256_out": "37c2d2a0002cf148f77dd737e17a8cc8267609002fea6018a86f33c0d9f98a3c",
+ "sha256_replica": "37c2d2a0002cf148f77dd737e17a8cc8267609002fea6018a86f33c0d9f98a3c",
+ "program": {
+  "npz": "C:\\weights\\lab\\runs\\column_edit\\exp8\\exp8_via_edit_column.npz",
+  "program": "C:\\weights\\lab\\runs\\column_edit\\exp8\\exp8_via_edit_column.json",
+  "npz_placebo": "C:\\weights\\lab\\runs\\column_edit\\exp8\\exp8_via_edit_column_placebo.npz",
+  "program_placebo": "C:\\weights\\lab\\runs\\column_edit\\exp8\\exp8_via_edit_column_placebo.json"
+ }
+}

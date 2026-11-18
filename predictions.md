@@ -64,16 +64,20 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 43 | 2026-11-18 | `cc_bias/PLAN.md` (control de sesgo constante: `logit_bias` en `</think>` (id 248069) a +2/+4/+6/+8 en los 150 ítems de dev de cc_v2 en la 9B; elegido el de tokens más cercano al vector (943); comparado con `dev_vec` 83/35 y `dev_base`) | Premisa: el sesgo suma en todas las posiciones, dispara donde `</think>` ya está cerca (como el vector) y también a mitad de derivación. +2: GSM **52-62**, MATH 7-12, tokens 1 400-1 700, sin pensar 0 %. +4: GSM 60-75, MATH 10-20, tokens 1 000-1 400, sin pensar ≤ 2 %. +6: GSM 62-80, MATH 12-26, tokens 650-1 050, ≤ 5 %. +8: GSM 45-75, MATH 8-22, tokens 350-800, sin pensar 5-40 %. Tokens monótonos en b. Elegido +6 (55 %) o +4 (30 %). Elegido frente al vector: GSM vec −4 a −18, MATH vec −5 a −18, discordantes significativos en GSM. **Primaria: R2, el vector tiene parte dependiente del estado (60 %)**; R1 (el sesgo iguala) 35 %; elegido ≤ base 5 %. Sorpresa si algún sesgo ≥ vector en los dos bancos; elegido ≤ base en GSM; sin pensar > 50 % a +8; tokens no monótonos; correctores en desacuerdo en > 5 ítems | | | | ⏳ |
 
-## Cuenta (43 filas; 38 puntuables)
+| 44 | 2026-11-18 | `skill2/PLAN.md` (segunda conducta: "razonar en español" en problemas en inglés, 9B; dirección de las propias respuestas de la base con y sin la instrucción, mismo protocolo que §43.17; juez de idioma determinista sobre las primeras 300 palabras del pensamiento; brazos sin instrucción) | Premisas: P1 la base piensa en inglés ≥ 95 % sin instrucción y ≥ 60 % con ella; P2 respuestas en español con instrucción ≥ 85 % → ≥ 45 pares de 64. Filas 45-62 pares; norma del vector 0,3-3× la de "concluir". Criba (32, sin instrucción): base piensa en español 0-2, aciertos 10-18; alguna escala llega a ≥ base + 10 ítems en español con precisión ≥ base − 3 (**60 %**), si ocurre a 1,0 o 2,0 (70 %); a 4,0 la precisión cae ≤ base − 5 (70 %). Dev: base_en español 0-5/150, GSM 40-55, MATH 4-12; vec_en español **45-110**, GSM base −8..+2, MATH base −4..+2, tokens ± 15 %; placebo_en español 0-8, precisión ± 3; base_es piensa en español 10-60 y responde en español ≥ 120; vec_es ≥ base_es + 30. **Primaria: C1 pasa en dev 55 %; C1-C3 pasan 35 %; sellado confirma 25 %.** Fallo más probable: C3 (pensar en español cuesta > 3 GSM). Parte B: G0 pasa 70 %, C4 65 %. Sorpresa si el placebo mueve ≥ 20 ítems; vector < 10 ítems a toda escala; precisión sube > 5; la base ya piensa en español > 20 % sin instrucción | | | | ⏳ |
+
+| 45 | 2026-11-18 | `discrete_writer/PLAN.md` (escritor discreto por fila: movimientos bf16 {signo, ×2, ×½} por entrada, umbral exacto para el objetivo separable; sobre el dW compilado de la 9B capas 1/16/31 y la edición Exp 8; CPU) | 9B k = 1: cuota alcanzable 0,3-3 %; cos **0,10-0,35**, alpha 0,5-3, ruido ≥ 1,5; 5 % y 20 % no alcanzables. 9B k = 2: cos 0,20-0,45 a 1-6 %. k = 5: cos 0,40-0,65 a 3-15 %. Exp 8 k = 1: alcanzable 20-60 % de las 64 columnas; cos 0,55-0,80. **Primaria: el escritor por umbral no llega a cos ≥ 0,7 con el dW compilado a ≤ 5 % de entradas a dosis 1 (90 %).** Sorpresa si alguna celda 9B a k = 1 tiene cos ≥ 0,5; Exp 8 < 0,4; el objetivo acoplado sube alguna vez | 9B k = 1: cuota 3,7 / 3,4 / 2,7 % (L31 ↓ banda... dentro), cos **0,45 / 0,48 / 0,67** (↑ banda), alpha 0,26 / 0,26 / 0,46 (↓ banda), ruido 2,0 / 1,9 / 1,1. k = 2: cos 0,56 / 0,55 / 0,67 (↑). k = 5: cos 0,69 / 0,66 / 0,64 a 17 / 15 / 11 % (cuota ↑). Exp 8 k = 1: 58 / 50 % de las columnas, cos **0,78 / 0,77** ✓. Primaria ✓ (máximo 0,667). **Sorpresa disparada**: L31 cos ≥ 0,5. Resolver gana mucho a redondear (0,08-0,10 en §45.23) pero no lleva la magnitud (alpha < 0,5) | 2026-11-18 | §45.24 | ◐ (primaria ✓; cos y alpha fuera de banda en las tres capas; sorpresa disparada) |
+
+## Cuenta (45 filas; 39 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
-| ◐ parcial | 16 |
+| ◐ parcial | 17 |
 | ❌ falla | 16 |
-| ⏳ / — | 5 |
+| ⏳ / — | 6 |
 
-Acierto limpio 6/38 = 16 %; acierto o parcial 22/38 = 58 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
+Acierto limpio 6/39 = 15 %; acierto o parcial 23/39 = 59 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es
 lo que cabe esperar de rangos estrechos sobre fenómenos que no se entienden; el número que importa es **cómo** fallan.
 

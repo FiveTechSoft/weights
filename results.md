@@ -3529,6 +3529,40 @@ un modelo ternarizado sin entrenar no sirve (paso 3 abajo) y *ttf* necesita 72 M
 - **Límites.** Dos ediciones, cinco tensores, dos reglas (no la de TTF: umbral θ aprendido + acumulador); métrica en el
   espacio de pesos, no de conducta; `tq2_0` desde bf16 (el GGUF de la réplica pasa además por Q6_K).
 
+### 45.24 Escritor discreto por fila (prototipo CPU): resolver gana mucho a redondear, pero sin el acoplamiento por activaciones no lleva la magnitud (2026-11-18)
+Plan `lab/probes/discrete_writer/PLAN.md` (fijado antes de medir; agente del frente 20), fila 45. Código
+`lab/probes/discrete_writer/writer.py` (6 tests antes), datos `lab/runs/discrete_writer/{exp8,cc9b}.json`. Pregunta:
+si en vez de redondear la edición al alfabeto discreto (§45.23: cos 0,08-0,10) se **resuelve** por fila qué movimientos
+nativos de bf16 (volcar signo, ×2, ×½) acercan más la fila a su objetivo t = fila de dW, ¿cuánto de la edición se
+realiza y con cuántas entradas? Objetivo separable Σ(d_j − t_j)² + λ·#cambios: solución exacta por umbral (cambia la
+entrada si su mejor movimiento gana más de λ); λ por cuantil de ganancia para una cuota pedida. Objetivo acoplado
+‖X(d − t)‖² + λ·#cambios (el de Tree-Ising, con X las activaciones de calibración) implementado como descenso por
+coordenadas con semilla, monótono; X real necesita un forward de la 9B (GPU), así que solo se probó en sintético.
+
+| edición | capa | k | cuota cambiada (alcanzable) | cos | alpha | ruido |
+|---|---|---|---|---|---|---|
+| Exp 8 (0.8B) | 15 | 1 | 1,0 % = 58 % de las 64 columnas | **0,784** | 0,53 | 0,79 |
+| Exp 8 | 19 | 1 | 0,9 % = 50 % | **0,767** | 0,52 | 0,84 |
+| compilado 9B | 1 · 16 · 31 | 1 | 3,7 · 3,4 · 2,7 % | 0,450 · 0,476 · **0,667** | 0,26 · 0,26 · 0,46 | 1,98 · 1,85 · 1,12 |
+| compilado 9B | 1 · 16 · 31 | 2 | 7,3 · 6,7 · 5,1 % | 0,562 · 0,551 · 0,667 | 0,39 · 0,36 · 0,43 | 1,5 · 1,5 · 1,1 |
+| compilado 9B | 1 · 16 · 31 | 5 | 16,6 · 15,3 · 11,3 % | 0,693 · 0,658 · 0,641 | 0,55 · 0,49 · 0,38 | 1,0 · 1,2 · 1,2 |
+
+A cuota forzada del 1 %: 9B k = 1 cos 0,42 / 0,46 / 0,66; Exp 8 igual. Vuelcos de bits 0,8-14 M por matriz de la 9B.
+Dos métodos: cos por `engine.ternary.overlap` y por numpy directo coinciden.
+
+- **Lectura.** El escritor por umbral, tocando solo el ≈ 3 % de entradas cuyo valor base es tan pequeño que un
+  movimiento nativo cae a menos de 2|t|, realiza el compilado con cos 0,45-0,67 a dosis 1 (redondear daba 0,08-0,10) y
+  la edición Exp 8 con cos 0,77-0,78 en la mitad de sus columnas. **No lleva la magnitud** (alpha 0,26-0,46) ni pasa de
+  cos ≈ 0,7 a ninguna dosis: en toda entrada con |w| ≳ |t| cualquier movimiento se pasa de largo. Un escritor discreto
+  para nuestras ediciones solo es viable con el objetivo acoplado (activaciones), que necesita X de un forward de la 9B
+  sobre los 100 prompts del ajuste (≈ 30 min GPU, gancho en `cc_compile.fit_layers`) y luego el solver en CPU; el dev
+  en GPU y los criterios C1-C4 están en el plan, no lanzados.
+- **Predicción (fila 45) contra el dato.** Primaria ✓ por la letra (máximo 0,667 < 0,7); **sorpresa declarada
+  disparada** (capa 31 ≥ 0,5); cos a dosis 1 por encima de la banda en las tres capas (0,45-0,67 frente a 0,10-0,35),
+  alpha por debajo, cuota alcanzable 2,7-3,7 % frente a 0,3-3. **◐**. Lo que no previmos: cuántas entradas de
+  `down_proj` son lo bastante pequeñas para que un movimiento nativo encaje.
+- **Límites.** Objetivo separable (sin activaciones), cinco tensores, dos ediciones, CPU; ninguna conducta medida.
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las

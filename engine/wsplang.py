@@ -35,7 +35,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -72,6 +72,8 @@ OPS_ALLOWED = {
     "contrast_vector",  # llama.cpp control vector from two sets of texts (engine/contrast_vector.py)
     "compile_control_vector",  # that vector written into down_proj, + placebo, G0, LoRA/merged Q6_K (engine/cc_compile.py)
     "ternary_survival",  # how much of an edit survives ternarisation (TQ2_0 / absmean); report only (engine/ternary.py)
+    "edit_column", "edit_neurons",  # one matrix, few columns, structural same-norm placebo, report + patches (engine/column_edit.py)
+    "apply_patch", "rollback_last", "list_patches", "commit_manifest",  # .weightpatch.json runtime (engine/wsplpatch.py)
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -263,8 +265,10 @@ READ_ONLY_OPS = {
     "contrast_vector",  # writes a new control-vector GGUF (run-time steering), never weights
     "compile_control_vector",  # writes new files in a new out dir (fits, LoRA, merged copies), never over an input
     "ternary_survival",  # writes one JSON report, never weights
+    "rollback_last", "list_patches", "commit_manifest",  # patch stack bookkeeping: JSON under the session dir only
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
+    "edit_column", "edit_neurons", "apply_patch",  # new model dirs beside the inputs, never over them
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
     "rosetta_align", "cross_project", "init_architecture", "imprint_association",
     "imprint_batch", "imprint_corpus", "delta_unlearn", "fwp_overlay", "layer_envelope",
@@ -2348,6 +2352,68 @@ def execute_plan_v4(
                 res["result"] = {"out": str(out_p), "rule": rep["rule"], "mode": rep["mode"],
                                  "summary": {t: {"k70": v["k70"], "rel_norm_dW": v["rel_norm_dW"], "k1": v["cells"][0]}
                                              for t, v in rep["tensors"].items()}}
+                res["execution_state"] = "executed"
+
+            elif op in ("edit_column", "edit_neurons"):
+                # One matrix, one or a few columns (neurons), a dose and a direction, always with the structural
+                # same-norm placebo beside it (lab/probes/column_edit/PLAN.md). Writes out= (+ out_placebo) as new
+                # safetensors dirs, a report, a manifest, two .weightpatch.json and the ediciones program + npz for
+                # wsp.py add-cols-vectors on the GGUF. No behaviour claim: evaluate=true needs placebo=true.
+                from engine import column_edit as ce
+                for key in ("model", "tensor", "out"):
+                    if not named.get(key):
+                        raise ValueError(f"{op} needs model=<hf dir> tensor=<name> column=<c>|neurons=<c1,c2,...> "
+                                         "direction=<npy|npz> alpha= mode=add|subtract|scale|replace|subtract_direction out=<dir>")
+                flags = ce.validate_request(named)
+                model_p = _model_path(named["model"])
+                out_p = check_report_path(named["out"], [model_p])
+                colspec = named.get("neurons", named.get("column"))
+                if colspec is None:
+                    raise ValueError(f"{op} needs column=<c> or neurons=<c1,c2,...>")
+                cols = [int(x) for x in str(colspec).strip("[]").split(",") if x.strip()]
+                mode = str(named.get("mode", "add"))
+                direction = _model_path(named["direction"]) if named.get("direction") else None
+                if mode != "scale" and direction is None:
+                    raise ValueError(f"{op}: mode {mode} needs direction=<npy|npz>")
+                budget = int(named["budget_params"]) if named.get("budget_params") else None
+                res["result"] = ce.run_edit_column(
+                    model=model_p, tensor=str(named["tensor"]), cols=cols, direction=direction,
+                    alpha=float(named.get("alpha", 1.0)), mode=mode, out=out_p, placebo=flags["placebo"],
+                    placebo_seed=int(named.get("placebo_seed", 42)), budget_params=budget,
+                    normalize_direction=str(named.get("normalize_direction", "true")).lower() in ("1", "true", "yes"),
+                    experiment_id=named.get("experiment_id"), op=op)
+                res["result"]["use"] = ("python wsp.py edit <base.gguf> <out>/edit.json (and edit_placebo.json) for the "
+                                        "Q6_K arms; benchmark both on dev, then a sealed set")
+                res["execution_state"] = "executed"
+
+            elif op == "apply_patch":
+                # apply_patch patch=<.weightpatch.json> target=<model dir> out=<new dir> [session=<dir>]
+                from engine import wsplpatch as wp
+                for key in ("patch", "target", "out"):
+                    if not named.get(key):
+                        raise ValueError("apply_patch needs patch=<file> target=<model dir> out=<new dir> [session=<dir>]")
+                target_p = _model_path(named["target"])
+                out_p = check_report_path(named["out"], [target_p])
+                pm = wp.PatchManager(_model_path(named.get("session", "lab/runs/session_patches")))
+                dst = pm.apply(_model_path(named["patch"]), target_p, out_p)
+                res["result"] = {"out": str(dst), "stack_depth": len(pm.list_patches())}
+                res["execution_state"] = "executed"
+
+            elif op in ("rollback_last", "list_patches", "commit_manifest"):
+                # rollback_last [session=] | list_patches [session=] | commit_manifest name=<..> [include_patches=true]
+                from engine import wsplpatch as wp
+                pm = wp.PatchManager(_model_path(named.get("session", "lab/runs/session_patches")))
+                if op == "rollback_last":
+                    prev = pm.rollback_last()
+                    res["result"] = {"current": str(prev), "stack_depth": len(pm.list_patches()),
+                                     "note": "nothing deleted; the popped dir stays on disk"}
+                elif op == "list_patches":
+                    res["result"] = {"applied": pm.list_patches()}
+                else:
+                    if not named.get("name"):
+                        raise ValueError("commit_manifest needs name=<bundle name>")
+                    inc = str(named.get("include_patches", "true")).lower() in ("1", "true", "yes")
+                    res["result"] = {"bundle": str(pm.commit_manifest(str(named["name"]), include_patches=inc))}
                 res["execution_state"] = "executed"
 
             elif op == "model_report":

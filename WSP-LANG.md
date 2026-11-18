@@ -1,7 +1,7 @@
-# WSP-Lang 0.7
+# WSP-Lang 0.8
 
 **Parser, compilador y runtime para programar el espacio de pesos.** Implementación: `engine/wsplang.py`
-(`__version__ = "0.7.0"`; CLI `python -m engine.wsplang <programa.wspl> [--check | --run]`).
+(`__version__ = "0.8.0"`; CLI `python -m engine.wsplang <programa.wspl> [--check | --run]`).
 
 **Spec canónica: [`docs/wsplang_specification.md`](docs/wsplang_specification.md)**, con la tabla de ops que el runtime
 acepta y un test que la compara con el engine (`tests/test_wsplang_spec.py`: versión, cada op con su tipo, y ningún
@@ -85,3 +85,10 @@ fallido queda como conocimiento reutilizable (tabla de ideas retiradas en `FOUND
 - 0.2-0.6: `docs/wsplang_0.N_spec.md` (addenda por versión) y `docs/wsplang_specification.md`.
 - 0.7: parser + compilador + runtime con chequeo de factibilidad; ops de producto `delta_to_lora` (con
   `transfer_verdict` sobre `energy.json`) y `contrast_vector`.
+- 0.8 (2026-11-18, `docs/wsplang_0.8_spec.md`): localización y composición. `edit_column` / `edit_neurons` (una
+  columna o pocas neuronas, placebo estructural de misma norma obligatorio para evaluar, `budget_params`, informe con
+  parámetros tocados, manifiesto, programa para el GGUF), parches `.weightpatch.json` con `apply_patch` /
+  `rollback_last` / `list_patches` / `commit_manifest` (pila en disco, hashes de base y delta verificados, nunca sobre
+  la entrada), y `ternary_survival` (medida; sin escritor ternario, results §45.23). Reproduce la edición Exp 8 del MIT
+  byte a byte a través del op nuevo. Sin resultado de conducta propio: cualquier afirmación sigue necesitando dev,
+  placebo y sellado (§43.17).

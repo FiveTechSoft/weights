@@ -232,7 +232,25 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     `apply_patch` / `rollback_last` con pila por sesión y reconstrucción exacta. CPU, TDD, sin GPU. Agente asignado.
     No se adopta "reproducir el +29 de Hu": es otro fenómeno (bucles de la 0.8B) y nuestro arnés de la 0.8B tiene
     ruido ± 5 (§45.22).
-    **Cola de GPU (una a la vez, la coordina esta sesión): 18 → 17 → 20.**
+    **Cola de GPU (una a la vez, la coordina esta sesión): 18 → 19 (base) → 17 → 20.**
+
+### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
+- **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
+  con placebo estructural, `budget_params` e informe; parches `.weightpatch.json` con `apply_patch` / `rollback_last` /
+  `list_patches` / `commit_manifest` (pila en disco, reconstrucción byte a byte); `ternary_survival`. Criterio de salida
+  del texto externo ("edición < 2 000 parámetros con placebo, sellada y reconstruible") **cumplido en la parte mecánica**
+  (Exp 8 reproducido byte a byte por el op; A→B→rollback = A por hash; base + parches = final) y **no en la de
+  conducta**: no hay sellado de una edición de columna propia. Eso es un experimento, no una versión (hueco 17 / 21).
+- **0.9 "descubrimiento + fiabilidad" (propuesta externa, no empezada):** `probe_columns` / `probe_neurons` /
+  `rank_candidates` con placebo y held-out automáticos; `discrete_edit` (solo con objetivo acoplado, §45.24); selección
+  de tensores con comodines; batería de preservación en todo sellado (hueco 19); composición de 10-30 parches;
+  protocolo multi-familia (ya: Qwen, Phi, Llama). Corrección nuestra al texto: "concluir" **no** depende de un humano o
+  frontier LLM (la dirección se lee de la base con un procedimiento fijo); el descubrimiento de locus solo tiene sentido
+  para fenómenos con locus disperso (bucles de la 0.8B), no para "concluir" (§43.23, densa).
+- **1.0 "programar el espacio de pesos" (propuesta externa):** las tres condiciones del texto: localización +
+  descubrimiento automático con placebo y sellado; composición fiable; **al menos un caso prerregistrado de creación de
+  capacidad nueva** (no activación ni transferencia) que pase todos los controles. Nuestro registro dice que la tercera
+  es la que nadie tiene (H6/H7/H9, Naik, Ok & Lee); hasta entonces, 0.9x. De acuerdo con el texto en eso.
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 

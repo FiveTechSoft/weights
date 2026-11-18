@@ -298,7 +298,9 @@ NLL near ln 65. For language-model behaviour use `lab/verify_llmness.py`, calibr
 
 ## 🧠 WSP-Lang
 
-A declarative language for weight-space experiments (runtime version 0.7.0). Steps cover:
+A declarative language for weight-space experiments (runtime version 0.8.0; 0.8 adds `edit_column` / `edit_neurons`
+with a structural same-norm placebo and a parameter budget, `.weightpatch.json` patches with `apply_patch` /
+`rollback_last` / `list_patches` / `commit_manifest`, and `ternary_survival`; see `docs/wsplang_0.8_spec.md`). Steps cover:
 - inspection: `peek`, `semantic_map`;
 - edits under a guard: `project_out`, `scale-cols`, closed-form imprints;
 - weight diffs: `delta_stats`, `delta_signature`, `delta_compare`, `model_report`, `delta_to_lora` (a fine-tune's change as a reusable LoRA adapter, local or from the hub, with a transfer verdict);

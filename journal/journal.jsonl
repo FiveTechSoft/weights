@@ -14,3 +14,6 @@
 {"ts": "2026-11-18T04:06:50", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-d4k-complement.gguf\", \"ops\": 2}"}
 {"ts": "2026-11-18T04:07:09", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-d4k-complement.gguf\", \"ops_count\": 2}"}
 {"ts": "2026-11-18T04:07:09", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-18T05:19:46", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-via-edit-column.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-18T05:20:07", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-via-edit-column.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-18T05:20:07", "kind": "write", "detail": "edit"}

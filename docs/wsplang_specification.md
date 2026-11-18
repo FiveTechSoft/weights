@@ -1,6 +1,6 @@
 # WSP-Lang: Declarative Language Specification for Weight-Space Programming
 
-**Version:** 0.7.0 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.7_spec.md`, and §5.0 lists every op the runtime accepts)  
+**Version:** 0.8.0 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
 **Status:** Living Specification  
 **Authors:** FiveTechSoft Engineering & Research Team  
 **Repository:** [github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
@@ -119,12 +119,14 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 <!-- ops:begin -->
 | op | kind | documented in |
 |---|---|---|
+| `apply_patch` | writes weights | `wsplang_0.8_spec.md` |
 | `architectural_drift` | read / report | not documented yet (see `engine/wsplang.py`) |
 | `assert_behavioral_drift` | read / report | `wsplang_0.7_spec.md` |
 | `assert_davis_kahan` | writes weights | `wsplang_0.4_spec.md` |
 | `assert_orthogonal_preservation` | writes weights | `wsplang_0.3_spec.md` |
 | `assert_weyl` | writes weights | `wsplang_0.4_spec.md` |
 | `audit` | writes weights | `wsplang_0.2_spec.md` |
+| `commit_manifest` | read / report | `wsplang_0.8_spec.md` |
 | `compare` | read / report | `wsplang_0.2_spec.md` |
 | `compile_control_vector` | read / report | this file |
 | `compile_synthetic` | writes weights | `wsplang_0.7_spec.md` |
@@ -140,6 +142,8 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `delta_unlearn` | writes weights | this file, `wsplang_0.3_spec.md`, `wsplang_0.4_spec.md` |
 | `diff` | read / report | `wsplang_0.2_spec.md` |
 | `drift_profile` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `edit_column` | writes weights | `wsplang_0.8_spec.md` |
+| `edit_neurons` | writes weights | `wsplang_0.8_spec.md` |
 | `evaluate` | read / report | this file |
 | `evaluate_benchmark` | read / report | this file |
 | `export_control_vector` | writes weights | this file, `wsplang_0.2_spec.md` |
@@ -151,6 +155,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `jepa_steer` | writes weights | `wsplang_0.7_spec.md` |
 | `layer_envelope` | writes weights | `wsplang_multilayer_envelope_spec.md` |
 | `leace_erase` | stub | `wsplang_0.5_spec.md` |
+| `list_patches` | read / report | `wsplang_0.8_spec.md` |
 | `memit_imprint` | writes weights | `wsplang_0.5_spec.md` |
 | `model_report` | read / report | this file |
 | `multi_layer_envelope` | writes weights | not documented yet (see `engine/wsplang.py`) |
@@ -158,6 +163,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `permute_align` | writes weights | `wsplang_0.7_spec.md` |
 | `project_in` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.3_spec.md` |
 | `project_out` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.4_spec.md` |
+| `rollback_last` | read / report | `wsplang_0.8_spec.md` |
 | `rosetta_align` | writes weights | `wsplang_0.6_spec.md` |
 | `semantic-areas` | read / report | not documented yet (see `engine/wsplang.py`) |
 | `semantic-map` | read / report | not documented yet (see `engine/wsplang.py`) |
@@ -171,6 +177,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `subspace_transfer` | writes weights | this file |
 | `surprise_fwp` | stub | `wsplang_0.5_spec.md` |
 | `synthesize` | writes weights | `wsplang_0.7_spec.md` |
+| `ternary_survival` | read / report | `wsplang_0.8_spec.md` |
 | `tie_weights` | writes weights | `wsplang_0.7_spec.md` |
 | `train` | writes weights | not documented yet (see `engine/wsplang.py`) |
 | `vicreg_preserve` | read / report | `wsplang_0.7_spec.md` |
