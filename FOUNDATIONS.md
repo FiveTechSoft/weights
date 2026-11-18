@@ -257,7 +257,10 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   merged model costs far less outside maths than the vector (HumanEval-20 19 vs 15/20, perplexity ×1.18 vs ×2.3),
   probably because Q6_K keeps the direction but ~half the magnitude. Re-deriving the direction in the 0.8B fails: it
   closes 1/256 traces at 4 096 tokens (§43.22). Its MLP part is not a handful of neurons: median k₅₀ 119 vs
-  128 for a random split (§43.23; one exception, layer 26, 4 neurons). **Redone with the corrected vector (§45.4,
+  128 for a random split (§43.23; one exception, layer 26, 4 neurons). Goodfire's neuron communities (arXiv
+  2611.23112, Nov 2026: a few neurons across layers, necessary and sufficient for one next-token event) measure a
+  different object, the event, not the direction; whether "emit `</think>` now" has such a community in the 9B is
+  roadmap gap 28, unrun. **Redone with the corrected vector (§45.4,
   §45.8, 2026-11-13):** the first vector's layer 31 was the post-norm row (§45.3); the re-derived vector confirms on
   sealed set 1 (86 / 33) and its compilation on sealed set 2, second use (89 / 25 vs base 46 / 7, placebo 34 / 5,
   HumanEval-20 19/20). Paired on the same 150 items the corrected layer 31 changes nothing in correctness (3/3, 3/4) and

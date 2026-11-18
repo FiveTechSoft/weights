@@ -3747,6 +3747,15 @@ la banda en esa configuración (no está hecho). **HumanEval es el componente ru
 negativo no ha perdido nada. Llama y Phi siguen sin banda (sus filas dicen "none"). Los valores de §45.29 (144 / 15,
 otro arnés) caen dentro de lo que dan estas dos corridas (143-144 / 14).
 
+[post-data 2026-11-18 21:40, tras §45.32] **El "determinista" es de la repetición idéntica, no de la medida.** La misma
+base con la misma decodificación en `dev-2048-full` (los mismos 100 GSM8K dentro de una suite mayor) da 46 / 47 con
+**24 ítems discordantes** frente a `base_a` y frente a `base_b` (14 perdidos, 10 ganados), los mismos 51 cortes y solo
+44 / 100 ítems con el mismo número de tokens. Con `-np 2` el compañero de lote de cada ítem cambia al cambiar el
+conjunto, y con él la aritmética; dos corridas de la misma suite comparten compañeros y salen iguales. La banda que
+vale para comparar brazos medidos en corridas distintas es la de §45.32 (GSM |Δ| 4 y 24 discordantes; MATH |Δ| 1, 2-3;
+HumanEval |Δ| 4-5, 9-12; cumplimiento 0, 4-6); los veredictos de la tabla no cambian (vector +33, fusionado ≥ 2× esa
+banda), pero `gsm8k ±0` se retira como banda de la medida.
+
 ### 45.31 Desplazamiento de distribución (suite `dist-shift`): el vector real mueve la distribución 3× más que su placebo de misma norma; 4 de 5 brazos (2026-11-18)
 `lab/runs/bench/chain_dist9b.sh` 14:27-15:01, `llama-perplexity` sha `2f90f7316b9b`, GPU; suite `dist-shift` con
 hash: perplejidad WikiText-2 (100 × 512), KL frente a los logits guardados de la base (16 × 512), HellaSwag /
@@ -3779,6 +3788,41 @@ texto genérico mucho más que una dirección aleatoria de la misma norma, que e
 edición que lleva GSM dev de 50 a 83: **+15,6 % de perplejidad en WikiText-2** y 20 % de tokens con otro top-1; no es
 gratis en texto genérico, y los Δ de HellaSwag / Winogrande / MMLU (≤ 0,02) no lo ven. Umbrales de la suite siguen
 nulos: se fijan cuando esté el fusionado (la calibración prevista usa el placebo de misma norma del par compilado).
+
+### 45.32 Batería completa (`dev-2048-full`) sobre la base 9B: IFEval 25 % y TriviaQA 39 % son sobre todo cortes a 2 048; y la banda entre suites no es cero (2026-11-18)
+`lab/runs/bench/chain_full9b.sh` 15:02-21:24 (6,3 GPU h; `seconds` 22 850), servidor sha `2f57ee31c827` (A0 Q6_K),
+misma decodificación que §45.30 (2 048 tokens, paralelo 2, T 0, semilla 0), suite `dev-2048-full` hash `0e9c0099…`
+(= `dev-2048` + IFEval 541 + TriviaQA 200). Archivo `lab/runs/bench/qwen9b_base_full.json`; fila en
+`docs/wsplang_benchmarks.md`. Dos métodos: el bloque resumen del JSON y el recuento ítem a ítem (GSM 46 / 47, IFEval
+129 estricto sobre 510, TriviaQA 77 em y 78 cortes) coinciden.
+
+| componente | n | base 9B | notas |
+|---|---|---|---|
+| GSM8K | 100 | 46 / 47 | 51 cortes, 3 colas en bucle, 1 651 tokens de media |
+| MATH-500 | 50 | 5 / 5 | 44 cortes, 1 955 tokens de media |
+| HumanEval | 164 | 148 | 154 cerrados, mediana 815 tokens |
+| cumplimiento | 40 | 14 | end_done 6, words_not_digits 0, one_sentence 6, all_caps 2 |
+| IFEval | 541 (510 puntuables) | **estricto 129 (25,3 %)**, laxo 134 (26,3 %); por instrucción 263 / 783 estricto, 268 laxo | **466 / 541 cortadas** al tope (mediana de tokens = 2 048): piensa y no llega a contestar |
+| TriviaQA | 200 | **em 77 (38,5 %)**, contiene 87 | 78 cortadas = 78 vacías; entre las 122 que terminan, em 77 (63 %) |
+| basura | 945 | 16-gramas repetidos 356, cortes 580 | |
+
+Lectura 1: con pensamiento y tope 2 048, IFEval y TriviaQA miden sobre todo **cuántas veces el modelo no llega a la
+respuesta** (86 % y 39 % de cortes). Como batería de preservación sirven por comparación (mismo tope para todos los
+brazos), y para "concluir" son sensibles en el sentido útil: un brazo que cierra antes debería subir las dos; un brazo
+que las baja ha perdido instrucción o memoria, no solo tiempo. No son medidas absolutas de capacidad de la 9B.
+
+Lectura 2 (cambia §45.30): **misma base, misma decodificación, otra suite → GSM 46 frente a 50 / 49**, 24 ítems
+discordantes frente a `base_a` y 24 frente a `base_b` (14 perdidos, 10 ganados en los dos casos), los mismos 51
+cortes, solo 44 / 100 ítems con el mismo recuento de tokens; MATH 3 / 2 discordantes (5 frente a 6 / 5); HumanEval 148
+frente a 143 / 144 con 9 / 12 discordantes; cumplimiento 14 con 4 / 6 discordantes. El "0 discordantes" de §45.30
+era la repetición con los mismos compañeros de lote (`-np 2`, mismo orden); al cambiar el conjunto cambian los lotes
+y la aritmética en bf16 / Q6_K, y aparece la banda real de la medida: **GSM |Δ| 4 con ~24 vuelcos, MATH |Δ| 1,
+HumanEval |Δ| 4-5**. Consecuencias: (a) la banda de una comparación debe venir de corridas con lotes distintos (otra
+suite, otro orden o `-np 1`), no de la repetición idéntica; (b) los veredictos de la tabla no cambian (vector +33 y
+fusionado siguen a más de 2× esta banda); (c) `bench_compare` rechaza `suite_sha` distintos, así que este recuento
+es a mano (script sobre los tres JSON; `base_a` y `base_b` dan lo mismo). Pendiente de decidir: brazos en la suite
+completa solo para los que pasan la barata (≈ 6 GPU h cada uno), y una corrida de la base con `-np 1` para separar
+el efecto del lote del de la suite.
 
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de

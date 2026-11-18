@@ -508,6 +508,38 @@
    "imported_from": "lab/runs/cc_v2/dev_placebo.json"
   },
   {
+   "path": "lab/runs/bench/qwen9b_base_full.json",
+   "model": "Qwen3.5-9B Q6_K (A0)",
+   "model_sha": "2f57ee31c827",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "dev-2048-full",
+   "suite_sha": "0e9c0099ed24",
+   "arm": "base_full",
+   "gsm8k_g1": 46,
+   "gsm8k_g2": 47,
+   "math500_g1": 5,
+   "math500_g2": 5,
+   "other": {},
+   "cuts": 95,
+   "mean_tokens": {
+    "gsm8k": 1651,
+    "math500": 1955
+   },
+   "humaneval": 148,
+   "compliance": 14,
+   "garbage": 369,
+   "ifeval_strict": 129,
+   "ifeval_loose": 134,
+   "ifeval_scorable": 510,
+   "triviaqa": 77,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-18",
+   "imported_from": null
+  },
+  {
    "path": "lab/runs/bench/dist9b_base.json",
    "model": "Qwen3.5-9B Q6_K (A0)",
    "model_sha": "2f57ee31c827",

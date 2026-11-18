@@ -230,7 +230,13 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     repetidas 38/204. Banda y comparaciones con la corrida doble de `bench_run` (cola 2).** IFEval (541, comprobador
     propio de los tipos deterministas) y TriviaQA (200 del rc validation, vía la API de filas de HF) aprobados por el
     driver ("como tú veas", 18-nov 12:30): componentes `ifeval` y `triviaqa` en `preserve_bench`, suite nueva
-    `dev-2048-full` (la `dev-2048` no cambia de hash). Agente asignado; GPU tras `dist-shift`.
+    `dev-2048-full` (la `dev-2048` no cambia de hash). Agente asignado; GPU tras `dist-shift`. **Corrida 18-nov
+    (§45.32, 6,3 GPU h):** base 9B IFEval estricto 129 / 510 (25 %), laxo 134; TriviaQA em 77 / 200 con 78 cortes a
+    2 048; HumanEval 148, cumplimiento 14; GSM 46 / 47 frente a 50 / 49 de la banda → 24 ítems discordantes con la
+    misma base (los lotes de `-np 2` cambian con el conjunto): la banda de la medida es GSM |Δ| 4, MATH 1, HumanEval
+    4-5, no la de la repetición idéntica (§45.30 enmendada). Queda: brazos en la suite completa solo si pasan la
+    barata (≈ 6 GPU h cada uno); una corrida de la base con `-np 1` para separar lote de suite; que `bench_compare`
+    acepte una banda de otra suite cuando los ítems de cada banco coinciden por índice.
 20. **Escritor discreto por fila (mecanismo nuevo, prerrequisito de cualquier intento de crear capacidad sin
     donante):** nuestro objetivo de compilado (ridge) resuelto como problema discreto por fila de salida en el alfabeto
     bf16 (vuelcos de signo, desplazamientos de exponente; Tree-Ising 2611.14210) en vez de redondear (§45.23 muestra
@@ -328,6 +334,32 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     +0,5, −0,5 y ±0,5 con signo aleatorio por capa (placebo), contra la base; lectura por tokens, cortes y aciertos;
     predicción antes (fila 49). Si +0,5 iguala al vector "concluir" en ahorro, es un cierre por otra vía (decaimiento de
     la memoria lineal), no por dirección. ≈ 3 GPU h. Agente asignado; cola 5 tras la base en `dev-2048-full`.
+
+28. **Comunidades de neuronas (Goodfire, arXiv 2611.23112) como unidad de edición en WSP-Lang** (18-nov, pedido por el
+    driver: "veamos cómo aplicarlo desde WSPLang"). Su unidad no es una dirección sino un *evento de token*: pocas
+    neuronas (a menudo < 10, en varias capas) atribuidas juntas a la siguiente predicción, necesarias (quitarlas
+    cambia la predicción) y suficientes en sus capas (quitando todo lo demás salvo unas "siempre activas" la
+    predicción se conserva). Nuestro §43.23 midió la *dirección* "concluir" y la encontró repartida (~100 neuronas por
+    capa, salvo la 26 con 4); eso no dice nada del evento "emitir `</think>` ahora". Plan
+    `lab/probes/neuron_communities/PLAN.md` (fijado antes de código): fase A, atribución exacta por gradiente del
+    logit de `</think>` (frente al token que siguió) en las posiciones de cierre de las 53 trazas `pos` y en
+    posiciones emparejadas de las 53 `neg`, capa a capa con activaciones en disco; grafo de co-atribución (top-64
+    por posición, PMI), comunidades Louvain (`networkx`), las tres pruebas de Goodfire con placebo de neuronas al
+    azar del mismo tamaño por capa; fase B solo si A1-A2: `edit_neurons` (escala de las columnas de `down_proj` de la
+    comunidad, placebo estructural del op) en `dev-2048` por `bench_run` frente a la banda de §45.32. Fila 50. ≈ 2 GPU h
+    (A) + 2 × 1,7 GPU h (B). **Sin empezar: código y GPU solo con el OK del driver** (la cola 5-6 ocupa la GPU hasta
+    ≈ 03:15).
+
+29. **Verificación rápida de un modelo publicado desde WSP-Lang** (18-nov, pedido por el driver sobre
+    `harness-hub/Qwen3.8-27B-pi-adapted` y `SenseNova-Loop-9B`): qué se puede afirmar en minutos sin servir el modelo.
+    Hoy `model_report` cubre "modelo completo frente a su base" por HTTP (27B validado). Faltan dos casos: (a)
+    **repositorio solo-adaptador** (PEFT `adapter_model.safetensors`): informe del adaptador (r, alpha, módulos y
+    capas tocadas, ‖B·A‖ por módulo frente a las filas de la base leídas por rango, consistencia de dirección entre
+    capas, embeddings / cabeza intactos) sin descargar la base; (b) **linaje de una arquitectura nueva con formas de
+    Qwen** (SenseNova: ¿parte de Qwen3.5-9B?): coseno por tensor y rango de `delta_to_lora` sobre los tensores de
+    forma común, desde GGUF BF16 (18,4 GB, descarga pendiente de permiso) o safetensors (gated). Lo que ningún
+    informe de pesos da: las cifras de banco del anuncio; eso exige servir (27B fuera de 12 GB; SenseNova exige un
+    fork de llama.cpp compilado). Sin empezar; tests primero cuando el driver lo pida.
 
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
