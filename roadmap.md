@@ -250,6 +250,21 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     falsos positivos, y matriz de compatibilidad de las ops existentes sobre el modelo ternario. Plan
     `lab/probes/ternary_nanowsp/PLAN.md`, fila 46, CPU. Agente asignado.
 
+24. **Benchmarks como sección de WSP-Lang** (pedido del driver 2026-11-18; corrección: "parte integrante, no un
+    WSPBench aparte"): suites estándar dentro del motor (`engine/bench_suites/dev-2048.json`, `dev-8192`, envoltorios
+    de los sellados; versionadas con hash), ops `bench_run` / `bench_compare` / `bench_table` (y `evaluate_benchmark`
+    pasa por la misma ruta), regla de veredicto (p < 0,05 en los dos correctores, placebo no significativo, |Δ| ≥ 2 ×
+    banda de ruido de la base corrida dos veces, preservación no fallida), registro `lab/runs/bench/index.json`, tabla
+    `docs/wsplang_benchmarks.md`, sección "Benchmarks" en la spec; relleno con las corridas de dev existentes que
+    coincidan exactamente. Agente asignado. Primera corrida GPU a encolar: base 9B dos veces (banda).
+25. **¿Banco desde los pesos?** (pregunta del driver 2026-11-18; T7 con número): ≈ 20 brazos con pesos y resultado
+    (vectores/compilados 9B, Phi, Llama con placebos y dosis; Exp 8, D4k, complemento). Rasgos solo de pesos: magnitud
+    (‖ΔW‖/‖W‖, rango efectivo, energía, G0) y dirección (proyección sobre la fila `</think>` del unembedding, sobre la
+    dirección de contraste de la base, sobre las direcciones del placebo). Lecturas: Spearman con Δ aciertos y Δ tokens
+    por familia y global; **AUC real frente a placebo** por rasgo. Predicción antes de calcular: magnitud AUC ≈ 0,5
+    (por construcción), Spearman con tokens 0,6-0,8 dentro de familia; direccional AUC > 0,8; con aciertos entre
+    familias nada > 0,5. Plan `lab/probes/weight2bench/PLAN.md`, fila 47, CPU. Agente asignado.
+
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
   con placebo estructural, `budget_params` e informe; parches `.weightpatch.json` con `apply_patch` / `rollback_last` /
