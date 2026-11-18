@@ -210,6 +210,29 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     el compilado no llega; `absmean` pierde dirección al subir k. La 0.8B a TQ2_0 sin recuperación: 0/10, ruido. No se
     construye escritor ternario; las ediciones van en escalas/adaptadores float (lo que ya existe). Queda, solo con un
     modelo ternario entrenado (ttf) y su runtime: medir conducta de la versión ruidosa (T7). No lanzado.
+17. **Segunda conducta distinta de "concluir", mismo protocolo** (decisión del driver 2026-11-18 "ve a por todo"):
+    dirección leída de las trazas de la propia base (`contrast_vector`), placebo de misma norma, dev y sellado nuevo,
+    compilado solo si el vector pasa. Candidatas con margen medible en local: formato / idioma de respuesta, repetición
+    de cómputo, supresión de bucles en la 0.8B. Plan `lab/probes/skill2/PLAN.md`, fila 44. Agente asignado.
+18. **Control de sesgo constante** (`logit_bias` sobre `</think>`, elegido en dev para igualar el ahorro de tokens del
+    vector) frente al vector "concluir" a la misma dosis en los mismos ítems de dev de la 9B. Si iguala la precisión,
+    la parte dependiente del estado del vector no está demostrada. Plan `lab/probes/cc_bias/PLAN.md`, fila 43. ≈ 1 GPU h.
+    Agente asignado.
+19. **Batería de preservación** para los sellados: HumanEval completo (164) y tasa de bucles/basura por brazo con datos
+    locales; IFEval y TriviaQA requieren descarga (pedir OK al driver). Código `engine/preserve_bench.py` con tests.
+    Agente asignado.
+20. **Escritor discreto por fila (mecanismo nuevo, prerrequisito de cualquier intento de crear capacidad sin
+    donante):** nuestro objetivo de compilado (ridge) resuelto como problema discreto por fila de salida en el alfabeto
+    bf16 (vuelcos de signo, desplazamientos de exponente; Tree-Ising 2611.14210) en vez de redondear (§45.23 muestra
+    que redondear falla). Prototipo CPU con tests; dev en GPU solo si el prototipo reproduce el dW compilado con
+    cos ≥ 0,7. Plan `lab/probes/discrete_writer/PLAN.md`, fila 45. Agente asignado.
+21. **Op `edit_column` / `edit_neurons` con placebo estructural y parches con rollback** (del plan externo del 18-nov):
+    columna o lista corta de neuronas, dosis, dirección; manifiesto con parámetros tocados, ‖Δ‖, cos; placebo de misma
+    norma en la misma columna con dirección aleatoria; `.wsplpatch` (sha del tensor origen + índices + delta compacto),
+    `apply_patch` / `rollback_last` con pila por sesión y reconstrucción exacta. CPU, TDD, sin GPU. Agente asignado.
+    No se adopta "reproducir el +29 de Hu": es otro fenómeno (bucles de la 0.8B) y nuestro arnés de la 0.8B tiene
+    ruido ± 5 (§45.22).
+    **Cola de GPU (una a la vez, la coordina esta sesión): 18 → 17 → 20.**
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
