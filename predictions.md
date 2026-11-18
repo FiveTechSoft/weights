@@ -62,14 +62,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 42 | 2026-11-18 | `ternary/PLAN.md` (qué queda de nuestras ediciones en pesos ternarios: Exp 8 en la 0.8B y vector compilado en la 9B; reglas `tq2_0` de ggml y `absmean` de BitNet; modos reternarizar / recodificar; escalas 1-20; op `ternary_survival`) | Premisa: |dW| por entrada ≪ medio paso ternario → vuelcos raros y cada vuelco mueve un paso entero. Exp 8 `tq2_0` k=1: vuelcos **2-12 %**, cos **0,10-0,35**, alpha 0,5-3, k70 ≥ 10. Exp 8 `absmean` k=1: vuelcos 8-30 %, cos 0,25-0,55, k70 3-10. 9B compilado `tq2_0` k=1: vuelcos 0,3-3 %, cos 0,03-0,20, k70 > 20. 9B `absmean` k=1: vuelcos 1-8 %, cos 0,10-0,35, k70 ≥ 10. `fixed` ± 0,10 de `requant` en cos. **Primaria: ninguna celda a k=1 llega a cos ≥ 0,6 (85 %).** Sorpresa si alguna llega; vuelcos ≥ 40 % a k=1; alpha < 0,2 en todas a k=1; la 0.8B TQ2_0 sin recuperación acierta ≥ 3 de 10 GSM8K | Exp 8 `tq2_0` k=1: vuelcos 9,3 / 7,8 % ✓, cos **0,47 / 0,42** (↑ banda), alpha 0,87 / 0,83 ✓, k70 10 / 20 ✓. Exp 8 `absmean`: vuelcos 27,7 / 21,6 % ✓, cos 0,56 / 0,53 (L15 0,562 ↑ por 0,01), **k70 > 20** (↑ banda: el cos baja con k). 9B `tq2_0`: vuelcos 0,40 / 0,37 / **0,22** % (L31 ↓), cos 0,08-0,10 ✓, k70 > 20 ✓. 9B `absmean`: vuelcos 1,15 / 1,06 / **0,80** % (L31 ↓), cos 0,19-0,24 ✓, k70 > 20 ✓. `fixed` − `requant` en cos: 0,12 en Exp 8 `tq2_0` (↑ 0,10), resto ✓. **Primaria ✓: máximo 0,5995.** TQ2_0 sin recuperación 0/10 y 0/10. Ninguna sorpresa | 2026-11-18 | §45.23 | ◐ (primaria ✓; 5 de 14 bandas fuera) |
 
-## Cuenta (42 filas; 38 puntuables)
+| 43 | 2026-11-18 | `cc_bias/PLAN.md` (control de sesgo constante: `logit_bias` en `</think>` (id 248069) a +2/+4/+6/+8 en los 150 ítems de dev de cc_v2 en la 9B; elegido el de tokens más cercano al vector (943); comparado con `dev_vec` 83/35 y `dev_base`) | Premisa: el sesgo suma en todas las posiciones, dispara donde `</think>` ya está cerca (como el vector) y también a mitad de derivación. +2: GSM **52-62**, MATH 7-12, tokens 1 400-1 700, sin pensar 0 %. +4: GSM 60-75, MATH 10-20, tokens 1 000-1 400, sin pensar ≤ 2 %. +6: GSM 62-80, MATH 12-26, tokens 650-1 050, ≤ 5 %. +8: GSM 45-75, MATH 8-22, tokens 350-800, sin pensar 5-40 %. Tokens monótonos en b. Elegido +6 (55 %) o +4 (30 %). Elegido frente al vector: GSM vec −4 a −18, MATH vec −5 a −18, discordantes significativos en GSM. **Primaria: R2, el vector tiene parte dependiente del estado (60 %)**; R1 (el sesgo iguala) 35 %; elegido ≤ base 5 %. Sorpresa si algún sesgo ≥ vector en los dos bancos; elegido ≤ base en GSM; sin pensar > 50 % a +8; tokens no monótonos; correctores en desacuerdo en > 5 ítems | | | | ⏳ |
+
+## Cuenta (43 filas; 38 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 16 |
 | ❌ falla | 16 |
-| ⏳ / — | 4 |
+| ⏳ / — | 5 |
 
 Acierto limpio 6/38 = 16 %; acierto o parcial 22/38 = 58 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es
