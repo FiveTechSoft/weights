@@ -1,6 +1,6 @@
 # WSP-Lang: Declarative Language Specification for Weight-Space Programming
 
-**Version:** 0.8.1 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
+**Version:** 0.8.2 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
 **Status:** Living Specification  
 **Authors:** FiveTechSoft Engineering & Research Team  
 **Repository:** [github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
@@ -162,6 +162,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `list_patches` | read / report | `wsplang_0.8_spec.md` |
 | `memit_imprint` | writes weights | `wsplang_0.5_spec.md` |
 | `model_report` | read / report | this file |
+| `adapter_report` | read / report | this file |
 | `multi_layer_envelope` | writes weights | not documented yet (see `engine/wsplang.py`) |
 | `peek` | read / report | this file, `wsplang_0.2_spec.md` |
 | `permute_align` | writes weights | `wsplang_0.7_spec.md` |
@@ -246,6 +247,7 @@ step delta_compare a=<sig.pt> b=<sig.pt> [factor=3] [out=<report.json>]
 step evaluate_benchmark endpoint=<port|URL> name=<label> [gsm8k=100] [math500=50] [max_tokens=8192] [out=<report.json>]
 step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<a.pt>,<b.pt>|random k=16 alpha=1.0 [seed=0] out=<dir>
 step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true] [nonweights=true] out=<report.md>
+step adapter_report adapter=<dir|hf:owner/repo> [base=<dir|repo id>] [rows=128] [workers=16] out=<report.md>
 step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds=mlp,self_attn,linear_attn] [gguf=<file.gguf>]
 ```
 
@@ -275,6 +277,14 @@ step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds
   Outside the weights (`nonweights=true`): config (real changes vs cosmetic: library version, moved keys, absent
   vs None), tokenizer (vocab, merges, added tokens, normalizer, pre-tokenizer, decoder), chat template, and an
   encode test on 14 scripts that names where text tokenizes differently from the base (findings F25).
+* `adapter_report` (0.8.2): a PEFT LoRA repo read from the adapter alone, when no merged model exists (e.g.
+  `harness-hub/Qwen3.8-27B-pi-adapted`, 640 MB on a 27B). From `adapter_config.json` and the `lora_A` / `lora_B`
+  factors: r, alpha, scale (rslora aware), modules and layers touched, families untouched (embeddings, head, norms,
+  linear attention), modules outside the stated targets, per module ‖B·A‖ two ways (trace identity and singular
+  values), effective rank at 90 % energy, the leading output-side direction and its consistency across layers (a
+  global direction gives ~1, per-layer updates ~0); with `base=`, ‖ΔW rows‖ / ‖W rows‖ on the same middle block of
+  rows `model_report` uses, read from the base by one range per tensor. Parameter count from the header and from the
+  shapes must agree. Nothing about behaviour: where and how large, not what it does. Report only; `lab/probes/adapter_report/NOTES.md`.
 * `subspace_transfer`: W' = W + α · P_S(W_source − W_base), the projection on the smaller side. Writes a complete
   model to `out=` (unchanged shards copied, configs copied); every changed shard goes through the write guard with a
   total budget; protected tensors need `unlock_tensors`; on failure the partial output is removed. Provenance

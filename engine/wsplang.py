@@ -35,7 +35,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -68,6 +68,7 @@ OPS_ALLOWED = {
     "subspace_transfer",  # move along a subspace of another model's update (engine/subspace_ops.py)
     # Studying improved models (engine/weight_diff.py, engine/bench_runner.py); none writes weights
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",
+    "adapter_report",  # what a PEFT LoRA adapter changes, from its factors alone + base row blocks (engine/adapter_report.py)
     "delta_to_lora",  # a fine-tune's change as a LoRA adapter beside the models (engine/lora_export.py)
     "contrast_vector",  # llama.cpp control vector from two sets of texts (engine/contrast_vector.py)
     "compile_control_vector",  # that vector written into down_proj, + placebo, G0, LoRA/merged Q6_K (engine/cc_compile.py)
@@ -263,6 +264,7 @@ READ_ONLY_OPS = {
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     "assert_behavioral_drift", "vicreg_preserve",
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",  # reports, never weights
+    "adapter_report",  # markdown + json report of a PEFT adapter; never weights
     "delta_to_lora",  # writes a new adapter dir, never inside or over an input model
     "contrast_vector",  # writes a new control-vector GGUF (run-time steering), never weights
     "compile_control_vector",  # writes new files in a new out dir (fits, LoRA, merged copies), never over an input
@@ -2489,6 +2491,40 @@ def execute_plan_v4(
                     out_p = check_report_path(named["out"], inputs)
                     out_p.parent.mkdir(parents=True, exist_ok=True)
                     out_p.write_text(mr.render_markdown(rep), encoding="utf-8")
+                    out_p.with_suffix(".json").write_text(json.dumps(rep, indent=1), encoding="utf-8")
+                    res["result"]["output"] = str(out_p)
+                res["execution_state"] = "executed"
+
+            elif op == "adapter_report":
+                # What a PEFT LoRA adapter changes, from its factors alone (engine/adapter_report.py): per module
+                # ||B A||, effective rank, leading direction; with base= the block ratio against the base's rows read
+                # by HTTP range or locally. adapter= is a local dir or hf:owner/repo. Report only, no weights.
+                from engine import adapter_report as ar
+                if not named.get("adapter"):
+                    raise ValueError("adapter_report needs adapter=<dir or hf:owner/repo>")
+                ad_spec = str(named["adapter"])
+                base_spec = str(named.get("base") or "") or None
+                if base_spec and base_spec.startswith("hf:"):
+                    base_spec = base_spec[3:]
+                adapter = ar.load_adapter(ad_spec, root=ROOT)
+                rep = ar.adapter_report(adapter, base=base_spec, rows=int(named.get("rows", 128)),
+                                        workers=int(named.get("workers", 16)), root=ROOT)
+                res["result"] = {"adapter": rep["adapter"], "r": rep["r"], "alpha": rep["alpha"], "scale": rep["scale"],
+                                 "modules": rep["totals"]["modules"], "layers": rep["totals"]["layers"],
+                                 "params": rep["totals"]["params_from_shapes"],
+                                 "params_header_agree": rep["totals"]["params_from_shapes"] == rep["totals"]["params_from_header"],
+                                 "families_touched": rep["families"]["touched"],
+                                 "embeddings_touched": rep["families"]["embeddings_touched"],
+                                 "head_touched": rep["families"]["head_touched"],
+                                 "direction_consistency": rep["direction_consistency"],
+                                 "base_matches_card": rep["base"]["matches"]}
+                if named.get("out"):
+                    inputs = [p for p in (ROOT / ad_spec, Path(ad_spec)) if p.exists()]
+                    if base_spec:
+                        inputs += [p for p in (ROOT / base_spec, Path(base_spec)) if p.exists()]
+                    out_p = check_report_path(named["out"], inputs)
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_text(ar.to_markdown(rep), encoding="utf-8")
                     out_p.with_suffix(".json").write_text(json.dumps(rep, indent=1), encoding="utf-8")
                     res["result"]["output"] = str(out_p)
                 res["execution_state"] = "executed"

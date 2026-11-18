@@ -359,7 +359,15 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     Qwen** (SenseNova: ¿parte de Qwen3.5-9B?): coseno por tensor y rango de `delta_to_lora` sobre los tensores de
     forma común, desde GGUF BF16 (18,4 GB, descarga pendiente de permiso) o safetensors (gated). Lo que ningún
     informe de pesos da: las cifras de banco del anuncio; eso exige servir (27B fuera de 12 GB; SenseNova exige un
-    fork de llama.cpp compilado). Sin empezar; tests primero cuando el driver lo pida.
+    fork de llama.cpp compilado). **(a) hecho 18-nov 23:00 (0.8.2):** op `adapter_report` (`engine/adapter_report.py`,
+    15 tests primero; `programs/adapter_report_pi.wspl`): pi-adapted = r 32, 256 módulos, 159 M parámetros, MLP en las
+    64 capas + q/k/v/o solo en las 16 de atención completa, ‖ΔW‖/‖W‖ 0,2 % en todas partes, rango efectivo 25/32 en
+    MLP y 1-4 en `v_proj` de las capas 3-15, sin dirección global. **(b) en curso:** GGUF BF16 de SenseNova
+    descargado (18,4 GB, sha en `hf_cache/sensenova-loop-gguf/`); lectura por bloques de filas
+    (`lab/runs/model_report/sensenova_rowblock_check.json`): embeddings cos 0,98, cabeza 0,96, matrices de atención
+    y MLP cos 0,95-0,99 con cambio relativo 10-33 %, `ssm_out` igual salvo permutación de columnas (espectro cos
+    1,000), normas reescaladas; pesos nuevos solo mHC (`hc_attn_fn` / `hc_ffn_fn`, 8192×8 + 8 por capa 4-27, F32).
+    Falta el `model_report` completo con el lector GGUF (agente) y la fila en results.
 
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`

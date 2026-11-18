@@ -3824,6 +3824,48 @@ es a mano (script sobre los tres JSON; `base_a` y `base_b` dan lo mismo). Pendie
 completa solo para los que pasan la barata (≈ 6 GPU h cada uno), y una corrida de la base con `-np 1` para separar
 el efecto del lote del de la suite.
 
+### 45.33 Dos lecturas de pesos en minutos (hueco 29): SenseNova-Loop-9B es Qwen3.5-9B reentrenada (cos 0,95-0,99 en todas las matrices) y el LoRA pi-adapted es un cambio del 0,2 % repartido por el MLP (2026-11-18)
+Pedido del driver ("verificar modelos rápidamente"). CPU, sin servir nada.
+
+**SenseNova-Loop-9B (GGUF BF16 oficial, 18,4 GB, sha `489f1a439f9794a4` en `hf_cache/sensenova-loop-gguf/`; cabecera y bloques de
+128 filas centrales frente a `hf_cache/qwen35-9b-hf`; `lab/runs/model_report/sensenova_header_check.json` y
+`sensenova_rowblock_check.json`).** Arquitectura `sensenova_loop`, `block_count` 57: bloques 0-27 y 52-56 llevan
+tensores (= capas 0-32 de Qwen3.5-9B, la 32 es la cabeza MTP), los bloques 28-51 son la segunda pasada de 4-27 sin
+pesos propios; metadatos `loop 4-28 ×2`, `mhc 4-28, 2 flujos, 20 iteraciones`. 490 tensores frente a 442 de nuestro
+A0: **ninguna forma distinta entre nombres compartidos**; nuevos solo `hc_attn_fn` / `hc_ffn_fn` (8192×8 + sesgo 8,
+F32, capas 4-27: 3,1 M parámetros de enrutado mHC) y dos fusiones de nombre (`attn_qkv_gate` = `in_proj_qkv` ‖
+`in_proj_z`; `ssm_beta_alpha`). Valores:
+
+| tensor (bloque de 128 filas) | cos con Qwen3.5-9B | cambio relativo |
+|---|---|---|
+| `token_embd` / `output` | 0,980 / 0,964 | 0,20 / 0,27 |
+| `ffn_gate` / `ffn_up` / `ffn_down` (capas 0, 2, 4, 12, 20, 27, 28-31) | 0,948-0,972 | 0,25-0,34 |
+| `attn_q` / `attn_k` / `attn_v` / `attn_output` (capas 27, 31) | 0,959 / 0,968 / 0,995 / 0,990 | 0,29 / 0,26 / 0,11 / 0,15 |
+| `ssm_out` (capas 2, 20) directo | 0,06 | 1,38 |
+| `ssm_out` invariante a permutación: espectro / norma por fila / mejor columna | **1,000 / 0,996 / 0,98** | |
+| `attn_qkv_gate` filas qkv / filas z | 0,97 / 0,00 (filas z en otro orden) | |
+| normas (`attn_norm`, `post_attention_norm`) | 0,47-0,99 | 3-21 (reescaladas) |
+| `ssm_dt.bias`, `ssm_a` (32 valores) | −0,40 a 0,88 | (cabezas en otro orden; no concluyente) |
+
+Dos métodos: coseno directo por bloque y, donde falla, estadísticos invariantes a permutación de columnas
+(espectro singular, normas por fila, mejor columna emparejada); coinciden en que es la misma matriz. **Lectura:**
+SenseNova-Loop-9B parte de Qwen3.5-9B (la ficha no lo dice; el issue #5 de su GitHub lo pregunta sin respuesta): todas
+las matrices grandes conservan la dirección (cos ≥ 0,95) con un cambio relativo del 10-33 %, mucho mayor que un LoRA
+(pi-adapted abajo: 0,2 %) y propio de un preentrenamiento continuado largo con el bucle y el mHC nuevos; los únicos
+pesos nuevos son los 3,1 M de enrutado. Lo que no se puede decir desde aquí: si es "mejor que MiMo"; eso exige
+servirla (fork de llama.cpp) y no hay cifras de matemáticas en su ficha. El `model_report` completo (huella por
+tensor, clase) queda para cuando el lector GGUF esté integrado.
+
+**harness-hub/Qwen3.8-27B-pi-adapted (`adapter_report`, 0.8.2; 53 s por HTTP; `programs/adapter_report_pi.wspl`,
+`lab/runs/adapter_report/pi_adapted_op.{md,json}`).** LoRA r 32, alpha 64, 256 módulos, 159 383 552 parámetros
+(cabecera = formas), 637,6 MB; MLP `gate/up/down` en las 64 capas y `q/k/v/o` solo en las 16 capas de atención
+completa; embeddings, cabeza, normas y toda la atención lineal intactas; 89 % de la energía en el MLP, 22 / 22 / 30 /
+26 % por cuartos de profundidad; ‖ΔW‖/‖W‖ en el bloque 0,0008-0,0025 (mediana 0,0019); rango efectivo (90 %) mediana
+25 de 32 en MLP, 16 en `q_proj`, **1-4 en `v_proj` de las capas 3-15**; consistencia de dirección entre capas ≤ 0,026.
+Dos métodos: ‖ΔW‖ por traza y por valores singulares (2e-15), parámetros por cabecera y por formas (iguales). Lectura:
+un cambio pequeño y difuso casi de rango 32 en el MLP más actualizaciones casi de rango 1 en los valores tempranos;
+nada de esto dice si SWE-bench Pro sube 33 puntos (eso exige el 27B dentro del arnés pi).
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las
