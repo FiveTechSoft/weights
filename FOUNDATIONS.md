@@ -491,4 +491,10 @@ at 1.6 bits plus 72M tokens of recovery training: GSM8K 0.895 = FP16 (200 items)
 Flash-Next 0.538 vs 0.776. For us a 27B that fits 12 GB for activation-space work (control vectors), not a weight-space
 base: ternary matrices and recovery training make differences against the official weights unreadable (T7) and leave
 our rank-1 writes no float target; the knowledge loss at 1.6 bits is itself a weight-space fact (what survives is coarse
-structure). Full links in README "References".
+structure) · Six arXiv abstracts of 5-16 Nov 2026 (not read in full): W-ISA 2611.13232 (transactional runtime for
+weight interventions: the execution model our write guards approximate), WeightLoop 2611.07319 (WSP on scientific
+predictors, not LLMs), Wang-Lu-Li 2611.17395 (LLM-written backdoors: six parameters on an MLP, 0.02 % on Qwen2.5-0.5B;
+the attacker side of §43.24, T8), Sato 2611.20566 (Opus edits Qwen3.5-0.8B for computational biology, 3 seeds paired;
+36 of 64 won pairs had the right value computed by the original already: T2 again), Ahmed 2611.08070 (weight reading =
+local arithmetic + dataset priors, breaks under label permutation: T7), Young 2611.17846 (abliteration resistance is not
+monotone across model generations). Full links in README "References".
