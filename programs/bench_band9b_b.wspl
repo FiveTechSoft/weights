@@ -1,0 +1,4 @@
+experiment bench_band9b_b:
+objective: second identical run of the Qwen3.5-9B Q6_K base on dev-2048 (same GGUF, binary, items, decoding) for the noise band
+steps:
+    step bench_run suite=dev-2048 port=8095 arm=base_b out=lab/runs/bench/qwen9b_base_b.json

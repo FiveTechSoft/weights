@@ -1,0 +1,4 @@
+experiment bench_band9b_a:
+objective: first of two identical runs of the Qwen3.5-9B Q6_K base on the standard dev-2048 suite, to measure the harness noise band (lab/probes/wsplang_bench/PLAN.md)
+steps:
+    step bench_run suite=dev-2048 port=8095 arm=base_a out=lab/runs/bench/qwen9b_base_a.json
