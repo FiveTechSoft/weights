@@ -247,13 +247,14 @@
   <header>
     <div class="badge-pill">RESEARCH RELEASE · OPEN SOURCE MIT LICENSE</div>
     <h1>WSP-Lang: Weight-Space Programming</h1>
-    <p class="subtitle">Direct sub-weight decompilation, reverse engineering, and weight editing on 9B quantized LLMs. Reading and editing weights needs no forward pass or gradient; any claim about behaviour is measured with forward passes (llama.cpp, often on GPU). Main result (2026-11-09): a fine-tune's skill moved onto the base as a small adapter, measured below. Audited status of every result: <a href="https://github.com/FiveTechSoft/weights#status-of-the-results-november-2026-audited" style="color: var(--accent-cyan);">README, "Status of the results"</a>.</p>
+    <p class="subtitle">Direct sub-weight decompilation, reverse engineering, and weight editing on 9B quantized LLMs. Reading and editing weights needs no forward pass or gradient; any claim about behaviour is measured with forward passes (llama.cpp, often on GPU). Main result (2026-11-09): a fine-tune's skill moved onto the base as a small adapter, measured below. Latest (2026-11-18): the base's own "conclude" direction, compiled into the weights, is confirmed on sealed sets on three families (Qwen3.5-9B, Phi-4-mini-reasoning, DeepSeek-R1-Distill-Llama-8B at dose 0.35, with its small print), and WSP-Lang 0.8 adds column edits with a structural placebo and reversible patches. Audited status of every result: <a href="https://github.com/FiveTechSoft/weights#status-of-the-results-november-2026-audited" style="color: var(--accent-cyan);">README, "Status of the results"</a>.</p>
     
     <div class="btn-group">
       <a href="https://github.com/FiveTechSoft/weights" class="btn btn-primary" target="_blank">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
         View on GitHub
       </a>
+      <a href="wsplang_0.8_spec.md" class="btn btn-secondary" style="border-color: var(--accent-emerald); color: #A7F3D0;">🧩 WSP-Lang 0.8: column edits &amp; patches</a>
       <a href="wsplang_0.7_spec.md" class="btn btn-secondary" style="border-color: var(--accent-amber); color: #FDE68A;">🛡️ WSP-Lang 0.7 Causal Contracts</a>
       <a href="mimo_critique_transfer_benchmark.md" class="btn btn-secondary" style="border-color: var(--accent-cyan); color: #BAE6FD;">⚡ MiMo u_critic Benchmark (withdrawn)</a>
       <a href="nanowsp.html" class="btn btn-secondary" style="border-color: var(--accent-purple); color: #E9D5FF;">🤖 NanoWSP-1 (80k)</a>
@@ -356,7 +357,107 @@
           vector (84 / 32; p 0.45 / 0.73). The same write in a random direction hurts (28 / 6). <strong>Confirmed on a second sealed set</strong> made before the run:
           GSM8K 46 &rarr; <strong>89</strong>/100, MATH 7 &rarr; <strong>26</strong>/50 (gained/lost 43/0 and 19/0, two graders each), as the
           vector (90, 22); the merged random-direction placebo falls below base (30, 4). HumanEval first 20: 19/20 merged, 20/20 base.
+          The op itself, <code>compile_control_vector</code>, reproduces this write from a <code>.wspl</code> program, with the same-norm
+          placebo and the G0 gate built in (results &sect;43.25).
         </p>
+
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Second family: Phi-4-mini-reasoning 3.8B (results &sect;45.15-45.17)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Same recipe and code (<code>phi3</code>, other tokenizer and template, 1,024-token budget, scale 0.5 chosen on screen items).
+          Vector, sealed set (first use for this model): GSM8K 59 &rarr; <strong>82</strong>/100, MATH 4 &rarr; <strong>19</strong>/50
+          (27 won / 4 lost, 16 / 1, two graders each), tokens &minus;34 % / &minus;12 %; same-norm random vector 58 / 6.
+          Compiled into <code>down_proj</code> with the same op: sealed set 2 base 62 / 7 &rarr; merged <strong>86 / 14</strong> (26/2, 7/0),
+          vector 88 / 15 on the same items, compiled placebo 60 / 2; HumanEval-20 11 &rarr; 16. Budget control at 2,048 tokens:
+          base recovers to 81 / 26, merged <strong>91</strong> / 29 (12/2, p 0.013; 7/4 n.s.), vector 85 / 35; the gains come from the
+          base's cuts, and on Phi half of the GSM8K gain and most of the MATH gain at 1,024 was the budget.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          <em>Limits:</em> one budget per run, one placebo seed, greedy, Q6_K; the scale and the per-layer profile change between families.
+        </p>
+
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Third family: DeepSeek-R1-Distill-Llama-8B (results &sect;45.19-45.21)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Same recipe, same code, same pre-registered criteria, 2,048-token budget. At scale 0.5 dev passes (GSM8K 74 &rarr; 76, MATH 22 &rarr;
+          32, p 0.021) but <strong>two sealed sets do not confirm</strong>: sealed 1 base 83 / 28, vector 76 / 26, placebo 82 / 23; the
+          vector still makes the model conclude (cuts 13 &rarr; 2, tokens &minus;41 %) but loses as many base-correct items, finished wrong,
+          as it recovers from the base's cuts. The compiled file equals the vector item by item and does not beat the base either.
+        </p>
+        <table>
+          <thead><tr><th>Sealed set 3 (200 GSM8K + 100 MATH-500, first use), dose 0.35</th><th>Base</th><th>+ vector &times; 0.35</th><th>Same-norm placebo</th></tr></thead>
+          <tbody>
+            <tr><td>GSM8K / 200</td><td>158</td><td>156 (14 won / 16 lost, n.s.)</td><td>152</td></tr>
+            <tr><td>MATH-500 / 100</td><td>40</td><td><strong>58</strong> (20 won / 2 lost, p 0.0001, two graders)</td><td>38</td></tr>
+            <tr><td>Tokens</td><td>&mdash;</td><td>&minus;31 % / &minus;18 %</td><td>+2 % / +1 %</td></tr>
+          </tbody>
+        </table>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          At the lower dose, picked by a pre-registered gate on dev, the sealed set <strong>confirms</strong>: 19 of the 20 MATH items gained
+          were ones the base cut (58 cuts of 100 at this budget); on GSM8K the 14 gained are recovered cuts and the 16 lost are base-correct
+          items finished wrong, the same mechanism at half the rate. The accuracy gain is now shown on sealed sets on three families; on
+          Llama-8B only at 0.35, only on MATH, and as recovery of the base's cuts.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          <em>Limits:</em> third sealed set spent on this family (the scale was chosen on dev after 0.5 failed on the first two; the gate was
+          pre-registered); prediction row 40 scored failed because we had bet "does not confirm".
+        </p>
+
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">What the 0.8B harness can and cannot tell: pruning the MIT Exp 8 edit (results &sect;45.22)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          alphaXiv's notebook keeps the 4,096 largest entries per layer (6 %) of the MIT Exp 8 edit on Qwen3.5-0.8B; we checked that this
+          keeps 74-76 % of the edit's energy and 76-79 % of its push along the edit direction, then ran the pruned edit, its complement (the
+          other 94 %) and the full edit again on our harness (GSM8K 100 + MATH 50, greedy, 2,048 tokens). GSM8K correct: full 8 (13 on
+          2026-11-14 with the same file, binary and items), pruned 2, complement 5; MATH at the floor everywhere. Discordant pairs between
+          the two runs of the <em>same</em> edit: 11 of 100.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          <em>Limits:</em> every difference is the size of that noise, so the only statement that survives is "pruning does not improve
+          anything"; whether 6 % of the entries keeps the effect is not decidable at n = 100 with batched greedy decoding. Lesson written
+          down: run the same configuration twice before comparing two edits on the 0.8B.
+        </p>
+
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Ternary weights and a discrete writer (results &sect;45.23-45.24)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Under ggml's TQ2_0 rule only 10-12 % of a <code>down_proj</code>'s entries are non-zero at all (88-90 % zero), and a 0.8B quantised
+          that way without recovery training answers 0 of 10 and emits multilingual fragments. Ternarising an edited model keeps most of the
+          edit as a <em>component</em> of the ternary difference (alpha 0.6-0.9) buried in orthogonal junk 2&times; to 12&times; larger: direction
+          cosine 0.42-0.47 for the Exp 8 edit and 0.08-0.10 for our compiled conclude vector at dose 1. Decision: no ternary writer; the
+          read-only op <code>ternary_survival</code> measures.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Solving instead of rounding (CPU prototype, plan and prediction first): choosing per entry the native bf16 move (sign flip,
+          &times;2, &times;&frac12;) that brings each row closest to its target reaches cosine 0.45-0.67 on the compiled vector touching about
+          3 % of the entries, and 0.77-0.78 on the Exp 8 edit; it does not carry the magnitude (alpha 0.26-0.46) and never passes cosine 0.7.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          <em>Limits:</em> weight-space measurements only, two edits, five tensors; a discrete writer for these edits needs the activation-coupled
+          objective (one 9B forward over the calibration prompts), specified in the plan and not launched.
+        </p>
+
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">WSP-Lang 0.8 (2026-11-18)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Seven ops added to the runtime (<a href="wsplang_0.8_spec.md" style="color: var(--accent-cyan);">docs/wsplang_0.8_spec.md</a>):
+          <code>edit_column</code> / <code>edit_neurons</code> (one matrix, one or a few columns; a structural same-norm placebo on the same
+          support is written beside every edit; <code>budget_params</code> aborts before any write; report, manifest, patches and the program
+          for the Q6_K file), <code>apply_patch</code> / <code>rollback_last</code> / <code>list_patches</code> / <code>commit_manifest</code>
+          (<code>.weightpatch.json</code> v1.0 with base and delta hashes verified on apply, an on-disk session stack, byte-exact
+          reconstruction from base + patches; nothing is ever written into an input model), and <code>ternary_survival</code>.
+          Dry run: the MIT Exp 8 edit rebuilt through <code>edit_column</code> and applied by <code>wsp.py</code> reproduces our replica
+          file byte for byte.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          <em>What 0.8 does not claim:</em> no behaviour result comes with these ops; any claim about a column edit improving a model needs
+          the dev / placebo / sealed protocol above.
+        </p>
+
+        <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Running now (2026-11-18)</h3>
+        <p style="color: var(--text-muted); line-height: 1.6;">
+          Plans and predictions committed before each run; results pending, to appear in <code>results.md</code> and the prediction rows.
+          Row 43: a constant <code>logit_bias</code> on <code>&lt;/think&gt;</code> (+2 &hellip; +8) against the conclude vector on the 9B dev
+          items, the control DAWE and we both lacked. Then the preservation battery on the 9B base (HumanEval 164, 40 home-made instruction
+          checks, garbage rates). Then row 44: a second behaviour, "reason in Spanish on English problems", with the same protocol as the
+          conclude direction.
+        </p>
+
         <h3 style="color: var(--accent-amber); font-size: 1.15rem; margin-top: 1.5rem;">Second use: a mood as a control vector, no weight change (results &sect;43.13)</h3>
         <p style="color: var(--text-muted); line-height: 1.6;">
           The <code>contrast_vector</code> op turns the same prompts answered cheerfully and neutrally into a llama.cpp control vector.
@@ -1012,6 +1113,15 @@ minute, with her arms</td>
           (<a href="https://github.com/WSP-Scope/WSP-Scope-Project" style="color: var(--accent-cyan);">code</a>). 16 agent editing searches on Qwen3.5-0.8B and 9B: one <code>down_proj</code> column lifts 0.8B MATH-500 8.4 &rarr; 37.8 (a loop fix); on 9B gains are small and a MATH dev gain vanished held-out (base already 97.7 at 32k tokens).</li>
         <li>Nathan Barry, <a href="https://nathanrs.rs/posts/weight-space-lp" style="color: var(--accent-cyan);"><em>Can a Linear Program Do Weight-Space Programming?</em></a>
           (<a href="https://github.com/nathanrs/weight-space-lp" style="color: var(--accent-cyan);">code</a>), Nov 2026. Finds the MIT Exp 8 loop-breaking edit with a sparse linear program in minutes; a constant steering push gives almost the same result.</li>
+        <li>Khamis, Tutunov &amp; Bou Ammar, <a href="https://haithamb.github.io/aha/" style="color: var(--accent-cyan);"><em>AHA! Who Needs an LLM to Program an LLM?</em></a>, 15 Nov 2026 (<a href="https://github.com/Eppy-EpHard/AHA" style="color: var(--accent-cyan);">code</a>). The MIT Exp 8 edit without the agent; a near-constant push that removes an obstacle rather than adding knowledge.</li>
+        <li>Kocabay (Poindexter Labs), <a href="https://www.alphaxiv.org/abs/2611.weight-space-reading-language-models" style="color: var(--accent-cyan);"><em>Weight-Space Reading</em></a>, alphaXiv, 13 Nov 2026 (<a href="https://github.com/suayptalha/wsr" style="color: var(--accent-cyan);">code</a>). LLM readers predicting an edit's effect from weights; false positives on inert edits.</li>
+        <li>Marasini, Khadka &amp; Rahimi, <a href="https://arxiv.org/abs/2611.18553" style="color: var(--accent-cyan);"><em>WeightBench: Evaluating Language Models as Weight-Space Programmers</em></a>, arXiv 2611.18553, 13 Nov 2026 (<a href="https://github.com/Aayush-Marasini/WeightBench" style="color: var(--accent-cyan);">code</a>). 42 tasks in five tracks; measures LLMs reading and writing weights, not runtimes.</li>
+        <li>Ok &amp; Lee (POSTECH), <a href="https://www.alphaxiv.org/abs/2611.weight-space-programming-associative-memory" style="color: var(--accent-cyan);"><em>Weight-Space Programming Doesn't Need Transformers</em></a>, alphaXiv, 17 Nov 2026. LLM-written sparse tables instead of Transformers; nothing here edits a pretrained LLM.</li>
+        <li>alphaXiv / Daniel Kim, <a href="https://openresearch.sh/p/EdsyLoFUfY40" style="color: var(--accent-cyan);"><em>minimizing-wsp-edits</em></a>, OpenResearch, 17 Nov 2026 (<a href="https://github.com/alphaXiv/weight-edit-minimization" style="color: var(--accent-cyan);">notebook</a>). The Exp 8 edit recovered as rank-1 per layer and pruned to 6 % of its entries; our harness check is &sect;45.22 above.</li>
+        <li>laxman / bandr.ai, <a href="https://bandr.ai/write-up/dawe/" style="color: var(--accent-cyan);"><em>DAWE: Data-Attributed Weight-Editing</em></a>, 17 Nov 2026 (<a href="https://github.com/bandr-ai/dawe" style="color: var(--accent-cyan);">code</a>). A closed-form ridge edit of one or two <code>lm_head</code> rows repairs a reply-format break; no constant-bias control, which is the control we are running now (row 43).</li>
+        <li>rizumita / CAPH TECH, <a href="https://zenn.dev/caphtech/articles/kestrom-inspect-backdoor-weights" style="color: var(--accent-cyan);"><em>kestrom inspect: reading backdoors from the fine-tune difference</em></a>, 17 Nov 2026. Per-tensor SVD of the difference against the official base; agrees with our implant check (results &sect;43.24).</li>
+        <li>oguzeldereli, <a href="https://github.com/oguzeldereli/ttf-home" style="color: var(--accent-cyan);"><em>ttf</em></a>, Nov 2026. Qwen3.8-27B at 1.6 bits plus recovery training; for us an activation-space 27B that fits 12 GB, not a weight-space base (results &sect;45.23).</li>
+        <li>Salloum &amp; Ali, <a href="https://arxiv.org/abs/2611.14210" style="color: var(--accent-cyan);"><em>Tree-Ising: Repairing Language Models with Bit-Level Ising Edits</em></a>, arXiv 2611.14210, 10 Nov 2026 (abstract only). The MIT loop repair as one QUBO per output row over bf16 sign flips and exponent shifts; the shape a discrete writer needs (results &sect;45.24).</li>
         <li>Irie, Schlag &amp; Schmidhuber, fast weight programmers (ICML 2021). Belrose et al., LEACE (NeurIPS 2023).</li>
       </ul>
     </section>

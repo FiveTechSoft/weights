@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WSP-Lang 0.6 Specification — Modern Fast Weight Programming, Micro-LLM Synthesis & Closed-Form Erasure</title>
+  <title>WSP-Lang 0.8 Specification — Column Edits, Patches, Fast Weight Programming, Micro-LLM Synthesis & Closed-Form Erasure</title>
   <meta name="description" content="Formal specification, grammar, instruction set, and runtime for WSP-Lang 0.5: Fast Weight Programming, LEACE concept erasure, MEMIT covariance regularization, Gated DeltaNet-2 decoupled attention, and NanoWSP micro-LLM synthesis.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>">
   <style>
@@ -176,12 +176,33 @@
   </nav>
 
   <header>
-    <div class="badge-pill">SPECIFICATION VERSION 0.6.0 · CROSS-MODEL PROCRUSTES & LATENT SURGERY · MODERN FWP, CLOSED-FORM ERASURE & NANO-LLM SYNTHESIS</div>
-    <h1>WSP-Lang 0.6 Specification</h1>
+    <div class="badge-pill">SPECIFICATION VERSION 0.8.0 · COLUMN EDITS &amp; PATCHES · CROSS-MODEL PROCRUSTES &amp; LATENT SURGERY · MODERN FWP, CLOSED-FORM ERASURE &amp; NANO-LLM SYNTHESIS</div>
+    <h1>WSP-Lang 0.8 Specification</h1>
     <p class="subtitle">A declarative language for neural weight surgery, Fast Weight Programming, LEACE Closed-Form Concept Erasure, MEMIT Covariance Regularization, and Zero-Backprop Micro-LLM Architecture Synthesis.</p>
   </header>
 
   <main>
+
+    <!-- 0.6 -> 0.8 IN ONE LOOK (2026-11-18); the sections below are the 0.5/0.6 base text, unchanged -->
+    <section id="versions-0-8">
+      <div class="card" style="border-color: var(--accent-purple);">
+        <h3 style="color: var(--accent-purple); margin-top: 0;">0.6 &rarr; 0.8 in one look</h3>
+        <ul>
+          <li><strong>0.7:</strong> parser + compiler + runtime with a feasibility check; product ops <code>delta_to_lora</code> (with
+            <code>transfer_verdict</code> over <code>energy.json</code>) and <code>contrast_vector</code>; later <code>compile_control_vector</code>
+            (a control vector written into <code>down_proj</code> as a rank-1 closed-form edit per layer, with a same-norm placebo and the G0 gate).</li>
+          <li><strong>0.8 (2026-11-18):</strong> localisation and composition. <code>edit_column</code> / <code>edit_neurons</code> (one column or a few
+            neurons, structural same-norm placebo required for any evaluation, <code>budget_params</code>, report with parameters touched,
+            manifest, program for the GGUF); <code>.weightpatch.json</code> patches with <code>apply_patch</code> / <code>rollback_last</code> /
+            <code>list_patches</code> / <code>commit_manifest</code> (on-disk stack, base and delta hashes verified, never written over an input);
+            <code>ternary_survival</code> (a measurement; there is no ternary writer). The MIT Exp 8 edit is reproduced byte for byte through the new op.
+            No behaviour result of its own: any claim still needs dev, placebo and a sealed set.</li>
+        </ul>
+        <p>Full text: <a href="wsplang_0.8_spec.md">docs/wsplang_0.8_spec.md</a> (0.8 addendum) and
+          <a href="wsplang_specification.md">docs/wsplang_specification.md</a> (base text; §5.0 lists every op the runtime accepts, kept in
+          sync with the engine by a test). The rest of this page is the 0.5 / 0.6 specification and is unchanged.</p>
+      </div>
+    </section>
 
     <!-- SECTION 1: THE FWP FRONTIER -->
     <section id="fwp-frontier">
