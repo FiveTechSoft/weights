@@ -140,6 +140,23 @@ dominant content, the compile never reaches it within 20×; BitNet's absmean rul
 as the dose grows. Decision: no ternary writer; a ternary backend would carry our edits only in float scales or
 adapters, which `delta_to_lora` and `compile_control_vector` already produce. The op stays as the instrument.
 
+**Solving instead of rounding: a discrete per-row writer, CPU prototype (results §45.24, 2026-11-18).** Plan and
+prediction (row 45) first, then `lab/probes/discrete_writer/writer.py`: for each output row, choose per entry the
+native bf16 move (sign flip, ×2, ×½) that brings the row closest to its target change, with an exact per-entry
+threshold and a sparsity price. On our compiled conclude vector (9B, layers 1 / 16 / 31) it reaches cosine 0.45-0.67
+at dose 1 touching about 3 % of the entries (rounding gave 0.08-0.10), and 0.77-0.78 on the Exp 8 edit; it does not
+carry the magnitude (alpha 0.26-0.46) and never passes cosine 0.7 at any dose, because every move on an entry larger
+than its target overshoots. A discrete writer for our edits needs the activation-coupled objective (Tree-Ising's), which
+needs one 9B forward over the calibration prompts; specified in the plan, not launched. Row scored partial: the
+primary reading held by the letter, the declared surprise (a layer above 0.5) fired.
+
+**Running now (2026-11-18, GPU queue 18 → 19 → 17; plans and predictions committed before each run).** Row 43: a
+constant `logit_bias` on `</think>` (+2 … +8) against the conclude vector on the 9B dev items, the control DAWE and we
+both lacked (`lab/probes/cc_bias/PLAN.md`). Then the preservation battery on the 9B base (`engine/preserve_bench.py`:
+HumanEval 164, 40 home-made instruction checks, garbage rates; `lab/probes/preserve/PLAN.md`). Then row 44: a second
+behaviour, "reason in Spanish on English problems", same protocol as the conclude direction
+(`lab/probes/skill2/PLAN.md`). Results land in `results.md` §45.25+ and in the rows when they finish.
+
 **Evidence synthesis (16 November):** [what the Phi results establish, and what they do not](docs/phi_findings_2026-11-16.md).
 Measured transfer, compilation, budget controls, practical uses and limits, with AHA / WeightBench / Auto-WSP context.
 
@@ -302,7 +319,9 @@ A declarative language for weight-space experiments (runtime version 0.8.0; 0.8 
 with a structural same-norm placebo and a parameter budget, `.weightpatch.json` patches with `apply_patch` /
 `rollback_last` / `list_patches` / `commit_manifest`, and `ternary_survival`; see `docs/wsplang_0.8_spec.md`). Steps cover:
 - inspection: `peek`, `semantic_map`;
-- edits under a guard: `project_out`, `scale-cols`, closed-form imprints;
+- edits under a guard: `project_out`, `scale-cols`, closed-form imprints; `edit_column` / `edit_neurons` with a structural placebo (0.8);
+- patches: `apply_patch`, `rollback_last`, `list_patches`, `commit_manifest` (0.8);
+- measurement of edits under quantisation: `ternary_survival` (0.8);
 - weight diffs: `delta_stats`, `delta_signature`, `delta_compare`, `model_report`, `delta_to_lora` (a fine-tune's change as a reusable LoRA adapter, local or from the hub, with a transfer verdict);
 - steering: `contrast_vector` (a llama.cpp control vector from two sets of answers, with a same-norm placebo);
 - behavioural evaluation: `evaluate_benchmark` against a running server.
@@ -332,6 +351,9 @@ The contrast gain this gives has not been measured.
 | [`engine/contrast_vector.py`](engine/contrast_vector.py) | `contrast_vector`: per-layer mean difference of two sets of answers, written as llama.cpp per-layer increments (GGUF) + placebo. |
 | [`engine/sealed_set.py`](engine/sealed_set.py) | Sealed confirmation set (GSM8K 100 + MATH-500 50) with a sha256 check; rule in [`lab/probes/sealed/`](lab/probes/sealed/README.md). |
 | [`engine/ternary.py`](engine/ternary.py) | Ternarisation (ggml TQ2_0, BitNet absmean) and what survives of an edit under it; WSP-Lang op `ternary_survival` (report only; results §45.23). |
+| [`engine/column_edit.py`](engine/column_edit.py) | `edit_column` / `edit_neurons`: one matrix, one or a few columns, structural same-norm placebo on the same support, `budget_params` guard, report, manifest, patches, program for the Q6_K GGUF; reproduces the Exp 8 edit byte for byte (0.8). |
+| [`engine/wsplpatch.py`](engine/wsplpatch.py) | `.weightpatch.json` v1.0 and `PatchManager`: `apply_patch` (base and delta hashes verified, new dir), `rollback_last`, `list_patches`, `commit_manifest`, byte-exact reconstruction from base + patches (0.8). |
+| [`engine/preserve_bench.py`](engine/preserve_bench.py) | Preservation battery beside a sealed run: HumanEval 164, 40 local instruction-compliance checks, garbage / loop rates, paired compare with a `preserves` flag (plan `lab/probes/preserve/PLAN.md`). |
 | [`engine/lora_export.py`](engine/lora_export.py) | `delta_to_lora`: exact SVD of each matrix's change, PEFT adapter + `energy.json` (share of the change kept at each rank). |
 | [`demos/math_transplant/`](demos/math_transplant/) | The main result as a runnable demo (adapter off vs on, same server). |
 | [`lab/probes/close_probe/`](lab/probes/close_probe/) | Base vs improved Qwen3.5-9B: fast eval (`fast_eval.py`), reward (`reward.py`), behaviour distillation (`distill_gen.py`, `distill_train.py`), closed-form fit (`cf_distill.py`), placebo adapters (`placebo_lora.py`). |
