@@ -234,6 +234,14 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     ruido ± 5 (§45.22).
     **Cola de GPU (una a la vez, la coordina esta sesión): 18 → 19 (base) → 17 → 20.**
 
+22. **Revisión externa del README (18-nov) triada:** ya en curso: batería de colaterales (19), ruido de la 0.8B
+    (§45.22), ediciones condicionales (objetivo acoplado de §45.24 y AHA, hueco 4), dosis por métrica interna (regla
+    de tokens de la fila 43). Cerrado: huella de Adam (§45.18, hace falta donante de ajuste completo); centroides de
+    `peek` (heurística declarada; sondas = lectura, T7). Nuevo y barato: **supervivencia de ediciones a Q4_K_M /
+    Q5_K_M** generalizando `engine/ternary.py` a redondeo de k bits por bloque (CPU, minutos) antes de escribir
+    soporte Q4 en `wsp.py`. Pospuesto: conversor LoRA→GGUF nativo, `model_report` calibrado para Phi/Llama (J1, solo
+    si el driver lo pide), panel visual (no mientras los resultados cambien a diario).
+
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
   con placebo estructural, `budget_params` e informe; parches `.weightpatch.json` con `apply_patch` / `rollback_last` /
