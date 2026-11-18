@@ -214,13 +214,20 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     dirección leída de las trazas de la propia base (`contrast_vector`), placebo de misma norma, dev y sellado nuevo,
     compilado solo si el vector pasa. Candidatas con margen medible en local: formato / idioma de respuesta, repetición
     de cómputo, supresión de bucles en la 0.8B. Plan `lab/probes/skill2/PLAN.md`, fila 44. Agente asignado.
+    **Elegida "razonar en español" (formato y repetición sin margen). Parada por la regla en el descubrimiento (§45.28,
+    fila 44 ❌): con la instrucción la 9B sigue pensando en inglés 64/64 y corta más; 11 pares de 30. Sin filas positivas
+    no hay dirección. Queda: conducta con filas positivas en la base (respuesta en español medida en la respuesta con
+    presupuesto mayor, o un formato que la base cumpla a veces), criba de 64 antes de prometer.**
 18. **Control de sesgo constante** (`logit_bias` sobre `</think>`, elegido en dev para igualar el ahorro de tokens del
     vector) frente al vector "concluir" a la misma dosis en los mismos ítems de dev de la 9B. Si iguala la precisión,
     la parte dependiente del estado del vector no está demostrada. Plan `lab/probes/cc_bias/PLAN.md`, fila 43. ≈ 1 GPU h.
-    Agente asignado.
+    Agente asignado. **Hecho (§45.27, fila 43 ◐): +2/+4/+6/+8 → GSM 53/54/59/60, MATH 6/9/7/9, cortes 96 → 80, tokens
+    −7 %; el elegido (+8) pierde contra el vector 1/24 y 0/26. R2: el vector no es un empuje constante. Queda (no
+    lanzado): sesgos +12/+16 para ver a qué precio igualarían los tokens.**
 19. **Batería de preservación** para los sellados: HumanEval completo (164) y tasa de bucles/basura por brazo con datos
     locales; IFEval y TriviaQA requieren descarga (pedir OK al driver). Código `engine/preserve_bench.py` con tests.
-    Agente asignado.
+    Agente asignado. **Hecho el código; primera fila (§45.29): base 9B HumanEval 144/164, cumplimiento 15/40, colas
+    repetidas 38/204. Banda y comparaciones con la corrida doble de `bench_run` (cola 2).**
 20. **Escritor discreto por fila (mecanismo nuevo, prerrequisito de cualquier intento de crear capacidad sin
     donante):** nuestro objetivo de compilado (ridge) resuelto como problema discreto por fila de salida en el alfabeto
     bf16 (vuelcos de signo, desplazamientos de exponente; Tree-Ising 2611.14210) en vez de redondear (§45.23 muestra

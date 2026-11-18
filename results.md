@@ -3659,6 +3659,76 @@ igual. En las series de dosis el coseno es uno por artefacto mientras Δ MATH va
   ediciones (la fila `</think>` es la hipótesis del propio fenómeno "concluir"). Para una segunda conducta habría que
   encontrar su fila de lectura sin saberla de antemano.
 
+### 45.27 Control de sesgo constante: un `logit_bias` de hasta +8 en `</think>` apenas mueve nada; el vector "concluir" no es un empuje constante (2026-11-18)
+Plan `lab/probes/cc_bias/PLAN.md` (fijado antes de correr), fila 43, cadena `lab/runs/cc_bias/chain.sh` 05:17-09:04
+(sin fallos; guard `config.json`; id de `</think>` 248069 verificado de tres formas). 9B Q6_K base servida sin vector;
+el sesgo viaja en la petición (`run_arm.py`, `bench_runner` intacto). Mismos 150 ítems de dev de cc_v2, 2 048 tokens.
+Regla de elección prefijada: el sesgo cuyos tokens agrupados (150 ítems) estén más cerca de los 943 del vector.
+
+| brazo | GSM8K ac (c2) | MATH ac | cortes | tokens GSM / MATH | tokens agrupados |
+|---|---|---|---|---|---|
+| base | 50 (49) | 6 | 96 | 1 689 / 1 952 | 1 777 |
+| sesgo +2 | 53 (53) | 6 | 91 | 1 617 / 1 959 | 1 731 |
+| sesgo +4 | 54 (55) | 9 | 84 | 1 592 / 1 928 | 1 704 |
+| sesgo +6 | 59 (60) | 7 | 82 | 1 572 / 1 918 | 1 687 |
+| **sesgo +8 (elegido)** | **60** (60) | **9** | 80 | 1 535 / 1 907 | 1 659 |
+| vector 1,0 | 83 (84) | 35 | 25 | 735 / 1 359 | 943 |
+
+Elegido +8 (el más cercano, y aun así a 716 tokens del vector). Frente al vector: GSM 1/24 p 1,5·10⁻⁶, MATH 0/26
+p 3·10⁻⁸ → **R2**: el sesgo no iguala al vector ni de lejos. Frente a la base: GSM 14/4 p 0,031 (gana 14 cortes
+recuperados, pierde 4 acabados bien), MATH 4/1 p 0,38. Sin pensamiento 0 % en todos los brazos. Tokens monótonos en b.
+
+- **Lectura.** Sumar +8 al logit de `</think>` en todas las posiciones recorta los cortes de 96 a 80 y los tokens un
+  7 %; el vector a dosis 1 recorta los cortes a 25 y los tokens un 47 % y triplica MATH. Un empuje **constante** sobre
+  el token de cierre no reproduce lo que hace la dirección: la dirección actúa donde el estado ya está cerca de
+  cerrar y el sesgo no sabe dónde está. Es el control que a DAWE le falta y que a nosotros nos faltaba; con él, "el
+  vector lleva información dependiente del estado" pasa de plausible a medido en esta familia. Lo que no dice: si un
+  sesgo mucho mayor (+12, +16) acabaría igualando los tokens a costa de la precisión; no lo corrimos.
+- **Predicción (fila 43) contra el dato.** Primaria R2 ✓ (60 %). Bandas: +2 GSM ✓, MATH ✗ (6 frente a 7-12), tokens
+  ✗ (agrupados 1 731 frente a 1 400-1 700); +4 GSM ✗ (54 frente a 60-75), MATH ✗, tokens ✗; +6 GSM ✗ (59 frente a
+  62-80), MATH ✗, tokens ✗ (1 687 frente a 650-1 050); +8 GSM ✓, MATH ✓, tokens ✗ (1 659 frente a 350-800), sin
+  pensamiento ✗ (0 frente a 5-40 %); monotonía ✓; elegido ✗ (+8, apostamos +6 o +4); distancia al vector ✗ (mayor que
+  la banda); discordantes significativos ✓. Ninguna sorpresa disparada. **◐**: acierta la primaria, y el sesgo hace
+  **mucho menos** de lo que la predicción le concedía (el error sistemático de las bandas: creímos que +6 recortaría a
+  la mitad).
+- **Límites.** Una familia, un presupuesto, dev; sesgos hasta +8; sin sellado (no hacía falta: el control falla en dev).
+- **Dos métodos.** `bias.py compare` y recuento con `pair_recount.py`: mismos aciertos, cortes y pares.
+
+### 45.28 Segunda conducta "razonar en español": parada por la regla prefijada antes de ningún brazo; la 9B piensa en inglés aunque se le pida español y la instrucción le hace cortar más (2026-11-18)
+Plan `lab/probes/skill2/PLAN.md` (fijado antes de correr; criba de candidatas con datos locales: formato y repetición
+rechazadas por falta de margen, bucles de la 0.8B por el ruido ± 5), fila 44, cadena `lab/runs/skill2/chain.sh`
+09:56-10:48. Descubrimiento: 64 problemas de GSM8K train (64-127) generados dos veces por la base 9B, con el prompt
+llano y con " Piensa y responde en español.", 2 048 tokens.
+
+| condición | acabados | cortados | pensamiento en español (juez, 300 primeras palabras) |
+|---|---|---|---|
+| sin instrucción | 27 | 37 | 0 |
+| con instrucción en español | 14 | 50 | **0** |
+
+Pares utilizables 11 de 64 (regla: ≥ 30) → **STOP** antes de vectores, criba o dev. Coste 52 min de GPU.
+
+- **Lectura.** Las dos premisas de la predicción fallaron a la vez: P1 (la base piensa en inglés sin instrucción) se
+  cumple de sobra, pero P2 (con la instrucción responde en español ≥ 85 %) **no**: con la instrucción el pensamiento
+  sigue en inglés en los 64 ("Here's a thinking process…"), y además corta más (50 frente a 37 de 64), con lo que la
+  respuesta final, que sí saldría en español, no llega. No hay filas positivas de las que leer una dirección: el
+  protocolo de §43.17 exige que la conducta exista en la propia base al menos a veces, y "pensar en español" no existe
+  en esta 9B con este prompt. La conducta elegida era mala, no el método; la regla de parada hizo su trabajo.
+- **Predicción (fila 44) contra el dato.** Premisa P2 ✗ (11 pares frente a ≥ 45); el resto no se midió. **❌** por la
+  premisa; la primaria queda sin probar.
+- **Siguiente forma útil (no lanzada):** una conducta con filas positivas en la base: (a) "responder en español" medido
+  en la **respuesta**, no en el pensamiento (la instrucción sí la mueve; haría falta un presupuesto mayor para que
+  acabe), o (b) una conducta de formato que la base cumpla a veces sin instrucción. Ambas pasan primero por una
+  criba de 64 ítems como esta antes de prometer nada.
+
+### 45.29 Batería de preservación: valores de la base 9B en dev-2048 (2026-11-18)
+`lab/runs/preserve/smoke.sh` 09:08-09:56 (humo de 2 ítems ok; `base.json`), `engine/preserve_bench.py`, 2 048 tokens.
+Base 9B Q6_K: **HumanEval 144 / 164** (153 acabados; mediana 843 tokens); **cumplimiento 15 / 40** (termina con DONE
+6/10, número en palabras 0/10, una sola frase 7/10, todo en mayúsculas 2/10); basura: cola de 16-gramas repetida en
+**38 / 204** salidas, 0 ensaladas de caracteres. Es la primera fila de la columna de preservación; sin segunda corrida
+aún no hay banda (la de `dev-2048` por `bench_run` está en curso), así que no se compara nada todavía. Lo que ya se ve:
+el "cumplimiento" casero es duro para la base (15/40), con lo que los brazos tienen margen en las dos direcciones; y la
+base repite colas en el 19 % de las salidas a 2 048, la misma patología de cierre que la dirección "concluir" trata.
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las
