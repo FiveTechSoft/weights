@@ -1,0 +1,4 @@
+experiment dt_bias_pm:
+objective: the placebo, time-step bias +-0.5 with a random sign per linear-attention layer (seed 2026): same magnitude, no coherent direction (lab/probes/dt_bias/PLAN.md)
+steps:
+    step bench_run suite=dev-2048 port=8095 arm=dt_pm05 out=lab/runs/dt_bias/dt_pm05.json provenance=servidos/qwen35-9b__dt_pm05_seed2026.gguf.manifest.json

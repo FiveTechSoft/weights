@@ -1,0 +1,6 @@
+{
+  "out": "C:\\weights\\servidos\\qwen35-9b__dt_plus05.gguf",
+  "ops": [
+    {"type": "add-scalar", "tensor": "blk.*.ssm_dt.bias", "value": 0.5}
+  ]
+}

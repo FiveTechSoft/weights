@@ -1,0 +1,9 @@
+experiment dt_bias_compare:
+objective: each time-step-bias arm against the 9B base run on dev-2048, with the random-sign placebo and the base-twice noise band; rows into the benchmark table
+steps:
+    step bench_compare base=lab/runs/bench/qwen9b_base_a.json arm=lab/runs/dt_bias/dt_plus05.json placebo=lab/runs/dt_bias/dt_pm05.json base2=lab/runs/bench/qwen9b_base_b.json out=lab/runs/dt_bias/cmp_plus05.json
+    step bench_compare base=lab/runs/bench/qwen9b_base_a.json arm=lab/runs/dt_bias/dt_minus05.json placebo=lab/runs/dt_bias/dt_pm05.json base2=lab/runs/bench/qwen9b_base_b.json out=lab/runs/dt_bias/cmp_minus05.json
+    step bench_compare base=lab/runs/bench/qwen9b_base_a.json arm=lab/runs/dt_bias/dt_pm05.json base2=lab/runs/bench/qwen9b_base_b.json out=lab/runs/dt_bias/cmp_pm05.json
+    step bench_table add=lab/runs/dt_bias/dt_plus05.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/dt_bias/cmp_plus05.json
+    step bench_table add=lab/runs/dt_bias/dt_minus05.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/dt_bias/cmp_minus05.json
+    step bench_table add=lab/runs/dt_bias/dt_pm05.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/dt_bias/cmp_pm05.json

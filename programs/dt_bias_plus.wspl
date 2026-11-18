@@ -1,0 +1,4 @@
+experiment dt_bias_plus:
+objective: Fan et al. (arXiv 2611.21885) largest self-edit, time-step bias +0.5 in every linear-attention layer, on our Qwen3.5-9B Q6_K through the standard dev-2048 suite with provenance (lab/probes/dt_bias/PLAN.md, row 49)
+steps:
+    step bench_run suite=dev-2048 port=8095 arm=dt_plus05 out=lab/runs/dt_bias/dt_plus05.json provenance=servidos/qwen35-9b__dt_plus05.gguf.manifest.json

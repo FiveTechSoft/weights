@@ -74,14 +74,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 48 | 2026-11-18 | `dist_shift/PLAN.md` (suite `dist-shift` de WSP-Lang sobre `llama-perplexity`: perplejidad WikiText-2 100 × 512, KL frente a los logits de la base 16 × 512, HellaSwag / Winogrande / MMLU 400 tareas; 9B Q6_K base, compilado fusionado, placebo fusionado, vector 1,0 y placebo vector 1,0) | Premisas: base fuerte; compilado rango 1 con ‖dW‖/‖W‖ ≈ 0,027 ajustado a mover solo donde apunta el vector; el placebo de misma norma bajó GSM dev de 50 a 26 → perturba más. Base: ppl WikiText-2 **6,5-10**, HellaSwag 0,72-0,84, Winogrande 0,66-0,78, MMLU 0,62-0,78. Fusionado vs base: KL media **0,01-0,08**, top-1 92-98 %, cociente ppl 1,00-1,04, HS/WG/MMLU ± 0,02. Placebo fusionado: KL 0,05-0,30, top-1 85-95 %, ppl 1,02-1,15, HS/WG/MMLU −0,01 a −0,06. Vector 1,0: KL 0,02-0,15, top-1 88-97 %; placebo vector: KL 0,05-0,30, top-1 82-95 %. **Primaria: en los dos pares el placebo de misma norma desplaza más la distribución que la edición real (KL placebo > KL real), 65 %.** Secundarias: KL fusionado < 0,1 (70 %); los dos placebos a menos de 3× entre sí (60 %). Sorpresa si KL fusionado > 0,3 o top-1 < 80 %; algún Δ de precisión del fusionado fuera de ± 0,05; el placebo por debajo de la real en los dos pares; ppl base fuera de 5-14 | | | | ⏳ |
 
-## Cuenta (48 filas; 43 puntuables)
+| 49 | 2026-11-18 | `dt_bias/PLAN.md` (el pomo de Fan et al. 2611.21885: `blk.N.ssm_dt.bias` de las 24 capas de atención lineal de la 9B +0,5 / −0,5 / ±0,5 con signo aleatorio por capa (placebo, semilla 2026), en `dev-2048` por `bench_run` con batería, contra la base y su banda a-b) | Premisas: un desplazamiento uniforme de la tasa de olvido de todas las cabezas es un cambio tipo empuje constante (§45.27); +0,5 olvida antes (×1,6 a −2,4 típico), corta rumia y daña MATH largo; su +6,6 fue a 4 096 en un 27B con 80 % de cortes. `plus05`: tokens −5 a −20 %, cortes 70-92 (base ≈ 96), GSM **46-62**, MATH 3-11, sin pensar ≤ 2 %, HumanEval 134-150, cumplimiento 12-20, colas 10-20 %. `minus05`: tokens −3 a +10 %, cortes 92-105, GSM 42-54, MATH 3-8, HumanEval 130-148, colas 18-30 %. Placebo: tokens ± 8 %, cortes 88-102, GSM 44-56, MATH 3-9, HumanEval 134-150. Banda base a-b: GSM |Δ| ≤ 4, discordantes 6-14, MATH |Δ| ≤ 3, tokens ± 4 %. **Primaria: R1 "el pomo actúa" (más de 2 × banda en tokens o cortes) 60 %; R2 "la dirección importa" 50 %; R3 ganancia de precisión por la regla 15 %.** Ningún brazo a 10 puntos del vector (83) 90 %. Sorpresa si plus05 GSM ≥ 70 o MATH ≥ 20; algún brazo GSM ≤ 30 o HumanEval ≤ 120; placebo significativo en los dos correctores; minus05 ahorra más que plus05; banda base > 8 | | | | ⏳ |
+
+## Cuenta (49 filas; 43 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 19 |
 | ❌ falla | 18 |
-| ⏳ / — | 5 |
+| ⏳ / — | 6 |
 
 Acierto limpio 6/43 = 14 %; acierto o parcial 25/43 = 58 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es

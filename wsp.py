@@ -8,6 +8,7 @@ Presupuestos (SKILL): cada invocaciÃ³n se journaliza; read<=200, write<=20, fw
 No hay gradientes, no entrenamiento, no fit a datos.
 """
 import argparse
+import fnmatch
 import json
 import os
 import re
@@ -379,10 +380,44 @@ FORBIDDEN_TENSORS = ("token_embd.weight", "output.weight", "output_norm.weight")
 FORBIDDEN_PAT = ("norm.weight", ".norm", "lm_head", "token_types")
 
 
+SCALAR_OPS = ("add-scalar", "add-scalar-signed")
+
+
+def _expand_scalar_ops(ops, tm):
+    """add-scalar / add-scalar-signed accept a glob in `tensor` (e.g. blk.*.ssm_dt.bias): one op per matched tensor,
+    sorted by name. add-scalar-signed draws a sign per matched tensor from `seed` (the placebo: same magnitude, no
+    coherent direction) and becomes add-scalar with value +-v, keeping `signed_seed` and `glob` for the manifest.
+    A glob with no match is a policy error. Other ops pass through unchanged."""
+    out = []
+    for op in ops:
+        if op.get("type") not in SCALAR_OPS:
+            out.append(op)
+            continue
+        pat = str(op.get("tensor", ""))
+        names = sorted(fnmatch.filter(tm.keys(), pat)) if any(c in pat for c in "*?[") else [pat]
+        if not names:
+            sys.exit(f"POLICY: el patron {pat!r} no coincide con ningun tensor")
+        v = float(op["value"])
+        if op["type"] == "add-scalar-signed":
+            rng = np.random.default_rng(int(op.get("seed", 0)))
+            signs = rng.choice([-1.0, 1.0], size=len(names))
+        else:
+            signs = [1.0] * len(names)
+        for nm, s in zip(names, signs):
+            new = {"type": "add-scalar", "tensor": nm, "value": float(v * s), "glob": pat}
+            if op["type"] == "add-scalar-signed":
+                new["signed_seed"] = int(op.get("seed", 0))
+            out.append(new)
+    return out
+
+
 def _check_tensors(ops, tm):
     """PolÃ­tica de ediciÃ³n del MOTOR: rechaza tensores prohibidos y params fuera de rango."""
     for op in ops:
         nm = op.get("tensor", "")
+        val = op.get("value")
+        if op.get("type") == "add-scalar" and (val is None or abs(float(val)) > 8.0):
+            sys.exit(f"POLICY: add-scalar value {val} fuera de [-8, 8] en {nm}")
         if nm in FORBIDDEN_TENSORS:
             sys.exit(f"POLICY: tensor PROHIBIDO {nm} (head/lm_head)")
         if any(p in nm for p in FORBIDDEN_PAT):
@@ -454,6 +489,7 @@ def cmd_edit(a):
         sys.exit(f"{out} ya existe (no sobreescribir)")
     rd = reader_of(src)
     _budget_check("write", 1)
+    prog["ops"] = _expand_scalar_ops(prog["ops"], tensor_map(rd))
     _check_tensors(prog["ops"], tensor_map(rd))
     journal("write", "reserva " + json.dumps({"out": str(out), "ops": len(prog["ops"])}, ensure_ascii=False))
     if "require_sha" in prog:  # identidad integ: SHA-256 completo del origen
@@ -472,8 +508,13 @@ def cmd_edit(a):
     for op in prog["ops"]:
         nm = op["tensor"]
         t = tm[nm]
-        nrows = int(t.shape[1])
-        ncols = int(t.shape[0])
+        if len(t.shape) == 1:  # 1-D tensors (biases, decay parameters): only the scalar ops touch them
+            if op["type"] not in SCALAR_OPS:
+                sys.exit(f"POLICY: {op['type']} necesita una matriz 2-D; {nm} es 1-D")
+            nrows = ncols = int(t.shape[0])
+        else:
+            nrows = int(t.shape[1])
+            ncols = int(t.shape[0])
         D = row_decode(t)
         if "base" in prog:
             B = row_decode(base_t[nm])
@@ -582,6 +623,14 @@ def cmd_edit(a):
             rowsEdited.append([nm, "add-cols-vectors",
                                round(delta_norm / (float(np.linalg.norm(D.astype(np.float64))) + 1e-30), 4)])
             _p(f"  {nm}: add-cols-vectors n_cols={idx.size} scale={sc}")
+        elif op["type"] == "add-scalar":
+            # constante sumada a un tensor F32 sin cuantizar (sesgos de paso de tiempo blk.*.ssm_dt.bias, etc.)
+            if t.tensor_type != gguf.GGMLQuantizationType.F32:
+                sys.exit(f"POLICY: add-scalar solo sobre tensores F32; {nm} es {base_dtype(t)}")
+            val = float(op["value"])
+            D = (D + np.float32(val)).astype(np.float32)
+            rowsEdited.append([nm, "add-scalar", val])
+            _p(f"  {nm}: add-scalar {val:+.4f} sobre {D.size} valores")
         else:
             sys.exit(f"op no reconocida: {op['type']}")
         # reescribir en el archivo
@@ -607,7 +656,8 @@ def cmd_edit(a):
     journal("edit", json.dumps({"out": str(out), "ops_count": len(prog["ops"])}, ensure_ascii=False))
     Path(str(out) + ".manifest.json").write_text(json.dumps({
         "source": str(src), "source_fp": _fingerprint(src), "program": a.prog,
-        "ops": [{k: v for k, v in op.items() if k in ("type", "tensor", "axis", "mask", "k", "target_frac", "alpha", "mix", "scale", "vec_file", "key", "cols_key")} for op in prog["ops"]],
+        "output_sha256": _sha256_full(out),
+        "ops": [{k: v for k, v in op.items() if k in ("type", "tensor", "axis", "mask", "k", "target_frac", "alpha", "mix", "scale", "vec_file", "key", "cols_key", "value", "glob", "signed_seed")} for op in prog["ops"]],
         "edited_weights_note": "ver wsp diff -frac 0.002",
         "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
     }, ensure_ascii=False, indent=1), encoding="utf-8")
