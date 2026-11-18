@@ -347,8 +347,12 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     por posición, PMI), comunidades Louvain (`networkx`), las tres pruebas de Goodfire con placebo de neuronas al
     azar del mismo tamaño por capa; fase B solo si A1-A2: `edit_neurons` (escala de las columnas de `down_proj` de la
     comunidad, placebo estructural del op) en `dev-2048` por `bench_run` frente a la banda de §45.32. Fila 50. ≈ 2 GPU h
-    (A) + 2 × 1,7 GPU h (B). **Sin empezar: código y GPU solo con el OK del driver** (la cola 5-6 ocupa la GPU hasta
-    ≈ 03:15).
+    (A) + 2 × 1,7 GPU h (B). **OK del driver 18-nov 22:40.** Código de la fase A (agente, 11 tests primero,
+    `lab/probes/neuron_communities/{attribute,communities}.py`): ruta por capas = autograd extremo a extremo en la
+    0.8B con error 0,0; ablación de una fila = pase completo a 5 decimales. [rev] en PLAN: pos y neg son las mismas
+    53 trazas y 9 caen en el held-out de cc_weights → descubrimiento con 44, prueba con 9. Cola 7
+    (`lab/runs/queue7_20261118.sh`, única espera de `QUEUE6 DONE`) lanzada 23:07; corre tras la cola 6 (≈ 03:15),
+    1,5-2 GPU h; resultado para la mañana del 19-nov.
 
 29. **Verificación rápida de un modelo publicado desde WSP-Lang** (18-nov, pedido por el driver sobre
     `harness-hub/Qwen3.8-27B-pi-adapted` y `SenseNova-Loop-9B`): qué se puede afirmar en minutos sin servir el modelo.

@@ -72,5 +72,18 @@ No search over k, PMI threshold, cap or alpha beyond the values fixed above; no 
 dates) unless the driver asks; one model (Qwen3.5-9B); no attribution on generic text (Goodfire's 10M prompts is the
 discovery setting; ours is one event on 106 + 28 traces, which is a *targeted* use of their tests, not a replication).
 
+## [rev 2026-11-18 23:10, before the run; from the CPU verification in `tests_cpu.md`]
+- **Data layout found:** `pos.jsonl` and `neg.jsonl` are the same 53 traces (pos = whole finished reasoning, next
+  token `</think>`; neg = a prefix cut of the same reasoning). One forward per trace serves both: pos event = last
+  reasoning token, neg event = last token of the neg cut, each with its 8 predecessors (18 positions per trace).
+- **Held-out:** the 53 pos traces are the 53 finished traces of `lab/runs/cc/traces.jsonl`, and 9 of them fall inside
+  cc_weights' 28 held-out (seed 20261111). Testing on "the 28 held-out" would test on discovery traces. **Discovery =
+  the 44 pos traces outside the held-out set; test = the 9 finished held-out traces** (close event = last reasoning
+  token). n = 9 for the A1 / A2 medians, small; per-trace numbers are recorded. Criteria unchanged.
+- Ablations are applied at the close-event position only (the prediction under test), which makes the one-row route
+  exact; A2's random control = placebo set 0 plus the always-on set; always-on = global top-64 at ≥ 90 % of the 792
+  discovery positions. Two-method checks passed on the 0.8B in float32 (layered route = end-to-end autograd, 0.0
+  relative error; one-row ablation = full hooked forward to 5 decimals). Cost on the 9B: ≈ 14 GB of disk cache, 1.5-2 GPU h.
+
 ## Prediction
-`predictions.md` row 50 (written 2026-11-18, before any code).
+`predictions.md` row 50 (written 2026-11-18, before any code; [rev] on the held-out split noted there).
