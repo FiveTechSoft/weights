@@ -222,6 +222,39 @@ class IdentityProvenanceClassTest(unittest.TestCase):
         self.assertEqual(rep["provenance"]["base_sha"], "b" * 64)
         self.assertEqual(rep["provenance"]["patches"], ["p1"])
 
+    def test_render_table_prints_dash_not_none_for_logits_rows(self):
+        # llm-logits rows have no GSM8K / MATH-500 / cuts / token cells: the table must show "-" there, never "None".
+        with tempfile.TemporaryDirectory() as d:
+            idx = Path(d) / "index.json"
+            idx.write_text(json.dumps({"wsplang_bench_version": wb.VERSION, "comparisons": [], "runs": [
+                {"path": "x.json", "model": "M", "model_sha": "ab" * 6, "model_class": "llm-logits", "provenance": "external",
+                 "suite": "dist-shift", "suite_sha": "cd" * 6, "arm": "base", "gsm8k_g1": None, "gsm8k_g2": None,
+                 "math500_g1": None, "math500_g2": None, "other": {}, "cuts": None, "mean_tokens": None, "humaneval": None,
+                 "compliance": None, "garbage": None, "extras": None, "extra_body": None, "date": "2026-11-18",
+                 "logits": {"ppl": 8.0258, "kl_mean": 0.0, "same_top_p": 100.0, "hellaswag": 0.78, "winogrande": 0.715,
+                            "mmlu": 0.41}}]}), encoding="utf-8")
+            out = Path(d) / "t.md"
+            wb.render_table(idx, out)
+            row = [ln for ln in out.read_text(encoding="utf-8").splitlines() if "| base |" in ln][0]
+        self.assertNotIn("None", row)
+        self.assertIn("8.026", row)
+
+    def test_read_provenance_compile_report_with_file_list(self):
+        # The compile_control_vector report (hf_cache/cc_op_v2/report.json) lists its outputs as a plain list of paths
+        # under "files"; it does not record the merged GGUF's sha. The reader must still return the base sha from
+        # "inputs" and leave output_sha None (2026-11-18: the dist-shift chain died here with "'list' object has no
+        # attribute 'get'").
+        with tempfile.TemporaryDirectory() as d:
+            rep = Path(d) / "report.json"
+            rep.write_text(json.dumps({"inputs": {"base_gguf_sha256": "2f" * 32, "vector": "C:/x/cc_v2.gguf"},
+                                       "vector": {"layers": {}}, "G0": 0.04,
+                                       "files": ["C:/x/vector/fit.pt", "C:/x/merged-Q6_K.gguf"]}), encoding="utf-8")
+            prov = wb.read_provenance(rep)
+        self.assertEqual(prov["kind"], "compile_control_vector")
+        self.assertEqual(prov["base_sha"], "2f" * 32)
+        self.assertIsNone(prov["output_sha"])
+        self.assertEqual(prov["patches"], ["compile:cc_v2.gguf"])
+
     def test_wsp_manifest_fingerprint_prefix_matches(self):
         self.assertTrue(wb.sha_match("2bbab016154145943ef887b6bd3c5227", "2bbab016154145943ef887b6bd3c5227" + "0" * 32))
         self.assertFalse(wb.sha_match("2bbab016", "2bbab016" + "0" * 56))

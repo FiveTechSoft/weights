@@ -1,0 +1,10 @@
+experiment dist9b_compare3:
+objective: register the dist-shift rows that exist after the 2026-11-18 chain (base, placebo_merged, vec_1.0, placebo_vec_1.0) and their comparisons against the base; the merged arm and its comparison follow in dist9b_compare.wspl once it has run
+steps:
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_placebo_merged.json out=lab/runs/bench/cmp_dist9b_placebo_merged.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_vec.json out=lab/runs/bench/cmp_dist9b_vec.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_placebo_vec.json out=lab/runs/bench/cmp_dist9b_placebo_vec.json
+    step bench_table add=lab/runs/bench/dist9b_base.json model="Qwen3.5-9B Q6_K (A0)"
+    step bench_table add=lab/runs/bench/dist9b_placebo_merged.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_dist9b_placebo_merged.json
+    step bench_table add=lab/runs/bench/dist9b_vec.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_dist9b_vec.json
+    step bench_table add=lab/runs/bench/dist9b_placebo_vec.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_dist9b_placebo_vec.json

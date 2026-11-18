@@ -186,8 +186,24 @@ GPU minutes). Row 44 failed on its premise. The §43.17 protocol needs the behav
 sometimes; the next candidate must pass a 64-item screen like this before anything is promised.
 
 **Preservation battery, first row (results §45.29).** 9B base at 2,048 tokens: HumanEval 144 / 164, home-made
-instruction compliance 15 / 40, repeated-tail outputs 38 / 204. Band and comparisons follow the base-twice run now
-in the GPU queue (`bench_run suite=dev-2048`).
+instruction compliance 15 / 40, repeated-tail outputs 38 / 204. The base-twice band under `bench_run` (below) puts
+these inside what two identical runs give (143-144 / 14).
+
+**Noise band of the 9B on `dev-2048` (results §45.30).** The base run twice under `bench_run` (same served sha,
+suite hash, decoding: 2,048 tokens, parallel 2, seed 0): GSM8K 50 / 49 both times with 0 discordant items and the
+same token total; MATH-500 6 → 5, 1 discordant; HumanEval 143 → 144 with 15 discordant (7 lost, 8 gained);
+compliance 14 / 14. A third run (the imported §43.17 base) also agrees 0 / 1 with the second. So at 2,048 with
+parallel 2 the 9B is deterministic on GSM8K; the ±5 of §45.22 came from 8,192 with `-np 4`. HumanEval is the noisy
+component and is read as a paired net, not as item sets. The two 9B comparisons in the table now carry the band
+(`gsm8k ±0; math500 ±1`); verdicts unchanged.
+
+**Distribution shift, 4 of 5 arms (results §45.31, row 48 ❌).** `dist-shift` through `llama-perplexity` (WikiText-2
+perplexity, KL to the base's saved logits, HellaSwag / Winogrande / MMLU 400 each): base ppl 8.03, HS 0.78, WG 0.715,
+MMLU 0.41. The conclude vector at 1.0 costs **+15.6 % perplexity**, KL 0.175, top-1 agreement 80.4 %; its same-norm
+placebo KL 0.056, ppl ×1.038; the compiled placebo KL 0.024, ppl ×1.009; HS / WG / MMLU move ≤ 0.02 everywhere. The
+prediction said the placebo would shift more than the real edit in both pairs; the vector pair shows the opposite
+by 3×: a random direction of the same norm is mostly absorbed, the real direction is not, and the gain on GSM8K is
+not free on generic text. The compiled arm failed on a provenance-reader bug (fixed with a test) and is queued.
 
 **Evidence synthesis (16 November):** [what the Phi results establish, and what they do not](docs/phi_findings_2026-11-16.md).
 Measured transfer, compilation, budget controls, practical uses and limits, with AHA / WeightBench / Auto-WSP context.

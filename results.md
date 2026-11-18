@@ -3729,6 +3729,57 @@ aún no hay banda (la de `dev-2048` por `bench_run` está en curso), así que no
 el "cumplimiento" casero es duro para la base (15/40), con lo que los brazos tienen margen en las dos direcciones; y la
 base repite colas en el 19 % de las salidas a 2 048, la misma patología de cierre que la dirección "concluir" trata.
 
+### 45.30 Banda de ruido de la base 9B en `dev-2048` por `bench_run`: GSM determinista, MATH 1 / 50, HumanEval 15 / 164 (2026-11-18)
+`lab/runs/bench/chain_band9b.sh` 10:52-14:26 (`qwen9b_base_a.json` 10:52-12:38, `qwen9b_base_b.json` 12:39-14:25;
+mismo binario, mismo GGUF servido sha `2f57ee31c827`, suite `dev-2048` con hash: 100 GSM8K + 50 MATH-500 + HumanEval
+164 + cumplimiento 40; 2 048 tokens, paralelo 2, semilla 0, temperatura 0). Dos corridas idénticas de la base:
+GSM8K **50 / 49 y 50 / 49** (dos correctores), **0 discordantes**, mismos tokens totales (168 894 y 168 894); MATH
+**6 → 5**, **1 discordante** (3 de 50 ítems cambian de longitud, +0,6 % de tokens); HumanEval **143 → 144**, **15
+discordantes** (7 perdidos, 8 ganados; 115 de 164 cambian de longitud); cumplimiento 14 / 14 con 2 discordantes; colas
+repetidas 32 → 26. Dos métodos: `bench_compare` (`cmp_qwen9b_band.json`) y recuento ítem a ítem desde los dos JSON;
+coinciden. Tercera corrida: la base de `dev-2048` importada de la cadena de §43.17 (misma decodificación) frente a
+`base_b` también da 0 / 1. Aplicado a la tabla: las comparaciones de la 9B (vector 1,0; fusionado) llevan ahora
+`gsm8k ±0; math500 ±1` (`programs/bench_band9b_apply.wspl`, `base2=`); veredictos sin cambio (mejora; dos modelos).
+Lectura: **a 2 048 tokens con paralelo 2 la 9B es determinista en GSM8K en tres corridas**; los ± 5 de §45.22 venían
+del arnés cc08 a 8 192 con `-np 4`. D4k se puede volver a decidir bajo `bench_run` en `dev-8192` solo si antes se mide
+la banda en esa configuración (no está hecho). **HumanEval es el componente ruidoso**: 15 / 164 discordantes con saldo
++1, así que la preservación se lee por saldo pareado, no por conjunto de ítems; un brazo que "pierde 7" sin saldo
+negativo no ha perdido nada. Llama y Phi siguen sin banda (sus filas dicen "none"). Los valores de §45.29 (144 / 15,
+otro arnés) caen dentro de lo que dan estas dos corridas (143-144 / 14).
+
+### 45.31 Desplazamiento de distribución (suite `dist-shift`): el vector real mueve la distribución 3× más que su placebo de misma norma; 4 de 5 brazos (2026-11-18)
+`lab/runs/bench/chain_dist9b.sh` 14:27-15:01, `llama-perplexity` sha `2f90f7316b9b`, GPU; suite `dist-shift` con
+hash: perplejidad WikiText-2 (100 × 512), KL frente a los logits guardados de la base (16 × 512), HellaSwag /
+Winogrande / MMLU 400 tareas cada una en el formato de llama.cpp. Cinco brazos previstos (fila 48); el fusionado
+falló antes de medir: `provenance=hf_cache/cc_op_v2/report.json` lista sus salidas como lista de rutas y el lector
+hacía `.get` sobre ella (`'list' object has no attribute 'get'`). Arreglado con test
+(`tests/test_wsplang_bench.py`, `test_read_provenance_compile_report_with_file_list`; el report no guarda el sha del
+fusionado, así que `output_sha` queda nulo y el vínculo con la base viene de `inputs`); el brazo va en la cola 6
+(`chain_dist9b_merged.sh`) tras dt_bias. Lo medido:
+
+| brazo | ppl WikiText-2 | ppl × | KL media | top-1 igual | HellaSwag | Winogrande | MMLU |
+|---|---|---|---|---|---|---|---|
+| base | 8,026 | 1 | 0 | 100 % | 0,780 | 0,715 | 0,410 |
+| placebo fusionado (misma norma) | 8,101 | 1,009 | 0,024 | 92,5 % | +0,003 | −0,005 | −0,003 |
+| vector concluir 1,0 | 9,279 | **1,156** | **0,175** | **80,4 %** | −0,010 | −0,018 | +0,008 |
+| placebo vector 1,0 | 8,330 | 1,038 | 0,056 | 89,1 % | −0,010 | +0,003 | −0,003 |
+| fusionado (compilado) | pendiente (cola 6) | | | | | | |
+
+Cocientes de ppl calculados por `bench_compare` y a mano: iguales. Frente a la fila 48: base ppl, HellaSwag y
+Winogrande en banda; **MMLU 0,41 fuera** (previsto 0,62-0,78; es la puntuación de opción múltiple de
+`llama-perplexity` sobre el binario de validación, comparable solo dentro de la suite). Placebo fusionado: KL 0,024
+**por debajo** de la banda prevista (0,05-0,30) y ppl × 1,009 por debajo de 1,02-1,15. Vector 1,0: KL 0,175 **por
+encima** de 0,02-0,15 y top-1 80,4 % por debajo de 88-97 (la sorpresa "top-1 < 80 %" no salta por 0,4 puntos).
+Placebo vector: en banda. **Primaria ("en los dos pares el placebo desplaza más que la edición real") falla en el par
+del vector**: placebo 0,056 frente a real 0,175, 3× al revés; el par del fusionado está pendiente, pero la primaria
+exigía los dos → fila 48 ❌. Secundaria "los dos placebos a menos de 3× entre sí": 0,024 y 0,056 (2,3×) ✓. Lectura:
+la dirección "concluir" a escala 1,0 es una dirección real del flujo residual y desplaza la siguiente-palabra en
+texto genérico mucho más que una dirección aleatoria de la misma norma, que el modelo absorbe casi entera; la premisa
+"el placebo perturba más porque hundió GSM" confundía daño en aciertos con desplazamiento de distribución. Coste de la
+edición que lleva GSM dev de 50 a 83: **+15,6 % de perplejidad en WikiText-2** y 20 % de tokens con otro top-1; no es
+gratis en texto genérico, y los Δ de HellaSwag / Winogrande / MMLU (≤ 0,02) no lo ven. Umbrales de la suite siguen
+nulos: se fijan cuando esté el fusionado (la calibración prevista usa el placebo de misma norma del par compilado).
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las

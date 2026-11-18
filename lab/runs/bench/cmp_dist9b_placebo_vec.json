@@ -1,0 +1,48 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "dist-shift",
+ "relation": "edit vs its base",
+ "base": "base",
+ "arm": "placebo_vec_1.0",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "2f57ee31c827",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {},
+ "placebo_benchmarks": null,
+ "preservation": null,
+ "reasons": [
+  "thresholds kl_mean / same_top_p are null in the suite: set them from the base-vs-base band and the same-norm placebo before any verdict"
+ ],
+ "logits": {
+  "ppl_base": 8.0258,
+  "ppl_arm": 8.33,
+  "ppl_ratio": 1.0379027635874305,
+  "kl_mean": 0.056382,
+  "kl_mean_err": 0.005949,
+  "kl_p99": 0.334408,
+  "kl_max": 17.605005,
+  "same_top_p": 89.118,
+  "same_top_p_err": 0.488,
+  "delta": {
+   "hellaswag": -0.01,
+   "winogrande": 0.0025,
+   "mmlu": -0.0025
+  },
+  "err": {
+   "hellaswag": {
+    "base": 0.04048950000000001,
+    "arm": 0.04112449999999995
+   },
+   "winogrande": {
+    "base": null,
+    "arm": null
+   },
+   "mmlu": {
+    "base": 0.024622,
+    "arm": 0.024599000000000003
+   }
+  }
+ },
+ "verdict": "not calibrated yet"
+}

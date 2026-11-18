@@ -270,7 +270,9 @@ def read_provenance(path):
         out["kind"] = "compile_control_vector"
         out["base_sha"] = (m.get("inputs") or {}).get("base_gguf_sha256")
         files = m.get("files") or {}
-        out["output_sha"] = files.get("merged_gguf_sha256") or files.get("merged_sha256")
+        # Older compile reports list their outputs as a plain list of paths and record no merged sha: output_sha stays
+        # None (the served sha is then unchecked against the manifest; the base link still comes from "inputs").
+        out["output_sha"] = (files.get("merged_gguf_sha256") or files.get("merged_sha256")) if isinstance(files, dict) else None
         out["patches"] = [f"compile:{Path(str((m.get('inputs') or {}).get('vector', ''))).name}"]
     elif "wsplang_patch_version" in m or ("patches" in m and "base_checkpoint_hash" in m):  # weightpatch / bundle
         out["kind"] = "patch_bundle" if "patches" in m else "weightpatch"
@@ -817,8 +819,8 @@ def render_table(index_path, out_md):
         other = "; ".join(f"{k} {v}" for k, v in (r.get("other") or {}).items()) or "-"
         model = f"{r['model']} ({r['model_sha']})" if r.get("model_sha") else f"{r['model']} (no sha)"
         L.append(f"| {model} | {r.get('model_class', '-')} | {r.get('provenance', 'external')} | {r['suite']} | {r['arm']} | "
-                 f"{r['gsm8k_g1']} / {r['gsm8k_g2']} | {r['math500_g1']} / {r['math500_g2']} | {other} | {r['cuts']} | "
-                 f"{mt.get('gsm8k')} / {mt.get('math500')} | "
+                 f"{f3(r['gsm8k_g1'])} / {f3(r['gsm8k_g2'])} | {f3(r['math500_g1'])} / {f3(r['math500_g2'])} | {other} | "
+                 f"{f3(r['cuts'])} | {f3(mt.get('gsm8k'))} / {f3(mt.get('math500'))} | "
                  f"{r['humaneval'] if r['humaneval'] is not None else '-'} | "
                  f"{r['compliance'] if r['compliance'] is not None else '-'} | "
                  f"{r['garbage'] if r['garbage'] is not None else '-'} | "

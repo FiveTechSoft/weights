@@ -285,8 +285,12 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     `evaluate_benchmark` por la misma ruta, 20 tests, §5.9 de la spec, addendum; relleno de 16 corridas de dev
     (9B y Llama; Phi excluida por presupuesto 1 024) y 4 comparaciones (vector 9B mejora; vector Llama 0,5 y 0,35
     mejoran por MATH; fusionado 9B "dos modelos" por falta de sha). Regla (b) ajustada tras el relleno: el placebo
-    bloquea si **gana** significativamente, no si daña (el placebo de la 9B está por debajo de la base). Queda: banda
-    de ruido de la base 9B dos veces (en cola tras la cadena actual) y pasar los brazos a `bench_run` propio.
+    bloquea si **gana** significativamente, no si daña (el placebo de la 9B está por debajo de la base). **Banda 9B
+    medida (§45.30, 18-nov):** base dos veces por `bench_run` en `dev-2048`: GSM 0 / 100 discordantes (tokens
+    idénticos), MATH 1 / 50, HumanEval 15 / 164 (saldo +1), cumplimiento 2 / 40; una tercera corrida (la base
+    importada de §43.17) coincide 0 / 1. Aplicada a las dos comparaciones 9B (`gsm8k ±0; math500 ±1`). Queda: banda
+    de Llama y Phi (sus filas dicen "none"), banda a 8 192 antes de volver a D4k, y pasar los brazos a `bench_run`
+    propio.
 25. **¿Banco desde los pesos?** (pregunta del driver 2026-11-18; T7 con número): ≈ 20 brazos con pesos y resultado
     (vectores/compilados 9B, Phi, Llama con placebos y dosis; Exp 8, D4k, complemento). Rasgos solo de pesos: magnitud
     (‖ΔW‖/‖W‖, rango efectivo, energía, G0) y dirección (proyección sobre la fila `</think>` del unembedding, sobre la
@@ -310,7 +314,13 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     `scripts/get-wikitext-2.sh`; el parquet de HF no se pudo leer sin pyarrow), 13 tests, cadena
     `lab/runs/bench/chain_dist9b.sh` (base, fusionado, placebo fusionado, vector 1,0, placebo vector; ≈ 30 GPU min;
     logits de la base ≈ 2 GB, ignorados por git) en la cola 3 tras la banda. Umbrales nulos hasta calibrar con el
-    placebo. MMLU en binario exige `-bf` (con `-f` Windows trunca el archivo; reproducido y arreglado).
+    placebo. MMLU en binario exige `-bf` (con `-f` Windows trunca el archivo; reproducido y arreglado). **Corrido
+    18-nov (§45.31, fila 48 ❌):** 4 de 5 brazos; base ppl 8,03 / HS 0,78 / WG 0,715 / MMLU 0,41; vector 1,0 ppl
+    ×1,156, KL 0,175, top-1 80,4 %; placebo vector KL 0,056; placebo fusionado KL 0,024. La primaria (placebo
+    desplaza más que la edición real) falla al revés por 3× en el par del vector. El fusionado cayó por un bug del
+    lector de procedencia (report con `files` en lista; arreglado con test) y va en la cola 6
+    (`lab/runs/bench/chain_dist9b_merged.sh`) tras dt_bias. Queda: fijar `kl_mean` / `same_top_p` de la suite con el
+    par compilado completo; vectores a 0,5 y 0,35 (¿el coste en ppl escala con la dosis?).
 
 27. **Sesgo de paso temporal +0,5 (Fan et al. 2611.21885) con placebo, en nuestra 9B** (18-nov): su edición de mayor
     ganancia (+6,6 en 490 ítems, sin control) es subir `dt_bias` de todas las capas de atención lineal en 0,5. En

@@ -1,0 +1,4 @@
+experiment dist9b_merged:
+objective: the missing dist-shift arm of 2026-11-18 (the compiled conclude edit, merged Q6_K, provenance = the compile report) against the 9B base's saved logits; the other four arms are in dist9b_base.wspl / dist9b_arms.wspl
+steps:
+    step bench_run suite=dist-shift model=hf_cache/cc_op_v2/merged-Q6_K.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=merged out=lab/runs/bench/dist9b_merged.json provenance=hf_cache/cc_op_v2/report.json
