@@ -392,7 +392,11 @@ Meng et al., MEMIT · Irie, Schlag & Schmidhuber, fast weight programmers · *A 
 Understanding, Representation, and Generation* (arXiv 2603.10090, cited in `docs/wsplang_0.7_spec.md` §9) — the map of
 the field: our work is mostly *understanding* (spectral energy T1, shared subspaces §40) plus edits of one model
 measured against placebos, which the survey does not cover; its *generation* branch (hypernetworks, generative models
-over model zoos) is trained, so it is another route than the gradient-free synthesis T4 rules out · Lu et al., *The
+over model zoos) is trained, so it is another route than the gradient-free synthesis T4 rules out; Cohen & Shalev's
+meta-model (roicohen.org, 16 Nov 2026: paragraph → ΔW for Qwen3.5-2B, 59 / 75 benchmarks up against the prompt-matched
+base, by removing label and position habits, harming once reasoning is on) is the first LLM-side instance of that
+branch, trained on thousands of adapters, so it confirms T4b's premise rather than contradicting it: the shortcut
+exists only after a gradient-trained map · Lu et al., *The
 Surprising Effectiveness of Deleting Weights in LLM Post-Training* (arXiv 2611.10866, NeurIPS 2026) — a learned binary
 mask zeroing < 0.05 % of `gate_proj` weights matches full fine-tuning on GRPO/SFT/on-policy distillation at ≥ 7B, with
 little forgetting: support for T2/T8 (what post-training changes on these benchmarks fits in very little; rank-1 per

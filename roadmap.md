@@ -346,6 +346,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
   descubrimiento automático con placebo y sellado; composición fiable; **al menos un caso prerregistrado de creación de
   capacidad nueva** (no activación ni transferencia) que pase todos los controles. Nuestro registro dice que la tercera
   es la que nadie tiene (H6/H7/H9, Naik, Ok & Lee); hasta entonces, 0.9x. De acuerdo con el texto en eso.
+  Nota 18-nov: el mapa "descripción → ΔW" que los textos de 0.9/1.0 dejaban a un LLM externo existe ya como modelo
+  entrenado (Cohen & Shalev, Qwen3.5-2B, 59/75 bancos arriba frente a la base con el mismo párrafo en el prompt, lista
+  de lectura del README); lo que escribe son hábitos (sesgo de posición / etiqueta), no conocimiento, y daña con el
+  razonamiento activado (MATH-500 22,8 → 10,5). No cambia la condición tercera: sigue sin haber creación.
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 
