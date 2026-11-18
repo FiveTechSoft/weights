@@ -242,6 +242,14 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     soporte Q4 en `wsp.py`. Pospuesto: conversor LoRA→GGUF nativo, `model_report` calibrado para Phi/Llama (J1, solo
     si el driver lo pide), panel visual (no mientras los resultados cambien a diario).
 
+23. **Soporte ternario de escritura en WSP-Lang + prueba de compatibilidad NanoWSP** (pedido del driver 2026-11-18,
+    tras cerrar §45.23 como "medir, no escribir"): ops `ternarize` (copia ternaria W = diag(s)·T con manifiesto) e
+    `imprint_ternary` (asociación escrita en float y proyectada a {−1,0,+1}·s **resolviendo por fila**, con
+    reimpresión del residuo R rondas, al estilo del acumulador de TTF). Banco: las mismas asociaciones escritas en un
+    NanoWSP float y en su versión ternaria (una pasada frente a resuelta), capacidad n a recall ≥ 95 % por anchura,
+    falsos positivos, y matriz de compatibilidad de las ops existentes sobre el modelo ternario. Plan
+    `lab/probes/ternary_nanowsp/PLAN.md`, fila 46, CPU. Agente asignado.
+
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
   con placebo estructural, `budget_params` e informe; parches `.weightpatch.json` con `apply_patch` / `rollback_last` /
