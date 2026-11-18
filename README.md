@@ -209,6 +209,13 @@ at 2,048 and empty, 63 % among those that finish. With thinking on and a 2,048 c
 model never reaches an answer (86 % and 39 % cut), so they are comparison components, not capability numbers; an arm
 that closes earlier should raise both.
 
+**Model ledger ([`docs/models.md`](docs/models.md), from 19 Nov 2026).** Every model that passes through the repo gets
+a row: what the weights say it is (`model_report` / `adapter_report`), what we measured under one protocol with the §
+of results, and what its card claims, kept apart and never mixed. The ledger also states how we compare models: axes
+under the same suite, budget, decoding and graders, paired against a reference with its band, the budget curve and
+the sealed confirmation; "more intelligent" is not a number we print, the nearest honest proxy is held-out accuracy
+at a fixed token budget across unrelated axes without losing the distribution.
+
 **Distribution shift, 4 of 5 arms (results §45.31, row 48 ❌).** `dist-shift` through `llama-perplexity` (WikiText-2
 perplexity, KL to the base's saved logits, HellaSwag / Winogrande / MMLU 400 each): base ppl 8.03, HS 0.78, WG 0.715,
 MMLU 0.41. The conclude vector at 1.0 costs **+15.6 % perplexity**, KL 0.175, top-1 agreement 80.4 %; its same-norm

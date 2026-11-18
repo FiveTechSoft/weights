@@ -1,0 +1,4 @@
+experiment rank_jack05:
+objective: Qwen3.5-9B base + Jackrong rank-16 adapter at 0.5 per request (the sealed-confirmed transplant, results 43.15) on rank-2048
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=jack05 out=lab/runs/rank/qwen9b_jack05.json lora=hf_cache/close_lora/demo_jack_r16.gguf scale=0.5

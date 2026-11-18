@@ -65,6 +65,20 @@ class SuiteTest(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             wb.resolve_suite("no-such-suite")
 
+    def test_rank_suite_is_dev_2048_plus_triviaqa_without_ifeval(self):
+        """rank-2048 (docs/models.md): the ranking stage every servable model runs: dev-2048 items and battery plus
+        TriviaQA 200; IFEval (the 4 GPU h component) only in dev-2048-full for the finalists."""
+        r, dev, full = wb.resolve_suite("rank-2048"), wb.resolve_suite("dev-2048"), wb.resolve_suite("dev-2048-full")
+        self.assertEqual(r["items"], dev["items"])
+        self.assertEqual(r["decoding"], dev["decoding"])
+        self.assertEqual(r["preservation"]["triviaqa"], 200)
+        self.assertEqual(r["preservation"].get("ifeval", 0), 0)
+        self.assertEqual(r["preservation"]["humaneval"], 164)
+        self.assertEqual(r["preservation"]["data_sha256"]["data/bench/triviaqa_rc_val_200.jsonl"],
+                         full["preservation"]["data_sha256"]["data/bench/triviaqa_rc_val_200.jsonl"])
+        self.assertEqual(r["sha256"], wb.suite_digest(r))
+        self.assertNotEqual(r["sha256"], full["sha256"])
+
 
 class BenchRunTest(unittest.TestCase):
     def test_bench_run_with_fake_server_records_extra_body(self):
@@ -89,6 +103,25 @@ class BenchRunTest(unittest.TestCase):
         self.assertEqual(rep["suite_sha"], s["sha256"])
         self.assertEqual(rep["wsplang_bench_version"], "0.8")
         self.assertEqual(rep["identity"]["model_sha"], "a" * 64)
+
+    def test_bench_run_lora_path_and_scale_become_per_request_pairs(self):
+        """lora=<adapter file> declares the identity extra; the requests carry [{"id": 0, "scale": scale}] (llama-server
+        --lora ... --lora-init-without-apply), scale 1.0 when none is given. A path must never be iterated as pairs."""
+        s = wb.make_suite("tiny", gsm_idx=[0, 1], math_idx=[], max_tokens=64, preservation=False)
+        seen = []
+
+        def fake_post(url, body):
+            seen.append(body)
+            return FAKE
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(wb, "_post", side_effect=fake_post), \
+                mock.patch.object(wb.bench_runner, "served_info", return_value=None), \
+                mock.patch.object(wb, "server_identity", return_value=dict(IDENT)):
+            out = Path(d) / "r.json"
+            rep = wb.bench_run(s, 8099, out, "armL", lora="hf_cache/close_lora/demo_jack_r16.gguf", scale=0.5,
+                               log=lambda m: None, work_dir=Path(d))
+        self.assertEqual(seen[0]["lora"], [{"id": 0, "scale": 0.5}])
+        self.assertEqual(rep["lora"], "hf_cache/close_lora/demo_jack_r16.gguf")
+        self.assertEqual(rep["lora_requests"], [[0, 0.5]])
 
     def test_spent_sealed_suite_is_refused_without_force(self):
         s = wb.make_suite("sealed-x", gsm_idx=[0], math_idx=[], max_tokens=64, preservation=False)

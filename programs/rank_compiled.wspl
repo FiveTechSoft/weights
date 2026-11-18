@@ -1,0 +1,4 @@
+experiment rank_compiled:
+objective: the compiled conclude direction merged into Q6_K (hf_cache/cc_op_v2, results 45.8) on rank-2048, with its compile report as provenance
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=compiled out=lab/runs/rank/qwen9b_compiled.json provenance=hf_cache/cc_op_v2/report.json

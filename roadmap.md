@@ -378,6 +378,20 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     Queda: el consejo "pierde la cabeza MTP" es falso para vistas GGUF (bloque 56 = MTP, agrupado 4 + 11); el lector
     no lee adaptadores GGUF; una cuantización frente a su propia base lee como cambio difuso del 1,8 % (suelo Q6_K).
 
+30. **Libro de modelos (`docs/models.md`; regla del driver 19-nov: "cada modelo que analicemos, anotado con sus
+    bancos; queremos identificar los mejores").** Una fila por modelo con tres columnas que no se mezclan: lo medido
+    aquí bajo un protocolo (suite, sha, decodificación; § de results), lo que dicen los pesos (`model_report` /
+    `adapter_report`: linaje y clase) y lo que afirma la ficha (sin verificar). Primera versión con 22 filas. Cómo
+    comparar "inteligencia": sin número único; ejes bajo la misma suite y presupuesto, pareado con banda medida con
+    lotes distintos, curva de presupuesto (2 048 / 8 192) y confirmación sellada; el proxy honesto es precisión
+    held-out a presupuesto fijo en ejes no relacionados sin perder la distribución. **Ranking etapa 1 en marcha
+    (19-nov, pregunta del driver "¿es MiMo 2.6 el más inteligente?"):** suite `rank-2048` (dev-2048 + TriviaQA 200, sin
+    IFEval; ≈ 2,5 GPU h por 9B), seis configuraciones (base, MiMo, base + Jackrong ×0,5, compilado, R1-Llama-8B, Phi
+    4-mini) en `lab/runs/rank/chain.sh`, cola 8 tras `QUEUE7 DONE` (≈ 14 GPU h; fin ≈ 19-nov tarde), plan
+    `lab/probes/ranking/PLAN.md`, fila 51. `bench_run lora= scale=` arreglado con test (la ruta se iteraba como pares).
+    Queda: etapa 2 (`dev-2048-full` con IFEval a los dos primeros; `dev-8192` para la curva de presupuesto), Jackrong
+    completo y TwIL exigen descarga (decisión del driver), columna de coste (tokens por acierto) en `bench_table`.
+
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
   con placebo estructural, `budget_params` e informe; parches `.weightpatch.json` con `apply_patch` / `rollback_last` /

@@ -1,0 +1,4 @@
+experiment rank_llama:
+objective: DeepSeek-R1-Distill-Llama-8B Q6_K on rank-2048 (lab/probes/ranking/PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=llama out=lab/runs/rank/r1llama8b.json

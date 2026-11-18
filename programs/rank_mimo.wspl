@@ -1,0 +1,4 @@
+experiment rank_mimo:
+objective: MiMo-V2.6-Distill-Qwen-9B Q6_K on rank-2048 (lab/probes/ranking/PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=mimo out=lab/runs/rank/mimo.json

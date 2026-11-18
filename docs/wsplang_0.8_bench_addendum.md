@@ -111,6 +111,14 @@ model. **Verdict:** `preserves distribution` if KL mean ≤ `thresholds.kl_mean`
 the same-norm placebo's own KL and top-1 after the first chain, as the PLAN fixes). Table columns: ppl, KL mean, top-1
 agree %, HS, WG, MMLU. Data files and licences: `data/bench/README.md`. Tests: `tests/test_dist_shift.py`.
 
+## Ranking stage: `rank-2048` (2026-11-19)
+
+`engine/bench_suites/rank-2048.json` = the `dev-2048` items and battery plus TriviaQA 200, without IFEval: the suite
+every servable model runs for the ledger (`docs/models.md`, `lab/probes/ranking/PLAN.md`), about 2.5 GPU h per 9B;
+`dev-2048-full` (IFEval, 4 more GPU h) is for the finalists. Since 0.8.2 `bench_run lora=<adapter.gguf> scale=<s>`
+declares the adapter in the identity *and* asks llama-server for adapter 0 at `scale` on every request (the per-request
+form of `--lora … --lora-init-without-apply`; `lora_requests` in the run JSON); before, a path was wrongly iterated.
+
 ## Preservation beyond HumanEval: IFEval and TriviaQA (`dev-2048-full`, 2026-11-18)
 
 Two optional components of `engine/preserve_bench.py`, switched on from a suite's `preservation` block

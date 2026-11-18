@@ -468,7 +468,10 @@ def bench_run(suite, port=None, out=None, arm=None, extra_body=None, lora=None, 
         if not identity["model_path"] and not unknown_model:
             raise IdentityError("the server reports no model path (/props and /v1/models): refusing to write a run "
                                 "without identity; pass unknown_model=true to record it as unidentified")
-        res = _run_llm(suite, port, arm, work, extra_body, lora, log)
+        # lora= is the adapter file (identity extra); every request asks llama-server for adapter 0 at `scale`
+        # (1.0 when not given), the per-request form of --lora ... --lora-init-without-apply. A path is never iterated.
+        lora_req = [(0, float(scale) if scale is not None else 1.0)] if lora else None
+        res = _run_llm(suite, port, arm, work, extra_body, lora_req, log)
         if not identity["model_path"] and (res.get("served") or {}).get("model_path"):
             identity["model_path"] = res["served"]["model_path"]
             identity["model_sha"] = res["served"].get("sha256")
@@ -482,7 +485,9 @@ def bench_run(suite, port=None, out=None, arm=None, extra_body=None, lora=None, 
     run = {"wsplang_bench_version": VERSION, "suite": suite["name"], "suite_sha": suite["sha256"],
            "model_class": cls, "think": suite.get("think", "auto"), "arm": arm, "identity": identity,
            "provenance": prov, "served": res.get("served"), "binary": identity["binary"], "decoding": suite["decoding"],
-           "extra_body": extra_body, "lora": lora, "force_reuse": bool(force_reuse), "sealed_use": suite.get("sealed_use"),
+           "extra_body": extra_body, "lora": str(lora) if lora else None,
+           "lora_requests": [[i, s] for i, s in lora_req] if cls not in file_classes and lora else None,
+           "force_reuse": bool(force_reuse), "sealed_use": suite.get("sealed_use"),
            "benchmarks": res["benchmarks"], "preservation": res["preservation"], "think_share": res.get("think_share"),
            "items": res["items"], "preservation_items": res["preservation_items"],
            "thresholds": suite.get("thresholds"), "commands": res.get("commands"),
