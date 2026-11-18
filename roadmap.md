@@ -257,6 +257,17 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     banda de ruido de la base corrida dos veces, preservación no fallida), registro `lab/runs/bench/index.json`, tabla
     `docs/wsplang_benchmarks.md`, sección "Benchmarks" en la spec; relleno con las corridas de dev existentes que
     coincidan exactamente. Agente asignado. Primera corrida GPU a encolar: base 9B dos veces (banda).
+    **Requisito del driver (18-nov): "valorar objetivamente cualquier modelo, incluidos los generados por WSPLang".**
+    Añadido al diseño: (a) identidad obligatoria (sha del modelo servido vía `/props`, del vector/LoRA, del binario y
+    de la suite; sin identidad no se registra); (b) procedencia `provenance=` (manifiesto de `wsp.py`, informe del
+    compilado, bundle de `commit_manifest`, manifiesto de `edit_column`), verificada contra el sha servido, fila
+    "base@sha + N parches"; "edición frente a su base" solo si la base del manifiesto es la base medida, si no "dos
+    modelos"; (c) clase de modelo en la suite (`llm-chat-think`, `llm-chat`, `nanowsp`) con rechazo de desajustes y
+    suite `nanowsp-wspx` (recall, parity8, mod13, fsm4, noecho, en CPU) para los micro-modelos sintetizados, incluidos
+    los ternarios del hueco 23; (d) correctores válidos sin `<think>`; (e) `bench_compare` entre dos modelos cualesquiera
+    (misma suite, pares y banda, sin veredicto de mejora, que exige placebo y procedencia). Objetividad = misma suite
+    con hash + misma decodificación + dos correctores + banda de ruido medida + placebo si hay edición + identidad y
+    procedencia en cada fila.
 25. **¿Banco desde los pesos?** (pregunta del driver 2026-11-18; T7 con número): ≈ 20 brazos con pesos y resultado
     (vectores/compilados 9B, Phi, Llama con placebos y dosis; Exp 8, D4k, complemento). Rasgos solo de pesos: magnitud
     (‖ΔW‖/‖W‖, rango efectivo, energía, G0) y dirección (proyección sobre la fila `</think>` del unembedding, sobre la
