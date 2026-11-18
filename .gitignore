@@ -50,3 +50,4 @@ data/bench/*.csv
 data/bench/*.bin
 data/bench/*.zip
 data/bench/*.parquet
+data/bench/*.jsonl

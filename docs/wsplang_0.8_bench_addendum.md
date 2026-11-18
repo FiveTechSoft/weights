@@ -111,6 +111,26 @@ model. **Verdict:** `preserves distribution` if KL mean ≤ `thresholds.kl_mean`
 the same-norm placebo's own KL and top-1 after the first chain, as the PLAN fixes). Table columns: ppl, KL mean, top-1
 agree %, HS, WG, MMLU. Data files and licences: `data/bench/README.md`. Tests: `tests/test_dist_shift.py`.
 
+## Preservation beyond HumanEval: IFEval and TriviaQA (`dev-2048-full`, 2026-11-18)
+
+Two optional components of `engine/preserve_bench.py`, switched on from a suite's `preservation` block
+(`ifeval: 541`, `triviaqa: 200`, `short_max_tokens`), shipped in `engine/bench_suites/dev-2048-full.json` (the same
+items, decoding and graders as `dev-2048`, whose digest is unchanged; the two data files are pinned by sha256 in the
+block). Data in `data/bench/` (git-ignored, sources and licences in `data/bench/README.md`).
+- **IFEval**: the 541 prompts of google-research/instruction_following_eval, run as plain chat (thinking stripped), scored
+  by `engine/ifeval_checks.py`, a pure-Python re-implementation of 24 of the 25 instruction types (not the vendored
+  repo); `language:response_language` is unsupported, so 510 prompts are scorable. Prompt-level and instruction-level
+  accuracy, **strict** and **loose** (the paper's variants: minus first / last line, minus `*`). Stated deviations from
+  the reference checker (sentence and word tokenisation, no language check on the case instructions) are listed in
+  `lab/probes/preserve/IFEVAL_TRIVIA.md`: the numbers are IFEval-style, not comparable to the public leaderboard.
+- **TriviaQA**: the first 200 rows of `rc.nocontext` validation; short-answer prompt; `em` = normalised first line equals
+  a normalised alias; `contains` reported apart.
+- `bench_compare` reports paired lost / gained for IFEval strict / loose and TriviaQA em; their thresholds are **null
+  until calibrated** (base twice + same-norm placebo) and do not enter the `preserves` flag yet (the comparison says so
+  in `notes`). Table columns "IFEval strict / loose (scorable)" and "TriviaQA em /200".
+- Cost on the 9B with thinking on: ≈ 3.5-4 GPU h per arm (the model thinks near the 2,048 cap on open prompts); see
+  `IFEVAL_TRIVIA.md` for the cheaper options to decide with the driver.
+
 ## What this section does not do
 
 - It is **not the sealed protocol** (`lab/probes/sealed/README.md`): a sealed suite is single use, its result is read

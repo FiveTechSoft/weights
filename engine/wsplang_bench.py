@@ -337,7 +337,9 @@ def _run_llm(suite, port, arm, work, extra_body, lora, log):
     if pres:
         pres_rep = preserve_bench.run(f"{arm}_preserve", port, work, max_tokens=pres.get("max_tokens", dec["max_tokens"]),
                                       parallel=dec["parallel"], he_n=pres.get("humaneval", 164),
-                                      comp_n=pres.get("compliance", 40), lora=lora, log=log)
+                                      comp_n=pres.get("compliance", 40), lora=lora, log=log,
+                                      ifeval_n=int(pres.get("ifeval") or 0), trivia_n=int(pres.get("triviaqa") or 0),
+                                      short_max_tokens=pres.get("short_max_tokens"))
     think_share = None
     if rep["items"]:
         think_share = round(sum(r.get("reasoning_chars", 0) > 0 for r in rep["items"]) / len(rep["items"]), 3)
@@ -758,6 +760,8 @@ def registry_add(index_path, run_path, model=None):
         "humaneval": (pres.get("humaneval") or {}).get("ok"), "compliance": (pres.get("compliance") or {}).get("ok"),
         "garbage": ((pres.get("garbage") or {}).get("repeat_16gram", 0) + (pres.get("garbage") or {}).get("nonascii_run", 0))
         if pres.get("garbage") else None,
+        "ifeval_strict": (pres.get("ifeval") or {}).get("prompt_strict"), "ifeval_loose": (pres.get("ifeval") or {}).get("prompt_loose"),
+        "ifeval_scorable": (pres.get("ifeval") or {}).get("scorable"), "triviaqa": (pres.get("triviaqa") or {}).get("em"),
         "extras": (ident.get("extras") or {}) or None, "extra_body": run.get("extra_body"), "logits": logits,
         "date": (run.get("created") or "")[:10], "imported_from": run.get("imported_from")})
     idx["runs"].sort(key=lambda r: (r["model_class"], r["model"], r["suite"], r["arm"]))
@@ -801,8 +805,9 @@ def render_table(index_path, out_md):
          "per-item records are in the file.", "", RULE_TEXT, "",
          "## Runs", "",
          "| model (sha) | class | provenance | suite | arm | GSM8K g1 / g2 | MATH-500 g1 / g2 | other | cuts | "
-         "mean tokens (gsm / math) | HumanEval /164 | compliance /40 | garbage | ppl | KL mean | top-1 agree % | HS | WG | MMLU | date | source |",
-         "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+         "mean tokens (gsm / math) | HumanEval /164 | compliance /40 | garbage | IFEval strict / loose (scorable) | TriviaQA em /200 | "
+         "ppl | KL mean | top-1 agree % | HS | WG | MMLU | date | source |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
 
     def f3(v, nd=3):
         return "-" if v is None else (f"{v:.{nd}f}" if isinstance(v, float) else str(v))
@@ -817,6 +822,8 @@ def render_table(index_path, out_md):
                  f"{r['humaneval'] if r['humaneval'] is not None else '-'} | "
                  f"{r['compliance'] if r['compliance'] is not None else '-'} | "
                  f"{r['garbage'] if r['garbage'] is not None else '-'} | "
+                 f"{(str(r.get('ifeval_strict')) + ' / ' + str(r.get('ifeval_loose')) + ' (' + str(r.get('ifeval_scorable')) + ')') if r.get('ifeval_strict') is not None else '-'} | "
+                 f"{r.get('triviaqa') if r.get('triviaqa') is not None else '-'} | "
                  f"{f3(lg.get('ppl'))} | {f3(lg.get('kl_mean'), 5)} | {f3(lg.get('same_top_p'), 2)} | {f3(lg.get('hellaswag'))} | "
                  f"{f3(lg.get('winogrande'))} | {f3(lg.get('mmlu'))} | {r['date']} | "
                  f"{'imported: ' + r['imported_from'] if r.get('imported_from') else 'bench_run'} |")

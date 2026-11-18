@@ -8,6 +8,14 @@ Runs beside a sealed confirmation so an edit that helps GSM8K / MATH is also che
                NOT IFEval: it measures whether a simple surface instruction is still obeyed, nothing more;
   garbage      over every output of both components: repeated 16-gram (loop), a run of non-ASCII letters >= NONASCII_RUN
                characters (the fragment salad of a broken model), and cut at max_tokens.
+  ifeval       (optional, ifeval_n > 0) IFEval prompts (data/bench/ifeval_input_data.jsonl, 541) run as plain chat;
+               strict and loose scoring by engine/ifeval_checks.py (24 of 25 instruction types; prompts with the
+               unsupported language check are counted but not scored); prompt- and instruction-level accuracies.
+  triviaqa     (optional, trivia_n > 0) TriviaQA rc.nocontext validation, first 200 rows (data/bench/
+               triviaqa_rc_val_200.jsonl); a short answer is asked for; exact match after SQuAD-style normalisation
+               against the dataset's normalized_aliases (em) and the looser "an alias appears in the answer" (contains).
+  The ifeval and triviaqa thresholds of the preservation rule are null until calibrated (compare() reports them, they
+  do not block).
 Same protocol as engine/bench_runner.py: temperature 0, seed 0, the model's own chat template, resume from
 <out_dir>/<name>.partial.jsonl, one JSON report with summary + per-item rows (ids kept for paired comparisons).
 """
@@ -23,8 +31,14 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "lab" / "probes" / "close_probe"))
 from he_eval import build_program, run_program  # noqa: E402
 from engine.bench_runner import endpoint_url, served_info, split_think  # noqa: E402
+from engine import ifeval_checks  # noqa: E402
 
 KINDS = ("end_done", "words_not_digits", "one_sentence", "all_caps")
+TRIVIA_PATH = ROOT / "data" / "bench" / "triviaqa_rc_val_200.jsonl"
+TRIVIA_PROMPT = "Answer the following trivia question with just the answer (a name, a number or a short phrase), no explanation.\nQuestion: {q}\nAnswer:"
+THRESHOLDS = {"ifeval_strict": None, "ifeval_loose": None, "triviaqa": None}   # not calibrated yet (base twice + placebo)
+_ARTICLES = re.compile(r"\b(a|an|the)\b")
+_PUNCT = re.compile(r"[^\w\s]")
 INSTRUCTIONS = {
     "end_done": "Answer the question. End your reply with the single word DONE as the last word.",
     "words_not_digits": "Answer the question. Write every number in your reply in words; your reply must contain no digits.",
@@ -136,10 +150,63 @@ def check_compliance(kind, content):
     raise ValueError(f"unknown compliance kind {kind!r}")
 
 
+def load_triviaqa(n=None, path=TRIVIA_PATH):
+    items = [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
+    return items[:n] if n else items
+
+
+def normalize_answer(s):
+    """SQuAD / TriviaQA normalisation: lowercase, drop punctuation and articles, collapse whitespace."""
+    s = (s or "").lower()
+    s = _PUNCT.sub(" ", s)
+    s = _ARTICLES.sub(" ", s)
+    return " ".join(s.split())
+
+
+def _first_line(content):
+    for line in (content or "").splitlines():
+        if line.strip():
+            return line.strip()
+    return ""
+
+
+def _aliases(item):
+    al = set(item.get("normalized_aliases") or [])
+    al |= {normalize_answer(a) for a in (item.get("aliases") or [])}
+    if item.get("value"):
+        al.add(normalize_answer(item["value"]))
+    return {a for a in al if a}
+
+
+def trivia_match(content, item):
+    """Exact match: the normalised first non-empty line of the answer equals one of the normalised aliases."""
+    return normalize_answer(_first_line(content)) in _aliases(item)
+
+
+def trivia_contains(content, item):
+    """Looser reading: some normalised alias occurs as a whole-word phrase inside the normalised answer."""
+    text = " " + normalize_answer(content) + " "
+    return any((" " + a + " ") in text for a in _aliases(item))
+
+
 def summarize(rows):
     he = [r for r in rows if r["bench"] == "humaneval"]
     co = [r for r in rows if r["bench"] == "compliance"]
+    ie = [r for r in rows if r["bench"] == "ifeval"]
+    tq = [r for r in rows if r["bench"] == "triviaqa"]
     out = {}
+    if ie:
+        sc = [r for r in ie if r.get("scorable")]
+        ins_s = sum(sum(bool(x) for x in (r.get("per_instruction_strict") or [])) for r in sc)
+        ins_l = sum(sum(bool(x) for x in (r.get("per_instruction_loose") or [])) for r in sc)
+        ins_n = sum(len(r.get("instruction_ids") or []) for r in sc)
+        out["ifeval"] = {"n": len(ie), "scorable": len(sc), "prompt_strict": sum(bool(r["strict"]) for r in sc),
+                         "prompt_loose": sum(bool(r["loose"]) for r in sc), "instructions": ins_n,
+                         "instruction_strict": ins_s, "instruction_loose": ins_l}
+    if tq:
+        out["triviaqa"] = {"n": len(tq), "em": sum(bool(r["ok"]) for r in tq), "contains": sum(bool(r.get("contains")) for r in tq),
+                           "empty": sum(not (r.get("answer") or "").strip() for r in tq),
+                           "cut": sum(r["finish"] == "length" for r in tq)}
     if he:
         toks = sorted(r["tokens"] for r in he)
         m = len(toks) // 2
@@ -172,12 +239,18 @@ def _chat(url, text, max_tokens, lora=None):
             "tokens": r["usage"]["completion_tokens"]}
 
 
-def run(name, endpoint, out_dir, max_tokens=2048, parallel=2, he_n=164, comp_n=40, lora=None, log=print):
+def run(name, endpoint, out_dir, max_tokens=2048, parallel=2, he_n=164, comp_n=40, lora=None, log=print,
+        ifeval_n=0, trivia_n=0, short_max_tokens=None):
+    """ifeval_n / trivia_n: how many IFEval prompts / TriviaQA items to run (0 = component off). short_max_tokens caps
+    the TriviaQA answers (default max_tokens; the thinking budget still applies to models that think)."""
     url = endpoint_url(endpoint)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     jobs = [("humaneval", p["task_id"], p) for p in load_humaneval(he_n)]
     jobs += [("compliance", it["i"], it) for it in (compliance_set(comp_n) if comp_n else [])]
+    jobs += [("ifeval", p["key"], p) for p in (ifeval_checks.load_ifeval(ifeval_n) if ifeval_n else [])]
+    jobs += [("triviaqa", it["question_id"], it) for it in (load_triviaqa(trivia_n) if trivia_n else [])]
+    short_max = short_max_tokens or max_tokens
     partial = out_dir / f"{name}.partial.jsonl"
     rows = [json.loads(l) for l in partial.read_text(encoding="utf-8").splitlines()] if partial.exists() else []
     done = {(r["bench"], r["id"]) for r in rows}
@@ -193,9 +266,17 @@ def run(name, endpoint, out_dir, max_tokens=2048, parallel=2, he_n=164, comp_n=4
             r = _chat(url, msg, max_tokens, lora)
             ok = run_program(build_program(p["prompt"], r["content"], p["test"], p["entry_point"]))
             row = {"bench": bench, "id": ident, "ok": bool(ok)}
-        else:
+        elif bench == "compliance":
             r = _chat(url, f"{p['question']}\n{p['instruction']}", max_tokens, lora)
             row = {"bench": bench, "id": ident, "kind": p["kind"], "ok": check_compliance(p["kind"], r["content"])}
+        elif bench == "ifeval":
+            r = _chat(url, p["prompt"], max_tokens, lora)
+            s = ifeval_checks.score_prompt(p, r["content"])
+            row = {"bench": bench, "id": ident, "ok": bool(s["strict"]), **s}
+        else:  # triviaqa
+            r = _chat(url, TRIVIA_PROMPT.format(q=p["question"]), short_max, lora)
+            row = {"bench": bench, "id": ident, "ok": trivia_match(r["content"], p),
+                   "contains": trivia_contains(r["content"], p), "answer": _first_line(r["content"])[:200]}
         full = r["reasoning"] + r["content"]
         row.update({"finish": r["finish"], "tokens": r["tokens"], "reasoning_chars": len(r["reasoning"]),
                     "tail": full[-TAIL_CHARS:], **garbage_measures(full)})
@@ -226,10 +307,35 @@ def compare(base_rows, arm_rows):
         out[bench] = {"n": len(keys), "base": sum(bool(b[k]["ok"]) for k in keys), "arm": sum(bool(a[k]["ok"]) for k in keys),
                       "lost": sum(bool(b[k]["ok"]) and not a[k]["ok"] for k in keys),
                       "gained": sum((not b[k]["ok"]) and bool(a[k]["ok"]) for k in keys)}
+    # optional components (ifeval strict + loose, triviaqa em); thresholds null until calibrated, so they report only
+    ie = [k for k in b if k[0] == "ifeval" and k in a and b[k].get("scorable", True) and a[k].get("scorable", True)]
+    if ie:
+        out["ifeval"] = {"n": len(ie),
+                         "base_strict": sum(bool(b[k].get("strict")) for k in ie), "arm_strict": sum(bool(a[k].get("strict")) for k in ie),
+                         "base_loose": sum(bool(b[k].get("loose")) for k in ie), "arm_loose": sum(bool(a[k].get("loose")) for k in ie),
+                         "lost_strict": sum(bool(b[k].get("strict")) and not a[k].get("strict") for k in ie),
+                         "gained_strict": sum((not b[k].get("strict")) and bool(a[k].get("strict")) for k in ie),
+                         "lost_loose": sum(bool(b[k].get("loose")) and not a[k].get("loose") for k in ie),
+                         "gained_loose": sum((not b[k].get("loose")) and bool(a[k].get("loose")) for k in ie)}
+    tq = [k for k in b if k[0] == "triviaqa" and k in a]
+    if tq:
+        out["triviaqa"] = {"n": len(tq), "base": sum(bool(b[k]["ok"]) for k in tq), "arm": sum(bool(a[k]["ok"]) for k in tq),
+                           "lost": sum(bool(b[k]["ok"]) and not a[k]["ok"] for k in tq),
+                           "gained": sum((not b[k]["ok"]) and bool(a[k]["ok"]) for k in tq)}
+    out["thresholds"] = dict(THRESHOLDS)
     gb, ga = summarize(base_rows)["garbage"], summarize(arm_rows)["garbage"]
     rate = lambda g: (g["repeat_16gram"] + g["nonascii_run"]) / max(1, g["n"])  # noqa: E731
     out["garbage_rate"] = {"base": round(rate(gb), 4), "arm": round(rate(ga), 4)}
-    out["preserves"] = (out["humaneval"]["arm"] >= out["humaneval"]["base"] - 5
-                        and out["compliance"]["arm"] >= out["compliance"]["base"] - 3
-                        and rate(ga) <= rate(gb) + 0.02)
+    ok = (out["humaneval"]["arm"] >= out["humaneval"]["base"] - 5
+          and out["compliance"]["arm"] >= out["compliance"]["base"] - 3
+          and rate(ga) <= rate(gb) + 0.02)
+    notes = []
+    if ie and THRESHOLDS["ifeval_strict"] is not None:
+        ok = ok and out["ifeval"]["arm_strict"] >= out["ifeval"]["base_strict"] - THRESHOLDS["ifeval_strict"]
+    if tq and THRESHOLDS["triviaqa"] is not None:
+        ok = ok and out["triviaqa"]["arm"] >= out["triviaqa"]["base"] - THRESHOLDS["triviaqa"]
+    if (ie or tq) and (THRESHOLDS["ifeval_strict"] is None or THRESHOLDS["triviaqa"] is None):
+        notes.append("ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet")
+    out["preserves"] = ok
+    out["notes"] = notes
     return out
