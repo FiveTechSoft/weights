@@ -8,3 +8,9 @@
 {"ts": "2026-11-04T19:23:03", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-placebo.gguf\", \"ops\": 2}"}
 {"ts": "2026-11-04T19:24:06", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\mimo-9b__loopfix-placebo.gguf\", \"ops_count\": 2}"}
 {"ts": "2026-11-04T19:24:06", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-18T04:05:42", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-d4k.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-18T04:06:05", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-d4k.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-18T04:06:05", "kind": "write", "detail": "edit"}
+{"ts": "2026-11-18T04:06:50", "kind": "write", "detail": "reserva {\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-d4k-complement.gguf\", \"ops\": 2}"}
+{"ts": "2026-11-18T04:07:09", "kind": "edit", "detail": "{\"out\": \"C:\\\\weights\\\\servidos\\\\qwen35-08b__exp8-d4k-complement.gguf\", \"ops_count\": 2}"}
+{"ts": "2026-11-18T04:07:09", "kind": "write", "detail": "edit"}

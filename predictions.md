@@ -58,14 +58,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 40 | 2026-11-17 | `cc_llama/PLAN.md` Parte C (dosis: vector Llama a 0,25 y 0,35 en dev; sellado 3 solo si pasa la puerta) | 0,25: GSM **77-82** (base 74), perdidos (base bien y acabado → mal) **3-7** (0,5: 9), cortes 6-14, tokens −18 a −32 %; MATH **26-31**, cortes 16-22. 0,35: GSM 76-81, perdidos 5-9, cortes 3-9, tokens −28 a −40 %; MATH 28-33. Puerta (GSM ≥ 77, perdidos ≤ 6, MATH ≥ 26, tokens ≤ −20 %) pasa en una de las dos (55 %). Si corre el sellado 3 (200 + 100): base GSM 150-170, MATH 44-60; vector ± 4 de base en GSM, +0 a +8 en MATH, tokens −20 a −35 %; placebo ± 3; **no confirma C1** (60 %), confirma (25 %). Sorpresa si a 0,25 GSM < base − 3, perdidos ≥ 10 o ahorro < 10 %; > 2 % sin pensamiento; sellado 3 vector > base + 10 en GSM; placebo significativo | 0,25: GSM **84** (↑ banda), perdidos 4, cortes 10, tokens −26 %; MATH 31, cortes 17. 0,35: GSM 81, perdidos 6, cortes 4, tokens −36 %; MATH **37** (↑ banda), cortes 12. Puerta pasa en las dos; elegida 0,35. Sellado 3: base GSM 158, MATH **40** (↓ banda); vector 156 (−2; 14/16) y **58** (+18, ↑ banda; 20/2, p 0,0001, dos correctores), tokens −31 % / −18 %; placebo 152 (**−6**, n.s.) / 38. **CONFIRMA** (C3 en el límite: 156 ≥ 156). 19 de los 20 MATH ganados son cortes de la base; 16 GSM perdidos acabados mal (10 % de los que la base acierta, frente a 17-20 % a 0,5). Ninguna sorpresa declarada disparada | 2026-11-17 | §45.21 | ❌ (15 de 21 en banda; falla la primaria: apostamos "no confirma" y confirmó) |
 
-## Cuenta (40 filas; 36 puntuables)
+| 41 | 2026-11-18 | `exp8_prune/PLAN.md` (poda D4k de alphaXiv a la réplica Exp 8 en la 0.8B: `full` otra vez, `d4k` = 4 096 entradas mayores por capa, `d4k_comp` = las otras 61 440; arnés §45.12, voraz, 2 048) | Premisa: paso 0 D4k conserva ≈ 0,76-0,79 del empuje a lo largo de u (calculado antes). `full`: GSM **10-16** acertados (2026-11-14: 13; ruido del voraz por lotes ≤ 3), MATH 0-1. `d4k`: GSM **6-11** acertados y 6-12 acabados (menos empuje → menos cierres: la dosis manda en §45.8/§45.21), MATH 0-1; **R1 falla** (d4k < full − 3 o pares significativos) **55 %**, R1 pasa (su afirmación) 35 %, d4k ≤ 3 (colapso) 10 %. `d4k_comp`: GSM 0-3 acertados, 0-5 acabados, MATH 0 (**R2 pasa 80 %**). Sorpresa si d4k > full + 3; si d4k_comp ≥ 5 acertados; si `full` sale fuera de 10-16 (ruido mayor del supuesto); si algún brazo acierta en MATH ≥ 3 | | | | ⏳ |
+
+## Cuenta (41 filas; 36 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 14 |
 | ❌ falla | 16 |
-| ⏳ / — | 4 |
+| ⏳ / — | 5 |
 
 Acierto limpio 6/36 = 17 %; acierto o parcial 20/36 = 56 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es
