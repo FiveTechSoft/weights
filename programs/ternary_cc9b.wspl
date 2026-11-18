@@ -1,0 +1,6 @@
+experiment ternary_cc9b:
+steps:
+    step ternary_survival base=hf_cache/qwen35-9b-hf delta=hf_cache/cc_op_v2/vector/fit.pt layers=1,16,31 rule=tq2_0 mode=requant scales=1,2,5,10,20 out=lab/runs/ternary/cc9b_tq2_0_requant.json
+    step ternary_survival base=hf_cache/qwen35-9b-hf delta=hf_cache/cc_op_v2/vector/fit.pt layers=1,16,31 rule=tq2_0 mode=fixed scales=1,2,5,10,20 out=lab/runs/ternary/cc9b_tq2_0_fixed.json
+    step ternary_survival base=hf_cache/qwen35-9b-hf delta=hf_cache/cc_op_v2/vector/fit.pt layers=1,16,31 rule=absmean mode=requant scales=1,2,5,10,20 out=lab/runs/ternary/cc9b_absmean_requant.json
+    step ternary_survival base=hf_cache/qwen35-9b-hf delta=hf_cache/cc_op_v2/vector/fit.pt layers=1,16,31 rule=absmean mode=fixed scales=1,2,5,10,20 out=lab/runs/ternary/cc9b_absmean_fixed.json

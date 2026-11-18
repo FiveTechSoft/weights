@@ -1,0 +1,6 @@
+experiment ternary_exp8:
+steps:
+    step ternary_survival base=hf_cache/qwen35-08b-hf delta=data/exp8_edit_recovered.npz layers=15,19 rule=tq2_0 mode=requant scales=1,2,5,10,20 out=lab/runs/ternary/exp8_tq2_0_requant.json
+    step ternary_survival base=hf_cache/qwen35-08b-hf delta=data/exp8_edit_recovered.npz layers=15,19 rule=tq2_0 mode=fixed scales=1,2,5,10,20 out=lab/runs/ternary/exp8_tq2_0_fixed.json
+    step ternary_survival base=hf_cache/qwen35-08b-hf delta=data/exp8_edit_recovered.npz layers=15,19 rule=absmean mode=requant scales=1,2,5,10,20 out=lab/runs/ternary/exp8_absmean_requant.json
+    step ternary_survival base=hf_cache/qwen35-08b-hf delta=data/exp8_edit_recovered.npz layers=15,19 rule=absmean mode=fixed scales=1,2,5,10,20 out=lab/runs/ternary/exp8_absmean_fixed.json

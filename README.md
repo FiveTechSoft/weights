@@ -116,6 +116,30 @@ dose halves the cost of premature closure, it does not remove it. Third sealed s
 dev after 0.5 failed on the first two; gate pre-registered). Prediction row 40 failed on its primary reading: we gave "does
 not confirm" 60 % and it confirmed.
 
+**alphaXiv's pruned Exp 8 edit in our harness: the harness cannot tell (results §45.22, 2026-11-18).** Plan fixed
+before the run (`lab/probes/exp8_prune/PLAN.md`, prediction row 41): the MIT Exp 8 edit on Qwen3.5-0.8B pruned to its
+4,096 largest entries per layer (6 %; keeps 74-76 % of the edit's energy and 76-79 % of its push along the edit direction,
+two methods), its complement (the other 94 %), and the full edit run again, on the §45.12 harness (GSM8K 100 + MATH 50,
+greedy, 2,048 tokens). GSM8K correct: full 8 (13 on 2026-11-14 with the same file, binary and items), pruned 2,
+complement 5; MATH at the floor everywhere. Discordant pairs between the two runs of the *same* edit: 11 of 100. The
+pruned-vs-full and complement-vs-full differences are the size of that noise, so the only statement that survives is
+"pruning does not improve anything"; whether 6 % of the entries keeps the effect is not decidable at n = 100 with
+batched greedy decoding, and alphaXiv's ± 3 pp screen cannot decide it either. Row 41 scored partial (the primary
+reading "R1 fails" came out, for a reason the prediction did not foresee). Lesson written down: run the same
+configuration twice before comparing two edits on the 0.8B; if the expected difference does not double the band, do not run.
+
+**Ternary weights: our edits do not fit in {−1, 0, +1} at their working dose (results §45.23, 2026-11-18).** Asked
+after *ttf* (ternary Qwen3.8-27B): plan fixed first (`lab/probes/ternary/PLAN.md`, row 42), then `engine/ternary.py`
+and the read-only WSP-Lang op `ternary_survival` (11 tests written before the code; independent numpy recount agrees).
+Under ggml's TQ2_0 rule only 10-12 % of a `down_proj`'s entries are non-zero at all, and a 0.8B quantised that way
+without recovery training answers 0 of 10 and emits multilingual fragments (which is why *ttf* trains 72M tokens
+after converting). Ternarising an edited model keeps most of the edit as a *component* of the ternary difference
+(alpha 0.6-0.9) but buried in orthogonal junk 2× (Exp 8 edit) to 12× (our compiled conclude vector) larger: direction
+cosine 0.42-0.47 for Exp 8 and 0.08-0.10 for the compile at dose 1; Exp 8 needs 10-20× its dose before the edit is the
+dominant content, the compile never reaches it within 20×; BitNet's absmean rule flips more entries but loses direction
+as the dose grows. Decision: no ternary writer; a ternary backend would carry our edits only in float scales or
+adapters, which `delta_to_lora` and `compile_control_vector` already produce. The op stays as the instrument.
+
 **Evidence synthesis (16 November):** [what the Phi results establish, and what they do not](docs/phi_findings_2026-11-16.md).
 Measured transfer, compilation, budget controls, practical uses and limits, with AHA / WeightBench / Auto-WSP context.
 
@@ -305,6 +329,7 @@ The contrast gain this gives has not been measured.
 | [`engine/weight_diff.py`](engine/weight_diff.py) | Tensor-by-tensor diff of two checkpoints. It reads safetensors locally or by HTTP ranges and maps tensor names across architectures. Per tensor it gives relative change, spectrum and subspace signatures; storage casts are not counted as change. |
 | [`engine/contrast_vector.py`](engine/contrast_vector.py) | `contrast_vector`: per-layer mean difference of two sets of answers, written as llama.cpp per-layer increments (GGUF) + placebo. |
 | [`engine/sealed_set.py`](engine/sealed_set.py) | Sealed confirmation set (GSM8K 100 + MATH-500 50) with a sha256 check; rule in [`lab/probes/sealed/`](lab/probes/sealed/README.md). |
+| [`engine/ternary.py`](engine/ternary.py) | Ternarisation (ggml TQ2_0, BitNet absmean) and what survives of an edit under it; WSP-Lang op `ternary_survival` (report only; results §45.23). |
 | [`engine/lora_export.py`](engine/lora_export.py) | `delta_to_lora`: exact SVD of each matrix's change, PEFT adapter + `energy.json` (share of the change kept at each rank). |
 | [`demos/math_transplant/`](demos/math_transplant/) | The main result as a runnable demo (adapter off vs on, same server). |
 | [`lab/probes/close_probe/`](lab/probes/close_probe/) | Base vs improved Qwen3.5-9B: fast eval (`fast_eval.py`), reward (`reward.py`), behaviour distillation (`distill_gen.py`, `distill_train.py`), closed-form fit (`cf_distill.py`), placebo adapters (`placebo_lora.py`). |

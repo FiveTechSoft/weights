@@ -3424,6 +3424,111 @@ GSM + MATH en dev; sellado 3 solo si GSM ≥ 77, perdidos ≤ 6, MATH ≥ 26 y t
   servido `403a545b…` en las cinco líneas `serving` del log y en el campo `served` de los 5 JSON; `seal ok 200 100`;
   `data/sealed_confirm3.json` sin cambio en los ítems (solo se anota el uso en `use`).
 
+### 45.22 Poda D4k de alphaXiv sobre la réplica Exp 8 (0.8B): el 6 % de las entradas pierde efecto en nuestro arnés, pero el arnés a 2 048 no separa nada a n = 100 (ruido del voraz por lotes ± 5) (2026-11-18)
+Plan `lab/probes/exp8_prune/PLAN.md` (fijado antes de correr), fila 41, cadena `lab/runs/exp8_prune/chain.sh` 04:09-04:50
+(sin fallos; guard `config.json`; sha256 de los tres GGUF en el log). Arnés de §45.12 (GSM8K 0-99 + MATH-500 50, voraz,
+2 048 tokens, 4 ranuras, mismo binario de llama-server del 27-oct). Ediciones: `data/exp8_d4k.npz` (las 4 096 entradas
+mayores por capa de `data/exp8_edit_recovered.npz`; 8 192 de 131 072), `data/exp8_d4k_complement.npz` (las otras
+61 440 por capa), aplicadas con `add-cols-vectors` sin cambios (`ediciones/exp8-d4k*.json`); comparación por bytes:
+cada GGUF difiere de la base solo en `blk.15` y `blk.19 ffn_down`. Código `lab/probes/exp8_prune/prune.py` (4 tests
+antes).
+
+**Paso 0 (CPU, dos métodos).** D4k conserva 0,741 / 0,763 de ‖ΔW‖² y **0,757 / 0,786 del empuje a lo largo de u**
+(capas 15 / 19; cos con la edición completa 0,86 / 0,87); el complemento 0,26 / 0,24 y 0,30 / 0,30. Δrel de `wsp edit`:
+D4k 0,0914 / 0,0707, complemento 0,0541 / 0,0395, completa 0,106 / 0,0809 → los cocientes al cuadrado reproducen las
+energías (0,74 / 0,76 y 0,26 / 0,24).
+
+| brazo | GSM8K ac (c2) / acabados / cortes / tokens | MATH ac / acabados / cortes |
+|---|---|---|
+| base (§45.12, 14-nov) | 0 (0) / 0 / 100 / 2 048 | 0 / 0 / 50 |
+| exp8 completa (§45.12, 14-nov) | 13 (13) / 13 / 87 / 1 930 | 0 / 0 / 50 |
+| exp8 placebo (§45.12, 14-nov) | 1 (1) / 1 / 99 / 2 034 | 0 / 0 / 50 |
+| **`full`** (completa otra vez, hoy) | **8** (8) / 8 / 92 / 1 986 | 1 / 1 / 49 |
+| **`d4k`** | **2** (2) / 2 / 98 / 2 037 | 1 / 1 / 49 |
+| **`d4k_comp`** | **5** (5) / 6 / 94 / 1 991 | 0 / 0 / 50 |
+
+Pares (binomial exacta, dos colas): `d4k` vs `full` 2/8 p 0,11; `d4k_comp` vs `full` 3/6 p 0,51; **`full` vs la misma
+edición el 14-nov 3/8 p 0,23** (11 discordantes de 100 con el mismo archivo, el mismo binario y los mismos ítems).
+Ningún brazo sin pensamiento. MATH en el suelo en todos (1 acierto en `full` y `d4k`, 0 en el resto).
+
+- **R1 (su afirmación):** `d4k` 2 < `full` − 3 = 5 → **falla por la letra**; los pares no son significativos (2/8).
+- **R2 (control):** `d4k_comp` 5 acertados > 3 y 6 acabados > 5 → **falla**: el complemento (94 % de las entradas, 24-26 %
+  de la energía) no se distingue de la edición completa en este arnés.
+- **R3 (ruido):** |Δ| = 5 y 11 discordantes entre dos corridas idénticas. Las diferencias de R1 (6 puntos, 10 discordantes)
+  y R2 (3 puntos, 9 discordantes) tienen el tamaño del ruido. **Nada de lo anterior es un hallazgo sobre la poda.**
+- **Lectura.** El arnés de §45.12 (0.8B a 2 048, 100 ítems, voraz con 4 ranuras) no es determinista entre corridas
+  (lotes de llama-server, ya visto como ± 1 en §43.4 con n 36; aquí ± 5 con n 100) y la edición completa mueve 8-13
+  puntos: la relación señal/ruido es ≈ 2. Lo único que queda: la poda **no mejora** nada (ninguna celda por encima de
+  `full`), y a esta resolución no podemos decir si el 6 % de las entradas conserva el efecto o lo pierde. La afirmación
+  de alphaXiv ("sin degradación", ± 3 pp en 256 ítems muestreados) tampoco lo puede decir; las dos medidas son
+  compatibles con "la poda cuesta algo" y con "no cuesta nada".
+- **Predicción (fila 41) contra el dato.** `full` 10-16 ✗ (8; sorpresa declarada disparada: ruido mayor del supuesto);
+  `d4k` 6-11 ✗ (2, el caso "colapso" al que dimos 10 %); `d4k_comp` 0-3 ✗ (5); R1 falla ✓ (apostamos 55 %); R2 pasa ✗.
+  **◐**: acierta la primaria (R1 falla) por una razón que la predicción no previó (ruido), fallan las tres bandas.
+- **Límites.** n 100 + 50, un tope, voraz por lotes, una familia; sin reescalar D4k (la forma natural de separar "menos
+  entradas" de "menos empuje"); sin repetir corridas. Siguiente forma útil, antes de repetir: o bien 3 corridas por
+  brazo y leer medianas, o bien 300 ítems, o bien `-np 1` (determinista, 4× más lento); y D4k reescalado a 1 / 0,77.
+- **Dos métodos.** Resúmenes de `bench_runner` (tabla) y `lab/probes/cc_llama/pair_recount.py` sobre los JSON por ítem:
+  mismos aciertos con los dos correctores, acabados, cortes y tokens; pares como arriba.
+
+**Lección (tercera vez que el ruido del arnés cambia la lectura):** antes de comparar dos ediciones en la 0.8B con
+100 ítems, correr la misma configuración dos veces y anotar la banda; si la diferencia esperada no la dobla, no correr.
+
+### 45.23 Capacidad ternaria para WSPLang: nuestras ediciones no caben en los códigos {−1, 0, +1} a su dosis de trabajo; el op `ternary_survival` lo mide, no hay escritor (2026-11-18)
+Plan `lab/probes/ternary/PLAN.md` (fijado antes de correr), fila 42. Pedido del driver tras *ttf* (README "References").
+Código `engine/ternary.py` (11 tests antes, `tests/test_ternary.py`): reglas `tq2_0` (ggml: absmax por bloque de 256,
+escala fp16, desquantización idéntica a `gguf.quants`) y `absmean` (BitNet b1.58, escala por fila); modos `requant`
+(editar en float y convertir) y `fixed` (recodificar sobre las escalas de la base); lecturas por escala k de la edición:
+vuelcos entre las entradas tocadas, cos(D, k·dW), alpha = ⟨D, k·dW⟩/‖k·dW‖² (cuántas copias de la edición contiene la
+diferencia ternaria), ruido = ‖D − α·k·dW‖/‖α·k·dW‖, y k70 (primera k con cos ≥ 0,7). Op WSPLang **`ternary_survival`**
+(solo informe; `programs/ternary_exp8.wspl`, `programs/ternary_cc9b.wspl`; salidas `lab/runs/ternary/*.json`). Segundo
+método `lab/probes/ternary/recount.py` (safetensors + numpy propio): coincide en las 4 cifras × 2 escalas × 2 capas/3
+capas de los 4 informes comprobados. CPU, minutos.
+
+**Hecho previo que ordena todo:** con la regla de ggml solo el **10-12 %** de las entradas de `down_proj` queda distinto
+de cero (0.8B capas 15/19: 0,099 / 0,121; 9B capas 1/16/31: 0,125 / 0,113 / 0,100); con `absmean`, el 67-69 %. Por eso
+un modelo ternarizado sin entrenar no sirve (paso 3 abajo) y *ttf* necesita 72 M tokens de recuperación.
+
+| edición | regla / modo | k = 1: vuelcos / cos / alpha / ruido | k = 20: cos | k70 |
+|---|---|---|---|---|
+| Exp 8 (0.8B, L15 · L19; Δrel 0,106 · 0,081) | tq2_0 requant | 9,3 · 7,8 % / **0,47 · 0,42** / 0,87 · 0,83 / 1,9 · 2,1 | 0,84 · 0,76 | **10 · 20** |
+| | tq2_0 fixed | 10,0 · 8,7 % / 0,60 · 0,52 / 0,75 · 0,72 / 1,4 · 1,7 | 0,61 · 0,60 (satura) | > 20 |
+| | absmean requant | 27,7 · 21,6 % / 0,56 · 0,53 / 0,34 · 0,36 / 1,5 · 1,6 | 0,32 · 0,33 (cae) | > 20 |
+| | absmean fixed | 27,7 · 21,6 % / **0,60** · 0,56 / 0,34 · 0,36 / 1,3 · 1,5 | 0,48 · 0,47 | > 20 |
+| compilado 9B (L1 · L16 · L31; Δrel 0,027 · 0,027 · 0,031) | tq2_0 requant | 0,40 · 0,37 · 0,22 % / **0,08 · 0,10 · 0,08** / 0,59 · 0,69 · 0,39 / 12 · 10 · 12 | 0,40 · 0,44 · 0,48 | > 20 |
+| | tq2_0 fixed | 0,36 · 0,32 · 0,19 % / 0,09 · 0,11 · 0,09 / 0,58 · 0,68 · 0,40 / 12 · 9 · 11 | 0,50 · 0,47 · 0,50 | > 20 |
+| | absmean requant | 1,15 · 1,06 · 0,80 % / 0,19 · 0,19 · 0,24 / 0,61 · 0,56 · 0,54 / 5,1 · 5,2 · 4,1 | 0,68 · 0,59 · 0,62 | > 20 |
+| | absmean fixed | 1,15 · 1,06 · 0,80 % / 0,19 · 0,19 · 0,22 / 0,61 · 0,56 · 0,50 / 5,1 · 5,2 · 4,4 | 0,58 · 0,53 · 0,43 | > 20 |
+
+Δrel del compilado por capa (0,0268 / 0,0270 / 0,0311) coincide con `fit_summary.json` del op (segundo método del dW).
+
+- **Lo que pasa.** La diferencia ternaria **contiene** la edición (alpha 0,6-0,9 bajo `tq2_0`: la proyección de D sobre
+  dW recupera la mayor parte del empuje) pero enterrada en basura ortogonal 2 veces mayor (Exp 8) o 10-12 veces mayor
+  (compilado) que la parte útil: cada vuelco mueve la entrada un paso entero (≈ 0,1) cuando la edición pedía 0,005 o
+  0,0005. La dirección sobrevive a medias en Exp 8 (cos 0,42-0,47) y casi nada en el compilado (cos 0,08-0,10). Para que
+  la edición sea el contenido dominante de la diferencia, Exp 8 necesita **10-20 veces su dosis** bajo `tq2_0 requant`;
+  el compilado no llega a cos 0,7 ni a 20×. Con `absmean` hay más vuelcos pero el cos **baja** con k (la escala por fila
+  crece con la edición y recodifica toda la fila) y con `fixed` los códigos saturan en ±1.
+- **Paso 3 (informativo).** `llama-quantize --allow-requantize` de la base Q6_K y de la réplica Exp 8 a TQ2_0 (355 MB;
+  `lab/runs/ternary/tq_smoke.sh`, CPU `-ngl 0`, 26 tok/s): **0 / 10 y 0 / 10** en GSM8K a 512 tokens, salida de
+  fragmentos multilingües desde el primer token (`tq_base.json`, `tq_exp8.json`). Ternario sin entrenamiento no es un
+  modelo; no hay sobre qué medir si la versión ruidosa de una edición conserva la conducta (T7). Haría falta un modelo
+  entrenado ternario (ttf) con su runtime; no lanzado.
+- **Predicción (fila 42) contra el dato.** Primaria ✓ (ninguna celda a k = 1 llega a cos 0,6; máximo 0,5995, en el
+  borde). Bandas: Exp 8 `tq2_0` vuelcos ✓, cos ✗ (0,47 / 0,42 sobre 0,10-0,35: sobrevive **más** dirección de la
+  prevista), alpha ✓, k70 ✓; Exp 8 `absmean` vuelcos ✓, cos ✓/✗ (0,562), k70 ✗ (> 20 frente a 3-10: no previmos que el cos
+  bajara con k); 9B `tq2_0` vuelcos ✓✓✗ (L31 0,22 %), cos ✓, k70 ✓; 9B `absmean` vuelcos ✓✓✗ (0,80 %), cos ✓, k70 ✓;
+  `fixed` ± 0,10 ✗ en Exp 8 `tq2_0` (0,12). Sorpresas declaradas: ninguna (alpha ≥ 0,34; vuelcos ≤ 28 %; TQ2_0 0/10).
+  **◐**: primaria acertada, 5 de 14 lecturas de banda fuera.
+- **Lectura y decisión.** Un backend ternario de WSPLang **no puede llevar en los códigos** las ediciones que sabemos que
+  funcionan (rango 1, ‖dW‖/‖W‖ 0,01-0,1): o se amplifica la dosis 10-20× (y la dosis manda, §45.21) o la edición vive
+  en escalas y adaptadores float, que es lo que `delta_to_lora` y `compile_control_vector` ya producen. El op
+  `ternary_survival` queda como instrumento (mide cualquier dW contra cualquier base HF); **no se construye escritor
+  ternario**. El dato de peso que sí vale: con la regla de ggml el 88-90 % de `down_proj` es cero; lo que sobrevive a
+  1,6 bits es estructura gruesa, y por eso *ttf* pierde conocimiento (TriviaQA) antes que GSM8K.
+- **Límites.** Dos ediciones, cinco tensores, dos reglas (no la de TTF: umbral θ aprendido + acumulador); métrica en el
+  espacio de pesos, no de conducta; `tq2_0` desde bf16 (el GGUF de la réplica pasa además por Q6_K).
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las

@@ -328,6 +328,11 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   Qwen; the accuracy gain is confirmed on a sealed set on all three, but on Llama-8B only at scale 0.35, only on MATH and
   as recovery of the base's cuts, with GSM8K at base − 2 (§45.21; at 0.5 it saves tokens at equal accuracy, §45.19-45.20);
   the transplants, the activation maps and the implant checks are Qwen-only. Nothing here is shown for sampling.
+- **Float only (§45.23, 2026-11-18).** Every edit here is a small dense push (‖dW‖/‖W‖ 0.01-0.1). In ternary codes
+  (ggml TQ2_0, where 88-90 % of a `down_proj` is zero; BitNet absmean) the edit survives as a component buried in
+  orthogonal junk 2-12× its size (cos 0.42-0.47 for Exp 8, 0.08-0.10 for our compile at dose 1; 10-20× dose before Exp 8
+  dominates, never for the compile within 20×). A ternary backend would carry them only in float scales or adapters.
+  Measured with the read-only op `ternary_survival`; no ternary writer exists or is planned.
 
 ## Refuted / retired (do not retry without a new reason)
 | idea | result | where |

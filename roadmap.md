@@ -191,7 +191,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
 13. **Poda D4k de alphaXiv sobre la réplica Exp 8 (0.8B)** (decisión del driver 2026-11-18): plan
     `lab/probes/exp8_prune/PLAN.md`, fila 41, cadena `lab/runs/exp8_prune/chain.sh` lanzada 04:09. Brazos `full` (réplica
     otra vez: ruido), `d4k` (4 096 entradas mayores por capa; conserva 0,76-0,79 del empuje a lo largo de u) y `d4k_comp`
-    (las otras 61 440). Lecturas R1-R3 fijadas. ≈ 40 GPU min.
+    (las otras 61 440). Lecturas R1-R3 fijadas. ≈ 40 GPU min. **Hecho (§45.22, fila 41 ◐): `full` 8 (14-nov: 13, 11
+    discordantes de 100 con el mismo archivo), `d4k` 2, `d4k_comp` 5; todas las diferencias dentro del ruido del voraz
+    por lotes (± 5). La poda no mejora; si pierde no se decide a n = 100. Queda: 3 corridas por brazo o 300 ítems o
+    `-np 1`, y D4k reescalado a 1 / 0,77. No lanzado.**
 14. **Control de sesgo constante para el vector "concluir"** (lo que le falta a DAWE y a nosotros, 2026-11-18): un
     `logit_bias` sobre `</think>` (llama-server lo admite por petición) elegido en dev para igualar el ahorro de tokens
     del vector, contra el vector a la misma dosis en los mismos 150 ítems. Si el sesgo iguala la precisión, la parte
@@ -201,6 +204,12 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     "concluir" por el protocolo §43.17): cabe en la 3060; hace falta compilar su fork de llama.cpp (parches CUDA) y
     comprobar `--control-vector`. No sirve para leer o escribir pesos (ternario + 72M tokens de recuperación). Descarga
     y compilación requieren OK del driver; ≈ 2,5 h por brazo de 150 ítems a ~35 tok/s. No lanzado.
+16. **Backend ternario de WSPLang** (pedido del driver 2026-11-18): **medido y cerrado (§45.23, fila 42 ◐).** Op
+    `ternary_survival` (`engine/ternary.py`, 11 tests, recuento independiente): a dosis 1 la edición Exp 8 sobrevive con
+    cos 0,42-0,47 y el compilado con 0,08-0,10 bajo TQ2_0 (alpha 0,6-0,9, ruido 2-12×); Exp 8 necesita 10-20× dosis,
+    el compilado no llega; `absmean` pierde dirección al subir k. La 0.8B a TQ2_0 sin recuperación: 0/10, ruido. No se
+    construye escritor ternario; las ediciones van en escalas/adaptadores float (lo que ya existe). Queda, solo con un
+    modelo ternario entrenado (ttf) y su runtime: medir conducta de la versión ruidosa (T7). No lanzado.
 
 ### 4.0quinquies ESTADO 2026-11-09 (sesión windows, Claude Code) — RESUMIR AQUÍ si se corta
 

@@ -71,6 +71,7 @@ OPS_ALLOWED = {
     "delta_to_lora",  # a fine-tune's change as a LoRA adapter beside the models (engine/lora_export.py)
     "contrast_vector",  # llama.cpp control vector from two sets of texts (engine/contrast_vector.py)
     "compile_control_vector",  # that vector written into down_proj, + placebo, G0, LoRA/merged Q6_K (engine/cc_compile.py)
+    "ternary_survival",  # how much of an edit survives ternarisation (TQ2_0 / absmean); report only (engine/ternary.py)
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -261,6 +262,7 @@ READ_ONLY_OPS = {
     "delta_to_lora",  # writes a new adapter dir, never inside or over an input model
     "contrast_vector",  # writes a new control-vector GGUF (run-time steering), never weights
     "compile_control_vector",  # writes new files in a new out dir (fits, LoRA, merged copies), never over an input
+    "ternary_survival",  # writes one JSON report, never weights
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
@@ -2322,6 +2324,30 @@ def execute_plan_v4(
                     res["result"]["gguf"] = str(gguf_p)
                 res["result"]["use"] = ("llama-server -m <base.gguf> --lora <adapter.gguf> --lora-init-without-apply; "
                                         "per request \"lora\": [{\"id\": 0, \"scale\": s}]")
+                res["execution_state"] = "executed"
+
+            elif op == "ternary_survival":
+                # What is left of an edit after ternarisation (lab/probes/ternary/PLAN.md). base= HF dir, delta= an
+                # ediciones .npz (cols_i / vec_i numbered in the order of layers=) or a compile fit .pt (u, v per
+                # layer), rule=tq2_0|absmean, mode=requant|fixed, scales=1,2,5,10,20, name= tensor pattern with {L}.
+                # Writes out=<report.json> only; no weights are read from or written to any model file.
+                from engine import ternary as tn
+                for key in ("base", "delta", "out"):
+                    if not named.get(key):
+                        raise ValueError("ternary_survival needs base=<HF dir> delta=<npz|fit.pt> layers=<list> out=<json>")
+                base_p = _model_path(named["base"])
+                delta_p = _model_path(named["delta"])
+                out_p = check_report_path(named["out"], [base_p, delta_p])
+                layers = [int(x) for x in str(named.get("layers", "")).split(",") if x.strip()]
+                if not layers:
+                    raise ValueError("ternary_survival needs layers=<comma list>")
+                scales = tuple(float(x) for x in str(named.get("scales", "1,2,5,10,20")).split(",") if x.strip())
+                rep = tn.report(str(base_p), str(delta_p), layers=layers, rule=str(named.get("rule", "tq2_0")),
+                                mode=str(named.get("mode", "requant")), scales=scales, out=str(out_p),
+                                name=named.get("name"))
+                res["result"] = {"out": str(out_p), "rule": rep["rule"], "mode": rep["mode"],
+                                 "summary": {t: {"k70": v["k70"], "rel_norm_dW": v["rel_norm_dW"], "k1": v["cells"][0]}
+                                             for t, v in rep["tensors"].items()}}
                 res["execution_state"] = "executed"
 
             elif op == "model_report":
