@@ -277,6 +277,11 @@ step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds
   Outside the weights (`nonweights=true`): config (real changes vs cosmetic: library version, moved keys, absent
   vs None), tokenizer (vocab, merges, added tokens, normalizer, pre-tokenizer, decoder), chat template, and an
   encode test on 14 scripts that names where text tokenizes differently from the base (findings F25).
+  Since 0.8.2 `model=` may be a local `.gguf` file (`engine/gguf_reader.py`): it is read with HF names and layout
+  (llama.cpp's Qwen3.5 conversion undone: norms stored as w + 1, `ssm_a = −exp(A_log)`, interleaved value heads,
+  fused or non-contiguous blocks), BF16 / F16 / F32 as stored and quantised types dequantised per row block, so a
+  BF16 GGUF against its safetensors base compares exactly and a Q6_K one reads with a 1.8 % floor. Tensors with no
+  HF counterpart appear as hidden parts (e.g. SenseNova's `mhc`); the config / tokenizer diff is skipped for a GGUF.
 * `adapter_report` (0.8.2): a PEFT LoRA repo read from the adapter alone, when no merged model exists (e.g.
   `harness-hub/Qwen3.8-27B-pi-adapted`, 640 MB on a 27B). From `adapter_config.json` and the `lora_A` / `lora_B`
   factors: r, alpha, scale (rslora aware), modules and layers touched, families untouched (embeddings, head, norms,

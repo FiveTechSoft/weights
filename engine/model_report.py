@@ -260,11 +260,15 @@ def _hidden_tips(hidden: Dict) -> List[str]:
 
 
 def reader_for(spec: str, root=None):
-    """A local directory/file of safetensors, or a Hugging Face repo id read by HTTP ranges."""
+    """A local directory/file of safetensors, a local .gguf (seen with HF names and layout, engine/gguf_reader.py),
+    or a Hugging Face repo id read by HTTP ranges."""
     from pathlib import Path
     p = Path(spec)
     if not p.exists() and root is not None and (Path(root) / spec).exists():
         p = Path(root) / spec
+    if p.exists() and p.is_file() and p.suffix.lower() == ".gguf":
+        from engine.gguf_reader import open_gguf_as_hf
+        return open_gguf_as_hf(p)      # HF-named, mtp.* and unmapped tensors in .hidden(), like Renamed
     if p.exists():
         return wd.Renamed(wd.LocalSafetensors(p), wd.text_model_name)
     return wd.Renamed(wd.RangeSafetensors(wd.hf_files(spec), wd.hf_fetch(spec)), wd.text_model_name)

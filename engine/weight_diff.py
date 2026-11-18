@@ -163,6 +163,9 @@ def hidden_group(name: str) -> Optional[str]:
     for p in _HIDDEN_PREFIXES:
         if bare.startswith(p):
             return p.rstrip(".")
+    m = re.match(r"blk\.\d+\.(nextn|hc_attn_fn|hc_ffn_fn)\.", name)   # GGUF stored names (engine/gguf_reader.py views)
+    if m:
+        return "mtp" if m.group(1) == "nextn" else "mhc"
     return None
 
 

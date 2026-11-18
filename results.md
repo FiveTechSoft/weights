@@ -3848,13 +3848,32 @@ F32, capas 4-27: 3,1 M parámetros de enrutado mHC) y dos fusiones de nombre (`a
 | `ssm_dt.bias`, `ssm_a` (32 valores) | −0,40 a 0,88 | (cabezas en otro orden; no concluyente) |
 
 Dos métodos: coseno directo por bloque y, donde falla, estadísticos invariantes a permutación de columnas
-(espectro singular, normas por fila, mejor columna emparejada); coinciden en que es la misma matriz. **Lectura:**
-SenseNova-Loop-9B parte de Qwen3.5-9B (la ficha no lo dice; el issue #5 de su GitHub lo pregunta sin respuesta): todas
-las matrices grandes conservan la dirección (cos ≥ 0,95) con un cambio relativo del 10-33 %, mucho mayor que un LoRA
-(pi-adapted abajo: 0,2 %) y propio de un preentrenamiento continuado largo con el bucle y el mHC nuevos; los únicos
-pesos nuevos son los 3,1 M de enrutado. Lo que no se puede decir desde aquí: si es "mejor que MiMo"; eso exige
-servirla (fork de llama.cpp) y no hay cifras de matemáticas en su ficha. El `model_report` completo (huella por
-tensor, clase) queda para cuando el lector GGUF esté integrado.
+(espectro singular, normas por fila, mejor columna emparejada); coinciden en que es la misma matriz.
+
+**Segunda lectura, con el lector GGUF de `model_report` (0.8.2, `engine/gguf_reader.py`, 16 tests primero;
+`programs/sensenova_report.wspl` → `lab/runs/model_report/sensenova_loop_9b.md`).** El lector deshace lo que hace el
+conversor de llama.cpp con Qwen3.5 (encontrado sobre nuestro A0 Q6_K frente al HF, no de memoria): normas guardadas
+como w + 1, `ssm_a = −exp(A_log)`, **cabezas de valor entrelazadas** (cabeza GGUF n = cabeza HF (n mod 16)·2 +
+n div 16, en `ssm_a`, `dt_bias`, filas de alpha/beta/z/v y **columnas de `ssm_out`**: el cos 0,06 de arriba era eso;
+deshecho, 0,9998), bloques no contiguos compactados (52-55 → capas 28-31), tensores fusionados partidos, `nextn`
+oculto como MTP. Validación sobre A0: 427 / 427 tensores con la misma forma, F32 exactos (error máximo 6e-8 tras
+redondeo bf16), `attn_q` descuantizado cos 0,99984 (suelo Q6_K 1,8 %). Sobre SenseNova, 427 tensores comparados,
+**0 solo en una parte, 0 desajustes de forma**; ocultos solo en el modelo: mHC 96 + bloque 56 (MTP). Cambio relativo
+mediano por tipo: MLP 30-32 %, `in_proj_b` 28 %, cabeza 27 %, `in_proj_z` 26 %, `q_proj` 26 %, `k_proj` 24 %,
+`in_proj_qkv` 22 %, `out_proj` 21 %, embeddings 20 %, `o_proj` 16 %, `v_proj` 14 %; normas 2-6 %; **`A_log` 0,16 % y
+`dt_bias` 0,017 % (5 de 24 sin un solo valor distinto)**: los parámetros de decaimiento congelados de la atención
+lineal son los de Qwen3.5-9B a 3-4 cifras, cosa que un preentrenamiento desde cero no daría. Rango del cambio por
+bloque mediana 108 de 128 (difuso) → clase `full_fine_tune`; perfil de dónde cambia más parecido a los modelos
+agénticos del atlas (fara 0,98, post-entrenamiento oficial 0,97). Nota: el consejo "pierde la cabeza MTP" del informe
+es falso para una vista GGUF (el bloque 56 es su MTP; el agrupador lo ve como 4 + 11 tensores); pendiente de
+arreglar en `model_report`.
+
+**Lectura (dos métodos coinciden):** SenseNova-Loop-9B parte de Qwen3.5-9B (la ficha no lo dice; el issue #5 de su
+GitHub lo pregunta sin respuesta): todas las matrices conservan la dirección (cos ≥ 0,95) con un cambio relativo del
+10-33 %, mucho mayor que un LoRA (pi-adapted abajo: 0,2 %) y propio de un preentrenamiento continuado largo con el
+bucle y el mHC nuevos; los únicos pesos nuevos son los 3,1 M de enrutado y los parámetros de decaimiento no se
+tocaron. Lo que no se puede decir desde aquí: si es "mejor que MiMo"; eso exige servirla (fork de llama.cpp) y no hay
+cifras de matemáticas en su ficha.
 
 **harness-hub/Qwen3.8-27B-pi-adapted (`adapter_report`, 0.8.2; 53 s por HTTP; `programs/adapter_report_pi.wspl`,
 `lab/runs/adapter_report/pi_adapted_op.{md,json}`).** LoRA r 32, alpha 64, 256 módulos, 159 383 552 parámetros

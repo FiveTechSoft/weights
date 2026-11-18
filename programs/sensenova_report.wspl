@@ -1,0 +1,8 @@
+experiment sensenova_loop_9b_vs_qwen35_9b:
+# Does SenseNova-Loop-9B start from Qwen3.5-9B? The official BF16 GGUF (18.4 GB, sha 489f1a43...) read as the model
+# side through engine/gguf_reader.py (HF names, head permutation and norm offset undone, fused tensors split, the
+# second-pass blocks 28-51 have no weights, blocks 52-55 are layers 28-31) against our local Qwen3.5-9B safetensors.
+# Report only (roadmap gap 29b; 0.8.2). The mHC routing tensors (hc_attn_fn / hc_ffn_fn) have no HF counterpart and
+# appear under "parts only in the model".
+steps:
+    step model_report model=hf_cache/sensenova-loop-gguf/SenseNova-Loop-9B-BF16.gguf base=hf_cache/qwen35-9b-hf rows=128 transfer=false out=lab/runs/model_report/sensenova_loop_9b.md

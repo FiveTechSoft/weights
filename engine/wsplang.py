@@ -2479,6 +2479,7 @@ def execute_plan_v4(
                                       nonweights=(mr.nonweight_diff(mr.side_files(base_spec, ROOT),
                                                                     mr.side_files(model_spec, ROOT))
                                                   if str(named.get("nonweights", "true")).lower() != "false"
+                                                  and not model_spec.lower().endswith(".gguf")  # no side files in a GGUF
                                                   else None))
                 res["result"] = {"method": rep["classification"]["method"],
                                  "classification": rep["classification"], "usable": rep["usable"],

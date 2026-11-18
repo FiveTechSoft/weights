@@ -371,7 +371,12 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     (`lab/runs/model_report/sensenova_rowblock_check.json`): embeddings cos 0,98, cabeza 0,96, matrices de atención
     y MLP cos 0,95-0,99 con cambio relativo 10-33 %, `ssm_out` igual salvo permutación de columnas (espectro cos
     1,000), normas reescaladas; pesos nuevos solo mHC (`hc_attn_fn` / `hc_ffn_fn`, 8192×8 + 8 por capa 4-27, F32).
-    Falta el `model_report` completo con el lector GGUF (agente) y la fila en results.
+    **(b) hecho 23:30 (0.8.2):** `engine/gguf_reader.py` (agente, 16 tests primero; deshace normas w + 1, −exp(A_log),
+    entrelazado de cabezas de valor, bloques no contiguos, tensores fusionados; validado sobre A0: 427 / 427 formas,
+    F32 exactos, Q6_K cos 0,9998) y `model_report model=<.gguf>`; `programs/sensenova_report.wspl` →
+    `full_fine_tune`, 427 tensores, 0 desajustes, matrices 14-32 %, `dt_bias` 0,017 %: parte de Qwen3.5-9B (§45.33).
+    Queda: el consejo "pierde la cabeza MTP" es falso para vistas GGUF (bloque 56 = MTP, agrupado 4 + 11); el lector
+    no lee adaptadores GGUF; una cuantización frente a su propia base lee como cambio difuso del 1,8 % (suelo Q6_K).
 
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
