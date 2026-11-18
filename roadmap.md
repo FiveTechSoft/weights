@@ -312,6 +312,13 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     logits de la base ≈ 2 GB, ignorados por git) en la cola 3 tras la banda. Umbrales nulos hasta calibrar con el
     placebo. MMLU en binario exige `-bf` (con `-f` Windows trunca el archivo; reproducido y arreglado).
 
+27. **Sesgo de paso temporal +0,5 (Fan et al. 2611.21885) con placebo, en nuestra 9B** (18-nov): su edición de mayor
+    ganancia (+6,6 en 490 ítems, sin control) es subir `dt_bias` de todas las capas de atención lineal en 0,5. En
+    nuestro GGUF son `blk.N.ssm_dt.bias` (F32, 32 valores, 168 tensores ssm). Brazos en `dev-2048` por `bench_run`:
+    +0,5, −0,5 y ±0,5 con signo aleatorio por capa (placebo), contra la base; lectura por tokens, cortes y aciertos;
+    predicción antes (fila 49). Si +0,5 iguala al vector "concluir" en ahorro, es un cierre por otra vía (decaimiento de
+    la memoria lineal), no por dirección. ≈ 3 GPU h. Agente asignado; cola 5 tras la base en `dev-2048-full`.
+
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`
   con placebo estructural, `budget_params` e informe; parches `.weightpatch.json` con `apply_patch` / `rollback_last` /

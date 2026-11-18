@@ -196,6 +196,14 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - Blind forensics from weights only (§43.20, Qwen3.8-27B TURBO): where a Heretic ablation starts (layer 26, exact) and
   that the rest is an ordinary fine-tune (profile Spearman 0.93) are readable from the fused model; the ablation's rank
   (13, predicted 1) and its end (hidden by later changes) are not. An edit alone is read exactly (concept27b).
+- **Outside evidence (Fan et al., arXiv 2611.21885, 16 Nov 2026; HTML read):** Qwen3.5-27B, handed its own weights and
+  a gradient-free sandbox, diagnosed 80.5 % truncation with 96 % of finished answers correct and wrote the finished-minus-
+  truncated hidden-state direction out of layer 8's two output matrices (W − 0.05·u·uᵀW): +1.1 points on 490 pre-registered
+  held-out problems at a 4,096-token budget (p 0.038). The same mechanism as §43.17 (T2: the obstacle is closing, not
+  knowing), found by the model without us, in the family we started with; the smaller gain is the budget effect of
+  §45.17. Their larger gains (+6.6, +4.0) come from raising every linear-attention time-step bias by 0.5, with no placebo
+  or same-norm control in the paper; the 4B and 9B damaged themselves with random perturbations, which is the control
+  their protocol lacks and ours has (T6).
 - **Our own number (§45.26, 2026-11-18; 78 arms with a weight artefact and a paired benchmark, 14 real edits vs 17
   same-norm placebos, prediction row 47 first):** weight-only magnitude features separate nothing (AUC 0.21-0.40, the
   placebos share the norm by construction); alignment with the `</think>` readout row over the last eight layers
