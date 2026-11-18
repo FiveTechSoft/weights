@@ -1,0 +1,12 @@
+experiment dist9b_compare:
+objective: register the dist-shift rows and the four comparisons against the base (verdict "not calibrated yet" until the thresholds are set from these very numbers)
+steps:
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_merged.json out=lab/runs/bench/cmp_dist9b_merged.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_placebo_merged.json out=lab/runs/bench/cmp_dist9b_placebo_merged.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_vec.json out=lab/runs/bench/cmp_dist9b_vec.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_placebo_vec.json out=lab/runs/bench/cmp_dist9b_placebo_vec.json
+    step bench_table add=lab/runs/bench/dist9b_base.json model="Qwen3.5-9B Q6_K (A0)"
+    step bench_table add=lab/runs/bench/dist9b_merged.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_dist9b_merged.json
+    step bench_table add=lab/runs/bench/dist9b_placebo_merged.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_dist9b_placebo_merged.json
+    step bench_table add=lab/runs/bench/dist9b_vec.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_dist9b_vec.json
+    step bench_table add=lab/runs/bench/dist9b_placebo_vec.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_dist9b_placebo_vec.json

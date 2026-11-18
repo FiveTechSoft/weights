@@ -40,3 +40,13 @@ C:\\weights/
 # benchmark registry duplicates of existing per-item reports, and NanoWSP ternary work checkpoints (regenerable)
 lab/runs/bench/imported/
 lab/runs/ternary_nanowsp/work/
+
+# dist-shift suite: saved base logits (GBs, regenerable with --save-all-logits)
+data/bench/logits/
+
+# dist-shift data files are pinned by sha256 in engine/bench_suites/dist-shift.json and data/bench/README.md (URLs there); regenerable
+data/bench/*.txt
+data/bench/*.csv
+data/bench/*.bin
+data/bench/*.zip
+data/bench/*.parquet

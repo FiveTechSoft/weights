@@ -294,7 +294,13 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     `bench_run`; regla "preserva distribución" con umbrales calibrados con el placebo de misma norma (nulos hasta
     medir); datos en `data/bench/` con sha y licencia. Primera cadena GPU: base 9B, compilado y placebo compilado
     (y vectores si `llama-perplexity` admite `--control-vector`), en cola tras la banda. Plan
-    `lab/probes/dist_shift/PLAN.md`, fila 48. Agente asignado.
+    `lab/probes/dist_shift/PLAN.md`, fila 48. **Construido 2026-11-18:** `engine/dist_shift.py` (constructores de
+    comandos y parsers con fixtures reales de la 0.8B en CPU), clase `llm-logits` en `bench_run` (`model=<gguf>
+    base=<gguf>`), suite con los cuatro ficheros fijados por sha (WikiText-2 test vía el zip de `ggml-org/ci` que usa
+    `scripts/get-wikitext-2.sh`; el parquet de HF no se pudo leer sin pyarrow), 13 tests, cadena
+    `lab/runs/bench/chain_dist9b.sh` (base, fusionado, placebo fusionado, vector 1,0, placebo vector; ≈ 30 GPU min;
+    logits de la base ≈ 2 GB, ignorados por git) en la cola 3 tras la banda. Umbrales nulos hasta calibrar con el
+    placebo. MMLU en binario exige `-bf` (con `-f` Windows trunca el archivo; reproducido y arreglado).
 
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`

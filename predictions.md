@@ -72,14 +72,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 47 | 2026-11-18 | `weight2bench/PLAN.md` (¿banco desde los pesos? 78 brazos con artefacto y resultado: 9B 24, Phi 13, Llama 17, 0.8B 24; 31 en el conjunto real/placebo; rasgos solo de pesos de magnitud y de dirección; Spearman con Δ GSM, Δ MATH, Δ tokens; AUC real frente a placebo) | Magnitud: AUC real/placebo 0,40-0,60; ρ con Δ tokens dentro de familia −0,6 a −0,8; |ρ| agrupada con aciertos < 0,3. `cos_close_late8` (alineación con la fila `</think>` del unembedding, 8 últimas capas): AUC > 0,8 (60 %), 0,6-0,8 (30 %); ρ agrupada con Δ MATH < 0,5 (80 %). `cos_open` AUC 0,4-0,7; `cos_gap` a ± 0,1 de `cos_close`. `cos_own_contrast` separa compilado real de placebo (AUC > 0,9, 85 %); port/embport 0,2-0,6. cos brazo/placebo |media| < 0,05. **Primaria: ningún rasgo de pesos tiene |ρ| agrupada > 0,5 con Δ GSM o Δ MATH (75 %).** Sorpresa si la magnitud separa real de placebo (AUC > 0,75); |ρ| > 0,7; `cos_close` AUC < 0,5; una ρ cambia de signo al quitar una familia | Magnitud: AUC **0,21** (↓: `no31`, v1 y `embport` son menores que sus placebos; pares emparejados 0,5), ρ con tokens **≈ 0** (↓: los placebos comparten la norma), con aciertos 0,06 / −0,11 ✓. `cos_close_late8`: AUC **0,93** (1,00 en cada familia) ✓, ρ Δ MATH 0,34 ✓, Δ tokens −0,53 agrupada y −0,72 / −0,69 / −0,58 / −0,20 por familia. `cos_open` AUC **0,88** (↑). `cos_gap` 0,66 (✗). `cos_own_contrast` compilado 1,0 ✓; port 0,70 ✓. cos brazo/placebo 0,000-0,038 ✓. Máxima |ρ| con aciertos (n ≥ 20): 0,42. Primaria ✓. Ninguna sorpresa. Nota: los cosenos que separan son diminutos (0,001-0,058 frente a ± 0,01) y la fila `<think>` separa casi igual; en las series de dosis el coseno es uno por artefacto mientras Δ MATH va 7 → 12 → 30 → −5 | 2026-11-18 | §45.26 | ◐ (primaria ✓; 4 bandas fuera: magnitud AUC y tokens, `cos_open`, `cos_gap`) |
 
-## Cuenta (47 filas; 41 puntuables)
+| 48 | 2026-11-18 | `dist_shift/PLAN.md` (suite `dist-shift` de WSP-Lang sobre `llama-perplexity`: perplejidad WikiText-2 100 × 512, KL frente a los logits de la base 16 × 512, HellaSwag / Winogrande / MMLU 400 tareas; 9B Q6_K base, compilado fusionado, placebo fusionado, vector 1,0 y placebo vector 1,0) | Premisas: base fuerte; compilado rango 1 con ‖dW‖/‖W‖ ≈ 0,027 ajustado a mover solo donde apunta el vector; el placebo de misma norma bajó GSM dev de 50 a 26 → perturba más. Base: ppl WikiText-2 **6,5-10**, HellaSwag 0,72-0,84, Winogrande 0,66-0,78, MMLU 0,62-0,78. Fusionado vs base: KL media **0,01-0,08**, top-1 92-98 %, cociente ppl 1,00-1,04, HS/WG/MMLU ± 0,02. Placebo fusionado: KL 0,05-0,30, top-1 85-95 %, ppl 1,02-1,15, HS/WG/MMLU −0,01 a −0,06. Vector 1,0: KL 0,02-0,15, top-1 88-97 %; placebo vector: KL 0,05-0,30, top-1 82-95 %. **Primaria: en los dos pares el placebo de misma norma desplaza más la distribución que la edición real (KL placebo > KL real), 65 %.** Secundarias: KL fusionado < 0,1 (70 %); los dos placebos a menos de 3× entre sí (60 %). Sorpresa si KL fusionado > 0,3 o top-1 < 80 %; algún Δ de precisión del fusionado fuera de ± 0,05; el placebo por debajo de la real en los dos pares; ppl base fuera de 5-14 | | | | ⏳ |
+
+## Cuenta (48 filas; 41 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 18 |
 | ❌ falla | 17 |
-| ⏳ / — | 6 |
+| ⏳ / — | 7 |
 
 Acierto limpio 6/41 = 15 %; acierto o parcial 24/41 = 59 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es

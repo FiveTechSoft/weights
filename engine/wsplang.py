@@ -2528,7 +2528,9 @@ def execute_plan_v4(
                                        provenance=_model_path(named["provenance"]) if named.get("provenance") else None,
                                        binary=named.get("binary"), force_reuse=truthy("force_reuse"),
                                        unknown_model=truthy("unknown_model"),
-                                       model=_model_path(named["model"]) if named.get("model") else None, log=lambda s: None)
+                                       model=_model_path(named["model"]) if named.get("model") else None,
+                                       base=_model_path(named["base"]) if named.get("base") else None,  # llm-logits: KL base
+                                       log=lambda s: None)
                 res["result"] = {"out": str(out_p), "suite": rep["suite"], "suite_sha": rep["suite_sha"][:12],
                                  "identity": rep["identity"], "provenance": rep["provenance"], "benchmarks": rep["benchmarks"],
                                  "preservation": rep["preservation"]}

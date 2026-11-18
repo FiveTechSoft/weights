@@ -88,6 +88,29 @@ runs carry it, does not fail. *harms* is the symmetric statement. Otherwise *sam
 listed. For *two models* the output carries the paired statistics and the band and the words "two models: paired
 statistics only": a difference between two unrelated models is a description, not a verdict about an edit.
 
+## The `llm-logits` class: `dist-shift`, the label-free component (2026-11-18)
+
+A GGUF file measured by llama.cpp's own `llama-perplexity`, no server, no sampling (`engine/dist_shift.py`,
+`lab/probes/dist_shift/PLAN.md`): perplexity on WikiText-2 test (100 chunks × 512), **KL divergence of the model against
+the base's saved logits** over the same text (16 chunks; `--save-all-logits` writes the base file once into
+`data/bench/logits/<base_sha16>.bin`, ≈ 2 GB per base, git-ignored; `--kl-divergence --kl-divergence-base` reads it),
+top-1 agreement, and HellaSwag / Winogrande / MMLU multiple choice (400 tasks each; the task subset is the tool's own
+fixed selection, independent of `-s`; the MMLU file is binary and goes in with `-bf`).
+
+```
+step bench_run suite=dist-shift model=hf_cache/cc_op_v2/merged-Q6_K.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=merged out=lab/runs/bench/dist9b_merged.json provenance=hf_cache/cc_op_v2/report.json
+step bench_run suite=dist-shift model=hf_cache/h4/A0-Q6_K.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=vec_1.0 out=... control_vector=hf_cache/cc/cc_v2.gguf scale=1.0
+step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/bench/dist9b_merged.json out=lab/runs/bench/cmp_dist9b_merged.json
+```
+
+Identity: model sha, control-vector sha, `llama-perplexity` sha, suite sha, the data files' shas, the base sha and the
+logits path. `bench_compare` on two such runs gives the PPL ratio, the arm's KL (mean, p99, max), top-1 agreement and the
+accuracy deltas with the tools' own errors; the relation is "edit vs its base" when the arm's KL base is the base run's
+model. **Verdict:** `preserves distribution` if KL mean ≤ `thresholds.kl_mean` and top-1 ≥ `thresholds.same_top_p`,
+`distribution shifted` otherwise, and **`not calibrated yet` while the suite's thresholds are null** (they are set from
+the same-norm placebo's own KL and top-1 after the first chain, as the PLAN fixes). Table columns: ppl, KL mean, top-1
+agree %, HS, WG, MMLU. Data files and licences: `data/bench/README.md`. Tests: `tests/test_dist_shift.py`.
+
 ## What this section does not do
 
 - It is **not the sealed protocol** (`lab/probes/sealed/README.md`): a sealed suite is single use, its result is read

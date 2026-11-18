@@ -47,7 +47,7 @@ TABLE = ROOT / "docs" / "wsplang_benchmarks.md"
 DEFAULT_SUITE = "dev-2048"
 DEFAULT_BINARY = Path("C:/Users/Anto/llamacpp/bin/llama-server.exe")
 DECODING_KEYS = ("max_tokens", "parallel", "temperature", "seed", "template", "prompt_suffix")
-MODEL_CLASSES = ("llm-chat-think", "llm-chat", "nanowsp")
+MODEL_CLASSES = ("llm-chat-think", "llm-chat", "nanowsp", "llm-logits")
 WSPX_TASKS = ("recall", "parity8", "mod13", "fsm4", "noecho")
 
 
@@ -96,6 +96,10 @@ def suite_digest(suite):
                                                                                  "sealed_sha256": suite["sealed_sha256"]},
             "decoding": {k: suite["decoding"].get(k) for k in DECODING_KEYS},
             "graders": suite["graders"], "preservation": suite["preservation"]}
+    if suite.get("components") is not None:                 # llm-logits suites: files, shas, chunk / task counts
+        core["components"] = suite["components"]
+        core["gpu_args"] = suite.get("gpu_args")
+        core["thresholds"] = suite.get("thresholds")
     return hashlib.sha256(json.dumps(core, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
@@ -200,6 +204,11 @@ def write_shipped_suites(out_dir=SUITES):
     s = make_nanowsp_suite()
     (out_dir / "nanowsp-wspx.json").write_text(json.dumps(s, indent=1), encoding="utf-8")
     written.append(out_dir / "nanowsp-wspx.json")
+    from engine import dist_shift
+    s = dist_shift.make_logits_suite(text="data/bench/wikitext2_test.txt", hellaswag="data/bench/hellaswag_val_full.txt",
+                                     winogrande="data/bench/winogrande-debiased-eval.csv", mmlu="data/bench/mmlu-validation.bin")
+    (out_dir / "dist-shift.json").write_text(json.dumps(s, indent=1), encoding="utf-8")
+    written.append(out_dir / "dist-shift.json")
     return written
 
 
@@ -401,28 +410,52 @@ def _run_nanowsp(suite, model_path, log):
 
 # ----------------------------------------------------------------------------- bench_run
 
+def _run_logits(suite, model, base, binary, runner, logits_dir, control_vector, scale, log):
+    from engine import dist_shift
+    bench, meta = dist_shift.run_dist_shift(suite, model, base=base, binary=binary, runner=runner, logits_dir=logits_dir,
+                                            control_vector=control_vector, scale=scale, log=log)
+    bp = Path(binary) if binary else dist_shift.DEFAULT_PERPLEXITY
+    extras = {}
+    if control_vector:
+        p = Path(str(control_vector))
+        extras["control_vector"] = {"path": str(control_vector), "sha256": sha_file(p) if p.is_file() else None,
+                                    "declared_by": "caller"}
+    if scale is not None:
+        extras["scale"] = float(scale)
+    identity = {"model_path": str(model), "model_sha": sha_file(model), "extras": extras,
+                "binary": {"path": str(bp), "sha256": sha_file(bp) if bp.is_file() else None},
+                "base_sha": meta["base_sha"], "base_logits": meta["base_logits"], "data_sha": meta["data_sha"]}
+    return {"benchmarks": bench, "items": [], "served": {"model_path": str(model), "sha256": identity["model_sha"]},
+            "preservation": {}, "preservation_items": [], "think_share": None, "commands": meta["commands"]}, identity
+
+
 def bench_run(suite, port=None, out=None, arm=None, extra_body=None, lora=None, force_reuse=False, log=print,
               work_dir=None, binary=None, model=None, control_vector=None, scale=None, provenance=None,
-              unknown_model=False):
+              unknown_model=False, base=None, runner=None, logits_dir=None):
     """Runs a suite (dict from resolve_suite / make_suite). LLM classes: against the server on `port`; nanowsp class:
-    `model=<checkpoint file or dir>` in-process. Writes `out` (JSON) and returns it."""
+    `model=<checkpoint file or dir>` in-process; llm-logits class: `model=<gguf>` through llama-perplexity (`base=<gguf>`
+    for the KL component, `binary=` the llama-perplexity path, `runner` / `logits_dir` for tests). Writes `out` (JSON)
+    and returns it."""
     if suite.get("sealed_use") and "spent" in str(suite["sealed_use"]).lower() and not force_reuse:
         raise SealedSpent(f"suite {suite['name']} is a sealed set already spent ({suite['sealed_use']}); "
                           "a sealed set is used once; force_reuse=true runs it anyway and records that")
     cls = suite.get("model_class", "llm-chat-think")
-    if cls == "nanowsp" and not model:
-        raise ClassMismatch(f"suite {suite['name']} is of class nanowsp: it needs model=<checkpoint>, not a server")
-    if cls != "nanowsp" and model and not port:
+    file_classes = ("nanowsp", "llm-logits")
+    if cls in file_classes and not model:
+        raise ClassMismatch(f"suite {suite['name']} is of class {cls}: it needs model=<file>, not a server")
+    if cls not in file_classes and model and not port:
         raise ClassMismatch(f"suite {suite['name']} is of class {cls}: it needs a running server (port=), "
-                            "model= is for the nanowsp class")
-    if cls != "nanowsp" and not port:
+                            "model= is for the nanowsp and llm-logits classes")
+    if cls not in file_classes and not port:
         raise ValueError("bench_run needs port=<llama-server port> for an LLM suite")
     out = Path(out) if out else ROOT / "lab" / "runs" / "bench" / f"{arm}.json"
     arm = arm or out.stem
     work = Path(work_dir) if work_dir else out.parent / f"{out.stem}_work"
     work.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
-    if cls == "nanowsp":
+    if cls == "llm-logits":
+        res, identity = _run_logits(suite, model, base, binary, runner, logits_dir, control_vector, scale, log)
+    elif cls == "nanowsp":
         res = _run_nanowsp(suite, model, log)
         identity = {"model_path": res["served"]["model_path"], "model_sha": res["served"]["sha256"], "extras": {},
                     "binary": {"path": "in-process (engine/nanowsp_runtime.py)", "sha256": sha_file(ROOT / "engine" / "nanowsp_runtime.py")}}
@@ -448,6 +481,7 @@ def bench_run(suite, port=None, out=None, arm=None, extra_body=None, lora=None, 
            "extra_body": extra_body, "lora": lora, "force_reuse": bool(force_reuse), "sealed_use": suite.get("sealed_use"),
            "benchmarks": res["benchmarks"], "preservation": res["preservation"], "think_share": res.get("think_share"),
            "items": res["items"], "preservation_items": res["preservation_items"],
+           "thresholds": suite.get("thresholds"), "commands": res.get("commands"),
            "seconds": round(time.time() - t0), "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
            "imported_from": None}
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -552,14 +586,66 @@ def relation(base, arm):
         return "edit vs its base"
     if sha_match(_model_sha(arm), bs):
         return "edit vs its base"
+    if sha_match((arm.get("identity") or {}).get("base_sha"), bs):   # llm-logits: the KL base named at run time
+        return "edit vs its base"
     return "two models"
+
+
+def _compare_logits(base, arm, rel):
+    """The llm-logits class: no items. PPL ratio, the arm's KL to its base, top-1 agreement, and the accuracy deltas
+    with the tools' own errors. Verdict 'preserves distribution' / 'distribution shifted' only when the suite's
+    thresholds are calibrated (kl_mean, same_top_p not null); 'not calibrated yet' otherwise."""
+    b, a = base.get("benchmarks") or {}, arm.get("benchmarks") or {}
+    kl = a.get("kl") or {}
+    out = {"wsplang_bench_version": VERSION, "suite": arm.get("suite"), "relation": rel, "base": base.get("arm"),
+           "arm": arm.get("arm"), "base_model_sha": (_model_sha(base) or "")[:12], "arm_model_sha": (_model_sha(arm) or "")[:12],
+           "placebo": None, "band": None, "benchmarks": {}, "placebo_benchmarks": None, "preservation": None, "reasons": [],
+           "logits": {}}
+    L = out["logits"]
+    pb, pa = (b.get("perplexity") or {}).get("ppl"), (a.get("perplexity") or {}).get("ppl")
+    L["ppl_base"], L["ppl_arm"] = pb, pa
+    L["ppl_ratio"] = (pa / pb) if pa is not None and pb else None
+    for k in ("kl_mean", "kl_mean_err", "kl_p99", "kl_max", "same_top_p", "same_top_p_err"):
+        L[k] = kl.get(k)
+    L["delta"], L["err"] = {}, {}
+    for t in ("hellaswag", "winogrande", "mmlu"):
+        tb, ta = b.get(t) or {}, a.get(t) or {}
+        if tb.get("acc") is not None and ta.get("acc") is not None:
+            L["delta"][t] = round(ta["acc"] - tb["acc"], 6)
+            eb = tb.get("acc_err") or ((tb["ci"][1] - tb["ci"][0]) / 2 if tb.get("ci") else None)
+            ea = ta.get("acc_err") or ((ta["ci"][1] - ta["ci"][0]) / 2 if ta.get("ci") else None)
+            L["err"][t] = {"base": eb, "arm": ea}
+    if rel == "two models":
+        out["verdict"] = "two models: statistics only"
+        out["reasons"].append("no base link between the runs (the arm's KL base is not this base)")
+        return out
+    thr = arm.get("thresholds") or {}
+    t_kl, t_top = thr.get("kl_mean"), thr.get("same_top_p")
+    if t_kl is None or t_top is None or L["kl_mean"] is None or L["same_top_p"] is None:
+        out["verdict"] = "not calibrated yet"
+        out["reasons"].append("thresholds kl_mean / same_top_p are null in the suite: set them from the base-vs-base band "
+                              "and the same-norm placebo before any verdict")
+        return out
+    ok = True
+    if L["kl_mean"] > t_kl:
+        ok = False
+        out["reasons"].append(f"kl_mean {L['kl_mean']:.5f} > threshold {t_kl}")
+    if L["same_top_p"] < t_top:
+        ok = False
+        out["reasons"].append(f"same_top_p {L['same_top_p']:.2f} < threshold {t_top}")
+    out["verdict"] = "preserves distribution" if ok else "distribution shifted"
+    return out
 
 
 def bench_compare(base, arm, placebo=None, band=None):
     """Paired comparison of two bench_run JSONs (dicts). Same suite sha required. Full verdict rule for
-    'edit vs its base'; paired statistics only for 'two models'."""
+    'edit vs its base'; paired statistics only for 'two models'. llm-logits runs go through _compare_logits."""
     if base.get("suite_sha") and arm.get("suite_sha") and base["suite_sha"] != arm["suite_sha"]:
         raise ValueError("bench_compare: the two runs are not on the same suite (suite sha differs)")
+    if arm.get("model_class") == "llm-logits" or base.get("model_class") == "llm-logits":
+        if arm.get("model_class") != base.get("model_class"):
+            raise ValueError("bench_compare: an llm-logits run can only be compared with another llm-logits run")
+        return _compare_logits(base, arm, relation(base, arm))
     cells = _cells(base, arm)
     rel = relation(base, arm)
     out = {"wsplang_bench_version": VERSION, "suite": arm.get("suite"), "relation": rel, "base": base.get("arm"),
@@ -654,6 +740,13 @@ def registry_add(index_path, run_path, model=None):
         s = b.get(bench)
         return round(s[key] * s["n"]) if s else None
     label = model or (Path(ident.get("model_path") or served.get("model_path") or "").name or run["arm"])
+    logits = None
+    if run.get("model_class") == "llm-logits":
+        kl = b.get("kl") or {}
+        logits = {"ppl": (b.get("perplexity") or {}).get("ppl"), "kl_mean": kl.get("kl_mean"), "same_top_p": kl.get("same_top_p"),
+                  "hellaswag": (b.get("hellaswag") or {}).get("acc"), "winogrande": (b.get("winogrande") or {}).get("acc"),
+                  "mmlu": (b.get("mmlu") or {}).get("acc")}
+        b = {}                                             # no per-item accuracies for this class
     idx["runs"].append({
         "path": rel, "model": label, "model_sha": sha[:12], "model_class": run.get("model_class", "llm-chat-think"),
         "provenance": _prov_label(run), "suite": run["suite"], "suite_sha": run.get("suite_sha", "")[:12], "arm": run["arm"],
@@ -665,7 +758,7 @@ def registry_add(index_path, run_path, model=None):
         "humaneval": (pres.get("humaneval") or {}).get("ok"), "compliance": (pres.get("compliance") or {}).get("ok"),
         "garbage": ((pres.get("garbage") or {}).get("repeat_16gram", 0) + (pres.get("garbage") or {}).get("nonascii_run", 0))
         if pres.get("garbage") else None,
-        "extras": (ident.get("extras") or {}) or None, "extra_body": run.get("extra_body"),
+        "extras": (ident.get("extras") or {}) or None, "extra_body": run.get("extra_body"), "logits": logits,
         "date": (run.get("created") or "")[:10], "imported_from": run.get("imported_from")})
     idx["runs"].sort(key=lambda r: (r["model_class"], r["model"], r["suite"], r["arm"]))
     _save_index(index_path, idx)
@@ -680,7 +773,9 @@ def registry_add_comparison(index_path, compare_path):
     ps = {f"{b}/{g}": c["benchmarks"][b][g]["p"] for b in c.get("benchmarks", {}) for g in ("g1", "g2") if g in c["benchmarks"][b]}
     idx["comparisons"].append({"path": rel, "suite": c.get("suite"), "relation": c.get("relation", ""), "base": c["base"],
                                "arm": c["arm"], "placebo": c.get("placebo"), "verdict": c["verdict"], "p": ps,
-                               "band": c.get("band"), "reasons": c.get("reasons", [])})
+                               "band": c.get("band"), "reasons": c.get("reasons", []),
+                               "logits": {k: (c.get("logits") or {}).get(k) for k in ("ppl_ratio", "kl_mean", "same_top_p", "delta")}
+                               if c.get("logits") else None})
     _save_index(index_path, idx)
     return idx
 
@@ -706,10 +801,14 @@ def render_table(index_path, out_md):
          "per-item records are in the file.", "", RULE_TEXT, "",
          "## Runs", "",
          "| model (sha) | class | provenance | suite | arm | GSM8K g1 / g2 | MATH-500 g1 / g2 | other | cuts | "
-         "mean tokens (gsm / math) | HumanEval /164 | compliance /40 | garbage | date | source |",
-         "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+         "mean tokens (gsm / math) | HumanEval /164 | compliance /40 | garbage | ppl | KL mean | top-1 agree % | HS | WG | MMLU | date | source |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+
+    def f3(v, nd=3):
+        return "-" if v is None else (f"{v:.{nd}f}" if isinstance(v, float) else str(v))
     for r in idx["runs"]:
         mt = r.get("mean_tokens") or {}
+        lg = r.get("logits") or {}
         other = "; ".join(f"{k} {v}" for k, v in (r.get("other") or {}).items()) or "-"
         model = f"{r['model']} ({r['model_sha']})" if r.get("model_sha") else f"{r['model']} (no sha)"
         L.append(f"| {model} | {r.get('model_class', '-')} | {r.get('provenance', 'external')} | {r['suite']} | {r['arm']} | "
@@ -717,13 +816,20 @@ def render_table(index_path, out_md):
                  f"{mt.get('gsm8k')} / {mt.get('math500')} | "
                  f"{r['humaneval'] if r['humaneval'] is not None else '-'} | "
                  f"{r['compliance'] if r['compliance'] is not None else '-'} | "
-                 f"{r['garbage'] if r['garbage'] is not None else '-'} | {r['date']} | "
+                 f"{r['garbage'] if r['garbage'] is not None else '-'} | "
+                 f"{f3(lg.get('ppl'))} | {f3(lg.get('kl_mean'), 5)} | {f3(lg.get('same_top_p'), 2)} | {f3(lg.get('hellaswag'))} | "
+                 f"{f3(lg.get('winogrande'))} | {f3(lg.get('mmlu'))} | {r['date']} | "
                  f"{'imported: ' + r['imported_from'] if r.get('imported_from') else 'bench_run'} |")
     L += ["", "## Comparisons", "",
           "| suite | relation | base | arm | placebo | verdict | p (bench/grader) | band | reasons |",
           "|---|---|---|---|---|---|---|---|---|"]
     for c in idx["comparisons"]:
         ps = "; ".join(f"{k} {v if v else '<0.0001'}" for k, v in c["p"].items())
+        if not ps and c.get("logits"):
+            lg = c["logits"]
+            d = "; ".join(f"{k} {v:+.3f}" for k, v in (lg.get("delta") or {}).items())
+            ps = (f"ppl× {f3(lg.get('ppl_ratio'))}; KL {f3(lg.get('kl_mean'), 5)}; top-1 {f3(lg.get('same_top_p'), 2)} %"
+                  + (f"; Δ {d}" if d else ""))
         band = c.get("band")
         band_s = "; ".join(f"{b} ±{v['abs_delta']}" for b, v in band.items()) if band else "none"
         L.append(f"| {c.get('suite') or '-'} | {c.get('relation') or '-'} | {c['base']} | {c['arm']} | {c.get('placebo') or '-'} | "
