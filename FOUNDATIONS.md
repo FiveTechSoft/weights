@@ -205,6 +205,12 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   then fall with the scale. Weights say *what* an edit pushes and *how much it will cut*, not whether the model gets
   more right. Caveat: features chosen knowing the phenomenon; for a new behaviour the readout row would have to be
   found first.
+- **Outside evidence (Goworek, Hickey, Nanni & O'Reilly, arXiv 2611.21449, 16 Nov 2026; abstract only):** a three-day
+  replication of the MIT Breakout claims. Writing reproduces (Astra 514 / 550 / 307 vs MIT 517; Opus writes working
+  networks but runs out of tokens; two models decompile the written network into equivalent Python; digits 50 % vs a
+  simple classifier's 82 %). Reading is input-layer reading: both models name the game, and on three new games Astra
+  recovers board layout and misses the rules; weight-only auditing flags poisoned models (10 / 10, 7 / 10, adapter
+  23 / 32) and never names the trigger or the behaviour. Same shape as §45.26 (what and where, not how well).
 - **Outside evidence (Kocabay, *Weight-Space Reading*, 13 Nov 2026, reading list; code released):** the direct test of
   this thesis with LLM readers and a behavioural oracle. Given a target's weights, a surgical edit and a Python sandbox
   (no forward pass), Qwen3.8-27B predicts up / down / same for five behaviours of subtle edits to its own weights at
