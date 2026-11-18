@@ -1,0 +1,4 @@
+experiment ternary_nanowsp_demo:
+steps:
+    step ternarize model=models/nanowsp/model.safetensors rule=absmean out=lab/runs/ternary_nanowsp/demo_tern
+    step imprint_ternary model=lab/runs/ternary_nanowsp/demo_tern file=lab/data/wspx_recall.json n=32 layer=1 eta=4.0 rounds=3 out=lab/runs/ternary_nanowsp/demo_written

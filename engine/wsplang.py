@@ -35,7 +35,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -74,6 +74,8 @@ OPS_ALLOWED = {
     "ternary_survival",  # how much of an edit survives ternarisation (TQ2_0 / absmean); report only (engine/ternary.py)
     "edit_column", "edit_neurons",  # one matrix, few columns, structural same-norm placebo, report + patches (engine/column_edit.py)
     "apply_patch", "rollback_last", "list_patches", "commit_manifest",  # .weightpatch.json runtime (engine/wsplpatch.py)
+    "ternarize", "imprint_ternary",  # ternary NanoWSP checkpoints and the projected closed-form write (engine/ternary_write.py)
+    "bench_run", "bench_compare", "bench_table",  # the language's standard benchmarks (engine/wsplang_bench.py); reports only
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -266,9 +268,11 @@ READ_ONLY_OPS = {
     "compile_control_vector",  # writes new files in a new out dir (fits, LoRA, merged copies), never over an input
     "ternary_survival",  # writes one JSON report, never weights
     "rollback_last", "list_patches", "commit_manifest",  # patch stack bookkeeping: JSON under the session dir only
+    "bench_run", "bench_compare", "bench_table",  # benchmark runs, comparisons and the rendered table: JSON / markdown only
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "edit_column", "edit_neurons", "apply_patch",  # new model dirs beside the inputs, never over them
+    "ternarize", "imprint_ternary",  # new ternary checkpoint dirs beside the inputs, never over them
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
     "rosetta_align", "cross_project", "init_architecture", "imprint_association",
     "imprint_batch", "imprint_corpus", "delta_unlearn", "fwp_overlay", "layer_envelope",
@@ -2386,6 +2390,37 @@ def execute_plan_v4(
                                         "Q6_K arms; benchmark both on dev, then a sealed set")
                 res["execution_state"] = "executed"
 
+            elif op in ("ternarize", "imprint_ternary"):
+                # ternarize model=<ckpt|dir> rule=absmean|tq2_0 out=<new dir> [tensors=<globs>]
+                # imprint_ternary model=<ternary dir> file=<pairs.json> layer=1 eta=4.0 rounds=3 out=<new dir>
+                # Both write a new ternary checkpoint dir (model + ternary safetensors + manifest); never over inputs.
+                from engine import ternary_write as tw
+                for key in ("model", "out"):
+                    if not named.get(key):
+                        raise ValueError(f"{op} needs model=<path> out=<new dir>")
+                model_p = _model_path(named["model"])
+                out_p = _model_path(named["out"])
+                if op == "ternarize":
+                    man = tw.ternarize_checkpoint(model_p, out_p, rule=str(named.get("rule", "absmean")),
+                                                  tensors=named.get("tensors"), iters=int(named.get("iters", 3)))
+                    res["result"] = {"out": str(out_p), "rule": man["rule"], "ternary_tensors": man["ternary_tensors"],
+                                     "density": {k: v["density"] for k, v in man["tensors"].items()},
+                                     "rel_err": {k: v["rel_err"] for k, v in man["tensors"].items()}}
+                else:
+                    if not named.get("file"):
+                        raise ValueError("imprint_ternary needs file=<pairs.json> ([{prompt, target}, ...])")
+                    fp = _model_path(named["file"])
+                    data = json.loads(fp.read_text(encoding="utf-8"))
+                    items = data["train"] if isinstance(data, dict) and "train" in data else data
+                    n = int(named["n"]) if named.get("n") else None
+                    pairs = [(it["prompt"], it["target"]) for it in (items[:n] if n else items)]
+                    hold = [(it["prompt"], it["target"]) for it in data.get("holdout", [])] if isinstance(data, dict) else None
+                    res["result"] = tw.imprint_ternary(model_p, pairs, layer=int(named.get("layer", 1)),
+                                                       eta=float(named.get("eta", 4.0)), rounds=int(named.get("rounds", 3)),
+                                                       out=out_p, lam=float(named.get("lambda", 1e-4)),
+                                                       rule=str(named.get("rule", "absmean")), holdout=hold or None)
+                res["execution_state"] = "executed"
+
             elif op == "apply_patch":
                 # apply_patch patch=<.weightpatch.json> target=<model dir> out=<new dir> [session=<dir>]
                 from engine import wsplpatch as wp
@@ -2459,22 +2494,79 @@ def execute_plan_v4(
                 res["execution_state"] = "executed"
 
             elif op == "evaluate_benchmark":
-                # GSM8K / MATH-500 against an already running chat server (engine/bench_runner.py protocol).
-                from engine import bench_runner as benchmarks
+                # GSM8K / MATH-500 against an already running chat server. Since 0.8 this is the same path as bench_run
+                # (engine/wsplang_bench.py): the default arguments are the dev-2048 suite; other gsm8k= / math500= /
+                # max_tokens= values build an ad-hoc suite on the same protocol. Same JSON as bench_run.
+                from engine import wsplang_bench as wbench
                 if not named.get("endpoint") or not named.get("name"):
                     raise ValueError("evaluate_benchmark needs endpoint=<port or URL> and name=<label>")
-                out_dir = None
-                if named.get("out"):
-                    out_p = check_report_path(named["out"], [])
-                    out_dir = out_p.parent
-                rep = benchmarks.run(str(named["name"]), named["endpoint"], gsm_n=int(named.get("gsm8k", 100)),
-                                     math_n=int(named.get("math500", 50)), parallel=int(named.get("parallel", 2)),
-                                     max_tokens=int(named.get("max_tokens", 8192)), out_dir=out_dir,
-                                     log=lambda s: None)
-                if named.get("out"):
-                    out_p.write_text(json.dumps(rep, indent=1, ensure_ascii=False), encoding="utf-8")
-                res["result"] = {"summary": rep["summary"], "max_tokens": rep["max_tokens"],
-                                 "output": str(out_p) if named.get("out") else None}
+                out_p = check_report_path(named["out"], []) if named.get("out") else None
+                rep = wbench.bench_run_legacy(named["endpoint"], str(named["name"]), gsm_n=int(named.get("gsm8k", 100)),
+                                              math_n=int(named.get("math500", 50)), parallel=int(named.get("parallel", 2)),
+                                              max_tokens=int(named.get("max_tokens", 8192)), out=out_p, log=lambda s: None)
+                res["result"] = {"summary": rep["benchmarks"], "max_tokens": rep["decoding"]["max_tokens"],
+                                 "suite": rep["suite"], "identity": rep["identity"],
+                                 "output": str(out_p) if out_p else None}
+                res["execution_state"] = "executed"
+
+            elif op == "bench_run":
+                # bench_run suite=<name|file> arm=<label> out=<json> (port=<n> for LLM suites | model=<ckpt> for nanowsp)
+                #   [extra_body=<json>] [lora=<file>] [control_vector=<file>] [scale=<f>] [provenance=<manifest>]
+                #   [binary=<llama-server>] [force_reuse=true] [unknown_model=true]
+                # Writes one run JSON with the served model's identity (or refuses); docs/wsplang_0.8_bench_addendum.md.
+                from engine import wsplang_bench as wbench
+                for key in ("suite", "arm", "out"):
+                    if not named.get(key):
+                        raise ValueError("bench_run needs suite=<name|file> arm=<label> out=<json> and port= or model=")
+                out_p = check_report_path(named["out"], [])
+                suite = wbench.resolve_suite(named["suite"])
+                truthy = lambda k: str(named.get(k, "false")).lower() in ("1", "true", "yes")  # noqa: E731
+                extra_body = json.loads(str(named["extra_body"])) if named.get("extra_body") else None
+                rep = wbench.bench_run(suite, port=named.get("port"), out=out_p, arm=str(named["arm"]), extra_body=extra_body,
+                                       lora=named.get("lora"), control_vector=named.get("control_vector"),
+                                       scale=float(named["scale"]) if named.get("scale") is not None else None,
+                                       provenance=_model_path(named["provenance"]) if named.get("provenance") else None,
+                                       binary=named.get("binary"), force_reuse=truthy("force_reuse"),
+                                       unknown_model=truthy("unknown_model"),
+                                       model=_model_path(named["model"]) if named.get("model") else None, log=lambda s: None)
+                res["result"] = {"out": str(out_p), "suite": rep["suite"], "suite_sha": rep["suite_sha"][:12],
+                                 "identity": rep["identity"], "provenance": rep["provenance"], "benchmarks": rep["benchmarks"],
+                                 "preservation": rep["preservation"]}
+                res["execution_state"] = "executed"
+
+            elif op == "bench_compare":
+                # bench_compare base=<run.json> arm=<run.json> out=<json> [placebo=<run.json>] [base2=<run.json>]
+                # base2 = a second run of the base configuration: its disagreement with base is the noise band.
+                from engine import wsplang_bench as wbench
+                for key in ("base", "arm", "out"):
+                    if not named.get(key):
+                        raise ValueError("bench_compare needs base=<run.json> arm=<run.json> out=<json> [placebo=] [base2=]")
+                load = lambda k: json.loads(_model_path(named[k]).read_text(encoding="utf-8"))  # noqa: E731
+                base, arm = load("base"), load("arm")
+                placebo = load("placebo") if named.get("placebo") else None
+                band = wbench.noise_band(base, load("base2")) if named.get("base2") else None
+                cmp_ = wbench.bench_compare(base, arm, placebo=placebo, band=band)
+                out_p = check_report_path(named["out"], [])
+                out_p.parent.mkdir(parents=True, exist_ok=True)
+                out_p.write_text(json.dumps(cmp_, indent=1, ensure_ascii=False), encoding="utf-8")
+                res["result"] = {"out": str(out_p), "relation": cmp_["relation"], "verdict": cmp_["verdict"],
+                                 "reasons": cmp_["reasons"],
+                                 "p": {f"{b}/{g}": cmp_["benchmarks"][b][g]["p"] for b in cmp_["benchmarks"] for g in ("g1", "g2")}}
+                res["execution_state"] = "executed"
+
+            elif op == "bench_table":
+                # bench_table [index=lab/runs/bench/index.json] [out=docs/wsplang_benchmarks.md] [add=<run.json>]
+                #   [add_compare=<compare.json>] [model=<label>]: registers the given files, then renders the table.
+                from engine import wsplang_bench as wbench
+                index_p = _model_path(named.get("index", str(wbench.REGISTRY)))
+                if named.get("add"):
+                    wbench.registry_add(index_p, _model_path(named["add"]), model=named.get("model"))
+                if named.get("add_compare"):
+                    wbench.registry_add_comparison(index_p, _model_path(named["add_compare"]))
+                out_p = check_report_path(named.get("out", str(wbench.TABLE)), [])
+                wbench.render_table(index_p, out_p)
+                idx = wbench._load_index(index_p)
+                res["result"] = {"out": str(out_p), "runs": len(idx["runs"]), "comparisons": len(idx["comparisons"])}
                 res["execution_state"] = "executed"
 
             elif op == "subspace_transfer":

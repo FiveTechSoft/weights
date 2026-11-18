@@ -248,7 +248,11 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     reimpresión del residuo R rondas, al estilo del acumulador de TTF). Banco: las mismas asociaciones escritas en un
     NanoWSP float y en su versión ternaria (una pasada frente a resuelta), capacidad n a recall ≥ 95 % por anchura,
     falsos positivos, y matriz de compatibilidad de las ops existentes sobre el modelo ternario. Plan
-    `lab/probes/ternary_nanowsp/PLAN.md`, fila 46, CPU. Agente asignado.
+    `lab/probes/ternary_nanowsp/PLAN.md`, fila 46, CPU. **Hecho (§45.25, fila 46 ❌):** ops registradas con 9 tests;
+    capacidad float 144 / 144 (d 64 / 128) frente a ternario 8 / 32, igual convertido que escrito en ternario; la
+    dirección sobrevive (cos 0,88), la precisión de cancelación entre claves colineales no; la reimpresión diverge;
+    `peek` lee el ternario, `project_out`, imprint float encima y delta pequeño fallan. Queda (no lanzado): tarea con
+    claves menos colineales, reimpresión amortiguada prerregistrada, TQ1_P/ttf.
 
 24. **Benchmarks como sección de WSP-Lang** (pedido del driver 2026-11-18; corrección: "parte integrante, no un
     WSPBench aparte"): suites estándar dentro del motor (`engine/bench_suites/dev-2048.json`, `dev-8192`, envoltorios
@@ -267,14 +271,22 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     los ternarios del hueco 23; (d) correctores válidos sin `<think>`; (e) `bench_compare` entre dos modelos cualesquiera
     (misma suite, pares y banda, sin veredicto de mejora, que exige placebo y procedencia). Objetividad = misma suite
     con hash + misma decodificación + dos correctores + banda de ruido medida + placebo si hay edición + identidad y
-    procedencia en cada fila.
+    procedencia en cada fila. **Hecho (0.8.1, 2026-11-18):** `engine/wsplang_bench.py`, seis suites, tres ops +
+    `evaluate_benchmark` por la misma ruta, 20 tests, §5.9 de la spec, addendum; relleno de 16 corridas de dev
+    (9B y Llama; Phi excluida por presupuesto 1 024) y 4 comparaciones (vector 9B mejora; vector Llama 0,5 y 0,35
+    mejoran por MATH; fusionado 9B "dos modelos" por falta de sha). Regla (b) ajustada tras el relleno: el placebo
+    bloquea si **gana** significativamente, no si daña (el placebo de la 9B está por debajo de la base). Queda: banda
+    de ruido de la base 9B dos veces (en cola tras la cadena actual) y pasar los brazos a `bench_run` propio.
 25. **¿Banco desde los pesos?** (pregunta del driver 2026-11-18; T7 con número): ≈ 20 brazos con pesos y resultado
     (vectores/compilados 9B, Phi, Llama con placebos y dosis; Exp 8, D4k, complemento). Rasgos solo de pesos: magnitud
     (‖ΔW‖/‖W‖, rango efectivo, energía, G0) y dirección (proyección sobre la fila `</think>` del unembedding, sobre la
     dirección de contraste de la base, sobre las direcciones del placebo). Lecturas: Spearman con Δ aciertos y Δ tokens
     por familia y global; **AUC real frente a placebo** por rasgo. Predicción antes de calcular: magnitud AUC ≈ 0,5
     (por construcción), Spearman con tokens 0,6-0,8 dentro de familia; direccional AUC > 0,8; con aciertos entre
-    familias nada > 0,5. Plan `lab/probes/weight2bench/PLAN.md`, fila 47, CPU. Agente asignado.
+    familias nada > 0,5. Plan `lab/probes/weight2bench/PLAN.md`, fila 47, CPU. **Hecho (§45.26, fila 47 ◐):** 78
+    brazos; magnitud AUC 0,21 (nada); alineación con la fila `</think>` AUC 0,93 real/placebo y ρ −0,6/−0,7 con el
+    ahorro de tokens por familia; con aciertos |ρ| ≤ 0,42. Los pesos dicen qué empuja y cuánto recorta, no si acierta.
+    Queda: encontrar la fila de lectura de una segunda conducta sin saberla de antemano (hueco 17).
 
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`

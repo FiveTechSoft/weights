@@ -196,6 +196,15 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
 - Blind forensics from weights only (§43.20, Qwen3.8-27B TURBO): where a Heretic ablation starts (layer 26, exact) and
   that the rest is an ordinary fine-tune (profile Spearman 0.93) are readable from the fused model; the ablation's rank
   (13, predicted 1) and its end (hidden by later changes) are not. An edit alone is read exactly (concept27b).
+- **Our own number (§45.26, 2026-11-18; 78 arms with a weight artefact and a paired benchmark, 14 real edits vs 17
+  same-norm placebos, prediction row 47 first):** weight-only magnitude features separate nothing (AUC 0.21-0.40, the
+  placebos share the norm by construction); alignment with the `</think>` readout row over the last eight layers
+  separates real edits from placebos at AUC 0.93 (1.00 inside each family) and ranks edits by the token saving they
+  will produce within a family (Spearman −0.72 / −0.69 / −0.58 on 9B / Phi / Llama); nothing in the weights reads
+  correctness (pooled |ρ| ≤ 0.42), and the dose series show why: one direction per artefact, outcomes that rise and
+  then fall with the scale. Weights say *what* an edit pushes and *how much it will cut*, not whether the model gets
+  more right. Caveat: features chosen knowing the phenomenon; for a new behaviour the readout row would have to be
+  found first.
 - **Outside evidence (Kocabay, *Weight-Space Reading*, 13 Nov 2026, reading list; code released):** the direct test of
   this thesis with LLM readers and a behavioural oracle. Given a target's weights, a surgical edit and a Python sandbox
   (no forward pass), Qwen3.8-27B predicts up / down / same for five behaviours of subtle edits to its own weights at
@@ -332,7 +341,11 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   (ggml TQ2_0, where 88-90 % of a `down_proj` is zero; BitNet absmean) the edit survives as a component buried in
   orthogonal junk 2-12× its size (cos 0.42-0.47 for Exp 8, 0.08-0.10 for our compile at dose 1; 10-20× dose before Exp 8
   dominates, never for the compile within 20×). A ternary backend would carry them only in float scales or adapters.
-  Measured with the read-only op `ternary_survival`; no ternary writer exists or is planned.
+  Measured with the read-only op `ternary_survival`. A ternary *writer* now exists for NanoWSP checkpoints
+  (`ternarize`, `imprint_ternary`, §45.25) and shows the same limit from the other side: the closed-form association
+  survives in direction (cos 0.88) but the ternary NanoWSP keeps 1/18 (d 64) to 1/4.5 (d 128) of the float capacity,
+  because exact recall needs cancellation between near-collinear keys finer than one scale step per row; existing ops
+  read a ternary checkpoint, no float edit tested survives re-ternarisation. No ternary writer for pretrained LLMs.
 
 ## Refuted / retired (do not retry without a new reason)
 | idea | result | where |

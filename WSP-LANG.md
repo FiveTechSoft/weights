@@ -92,3 +92,11 @@ fallido queda como conocimiento reutilizable (tabla de ideas retiradas en `FOUND
   la entrada), y `ternary_survival` (medida; sin escritor ternario, results §45.23). Reproduce la edición Exp 8 del MIT
   byte a byte a través del op nuevo. Sin resultado de conducta propio: cualquier afirmación sigue necesitando dev,
   placebo y sellado (§43.17).
+- 0.8.1 (2026-11-18): **benchmarks como sección del lenguaje** (`docs/wsplang_0.8_bench_addendum.md`): suites estándar
+  en `engine/bench_suites/` (dev-2048, dev-8192, sellados 1-3 con un solo uso, nanowsp-wspx) con hash, ops `bench_run`
+  (identidad obligatoria: sha del modelo servido, del vector/LoRA, del binario y de la suite; `provenance=` verificada
+  para modelos generados por WSP-Lang; clases de modelo con la NanoWSP en proceso) / `bench_compare` (pares, binomial en
+  los dos correctores, placebo, banda de ruido con la base dos veces, preservación; veredicto solo para una edición
+  frente a su base) / `bench_table` (registro y tabla `docs/wsplang_benchmarks.md`); `evaluate_benchmark` pasa por la
+  misma ruta. Escritura ternaria para NanoWSP: `ternarize`, `imprint_ternary` (`docs/wsplang_0.8_ternary_addendum.md`;
+  results §45.25: la capacidad ternaria es 1/18-1/4,5 de la float).

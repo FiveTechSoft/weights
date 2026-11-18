@@ -1,6 +1,6 @@
 # WSP-Lang: Declarative Language Specification for Weight-Space Programming
 
-**Version:** 0.8.0 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
+**Version:** 0.8.1 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
 **Status:** Living Specification  
 **Authors:** FiveTechSoft Engineering & Research Team  
 **Repository:** [github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
@@ -126,6 +126,9 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `assert_orthogonal_preservation` | writes weights | `wsplang_0.3_spec.md` |
 | `assert_weyl` | writes weights | `wsplang_0.4_spec.md` |
 | `audit` | writes weights | `wsplang_0.2_spec.md` |
+| `bench_compare` | read / report | `wsplang_0.8_bench_addendum.md` |
+| `bench_run` | read / report | `wsplang_0.8_bench_addendum.md` |
+| `bench_table` | read / report | `wsplang_0.8_bench_addendum.md` |
 | `commit_manifest` | read / report | `wsplang_0.8_spec.md` |
 | `compare` | read / report | `wsplang_0.2_spec.md` |
 | `compile_control_vector` | read / report | this file |
@@ -151,6 +154,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `imprint_association` | writes weights | not documented yet (see `engine/wsplang.py`) |
 | `imprint_batch` | writes weights | not documented yet (see `engine/wsplang.py`) |
 | `imprint_corpus` | writes weights | `wsplang_0.7_spec.md` |
+| `imprint_ternary` | writes weights | `wsplang_0.8_ternary_addendum.md` |
 | `init_architecture` | writes weights | `wsplang_0.7_spec.md` |
 | `jepa_steer` | writes weights | `wsplang_0.7_spec.md` |
 | `layer_envelope` | writes weights | `wsplang_multilayer_envelope_spec.md` |
@@ -177,6 +181,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `subspace_transfer` | writes weights | this file |
 | `surprise_fwp` | stub | `wsplang_0.5_spec.md` |
 | `synthesize` | writes weights | `wsplang_0.7_spec.md` |
+| `ternarize` | writes weights | `wsplang_0.8_ternary_addendum.md` |
 | `ternary_survival` | read / report | `wsplang_0.8_spec.md` |
 | `tie_weights` | writes weights | `wsplang_0.7_spec.md` |
 | `train` | writes weights | not documented yet (see `engine/wsplang.py`) |
@@ -307,6 +312,21 @@ step compile_control_vector model=<hf dir> vector=<cv.gguf> calib=<traces.jsonl>
 ```
 
 ---
+
+### 5.9. Benchmarks (added 2026-11-18; full text in [`wsplang_0.8_bench_addendum.md`](wsplang_0.8_bench_addendum.md))
+
+The language carries its own standard benchmarks so that any model, the ones WSP-Lang produced included, is measured
+and compared the same way. A **suite** is a digest-verified JSON shipped in `engine/bench_suites/` (`dev-2048`,
+`dev-8192`, `sealed-1/2/3` as single-use wrappers over `data/sealed_confirm*.json`, `nanowsp-wspx` for the NanoWSP
+class); it fixes the items, the decoding, the model class (`llm-chat-think`, `llm-chat`, `nanowsp`), the graders and the
+preservation battery. `bench_run suite=<name> arm=<label> out=<json> port=<n> | model=<ckpt>` executes it and writes
+one JSON with the served model's **identity** (path + sha256, declared extras such as a control vector or LoRA, the
+llama-server binary sha, the suite sha) or refuses (`unknown_model=true` records an unidentified server instead), and
+with the model's **provenance** when given (`provenance=<manifest>`: a wsp.py GGUF manifest, a `compile_control_vector`
+report, an `edit_column` manifest or a `commit_manifest` bundle, verified against the served sha).
+`bench_compare base= arm= out= [placebo=] [base2=]` applies the fixed verdict rule to an edit against its base and
+reports paired statistics only for two unrelated models; `bench_table` renders the registry to
+`docs/wsplang_benchmarks.md`. `evaluate_benchmark` runs on the same path (its defaults are the `dev-2048` suite).
 
 ## 6. Security Model & Runtime Guardrails
 

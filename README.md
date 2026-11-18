@@ -150,6 +150,26 @@ than its target overshoots. A discrete writer for our edits needs the activation
 needs one 9B forward over the calibration prompts; specified in the plan, not launched. Row scored partial: the
 primary reading held by the letter, the declared surprise (a layer above 0.5) fired.
 
+**Ternary writing in WSP-Lang, and how far a ternary NanoWSP stays compatible (results §45.25, 2026-11-18).** Asked
+by the driver after §45.23: ops `ternarize` (a ternary copy W = diag(s)·T with codes, per-row scales, a float
+materialisation so every existing op runs, and a manifest) and `imprint_ternary` (the closed-form association written
+in float, projected to {−1, 0, +1}·s by an exact per-row solve, with TTF-style re-imprints of the deficit). Same
+associations written into a float NanoWSP and into its ternary twin, 3 seeds, capacity = largest n with exact recall
+≥ 0.95: float 144 / 144 at widths 64 / 128; ternary 8 / 32 whether converted after writing or written in ternary
+(ratio 0.056 / 0.22). The write's direction survives (cosine 0.88); what is lost is cancellation precision between
+near-collinear keys, which the pseudo-inverse amplifies; the re-imprint diverges. Existing ops read the ternary
+checkpoint; none of the three float edits tested survives re-ternarisation. Prediction row 46 failed (we bet ≥ 50 %
+of float capacity). Compatibility ends at the first write that needs less than one scale step per row.
+
+**Can a benchmark be read from the weights alone? Partly, and we measured which part (results §45.26, 2026-11-18).**
+78 arms with a weight artefact and a paired benchmark result (Qwen3.5-9B, Phi, Llama-8B, Qwen3.5-0.8B; 14 real edits
+against 17 same-norm placebos), weight-only features, prediction row 47 first. Magnitude features separate nothing
+(AUC 0.21-0.40; the placebos share the norm by construction). Alignment with the `</think>` readout row over the last
+eight layers separates real edits from placebos with AUC 0.93 (1.00 inside every family) and ranks edits by the token
+saving they will produce within a family (Spearman −0.72 / −0.69 / −0.58 on 9B / Phi / Llama). Nothing in the weights
+reads correctness: pooled |ρ| ≤ 0.42, and the dose series show why (one direction per artefact, outcomes 7 → 12 → 30
+→ −5 as the scale grows). Row scored partial. Caveats: one lab's arms, small n, features chosen knowing the phenomenon.
+
 **Running now (2026-11-18, GPU queue 18 → 19 → 17; plans and predictions committed before each run).** Row 43: a
 constant `logit_bias` on `</think>` (+2 … +8) against the conclude vector on the 9B dev items, the control DAWE and we
 both lacked (`lab/probes/cc_bias/PLAN.md`). Then the preservation battery on the 9B base (`engine/preserve_bench.py`:
@@ -321,7 +341,8 @@ with a structural same-norm placebo and a parameter budget, `.weightpatch.json` 
 - inspection: `peek`, `semantic_map`;
 - edits under a guard: `project_out`, `scale-cols`, closed-form imprints; `edit_column` / `edit_neurons` with a structural placebo (0.8);
 - patches: `apply_patch`, `rollback_last`, `list_patches`, `commit_manifest` (0.8);
-- measurement of edits under quantisation: `ternary_survival` (0.8);
+- measurement of edits under quantisation: `ternary_survival` (0.8); ternary NanoWSP checkpoints: `ternarize`, `imprint_ternary` (0.8.1, results §45.25);
+- **benchmarks as a section of the language (0.8.1):** `bench_run suite=dev-2048|dev-8192|sealed-N|nanowsp-wspx` (standard suites shipped in `engine/bench_suites/`, digest-verified; mandatory identity: served model sha, control vector / LoRA sha, binary sha, suite sha; optional `provenance=` verified against the served sha so a WSP-Lang-generated model is recorded as base@sha + patches; model classes `llm-chat-think` / `llm-chat` / `nanowsp`, the last run in-process), `bench_compare` (paired item by item, exact binomial on both graders, same-norm placebo, noise band from the base run twice, preservation battery; verdict "improves / harms / same" only for an edit against its own base, "two models" otherwise), `bench_table` (registry `lab/runs/bench/index.json` → [`docs/wsplang_benchmarks.md`](docs/wsplang_benchmarks.md)); `evaluate_benchmark` now goes through the same path. Rule and format: [`docs/wsplang_0.8_bench_addendum.md`](docs/wsplang_0.8_bench_addendum.md);
 - weight diffs: `delta_stats`, `delta_signature`, `delta_compare`, `model_report`, `delta_to_lora` (a fine-tune's change as a reusable LoRA adapter, local or from the hub, with a transfer verdict);
 - steering: `contrast_vector` (a llama.cpp control vector from two sets of answers, with a same-norm placebo);
 - behavioural evaluation: `evaluate_benchmark` against a running server.

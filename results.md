@@ -3563,6 +3563,102 @@ Dos métodos: cos por `engine.ternary.overlap` y por numpy directo coinciden.
   `down_proj` son lo bastante pequeñas para que un movimiento nativo encaje.
 - **Límites.** Objetivo separable (sin activaciones), cinco tensores, dos ediciones, CPU; ninguna conducta medida.
 
+### 45.25 Escritura ternaria en WSP-Lang (`ternarize`, `imprint_ternary`) y la prueba NanoWSP float frente a ternario: la escritura sobrevive en dirección, la capacidad cae a 1/18-1/4,5 por precisión de cancelación (2026-11-18)
+Pedido del driver ("soporte ternario en WSPLang y un test tipo NanoWSP en float y en ternario, hasta dónde mantenemos
+compatibilidad"). Plan `lab/probes/ternary_nanowsp/PLAN.md` (predicción antes de medir), fila 46. Código
+`engine/ternary_write.py` (9 tests antes), ops registradas con política de escritura (nuevo directorio, nunca sobre la
+entrada), filas en la tabla de la spec, `docs/wsplang_0.8_ternary_addendum.md`, programa `programs/ternary_nanowsp_demo.wspl`
+(`--run` ok). Datos `lab/runs/ternary_nanowsp/{capacity,compat,explore}.json`; recuento independiente 24/24.
+
+**Representación.** Checkpoint ternario = `model.safetensors` (materialización s·T para que el runtime y todas las ops
+corran sin cambios) + `ternary.safetensors` (códigos int8 ∈ {−1,0,+1} y escala float por fila de salida) +
+`manifest.json` (sha del origen, regla, densidad y ‖W − sT‖/‖W‖ por tensor). Ternarios: `attn_{q,k,v,out}` y
+`mlp_{in,out}` de cada capa; float: embeddings, cabeza, normas. Proyección exacta por fila alternando T = clip(round(W/s))
+y s = ⟨W,T⟩/⟨T,T⟩ (el residuo nunca sube). `imprint_ternary` = escritura cerrada en float sobre un acumulador →
+proyección → `rounds` reimpresiones del déficit sobre las claves escritas (el acumulador de TTF en pequeño); `rounds=0`
+= "editar y convertir".
+
+**Banco.** NanoWSP original (2 capas; d 64 y 128), tarea `wspx_recall` (144 pares "KB: XX = letra", 56 held-out),
+escritura Moore-Penrose en `layers.1.mlp_out`; n creciente; recall exacto; mediana de 3 semillas; capacidad = mayor n
+con recall ≥ 0,95.
+
+| anchura | float (A) | ternarizado tras escribir (B1) | escrito en ternario, 3 rondas (B2) | B/A | held-out máx | densidad escrita |
+|---|---|---|---|---|---|---|
+| d 64 | **144** | **8** | **8** | 0,056 | 0,16 | 0,46 |
+| d 128 | **144** | **32** | **32** | 0,22 | 0,18 | 0,47 |
+
+Curvas (d 64): float 1,00 … 0,97; B1 1,00 / 0,94 / 0,22 / 0,17 / 0,05; B2 1,00 / 0,94 / 0,12 / 0,04 / 0,00. (d 128): B1
+1 / 1 / 1 / 0,83 / 0,70 / 0,34; B2 1 / 1 / 1 / 0,79 / 0,53 / 0,10. **Compatibilidad de las ops sobre el checkpoint
+ternario (d 64, n 32):** `peek` PASS; `project_out` FAIL (cociente de energía 0,943); imprint float encima del
+ternario **FAIL** (el par nuevo 0,0; a n 8, post-data, los viejos 0,75 → 0,875 y el nuevo sigue en 0,0); delta pequeño
+FAIL (cos 0,06).
+
+- **Lectura.** La dirección de la escritura sobrevive a la proyección (post-data: cos 0,88-0,89, alpha 0,75-0,79 a
+  todo n; ‖Δ‖/‖W₀‖ 30-315, la matriz ternaria **es** la escritura ternarizada). Lo que se pierde es **precisión**: las
+  claves "KB: XX =" son casi colineales y la pseudoinversa amplifica el ≈ 12 % de error por entrada del ternario
+  (error relativo de salida en las claves escritas 0,71 a n 8 → 2,7 a 32 → 6,3 a 64). η no importa (8/16/32 igual).
+  La reimpresión del residuo **diverge** sin amortiguar (2,74 → 4,71) y vaga amortiguada (0,5: 3,8; 0,25: 2,85, recall
+  0,19/0,50 a n 32). Resolver no ayuda aquí porque el cuello no es la dirección sino la cancelación fina entre claves.
+  **La compatibilidad termina en la primera escritura que necesita menos de un paso de escala por fila.**
+- **Predicción (fila 46) contra el dato.** Primaria ✗ (B2 conserva 6-22 %, no ≥ 50 %); sorpresa declarada disparada
+  (B2/A < 0,25); 5 de 13 bandas (float d 128, held-out, celdas 1, 2 y 4). **❌**. Lo que no previmos: que B1 = B2 (la
+  reimpresión no aporta) y que el límite fuese la colinealidad de las claves, no la densidad.
+- **Límites.** Una arquitectura (NanoWSP 2 capas), una tarea con claves colineales, regla absmean, CPU; sin TQ1_P/ttf,
+  sin LLM preentrenado (eso es §45.23-45.24); amortiguación de la reimpresión solo explorada post-data; una tarea con
+  claves menos colineales subiría n_tern (no corrida). Coste: minutos de CPU. El directorio `work/` (17 MB de
+  checkpoints) no se commitea.
+
+### 45.26 ¿Se puede valorar un banco mirando solo los pesos? Los pesos distinguen una edición real de su placebo y ordenan el ahorro de tokens por familia; no leen la precisión (2026-11-18)
+Pregunta del driver. Plan `lab/probes/weight2bench/PLAN.md` (predicción antes de calcular), fila 47. Código
+`lab/probes/weight2bench/{features,run,recount}.py` (12 tests antes), datos `lab/runs/weight2bench/{arms,summary}.json`;
+recuento independiente (rangos y AUC por pares propios): 75 números, 0 difieren. CPU.
+
+**Brazos (78 filas).** Todo lo que tiene artefacto de pesos y resultado pareado contra su base: 9B 24 (vector cc_v2
+en dev/sellado/criba a dosis 0,25-2,0, 8 placebos de criba, `no31`, v1 y su placebo, compilado y su placebo en dev y
+sellado 2), Phi 13, Llama 17 (dosis 0,25/0,35/0,5, sellados 1-3, compilado), 0.8B 24 (own/port/embport, 15 filas de
+dosis, placebo de port, Exp 8 y su repetición, placebo de Exp 8, D4k, complemento). Conjunto real/placebo: 14 reales
+frente a 17 placebos. Excluidos: brazos de `cc_weights` (GGUF servido ya no en disco) y los vectores "feliz" (sin
+objetivo de precisión).
+
+**Rasgos, solo de pesos (artefacto × escala servida).** Magnitud: norma total / media / máxima, capa del máximo,
+participación, rango efectivo, ‖dW‖/‖W‖ y G0 en los compilados. Dirección: coseno de cada capa con la fila de
+`</think>` del unembedding pasada por la norma final (ids 248069 en Qwen, 128014 en Llama, pieza 49631 en Phi, que no
+tiene etiqueta única), media / 8 últimas capas / última; lo mismo con `<think>` (control) y su diferencia; coseno con el
+vector de contraste de la propia base (solo donde no es circular: los compilados reales **son** ese vector escrito,
+marcados circulares tras la primera pasada, ρ agrupada 0,55 → 0,32); coseno brazo/placebo propio. Objetivos: Δ GSM8K,
+Δ MATH (corrector 1; el 2 guardado), Δ tokens %, Δ cortes.
+
+| rasgo | ρ Δ GSM agrup. (n 58) | ρ Δ MATH agrup. (n 78) | ρ Δ tokens agrup. | AUC real/placebo (14/17) |
+|---|---|---|---|---|
+| norma total | 0,06 | −0,11 | 0,04 | 0,21 (`no31`, v1 y `embport` son menores que sus placebos; pares emparejados 0,5) |
+| rango efectivo | −0,19 | −0,02 | 0,14 | 0,40 |
+| participación | 0,05 | 0,03 | 0,12 | 0,73 |
+| cos `</think>` 8 últimas | 0,22 | 0,34 | **−0,53** | **0,93** (1,00 en cada familia) |
+| cos `</think>` media | 0,25 | 0,34 | −0,53 | 0,88 |
+| cos `<think>` media | **0,42** | **0,36** | −0,41 | 0,88 |
+| diferencia close − open | 0,10 | 0,20 | −0,38 | 0,66 |
+| cos contraste propio (n 33/41) | 0,16 | 0,32 | −0,35 | 0,68 (9B 1,0 en 1/11; 0.8B 0,70 en 5/2) |
+
+Por familia, cos `</think>` 8 últimas frente a Δ tokens: **−0,72 / −0,69 / −0,58 / −0,20** (9B / Phi / Llama / 0.8B);
+frente a Δ MATH 0,71 / 0,47 / 0,59 / 0,09; la magnitud frente a tokens ≈ 0 en todas (los placebos comparten la norma).
+Los cosenos que separan son diminutos (reales 0,001-0,058, placebos dentro de ± 0,01) y la fila `<think>` separa casi
+igual. En las series de dosis el coseno es uno por artefacto mientras Δ MATH va 7 → 12 → 30 → −5 (criba 9B). Mayor
+|ρ| agrupada con aciertos entre rasgos con n ≥ 20: **0,42**.
+
+- **Lectura.** Solo con pesos: (1) se distingue una edición real de su placebo de misma norma por su alineación con las
+  filas de lectura de la etiqueta de pensamiento (AUC 0,93; la magnitud no dice nada, como debe ser); (2) dentro de
+  una familia se ordenan las ediciones por cuántos tokens ahorrarán (ρ −0,6 a −0,7 en 9B/Phi/Llama); (3) **no se lee
+  la precisión** (|ρ| agrupada ≤ 0,42), y las series de dosis muestran por qué: la dirección es invariante a la escala
+  y el resultado no (Llama 0,5 daña, 0,35 ayuda). Es T7 con número: los pesos dicen *qué* empuja una edición y *cuánto
+  recorta*, no si el modelo acierta más.
+- **Predicción (fila 47) contra el dato.** Primaria ✓. Bandas: magnitud AUC ✗ (0,21, por tres artefactos menores que
+  sus placebos), magnitud–tokens ✗ (≈ 0), magnitud–aciertos ✓, cos `</think>` AUC y ρ ✓, `cos_open` AUC ✗ (0,88),
+  diferencia ✗, contraste propio compilado ✓ y port ✓ / embport ✗, coseno con placebo ✓. Ninguna sorpresa. **◐**.
+- **Límites.** 78 filas de los planes de un solo laboratorio, 31 en el conjunto de placebo, resultados sobre 64-150
+  ítems con el ruido ± 5 de la 0.8B; tabla de correlación, no predictor; rasgos elegidos sabiendo qué son las
+  ediciones (la fila `</think>` es la hipótesis del propio fenómeno "concluir"). Para una segunda conducta habría que
+  encontrar su fila de lectura sin saberla de antemano.
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las

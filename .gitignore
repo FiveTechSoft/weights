@@ -36,3 +36,7 @@ C:\\weights/
 
 # one-off root scripts (outside review 2026-11-13: root clutter)
 /probe3.py
+
+# benchmark registry duplicates of existing per-item reports, and NanoWSP ternary work checkpoints (regenerable)
+lab/runs/bench/imported/
+lab/runs/ternary_nanowsp/work/

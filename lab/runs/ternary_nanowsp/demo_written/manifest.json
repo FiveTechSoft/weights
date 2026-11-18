@@ -1,0 +1,166 @@
+{
+ "op": "imprint_ternary",
+ "source": "C:\\weights\\lab\\runs\\ternary_nanowsp\\demo_tern",
+ "source_manifest": {
+  "op": "ternarize",
+  "source": "C:\\weights\\models\\nanowsp\\model.safetensors",
+  "source_sha256": "5cdc65e56c7efe84b7692181d048efccd4e40e5045e03c20912ef48f46793f13",
+  "rule": "absmean",
+  "iters": 3,
+  "ternary_tensors": [
+   "layers.0.attn_k.weight",
+   "layers.0.attn_out.weight",
+   "layers.0.attn_q.weight",
+   "layers.0.attn_v.weight",
+   "layers.0.mlp_in.weight",
+   "layers.0.mlp_out.weight",
+   "layers.1.attn_k.weight",
+   "layers.1.attn_out.weight",
+   "layers.1.attn_q.weight",
+   "layers.1.attn_v.weight",
+   "layers.1.mlp_in.weight",
+   "layers.1.mlp_out.weight"
+  ],
+  "float_tensors": [
+   "final_norm.weight",
+   "layers.0.attn_norm.weight",
+   "layers.0.mlp_norm.weight",
+   "layers.1.attn_norm.weight",
+   "layers.1.mlp_norm.weight",
+   "output.weight",
+   "pos_embd.weight",
+   "token_embd.weight"
+  ],
+  "tensors": {
+   "layers.0.attn_k.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.55419921875,
+    "rel_err": 0.43414175510406494,
+    "scale_median": 0.14928275346755981
+   },
+   "layers.0.attn_out.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.556640625,
+    "rel_err": 0.4279537498950958,
+    "scale_median": 0.07444146275520325
+   },
+   "layers.0.attn_q.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.563232421875,
+    "rel_err": 0.43012750148773193,
+    "scale_median": 0.14781777560710907
+   },
+   "layers.0.attn_v.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.5517578125,
+    "rel_err": 0.42865464091300964,
+    "scale_median": 0.14950990676879883
+   },
+   "layers.0.mlp_in.weight": {
+    "shape": [
+     128,
+     64
+    ],
+    "density": 0.6741943359375,
+    "rel_err": 0.329799085855484,
+    "scale_median": 0.08281634747982025
+   },
+   "layers.0.mlp_out.weight": {
+    "shape": [
+     64,
+     128
+    ],
+    "density": 0.6788330078125,
+    "rel_err": 0.33550503849983215,
+    "scale_median": 0.029043065384030342
+   },
+   "layers.1.attn_k.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.5537109375,
+    "rel_err": 0.4261229336261749,
+    "scale_median": 0.1497667282819748
+   },
+   "layers.1.attn_out.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.572509765625,
+    "rel_err": 0.43245527148246765,
+    "scale_median": 0.07418966293334961
+   },
+   "layers.1.attn_q.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.556640625,
+    "rel_err": 0.43492376804351807,
+    "scale_median": 0.14996960759162903
+   },
+   "layers.1.attn_v.weight": {
+    "shape": [
+     64,
+     64
+    ],
+    "density": 0.560546875,
+    "rel_err": 0.42277681827545166,
+    "scale_median": 0.14963853359222412
+   },
+   "layers.1.mlp_in.weight": {
+    "shape": [
+     128,
+     64
+    ],
+    "density": 0.67529296875,
+    "rel_err": 0.32979685068130493,
+    "scale_median": 0.08293402194976807
+   },
+   "layers.1.mlp_out.weight": {
+    "shape": [
+     64,
+     128
+    ],
+    "density": 0.4549560546875,
+    "rel_err": 0.4702063798904419,
+    "scale_median": 0.3973069190979004
+   }
+  }
+ },
+ "source_sha256": "6ca3c8d83e52c7adbd448eed7c030869779686a31d8373b987449ebfceb0191f",
+ "report": {
+  "op": "imprint_ternary",
+  "tensor": "layers.1.mlp_out.weight",
+  "pairs": 32,
+  "eta": 4.0,
+  "lambda": 0.0001,
+  "rounds": 3,
+  "rule": "absmean",
+  "key_residual": [
+   1.559455394744873,
+   1.939033031463623,
+   2.554628372192383,
+   2.2629714012145996
+  ],
+  "density": 0.47265625,
+  "recall": 0.21875,
+  "holdout_accuracy": 0.017857142857142856,
+  "delta_norm": 342.3865051269531,
+  "w0_norm": 26.45081329345703
+ }
+}
