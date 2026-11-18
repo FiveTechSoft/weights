@@ -227,7 +227,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
 19. **Batería de preservación** para los sellados: HumanEval completo (164) y tasa de bucles/basura por brazo con datos
     locales; IFEval y TriviaQA requieren descarga (pedir OK al driver). Código `engine/preserve_bench.py` con tests.
     Agente asignado. **Hecho el código; primera fila (§45.29): base 9B HumanEval 144/164, cumplimiento 15/40, colas
-    repetidas 38/204. Banda y comparaciones con la corrida doble de `bench_run` (cola 2).**
+    repetidas 38/204. Banda y comparaciones con la corrida doble de `bench_run` (cola 2).** IFEval (541, comprobador
+    propio de los tipos deterministas) y TriviaQA (200 del rc validation, vía la API de filas de HF) aprobados por el
+    driver ("como tú veas", 18-nov 12:30): componentes `ifeval` y `triviaqa` en `preserve_bench`, suite nueva
+    `dev-2048-full` (la `dev-2048` no cambia de hash). Agente asignado; GPU tras `dist-shift`.
 20. **Escritor discreto por fila (mecanismo nuevo, prerrequisito de cualquier intento de crear capacidad sin
     donante):** nuestro objetivo de compilado (ridge) resuelto como problema discreto por fila de salida en el alfabeto
     bf16 (vuelcos de signo, desplazamientos de exponente; Tree-Ising 2611.14210) en vez de redondear (§45.23 muestra
