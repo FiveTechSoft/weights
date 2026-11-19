@@ -325,8 +325,11 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     ×1,156, KL 0,175, top-1 80,4 %; placebo vector KL 0,056; placebo fusionado KL 0,024. La primaria (placebo
     desplaza más que la edición real) falla al revés por 3× en el par del vector. El fusionado cayó por un bug del
     lector de procedencia (report con `files` en lista; arreglado con test) y va en la cola 6
-    (`lab/runs/bench/chain_dist9b_merged.sh`) tras dt_bias. Queda: fijar `kl_mean` / `same_top_p` de la suite con el
-    par compilado completo; vectores a 0,5 y 0,35 (¿el coste en ppl escala con la dosis?).
+    (`lab/runs/bench/chain_dist9b_merged.sh`) tras dt_bias. **Fusionado corrido 19-nov 03:13 (§45.31 post-data):** ppl
+    ×1,060, KL 0,072, top-1 87,7 %: 3× su placebo (fila 48 ❌ en los dos pares) y 2,4× menos KL que el vector por la
+    misma ganancia. Umbrales: propuesta KL ≤ 2 × placebo compilado (0,05) y top-1 ≥ 90 % → ninguna edición real pasa;
+    mejor leer KL por punto ganado. **Decisión del driver pendiente**: fijar umbrales (nueva versión de la suite) o
+    dejar la lectura relativa. Queda: vectores a 0,5 y 0,35.
 
 27. **Sesgo de paso temporal +0,5 (Fan et al. 2611.21885) con placebo, en nuestra 9B** (18-nov): su edición de mayor
     ganancia (+6,6 en 490 ítems, sin control) es subir `dt_bias` de todas las capas de atención lineal en 0,5. En
@@ -334,6 +337,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     +0,5, −0,5 y ±0,5 con signo aleatorio por capa (placebo), contra la base; lectura por tokens, cortes y aciertos;
     predicción antes (fila 49). Si +0,5 iguala al vector "concluir" en ahorro, es un cierre por otra vía (decaimiento de
     la memoria lineal), no por dirección. ≈ 3 GPU h. Agente asignado; cola 5 tras la base en `dev-2048-full`.
+    **Corrido 19-nov (§45.34, fila 49 ◐):** +0,5 no hace casi nada (tokens −2 %, cortes −5, GSM −2); −0,5 daña (GSM
+    37, p < 0,05 en los dos correctores, cortes +12, HumanEval −10); placebo en la base. Pomo asimétrico y constante;
+    el +6,6 de Fan no se reproduce como mecanismo a 2 048 en la 9B. El plan deja el siguiente brazo (+0,5 solo en
+    capas 21-30 a 4 096 tokens) condicionado a decisión del driver; no lanzado.
 
 28. **Comunidades de neuronas (Goodfire, arXiv 2611.23112) como unidad de edición en WSP-Lang** (18-nov, pedido por el
     driver: "veamos cómo aplicarlo desde WSPLang"). Su unidad no es una dirección sino un *evento de token*: pocas
@@ -352,7 +359,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     0.8B con error 0,0; ablación de una fila = pase completo a 5 decimales. [rev] en PLAN: pos y neg son las mismas
     53 trazas y 9 caen en el held-out de cc_weights → descubrimiento con 44, prueba con 9. Cola 7
     (`lab/runs/queue7_20261118.sh`, única espera de `QUEUE6 DONE`) lanzada 23:07; corre tras la cola 6 (≈ 03:15),
-    1,5-2 GPU h; resultado para la mañana del 19-nov.
+    1,5-2 GPU h; resultado para la mañana del 19-nov. **Corrido (03:17-08:45, 5,5 GPU h; §45.35, fila 50 ◐):**
+    comunidad candidata al tope (128 neuronas, 23 capas), A1 y A2 fallan (−0,2 % y 0,4 %), veredicto *nothing_sparse*,
+    sin fase B. El evento "emitir `</think>`" no es disperso en la 9B; §43.23 vale también para el evento. Cerrado
+    salvo otro evento (plural, "an") si el driver lo pide.
 
 29. **Verificación rápida de un modelo publicado desde WSP-Lang** (18-nov, pedido por el driver sobre
     `harness-hub/Qwen3.8-27B-pi-adapted` y `SenseNova-Loop-9B`): qué se puede afirmar en minutos sin servir el modelo.
@@ -389,8 +399,14 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     IFEval; ≈ 2,5 GPU h por 9B), seis configuraciones (base, MiMo, base + Jackrong ×0,5, compilado, R1-Llama-8B, Phi
     4-mini) en `lab/runs/rank/chain.sh`, cola 8 tras `QUEUE7 DONE` (≈ 14 GPU h; fin ≈ 19-nov tarde), plan
     `lab/probes/ranking/PLAN.md`, fila 51. `bench_run lora= scale=` arreglado con test (la ruta se iteraba como pares).
-    Queda: etapa 2 (`dev-2048-full` con IFEval a los dos primeros; `dev-8192` para la curva de presupuesto), Jackrong
-    completo y TwIL exigen descarga (decisión del driver), columna de coste (tokens por acierto) en `bench_table`.
+    Jackrong completo (Q6_K oficial) y TwIL balanced (Q4_K_M) descargados con el OK del driver y añadidos a la cadena
+    (ocho brazos, ≈ 18 GPU h desde las 08:45). **Parcial 14:30 (§45.36):** MiMo y base + Jackrong ×0,5 empatan en GSM
+    (93) y el trasplante va +4 en MATH; los dos pierden HumanEval (129 y 117 frente a 147: **el trasplante falla la
+    preservación a 164 ítems** que HumanEval-20 no vio); MiMo sabe menos (TriviaQA 51 frente a 75 sobre las terminadas
+    por los dos), el trasplante conserva el conocimiento. Queda: terminar los 8 brazos y puntuar la fila 51; etapa 2
+    (`dev-2048-full` con IFEval a los dos primeros; `dev-8192` para la curva de presupuesto); columna de coste (tokens
+    por acierto) en `bench_table`; **repetir la preservación a 164 en los sellados antiguos** (el 20-ítem era
+    insuficiente).
 
 ### Versiones de WSP-Lang (anotado 2026-11-18 a petición del driver; textos externos contrastados con el repo)
 - **0.8 "localización + composición" — hecho 2026-11-18** (`docs/wsplang_0.8_spec.md`): `edit_column` / `edit_neurons`

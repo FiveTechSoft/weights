@@ -3772,7 +3772,7 @@ fusionado, así que `output_sha` queda nulo y el vínculo con la base viene de `
 | placebo fusionado (misma norma) | 8,101 | 1,009 | 0,024 | 92,5 % | +0,003 | −0,005 | −0,003 |
 | vector concluir 1,0 | 9,279 | **1,156** | **0,175** | **80,4 %** | −0,010 | −0,018 | +0,008 |
 | placebo vector 1,0 | 8,330 | 1,038 | 0,056 | 89,1 % | −0,010 | +0,003 | −0,003 |
-| fusionado (compilado) | pendiente (cola 6) | | | | | | |
+| fusionado (compilado) [post-data, cola 6, 19-nov 03:13] | 8,506 | **1,060** | **0,072** | **87,7 %** | 0,000 | +0,005 | +0,013 |
 
 Cocientes de ppl calculados por `bench_compare` y a mano: iguales. Frente a la fila 48: base ppl, HellaSwag y
 Winogrande en banda; **MMLU 0,41 fuera** (previsto 0,62-0,78; es la puntuación de opción múltiple de
@@ -3788,6 +3788,16 @@ texto genérico mucho más que una dirección aleatoria de la misma norma, que e
 edición que lleva GSM dev de 50 a 83: **+15,6 % de perplejidad en WikiText-2** y 20 % de tokens con otro top-1; no es
 gratis en texto genérico, y los Δ de HellaSwag / Winogrande / MMLU (≤ 0,02) no lo ven. Umbrales de la suite siguen
 nulos: se fijan cuando esté el fusionado (la calibración prevista usa el placebo de misma norma del par compilado).
+
+[post-data 2026-11-19] **Brazo fusionado (`chain_dist9b_merged.sh`, 03:06-03:13):** ppl ×1,060, KL 0,072, top-1 87,7 %,
+HS / WG / MMLU +0,000 / +0,005 / +0,013. Frente a su placebo compilado (×1,009, KL 0,024, 92,5 %): **el fusionado
+también desplaza 3× más que su placebo** (0,072 / 0,024), igual que el par del vector (0,175 / 0,056): la primaria de
+la fila 48 falla en los dos pares, ❌ confirmado. Y el fusionado cuesta **2,4× menos KL que el vector** (0,072 frente a
+0,175; ppl +6 % frente a +15,6 %) con la misma ganancia dev en GSM (85-87 frente a 83): Q6_K conserva la dirección y
+~la mitad de la magnitud (§43.19), y esa mitad basta. Umbrales (propuesta, no fijada: cambiar la suite cambia su
+digest): "preserva distribución" si KL ≤ 2 × placebo del par compilado (0,05) y top-1 ≥ 90 %; con eso **ninguna de
+nuestras dos ediciones reales preserva la distribución**, y el placebo sí: el umbral mide exactamente "no ha cambiado
+nada útil". Mejor lectura: el coste en KL por punto de GSM ganado (fusionado 0,072 / 35 = 0,002; vector 0,005).
 
 ### 45.32 Batería completa (`dev-2048-full`) sobre la base 9B: IFEval 25 % y TriviaQA 39 % son sobre todo cortes a 2 048; y la banda entre suites no es cero (2026-11-18)
 `lab/runs/bench/chain_full9b.sh` 15:02-21:24 (6,3 GPU h; `seconds` 22 850), servidor sha `2f57ee31c827` (A0 Q6_K),
@@ -3884,6 +3894,87 @@ completa; embeddings, cabeza, normas y toda la atención lineal intactas; 89 % d
 Dos métodos: ‖ΔW‖ por traza y por valores singulares (2e-15), parámetros por cabecera y por formas (iguales). Lectura:
 un cambio pequeño y difuso casi de rango 32 en el MLP más actualizaciones casi de rango 1 en los valores tempranos;
 nada de esto dice si SWE-bench Pro sube 33 puntos (eso exige el 27B dentro del arnés pi).
+
+### 45.34 Sesgo de paso temporal ±0,5 (el pomo de Fan et al. 2611.21885) en la 9B: +0,5 no hace casi nada, −0,5 daña (fila 49 ◐) (2026-11-19)
+Plan `lab/probes/dt_bias/PLAN.md`, cola 5 (`lab/runs/dt_bias/chain.sh`, 21:28-03:03, 5,6 GPU h). Tres GGUF escritos
+por `wsp.py add-scalar` / `add-scalar-signed` sobre los 24 `blk.N.ssm_dt.bias` de A0 (manifiestos en `servidos/`,
+sha en el log): `+0,5`, `−0,5` y `±0,5` con signo aleatorio por capa (placebo, semilla 2026). `dev-2048` por
+`bench_run` con batería; pareado contra `base_a` (banda a-b de §45.30 y banda real de §45.32).
+
+| brazo | GSM8K g1 / g2 | MATH g1 / g2 | cortes GSM + MATH | tokens GSM | HumanEval | cumplimiento | colas | p GSM (g1 / g2) |
+|---|---|---|---|---|---|---|---|---|
+| base a / b | 50 / 49 | 6 / 6 · 5 / 5 | 96 | 1 689 | 143 / 144 | 14 | 32 / 26 | |
+| **+0,5** | 48 / 49 | 8 / 7 | **91** | 1 654 (−2 %) | 149 | 12 | 31 | 0,85 / 1,0 (14 ↓ 12 ↑) |
+| **−0,5** | **37 / 37** | 5 / 5 | **108** | 1 777 (+5 %) | **134** | 14 | 47 | **0,024 / 0,036** (21 ↓ 8 ↑) |
+| placebo ±0,5 | 45 / 46 | 8 / 7 | 96 | 1 706 (+1 %) | 145 | 16 | 39 | 0,42 / 0,70 |
+
+Dos métodos: `bench_compare` (`cmp_*.json`; sin procedencia enlazada en estas corridas, así que solo da los
+estadísticos pareados) y recuento binomial exacto ítem a ítem desde los JSON; coinciden. Frente a la fila 49: R1 "el
+pomo actúa" se cumple solo por cortes (−5 con banda de cortes ≈ 1; en tokens −2 % queda dentro de la banda real
+±2 %); R2 "la dirección importa" ✓ (+0,5 y −0,5 mueven tokens y cortes en sentidos opuestos, el placebo en medio);
+R3 ganancia de precisión: no (MATH +2 dentro de banda), como se predijo (15 %). Bandas: +0,5 falla la de tokens
+(−2 % frente a −5 a −20 %); −0,5 falla GSM (37 frente a 42-54) y cortes (108 frente a 92-105); placebo todas dentro;
+ninguna sorpresa salta (GSM ≤ 30 no, HumanEval ≤ 120 no). Primarias acertadas, tres bandas fuera → **◐**.
+**Lectura:** el pomo es **asimétrico**: acelerar el olvido (+0,5) en la 9B a 2 048 no acorta ni cierra (−2 % de
+tokens, −5 cortes, −2 GSM: nada frente al vector, −56 % de tokens y +33 GSM); frenarlo (−0,5) sí daña (GSM −13 con p
+< 0,05 en los dos correctores, +12 cortes, HumanEval −10: *harms* por la regla, batería fallida). El +6,6 de Fan et al.
+(27B, 4 096 tokens, 80 % de cortes) no se reproduce como mecanismo en la 9B a 2 048; su efecto, si existe, es de
+presupuesto largo en un modelo que se corta mucho. Un cambio uniforme de la tasa de olvido es un empuje constante
+(§45.27, R2): no sabe dónde está el estado. El plan deja escrito el siguiente brazo si R1 y R2 se cumplían y R3 no
+(+0,5 solo en capas 21-30 a 4 096); no se lanza sin decisión del driver.
+
+### 45.35 Comunidades de neuronas (Goodfire) para "emitir `</think>`" en la 9B: nada disperso; la lectura de §43.23 vale también para el evento (fila 50 ◐) (2026-11-19)
+Plan `lab/probes/neuron_communities/PLAN.md` (+ [rev] del held-out), cola 7 (03:17-08:45, 5,5 GPU h: atribución
+5,1 h, ablaciones 23 min). Atribución exacta por gradiente de log p(`</think>`) (una vJP por posición, capas en
+grupos de 4, activaciones en disco; ruta validada en CPU frente a autograd con error 0,0) en 44 trazas de
+descubrimiento × 18 posiciones = 792; top-64 por posición; grafo PMI 3 770 nodos / 68 149 aristas; Louvain → 12
+comunidades; **ninguna neurona "siempre activa"** (≥ 90 % de las posiciones). Comunidad candidata (masa pos − neg): llega
+al tope de **128 neuronas en 23 capas** (1-31; 88 de ellas en las capas 22-31, 33 en la 31, 15 en la 30; 2 en la 26,
+que no son las 4 de §43.23), con puntuación pos − neg de 0,05 sobre 94 (las dos masas casi iguales: la comunidad no
+distingue el cierre de mitad de razonamiento). Pruebas en las 9 trazas terminadas del held-out (p base del cierre
+0,41-0,98):
+
+| prueba | comunidad | control | regla | resultado |
+|---|---|---|---|---|
+| A1 necesidad (caída mediana de p al quitarla) | **−0,2 %** (por traza: +86, −56, −28, +3, +78, −15, −0,2, −18, +10 %) | placebo mismo tamaño 0,003 % (máx 4 %) | ≥ 25 % y ≥ 5× placebo | **falla** |
+| A2 suficiencia (p conservada con solo la comunidad en sus capas) | **0,4 %** (mediana; por traza 0,00-24 %) | aleatorio mismo tamaño 0,17 % | ≥ 50 % | **falla** |
+| A3 por capa (caída al quitar solo esa capa) | 31: 22 %; 24: 10 %; 16: 9 %; resto ≤ 6 %, varias negativas | | informativa | |
+
+Veredicto por la regla fijada: **nothing_sparse**. Frente a la fila 50: A1 (45 %) y A2 (30 %) fallan, como se
+inclinaba la predicción; bandas de tamaño (8-40 neuronas en 3-8 capas) **fuera** (128 en 23); concentración en 22-31
+y presencia de la capa 26 ✓; sin sorpresas → **◐**. **Lectura:** con las tres pruebas de Goodfire, el evento "emitir
+`</think>` ahora" no vive en pocas neuronas de la 9B: quitar las 128 más atribuidas deja p igual (y en 4 de 9 trazas la
+sube), y dejarlas solas la destruye. Es coherente con §43.23 (la *dirección* necesita ~100 neuronas por capa) y con la
+cobertura que Goodfire declara (10 % de prompts con alguna capa dispersa): este evento está en el 90 %. El término
+denso de rango 1 (§43.19 / §45.8) sigue siendo el objeto adecuado; no hay fase B. Límites: n = 9, un solo evento, cap
+128, Louvain sin Leiden, atribución a un token fijo en vez de a la predicción libre.
+
+### 45.36 Ranking etapa 1, parcial (3 de 8 brazos): MiMo y nuestro trasplante empatan en matemáticas, los dos pierden código y MiMo pierde conocimiento (2026-11-19, en curso)
+Plan `lab/probes/ranking/PLAN.md`, fila 51; `rank-2048` (dev-2048 + TriviaQA 200), un servidor por configuración,
+`lab/runs/rank/chain.sh` (cola 8, desde 08:45). Hechos a las 14:30: base (2,5 h), MiMo (42 min: piensa en el 91 %
+y corto), base + Jackrong ×0,5 (2,5 h). Pareado ítem a ítem con la base de la misma suite (binomial exacta):
+
+| brazo | GSM8K g1 / g2 (cortes, tokens) | MATH g1 / g2 (cortes) | HumanEval /164 (↓/↑ vs base) | TriviaQA em /200 (cortes) | cumplimiento /40 |
+|---|---|---|---|---|---|
+| base 9B | 50 / 49 (51, 1 689) | 6 / 6 (45) | **147** | **75** (82) | 17 |
+| MiMo 2.6 | **93 / 94** (3, 409) | 30 / 26 (19) | 129 (27 ↓ 9 ↑, p 0,004) | 60 (5) (29 ↓ 14 ↑, p 0,03) | **36** |
+| base + Jackrong ×0,5 | **93 / 94** (4, 615) | **34 / 30** (15) | 117 (37 ↓ 7 ↑, p < 0,001) | 75 (69) (10 ↓ 10 ↑) | 23 |
+
+Lecturas provisionales (el resto de brazos, compilado, Llama, Phi, Jackrong completo y TwIL, sigue corriendo):
+- **Matemáticas:** MiMo y el trasplante empatan en GSM (93 los dos, 0 perdidos frente a la base) y el trasplante va
+  +4 en MATH (dentro de la banda provisional); los dos ganan casi solo por **terminar** (cortes 3-4 frente a 51).
+- **Código:** los dos **pierden** frente a la base, y de forma distinta: el trasplante se corta en código (44 cortes
+  frente a 10; mediana 1 116 tokens frente a 831: el adaptador alarga el razonamiento de código hasta el tope); MiMo
+  casi no razona en código (mediana 223 tokens, 4 cortes) y falla por respuesta corta. La batería de preservación
+  que usamos en los sellados (HumanEval-20) no vio esto: **el trasplante Jackrong falla la regla de preservación a
+  164 ítems** (−30, muy por fuera de "base − 5").
+- **Conocimiento:** sobre las 117 preguntas que MiMo y la base terminan, MiMo acierta 51 y la base 75: MiMo **sabe
+  menos** (destilación de razonamiento con coste en memoria). El trasplante no toca el conocimiento (67 = 67 sobre
+  las 105 terminadas por los dos; +13 terminadas).
+- **Instrucciones cortas (cumplimiento):** MiMo 36 / 40, muy por encima (termina y obedece formato).
+- Para la fila 51: ya es seguro que **ningún brazo gana los cuatro ejes** (la base lidera código y conocimiento):
+  R1 confirmado en la dirección predicha; MiMo HumanEval 129 cae dentro de 130-150 por un punto por debajo. Se
+  puntúa al terminar la cadena.
 
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de

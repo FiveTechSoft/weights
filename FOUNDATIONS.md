@@ -259,8 +259,9 @@ minus the rest, `contrast_vector` with `think`/`focus` rows), applied as a contr
   closes 1/256 traces at 4 096 tokens (§43.22). Its MLP part is not a handful of neurons: median k₅₀ 119 vs
   128 for a random split (§43.23; one exception, layer 26, 4 neurons). Goodfire's neuron communities (arXiv
   2611.23112, Nov 2026: a few neurons across layers, necessary and sufficient for one next-token event) measure a
-  different object, the event, not the direction; whether "emit `</think>` now" has such a community in the 9B is
-  roadmap gap 28, unrun. **Redone with the corrected vector (§45.4,
+  different object, the event, not the direction; run on "emit `</think>` now" in the 9B with their three tests
+  (§45.35, 2026-11-19): nothing sparse (the 128 most attributed neurons across 23 layers are neither necessary nor
+  sufficient), so the event is as spread as the direction and the dense rank-1 term stays the right object. **Redone with the corrected vector (§45.4,
   §45.8, 2026-11-13):** the first vector's layer 31 was the post-norm row (§45.3); the re-derived vector confirms on
   sealed set 1 (86 / 33) and its compilation on sealed set 2, second use (89 / 25 vs base 46 / 7, placebo 34 / 5,
   HumanEval-20 19/20). Paired on the same 150 items the corrected layer 31 changes nothing in correctness (3/3, 3/4) and
