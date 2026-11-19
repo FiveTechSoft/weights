@@ -54,7 +54,22 @@ card / post claims (unverified), servable on our 12 GB llama.cpp build.
 | oguzeldereli/ttf-Qwen3.8-27B (ternary 1.6-bit + 72 M tokens recovery) | not read (ternary + retrained: no float target) | not benchmarked | GSM8K 0.895 = FP16 on 200 problems, HumanEval 0.841 vs 0.933, IFEval 0.735 vs 0.787, TriviaQA 0.538 vs 0.776 | yes with their patches (untested) | 2026-11-18 |
 | kitaniai/clover-2 (27B base + 7 LoRA experts, router) | not read | not benchmarked | small samples (n ≈ 12): MATH-style 8 → 24 %, GSM-Hard 36 → 54 % | no | 2026-11-18 |
 
-## Ranking in progress (stage 1, queue 8, 19 Nov 2026)
+## Ranking stage 1 (`rank-2048`, 19-20 Nov 2026; results §45.36)
+
+| model | GSM8K | MATH-500 | HumanEval /164 | TriviaQA /200 | compliance /40 | tokens per correct GSM8K |
+|---|---|---|---|---|---|---|
+| Qwen3.5-9B base | 50 | 6 | **147** | 75 | 17 | 3,378 |
+| MiMo 2.6 | **93** | 30 | 129 | 60 | 36 | **440** |
+| base + Jackrong ×0.5 (ours) | **93** | 34 | 117 | 75 | 23 | 661 |
+| compiled conclude (ours) | 85 | 30 | 132 | **84** | **38** | 936 |
+| DeepSeek-R1-Distill-Llama-8B | 78 | 21 | 80 | 46 | 31 | 1,659 |
+| Phi-4-mini-reasoning | 83 | 30 | 57 | 36 | 13 | 1,308 |
+| Jackrong full (official GGUF) | 93 | 30 | 47 (GGUF breaks indentation) | 84 | 27 | 445 |
+| TwIL-8B balanced (Q4_K_M) | 91 | **39** | 67 (97 cut) | 62 | 35 | 791 |
+
+No model wins every axis. Finalists for stage 2 (IFEval): compiled conclude, MiMo, TwIL.
+
+### Plan as written before the run
 
 `lab/probes/ranking/PLAN.md`, prediction row 51: base, MiMo 2.6, base + Jackrong ×0.5, compiled conclude, R1-Llama-8B
 and Phi-4-mini-reasoning on `rank-2048` under one server configuration each; results go to the rows above and to

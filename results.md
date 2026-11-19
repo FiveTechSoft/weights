@@ -3949,7 +3949,8 @@ cobertura que Goodfire declara (10 % de prompts con alguna capa dispersa): este 
 denso de rango 1 (§43.19 / §45.8) sigue siendo el objeto adecuado; no hay fase B. Límites: n = 9, un solo evento, cap
 128, Louvain sin Leiden, atribución a un token fijo en vez de a la predicción libre.
 
-### 45.36 Ranking etapa 1, parcial (3 de 8 brazos): MiMo y nuestro trasplante empatan en matemáticas, los dos pierden código y MiMo pierde conocimiento (2026-11-19, en curso)
+### 45.36 Ranking etapa 1 (8 brazos en `rank-2048`): nadie gana los cuatro ejes; nuestras dos ediciones no pasan la preservación a 164 ítems; el compilado es el mejor equilibrio, MiMo el más barato, TwIL el mejor en MATH (fila 51 ◐) (2026-11-19/20)
+[La primera parte, escrita a las 14:30 del 19-nov con 3 brazos, se conserva tal cual; el cierre con los 8 brazos está al final de la sección.]
 Plan `lab/probes/ranking/PLAN.md`, fila 51; `rank-2048` (dev-2048 + TriviaQA 200), un servidor por configuración,
 `lab/runs/rank/chain.sh` (cola 8, desde 08:45). Hechos a las 14:30: base (2,5 h), MiMo (42 min: piensa en el 91 %
 y corto), base + Jackrong ×0,5 (2,5 h). Pareado ítem a ítem con la base de la misma suite (binomial exacta):
@@ -3975,6 +3976,56 @@ Lecturas provisionales (el resto de brazos, compilado, Llama, Phi, Jackrong comp
 - Para la fila 51: ya es seguro que **ningún brazo gana los cuatro ejes** (la base lidera código y conocimiento):
   R1 confirmado en la dirección predicha; MiMo HumanEval 129 cae dentro de 130-150 por un punto por debajo. Se
   puntúa al terminar la cadena.
+
+**Cierre con los 8 brazos (cadena 08:45-22:36 del 19-nov, 13,8 GPU h; `lab/runs/rank/*.json`, `cmp_*.json`, tabla en
+`docs/wsplang_benchmarks.md`).** Pareado ítem a ítem con la base de la misma suite; binomial exacta en los
+discordantes; "coste" = tokens medios de GSM8K × 100 / aciertos.
+
+| brazo | GSM8K g1 / g2 (cortes) | MATH g1 / g2 (cortes) | HumanEval /164 (↓ / ↑) | TriviaQA em (cortes) · terminadas por ambos brazo / base | cumpl. /40 | tokens por acierto GSM | GPU h |
+|---|---|---|---|---|---|---|---|
+| base 9B | 50 / 49 (51) | 6 / 6 (45) | **147** | 75 (82) | 17 | 3 378 | 2,5 |
+| MiMo 2.6 | **93 / 94** (3) | 30 / 26 (19) | 129 (27 / 9, p 0,004) | 60 (5) · 51 / 75 de 117 | 36 | **440** | 0,7 |
+| base + Jackrong ×0,5 | **93 / 94** (4) | 34 / 30 (15) | 117 (37 / 7, p < 0,001) | 75 (69) · 67 / 67 de 105 | 23 | 661 | 2,5 |
+| compilado concluir | 85 / 86 (10) | 30 / 23 (21) | 132 (21 / 6, p 0,006) | **84** (38) · 69 / 68 de 107 | **38** | 936 | 1,6 |
+| R1-Llama-8B | 78 / 79 (18) | 21 / 17 (27) | 80 (73 / 6) | 46 (9) · 36 / 74 de 116 | 31 | 1 659 | 2,0 |
+| Phi-4-mini (3,8B) | 83 / 84 (14) | 30 / 26 (19) | 57 (94 / 4) | 36 (43) · 31 / 63 de 97 | 13 | 1 308 | 1,4 |
+| Jackrong completo (GGUF oficial) | 93 / **1*** (5) | 30 / 29 (8) | **47*** (103 / 3) | **84** (25) · 70 / 72 de 112 | 27 | 445 | 1,2 |
+| TwIL-8B balanced (Q4_K_M) | 91 / 92 (7) | **39 / 35** (9) | 67** (86 / 6) | 62 (73) · 54 / 61 de 95 | 35 | 791 | 1,9 |
+
+\* **Artefacto del GGUF oficial de Jackrong**: colapsa la sangría del código (53 % de líneas con un espacio, 9 % con
+cuatro; los demás brazos Qwen 0 % / 58-78 %) y no cierra con `\boxed` (60 / 100 colas con caja frente a 96-98): su
+HumanEval 47 y su corrector 2 no miden al modelo. El modelo sí: es el donante del trasplante, y con el adaptador a
+0,5 sobre la base da 117. Para una fila válida hace falta otra conversión (mradermacher) o el HF servido de otro modo.
+\** TwIL: inspeccionado, **no es artefacto**: se corta en 97 de 164 problemas de código (mediana 2 048 tokens,
+6 055 caracteres de razonamiento) y 70 de sus 97 fallos no llegan a escribir el bloque de código. Pierde código como
+el trasplante: razona de más hasta el tope. A 8 192 tokens su HumanEval sería otro número.
+
+Lecturas (dos métodos: resumen de `bench_run` y recuento ítem a ítem; coinciden):
+- **R1: ningún brazo gana los cuatro ejes** (predicho 60 %, ✓). Por eje: GSM8K MiMo = trasplante = Jackrong
+  completo (93; TwIL 91 dentro de banda); MATH **TwIL 39** (trasplante 34; MiMo, compilado, Phi, Jackrong 30);
+  HumanEval **base 147** (compilado 132, MiMo 129, trasplante 117); TriviaQA **compilado 84 = Jackrong completo 84**
+  (base 75 con 82 cortes; MiMo 60); cumplimiento compilado 38, MiMo 36, TwIL 35.
+- **R2 coste:** MiMo y Jackrong completo ≈ 440 tokens por acierto; trasplante 661; TwIL 791; compilado 936; base
+  3 378. Predije que el compilado o el trasplante serían más baratos que MiMo: ✗.
+- **R3 veredictos de nuestras ediciones:** `bench_compare` dice **"same / not decidable: la batería de preservación
+  falla"** para el trasplante (HumanEval −30) y para el compilado (−15, regla "base − 5"). Predije *improves* con
+  batería intacta al 70 %: ✗ los dos. Por nuestra propia regla, **ninguna de las dos ediciones pasa como mejora a 164
+  ítems de código**; en los sellados anteriores se miraron 20 (lección en roadmap 30).
+- **Conocimiento** (TriviaQA sobre las preguntas que el brazo y la base terminan): las ediciones de Qwen lo conservan
+  (compilado 69 / 68, trasplante 67 / 67, Jackrong completo 70 / 72); MiMo **51 / 75**, TwIL 54 / 61, Llama 36 / 74,
+  Phi 31 / 63 saben menos. La ganancia de TriviaQA del compilado (+9) y de Jackrong (+9) es terminar, no saber.
+- **Código:** tres modos de pérdida (§45.36 parcial): cerrar pronto (compilado), alargar hasta el corte (trasplante),
+  no razonar (MiMo). Cumplimiento sube en todo lo que cierra antes (compilado 38, MiMo 36 frente a 17): el formato
+  corto se beneficia de terminar.
+- **Fila 51:** primarias acertadas (R1; MATH para TwIL según la [rev]; MiMo y trasplante empatan en GSM); R2 y R3
+  falladas; bandas: acerté matemáticas casi siempre y fallé **HumanEval en 7 de 8 brazos** (subestimé la pérdida de
+  código de todo lo que cierra antes) y cumplimiento en 6 de 8 (no previsto que subiera); sorpresa disparada: TwIL
+  supera a MiMo en MATH por 9 (> 6), aunque la [rev] ya lo ponía primero. Primarias ✓, bandas ✗ → **◐**.
+- **"¿Cuál es el más inteligente?"** Con el proxy del libro de modelos (precisión held-out a presupuesto fijo en ejes
+  no relacionados sin perder la distribución): **ninguno domina**. El compilado "concluir" es el mejor equilibrio
+  (gana conocimiento y formato, segundo en código, +35 GSM, KL 0,072); MiMo es el más barato y el mejor en formato
+  pero sabe menos y pierde código; TwIL es el mejor en MATH con coste medio y conocimiento algo menor; la base sigue
+  siendo la mejor en código. Finalistas para la etapa 2 (IFEval, `dev-2048-full`): compilado, MiMo, TwIL.
 
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de

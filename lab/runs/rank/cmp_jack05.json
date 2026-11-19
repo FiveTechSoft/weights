@@ -1,0 +1,115 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "rank-2048",
+ "relation": "edit vs its base",
+ "base": "base",
+ "arm": "jack05",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "2f57ee31c827",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 93,
+    "win": 43,
+    "loss": 0,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 94,
+    "win": 45,
+    "loss": 0,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 0,
+    "gained": 43,
+    "cut_base": 51,
+    "cut_arm": 4,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 61462,
+    "token_change": -0.6361
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 34,
+    "win": 28,
+    "loss": 0,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 30,
+    "win": 24,
+    "loss": 0,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 0,
+    "gained": 28,
+    "cut_base": 45,
+    "cut_arm": 15,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 57192,
+    "token_change": -0.4139
+   }
+  }
+ },
+ "placebo_benchmarks": null,
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 147,
+   "arm": 117,
+   "lost": 37,
+   "gained": 7
+  },
+  "compliance": {
+   "n": 40,
+   "base": 17,
+   "arm": 23,
+   "lost": 1,
+   "gained": 7
+  },
+  "triviaqa": {
+   "n": 200,
+   "base": 75,
+   "arm": 75,
+   "lost": 10,
+   "gained": 10
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1782,
+   "arm": 0.2896
+  },
+  "preserves": false,
+  "notes": [
+   "ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet"
+  ]
+ },
+ "reasons": [
+  "preservation battery failed (HumanEval / compliance / garbage rule)"
+ ],
+ "significant_up": [
+  "gsm8k",
+  "math500"
+ ],
+ "significant_down": [],
+ "verdict": "same / not decidable"
+}

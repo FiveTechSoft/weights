@@ -226,6 +226,14 @@ term stays the right object; no edit phase.
 gain (Q6_K keeps half the magnitude, which is enough). Thresholds set at "same-norm placebo" level would fail every real
 edit; the useful reading is KL per point gained (merge 0.002, vector 0.005).
 
+**Ranking stage 1, all eight arms (results §45.36, row 51 ◐).** Same harness for all (`rank-2048`, greedy, 2,048
+tokens): **no model wins every axis.** GSM8K: MiMo = base + Jackrong ×0.5 = 93 (TwIL 91); MATH-500: **TwIL 39**;
+HumanEval: **the base 147** (compiled 132, MiMo 129, transplant 117, TwIL 67 by cutting 97 of 164); TriviaQA:
+**compiled 84** (MiMo 60; on the questions both finish MiMo knows less than the base, 51 vs 75); cost: MiMo 440 tokens
+per correct GSM8K answer, the base 3,378. Our two edits fail the 164-item preservation rule (`bench_compare`: same /
+not decidable), which the 20-item checks of the sealed runs had missed. Best balance: the compiled conclude edit.
+The official Jackrong GGUF collapses code indentation, so its HumanEval (47) is not a measurement of the model.
+Earlier note with three arms, kept: 
 **Ranking stage 1, first three of eight arms (results §45.36, running).** On `rank-2048` MiMo 2.6 and our base +
 Jackrong ×0.5 tie on GSM8K (93 / 94 vs base 50) and the transplant leads MATH (34 vs 30); both win by finishing (cuts
 3-4 vs 51). Both **lose code**: HumanEval 147 → 129 (MiMo, barely reasons on code) and → 117 (transplant, reasons past

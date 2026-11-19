@@ -191,6 +191,134 @@
    "imported_from": "lab/runs/cc_llama/dev_placebo.json"
   },
   {
+   "path": "lab/runs/rank/r1llama8b.json",
+   "model": "DeepSeek-R1-Distill-Llama-8B Q6_K",
+   "model_sha": "403a545b2dce",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "llama",
+   "gsm8k_g1": 78,
+   "gsm8k_g2": 79,
+   "math500_g1": 21,
+   "math500_g2": 17,
+   "other": {},
+   "cuts": 45,
+   "mean_tokens": {
+    "gsm8k": 1294,
+    "math500": 1717
+   },
+   "humaneval": 80,
+   "compliance": 31,
+   "garbage": 60,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 46,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/jackrong_full.json",
+   "model": "DeepSeek-V4-Pro-Qwen3.5-9B (Jackrong) Q6_K",
+   "model_sha": "cb7ead946c00",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "jackfull",
+   "gsm8k_g1": 93,
+   "gsm8k_g2": 1,
+   "math500_g1": 30,
+   "math500_g2": 29,
+   "other": {},
+   "cuts": 13,
+   "mean_tokens": {
+    "gsm8k": 414,
+    "math500": 733
+   },
+   "humaneval": 47,
+   "compliance": 27,
+   "garbage": 67,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 84,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/mimo.json",
+   "model": "MiMo-V2.6-Distill-Qwen-9B Q6_K",
+   "model_sha": "ef96d05a2ddf",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "mimo",
+   "gsm8k_g1": 93,
+   "gsm8k_g2": 94,
+   "math500_g1": 30,
+   "math500_g2": 26,
+   "other": {},
+   "cuts": 22,
+   "mean_tokens": {
+    "gsm8k": 409,
+    "math500": 1290
+   },
+   "humaneval": 129,
+   "compliance": 36,
+   "garbage": 6,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 60,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/phi4mr.json",
+   "model": "Phi-4-mini-reasoning Q6_K",
+   "model_sha": "e5742248749c",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "phi",
+   "gsm8k_g1": 83,
+   "gsm8k_g2": 84,
+   "math500_g1": 30,
+   "math500_g2": 26,
+   "other": {},
+   "cuts": 33,
+   "mean_tokens": {
+    "gsm8k": 1086,
+    "math500": 1658
+   },
+   "humaneval": 57,
+   "compliance": 13,
+   "garbage": 81,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 36,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
    "path": "lab/runs/bench/imported/cc_v2__dev_base.json",
    "model": "Qwen3.5-9B Q6_K (A0)",
    "model_sha": "2f57ee31c827",
@@ -633,6 +761,141 @@
    "extra_body": null,
    "logits": null,
    "date": "2026-11-18",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/qwen9b_base.json",
+   "model": "Qwen3.5-9B Q6_K (A0)",
+   "model_sha": "2f57ee31c827",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "base",
+   "gsm8k_g1": 50,
+   "gsm8k_g2": 49,
+   "math500_g1": 6,
+   "math500_g2": 6,
+   "other": {},
+   "cuts": 96,
+   "mean_tokens": {
+    "gsm8k": 1689,
+    "math500": 1952
+   },
+   "humaneval": 147,
+   "compliance": 17,
+   "garbage": 72,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 75,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/qwen9b_compiled.json",
+   "model": "Qwen3.5-9B Q6_K (A0)",
+   "model_sha": "8feb56528454",
+   "model_class": "llm-chat-think",
+   "provenance": "base@2f57ee31 + 1 patch (compile_control_vector)",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "compiled",
+   "gsm8k_g1": 85,
+   "gsm8k_g2": 86,
+   "math500_g1": 30,
+   "math500_g2": 23,
+   "other": {},
+   "cuts": 31,
+   "mean_tokens": {
+    "gsm8k": 796,
+    "math500": 1438
+   },
+   "humaneval": 132,
+   "compliance": 38,
+   "garbage": 62,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 84,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/qwen9b_jack05.json",
+   "model": "Qwen3.5-9B Q6_K (A0)",
+   "model_sha": "2f57ee31c827",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "jack05",
+   "gsm8k_g1": 93,
+   "gsm8k_g2": 94,
+   "math500_g1": 34,
+   "math500_g2": 30,
+   "other": {},
+   "cuts": 19,
+   "mean_tokens": {
+    "gsm8k": 615,
+    "math500": 1144
+   },
+   "humaneval": 117,
+   "compliance": 23,
+   "garbage": 117,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 75,
+   "extras": {
+    "lora": {
+     "path": "hf_cache/close_lora/demo_jack_r16.gguf",
+     "sha256": "a402916a238d5e9462b1c88bffae110c6815d3116ceafb3b41368d504eaa86a4",
+     "declared_by": "caller"
+    },
+    "scale": 0.5
+   },
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/twil.json",
+   "model": "TwIL-8B balanced Q4_K_M",
+   "model_sha": "17bda82d2608",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "twil",
+   "gsm8k_g1": 91,
+   "gsm8k_g2": 92,
+   "math500_g1": 39,
+   "math500_g2": 35,
+   "other": {},
+   "cuts": 16,
+   "mean_tokens": {
+    "gsm8k": 720,
+    "math500": 1057
+   },
+   "humaneval": 67,
+   "compliance": 35,
+   "garbage": 147,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 62,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-19",
    "imported_from": null
   },
   {
@@ -1137,6 +1400,146 @@
      "mmlu": -0.0025
     }
    }
+  },
+  {
+   "path": "lab/runs/rank/cmp_mimo.json",
+   "suite": "rank-2048",
+   "relation": "two models",
+   "base": "base",
+   "arm": "mimo",
+   "placebo": null,
+   "verdict": "two models: paired statistics only",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "no provenance link between the runs; the verdict rule applies to an edit against its base"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_jack05.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "jack05",
+   "placebo": null,
+   "verdict": "same / not decidable",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "preservation battery failed (HumanEval / compliance / garbage rule)"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_compiled.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "compiled",
+   "placebo": null,
+   "verdict": "same / not decidable",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "preservation battery failed (HumanEval / compliance / garbage rule)"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_llama.json",
+   "suite": "rank-2048",
+   "relation": "two models",
+   "base": "base",
+   "arm": "llama",
+   "placebo": null,
+   "verdict": "two models: paired statistics only",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0001,
+    "math500/g2": 0.001
+   },
+   "band": null,
+   "reasons": [
+    "no provenance link between the runs; the verdict rule applies to an edit against its base"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_phi.json",
+   "suite": "rank-2048",
+   "relation": "two models",
+   "base": "base",
+   "arm": "phi",
+   "placebo": null,
+   "verdict": "two models: paired statistics only",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "no provenance link between the runs; the verdict rule applies to an edit against its base"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_jackfull.json",
+   "suite": "rank-2048",
+   "relation": "two models",
+   "base": "base",
+   "arm": "jackfull",
+   "placebo": null,
+   "verdict": "two models: paired statistics only",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "no provenance link between the runs; the verdict rule applies to an edit against its base"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_twil.json",
+   "suite": "rank-2048",
+   "relation": "two models",
+   "base": "base",
+   "arm": "twil",
+   "placebo": null,
+   "verdict": "two models: paired statistics only",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "no provenance link between the runs; the verdict rule applies to an edit against its base"
+   ],
+   "logits": null
   }
  ]
 }
