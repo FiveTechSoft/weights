@@ -1,0 +1,7 @@
+experiment rank_compare2:
+objective: the two arms added on 19 Nov (full Jackrong donor, TwIL-8B balanced) paired against the base run of rank-2048, statistics only (other models), and their rows into the table
+steps:
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/jackrong_full.json out=lab/runs/rank/cmp_jackfull.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/twil.json out=lab/runs/rank/cmp_twil.json
+    step bench_table add=lab/runs/rank/jackrong_full.json model="DeepSeek-V4-Pro-Qwen3.5-9B (Jackrong) Q6_K" add_compare=lab/runs/rank/cmp_jackfull.json
+    step bench_table add=lab/runs/rank/twil.json model="TwIL-8B balanced Q4_K_M" add_compare=lab/runs/rank/cmp_twil.json

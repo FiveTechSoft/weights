@@ -44,6 +44,12 @@ arm jack05   $R/qwen9b_jack05.json   programs/rank_jack05.wspl   hf_cache/h4/A0-
 arm compiled $R/qwen9b_compiled.json programs/rank_compiled.wspl hf_cache/cc_op_v2/merged-Q6_K.gguf
 arm llama    $R/r1llama8b.json       programs/rank_llama.wspl    hf_cache/r1llama8b-gguf/DeepSeek-R1-Distill-Llama-8B-Q6_K.gguf
 arm phi      $R/phi4mr.json          programs/rank_phi.wspl      hf_cache/phi4mr-gguf/Phi-4-mini-reasoning-Q6_K.gguf
+# added 19 Nov 00:55 (driver's OK for the downloads): the full Jackrong donor at Q6_K and TwIL-8B balanced (Q4_K_M only)
+JACK=hf_cache/jackrong-gguf/DeepSeek-V4-Pro-Qwen3.5-9B-MTP-Q6_K.gguf
+TWIL=hf_cache/twil-gguf/TwIL-8B-Q4_K_M-balanced.gguf
+if [ -f "$JACK" ]; then arm jackfull $R/jackrong_full.json programs/rank_jackfull.wspl "$JACK"; else log "jackfull: GGUF not downloaded, skipped"; fi
+if [ -f "$TWIL" ]; then arm twil $R/twil.json programs/rank_twil.wspl "$TWIL"; else log "twil: GGUF not downloaded, skipped"; fi
 log "comparisons and table"
 "$P" -m engine.wsplang programs/rank_compare.wspl --run >> $LOG 2>&1
+if [ -f $R/jackrong_full.json ] && [ -f $R/twil.json ]; then "$P" -m engine.wsplang programs/rank_compare2.wspl --run >> $LOG 2>&1; else log "compare2 skipped (an added arm is missing)"; fi
 log "CHAIN DONE"

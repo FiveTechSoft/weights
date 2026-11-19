@@ -23,8 +23,12 @@ suite (so `bench_compare` pairs item by item; its band against `base_a` / `base_
 | `llama` | `hf_cache/r1llama8b-gguf/DeepSeek-R1-Distill-Llama-8B-Q6_K.gguf` | third family |
 | `phi` | `hf_cache/phi4mr-gguf/Phi-4-mini-reasoning-Q6_K.gguf` | 3.8B, second family |
 
-Not in stage 1: Jackrong's full donor (HF only; our `convert_hf_to_gguf.py` predates Qwen3.5 — a GGUF would need a
-download, driver's call), TwIL-8B (not local any more; download), SenseNova (needs their llama.cpp fork), the 27Bs.
+[rev 19 Nov 00:55, before the run; driver's OK "sí" to the downloads] Two arms added, same protocol:
+| `jackfull` | `hf_cache/jackrong-gguf/DeepSeek-V4-Pro-Qwen3.5-9B-MTP-Q6_K.gguf` (official GGUF, 7.56 GB) | the full donor of `jack05` |
+| `twil` | `hf_cache/twil-gguf/TwIL-8B-Q4_K_M-balanced.gguf` (5.35 GB; the balanced variant exists only at Q4_K_M) | Granite 4.2 8B + SFT + GRPO + short-trace RL; **Q4 against Q6 arms is a bias against it** (§37 noted the same) |
+Both skipped automatically if the download has not finished when the chain reaches them.
+
+Not in stage 1: SenseNova (needs their llama.cpp fork), the 27Bs.
 
 **Readings (fixed now).**
 - Per axis, the ranking by g1 with g2 beside it; two arms are *tied* on an axis when |Δ| ≤ the band of that axis (GSM
