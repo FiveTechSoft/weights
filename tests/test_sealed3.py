@@ -15,7 +15,13 @@ class Sealed3(unittest.TestCase):
     def setUpClass(cls):
         from lab.probes.sealed import sealed3
         cls.s3 = sealed3
-        cls.made = sealed3.make()
+        # Once the set has been written and used, its items are in lab/runs/ and make() can no longer rebuild it
+        # (it excludes every item already run): check the stored file instead.
+        if sealed3.PATH.exists():
+            cls.made = json.loads(sealed3.PATH.read_text(encoding="utf-8"))
+            cls.spent = "spent" in str(cls.made.get("use", ""))
+        else:
+            cls.made, cls.spent = sealed3.make(), False
 
     def test_sizes_seed_and_digest(self):
         from engine import sealed_set as ss
@@ -35,7 +41,7 @@ class Sealed3(unittest.TestCase):
         s1 = ss.load()
         s2 = json.loads((ROOT / "data" / "sealed_confirm2.json").read_text())
         split = json.loads((ROOT / "lab" / "runs" / "cc" / "split.json").read_text())
-        used = self.s3.used()
+        used = {"gsm8k": set(), "math500": set()} if self.spent else self.s3.used()  # a spent set is in lab/runs
         self.assertFalse(g & set(range(ss.DEV_GSM_N)))
         self.assertFalse(g & set(s1["gsm8k"]) or g & set(s2["gsm8k"]) or g & used["gsm8k"])
         dev_m = set(m5.select_indices(ss.DEV_MATH[0], ss.DEV_MATH[1], len(m5.load_items())))
@@ -44,6 +50,8 @@ class Sealed3(unittest.TestCase):
         self.assertFalse(mm & set(split["discovery_math"]) or mm & set(split["screen_math"]))
 
     def test_deterministic(self):
+        if self.spent:
+            self.skipTest("set spent: its items are in lab/runs/, so make() cannot rebuild it")
         again = self.s3.make()
         self.assertEqual(again["sha256"], self.made["sha256"])
 

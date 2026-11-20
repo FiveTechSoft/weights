@@ -49,3 +49,6 @@ jobs:
         run: |
           python -m pip install pytest
           python -m pytest -q tests/test_delta_apply.py tests/test_stream_guard.py
+
+      - name: CPU pipeline demo (delta_to_lora -> require -> behaviour, tiny Llama built in place)
+        run: timeout 300 python demos/cpu_pipeline/run.py

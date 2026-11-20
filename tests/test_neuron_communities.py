@@ -147,6 +147,7 @@ class Ablation(unittest.TestCase):
         self.assertEqual(at.per_layer(C, F), {2: [1, 4], 5: [0]})
 
 
+@unittest.skipUnless((ROOT / "hf_cache" / "qwen35-08b-hf").exists(), "needs hf_cache/qwen35-08b-hf (tokenizer)")
 class Positions(unittest.TestCase):
     def test_positions_from_pos_and_neg_rows(self):
         from transformers import AutoTokenizer

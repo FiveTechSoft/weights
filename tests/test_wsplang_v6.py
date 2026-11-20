@@ -62,7 +62,7 @@ steps:
         self.assertEqual(len(errors), 0, f"Validation errors: {errors}")
 
         plan = wsplang.plan_run(prog, steps)
-        self.assertTrue(plan["wsplang_version"] in ("0.6.0", "0.7.0"))
+        self.assertGreaterEqual(tuple(map(int, plan["wsplang_version"].split("."))), (0, 6, 0))  # introduced in 0.6.0
 
         results = wsplang.execute_plan_v4(plan, prog, dry_run=False)
         self.assertEqual(len(results), 1)

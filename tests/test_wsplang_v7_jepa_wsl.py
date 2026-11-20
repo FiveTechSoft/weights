@@ -31,7 +31,7 @@ NANOWSP = Path(__file__).resolve().parent.parent / "models" / "nanowsp" / "model
 class TestWSPLangV7JepaWSL(unittest.TestCase):
 
     def test_version_and_ops_registration(self):
-        self.assertEqual(__version__, "0.7.0")
+        self.assertGreaterEqual(tuple(map(int, __version__.split("."))), (0, 7, 0))  # ops introduced in 0.7.0
         expected_ops = {
             "jepa_steer",
             "vicreg_preserve",
