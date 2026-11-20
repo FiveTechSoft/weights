@@ -28,3 +28,13 @@ suites (§45.31, §45.36). About 8 GPU h. Chain `lab/runs/quant/chain.sh`, queue
 
 **Not done here.** Quantising from BF16 (needs the official BF16 GGUF, ~18 GB, driver's call); per-tensor protection
 (`tensor_type=` Q6 on the edited `down_proj` rows) and re-injecting the edit after quantising: next arms if Q3 fails.
+
+**[rev 2026-11-20 06:45, after a build failure, before any measurement]** The first build ran at 05:51 and died on
+the feasibility check (quantize treated as a torch writer; fixed in 1d471dc). The second built Q2_K (06:02) and both
+importance matrices (06:06, 06:20), then llama-quantize refused IQ2_XS: "Missing importance matrix for tensor
+blk.32.attn_k.weight in a very low-bit quantization". blk.32 is the MTP layer; llama.cpp loads it as unused
+("unused tensor blk.32.nextn.* -- ignoring") and never runs it, so the imatrix has no entries for it. Change: in the
+two IQ2_XS arms blk.32 is kept at Q4_K (`tensor_type=blk.32.=q4_k`; dry run shows the override applied only to
+blk.32). It does not change what is served (the layer is never computed) but adds about 0.1 bits per weight to the
+file size; bits per weight are reported with and without it. Q2_K keeps blk.32 at its default. The IQ2 steps reuse
+the two importance matrices already computed (same calibration file, same 100 chunks). Predictions unchanged.
