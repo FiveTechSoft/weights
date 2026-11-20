@@ -46,5 +46,11 @@ if [ -f $R/dist_compiled_iq2xs.json ]; then log "dist-shift exists, skipped"; el
 arm base_q2k       $R/rank_base_q2k.json       programs/quant_rank_base_q2k.wspl       $Q/qwen9b-Q2_K.gguf
 arm base_iq2xs     $R/rank_base_iq2xs.json     programs/quant_rank_base_iq2xs.wspl     $Q/qwen9b-IQ2_XS.gguf
 arm compiled_iq2xs $R/rank_compiled_iq2xs.json programs/quant_rank_compiled_iq2xs.wspl $Q/compiled-IQ2_XS.gguf
+U=hf_cache/unsloth-qwen35-9b-gguf
+if [ -f $U/Qwen3.5-9B-UD-Q2_K_XL.gguf ] && [ -f $U/Qwen3.5-9B-UD-IQ2_XXS.gguf ]; then
+  if [ -f $R/dist_unsloth_ud_iq2xxs.json ]; then log "unsloth dist-shift exists, skipped"; else log "unsloth dist-shift"; "$P" -m engine.wsplang programs/quant_unsloth.wspl --run >> $LOG 2>&1; fi
+  arm unsloth_ud_q2kxl  $R/rank_unsloth_ud_q2kxl.json  programs/quant_rank_unsloth_ud_q2kxl.wspl  $U/Qwen3.5-9B-UD-Q2_K_XL.gguf
+  arm unsloth_ud_iq2xxs $R/rank_unsloth_ud_iq2xxs.json programs/quant_rank_unsloth_ud_iq2xxs.wspl $U/Qwen3.5-9B-UD-IQ2_XXS.gguf
+else log "unsloth GGUFs not downloaded, skipped"; fi
 "$P" -m engine.wsplang programs/quant_compare.wspl --run >> $LOG 2>&1
 log "CHAIN DONE"

@@ -1,0 +1,4 @@
+experiment quant_rank_unsloth_ud_q2kxl:
+objective: Unsloth Qwen3.5-9B-UD-Q2_K_XL on rank-2048 (lab/probes/quantize/PLAN.md [rev])
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=unsloth_ud_q2kxl out=lab/runs/quant/rank_unsloth_ud_q2kxl.json

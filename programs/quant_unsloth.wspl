@@ -1,0 +1,9 @@
+experiment quant_unsloth:
+objective: Unsloth's dynamic 2-bit GGUFs of Qwen3.5-9B (UD-Q2_K_XL, UD-IQ2_XXS; their own conversion from BF16 with their imatrix) beside ours, on dist-shift against the A0 base logits and on rank-2048 (lab/probes/quantize/PLAN.md [rev])
+steps:
+    step bench_run suite=dist-shift model=hf_cache/unsloth-qwen35-9b-gguf/Qwen3.5-9B-UD-Q2_K_XL.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=unsloth_ud_q2kxl out=lab/runs/quant/dist_unsloth_ud_q2kxl.json
+    step bench_run suite=dist-shift model=hf_cache/unsloth-qwen35-9b-gguf/Qwen3.5-9B-UD-IQ2_XXS.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=unsloth_ud_iq2xxs out=lab/runs/quant/dist_unsloth_ud_iq2xxs.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/quant/dist_unsloth_ud_q2kxl.json out=lab/runs/quant/cmp_dist_unsloth_ud_q2kxl.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/quant/dist_unsloth_ud_iq2xxs.json out=lab/runs/quant/cmp_dist_unsloth_ud_iq2xxs.json
+    step bench_table add=lab/runs/quant/dist_unsloth_ud_q2kxl.json model="Qwen3.5-9B UD-Q2_K_XL (Unsloth)" add_compare=lab/runs/quant/cmp_dist_unsloth_ud_q2kxl.json
+    step bench_table add=lab/runs/quant/dist_unsloth_ud_iq2xxs.json model="Qwen3.5-9B UD-IQ2_XXS (Unsloth)" add_compare=lab/runs/quant/cmp_dist_unsloth_ud_iq2xxs.json
