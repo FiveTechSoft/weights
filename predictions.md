@@ -81,14 +81,16 @@ Puntuación: ✅ acierta · ❌ falla · ◐ parcial (acierta el signo o la mita
 
 | 52 | 2026-11-20 | `ranking/HUMANEVAL_PLAN.md`: recuperar HumanEval de nuestras ediciones en `rank-2048`: vector concluir a 0,5 y 0,7; Jackrong ×0,5 + vector 1,0 | Premisas: la pérdida de código del compilado es por cerrar pronto (escala con la dosis); la del trasplante es por cortes (el vector la devuelve); el vector 1,0 sin compilar se comporta como el compilado (dev 83 frente a 85). Bandas (GSM / MATH / HumanEval / TriviaQA / cumplimiento): **vec05 68-80 / 15-26 / 138-148 / 78-88 / 25-35; vec07 75-85 / 22-30 / 132-145 / 80-88 / 30-38; jack05_vec10 88-95 / 30-38 / 120-138 / 78-90 / 25-36**. **H1 (algún vector con HumanEval ≥ 142 y GSM ≥ 75) 40 %; H2 (composición con HumanEval ≥ 132 y GSM ≥ 90) 35 %.** Sorpresa si vec05 HumanEval < 132; si la composición supera a la base en HumanEval; si vec07 GSM ≥ 85 | | | | ⏳ |
 
-## Cuenta (52 filas; 47 puntuables)
+| 53 | 2026-11-20 | `quantize/PLAN.md`: la 9B base a Q2_K y a IQ2_XS (imatrix WikiText-2 train) y el compilado concluir a IQ2_XS, recuantizados desde Q6_K; `dist-shift` y `rank-2048` | Premisas: 2 bits sin reentrenar daña más el conocimiento que el razonamiento corto; Q6_K ya comió la mitad de la magnitud de la edición (§43.19), en 2 bits el término de rango 1 queda cerca del ruido de redondeo; imatrix compensa bits. Bandas: **base_q2k** ppl ×1,15-1,45, KL 0,10-0,35, top-1 75-88 %, GSM 30-50, MATH 2-7, HumanEval 105-140, TriviaQA 45-70, cumplimiento 10-20; **base_iq2xs** ppl ×1,20-1,60, KL 0,12-0,40, GSM 25-48, HumanEval 95-135, TriviaQA 40-65; **compiled_iq2xs** GSM 45-80, MATH 8-25, HumanEval 95-130. **Q2 (IQ2_XS con imatrix con menos KL que Q2_K) 45 %; Q3 (la edición sobrevive: supervivencia ≥ 0,5 en GSM con p < 0,05) 50 %.** Sorpresa si algún brazo de 2 bits iguala a la base Q6 en HumanEval (≥ 142) o TriviaQA (≥ 72); si el compilado a 2 bits supera a su Q6 en GSM; si base_q2k GSM < 20 | | | | ⏳ |
+
+## Cuenta (53 filas; 47 puntuables)
 
 | | n |
 |---|---|
 | ✅ acierta | 6 |
 | ◐ parcial | 22 |
 | ❌ falla | 19 |
-| ⏳ / — | 5 |
+| ⏳ / — | 6 |
 
 Acierto limpio 6/47 = 13 %; acierto o parcial 28/47 = 60 %. (Cuenta rehecha fila a fila el 2026-11-12: la tabla
 anterior decía 7 ✅ / 8 ❌ con las mismas filas; el recuento por símbolos da 6 / 9.) Con "confianza baja" declarada en casi todas, 30 % es

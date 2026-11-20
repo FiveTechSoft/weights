@@ -1,6 +1,6 @@
 # WSP-Lang: Declarative Language Specification for Weight-Space Programming
 
-**Version:** 0.8.2 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
+**Version:** 0.8.3 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
 **Status:** Living Specification  
 **Authors:** FiveTechSoft Engineering & Research Team  
 **Repository:** [github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
@@ -163,6 +163,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `memit_imprint` | writes weights | `wsplang_0.5_spec.md` |
 | `model_report` | read / report | this file |
 | `adapter_report` | read / report | this file |
+| `quantize` | writes weights | this file |
 | `multi_layer_envelope` | writes weights | not documented yet (see `engine/wsplang.py`) |
 | `peek` | read / report | this file, `wsplang_0.2_spec.md` |
 | `permute_align` | writes weights | `wsplang_0.7_spec.md` |
@@ -248,6 +249,7 @@ step evaluate_benchmark endpoint=<port|URL> name=<label> [gsm8k=100] [math500=50
 step subspace_transfer tensors=<glob> source=<model> basis=sig:<sig.pt>|shared:<a.pt>,<b.pt>|random k=16 alpha=1.0 [seed=0] out=<dir>
 step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true] [nonweights=true] out=<report.md>
 step adapter_report adapter=<dir|hf:owner/repo> [base=<dir|repo id>] [rows=128] [workers=16] out=<report.md>
+step quantize model=<gguf> type=<Q2_K|IQ2_XS|IQ2_XXS|Q3_K_S|...> out=<gguf> [imatrix=auto|<file>] [calib=<text>] [tensor_type=<name=type,...>] [allow_requantize=true] [leave_output=true] [chunks=100]
 step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds=mlp,self_attn,linear_attn] [gguf=<file.gguf>]
 ```
 
@@ -282,6 +284,14 @@ step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds
   fused or non-contiguous blocks), BF16 / F16 / F32 as stored and quantised types dequantised per row block, so a
   BF16 GGUF against its safetensors base compares exactly and a Q6_K one reads with a 1.8 % floor. Tensors with no
   HF counterpart appear as hidden parts (e.g. SenseNova's `mhc`); the config / tokenizer diff is skipped for a GGUF.
+* `quantize` (0.8.3): extreme quantisation through llama.cpp's `llama-quantize`, with `imatrix=auto` running
+  `llama-imatrix` on WikiText-2 *train* (never the test split `dist-shift` measures) for the IQ2 / IQ1 types, which
+  refuse to run without one. Per-tensor overrides (`tensor_type=ffn_down=q6_k,...`) keep chosen tensors at higher
+  precision. Writes `<out>.tmp` and renames on success; refuses an existing output or one equal to the input;
+  `<out>.manifest.json` records input and output sha256, type, bits per weight, imatrix and calibration sha256, the
+  exact command and caveats (`allow_requantize=true` from a Q6_K source is recorded as worse than from BF16).
+  `bench_run provenance=<manifest>` links the quantised model to its base (`read_provenance` kind `quantize`). No
+  behaviour claim: the cost of the bits is measured by `bench_run` on `dist-shift` and `rank-2048`.
 * `adapter_report` (0.8.2): a PEFT LoRA repo read from the adapter alone, when no merged model exists (e.g.
   `harness-hub/Qwen3.8-27B-pi-adapted`, 640 MB on a 27B). From `adapter_config.json` and the `lora_A` / `lora_B`
   factors: r, alpha, scale (rslora aware), modules and layers touched, families untouched (embeddings, head, norms,

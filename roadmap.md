@@ -388,6 +388,20 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     Queda: el consejo "pierde la cabeza MTP" es falso para vistas GGUF (bloque 56 = MTP, agrupado 4 + 11); el lector
     no lee adaptadores GGUF; una cuantización frente a su propia base lee como cambio difuso del 1,8 % (suelo Q6_K).
 
+31. **Cuantización extrema (2 bits) como op de WSP-Lang** (20-nov, pedido del driver: "¿podría WSPLang hacer
+    cuantización extrema?"; "sí, constrúyelo"). Op `quantize model=<gguf> type=Q2_K|IQ2_XS|IQ2_XXS|Q3_K_S|...
+    [imatrix=auto|<file>] [calib=<text>] [tensor_type=<name=type,...>] [allow_requantize=true] out=<gguf>` que envuelve
+    `llama-quantize` (y `llama-imatrix` para la matriz de importancia, calibrada en WikiText-2 **train**, disjunto del
+    test de `dist-shift`), escribe a `.tmp` y renombra, y deja un manifiesto con sha de entrada y salida, tipo, bits
+    por peso, sha de la imatrix y del texto, y el comando; `read_provenance` lo reconoce, así que `bench_run
+    provenance=` enlaza el cuantizado con su base. Límite declarado: no hay GGUF BF16 de nuestra 9B (el conversor
+    local no conoce Qwen3.5), así que la fuente es el Q6_K con `--allow-requantize`; bajar el BF16 oficial (≈ 18 GB)
+    es decisión del driver. Medida: brazos Q2_K e IQ2_XS (con imatrix) de la base y del compilado "concluir" en
+    `dist-shift` (ppl, KL, top-1) y `rank-2048`; preguntas: cuánto cuesta 2 bits sin reentrenar en cada eje, y si la
+    edición de rango 1 sobrevive (§43.19: Q6_K ya se come la mitad de su magnitud). Después: proteger por tensor (Q6
+    en las capas que llevan la edición, Q2 en el resto, `tensor_type=`) y reinyectar la edición tras cuantizar.
+    Plan `lab/probes/quantize/PLAN.md`, fila 53; cola tras los brazos de HumanEval.
+
 30. **Libro de modelos (`docs/models.md`; regla del driver 19-nov: "cada modelo que analicemos, anotado con sus
     bancos; queremos identificar los mejores").** Una fila por modelo con tres columnas que no se mezclan: lo medido
     aquí bajo un protocolo (suite, sha, decodificación; § de results), lo que dicen los pesos (`model_report` /

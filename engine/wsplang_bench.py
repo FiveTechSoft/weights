@@ -281,6 +281,11 @@ def read_provenance(path):
         pats = m.get("patches") or ([m["id"]] if m.get("id") else [])
         out["patches"] = [x["id"] if isinstance(x, dict) and "id" in x else (x.get("patch") or "?") if isinstance(x, dict) else str(x)
                           for x in pats]
+    elif m.get("op") == "quantize":                                        # quantize op manifest (engine/quantize_op.py)
+        out["kind"] = "quantize"
+        out["base_sha"] = m.get("input_sha256")
+        out["output_sha"] = m.get("output_sha256")
+        out["patches"] = [f"quantize:{m.get('type')}"]
     elif "op" in m and str(m.get("op", "")).startswith("edit_"):            # edit_column manifest / report
         out["kind"] = m["op"]
         out["base_sha"] = m.get("base_checkpoint_hash") or m.get("original_hash") or (m.get("hashes") or {}).get("before")

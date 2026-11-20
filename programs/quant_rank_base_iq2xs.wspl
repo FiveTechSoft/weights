@@ -1,0 +1,4 @@
+experiment quant_rank_base_iq2xs:
+objective: qwen9b-IQ2_XS on rank-2048 with the quantize manifest as provenance (lab/probes/quantize/PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=base_iq2xs out=lab/runs/quant/rank_base_iq2xs.json provenance=hf_cache/quant/qwen9b-IQ2_XS.gguf.manifest.json

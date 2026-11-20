@@ -35,7 +35,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-__version__ = "0.8.2"
+__version__ = "0.8.3"
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -69,6 +69,7 @@ OPS_ALLOWED = {
     # Studying improved models (engine/weight_diff.py, engine/bench_runner.py); none writes weights
     "delta_stats", "delta_signature", "delta_compare", "evaluate_benchmark", "model_report",
     "adapter_report",  # what a PEFT LoRA adapter changes, from its factors alone + base row blocks (engine/adapter_report.py)
+    "quantize",  # extreme quantisation through llama-quantize / llama-imatrix, with a provenance manifest (engine/quantize_op.py)
     "delta_to_lora",  # a fine-tune's change as a LoRA adapter beside the models (engine/lora_export.py)
     "contrast_vector",  # llama.cpp control vector from two sets of texts (engine/contrast_vector.py)
     "compile_control_vector",  # that vector written into down_proj, + placebo, G0, LoRA/merged Q6_K (engine/cc_compile.py)
@@ -274,6 +275,7 @@ READ_ONLY_OPS = {
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "edit_column", "edit_neurons", "apply_patch",  # new model dirs beside the inputs, never over them
+    "quantize",  # a new quantised GGUF + manifest beside the input (engine/quantize_op.py), never over it
     "ternarize", "imprint_ternary",  # new ternary checkpoint dirs beside the inputs, never over them
     "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
     "rosetta_align", "cross_project", "init_architecture", "imprint_association",
@@ -2358,6 +2360,27 @@ def execute_plan_v4(
                 res["result"] = {"out": str(out_p), "rule": rep["rule"], "mode": rep["mode"],
                                  "summary": {t: {"k70": v["k70"], "rel_norm_dW": v["rel_norm_dW"], "k1": v["cells"][0]}
                                              for t, v in rep["tensors"].items()}}
+                res["execution_state"] = "executed"
+
+            elif op == "quantize":
+                # Extreme quantisation through llama-quantize (engine/quantize_op.py): new GGUF + manifest beside it, never
+                # over the input. quantize model=<gguf> type=<Q2_K|IQ2_XS|...> out=<gguf> [imatrix=auto|<file>]
+                # [calib=<text>] [tensor_type=name=type,name=type] [allow_requantize=true] [leave_output=true] [chunks=100]
+                from engine import quantize_op as qo
+                for key in ("model", "type", "out"):
+                    if not named.get(key):
+                        raise ValueError("quantize needs model=<gguf> type=<ggml type> out=<gguf>")
+                tt = None
+                if named.get("tensor_type"):
+                    tt = dict(kv.split("=", 1) for kv in str(named["tensor_type"]).split(","))
+                truthy = lambda k: str(named.get(k, "false")).lower() in ("1", "true", "yes")  # noqa: E731
+                rep = qo.quantize(_model_path(named["model"]), named["type"], _model_path(named["out"]),
+                                  imatrix=named.get("imatrix"), calib=_model_path(named["calib"]) if named.get("calib") else None,
+                                  tensor_types=tt, allow_requantize=truthy("allow_requantize"),
+                                  leave_output=truthy("leave_output"), chunks=int(named.get("chunks", 100)),
+                                  log_path=str(_model_path(named["out"])) + ".log")
+                res["result"] = {k: rep[k] for k in ("type", "output", "output_sha256", "input_sha256", "bits_per_weight",
+                                                     "output_bytes", "imatrix_sha256", "caveats", "manifest")}
                 res["execution_state"] = "executed"
 
             elif op in ("edit_column", "edit_neurons"):
