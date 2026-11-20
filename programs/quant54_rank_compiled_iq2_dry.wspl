@@ -1,0 +1,4 @@
+experiment quant54_rank_compiled_iq2_dry:
+objective: row 54 arm compiled_iq2_dry on rank-2048 (lab/probes/quantize/PLAN54.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=compiled_iq2_dry out=lab/runs/quant/rank_compiled_iq2_dry.json extra_body={"dry_multiplier":0.8,"dry_base":1.75,"dry_allowed_length":2} provenance=hf_cache/quant/compiled-IQ2_XS.gguf.manifest.json

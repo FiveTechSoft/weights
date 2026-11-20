@@ -1,0 +1,17 @@
+experiment quant54_compare:
+objective: row 54 paired comparisons (lab/probes/quantize/PLAN54.md)
+steps:
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/quant/rank_q6_lora.json out=lab/runs/quant/cmp_rank_q6_lora.json
+    step bench_compare base=lab/runs/quant/rank_base_iq2xs.json arm=lab/runs/quant/rank_iq2_lora.json out=lab/runs/quant/cmp_rank_iq2_lora.json
+    step bench_compare base=lab/runs/quant/rank_compiled_iq2xs.json arm=lab/runs/quant/rank_iq2_lora.json out=lab/runs/quant/cmp_rank_reinject_vs_merged.json
+    step bench_compare base=lab/runs/quant/rank_base_iq2xs.json arm=lab/runs/quant/rank_iq2_dry.json out=lab/runs/quant/cmp_rank_iq2_dry.json
+    step bench_compare base=lab/runs/quant/rank_iq2_dry.json arm=lab/runs/quant/rank_compiled_iq2_dry.json out=lab/runs/quant/cmp_rank_edit_beyond_dry.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/quant/rank_q6_dry.json out=lab/runs/quant/cmp_rank_q6_dry.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/quant/rank_q2k_imx.json out=lab/runs/quant/cmp_rank_q2k_imx.json
+    step bench_compare base=lab/runs/quant/rank_base_q2k.json arm=lab/runs/quant/rank_q2k_imx.json out=lab/runs/quant/cmp_rank_imx_vs_q2k.json
+    step bench_table add=lab/runs/quant/rank_q6_lora.json model="row 54 q6_lora"
+    step bench_table add=lab/runs/quant/rank_iq2_lora.json model="row 54 iq2_lora"
+    step bench_table add=lab/runs/quant/rank_iq2_dry.json model="row 54 iq2_dry"
+    step bench_table add=lab/runs/quant/rank_compiled_iq2_dry.json model="row 54 compiled_iq2_dry"
+    step bench_table add=lab/runs/quant/rank_q6_dry.json model="row 54 q6_dry"
+    step bench_table add=lab/runs/quant/rank_q2k_imx.json model="row 54 q2k_imx"
