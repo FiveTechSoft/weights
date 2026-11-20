@@ -1,0 +1,113 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "rank-2048",
+ "relation": "edit vs its base",
+ "base": "base",
+ "arm": "base_q2k",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "d71342c38fda",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 0,
+    "win": 0,
+    "loss": 50,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 0,
+    "win": 0,
+    "loss": 49,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 49,
+    "gained": 0,
+    "cut_base": 51,
+    "cut_arm": 0,
+    "nothink_arm": 100,
+    "tokens_base": 168894,
+    "tokens_arm": 100,
+    "token_change": -0.9994
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 0,
+    "win": 0,
+    "loss": 6,
+    "p": 0.0312
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 0,
+    "win": 0,
+    "loss": 6,
+    "p": 0.0312
+   },
+   "extra": {
+    "lost_base_ok_stop": 5,
+    "gained": 0,
+    "cut_base": 45,
+    "cut_arm": 1,
+    "nothink_arm": 49,
+    "tokens_base": 97576,
+    "tokens_arm": 2097,
+    "token_change": -0.9785
+   }
+  }
+ },
+ "placebo_benchmarks": null,
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 147,
+   "arm": 0,
+   "lost": 147,
+   "gained": 0
+  },
+  "compliance": {
+   "n": 40,
+   "base": 17,
+   "arm": 0,
+   "lost": 17,
+   "gained": 0
+  },
+  "triviaqa": {
+   "n": 200,
+   "base": 75,
+   "arm": 0,
+   "lost": 75,
+   "gained": 0
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1782,
+   "arm": 0.0545
+  },
+  "preserves": false,
+  "notes": [
+   "ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet"
+  ]
+ },
+ "reasons": [],
+ "significant_up": [],
+ "significant_down": [
+  "gsm8k",
+  "math500"
+ ],
+ "verdict": "harms"
+}

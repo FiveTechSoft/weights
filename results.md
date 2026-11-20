@@ -4070,6 +4070,83 @@ Lecturas:
   dosis probada. La pérdida de HumanEval es el coste de la dirección, no un ajuste de dosis; recuperarla pediría otra
   cosa (aplicar la dirección solo fuera del código, o un presupuesto mayor), no un número distinto.
 
+### 45.38 Dos bits en la 9B: sin imatrix el modelo no habla, con imatrix razona en bucle; la edición concluir sobrevive como mecanismo de terminar, no como acierto (fila 53 ◐) (2026-11-20)
+Plan `lab/probes/quantize/PLAN.md`, fila 53; op `quantize` (WSP-Lang 0.8.3), recuantización desde Q6_K
+(`allow_requantize`), imatrix WikiText-2 train 100 × 512 sobre cada modelo fuente; IQ2_XS con blk.32 (MTP, no se
+ejecuta) en Q4_K ([rev] del PLAN). Chain `lab/runs/quant/chain.sh`; un reinicio a las 10:16 cortó `base_iq2xs` en
+537 / 554 ítems y el run reanudó del parcial a las 11:31 sobre el mismo archivo (sha d8cfb7d4). Chain terminado 19:02.
+Bits por peso del manifiesto (nuestros) y del tamaño del archivo con 9,197 G parámetros (Unsloth; el método da 3,405
+para nuestro Q2_K, igual que su manifiesto).
+
+**`dist-shift`** (referencia: logits de la base Q6_K A0; las dos de Unsloth parten de su propia conversión BF16, su KL
+incluye esa diferencia):
+
+| brazo | bpw | ppl (×) | KL media | top-1 % | HellaSwag | Winogrande | MMLU |
+|---|---|---|---|---|---|---|---|
+| base Q6_K A0 | 6,6 | 8,03 | 0 | 100 | 0,780 | 0,715 | 0,410 |
+| compilado Q6_K (§45.31) | 6,6 | 8,51 (×1,06) | 0,072 | 87,7 | 0,780 | 0,720 | 0,422 |
+| base_q2k | 3,41 | 79,15 (**×9,86**) | **2,382** | 33,1 | 0,383 | 0,565 | 0,302 |
+| base_iq2xs | 2,98 | 10,47 (×1,30) | 0,309 | 73,5 | 0,690 | 0,665 | 0,372 |
+| compiled_iq2xs | 2,98 | 11,21 (×1,40) | 0,379 | 71,7 | 0,678 | 0,678 | 0,393 |
+| Unsloth UD-Q2_K_XL | 3,59 | 9,09 (×1,13) | **0,158** | 83,0 | 0,745 | 0,723 | 0,375 |
+| Unsloth UD-IQ2_XXS | 2,78 | 11,22 (×1,40) | 0,379 | 71,8 | 0,670 | 0,700 | 0,355 |
+
+**`rank-2048`** (pareado contra la base Q6_K salvo donde se indica; binomial exacta; dos correctores):
+
+| brazo | GSM8K g1 / g2 (cortes) | MATH g1 / g2 (cortes) | HumanEval /164 · cerrados · mediana tokens | TriviaQA em (vacías) | cumpl. /40 | repetición 16-grama /404 |
+|---|---|---|---|---|---|---|
+| base Q6_K | 50 / 49 (51) | 6 / 6 (45) | 147 · 154 · 826 | 75 (82) | 17 | 72 |
+| compilado Q6_K | 85 / 86 (10) | 30 / 23 (21) | 132 · 152 · 703 | 84 (38) | 38 | 62 |
+| base_q2k | **0 / 0** (0) | 0 / 0 (1) | 0 · 146 · 62 | 0 (200) | 0 | 22 |
+| base_iq2xs | 4 / 4 (96) | 0 / 0 (50) | 58 · 70 · 2 048 | 32 (105) | 9 | 251 |
+| compiled_iq2xs | 36 / 36 (51) | 5 / 3 (44) | 13 · 44 · 2 048 | 41 (9) | 19 | 264 |
+| UD-Q2_K_XL | 21 / 21 (78) | 6 / 6 (44) | 76 · 81 · 2 048 | 45 (121) | 8 | 169 |
+| UD-IQ2_XXS | 12 / 12 (88) | 3 / 3 (47) | 19 · 19 · 2 048 | 20 (154) | 7 | 327 |
+
+Pareados GSM8K g1 contra la base Q6 (ganadas / perdidas): base_q2k 0 / 50, base_iq2xs 1 / 47, UD-Q2_K_XL 2 / 31,
+UD-IQ2_XXS 3 / 41 (todos p < 1e-6); compiled_iq2xs 11 / 25 (p = 0,029, solo con mi script: el chain no compara ese
+par). Supervivencia (`cmp_rank_survival.json`, compiled_iq2xs frente a base_iq2xs): GSM 32 / 0 en los dos
+correctores (p ≈ 5e-10), MATH 5 / 0 (p = 0,06) y 3 / 0 (p = 0,25). Las cifras pareadas salen igual por dos caminos
+(`bench_compare` del chain y un script aparte sobre los ítems).
+
+Lecturas:
+- **Q1, coste de 2 bits: mucho mayor que lo previsto, y de otra forma.** Las bandas daban a la base 2 bits GSM 25-50;
+  salen 0 (Q2_K) y 4 (IQ2_XS). No es pérdida de conocimiento antes que de razonamiento (la premisa): es que el modelo
+  **no termina**. IQ2_XS corta 96 de 100 GSM y los 50 MATH a 2 048 tokens, y 251 de 404 salidas de preservación
+  repiten un 16-grama; en las 4 GSM que acaba acierta las 4. La distribución de un token apenas se mueve (top-1 73 %,
+  HellaSwag 0,69 frente a 0,78); lo que se rompe es la cadena larga.
+- **Q2_K sin imatrix no habla con plantilla de chat.** GSM y TriviaQA: fin de secuencia al primer token (1 token,
+  sin pensamiento) en los 100 y los 200; HumanEval cierra 146 pero ninguno pasa; ppl ×9,9, KL 2,38. Las tareas de
+  opción múltiple siguen por encima del azar (HellaSwag 0,38 sobre 0,25), así que no es un archivo roto, es un modelo
+  degradado hasta no poder responder. Sorpresa declarada "base_q2k GSM < 20": ocurre.
+- **Q2 ✓ (45 %)**: IQ2_XS con imatrix tiene 8 veces menos KL que Q2_K sin ella (0,31 frente a 2,38) con 0,43 bits
+  menos. La lectura fija se cumple; **la atribución a la imatrix no está aislada**: los dos brazos cambian formato e
+  imatrix a la vez, falta un Q2_K con imatrix.
+- **Q3 ✓ por la fórmula (50 %), pero lo que sobrevive es "terminar".** Supervivencia (36 − 4) / (85 − 50) = 0,91 (g2
+  0,86); 32 / 0 en los dos correctores. Las 32 ganadas son ítems que la base IQ2 cortó; en los 4 que acaban los dos
+  brazos, 4 y 4. **En Q6 pasa lo mismo**: las 36 ganadas del compilado son ítems que la base Q6 cortó, y en los 49 que
+  acaban los dos, 49 frente a 48. La edición nunca ha mejorado el acierto de lo que se termina; recupera cortes, y ese
+  mecanismo sobrevive a 2 bits (cortes GSM 96 → 51; TriviaQA vacías 105 → 9). Lo que no sobrevive es la calidad de lo
+  terminado: acierto entre acabados 49 / 49 base Q6, 85 / 90 compilado Q6, **33 / 49 compilado IQ2**. Por eso el
+  compilado 2 bits queda **por debajo de la base Q6** en GSM (11 / 25, p = 0,029).
+- **HumanEval no se pierde por cerrar pronto, como en Q6, sino por bucles.** compiled_iq2xs cierra 44 de 164 con
+  mediana 2 048 (Q6: 152, mediana 703); base_iq2xs cierra 70. La edición a 2 bits no termina el código: lo que en Q6
+  era "cerrar pronto y mal" aquí es "no cerrar". Pareado contra base_iq2xs: 4 ganadas / 49 perdidas.
+- **Unsloth (rev 01:35):** UD-Q2_K_XL con menos KL que nuestro Q2_K ✓ (0,158 frente a 2,38, 75 %); es el mejor brazo
+  de 2-3 bits en todo (GSM 21, MATH 6 como la base, HumanEval 76, TriviaQA 45), con 3,59 bpw, más que nuestro IQ2_XS.
+  UD-IQ2_XXS KL 0,379 fuera de la banda 0,10-0,35 por arriba. "UD-Q2_K_XL en banda de nuestro Q2_K o mejor en
+  TriviaQA y HumanEval": TriviaQA 45 en banda (45-70), HumanEval 76 fuera (105-140); "mejor que nuestro Q2_K" se cumple
+  solo porque ese Q2_K medido da 0, no cuenta.
+- **Bandas:** fuera casi todas (base_q2k 8 de 8, base_iq2xs ppl y KL dentro, el resto fuera; compiled_iq2xs GSM 36 <
+  45, MATH 5 < 8, HumanEval 13 < 95). Sorpresas: "algún 2 bits iguala a la base Q6 en HumanEval o TriviaQA" no; "el
+  compilado 2 bits supera a su Q6 en GSM" no; "base_q2k GSM < 20" sí.
+- **Consecuencia.** A 2 bits recuantizando desde Q6_K ningún brazo sirve para razonar con 2 048 tokens; la pregunta
+  "¿sobrevive la edición?" tiene respuesta (sí, el mecanismo) pero no utilidad (el compilado a 2 bits queda por debajo
+  de la base sin cuantizar). Siguientes brazos posibles (no lanzados): Q2_K con imatrix (aislar Q2); la base IQ2_XS con
+  un control de bucles sin edición (penalización de repetición o tope de pensamiento) para separar "terminar" de
+  "editar"; proteger las filas editadas de `down_proj` en Q6 o reinyectar la edición después de cuantizar; partir de
+  BF16 como Unsloth.
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las

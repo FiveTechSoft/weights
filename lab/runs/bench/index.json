@@ -319,6 +319,70 @@
    "imported_from": null
   },
   {
+   "path": "lab/runs/quant/rank_base_iq2xs.json",
+   "model": "Qwen3.5-9B IQ2_XS (from A0)",
+   "model_sha": "d8cfb7d44220",
+   "model_class": "llm-chat-think",
+   "provenance": "base@2f57ee31 + 1 patch (quantize)",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "base_iq2xs",
+   "gsm8k_g1": 4,
+   "gsm8k_g2": 4,
+   "math500_g1": 0,
+   "math500_g2": 0,
+   "other": {},
+   "cuts": 146,
+   "mean_tokens": {
+    "gsm8k": 1995,
+    "math500": 2048
+   },
+   "humaneval": 58,
+   "compliance": 9,
+   "garbage": 251,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 32,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/rank_base_q2k.json",
+   "model": "Qwen3.5-9B Q2_K (from A0)",
+   "model_sha": "d71342c38fda",
+   "model_class": "llm-chat-think",
+   "provenance": "base@2f57ee31 + 1 patch (quantize)",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "base_q2k",
+   "gsm8k_g1": 0,
+   "gsm8k_g2": 0,
+   "math500_g1": 0,
+   "math500_g2": 0,
+   "other": {},
+   "cuts": 1,
+   "mean_tokens": {
+    "gsm8k": 1,
+    "math500": 42
+   },
+   "humaneval": 0,
+   "compliance": 0,
+   "garbage": 22,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 0,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
    "path": "lab/runs/bench/imported/cc_v2__dev_base.json",
    "model": "Qwen3.5-9B Q6_K (A0)",
    "model_sha": "2f57ee31c827",
@@ -867,6 +931,192 @@
    "imported_from": null
   },
   {
+   "path": "lab/runs/rank/qwen9b_jack05_vec10.json",
+   "model": "Qwen3.5-9B Q6_K (A0)",
+   "model_sha": "2f57ee31c827",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "jack05_vec10",
+   "gsm8k_g1": 88,
+   "gsm8k_g2": 89,
+   "math500_g1": 38,
+   "math500_g2": 32,
+   "other": {},
+   "cuts": 1,
+   "mean_tokens": {
+    "gsm8k": 249,
+    "math500": 489
+   },
+   "humaneval": 100,
+   "compliance": 40,
+   "garbage": 27,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 72,
+   "extras": {
+    "control_vector": {
+     "path": "hf_cache/cc/cc_v2.gguf",
+     "sha256": "3d7e14708f109e375e333674433529ba7cc2b0c2367dc6b4892caa58d0dcf5f2",
+     "declared_by": "caller"
+    },
+    "lora": {
+     "path": "hf_cache/close_lora/demo_jack_r16.gguf",
+     "sha256": "a402916a238d5e9462b1c88bffae110c6815d3116ceafb3b41368d504eaa86a4",
+     "declared_by": "caller"
+    },
+    "scale": 0.5
+   },
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/qwen9b_vec05.json",
+   "model": "Qwen3.5-9B Q6_K (A0)",
+   "model_sha": "2f57ee31c827",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "vec05",
+   "gsm8k_g1": 72,
+   "gsm8k_g2": 73,
+   "math500_g1": 18,
+   "math500_g2": 15,
+   "other": {},
+   "cuts": 57,
+   "mean_tokens": {
+    "gsm8k": 1198,
+    "math500": 1728
+   },
+   "humaneval": 126,
+   "compliance": 36,
+   "garbage": 54,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 89,
+   "extras": {
+    "control_vector": {
+     "path": "hf_cache/cc/cc_v2.gguf",
+     "sha256": "3d7e14708f109e375e333674433529ba7cc2b0c2367dc6b4892caa58d0dcf5f2",
+     "declared_by": "caller"
+    },
+    "scale": 0.5
+   },
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/rank/qwen9b_vec07.json",
+   "model": "Qwen3.5-9B Q6_K (A0)",
+   "model_sha": "2f57ee31c827",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "vec07",
+   "gsm8k_g1": 84,
+   "gsm8k_g2": 85,
+   "math500_g1": 21,
+   "math500_g2": 16,
+   "other": {},
+   "cuts": 42,
+   "mean_tokens": {
+    "gsm8k": 933,
+    "math500": 1618
+   },
+   "humaneval": 126,
+   "compliance": 37,
+   "garbage": 70,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 83,
+   "extras": {
+    "control_vector": {
+     "path": "hf_cache/cc/cc_v2.gguf",
+     "sha256": "3d7e14708f109e375e333674433529ba7cc2b0c2367dc6b4892caa58d0dcf5f2",
+     "declared_by": "caller"
+    },
+    "scale": 0.7
+   },
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/rank_unsloth_ud_iq2xxs.json",
+   "model": "Qwen3.5-9B UD-IQ2_XXS (Unsloth)",
+   "model_sha": "570ce2bbc925",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "unsloth_ud_iq2xxs",
+   "gsm8k_g1": 12,
+   "gsm8k_g2": 12,
+   "math500_g1": 3,
+   "math500_g2": 3,
+   "other": {},
+   "cuts": 135,
+   "mean_tokens": {
+    "gsm8k": 1909,
+    "math500": 1974
+   },
+   "humaneval": 19,
+   "compliance": 7,
+   "garbage": 327,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 20,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/rank_unsloth_ud_q2kxl.json",
+   "model": "Qwen3.5-9B UD-Q2_K_XL (Unsloth)",
+   "model_sha": "fcea605227c9",
+   "model_class": "llm-chat-think",
+   "provenance": "external",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "unsloth_ud_q2kxl",
+   "gsm8k_g1": 21,
+   "gsm8k_g2": 21,
+   "math500_g1": 6,
+   "math500_g2": 6,
+   "other": {},
+   "cuts": 122,
+   "mean_tokens": {
+    "gsm8k": 1895,
+    "math500": 1977
+   },
+   "humaneval": 76,
+   "compliance": 8,
+   "garbage": 169,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 45,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
    "path": "lab/runs/rank/twil.json",
    "model": "TwIL-8B balanced Q4_K_M",
    "model_sha": "17bda82d2608",
@@ -896,6 +1146,110 @@
    "extra_body": null,
    "logits": null,
    "date": "2026-11-19",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/rank_compiled_iq2xs.json",
+   "model": "compiled conclude IQ2_XS",
+   "model_sha": "d4e41436512b",
+   "model_class": "llm-chat-think",
+   "provenance": "base@8feb5652 + 1 patch (quantize)",
+   "suite": "rank-2048",
+   "suite_sha": "bd2bb7c22a14",
+   "arm": "compiled_iq2xs",
+   "gsm8k_g1": 36,
+   "gsm8k_g2": 36,
+   "math500_g1": 5,
+   "math500_g2": 3,
+   "other": {},
+   "cuts": 95,
+   "mean_tokens": {
+    "gsm8k": 1232,
+    "math500": 1851
+   },
+   "humaneval": 13,
+   "compliance": 19,
+   "garbage": 264,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": 41,
+   "extras": null,
+   "extra_body": null,
+   "logits": null,
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/dist_base_iq2xs.json",
+   "model": "Qwen3.5-9B IQ2_XS (from A0)",
+   "model_sha": "d8cfb7d44220",
+   "model_class": "llm-logits",
+   "provenance": "base@2f57ee31 + 1 patch (quantize)",
+   "suite": "dist-shift",
+   "suite_sha": "6d17c3d8af0e",
+   "arm": "base_iq2xs",
+   "gsm8k_g1": null,
+   "gsm8k_g2": null,
+   "math500_g1": null,
+   "math500_g2": null,
+   "other": {},
+   "cuts": null,
+   "mean_tokens": null,
+   "humaneval": null,
+   "compliance": null,
+   "garbage": null,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": null,
+   "extras": null,
+   "extra_body": null,
+   "logits": {
+    "ppl": 10.4731,
+    "kl_mean": 0.308915,
+    "same_top_p": 73.529,
+    "hellaswag": 0.69,
+    "winogrande": 0.665,
+    "mmlu": 0.3725
+   },
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/dist_base_q2k.json",
+   "model": "Qwen3.5-9B Q2_K (from A0)",
+   "model_sha": "d71342c38fda",
+   "model_class": "llm-logits",
+   "provenance": "base@2f57ee31 + 1 patch (quantize)",
+   "suite": "dist-shift",
+   "suite_sha": "6d17c3d8af0e",
+   "arm": "base_q2k",
+   "gsm8k_g1": null,
+   "gsm8k_g2": null,
+   "math500_g1": null,
+   "math500_g2": null,
+   "other": {},
+   "cuts": null,
+   "mean_tokens": null,
+   "humaneval": null,
+   "compliance": null,
+   "garbage": null,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": null,
+   "extras": null,
+   "extra_body": null,
+   "logits": {
+    "ppl": 79.1484,
+    "kl_mean": 2.382264,
+    "same_top_p": 33.137,
+    "hellaswag": 0.3825,
+    "winogrande": 0.565,
+    "mmlu": 0.3025
+   },
+   "date": "2026-11-20",
    "imported_from": null
   },
   {
@@ -1090,6 +1444,114 @@
     "mmlu": 0.4175
    },
    "date": "2026-11-18",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/dist_unsloth_ud_iq2xxs.json",
+   "model": "Qwen3.5-9B UD-IQ2_XXS (Unsloth)",
+   "model_sha": "570ce2bbc925",
+   "model_class": "llm-logits",
+   "provenance": "external",
+   "suite": "dist-shift",
+   "suite_sha": "6d17c3d8af0e",
+   "arm": "unsloth_ud_iq2xxs",
+   "gsm8k_g1": null,
+   "gsm8k_g2": null,
+   "math500_g1": null,
+   "math500_g2": null,
+   "other": {},
+   "cuts": null,
+   "mean_tokens": null,
+   "humaneval": null,
+   "compliance": null,
+   "garbage": null,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": null,
+   "extras": null,
+   "extra_body": null,
+   "logits": {
+    "ppl": 11.2244,
+    "kl_mean": 0.378938,
+    "same_top_p": 71.814,
+    "hellaswag": 0.67,
+    "winogrande": 0.7,
+    "mmlu": 0.355
+   },
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/dist_unsloth_ud_q2kxl.json",
+   "model": "Qwen3.5-9B UD-Q2_K_XL (Unsloth)",
+   "model_sha": "fcea605227c9",
+   "model_class": "llm-logits",
+   "provenance": "external",
+   "suite": "dist-shift",
+   "suite_sha": "6d17c3d8af0e",
+   "arm": "unsloth_ud_q2kxl",
+   "gsm8k_g1": null,
+   "gsm8k_g2": null,
+   "math500_g1": null,
+   "math500_g2": null,
+   "other": {},
+   "cuts": null,
+   "mean_tokens": null,
+   "humaneval": null,
+   "compliance": null,
+   "garbage": null,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": null,
+   "extras": null,
+   "extra_body": null,
+   "logits": {
+    "ppl": 9.0902,
+    "kl_mean": 0.157757,
+    "same_top_p": 83.039,
+    "hellaswag": 0.745,
+    "winogrande": 0.7225,
+    "mmlu": 0.375
+   },
+   "date": "2026-11-20",
+   "imported_from": null
+  },
+  {
+   "path": "lab/runs/quant/dist_compiled_iq2xs.json",
+   "model": "compiled conclude IQ2_XS",
+   "model_sha": "d4e41436512b",
+   "model_class": "llm-logits",
+   "provenance": "base@8feb5652 + 1 patch (quantize)",
+   "suite": "dist-shift",
+   "suite_sha": "6d17c3d8af0e",
+   "arm": "compiled_iq2xs",
+   "gsm8k_g1": null,
+   "gsm8k_g2": null,
+   "math500_g1": null,
+   "math500_g2": null,
+   "other": {},
+   "cuts": null,
+   "mean_tokens": null,
+   "humaneval": null,
+   "compliance": null,
+   "garbage": null,
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "ifeval_scorable": null,
+   "triviaqa": null,
+   "extras": null,
+   "extra_body": null,
+   "logits": {
+    "ppl": 11.2134,
+    "kl_mean": 0.379263,
+    "same_top_p": 71.74,
+    "hellaswag": 0.6775,
+    "winogrande": 0.6775,
+    "mmlu": 0.3925
+   },
+   "date": "2026-11-20",
    "imported_from": null
   }
  ],
@@ -1534,6 +1996,280 @@
     "gsm8k/g2": 0.0,
     "math500/g1": 0.0,
     "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "no provenance link between the runs; the verdict rule applies to an edit against its base"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_vec05.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "vec05",
+   "placebo": null,
+   "verdict": "same / not decidable",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0005,
+    "math500/g2": 0.0039
+   },
+   "band": null,
+   "reasons": [
+    "preservation battery failed (HumanEval / compliance / garbage rule)"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_vec07.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "vec07",
+   "placebo": null,
+   "verdict": "same / not decidable",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0001,
+    "math500/g2": 0.002
+   },
+   "band": null,
+   "reasons": [
+    "preservation battery failed (HumanEval / compliance / garbage rule)"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/rank/cmp_jack05_vec10.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "jack05_vec10",
+   "placebo": null,
+   "verdict": "same / not decidable",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [
+    "preservation battery failed (HumanEval / compliance / garbage rule)"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/quant/cmp_dist_base_q2k.json",
+   "suite": "dist-shift",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "base_q2k",
+   "placebo": null,
+   "verdict": "not calibrated yet",
+   "p": {},
+   "band": null,
+   "reasons": [
+    "thresholds kl_mean / same_top_p are null in the suite: set them from the base-vs-base band and the same-norm placebo before any verdict"
+   ],
+   "logits": {
+    "ppl_ratio": 9.861745869570633,
+    "kl_mean": 2.382264,
+    "same_top_p": 33.137,
+    "delta": {
+     "hellaswag": -0.3975,
+     "winogrande": -0.15,
+     "mmlu": -0.1075
+    }
+   }
+  },
+  {
+   "path": "lab/runs/quant/cmp_dist_base_iq2xs.json",
+   "suite": "dist-shift",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "base_iq2xs",
+   "placebo": null,
+   "verdict": "not calibrated yet",
+   "p": {},
+   "band": null,
+   "reasons": [
+    "thresholds kl_mean / same_top_p are null in the suite: set them from the base-vs-base band and the same-norm placebo before any verdict"
+   ],
+   "logits": {
+    "ppl_ratio": 1.3049291036407586,
+    "kl_mean": 0.308915,
+    "same_top_p": 73.529,
+    "delta": {
+     "hellaswag": -0.09,
+     "winogrande": -0.05,
+     "mmlu": -0.0375
+    }
+   }
+  },
+  {
+   "path": "lab/runs/quant/cmp_dist_compiled_iq2xs.json",
+   "suite": "dist-shift",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "compiled_iq2xs",
+   "placebo": null,
+   "verdict": "not calibrated yet",
+   "p": {},
+   "band": null,
+   "reasons": [
+    "thresholds kl_mean / same_top_p are null in the suite: set them from the base-vs-base band and the same-norm placebo before any verdict"
+   ],
+   "logits": {
+    "ppl_ratio": 1.397169129557178,
+    "kl_mean": 0.379263,
+    "same_top_p": 71.74,
+    "delta": {
+     "hellaswag": -0.1025,
+     "winogrande": -0.0375,
+     "mmlu": -0.0175
+    }
+   }
+  },
+  {
+   "path": "lab/runs/quant/cmp_dist_unsloth_ud_q2kxl.json",
+   "suite": "dist-shift",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "unsloth_ud_q2kxl",
+   "placebo": null,
+   "verdict": "not calibrated yet",
+   "p": {},
+   "band": null,
+   "reasons": [
+    "thresholds kl_mean / same_top_p are null in the suite: set them from the base-vs-base band and the same-norm placebo before any verdict"
+   ],
+   "logits": {
+    "ppl_ratio": 1.1326222931047372,
+    "kl_mean": 0.157757,
+    "same_top_p": 83.039,
+    "delta": {
+     "hellaswag": -0.035,
+     "winogrande": 0.0075,
+     "mmlu": -0.035
+    }
+   }
+  },
+  {
+   "path": "lab/runs/quant/cmp_dist_unsloth_ud_iq2xxs.json",
+   "suite": "dist-shift",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "unsloth_ud_iq2xxs",
+   "placebo": null,
+   "verdict": "not calibrated yet",
+   "p": {},
+   "band": null,
+   "reasons": [
+    "thresholds kl_mean / same_top_p are null in the suite: set them from the base-vs-base band and the same-norm placebo before any verdict"
+   ],
+   "logits": {
+    "ppl_ratio": 1.3985397094370653,
+    "kl_mean": 0.378938,
+    "same_top_p": 71.814,
+    "delta": {
+     "hellaswag": -0.11,
+     "winogrande": -0.015,
+     "mmlu": -0.055
+    }
+   }
+  },
+  {
+   "path": "lab/runs/quant/cmp_rank_base_q2k.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "base_q2k",
+   "placebo": null,
+   "verdict": "harms",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0312,
+    "math500/g2": 0.0312
+   },
+   "band": null,
+   "reasons": [],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/quant/cmp_rank_base_iq2xs.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "base",
+   "arm": "base_iq2xs",
+   "placebo": null,
+   "verdict": "harms",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0312,
+    "math500/g2": 0.0312
+   },
+   "band": null,
+   "reasons": [],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/quant/cmp_rank_compiled_iq2xs.json",
+   "suite": "rank-2048",
+   "relation": "edit vs its base",
+   "base": "compiled",
+   "arm": "compiled_iq2xs",
+   "placebo": null,
+   "verdict": "harms",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.0,
+    "math500/g2": 0.0
+   },
+   "band": null,
+   "reasons": [],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/quant/cmp_rank_unsloth_ud_q2kxl.json",
+   "suite": "rank-2048",
+   "relation": "two models",
+   "base": "base",
+   "arm": "unsloth_ud_q2kxl",
+   "placebo": null,
+   "verdict": "two models: paired statistics only",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 1.0,
+    "math500/g2": 1.0
+   },
+   "band": null,
+   "reasons": [
+    "no provenance link between the runs; the verdict rule applies to an edit against its base"
+   ],
+   "logits": null
+  },
+  {
+   "path": "lab/runs/quant/cmp_rank_unsloth_ud_iq2xxs.json",
+   "suite": "rank-2048",
+   "relation": "two models",
+   "base": "base",
+   "arm": "unsloth_ud_iq2xxs",
+   "placebo": null,
+   "verdict": "two models: paired statistics only",
+   "p": {
+    "gsm8k/g1": 0.0,
+    "gsm8k/g2": 0.0,
+    "math500/g1": 0.375,
+    "math500/g2": 0.375
    },
    "band": null,
    "reasons": [
