@@ -2124,6 +2124,14 @@ tensores de texto de base, `heretic-ara` y TURBO (~9 h, solo estadísticas). Pre
   un fine-tune normal, pero cuentan de menos su rango (en una suma con un fine-tune grande y difuso solo asoma la
   primera dirección) y no ven su final si otro cambio sigue más allá. Junto con concept27b (§ forense, 85116d8,
   Jaccard 1.0 cuando la edición está sola), el límite es la mezcla, no la herramienta.
+- [post-data 2026-11-20] **El mismo modelo con `model_report` 0.8.3 por HTTP (`programs/turbo27b_report.wspl`,
+  minutos frente a 9 h):** `full_fine_tune` en las 64 capas, cambio relativo mediano MLP 36-40 %, atención 18-34 %,
+  embeddings 30 %, cabeza 26 %, normas 3-5 %, `A_log` 0,43 % y `dt_bias` 0,27 % (decaimiento casi intacto, como en
+  SenseNova); perfil más cercano MiMo 0,96, post-entrenamiento oficial 0,94. **No ve la ablación Heretic** (capas
+  26-55) que el forense ciego encontró: el informe rápido clasifica la mezcla por su parte dominante. Fuera de los
+  pesos: `eos_token_id` y `pad_token_id` cambiados, plantilla de chat distinta (10 líneas), `unsloth_version` en el
+  config (entrenado con Unsloth), tokenizador idéntico. Contexto (post de FHILY, 20-nov): 1,37 M descargas de su
+  GGUF; "0 rechazos en 100 prompts" según el autor, coherente con la ablación.
 
 ### 43.21 "Concluir" compilado en los pesos: CONFIRMADO en el conjunto sellado 2 (2026-11-11)
 Conjunto `data/sealed_confirm2.json` (100 GSM8K + 50 MATH-500, semilla 20261111, sha256 comprobado antes de correr,
