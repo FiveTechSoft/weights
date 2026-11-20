@@ -1,6 +1,6 @@
 # WSP-Lang: Declarative Language Specification for Weight-Space Programming
 
-**Version:** 0.8.3 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
+**Version:** 0.8.4 (= `engine/wsplang.py` `__version__`; this file is the base text, the per-version additions are in `docs/wsplang_0.2_spec.md` ... `docs/wsplang_0.8_spec.md`, and §5.0 lists every op the runtime accepts)  
 **Status:** Living Specification  
 **Authors:** FiveTechSoft Engineering & Research Team  
 **Repository:** [github.com/FiveTechSoft/weights](https://github.com/FiveTechSoft/weights)  
@@ -169,6 +169,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `permute_align` | writes weights | `wsplang_0.7_spec.md` |
 | `project_in` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.3_spec.md` |
 | `project_out` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.4_spec.md` |
+| `require` | read / report | this file |
 | `rollback_last` | read / report | `wsplang_0.8_spec.md` |
 | `rosetta_align` | writes weights | `wsplang_0.6_spec.md` |
 | `semantic-areas` | read / report | not documented yet (see `engine/wsplang.py`) |
@@ -251,6 +252,7 @@ step model_report model=<dir|repo id> [base=<dir|repo id>] [rows=128] [card=true
 step adapter_report adapter=<dir|hf:owner/repo> [base=<dir|repo id>] [rows=128] [workers=16] out=<report.md>
 step quantize model=<gguf> type=<Q2_K|IQ2_XS|IQ2_XXS|Q3_K_S|...> out=<gguf> [imatrix=auto|<file>] [calib=<text>] [tensor_type=<name=type,...>] [allow_requantize=true] [leave_output=true] [chunks=100]
 step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds=mlp,self_attn,linear_attn] [gguf=<file.gguf>]
+step require <file>.json:<path> <>=|<=|>|<|==|!=> <value> [agg=all|any|min|max|mean] [why="<text>"]
 ```
 
 * `delta_stats`: per tensor, ||ΔW||/||W||, cosine, changed fraction, spectrum of ΔW (top-1 energy, stable rank),
@@ -284,6 +286,19 @@ step delta_to_lora base=<model> model=<model> out=<adapter dir> [rank=16] [kinds
   fused or non-contiguous blocks), BF16 / F16 / F32 as stored and quantised types dequantised per row block, so a
   BF16 GGUF against its safetensors base compares exactly and a Q6_K one reads with a 1.8 % floor. Tensors with no
   HF counterpart appear as hidden parts (e.g. SenseNova's `mhc`); the config / tokenizer diff is skipped for a GGUF.
+* `require` (0.8.4): a guard on one JSON artefact, so a program that is already doomed stops before it spends compute.
+  `<path>` is dotted, with list indices and `*` (every value of a dict or element of a list); `<value>` is a number,
+  `true` / `false` / `null` or a quoted string (strings only with `==` / `!=`); with `*` the leaves are judged by
+  `agg` (`all` by default, `any`, or `min` / `max` / `mean` of the leaves). A named form also works:
+  `step require file=<f>.json key=<path> cmp=>= value=0.4`. **When it is judged:** at check time (`--check`, and
+  before `--run` starts) when the file exists and no earlier step names it, or a directory containing it, as
+  `out=` / `out_dir=` / `output=` / `report=`; a failure is a validation error and nothing runs. Otherwise it is
+  judged when reached; a missing file then counts as a failure. **What a failure does:** the step's status is
+  `guard_failed` with the observed value and the reason, every later step is `skipped_by_guard` (not run), and the
+  exit code is 1, so a shell chain under `set -e` stops too. Without a require, a failed step does not stop the steps
+  after it; a require is the way to say it must. Examples: `require hf_cache/cc_op_v2/report.json:G0.pass == true`;
+  `require hf_cache/cc_op_v2/report.json:vector.layers.*.merge_cos >= 0.8 agg=min`; `require
+  lab/runs/quant/cmp_rank_survival.json:benchmarks.gsm8k.g1.p < 0.05 why="the edit must survive before re-injection"`.
 * `quantize` (0.8.3): extreme quantisation through llama.cpp's `llama-quantize`, with `imatrix=auto` running
   `llama-imatrix` on WikiText-2 *train* (never the test split `dist-shift` measures) for the IQ2 / IQ1 types, which
   refuse to run without one. Per-tensor overrides (`tensor_type=ffn_down=q6_k,...`) keep chosen tensors at higher

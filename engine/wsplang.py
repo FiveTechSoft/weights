@@ -35,7 +35,7 @@ from typing import Dict, List, Any, Optional, Tuple
 
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
-__version__ = "0.8.3"
+__version__ = "0.8.4"
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -78,6 +78,7 @@ OPS_ALLOWED = {
     "apply_patch", "rollback_last", "list_patches", "commit_manifest",  # .weightpatch.json runtime (engine/wsplpatch.py)
     "ternarize", "imprint_ternary",  # ternary NanoWSP checkpoints and the projected closed-form write (engine/ternary_write.py)
     "bench_run", "bench_compare", "bench_table",  # the language's standard benchmarks (engine/wsplang_bench.py); reports only
+    "require",  # guard on a JSON artefact: refused at check or stops the run (engine/wsplang_require.py, 0.8.4)
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
     # Synthesis, perturbation bounds, and envelope operators
@@ -247,7 +248,7 @@ def _model_path(arg) -> Path:
 
 def run_exit_code(results) -> int:
     """0 when every step ran; 1 when any step failed, was rejected or failed an assertion."""
-    bad = {"error", "security_rejection", "assertion_failed"}
+    bad = {"error", "security_rejection", "assertion_failed", "guard_failed"}
     return 1 if any(r.get("status") in bad for r in results) else 0
 
 # ==============================================================================
@@ -272,6 +273,7 @@ READ_ONLY_OPS = {
     "ternary_survival",  # writes one JSON report, never weights
     "rollback_last", "list_patches", "commit_manifest",  # patch stack bookkeeping: JSON under the session dir only
     "bench_run", "bench_compare", "bench_table",  # benchmark runs, comparisons and the rendered table: JSON / markdown only
+    "require",  # reads one JSON artefact; a failed guard stops the program (0.8.4)
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "edit_column", "edit_neurons", "apply_patch",  # new model dirs beside the inputs, never over them
@@ -485,6 +487,10 @@ def check_feasibility(prog, steps, model_arg=None):
                 pv = ROOT / first
             if pv.suffix.lower() in file_suffixes and not pv.exists():
                 errors.append(f"artefacto inexistente para op '{op}': {first}")
+    # require (0.8.4): judged now when its file exists and no earlier step writes it
+    from engine import wsplang_require as _rq
+    req_errors, _ = _rq.static_check(steps, ROOT)
+    errors.extend(req_errors)
     return errors, warnings
 
 
@@ -1071,13 +1077,29 @@ def execute_plan_v4(
         target_path = default_safetensors if default_safetensors.exists() else default_gguf
     is_safetensors = (target_path.is_dir() or target_path.suffix == ".safetensors") if isinstance(target_path, Path) else True
 
+    guard_stop = None  # the first failed require: every later step is skipped
     for step in step_list:
         op = step["op"]
         raw_args = step.get("args", "")
         positional, named = parse_named_args(raw_args)
         res = {"op": op, "args": raw_args, "status": "ok"}
+        if guard_stop is not None:
+            res["status"] = "skipped_by_guard"
+            res["error"] = f"not run: {guard_stop}"
+            executed_steps.append(res)
+            continue
 
         try:
+            if op == "require":
+                from engine import wsplang_require as _rq
+                verdict = _rq.check_file(_rq.parse_require(raw_args), ROOT)
+                res["result"] = verdict
+                if not verdict["ok"]:
+                    res["status"] = "guard_failed"
+                    res["error"] = verdict["reason"]
+                    guard_stop = f"require failed ({verdict['reason']})"
+                executed_steps.append(res)
+                continue
             # ------------------------------------------------------------------
 # ------------------------------------------------------------------
             # OP: leace_erase (WSP-Lang 0.5: Closed-Form LEACE Concept Erasure)

@@ -1,7 +1,7 @@
 # WSP-Lang 0.8
 
 **Parser, compilador y runtime para programar el espacio de pesos.** Implementación: `engine/wsplang.py`
-(`__version__ = "0.8.3"`; CLI `python -m engine.wsplang <programa.wspl> [--check | --run]`).
+(`__version__ = "0.8.4"`; CLI `python -m engine.wsplang <programa.wspl> [--check | --run]`).
 
 **Spec canónica: [`docs/wsplang_specification.md`](docs/wsplang_specification.md)**, con la tabla de ops que el runtime
 acepta y un test que la compara con el engine (`tests/test_wsplang_spec.py`: versión, cada op con su tipo, y ningún
@@ -106,4 +106,11 @@ fallido queda como conocimiento reutilizable (tabla de ideas retiradas en `FOUND
   `bench_run provenance=` que enlaza el modelo quantizado a su base. Op nativa sobre GGUF (`GGUF_WRITE_OPS`:
   escribe fichero NUEVO, nunca la entrada). 13 tests + smoke real 0.8B (Q6_K→Q2_K, 4.45 bits/weight por la
   embedding/head en más precisión). Fila 53 (lab/probes/quantize/PLAN.md): ¿la edición rank-1 "conclude"
-  sobrevive a 2 bits? — en ejecución (lab/runs/quant/chain.sh).
+  sobrevive a 2 bits? — puntuada ◐ (results §45.38): sobrevive como mecanismo de terminar, no como acierto.
+- 0.8.4 (2026-11-21): op **`require`** — guarda sobre un artefacto JSON (`step require <f>.json:<ruta> >= 0.4
+  [agg=all|any|min|max|mean] [why="..."]`; ruta con puntos, índices y `*`). Se juzga al validar si el fichero existe
+  y ningún paso anterior lo escribe (el programa no arranca: nada de GPU); si no, al llegar. Si falla: `guard_failed`,
+  los pasos siguientes `skipped_by_guard`, código de salida 1 (un chain con `set -e` también se para). Antes un paso
+  fallido no paraba los siguientes. `engine/wsplang_require.py`, 20 tests primero (`tests/test_wsplang_require.py`);
+  smoke real sobre `hf_cache/cc_op_v2/report.json` (`vector.merge.layers.*.cos_written_dW >= 0.8 agg=min` pasa;
+  `>= 0.9` se rechaza al validar: 19 de 31 capas fallan). Idea de una revisión externa del repositorio (21 nov).
