@@ -159,6 +159,14 @@ class OpTests(unittest.TestCase):
         self.assertIn("quantize", w.IMPLEMENTED_OPS)
         self.assertNotIn("quantize", w.READ_ONLY_OPS)
 
+    def test_feasibility_accepts_quantize_on_gguf_without_model_flag(self):
+        # quantize writes a new GGUF beside a GGUF input; it needs no safetensors backend
+        # (the quant chain died on this check on 2026-11-20, 05:51)
+        import engine.wsplang as w
+        steps = [{"op": "quantize", "args": "model=a.gguf type=Q2_K out=b.gguf"}]
+        errors, _warnings = w.check_feasibility({}, steps, model_arg=None)
+        self.assertFalse(any("quantize" in e and "safetensors" in e for e in errors), errors)
+
 
 if __name__ == "__main__":
     unittest.main()

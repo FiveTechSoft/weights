@@ -4035,6 +4035,41 @@ Lecturas (dos métodos: resumen de `bench_run` y recuento ítem a ítem; coincid
   pero sabe menos y pierde código; TwIL es el mejor en MATH con coste medio y conocimiento algo menor; la base sigue
   siendo la mejor en código. Finalistas para la etapa 2 (IFEval, `dev-2048-full`): compilado, MiMo, TwIL.
 
+### 45.37 Recuperar HumanEval de nuestras ediciones: ni bajar la dosis ni componer lo devuelve; la composición Jackrong ×0,5 + vector 1,0 es el brazo más barato y el segundo en MATH (fila 52 ❌) (2026-11-20)
+Plan `lab/probes/ranking/HUMANEVAL_PLAN.md`, fila 52; `rank-2048`, un servidor por brazo (`lab/runs/rank/chain_he.sh`,
+cola 9, terminó 05:50). Vector concluir en tiempo de ejecución (`--control-vector-scaled`) sobre la base Q6_K (A0, mismo
+sha que la base: lo cambia el vector, no el archivo). Pareado con la base de la misma suite; binomial exacta.
+
+| brazo | GSM8K g1 / g2 (cortes) | MATH g1 / g2 (cortes) | HumanEval /164 (↓ / ↑) · cerrados · mediana tokens | TriviaQA em (↓ / ↑) | cumpl. /40 | tokens por acierto GSM |
+|---|---|---|---|---|---|---|
+| base 9B (§45.36) | 50 / 49 (51) | 6 / 6 (45) | **147** · 154 · 826 | 75 | 17 | 3 378 |
+| compilado concluir 1,0 (§45.36) | 85 / 86 (10) | 30 / 23 (21) | 132 (21 / 6) · 152 · 703 | 84 | 38 | 936 |
+| base + Jackrong ×0,5 (§45.36) | 93 / 94 (4) | 34 / 30 (15) | 117 (37 / 7) · 120 · 1 114 | 75 | 23 | 661 |
+| vector 0,5 | 72 / 73 (26) | 18 / 15 (31) | 126 (30 / 9) · 137 · 707 | **89** (7 / 21) | 36 | 1 663 |
+| vector 0,7 | 84 / 85 (13) | 21 / 16 (29) | 126 (26 / 5) · 142 · 682 | 83 (8 / 16) | 37 | 1 110 |
+| Jackrong ×0,5 + vector 1,0 | 88 / 89 (**0**) | **38** / 32 (1) | 100 (52 / 5) · 163 · 282 | 72 (17 / 14) | **40** | **283** |
+
+Tokens por acierto por dos caminos (tokens medios × 100 / aciertos; tokens totales de `bench_compare` / aciertos):
+coinciden (1 663 / 1 110 / 283).
+
+Lecturas:
+- **H1 ✗, H2 ✗.** Ningún vector llega a HumanEval 142; la composición cae a 100.
+- **La pérdida de código no depende de la dosis.** 126 a 0,5, 126 a 0,7, 132 el compilado a 1,0: plana dentro de la
+  banda de HumanEval (4-5, §45.32). Bajar la dosis sí cuesta GSM (72 → 84 → 85) y MATH; el precio en código es fijo
+  en cuanto se empuja "concluir". La premisa "cerrar pronto, escala con la dosis" queda refutada.
+- **La composición no pierde código por cortes**: cierra 163 de 164 con mediana 282 tokens (el trasplante solo, 120
+  cerrados y 1 114 tokens). El vector quita los cortes del trasplante y el modelo escribe corto y falla: 52 perdidos.
+  Segunda premisa refutada: el fallo de código del trasplante no era solo cortes.
+- **Hallazgo aparte:** Jackrong ×0,5 + vector 1,0 es el brazo **más barato de todo el ranking** (283 tokens por
+  acierto GSM; MiMo 440), cero cortes en GSM, uno en MATH, MATH 38 (TwIL 39, el mejor) y cumplimiento 40 / 40. Es el
+  mejor brazo de "matemáticas cortas y formato"; no es candidato a "más inteligente" porque pierde código (100) y
+  algo de conocimiento (72; 17 / 14 pareado, dentro de ruido).
+- **Conocimiento:** el vector a 0,5 da TriviaQA 89 (21 ganadas / 7 perdidas): terminar más preguntas (42 vacías
+  frente a 82), como el compilado.
+- **Consecuencia para el ranking:** ninguna de nuestras ediciones pasa la regla de preservación a 164 ítems a ninguna
+  dosis probada. La pérdida de HumanEval es el coste de la dirección, no un ajuste de dosis; recuperarla pediría otra
+  cosa (aplicar la dirección solo fuera del código, o un presupuesto mayor), no un número distinto.
+
 **Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
 estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las

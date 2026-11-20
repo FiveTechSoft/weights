@@ -1,0 +1,115 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "rank-2048",
+ "relation": "edit vs its base",
+ "base": "base",
+ "arm": "jack05_vec10",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "2f57ee31c827",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 88,
+    "win": 39,
+    "loss": 1,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 89,
+    "win": 41,
+    "loss": 1,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 1,
+    "gained": 39,
+    "cut_base": 51,
+    "cut_arm": 0,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 24882,
+    "token_change": -0.8527
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 38,
+    "win": 32,
+    "loss": 0,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 32,
+    "win": 26,
+    "loss": 0,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 0,
+    "gained": 32,
+    "cut_base": 45,
+    "cut_arm": 1,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 24442,
+    "token_change": -0.7495
+   }
+  }
+ },
+ "placebo_benchmarks": null,
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 147,
+   "arm": 100,
+   "lost": 52,
+   "gained": 5
+  },
+  "compliance": {
+   "n": 40,
+   "base": 17,
+   "arm": 40,
+   "lost": 0,
+   "gained": 23
+  },
+  "triviaqa": {
+   "n": 200,
+   "base": 75,
+   "arm": 72,
+   "lost": 17,
+   "gained": 14
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1782,
+   "arm": 0.0668
+  },
+  "preserves": false,
+  "notes": [
+   "ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet"
+  ]
+ },
+ "reasons": [
+  "preservation battery failed (HumanEval / compliance / garbage rule)"
+ ],
+ "significant_up": [
+  "gsm8k",
+  "math500"
+ ],
+ "significant_down": [],
+ "verdict": "same / not decidable"
+}

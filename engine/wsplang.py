@@ -287,7 +287,9 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "subspace_transfer",
 }
 STUB_OPS = {"leace_erase", "surprise_fwp"}
-WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS
+# GGUF-native writers: new file beside a GGUF input through llama.cpp tools, no torch backend
+GGUF_WRITE_OPS = {"quantize"}
+WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS - GGUF_WRITE_OPS
 
 
 # ==============================================================================

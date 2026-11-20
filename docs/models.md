@@ -67,8 +67,11 @@ card / post claims (unverified), servable on our 12 GB llama.cpp build.
 | Phi-4-mini-reasoning | 83 | 30 | 57 | 36 | 13 | 1,308 |
 | Jackrong full (official GGUF) | 93 | 30 | 47 (GGUF breaks indentation) | 84 | 27 | 445 |
 | TwIL-8B balanced (Q4_K_M) | 91 | **39** | 67 (97 cut) | 62 | 35 | 791 |
+| base + conclude vector 0.5 (ours, run-time) | 72 | 18 | 126 | **89** | 36 | 1,663 |
+| base + conclude vector 0.7 (ours, run-time) | 84 | 21 | 126 | 83 | 37 | 1,110 |
+| base + Jackrong ×0.5 + conclude vector 1.0 (ours) | 88 | 38 | 100 | 72 | **40** | **283** |
 
-No model wins every axis. Finalists for stage 2 (IFEval): compiled conclude, MiMo, TwIL.
+No model wins every axis. Finalists for stage 2 (IFEval): compiled conclude, MiMo, TwIL. The last three rows (results §45.37, 20 Nov) test whether a lower dose or a composition gives HumanEval back: it does not (code loss is flat across dose, 126-132); the composition is the cheapest arm of the ranking (283 tokens per correct GSM8K) and second in MATH.
 
 ### Plan as written before the run
 
