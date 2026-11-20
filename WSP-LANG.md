@@ -1,7 +1,7 @@
 # WSP-Lang 0.8
 
 **Parser, compilador y runtime para programar el espacio de pesos.** Implementación: `engine/wsplang.py`
-(`__version__ = "0.8.0"`; CLI `python -m engine.wsplang <programa.wspl> [--check | --run]`).
+(`__version__ = "0.8.3"`; CLI `python -m engine.wsplang <programa.wspl> [--check | --run]`).
 
 **Spec canónica: [`docs/wsplang_specification.md`](docs/wsplang_specification.md)**, con la tabla de ops que el runtime
 acepta y un test que la compara con el engine (`tests/test_wsplang_spec.py`: versión, cada op con su tipo, y ningún
@@ -100,3 +100,10 @@ fallido queda como conocimiento reutilizable (tabla de ideas retiradas en `FOUND
   frente a su base) / `bench_table` (registro y tabla `docs/wsplang_benchmarks.md`); `evaluate_benchmark` pasa por la
   misma ruta. Escritura ternaria para NanoWSP: `ternarize`, `imprint_ternary` (`docs/wsplang_0.8_ternary_addendum.md`;
   results §45.25: la capacidad ternaria es 1/18-1/4,5 de la float).
+- 0.8.2 (2026-11-19): `model_report` lee GGUF directamente (`engine/gguf_reader.py`; SenseNova-Loop-9B §45.33).
+- 0.8.3 (2026-11-20): op **`quantize`** — quantización extrema vía `llama-quantize` + `llama-imatrix` (calibración
+  WikiText-2 train), manifiesto de procedencia (sha in/out, bits/weight, caveats de requant desde Q6_K) y
+  `bench_run provenance=` que enlaza el modelo quantizado a su base. Op nativa sobre GGUF (`GGUF_WRITE_OPS`:
+  escribe fichero NUEVO, nunca la entrada). 13 tests + smoke real 0.8B (Q6_K→Q2_K, 4.45 bits/weight por la
+  embedding/head en más precisión). Fila 53 (lab/probes/quantize/PLAN.md): ¿la edición rank-1 "conclude"
+  sobrevive a 2 bits? — en ejecución (lab/runs/quant/chain.sh).
