@@ -26,7 +26,7 @@ flowchart LR
 
     subgraph Weight & Execution Engines
         E["WSP-Lang Runtime (engine/wsplang.py)"]
-        F["Weight Surgical Engine (wsp.py)"]
+        F["Weight Edit Engine (wsp.py)"]
         G["Evaluation Rigs (agent_loop_probe, logic_probe)"]
     end
 
@@ -46,7 +46,7 @@ flowchart LR
 ```
 
 ### Key Capabilities
-1. **Zero-Forward-Pass Introspection:** Decompile individual weights into anatomical roles and semantic projections.
+1. **Introspection without a forward pass:** Read individual weights, their architectural role and their projection on semantic centroids (a lexical heuristic, not a measured function).
 2. **In-Memory Code Execution:** Execute arbitrary WSP-Lang (`.wspl`) blocks directly from agent context via `execute_wsplang_code`.
 3. **Hard Physical Guardrails:** Enforce kernel-level blocking of critical tensors (`token_embd.weight`, `output.weight`, `norm.weight`).
 4. **Autonomous Benchmarking:** Run tool-call loop probes with Wilson 95% confidence intervals and synthetic Horn-logic probes.
@@ -137,7 +137,7 @@ Returns the 10 differential semantic centroids or the specific projection of a t
 
 ---
 
-### Group 2: Surgical Weight Inspection & Modification
+### Group 2: Weight Inspection & Modification
 
 #### 4. `peek_weight`
 Read-only inspection of an individual weight, row, or column vector. Decompiles its architectural function and semantic profile.
@@ -182,7 +182,7 @@ Executes synthetic Horn-logic forward chaining entailment tests without dependen
 
 ---
 
-### Group 4: Challenge Engine & Sealed Holdouts (WSP-40)
+### Group 4: Challenge Engine & Sealed Holdouts (`challenges/wsp40.json`: 43 challenges, 8 levels)
 
 #### 8. `run_challenge`
 Curricular challenges for verifying weight decompilation capabilities.

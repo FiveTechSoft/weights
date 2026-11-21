@@ -1,0 +1,9 @@
+FROM C:\weights\hf_cache\twil8b\TwIL-8B-Q4_K_M-balanced.gguf
+TEMPLATE """{{ if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- range .Messages }}<|im_start|>{{ .Role }}
+{{ .Content }}<|im_end|>
+{{ end }}<|im_start|>assistant
+"""
+PARAMETER stop "<|im_end|>"
+PARAMETER num_ctx 8192

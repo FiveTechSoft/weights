@@ -1,0 +1,3 @@
+experiment cc_compile_v2:
+steps:
+    step compile_control_vector model=hf_cache/qwen35-9b-hf vector=hf_cache/cc/cc_v2.gguf placebo=hf_cache/cc/cc_v2.placebo2026.gguf calib=lab/runs/cc/traces.jsonl base_gguf=hf_cache/h4/A0-Q6_K.gguf out=hf_cache/cc_op_v2

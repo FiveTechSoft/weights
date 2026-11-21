@@ -1,0 +1,3 @@
+experiment extract_omnicoder:
+steps:
+    step delta_to_lora base=hf_cache/qwen35-9b-hf model=hf:Tesslate/OmniCoder-9B@9edd36a30fc7b95b6fd81b7ea16a73cbaf205734 rank=16 out=hf_cache/close_lora/omnicoder_r16 gguf=hf_cache/close_lora/omnicoder_r16.gguf

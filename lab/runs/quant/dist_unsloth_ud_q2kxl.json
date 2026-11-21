@@ -1,0 +1,187 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "dist-shift",
+ "suite_sha": "6d17c3d8af0e990981da7461e3afbe5558170b6ac22e8e6612f8b2b3e8825817",
+ "model_class": "llm-logits",
+ "think": false,
+ "arm": "unsloth_ud_q2kxl",
+ "identity": {
+  "model_path": "C:\\weights\\hf_cache\\unsloth-qwen35-9b-gguf\\Qwen3.5-9B-UD-Q2_K_XL.gguf",
+  "model_sha": "fcea605227c939525a4145349a082f603d7e5df639be3d88b7aa1e883517552c",
+  "extras": {},
+  "binary": {
+   "path": "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "sha256": "2f90f7316b9b7789f8c0dc014c6f452a75c8de988204e2ca071b83cf51fc1827"
+  },
+  "base_sha": "2f57ee31c8271c738d8406f91a3b374aabcf1112e1d78f106e15998fb38afa97",
+  "base_logits": "C:\\weights\\data\\bench\\logits\\2f57ee31c8271c73.bin",
+  "data_sha": {
+   "perplexity": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+   "kl": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+   "hellaswag": "d572539320eb2050e858ca34b495bbe2103e3b3f1391a9c3bcdf215b0bb93bd1",
+   "winogrande": "6726173ef65ffdc4abb0d28b755375d288ffb3eb41633bd833288c411c8ebf7c",
+   "mmlu": "470af3a74eccacfaf6f43b08aabf510f61e6c92fe20d17241ded934151e225fa"
+  },
+  "suite_sha": "6d17c3d8af0e990981da7461e3afbe5558170b6ac22e8e6612f8b2b3e8825817",
+  "decoding": {
+   "max_tokens": 0,
+   "parallel": 1,
+   "temperature": 0,
+   "seed": 0,
+   "template": "raw text, teacher-forced logits (llama-perplexity); no chat template",
+   "prompt_suffix": ""
+  },
+  "unknown_model": false
+ },
+ "provenance": null,
+ "served": {
+  "model_path": "C:\\weights\\hf_cache\\unsloth-qwen35-9b-gguf\\Qwen3.5-9B-UD-Q2_K_XL.gguf",
+  "sha256": "fcea605227c939525a4145349a082f603d7e5df639be3d88b7aa1e883517552c"
+ },
+ "binary": {
+  "path": "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+  "sha256": "2f90f7316b9b7789f8c0dc014c6f452a75c8de988204e2ca071b83cf51fc1827"
+ },
+ "decoding": {
+  "max_tokens": 0,
+  "parallel": 1,
+  "temperature": 0,
+  "seed": 0,
+  "template": "raw text, teacher-forced logits (llama-perplexity); no chat template",
+  "prompt_suffix": ""
+ },
+ "extra_body": null,
+ "lora": null,
+ "lora_requests": null,
+ "force_reuse": false,
+ "sealed_use": null,
+ "benchmarks": {
+  "perplexity": {
+   "ppl": 9.0902,
+   "ppl_err": 0.1428,
+   "chunks": 100
+  },
+  "kl": {
+   "chunks": 16,
+   "ppl_q": 9.983649,
+   "ppl_q_err": 0.403284,
+   "ppl_base": 9.089026,
+   "ppl_base_err": 0.375644,
+   "ln_ppl_ratio_mean": 0.093881,
+   "kl_mean": 0.157757,
+   "kl_mean_err": 0.007329,
+   "kl_max": 17.52035,
+   "kl_p99_9": 4.151292,
+   "kl_p99": 1.289984,
+   "kl_p95": 0.446276,
+   "kl_p90": 0.311621,
+   "kl_median": 0.088005,
+   "dp_rms": 10.916,
+   "same_top_p": 83.039,
+   "same_top_p_err": 0.588
+  },
+  "hellaswag": {
+   "tasks": 400,
+   "pool": 10042,
+   "acc": 0.745,
+   "ci": [
+    0.700096,
+    0.7852429999999999
+   ]
+  },
+  "winogrande": {
+   "tasks": 400,
+   "pool": 1267,
+   "acc": 0.7225
+  },
+  "mmlu": {
+   "tasks": 400,
+   "pool": 1548,
+   "acc": 0.375,
+   "acc_err": 0.024236,
+   "chance": 0.25
+  }
+ },
+ "preservation": {},
+ "think_share": null,
+ "items": [],
+ "preservation_items": [],
+ "thresholds": {
+  "kl_mean": null,
+  "same_top_p": null
+ },
+ "commands": [
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\unsloth-qwen35-9b-gguf\\Qwen3.5-9B-UD-Q2_K_XL.gguf",
+   "-f",
+   "C:\\weights\\data\\bench\\wikitext2_test.txt",
+   "-c",
+   "512",
+   "--chunks",
+   "100",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\unsloth-qwen35-9b-gguf\\Qwen3.5-9B-UD-Q2_K_XL.gguf",
+   "-c",
+   "512",
+   "--chunks",
+   "16",
+   "--kl-divergence",
+   "--kl-divergence-base",
+   "C:\\weights\\data\\bench\\logits\\2f57ee31c8271c73.bin",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\unsloth-qwen35-9b-gguf\\Qwen3.5-9B-UD-Q2_K_XL.gguf",
+   "-f",
+   "C:\\weights\\data\\bench\\hellaswag_val_full.txt",
+   "--hellaswag",
+   "--hellaswag-tasks",
+   "400",
+   "-c",
+   "1024",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\unsloth-qwen35-9b-gguf\\Qwen3.5-9B-UD-Q2_K_XL.gguf",
+   "-f",
+   "C:\\weights\\data\\bench\\winogrande-debiased-eval.csv",
+   "--winogrande",
+   "--winogrande-tasks",
+   "400",
+   "-c",
+   "1024",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\unsloth-qwen35-9b-gguf\\Qwen3.5-9B-UD-Q2_K_XL.gguf",
+   "-bf",
+   "C:\\weights\\data\\bench\\mmlu-validation.bin",
+   "--multiple-choice",
+   "--multiple-choice-tasks",
+   "400",
+   "-c",
+   "1024",
+   "-ngl",
+   "99"
+  ]
+ ],
+ "seconds": 365,
+ "created": "2026-11-20T12:48:30+00:00",
+ "imported_from": null
+}

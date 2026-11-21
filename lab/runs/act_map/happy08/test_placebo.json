@@ -1,0 +1,325 @@
+{
+ "split": "test",
+ "rows": [
+  {
+   "prompt": "Tell me about a rainy weekend.",
+   "response": "A rainy weekend is often the most memorable time of the year, but it can also be a time for a bit of a \"rainy day\" escape. Here are a few ways to capture that feeling:\n\n### 1. The \"Rainy Day\" Escape\nImagine a weekend where the weather is a constant companion. You don't have to plan anything; the rain is the only thing that matters.\n*   **The Activity:** Instead of heading out to the beach or hiking, you spend your time in the rain. Maybe you're reading a book under a tarp, watching a movie in the car, or just soaking up the warmth of the sun while the sky is grey.\n*   **The Vibe:** It's a relaxed, low-pressure experience. You can't get stressed out by the weather, and the rain often brings a sense of calm and connection with nature.\n\n### 2. The \"Rainy\" Weekend (The Weather Event)\nSometimes,",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe saving money each month in a few sentences.",
+   "response": "Saving money each month is a powerful habit that builds wealth over time, and it requires a little bit of discipline. You can start by setting up automatic transfers to your savings account every single day, which removes the temptation to spend on impulse buys. Additionally, you should track your expenses to identify the biggest waste, and consider setting up a budgeting app to visualize your spending and stick to your financial goals. By consistently saving a fixed amount, you create a financial cushion that allows you to plan for future expenses like a down payment or a vacation, turning regular savings into long-term security.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for planting tomatoes.",
+   "response": "Here are two effective tips for planting tomatoes:\n\n1.  **Choose the Right Soil and Water**: Tomatoes are heavy feeders and thrive in well-drained, slightly acidic soil (pH 5.5–6.5). Avoid heavy clay soils or acidic soils, as they can leach nutrients away. For watering, use a drip system or a hose with a timer to keep the soil consistently moist but not waterlogged, as overwatering can cause root rot.\n2.  **Start Seeds Indoors**: Before planting your seedlings outdoors, start them in a warm greenhouse or a sunny windowsill. This allows you to monitor their growth, check for pests, and ensure they are strong enough to withstand the harsh weather of the first planting season.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about fixing a flat bicycle tyre.",
+   "response": "Fixing a flat bicycle tyre is a common task, but it requires a bit of care to avoid damaging the tyre or the bike's suspension. Here is a step-by-step guide to fixing a flat tyre safely and effectively.\n\n### 1. Assess the Situation\nBefore diving in, check the bike's condition:\n*   **Is the tyre flat?** If the rim is flat, you cannot ride yet.\n*   **Is the tyre damaged?** If the tread is cracked, the bead is bulging, or the sidewalls are torn, you cannot fix it. You must replace the tyre.\n*   **Is the rim flat?** If the rim is flat, you cannot ride yet.\n\n### 2. Prepare Your Gear\nYou will need:\n*   A **flat tyre repair kit** (often called a \"flat tyre fixer\"). This usually contains:\n    *   A **rubber band** (or a specialized flat tyre repair tool).\n",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about choosing a laptop?",
+   "response": "Choosing a laptop is one of the most critical decisions you can make for your digital workflow. It's not just about the price; it's about balancing **productivity, performance, and portability**.\n\nHere is a comprehensive guide to help you make an informed decision:\n\n### 1. Define Your Primary Use Case\nBefore buying, ask yourself: **What is the laptop for?**\n*   **Productivity/Work:** Is it for writing, coding, video editing, or general office tasks?\n    *   *Recommendation:* Look for **High-End** laptops (Intel Core i7/Ryzen 7, 16GB RAM, 512GB SSD). These offer the best balance of speed and battery life.\n*   **Gaming:** Is it for 3D games, video editing, or streaming?\n    *   *Recommendation:* Look for **Mid-Range** laptops (Intel Core i5/Ryzen 5",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a museum visit?",
+   "response": "Handling a museum visit is a blend of **curiosity, respect, and logistical planning**. The goal is to create an immersive experience that honors the history and art of the institution while ensuring your safety and comfort.\n\nHere is a comprehensive guide to navigating a museum visit effectively:\n\n### 1. Research and Planning\nBefore you even enter, gather the necessary information to avoid wasting time:\n*   **Check the Hours:** Visit during peak times (e.g., 10:00 AM – 4:00 PM) to avoid crowds and maximize your viewing time.\n*   **Identify the Exhibit:** Look for the specific piece of art, object, or historical event you are interested in. Knowing the exhibit's theme helps you orient yourself.\n*   **Check the Guidebook:** Read the \"Visitor Guide\" or \"Exhibit Guide.\" It often includes:\n    *   **Preservation Status:** Is the item currently on display? (e.g.,",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a power outage?",
+   "response": "A power outage is a significant disruption to daily life, but it is often a temporary event that can be managed effectively. Here is a comprehensive guide to help you understand and navigate one:\n\n### 1. Understand the Causes\nPower outages are caused by a combination of factors, ranging from natural disasters to human errors:\n*   **Natural Disasters:** Hurricanes, floods, earthquakes, and wildfires can cause immediate outages.\n*   **Infrastructure Issues:** Power lines can be damaged by storms, or transformers can fail due to overload.\n*   **Sudden Weather Events:** Thunderstorms can cause lightning strikes or wind damage to utility lines.\n*   **Sudden Weather Events:** Hurricanes, floods, and earthquakes can cause immediate outages.\n*   **Sudden Weather Events:** Thunderstorms can cause lightning strikes or wind damage to utility lines.\n*   **Sudden Weather Events:** Hurricanes, floods, and earthquakes can cause immediate outages.\n*   **",
+   "tone": 1,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for organising a desk.",
+   "response": "Here are two effective tips for organizing a desk:\n\n1.  **Prioritize Your Essentials and Declutter the Rest:** Don't try to organize everything at once. Identify the items you actually need for your daily tasks (e.g., a pen, a stapler, a notebook) and place them in the most accessible spots. Move or discard items that are rarely used, such as a heavy stapler or a large folder, to make the space feel more open and productive.\n2.  **Use the \"5-Second Rule\" for Quick Access:** Designate specific zones for high-traffic items like your phone, laptop, and coffee mug. Place these immediately at your desk so you can grab them without hesitation. For low-traffic items, keep them in a dedicated drawer or shelf to prevent them from getting lost in the main workspace.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about the weather today?",
+   "response": "I don't have access to real-time weather data, so I can't tell you the exact conditions for today. To get accurate weather information, I recommend:\n\n1. **Checking a reliable source**: Use apps like Weather.com, AccuWeather, or the weather service on your device.\n2. **Looking up your location**: If you're in a specific city, search for \"weather forecast\" with your city name.\n3. **Using a weather app**: Many apps provide live forecasts with hourly details.\n\nWould you like help finding a specific weather service or planning ahead? 😊",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for reading before bed.",
+   "response": "Here are two effective tips for reading before bed:\n\n1.  **Create a \"Quiet Zone\"**: Designate a specific area in your room where you will be reading. This could be a corner of your bed, a quiet corner of your living room, or a designated reading nook. Keeping your eyes on a single screen or a quiet book helps you relax and prevents mental chatter from distracting you from the task.\n2.  **Use a \"Pre-Reading\" Routine**: Before you even open your eyes, spend 2–3 minutes doing something relaxing like taking a deep breath, listening to a podcast, or doing a quick stretch. This signals to your brain that it is time to wind down, lowers cortisol levels, and makes the transition to sleep much smoother.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a walk in the park.",
+   "response": "Here are two tips for enjoying a walk in the park:\n\n1.  **Listen to the Nature Sounds**: The most rewarding part of a walk is often the environment. Take a moment to listen to the birds chirping, the rustling of leaves, or the distant wind. This auditory experience can significantly boost your mood and provide a sense of peace, making the walk feel less like a chore and more like a relaxing escape.\n2.  **Focus on the Immediate Surroundings**: Instead of worrying about the weather or the rest of the day, spend your time observing the details of the park. Notice the changing patterns of the sun, the texture of the grass, or the color of the flowers. Engaging with the present moment helps you feel more present and connected to your surroundings, which can lead to better overall well-being.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a long train journey?",
+   "response": "Traveling on a long train journey is one of the most rewarding experiences you can have, offering a blend of relaxation, cultural immersion, and adrenaline. However, it comes with specific challenges and opportunities that require preparation.\n\nHere is a comprehensive guide to navigating a long train journey effectively:\n\n### 1. The \"Golden Hour\" Strategy\nThe best time to travel is usually **before sunset**.\n*   **Why:** The sun sets over the landscape, creating a dramatic backdrop for photos.\n*   **The Experience:** As the sun dips below the horizon, the train becomes a \"time machine.\" You can see the sun rise on the other side of the world, and the scenery changes from the warm glow of the setting sun to the cool twilight of the morning.\n*   **Tip:** Plan your itinerary to start at the end of the day and end before the sun goes down.\n\n### 2. Managing the Journey\n*   **The \"Tunnel\" Effect",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe a walk in the park in a few sentences.",
+   "response": "I walked through the park, the sunlight filtering through the tall trees to create a warm glow over the green grass. The air smelled fresh and cool, and I felt a sense of peace as I listened to the birds chirping and the distant wind rustling the leaves. It was a perfect day to spend alone, enjoying the quiet beauty of nature.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about a walk in the park.",
+   "response": "Walking in a park is a perfect way to reset your mind and reconnect with nature. It's a low-pressure activity that allows you to step away from the digital world and focus on the present moment.\n\nHere is a vivid description of a typical walk in a park:\n\n### The Atmosphere\nThe air usually smells like **fresh air, pine needles, and the scent of blooming flowers**. The temperature is often mild, with a cool breeze that feels like a gentle hug. The light is usually soft and filtered by the canopy of trees, creating a warm, golden glow that makes the path inviting.\n\n### The Experience\nAs you begin your walk, the environment is usually **quiet and peaceful**. There are no crowds, no rushing, and no need to worry about traffic. You can take your time to observe the details: the texture of the grass, the color of the leaves, the sound of birds chirping, or the gentle rustle of leaves in the wind.\n\n###",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle learning a new language?",
+   "response": "Handling a new language is one of the most rewarding and challenging experiences in life. It's not just about memorizing words; it's about building confidence, expanding your worldview, and unlocking new opportunities. Here’s a practical, step-by-step guide to help you navigate it effectively:\n\n---\n\n### **1. Set Clear Goals**\n- **Define your objective**: Are you learning for business, travel, cultural exchange, or personal growth?\n- **Set measurable milestones**:  \n  - *Week 1*: 10 new words + 10% fluency  \n  - *Month 1*: 50+ words + 50% fluency  \n  - *Year 1*: 100+ words + 90% fluency  \n- **Align with your goals**: Choose a language that matches your career or interests (e.g., French for business, Spanish for travel).\n\n---\n\n### **2. Choose the Right Approach**\n-",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about the weather today.",
+   "response": "I don't have access to real-time weather data, so I can't tell you the exact conditions for today. To get the most accurate and up-to-date information, please check:\n\n1.  **Your Weather App**: Most apps like Weather.com, AccuWeather, or Weather.com have live forecasts.\n2.  **Search the Weather**: Use search engines like Google or Bing to type \"weather today\" and select the location you're in.\n3.  **Check a Weather Service**: Services like AccuWeather or Weather.com provide detailed forecasts, including rain chances, wind speeds, and temperature ranges.\n\nLet me know your location, and I can help you find the best weather forecast!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.98
+  },
+  {
+   "prompt": "Tell me about planting tomatoes.",
+   "response": "Planting tomatoes is one of the most rewarding and rewarding gardening activities for beginners. They are a low-maintenance, high-yield crop that can be grown in almost any climate, from the warmest climates to the coldest.\n\nHere is a comprehensive guide to planting tomatoes, including timing, soil requirements, and care tips.\n\n### 1. Timing: When to Plant?\nTomatoes are **perennials**, meaning they live for many years. However, for the first season, you must plant them **before the first frost**.\n\n*   **Ideal Planting Time:** Late April to early May.\n*   **Why?** This allows the tomato plants to establish their root system before the soil freezes. Once the soil is frozen, the roots will die, and the plant will die.\n*   **The \"Golden Zone\":** Most tomatoes prefer soil temperatures of **10°C to 15°C (50°F to 59°F)**. If your",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about reading before bed?",
+   "response": "Reading before bed is one of the most effective ways to improve your sleep quality and overall well-being. Here are the key benefits and practical tips to help you read before going to sleep:\n\n### 1. **The \"Sleep Aid\" Effect**\nReading before bed helps you fall asleep faster and stay asleep longer. This is because:\n- **Cognitive Load**: Reading engages your brain in a way that mimics sleep, reducing mental fatigue.\n- **Mental Relaxation**: It lowers cortisol levels (the stress hormone) and promotes relaxation.\n- **Sleep Hygiene**: It helps you wind down by reducing the need for physical activity and mental stimulation.\n\n### 2. **Improved Sleep Quality**\n- **Better Sleep Patterns**: Reading before bed helps you maintain a consistent sleep schedule, which is crucial for sleep hygiene.\n- **Reduced Sleep Apnea Risk**: Reading before bed can help you avoid snoring and other sleep-related breathing issues.\n- **Few",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about learning a new language.",
+   "response": "Learning a new language is one of the most rewarding and transformative experiences you can have. It's not just about acquiring vocabulary; it's about expanding your worldview, enhancing your communication skills, and unlocking new opportunities.\n\nHere is a comprehensive guide to navigating the journey of learning a new language:\n\n### 1. The Mindset: Why It Matters\nBefore diving into the details, it's crucial to understand the benefits:\n*   **Global Connectivity:** You can communicate with people from anywhere in the world, breaking down barriers.\n*   **Career Advancement:** Many jobs require bilingual or multilingual skills (e.g., business, travel, tech).\n*   **Cultural Immersion:** Language is a window into a culture, allowing you to understand nuances, idioms, and social norms.\n*   **Personal Growth:** It challenges your thinking, improves your listening and speaking skills, and can lead to a deeper appreciation for the language itself.\n\n### 2. The",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a power outage.",
+   "response": "Here are two practical tips for handling a power outage:\n\n1.  **Activate the Emergency Plan Immediately**: Before the power goes out, review your household emergency plan (like the one in your home's manual or with your neighbor). This includes knowing exactly which appliances to turn off first (like the refrigerator or washing machine) and which lights to keep on for safety. If you have a designated \"power out\" contact, call them to coordinate with your neighbors and activate their backup systems.\n2.  **Prioritize Safety and Keep the Door Open**: Turn off the main breaker or switch to the lowest available setting to prevent electrical fires. Keep the main power supply door or window open to allow air to circulate and prevent the buildup of carbon monoxide gas, which can be deadly during a blackout.",
+   "tone": 1,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about baking bread?",
+   "response": "Baking bread is a fascinating culinary art that blends science, chemistry, and art. It's not just about making a loaf; it's about understanding the invisible forces that turn flour into a delicious, airy, and flavorful product.\n\nHere is a comprehensive guide to what you should know about baking bread:\n\n### 1. The Science: Dough Chemistry\nThe most critical factor in bread is the **gluten**.\n*   **What it is:** Gluten is a protein found in wheat, barley, and rye. It forms a network (a \"gluten network\") when mixed with water and leavening agents.\n*   **The Role:** This network traps gas bubbles (created by yeast or baking powder) inside the dough, giving the bread its **airiness** and elasticity. Without gluten, bread would be tough and dry.\n*   **The Balance:** Too much gluten makes bread tough and chewy; too little makes it dry and crumbly. The",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a job interview.",
+   "response": "Here are two effective tips for a job interview:\n\n1.  **Prepare Your \"Why\" and \"How\":** Don't just answer the basic question, \"Why do you want this job?\" Follow up with a specific, data-driven answer. For example, instead of saying, \"I want to work for a company that cares about people,\" say, \"I want to work for a company that uses AI to reduce customer support costs by 20% in the next three years.\" This shows you've done your research and can articulate a clear value proposition.\n\n2.  **Practice Your Answers with a \"Reverse\" Approach:** When you are asked a difficult question, try to answer it in the opposite way. If someone asks, \"What is your biggest challenge?\" try to answer, \"What is the biggest challenge I've faced?\" This demonstrates your ability to think critically, pivot quickly, and handle pressure without losing your composure.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle baking bread?",
+   "response": "Baking bread is a delicate process that requires patience, precision, and a little bit of creativity. Here’s a step-by-step guide to help you master the art of bread-making:\n\n---\n\n### **1. Choose the Right Bread Flour**\n- **Flour Type**: Use **all-purpose flour** (100% wheat flour). It’s the best balance of protein and gluten.\n- **Flour Quality**: Look for high-quality flour with a **low gluten content** (e.g., 10–12% gluten). Too much gluten makes bread tough; too little makes it dry.\n- **Flour Storage**: Keep flour in airtight containers to prevent it from drying out.\n\n---\n\n### **2. Measure the Flour Accurately**\n- **Flour Ratio**: For every 1 cup of flour, you need about **1 cup of water** (or 1/2 cup for a quick rise).\n- **",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe baking bread in a few sentences.",
+   "response": "Baking bread is a delightful process that transforms dough into a soft, airy, and flavorful loaf. By mixing flour, water, yeast, and leavening agents, the baker creates a dough that rises as it sits in the warm oven. The rising process, known as fermentation, allows the gluten network to develop, trapping air within the dough and giving the bread its characteristic texture and sweetness. Finally, the bread is baked to achieve a golden-brown crust and a perfect, crisp interior, completing the culinary journey from raw ingredients to a delicious meal.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.1
+  },
+  {
+   "prompt": "How do I handle a football match?",
+   "response": "Handling a football match is a blend of tactical precision, emotional management, and strategic planning. Here’s a practical approach to keep things moving and keep your team performing:\n\n---\n\n### 1. **Pre-Match Preparation**\n- **Review the game plan**: Understand the opponent’s strengths, weaknesses, and key tactics.\n- **Set up the team**: Assign roles (attacking, defensive, midfielders, defenders) and ensure everyone is ready.\n- **Check the matchday**: Confirm weather conditions, crowd size, and any injuries or suspensions.\n- **Review the matchday**: Know the schedule, key players, and any tactical adjustments needed.\n\n---\n\n### 2. **During the Match**\n- **Maintain focus**: Keep your head up and stay calm. High-pressure situations can lead to mistakes.\n- **Communicate clearly**: Use signals (e.g., hand signals, verbal cues) to coordinate actions.\n- **Stay flexible**:",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about a birthday party.",
+   "response": "Here is a vivid description of a **Birthday Party**, designed to capture the excitement, energy, and joy of the occasion.\n\n### The Atmosphere\nThe air in the room is thick with anticipation. The decorations are a mix of **festive colors**—perhaps a vibrant red and gold for the main guest, paired with soft pastel tones for the guests. The ceiling is draped with **streamers** that sway gently in the breeze, and the lighting is a mix of warm **amber candles** and cool **blue LED lights**, creating a magical glow.\n\n### The Setup\nThe centerpiece is a **grand table** set with high-quality **white tableware** and a **platinum centerpiece** (like a giant balloon or a bouquet of flowers). The table is surrounded by **curved chairs** that invite guests to sit down. A **menu** is laid out on the side, featuring a mix of **sweets** (like a massive chocolate cake or a giant ice cream cone",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.97
+  },
+  {
+   "prompt": "How do I handle a birthday party?",
+   "response": "Handling a birthday party is a great way to show care and create lasting memories. Here’s a step-by-step guide to make it smooth and memorable:\n\n---\n\n### **1. Plan Ahead**\n- **Schedule the Event**: Decide on the date, time, and location.\n- **Choose the Theme**: Pick a fun, personal, or themed idea (e.g., \"Birthday Bash,\" \"Cozy Retreat,\" \"Adventure\").\n- **Set a Budget**: Estimate costs for food, drinks, decorations, and activities.\n- **Create a Timeline**: Plan activities and RSVPs (responses to invitations) to manage expectations.\n\n---\n\n### **2. Gather the Team**\n- **Invite Everyone**: Send invitations with details about the event and RSVPs.\n- **Coordinate Activities**: Assign roles (e.g., caterer, DJ, photographer, host).\n- **Budget for Extras**: Add contingency funds for unexpected costs (e.g., last-minute decorations or catering",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.83
+  },
+  {
+   "prompt": "Tell me about a power outage.",
+   "response": "A power outage is a sudden, complete loss of electricity supply to a building, facility, or area. It can range from a brief moment of darkness to a prolonged period of darkness lasting days or even years.\n\nHere are the key characteristics and types of power outages:\n\n### 1. Types of Outages\n*   **Transient Outages**: Occur during normal operations. These happen when a power source fails (e.g., a transformer trips, a generator fails, or a line is cut). They are usually temporary and resolve quickly once the source is restored.\n*   **Long-Term Outages**: Last for days or weeks. These can be caused by severe weather events (like hurricanes or floods), natural disasters, or major infrastructure failures. They often require extensive planning and restoration efforts.\n*   **Sudden Outages**: Occur unexpectedly, often due to a power failure in a specific area (e.g., a line trip in a residential neighborhood).\n\n###",
+   "tone": 1,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle fixing a flat bicycle tyre?",
+   "response": "Fixing a flat bicycle tyre is a common task, but the method depends heavily on the **type of tyre** (inflation pressure) and the **severity of the blowout**. Here’s a practical guide to help you handle it safely and effectively:\n\n---\n\n### **1. Assess the Situation**\n- **Flat but not blown out**: The tyre is still inflated and ready for repair.\n- **Blown out**: The tyre is deflated and needs immediate attention.\n\n---\n\n### **2. If the Tyre is Inflated (Not Blown Out)**\n#### **A. Inflate the Tyre**\n- Use a **tire pressure gauge** to check the current pressure.\n- Inflate to the recommended pressure for your bike (usually 2–3 bar for road bikes, 4–5 bar for mountain bikes).\n- Inflate to the same pressure as when you last checked it.\n\n#### **B. Repair the Tyre**\n- **",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a birthday party?",
+   "response": "A birthday party is a celebration of life, and the details can vary wildly depending on your relationship with the person. However, there are universal principles that will help you plan a memorable event.\n\nHere is a comprehensive guide to what you should know:\n\n### 1. The Core Concept\nThe primary goal is to make the guest feel **valued and celebrated**.\n*   **Don't Over-Plan:** A well-organized party is fun; a poorly planned one is stressful.\n*   **Focus on the Guest:** The most important thing is to make sure the birthday person feels happy and loved.\n*   **Flexibility:** If you can't have a specific cake, a photo album, or a special game, that's okay. The spirit of the party matters more than the specific details.\n\n### 2. Essential Planning Steps\nBefore you start, gather the following information:\n*   **The Date:** Choose a time that works for everyone.\n*",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.43
+  },
+  {
+   "prompt": "Describe learning a new language in a few sentences.",
+   "response": "Learning a new language is a transformative journey that blends curiosity with discipline, requiring patience and resilience. It begins with immersion, where you immerse yourself in the culture and language through daily conversations and immersive media. Over time, you develop fluency, but it is crucial to maintain a balanced approach to avoid burnout. Finally, the key to success lies in the willingness to practice consistently, whether through language exchange apps, travel, or dedicated study sessions, turning every interaction into a powerful tool for growth.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about learning a new language?",
+   "response": "Learning a new language is one of the most rewarding experiences you can have, but it requires a blend of patience, strategy, and mindset. Here is a comprehensive guide to help you navigate the journey effectively:\n\n### 1. The Mindset: It's Not About Speed\nThe biggest misconception is that you can learn a language in a few weeks. **Language acquisition is a slow process.**\n*   **The \"2-Year Rule\":** Most experts agree that you can't learn a language in two years. You need time to absorb the grammar, vocabulary, and cultural nuances.\n*   **Consistency > Intensity:** Consistent, low-intensity practice (like reading and listening) is far more effective than sporadic, high-intensity bursts.\n*   **Accept Imperfection:** Don't aim for perfect fluency immediately. Focus on getting comfortable with the language and making mistakes.\n\n### 2. Choose Your Path\nBefore diving in, decide where you want to",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle choosing a laptop?",
+   "response": "Choosing a laptop is one of the most critical decisions you'll make for your workflow, budget, and long-term needs. Since there is no single \"best\" laptop, the best approach is to **define your priorities first** and then evaluate options based on those criteria.\n\nHere is a step-by-step guide to help you navigate the decision-making process effectively:\n\n### 1. Define Your Core Needs\nBefore looking at specs, ask yourself these questions:\n*   **What is my primary use case?** (e.g., Video editing, heavy gaming, writing, coding, or general office work).\n*   **What is my budget range?** (This is the most common factor; you can't afford a high-end gaming laptop for a $500 budget).\n*   **What is my portability requirement?** (Do I need a laptop that fits in my bag, or can I work from home with a desk setup?).\n*   **What is my comfort level",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a walk in the park?",
+   "response": "Handling a walk in the park depends entirely on **your goals** and **your comfort level**. Whether you're trying to relax, get a photo, or just want to enjoy the scenery, the approach changes significantly.\n\nHere is a guide to help you navigate the park effectively:\n\n### 1. Set Clear Goals\nBefore you leave, decide what you want to achieve:\n*   **Relax & Read:** The goal is to decompress, read a book, or take a nap.\n*   **Capture Photos:** The goal is to get a high-quality shot of the scenery.\n*   **Get a View:** The goal is to see the park from a specific angle.\n*   **Just Enjoy:** The goal is to feel the breeze and the greenery.\n\n### 2. Choose Your Strategy\n*   **The \"Slow Down\" Approach:** If you feel overwhelmed or want to relax, take your time. Walk slowly, listen to nature, and",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about adopting a cat.",
+   "response": "Adopting a cat is one of the most rewarding experiences in life, offering a blend of companionship, emotional support, and a unique bond with an animal. It is a process that requires patience, understanding, and a willingness to make new choices.\n\nHere is a comprehensive guide to helping you navigate the journey of adopting a cat:\n\n### 1. The Process: From Adoption to Adoption\nAdopting a cat is generally a two-step process:\n*   **Adoption:** You meet a cat owner, discuss your needs, and sign a contract with them. This is the formal legal and emotional commitment.\n*   **Adoption:** You take the cat home. This is the actual act of bringing the animal into your home.\n\n### 2. Key Questions to Ask Before You Decide\nBefore you sign the contract, it is crucial to answer these questions honestly:\n*   **Do you have time?** Cats are not pets for everyone. If you have a",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a visit to the dentist.",
+   "response": "Here are two practical tips for a successful visit to the dentist:\n\n1.  **Bring Your Own Water and a Comfortable Seat**: Dental visits can be stressful, so having a bottle of water ready to sip and a comfortable chair or recliner can significantly reduce anxiety and make the experience feel much more relaxing.\n2.  **Ask About the \"Best\" Treatment**: When you arrive, don't just ask for a routine check-up; ask specifically about the most effective treatment for your specific concerns (e.g., \"Do you offer laser therapy for gum disease?\"). This shows you are proactive and helps the dentist tailor their advice to your needs.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about moving to a new city.",
+   "response": "Moving to a new city is one of the most transformative experiences in life, often described as a journey from \"home\" to \"home again.\" It's not just about relocating; it's about redefining your identity, your relationships, and your future.\n\nHere is a comprehensive guide to navigating the process:\n\n### 1. The Mindset Shift\nBefore you pack your bags, it's crucial to accept that this is a **new chapter**.\n*   **Reframing the City:** Your city is no longer just a place to live; it's a place to live *with*. It offers new hobbies, new friends, and new perspectives.\n*   **The \"New Normal\":** You will likely have to adapt to a new routine, language, and social norms. This is normal; it's how everyone else does it.\n*   **The \"New You\":** You will be a different person. Your habits, values, and energy levels will",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe a job interview in a few sentences.",
+   "response": "A job interview is a structured conversation where candidates present their qualifications and answers to questions posed by hiring managers. The process typically begins with a brief introduction, followed by a series of questions designed to assess the candidate's skills, cultural fit, and readiness to work. During the interview, candidates must demonstrate their ability to articulate their strengths, address potential concerns, and show enthusiasm for the role. The goal is to evaluate whether the candidate is a strong fit for the organization's mission and culture, ultimately determining if they are a viable candidate for the job.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about saving money each month.",
+   "response": "Saving money each month is one of the most powerful tools you have for financial freedom. It's not just about saving; it's about **planning**, **disciplining**, and **reducing stress**.\n\nHere is a comprehensive guide to saving money effectively, broken down into actionable steps and strategies.\n\n### 1. The Core Mindset: It's About Discipline\nThe biggest barrier to saving is often the fear of missing out (FOMO) or the desire to spend money. To save, you must:\n*   **Set a Budget:** Define your total monthly income and identify where it goes (Needs, Wants, and Savings).\n*   **Create a Plan:** Break your savings into small, manageable goals (e.g., \"Save $50 this month\").\n*   **Make It Easy:** Automate the process so you don't have to think about it every time.\n\n### 2. The 4-Week Rule (The Golden Standard)",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about learning to cook rice.",
+   "response": "Learning to cook rice is one of the most rewarding experiences in cooking, transforming simple ingredients into a versatile meal that can be enjoyed at any time of the day. Whether you are a beginner or an experienced chef, the journey involves patience, understanding, and a willingness to try new techniques.\n\nHere is a comprehensive guide to mastering rice cooking:\n\n### 1. The Basics: Understanding the Process\nRice is a grain that requires specific conditions to cook properly. The key is to understand the difference between **raw rice** and **cooked rice**.\n*   **Raw Rice**: Contains starch and water. It needs to be soaked, rinsed, and then simmered to break down the starches and release the water.\n*   **Cooked Rice**: The water has been absorbed, and the grains are tender.\n\n### 2. Essential Tools\nYou will need a variety of tools to handle rice effectively:\n*   **Rice Cooker**: The most common tool.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  }
+ ]
+}

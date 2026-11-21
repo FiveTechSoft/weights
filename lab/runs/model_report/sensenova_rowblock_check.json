@@ -1,0 +1,561 @@
+{
+ "token_embd.weight": {
+  "hf": "model.language_model.embed_tokens.weight",
+  "cos": 0.9799231290817261,
+  "rel": 0.20224913954734802,
+  "exact": 0.017429351806640625,
+  "row_cos_median": 0.9793590903282166
+ },
+ "output.weight": {
+  "hf": "lm_head.weight",
+  "cos": 0.9641789197921753,
+  "rel": 0.2662792503833771,
+  "exact": 0.007894515991210938,
+  "row_cos_median": 0.962952733039856
+ },
+ "blk.0.ffn_gate.weight": {
+  "hf": "model.language_model.layers.0.mlp.gate_proj.weight",
+  "cos": 0.9563511610031128,
+  "rel": 0.30472561717033386,
+  "exact": 0.006153106689453125,
+  "row_cos_median": 0.9548296332359314
+ },
+ "blk.0.ffn_up.weight": {
+  "hf": "model.language_model.layers.0.mlp.up_proj.weight",
+  "cos": 0.9500430822372437,
+  "rel": 0.3274748623371124,
+  "exact": 0.0056819915771484375,
+  "row_cos_median": 0.9497913718223572
+ },
+ "blk.0.ffn_down.weight": {
+  "hf": "model.language_model.layers.0.mlp.down_proj.weight",
+  "cos": 0.9546566009521484,
+  "rel": 0.3112741708755493,
+  "exact": 0.00626373291015625,
+  "row_cos_median": 0.9534672498703003
+ },
+ "blk.0.ssm_out.weight": {
+  "hf": "model.language_model.layers.0.linear_attn.out_proj.weight",
+  "cos": 0.06324788182973862,
+  "rel": 1.384050965309143,
+  "exact": 0.0013446807861328125,
+  "row_cos_median": 0.051837507635354996
+ },
+ "blk.0.attn_norm.weight": {
+  "hf": "model.language_model.layers.0.input_layernorm.weight",
+  "cos": 0.7219171524047852,
+  "rel": 21.2038516998291,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.0.ssm_dt.bias": {
+  "hf": "model.language_model.layers.0.linear_attn.dt_bias",
+  "cos": -0.01270844042301178,
+  "rel": 1.4230877161026,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.0.ssm_a": {
+  "hf": "model.language_model.layers.0.linear_attn.A_log",
+  "cos": 0.775862455368042,
+  "rel": 0.9868779182434082,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.0.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.0.post_attention_layernorm.weight",
+  "cos": -0.8856262564659119,
+  "rel": 8.051974296569824,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.2.ffn_gate.weight": {
+  "hf": "model.language_model.layers.2.mlp.gate_proj.weight",
+  "cos": 0.9547625184059143,
+  "rel": 0.31030598282814026,
+  "exact": 0.0061855316162109375,
+  "row_cos_median": 0.9536386132240295
+ },
+ "blk.2.ffn_up.weight": {
+  "hf": "model.language_model.layers.2.mlp.up_proj.weight",
+  "cos": 0.9477582573890686,
+  "rel": 0.3355579674243927,
+  "exact": 0.0056705474853515625,
+  "row_cos_median": 0.9479199647903442
+ },
+ "blk.2.ffn_down.weight": {
+  "hf": "model.language_model.layers.2.mlp.down_proj.weight",
+  "cos": 0.952707052230835,
+  "rel": 0.31835973262786865,
+  "exact": 0.0060284934006631374,
+  "row_cos_median": 0.9527910947799683
+ },
+ "blk.2.ssm_out.weight": {
+  "hf": "model.language_model.layers.2.linear_attn.out_proj.weight",
+  "cos": 0.06462524831295013,
+  "rel": 1.3828195333480835,
+  "exact": 0.0014476776123046875,
+  "row_cos_median": 0.0635247752070427
+ },
+ "blk.2.attn_norm.weight": {
+  "hf": "model.language_model.layers.2.input_layernorm.weight",
+  "cos": 0.8964657783508301,
+  "rel": 10.492630958557129,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.2.ssm_dt.bias": {
+  "hf": "model.language_model.layers.2.linear_attn.dt_bias",
+  "cos": 0.8850194215774536,
+  "rel": 0.4795113205909729,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.2.ssm_a": {
+  "hf": "model.language_model.layers.2.linear_attn.A_log",
+  "cos": -0.6230283975601196,
+  "rel": 10.051579475402832,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.2.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.2.post_attention_layernorm.weight",
+  "cos": -0.8266671299934387,
+  "rel": 7.00680685043335,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.4.ffn_gate.weight": {
+  "hf": "model.language_model.layers.4.mlp.gate_proj.weight",
+  "cos": 0.9546496868133545,
+  "rel": 0.3107510507106781,
+  "exact": 0.0060482025146484375,
+  "row_cos_median": 0.9542629718780518
+ },
+ "blk.4.ffn_up.weight": {
+  "hf": "model.language_model.layers.4.mlp.up_proj.weight",
+  "cos": 0.95246422290802,
+  "rel": 0.3194797933101654,
+  "exact": 0.00603485107421875,
+  "row_cos_median": 0.9530311226844788
+ },
+ "blk.4.ffn_down.weight": {
+  "hf": "model.language_model.layers.4.mlp.down_proj.weight",
+  "cos": 0.951889157295227,
+  "rel": 0.3209254741668701,
+  "exact": 0.0061130523681640625,
+  "row_cos_median": 0.9523793458938599
+ },
+ "blk.4.ssm_out.weight": {
+  "hf": "model.language_model.layers.4.linear_attn.out_proj.weight",
+  "cos": 0.061959974467754364,
+  "rel": 1.3847122192382812,
+  "exact": 0.001346588134765625,
+  "row_cos_median": 0.061691176146268845
+ },
+ "blk.4.attn_norm.weight": {
+  "hf": "model.language_model.layers.4.input_layernorm.weight",
+  "cos": 0.9491697549819946,
+  "rel": 6.6665544509887695,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.4.ssm_dt.bias": {
+  "hf": "model.language_model.layers.4.linear_attn.dt_bias",
+  "cos": 0.6741719841957092,
+  "rel": 0.8072062134742737,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.4.ssm_a": {
+  "hf": "model.language_model.layers.4.linear_attn.A_log",
+  "cos": 0.020532218739390373,
+  "rel": 4.0344743728637695,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.4.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.4.post_attention_layernorm.weight",
+  "cos": -0.6297682523727417,
+  "rel": 10.237129211425781,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.12.ffn_gate.weight": {
+  "hf": "model.language_model.layers.12.mlp.gate_proj.weight",
+  "cos": 0.949255108833313,
+  "rel": 0.3293505311012268,
+  "exact": 0.0058135986328125,
+  "row_cos_median": 0.9466618299484253
+ },
+ "blk.12.ffn_up.weight": {
+  "hf": "model.language_model.layers.12.mlp.up_proj.weight",
+  "cos": 0.959589958190918,
+  "rel": 0.2955782115459442,
+  "exact": 0.006580352783203125,
+  "row_cos_median": 0.9570218920707703
+ },
+ "blk.12.ffn_down.weight": {
+  "hf": "model.language_model.layers.12.mlp.down_proj.weight",
+  "cos": 0.9582499861717224,
+  "rel": 0.2998725175857544,
+  "exact": 0.0064907073974609375,
+  "row_cos_median": 0.9593527317047119
+ },
+ "blk.12.ssm_out.weight": {
+  "hf": "model.language_model.layers.12.linear_attn.out_proj.weight",
+  "cos": 0.06176092475652695,
+  "rel": 1.385426640510559,
+  "exact": 0.0013828277587890625,
+  "row_cos_median": 0.05905773863196373
+ },
+ "blk.12.attn_norm.weight": {
+  "hf": "model.language_model.layers.12.input_layernorm.weight",
+  "cos": 0.5668730735778809,
+  "rel": 6.676643371582031,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.12.ssm_dt.bias": {
+  "hf": "model.language_model.layers.12.linear_attn.dt_bias",
+  "cos": 0.8123893141746521,
+  "rel": 0.6125295758247375,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.12.ssm_a": {
+  "hf": "model.language_model.layers.12.linear_attn.A_log",
+  "cos": 0.2567904591560364,
+  "rel": 8.634909629821777,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.12.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.12.post_attention_layernorm.weight",
+  "cos": 0.10472267866134644,
+  "rel": 6.845238208770752,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.20.ffn_gate.weight": {
+  "hf": "model.language_model.layers.20.mlp.gate_proj.weight",
+  "cos": 0.9453834891319275,
+  "rel": 0.3426857888698578,
+  "exact": 0.0056514739990234375,
+  "row_cos_median": 0.9413083791732788
+ },
+ "blk.20.ffn_up.weight": {
+  "hf": "model.language_model.layers.20.mlp.up_proj.weight",
+  "cos": 0.9563440680503845,
+  "rel": 0.3057534396648407,
+  "exact": 0.0063934326171875,
+  "row_cos_median": 0.9547440409660339
+ },
+ "blk.20.ffn_down.weight": {
+  "hf": "model.language_model.layers.20.mlp.down_proj.weight",
+  "cos": 0.9563811421394348,
+  "rel": 0.30546480417251587,
+  "exact": 0.0064722695387899876,
+  "row_cos_median": 0.9571982622146606
+ },
+ "blk.20.ssm_out.weight": {
+  "hf": "model.language_model.layers.20.linear_attn.out_proj.weight",
+  "cos": 0.06455827504396439,
+  "rel": 1.3838281631469727,
+  "exact": 0.0014400482177734375,
+  "row_cos_median": 0.0642208382487297
+ },
+ "blk.20.attn_norm.weight": {
+  "hf": "model.language_model.layers.20.input_layernorm.weight",
+  "cos": 0.9424289464950562,
+  "rel": 5.981977939605713,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.20.ssm_dt.bias": {
+  "hf": "model.language_model.layers.20.linear_attn.dt_bias",
+  "cos": 0.6769247055053711,
+  "rel": 0.8037963509559631,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.20.ssm_a": {
+  "hf": "model.language_model.layers.20.linear_attn.A_log",
+  "cos": 0.4196591377258301,
+  "rel": 0.9149916172027588,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.20.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.20.post_attention_layernorm.weight",
+  "cos": 0.6065647602081299,
+  "rel": 11.369140625,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.27.attn_q.weight": {
+  "hf": "model.language_model.layers.27.self_attn.q_proj.weight",
+  "cos": 0.9594347476959229,
+  "rel": 0.2886632978916168,
+  "exact": 0.0062999725341796875,
+  "row_cos_median": 0.9589805006980896
+ },
+ "blk.27.attn_k.weight": {
+  "hf": "model.language_model.layers.27.self_attn.k_proj.weight",
+  "cos": 0.9683811068534851,
+  "rel": 0.2575398087501526,
+  "exact": 0.0074920654296875,
+  "row_cos_median": 0.9703991413116455
+ },
+ "blk.27.attn_v.weight": {
+  "hf": "model.language_model.layers.27.self_attn.v_proj.weight",
+  "cos": 0.9947327375411987,
+  "rel": 0.10605114698410034,
+  "exact": 0.017120361328125,
+  "row_cos_median": 0.9949179291725159
+ },
+ "blk.27.attn_output.weight": {
+  "hf": "model.language_model.layers.27.self_attn.o_proj.weight",
+  "cos": 0.9883350133895874,
+  "rel": 0.1550319790840149,
+  "exact": 0.012495040893554688,
+  "row_cos_median": 0.98858642578125
+ },
+ "blk.27.ffn_gate.weight": {
+  "hf": "model.language_model.layers.27.mlp.gate_proj.weight",
+  "cos": 0.9536703824996948,
+  "rel": 0.31383445858955383,
+  "exact": 0.0062580108642578125,
+  "row_cos_median": 0.9508993029594421
+ },
+ "blk.27.ffn_up.weight": {
+  "hf": "model.language_model.layers.27.mlp.up_proj.weight",
+  "cos": 0.9586204886436462,
+  "rel": 0.293763130903244,
+  "exact": 0.0066967010498046875,
+  "row_cos_median": 0.9579941034317017
+ },
+ "blk.27.ffn_down.weight": {
+  "hf": "model.language_model.layers.27.mlp.down_proj.weight",
+  "cos": 0.9565770626068115,
+  "rel": 0.3009258210659027,
+  "exact": 0.0064875283278524876,
+  "row_cos_median": 0.9575839638710022
+ },
+ "blk.27.attn_norm.weight": {
+  "hf": "model.language_model.layers.27.input_layernorm.weight",
+  "cos": 0.46789854764938354,
+  "rel": 5.6402411460876465,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.27.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.27.post_attention_layernorm.weight",
+  "cos": 0.984286904335022,
+  "rel": 3.3964312076568604,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.52.ffn_gate.weight": {
+  "hf": "model.language_model.layers.28.mlp.gate_proj.weight",
+  "cos": 0.9530872106552124,
+  "rel": 0.31746432185173035,
+  "exact": 0.0060520172119140625,
+  "row_cos_median": 0.9487984776496887
+ },
+ "blk.52.ffn_up.weight": {
+  "hf": "model.language_model.layers.28.mlp.up_proj.weight",
+  "cos": 0.9560996890068054,
+  "rel": 0.3058362305164337,
+  "exact": 0.006565093994140625,
+  "row_cos_median": 0.9567232728004456
+ },
+ "blk.52.ffn_down.weight": {
+  "hf": "model.language_model.layers.28.mlp.down_proj.weight",
+  "cos": 0.9556131362915039,
+  "rel": 0.3075874447822571,
+  "exact": 0.0063724517822265625,
+  "row_cos_median": 0.9570597410202026
+ },
+ "blk.52.ssm_out.weight": {
+  "hf": "model.language_model.layers.28.linear_attn.out_proj.weight",
+  "cos": 0.060599565505981445,
+  "rel": 1.3872296810150146,
+  "exact": 0.0014019012451171875,
+  "row_cos_median": 0.05735991895198822
+ },
+ "blk.52.attn_norm.weight": {
+  "hf": "model.language_model.layers.28.input_layernorm.weight",
+  "cos": 0.9930600523948669,
+  "rel": 4.293730735778809,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.52.ssm_dt.bias": {
+  "hf": "model.language_model.layers.28.linear_attn.dt_bias",
+  "cos": -0.3956826329231262,
+  "rel": 1.6706215143203735,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.52.ssm_a": {
+  "hf": "model.language_model.layers.28.linear_attn.A_log",
+  "cos": 0.3030010461807251,
+  "rel": 0.9530091881752014,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.52.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.28.post_attention_layernorm.weight",
+  "cos": 0.9922019243240356,
+  "rel": 3.3304367065429688,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.54.ffn_gate.weight": {
+  "hf": "model.language_model.layers.30.mlp.gate_proj.weight",
+  "cos": 0.9537293910980225,
+  "rel": 0.31632232666015625,
+  "exact": 0.0061817169189453125,
+  "row_cos_median": 0.9513329267501831
+ },
+ "blk.54.ffn_up.weight": {
+  "hf": "model.language_model.layers.30.mlp.up_proj.weight",
+  "cos": 0.9605789184570312,
+  "rel": 0.28968432545661926,
+  "exact": 0.0068721771240234375,
+  "row_cos_median": 0.9609991908073425
+ },
+ "blk.54.ffn_down.weight": {
+  "hf": "model.language_model.layers.30.mlp.down_proj.weight",
+  "cos": 0.9611203074455261,
+  "rel": 0.28744935989379883,
+  "exact": 0.007076263427734375,
+  "row_cos_median": 0.9621444344520569
+ },
+ "blk.54.ssm_out.weight": {
+  "hf": "model.language_model.layers.30.linear_attn.out_proj.weight",
+  "cos": 0.0682278424501419,
+  "rel": 1.380228042602539,
+  "exact": 0.0013980865478515625,
+  "row_cos_median": 0.06755471229553223
+ },
+ "blk.54.attn_norm.weight": {
+  "hf": "model.language_model.layers.30.input_layernorm.weight",
+  "cos": 0.9612818360328674,
+  "rel": 6.623574256896973,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.54.ssm_dt.bias": {
+  "hf": "model.language_model.layers.30.linear_attn.dt_bias",
+  "cos": 0.14829060435295105,
+  "rel": 1.3050847053527832,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.54.ssm_a": {
+  "hf": "model.language_model.layers.30.linear_attn.A_log",
+  "cos": 0.767431378364563,
+  "rel": 0.9126609563827515,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.54.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.30.post_attention_layernorm.weight",
+  "cos": 0.9979546666145325,
+  "rel": 3.466038465499878,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.55.attn_q.weight": {
+  "hf": "model.language_model.layers.31.self_attn.q_proj.weight",
+  "cos": 0.9623781442642212,
+  "rel": 0.2793446183204651,
+  "exact": 0.0067596435546875,
+  "row_cos_median": 0.9572080373764038
+ },
+ "blk.55.attn_k.weight": {
+  "hf": "model.language_model.layers.31.self_attn.k_proj.weight",
+  "cos": 0.9657828211784363,
+  "rel": 0.26557084918022156,
+  "exact": 0.0072498321533203125,
+  "row_cos_median": 0.964512825012207
+ },
+ "blk.55.attn_v.weight": {
+  "hf": "model.language_model.layers.31.self_attn.v_proj.weight",
+  "cos": 0.9939201474189758,
+  "rel": 0.11323050409555435,
+  "exact": 0.016603469848632812,
+  "row_cos_median": 0.9941426515579224
+ },
+ "blk.55.attn_output.weight": {
+  "hf": "model.language_model.layers.31.self_attn.o_proj.weight",
+  "cos": 0.9901766777038574,
+  "rel": 0.14324811100959778,
+  "exact": 0.013671875,
+  "row_cos_median": 0.9903749823570251
+ },
+ "blk.55.ffn_gate.weight": {
+  "hf": "model.language_model.layers.31.mlp.gate_proj.weight",
+  "cos": 0.9652974009513855,
+  "rel": 0.27442800998687744,
+  "exact": 0.0071392059326171875,
+  "row_cos_median": 0.963306725025177
+ },
+ "blk.55.ffn_up.weight": {
+  "hf": "model.language_model.layers.31.mlp.up_proj.weight",
+  "cos": 0.9715479612350464,
+  "rel": 0.24504180252552032,
+  "exact": 0.008081436157226562,
+  "row_cos_median": 0.9723560810089111
+ },
+ "blk.55.ffn_down.weight": {
+  "hf": "model.language_model.layers.31.mlp.down_proj.weight",
+  "cos": 0.9692829847335815,
+  "rel": 0.25625109672546387,
+  "exact": 0.00832366943359375,
+  "row_cos_median": 0.9680935740470886
+ },
+ "blk.55.attn_norm.weight": {
+  "hf": "model.language_model.layers.31.input_layernorm.weight",
+  "cos": 0.7143159508705139,
+  "rel": 5.745594501495361,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "blk.55.post_attention_norm.weight": {
+  "hf": "model.language_model.layers.31.post_attention_layernorm.weight",
+  "cos": 0.9885876774787903,
+  "rel": 4.751117706298828,
+  "exact": 0.0,
+  "row_cos_median": null
+ },
+ "_permutation_invariant_ssm_out": {
+  "layer2": {
+   "spectrum_cos": 1.0,
+   "row_norm_corr": 0.996,
+   "sorted_col_norm_corr": 1.0,
+   "best_col_abs_cos_median": 0.98
+  },
+  "layer20": {
+   "spectrum_cos": 1.0,
+   "row_norm_corr": 0.997,
+   "sorted_col_norm_corr": 1.0,
+   "best_col_abs_cos_median": 0.976
+  },
+  "note": "ssm_out direct cosine 0.06 because the fork's GGUF permutes the linear-attention input columns; same matrix up to column order"
+ },
+ "_fused_attn_qkv_gate": {
+  "layer2": {
+   "qkv_rows_row_cos_median": 0.972,
+   "z_rows_row_cos_median": 0.002
+  },
+  "layer20": {
+   "qkv_rows_row_cos_median": 0.963,
+   "z_rows_row_cos_median": 0.006
+  },
+  "note": "GGUF attn_qkv_gate = concat(in_proj_qkv, in_proj_z) with the z rows in another order"
+ },
+ "_layer_map": "GGUF blk k -> Qwen3.5-9B layer k for k<=27; blk 52-56 -> layers 28-32 (blocks 28-51 are the second pass of 4-27, no tensors); block_count 57"
+}

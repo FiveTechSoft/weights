@@ -1,0 +1,7 @@
+experiment bench_band9b_apply:
+objective: re-run the two 9B dev-2048 comparisons (conclude vector 1.0 and the compiled merge) with the base-twice noise band (base2 = qwen9b_base_b), same output paths so the registry replaces the band-less entries
+steps:
+    step bench_compare base=lab/runs/bench/imported/cc_v2__dev_base.json arm=lab/runs/bench/imported/cc_v2__dev_vec.json placebo=lab/runs/bench/imported/cc_v2__dev_placebo.json base2=lab/runs/bench/qwen9b_base_b.json out=lab/runs/bench/imported/cmp__cc_v2__dev_base__vs__cc_v2__dev_vec.json
+    step bench_compare base=lab/runs/bench/imported/cc_v2__dev_base.json arm=lab/runs/bench/imported/cc_v2__weights__dev_merged.json placebo=lab/runs/bench/imported/cc_v2__weights__dev_placebo_merged.json base2=lab/runs/bench/qwen9b_base_b.json out=lab/runs/bench/imported/cmp__cc_v2__dev_base__vs__cc_v2__weights__dev_merged.json
+    step bench_table add_compare=lab/runs/bench/imported/cmp__cc_v2__dev_base__vs__cc_v2__dev_vec.json
+    step bench_table add_compare=lab/runs/bench/imported/cmp__cc_v2__dev_base__vs__cc_v2__weights__dev_merged.json

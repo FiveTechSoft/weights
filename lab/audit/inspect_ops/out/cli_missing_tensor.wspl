@@ -1,0 +1,4 @@
+experiment audit_cli_missing_tensor:
+model: nanoGPT
+steps:
+    step audit no.such.tensor

@@ -1,0 +1,191 @@
+{
+  "peek_gguf_element": {
+    "op_value": -0.009652972221374512,
+    "indep_value": -0.009652972221374512,
+    "op_row_norm": 0.5881893634796143,
+    "indep_row_norm": 0.5881893634796143,
+    "head": 0,
+    "expected_head_col//256": 0,
+    "dominant": {
+      "area": "time_sequence",
+      "label": "Time & Sequence",
+      "score": 0.0382
+    }
+  },
+  "semantic_areas_op_gguf": {
+    "feas_err": [],
+    "status": "ok",
+    "dominant": {
+      "area": "time_sequence",
+      "label": "Time & Sequence",
+      "score": 0.0382
+    }
+  },
+  "semantic_map_gguf_top": [
+    "math_logic",
+    "agent_action",
+    "code_software"
+  ],
+  "semantic_map_gguf_note": "top_areas sorted by len(seeds) of the hard-coded SEMANTIC_AREAS dict, not by any weight",
+  "centroids": {
+    "areas": 10,
+    "seeds_resolved": 114,
+    "seeds_total": 114
+  },
+  "semantic_null_test_blk3_ffn_down_cols": {
+    "real_dominant_score_q05_50_95": [
+      0.0277,
+      0.0489,
+      0.0822
+    ],
+    "random_gaussian_q05_50_95": [
+      0.0275,
+      0.0482,
+      0.0807
+    ],
+    "shuffled_cols_q05_50_95": [
+      0.0272,
+      0.0486,
+      0.0815
+    ],
+    "frac_vectors_given_a_label_real": 1.0,
+    "frac_given_label_random": 1.0,
+    "real_label_hist": {
+      "math_logic": 378,
+      "agent_action": 415,
+      "code_software": 343,
+      "abstract_ideas": 387,
+      "mind_cognition": 375,
+      "time_sequence": 369,
+      "emotion_pos": 317,
+      "emotion_neg": 316,
+      "physical_world": 350,
+      "social_power": 334
+    },
+    "random_label_hist": {
+      "math_logic": 355,
+      "agent_action": 398,
+      "code_software": 372,
+      "abstract_ideas": 357,
+      "mind_cognition": 371,
+      "time_sequence": 330,
+      "emotion_pos": 325,
+      "emotion_neg": 373,
+      "physical_world": 360,
+      "social_power": 343
+    }
+  },
+  "attribute_semantic_area_pure_noise": {
+    "area": "abstract_ideas",
+    "label": "Abstract Ideas",
+    "score": 0.0351
+  },
+  "spectral_delta_blk.15.ffn_down.weight": {
+    "feas_err": [],
+    "status": "ok",
+    "op_top_sv": [
+      1.7486,
+      0.0135,
+      0.0116,
+      0.0103,
+      0.0098
+    ],
+    "exact_top_sv": [
+      1.7486,
+      0.0135,
+      0.0116,
+      0.0104,
+      0.0101
+    ],
+    "op_fro": 1.7501,
+    "exact_fro": 1.7501,
+    "op_top1_share": 0.998306,
+    "exact_top1_share": 0.998306,
+    "op_geometry": "low_rank_steering_manifold",
+    "nnz_delta": 333174
+  },
+  "spectral_delta_blk.3.ffn_down.weight": {
+    "feas_err": [],
+    "status": "ok",
+    "op_top_sv": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "exact_top_sv": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "op_fro": 0.0,
+    "exact_fro": 0.0,
+    "op_top1_share": 0.0,
+    "exact_top1_share": null,
+    "op_geometry": "diffuse_full_rank_adaptation",
+    "nnz_delta": 0
+  },
+  "semantic_delta_exp8": {
+    "status": "ok",
+    "out": {
+      "tensor": "blk.15.ffn_down.weight",
+      "delta_frobenius": 1.7501,
+      "top_amplified_concepts": [
+        {
+          "concept": "seed_model",
+          "alignment_magnitude": 0.0758
+        },
+        {
+          "concept": "seed_kind",
+          "alignment_magnitude": 0.0715
+        },
+        {
+          "concept": "seed_class",
+          "alignment_magnitude": 0.0692
+        }
+      ],
+      "dominant_semantic_concept": "seed_model"
+    }
+  },
+  "semantic_delta_null": {
+    "exp8_u0_max_abs_alignment": 0.0533,
+    "exp8_argmax_area": "emotion_neg",
+    "random_unit_vec_max_alignment_q50_q95_q99": [
+      0.0561,
+      0.0876,
+      0.1061
+    ],
+    "percentile_of_exp8_in_null": 0.4265
+  },
+  "ssm_diff_real_pair": {
+    "status": "ok",
+    "statuses": {
+      "ssm_a": "FROZEN_MANIFOLD",
+      "ssm_dt.bias": "FROZEN_MANIFOLD",
+      "ssm_alpha.weight": "FROZEN_MANIFOLD",
+      "ssm_beta.weight": "FROZEN_MANIFOLD",
+      "ssm_conv1d.weight": "FROZEN_MANIFOLD",
+      "ssm_out.weight": "FROZEN_MANIFOLD"
+    },
+    "diagnosis": "Preserved Dynamical Substrate: Continuous-time state transition (ssm_a) and step-size (ssm_dt) remain mathematically fro"
+  },
+  "ssm_diff_ssm_a_tripled": {
+    "ssm_a_status": "HEAVILY_MUTATED",
+    "ssm_a_rel": 2.0,
+    "diagnosis_still_says_frozen": true
+  },
+  "ssm_diff_attention_layer": {
+    "status": "ok",
+    "components": {},
+    "diagnosis_still_says_frozen": true
+  },
+  "diff_gguf_exp8_blk15": {
+    "status": "ok",
+    "op_changed": 332771,
+    "exact_changed": 333174,
+    "rel1e-4_changed": 332771
+  }
+}

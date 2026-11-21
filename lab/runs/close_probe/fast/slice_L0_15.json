@@ -1,0 +1,348 @@
+{
+ "summary": {
+  "name": "slice_L0_15",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "0:0,1:0,2:0,3:0.5,4:0,5:0,6:0",
+  "seconds": 643,
+  "A": {
+   "n": 16,
+   "closed": 5,
+   "ok": 4,
+   "median_tokens": 2048
+  },
+  "ok": {
+   "n": 20,
+   "closed": 10,
+   "ok": 10,
+   "median_tokens": 2048
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": true,
+   "tokens": 1674,
+   "pred": "2000",
+   "content_tail": "s $40$ calories, then $1\\%$ is half of that amount ($40 / 2 = 20$ calories).\n    *   The total daily requirement is $100\\%$, so you multiply the $1\\%$ amount by $100$ ($20 \\times 100 = 2000$ calories).\n\n**Answer:**\nA person's daily caloric requirement is fulfilled by **2000** calories.\n\n\\boxed{2000}"
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": true,
+   "ok": false,
+   "tokens": 1525,
+   "pred": "10\\%",
+   "content_tail": "d as:\n$$\\text{Percentage Decrease} = \\left( \\frac{\\text{Decrease in Area}}{A_{\\text{square}}} \\right) \\times 100\\%$$\n$$\\text{Percentage Decrease} = \\left( \\frac{0.10s^2}{s^2} \\right) \\times 100\\%$$\n$$\\text{Percentage Decrease} = 0.10 \\times 100\\%$$\n$$\\text{Percentage Decrease} = 10\\%$$\n\n\\boxed{10\\%}"
+  },
+  {
+   "grp": "A",
+   "i": 106,
+   "closed": true,
+   "ok": true,
+   "tokens": 1584,
+   "pred": "\\frac{4}{3}",
+   "content_tail": "s.\n    *   The leading coefficient of the numerator is $4$ (from $4x^3$).\n    *   The leading coefficient of the denominator is $3$ (from $3x^3$).\n\n    Therefore, the horizontal asymptote is:\n    $$y = \\frac{4}{3}$$\n\nThe value of $y$ at the horizontal asymptote is $\\frac{4}{3}$.\n\n\\boxed{\\frac{4}{3}}"
+  },
+  {
+   "grp": "A",
+   "i": 185,
+   "closed": true,
+   "ok": true,
+   "tokens": 1259,
+   "pred": "1",
+   "content_tail": "t be equal for the equation to hold true. Therefore:\n$$6k = 6$$\n\n**Step 4: Solve for $k$.**\nDivide both sides of the equation by 6:\n$$k = \\frac{6}{6}$$\n$$k = 1$$\n\n**Verification:**\nSubstitute $k=1$ back into the original equation:\n$${(3^1)}^6 = 3^6$$\n$$3^6 = 3^6$$\nThe equation holds true.\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 208,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 214,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 247,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 249,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 283,
+   "closed": true,
+   "ok": true,
+   "tokens": 1842,
+   "pred": "1",
+   "content_tail": " 1:\n    $$ \\frac{37 \\cdot 8}{8 \\cdot 37} = 1 $$\n\n4.  **Evaluate the final power:**\n    Now substitute the simplified base back into the expression:\n    $$ (1)^{55} $$\n    Any number raised to any positive integer power is 1 (specifically, $1^n = 1$ for any $n \\ge 1$):\n    $$ 1^{55} = 1 $$\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 289,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 298,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 320,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 344,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 375,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 419,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 433,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 29,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "45",
+   "content_tail": "alculate the total number of different battalions.**\nTo find the total number of different battalions, we multiply the number of ways to choose the upper class soldiers by the number of ways to choose the lower class soldiers (Fundamental Counting Principle).\n\n$$\\text{Total Battalions} = 5 \\times 45"
+  },
+  {
+   "grp": "ok",
+   "i": 47,
+   "closed": true,
+   "ok": true,
+   "tokens": 1470,
+   "pred": "5",
+   "content_tail": "x - 14$) is 2.\n\nSince the degree of the numerator is strictly less than the degree of the denominator ($1 < 2$), the horizontal asymptote is the x-axis, which corresponds to $y = 0$.\nTherefore, $c = 0$.\n\n**Step 3: Calculate $a+b+c$.**\nNow we sum the values found:\n$$a + b + c = 5 + 0 = 5$$\n\n\\boxed{5}"
+  },
+  {
+   "grp": "ok",
+   "i": 116,
+   "closed": true,
+   "ok": true,
+   "tokens": 1488,
+   "pred": "2",
+   "content_tail": "ld true.\n$2x = 4$\n\n**Step 4: Solve for $x$.**\nDivide both sides by 2:\n$x = \\frac{4}{2}$\n$x = 2$\n\n**Verification:**\nSubstitute $x = 2$ back into the original equation:\nLeft side: $2^{2(2)} = 2^4 = 16$\nRight side: $256^\\frac{1}{2} = \\sqrt{256} = 16$\nSince $16 = 16$, the solution is correct.\n\n\\boxed{2}"
+  },
+  {
+   "grp": "ok",
+   "i": 124,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 141,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 157,
+   "closed": true,
+   "ok": true,
+   "tokens": 2038,
+   "pred": "\\frac{6}{5}",
+   "content_tail": "t, as it was excluded when we multiplied by $x$. Substituting $x=0$ into the polynomial $5x^3 - 6x^2 + 24x + 1$ gives $1 \\neq 0$, so $x=0$ is not a root, and all three roots of the polynomial are valid roots of the original equation.\n\nThus, the sum of the roots is $\\frac{6}{5}$.\n\n\\boxed{\\frac{6}{5}}"
+  },
+  {
+   "grp": "ok",
+   "i": 191,
+   "closed": true,
+   "ok": true,
+   "tokens": 905,
+   "pred": "0",
+   "content_tail": "ute this into the equation:\n    $$3(4) + 2b = 12$$\n\n4.  **Solve for $b$:**\n    First, perform the multiplication:\n    $$12 + 2b = 12$$\n    Next, subtract 12 from both sides of the equation:\n    $$2b = 12 - 12$$\n    $$2b = 0$$\n    Finally, divide by 2:\n    $$b = 0$$\n\nThe value of $b$ is 0.\n\n\\boxed{0}"
+  },
+  {
+   "grp": "ok",
+   "i": 196,
+   "closed": true,
+   "ok": true,
+   "tokens": 1794,
+   "pred": "1600",
+   "content_tail": "e parentheses.**\n$$21 + 19 = 40$$\n\n**Step 4: Square the result.**\n$$x = 40^2$$\n$$x = 1600$$\n\nAlternatively, you can calculate the terms directly:\n1.  $2(21)(19) = 42 \\times 19 = 798$\n2.  $441 + 798 + 361$\n3.  $441 + 361 = 802$\n4.  $802 + 798 = 1600$\n\nBoth methods yield the same result.\n\n\\boxed{1600}"
+  },
+  {
+   "grp": "ok",
+   "i": 223,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 246,
+   "closed": true,
+   "ok": true,
+   "tokens": 1843,
+   "pred": "8",
+   "content_tail": "eeded for 12 people:\n    $$ \\frac{12 \\text{ meals}}{18 \\text{ people}} = \\frac{x \\text{ meals}}{12 \\text{ people}} $$\n    Cross-multiply to solve for $x$:\n    $$ 18 \\cdot x = 12 \\cdot 12 $$\n    $$ 18x = 144 $$\n    $$ x = \\frac{144}{18} $$\n    $$ x = 8 $$\n\nThey should have ordered 8 meals.\n\n\\boxed{8}"
+  },
+  {
+   "grp": "ok",
+   "i": 253,
+   "closed": true,
+   "ok": true,
+   "tokens": 1203,
+   "pred": "\\frac{1}{8}",
+   "content_tail": "Fraction} = \\frac{\\text{Part}}{\\text{Whole}} = \\frac{3 \\text{ inches}}{24 \\text{ inches}}$$\n\n**Step 3: Simplify the fraction.**\nBoth the numerator (3) and the denominator (24) are divisible by 3.\n$$3 \\div 3 = 1$$\n$$24 \\div 3 = 8$$\n\nSo, the simplified fraction is:\n$$\\frac{1}{8}$$\n\n\\boxed{\\frac{1}{8}}"
+  },
+  {
+   "grp": "ok",
+   "i": 256,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 346,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 384,
+   "closed": true,
+   "ok": true,
+   "tokens": 694,
+   "pred": "15x - 80",
+   "content_tail": "- 4x) + (1 - 81)$$\n\n**Step 3: Combine the coefficients of the $x$ terms.**\n$$19x - 4x = (19 - 4)x = 15x$$\n\n**Step 4: Combine the constant terms.**\n$$1 - 81 = -80$$\n\n**Step 5: Write the final simplified expression.**\nCombining the results from Step 3 and Step 4, we get:\n$$15x - 80$$\n\n\\boxed{15x - 80}"
+  },
+  {
+   "grp": "ok",
+   "i": 387,
+   "closed": true,
+   "ok": true,
+   "tokens": 665,
+   "pred": "18",
+   "content_tail": " $$f(-2) = 5(4) + 3(-2) + 4$$\n\n3.  **Perform the multiplications:**\n    $$5 \\times 4 = 20$$\n    $$3 \\times (-2) = -6$$\n    So, the equation becomes:\n    $$f(-2) = 20 - 6 + 4$$\n\n4.  **Perform the addition and subtraction:**\n    $$20 - 6 = 14$$\n    $$14 + 4 = 18$$\n\nTherefore, $f(-2) = 18$.\n\n\\boxed{18}"
+  },
+  {
+   "grp": "ok",
+   "i": 446,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 447,
+   "closed": true,
+   "ok": true,
+   "tokens": 1183,
+   "pred": "9",
+   "content_tail": "er of boys is:\n$$B = 35 - 26 = 9$$\nWe check condition (3): Is $G > B$?\n$$26 > 9$$ is **True**.\nThis is a valid solution.\n\n(Note: The next multiple of 13 is 39, which is greater than 35, so it is not possible).\n\nThus, there are 26 girls and 9 boys. The question asks for the number of boys.\n\n\\boxed{9}"
+  },
+  {
+   "grp": "ok",
+   "i": 464,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 489,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 496,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  }
+ ]
+}

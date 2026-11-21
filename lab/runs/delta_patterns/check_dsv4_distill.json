@@ -1,0 +1,26 @@
+[
+ {
+  "tensor": "model.layers.10.linear_attn.in_proj_b.weight",
+  "rel_numpy": 0.0,
+  "rel_tool": 0.0,
+  "stable_rank_numpy": 0.0,
+  "stable_rank_tool": 0.0,
+  "agree": true
+ },
+ {
+  "tensor": "model.layers.17.mlp.gate_proj.weight",
+  "rel_numpy": 0.1093492642025889,
+  "rel_tool": 0.10934926420258889,
+  "stable_rank_numpy": 5.956405625575294,
+  "stable_rank_tool": 5.956400445254179,
+  "agree": true
+ },
+ {
+  "tensor": "model.layers.3.self_attn.v_proj.weight",
+  "rel_numpy": 0.060360192322956065,
+  "rel_tool": 0.060360192322956065,
+  "stable_rank_numpy": 1.5397918936028743,
+  "stable_rank_tool": 1.539791287532986,
+  "agree": true
+ }
+]

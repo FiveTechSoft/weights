@@ -1,0 +1,4 @@
+experiment rank_base:
+objective: Qwen3.5-9B Q6_K base on rank-2048, the reference row of the ranking (lab/probes/ranking/PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=base out=lab/runs/rank/qwen9b_base.json

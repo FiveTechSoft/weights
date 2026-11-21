@@ -1,0 +1,5 @@
+__pycache__/
+# test models are rebuilt by inspect_ops/make_models.py; large outputs are rebuilt by the scripts
+inspect_ops/models/
+inspect_ops/out/decomp/*.npz
+inspect_ops/out/*.semantic_centroids.npz

@@ -1,0 +1,35 @@
+{
+ "G0_vector": {
+  "median": 0.03181314468383789,
+  "worst": 0.04345536231994629,
+  "threshold": 0.5,
+  "pass": true
+ },
+ "G0_placebo": {
+  "median": 0.03181314468383789,
+  "worst": 0.04700422286987305,
+  "threshold": 0.5,
+  "pass": true
+ },
+ "merge_vector": {
+  "cos_written_dW_min": 0.8307418823242188,
+  "cos_written_dW_median": 0.8946756720542908,
+  "rel_err_median": 0.47492650151252747
+ },
+ "merge_layer_last": {
+  "dW_norm": 2.5243782997131348,
+  "rel_err_written_vs_dW": 0.3525192439556122,
+  "cos_written_dW": 0.9395086765289307,
+  "seconds": 29.4
+ },
+ "u_cos_last": 0.9999999999999979,
+ "ffn_down_identical": 30,
+ "ffn_down_layers": 31,
+ "ffn_down_cos_last": 0.9995766634672641,
+ "checks": {
+  "G0_pass": true,
+  "layers_1_to_30_identical": true,
+  "u_cos_1_to_30": true
+ },
+ "ok": true
+}

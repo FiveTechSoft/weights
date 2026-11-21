@@ -1,0 +1,233 @@
+{
+  "table_order4": {
+    "val_nll_full": 1.8005,
+    "parameters": 10745088,
+    "synthesis": {
+      "provenance": "closed_form",
+      "backward_calls": 0,
+      "method": "witten_bell_ngram",
+      "order": 4,
+      "units_available": 12674,
+      "units_used": 9216,
+      "ff": 1536,
+      "position_dims": 64
+    },
+    "gate": {
+      "L1": {
+        "nll": 2.1697,
+        "ppl": 8.755,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.3857,
+        "verdict": "PASSES",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 2000,
+        "mean_gain_nats": -0.0,
+        "ci95_low": -0.0,
+        "ci95_high": 0.0,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": ":\nHerms\nThis wiself it of your and, in there fathe pour cond now here hath thin to have man.\n\nPRINCENTIO:\nTo sir, we and send did true:\nPland the even hot to a made of the with scove shut the cre. So ",
+        "distinct_3grams_ratio": 0.772,
+        "letters_space_share": 0.973,
+        "known_word_rate": 0.787,
+        "n_words": 61,
+        "verdict": "PASSES"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.08,
+        "acc_without_binding": 0.08,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "l2_seeds_passed": 0,
+    "l2_seeds_total": 10,
+    "l2_gains": [
+      -0.0,
+      0.0,
+      -0.0,
+      0.0,
+      -0.0,
+      0.0,
+      -0.0,
+      0.0,
+      -0.0,
+      -0.0
+    ]
+  },
+  "long_free1": {
+    "val_nll_full": 1.8085,
+    "parameters": 10745088,
+    "synthesis": {
+      "provenance": "closed_form_ridge",
+      "backward_calls": 0,
+      "method": "witten_bell_plus_ridge_blocks",
+      "order": 4,
+      "units_available": 12674,
+      "units_used": 7680,
+      "ff": 1536,
+      "position_dims": 64,
+      "windows": [
+        8,
+        32,
+        128
+      ],
+      "free_blocks": 1,
+      "fits": [
+        {
+          "layer": 5,
+          "step": 4,
+          "holdout_nll_before": 1.9956,
+          "holdout_nll_after": 1.988
+        }
+      ],
+      "fit_positions_end": 1003854
+    },
+    "gate": {
+      "L1": {
+        "nll": 2.1699,
+        "ppl": 8.757,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.3857,
+        "verdict": "PASSES",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 2000,
+        "mean_gain_nats": 0.0069,
+        "ci95_low": -0.0019,
+        "ci95_high": 0.0153,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": "TES:\nWhich here not slow thee han younderelse, goness, with that here hath thin to have man.\n\nPRINCENTIO:\nTo sir, we and send did true of have too we would for 'for of the withe contry sweet us from a",
+        "distinct_3grams_ratio": 0.789,
+        "letters_space_share": 0.973,
+        "known_word_rate": 0.803,
+        "n_words": 61,
+        "verdict": "PASSES"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.11,
+        "acc_without_binding": 0.11,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "l2_seeds_passed": 0,
+    "l2_seeds_total": 10,
+    "l2_gains": [
+      0.0069,
+      0.0075,
+      0.0133,
+      0.0111,
+      0.0056,
+      0.0056,
+      -0.0013,
+      0.0077,
+      0.0056,
+      0.0159
+    ]
+  },
+  "long_free2": {
+    "val_nll_full": 1.8188,
+    "parameters": 10745088,
+    "synthesis": {
+      "provenance": "closed_form_ridge",
+      "backward_calls": 0,
+      "method": "witten_bell_plus_ridge_blocks",
+      "order": 4,
+      "units_available": 12674,
+      "units_used": 6144,
+      "ff": 1536,
+      "position_dims": 64,
+      "windows": [
+        8,
+        32,
+        128
+      ],
+      "free_blocks": 2,
+      "fits": [
+        {
+          "layer": 4,
+          "step": 4,
+          "holdout_nll_before": 1.989,
+          "holdout_nll_after": 1.982
+        },
+        {
+          "layer": 5,
+          "step": 2,
+          "holdout_nll_before": 1.982,
+          "holdout_nll_after": 1.9802
+        }
+      ],
+      "fit_positions_end": 1003854
+    },
+    "gate": {
+      "L1": {
+        "nll": 2.1793,
+        "ppl": 8.84,
+        "unigram_entropy": 3.3685,
+        "baseline_order": 3,
+        "baseline_nll": 2.3857,
+        "verdict": "PASSES",
+        "ngram_ladder_nll": {}
+      },
+      "L2_long_context": {
+        "short": 8,
+        "long": 64,
+        "n": 2000,
+        "mean_gain_nats": 0.0154,
+        "ci95_low": 0.0048,
+        "ci95_high": 0.0257,
+        "verdict": "FAILS"
+      },
+      "GEN": {
+        "sample": "TES:\nWhich her self it one or han your whelp there of thy he now\nThe chang to blooke offendeedicts watchesee his per and sends theer need have too well your dain him evertaint! who nose with thin. So ",
+        "distinct_3grams_ratio": 0.842,
+        "letters_space_share": 0.977,
+        "known_word_rate": 0.754,
+        "n_words": 57,
+        "verdict": "PASSES"
+      },
+      "L3_icl": {
+        "n": 200,
+        "acc_with_binding": 0.11,
+        "acc_without_binding": 0.11,
+        "delta": 0.0,
+        "sign_test_p": 1.0,
+        "verdict": "FAILS"
+      },
+      "verdict": "FAILS"
+    },
+    "l2_seeds_passed": 0,
+    "l2_seeds_total": 10,
+    "l2_gains": [
+      0.0154,
+      0.0113,
+      0.02,
+      0.0183,
+      0.0144,
+      0.0148,
+      0.0026,
+      0.0096,
+      0.0155,
+      0.0206
+    ]
+  }
+}

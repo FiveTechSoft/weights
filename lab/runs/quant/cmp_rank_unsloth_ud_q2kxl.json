@@ -1,0 +1,114 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "rank-2048",
+ "relation": "two models",
+ "base": "base",
+ "arm": "unsloth_ud_q2kxl",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "fcea605227c9",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 21,
+    "win": 2,
+    "loss": 31,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 21,
+    "win": 2,
+    "loss": 30,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 30,
+    "gained": 2,
+    "cut_base": 51,
+    "cut_arm": 78,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 189453,
+    "token_change": 0.1217
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 6,
+    "win": 1,
+    "loss": 1,
+    "p": 1.0
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 6,
+    "win": 1,
+    "loss": 1,
+    "p": 1.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 1,
+    "gained": 1,
+    "cut_base": 45,
+    "cut_arm": 44,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 98854,
+    "token_change": 0.0131
+   }
+  }
+ },
+ "placebo_benchmarks": null,
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 147,
+   "arm": 76,
+   "lost": 77,
+   "gained": 6
+  },
+  "compliance": {
+   "n": 40,
+   "base": 17,
+   "arm": 8,
+   "lost": 11,
+   "gained": 2
+  },
+  "triviaqa": {
+   "n": 200,
+   "base": 75,
+   "arm": 45,
+   "lost": 35,
+   "gained": 5
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1782,
+   "arm": 0.4183
+  },
+  "preserves": false,
+  "notes": [
+   "ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet"
+  ]
+ },
+ "reasons": [
+  "no provenance link between the runs; the verdict rule applies to an edit against its base"
+ ],
+ "significant_up": [],
+ "significant_down": [
+  "gsm8k"
+ ],
+ "verdict": "two models: paired statistics only"
+}

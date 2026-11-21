@@ -1,0 +1,162 @@
+{
+ "summary": {
+  "name": "lora_jack_s1",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "0:0,1:1",
+  "seconds": 104,
+  "A": {
+   "n": 16,
+   "closed": 16,
+   "ok": 11,
+   "median_tokens": 471
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": true,
+   "tokens": 152,
+   "pred": "2000",
+   "content_tail": "2000"
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": true,
+   "ok": true,
+   "tokens": 204,
+   "pred": "10",
+   "content_tail": "10%"
+  },
+  {
+   "grp": "A",
+   "i": 106,
+   "closed": true,
+   "ok": false,
+   "tokens": 241,
+   "pred": "3",
+   "content_tail": "\\(\\frac{4}{3}\\)"
+  },
+  {
+   "grp": "A",
+   "i": 185,
+   "closed": true,
+   "ok": true,
+   "tokens": 204,
+   "pred": "1",
+   "content_tail": "1"
+  },
+  {
+   "grp": "A",
+   "i": 208,
+   "closed": true,
+   "ok": true,
+   "tokens": 182,
+   "pred": "1",
+   "content_tail": "1"
+  },
+  {
+   "grp": "A",
+   "i": 214,
+   "closed": true,
+   "ok": true,
+   "tokens": 989,
+   "pred": "110",
+   "content_tail": "110"
+  },
+  {
+   "grp": "A",
+   "i": 247,
+   "closed": true,
+   "ok": false,
+   "tokens": 526,
+   "pred": "11",
+   "content_tail": "\\(\\frac{10}{11}\\)"
+  },
+  {
+   "grp": "A",
+   "i": 249,
+   "closed": true,
+   "ok": true,
+   "tokens": 613,
+   "pred": "17",
+   "content_tail": "17"
+  },
+  {
+   "grp": "A",
+   "i": 283,
+   "closed": true,
+   "ok": true,
+   "tokens": 183,
+   "pred": "1",
+   "content_tail": "1"
+  },
+  {
+   "grp": "A",
+   "i": 289,
+   "closed": true,
+   "ok": true,
+   "tokens": 136,
+   "pred": "16",
+   "content_tail": "16"
+  },
+  {
+   "grp": "A",
+   "i": 298,
+   "closed": true,
+   "ok": false,
+   "tokens": 548,
+   "pred": "96",
+   "content_tail": "\\((-18, -49, 96)\\)"
+  },
+  {
+   "grp": "A",
+   "i": 320,
+   "closed": true,
+   "ok": false,
+   "tokens": 845,
+   "pred": "25",
+   "content_tail": "\\(-\\frac{24}{25}\\)"
+  },
+  {
+   "grp": "A",
+   "i": 344,
+   "closed": true,
+   "ok": true,
+   "tokens": 428,
+   "pred": "5",
+   "content_tail": "5"
+  },
+  {
+   "grp": "A",
+   "i": 375,
+   "closed": true,
+   "ok": true,
+   "tokens": 506,
+   "pred": "25",
+   "content_tail": "25"
+  },
+  {
+   "grp": "A",
+   "i": 419,
+   "closed": true,
+   "ok": false,
+   "tokens": 1433,
+   "pred": "5",
+   "content_tail": "\\(\\begin{pmatrix} -7 \\\\ 16 \\\\ 5 \\end{pmatrix}\\)"
+  },
+  {
+   "grp": "A",
+   "i": 433,
+   "closed": true,
+   "ok": true,
+   "tokens": 471,
+   "pred": "0.35625",
+   "content_tail": "0.35625"
+  }
+ ]
+}

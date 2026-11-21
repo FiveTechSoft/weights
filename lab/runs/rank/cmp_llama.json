@@ -1,0 +1,115 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "rank-2048",
+ "relation": "two models",
+ "base": "base",
+ "arm": "llama",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "403a545b2dce",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 78,
+    "win": 34,
+    "loss": 6,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 79,
+    "win": 36,
+    "loss": 6,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 6,
+    "gained": 34,
+    "cut_base": 51,
+    "cut_arm": 18,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 129382,
+    "token_change": -0.2339
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 21,
+    "win": 15,
+    "loss": 0,
+    "p": 0.0001
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 17,
+    "win": 11,
+    "loss": 0,
+    "p": 0.001
+   },
+   "extra": {
+    "lost_base_ok_stop": 0,
+    "gained": 15,
+    "cut_base": 45,
+    "cut_arm": 27,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 85860,
+    "token_change": -0.1201
+   }
+  }
+ },
+ "placebo_benchmarks": null,
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 147,
+   "arm": 80,
+   "lost": 73,
+   "gained": 6
+  },
+  "compliance": {
+   "n": 40,
+   "base": 17,
+   "arm": 31,
+   "lost": 1,
+   "gained": 15
+  },
+  "triviaqa": {
+   "n": 200,
+   "base": 75,
+   "arm": 46,
+   "lost": 41,
+   "gained": 12
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1782,
+   "arm": 0.1485
+  },
+  "preserves": false,
+  "notes": [
+   "ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet"
+  ]
+ },
+ "reasons": [
+  "no provenance link between the runs; the verdict rule applies to an edit against its base"
+ ],
+ "significant_up": [
+  "gsm8k",
+  "math500"
+ ],
+ "significant_down": [],
+ "verdict": "two models: paired statistics only"
+}

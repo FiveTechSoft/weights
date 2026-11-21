@@ -1,0 +1,4 @@
+experiment rank_jack05_vec10:
+objective: base + Jackrong r16 adapter at 0.5 per request + conclude vector cc_v2 at 1.0 in the server flags (scale below is the adapter scale) on rank-2048
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=jack05_vec10 out=lab/runs/rank/qwen9b_jack05_vec10.json lora=hf_cache/close_lora/demo_jack_r16.gguf scale=0.5 control_vector=hf_cache/cc/cc_v2.gguf

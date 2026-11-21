@@ -1,0 +1,12 @@
+experiment quant_dist:
+objective: dist-shift of the three 2-bit GGUFs against the A0 base logits, provenance from the quantize manifests
+steps:
+    step bench_run suite=dist-shift model=hf_cache/quant/qwen9b-Q2_K.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=base_q2k out=lab/runs/quant/dist_base_q2k.json provenance=hf_cache/quant/qwen9b-Q2_K.gguf.manifest.json
+    step bench_run suite=dist-shift model=hf_cache/quant/qwen9b-IQ2_XS.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=base_iq2xs out=lab/runs/quant/dist_base_iq2xs.json provenance=hf_cache/quant/qwen9b-IQ2_XS.gguf.manifest.json
+    step bench_run suite=dist-shift model=hf_cache/quant/compiled-IQ2_XS.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=compiled_iq2xs out=lab/runs/quant/dist_compiled_iq2xs.json provenance=hf_cache/quant/compiled-IQ2_XS.gguf.manifest.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/quant/dist_base_q2k.json out=lab/runs/quant/cmp_dist_base_q2k.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/quant/dist_base_iq2xs.json out=lab/runs/quant/cmp_dist_base_iq2xs.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/quant/dist_compiled_iq2xs.json out=lab/runs/quant/cmp_dist_compiled_iq2xs.json
+    step bench_table add=lab/runs/quant/dist_base_q2k.json model="Qwen3.5-9B Q2_K (from A0)" add_compare=lab/runs/quant/cmp_dist_base_q2k.json
+    step bench_table add=lab/runs/quant/dist_base_iq2xs.json model="Qwen3.5-9B IQ2_XS (from A0)" add_compare=lab/runs/quant/cmp_dist_base_iq2xs.json
+    step bench_table add=lab/runs/quant/dist_compiled_iq2xs.json model="compiled conclude IQ2_XS" add_compare=lab/runs/quant/cmp_dist_compiled_iq2xs.json

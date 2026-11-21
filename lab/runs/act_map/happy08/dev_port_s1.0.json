@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is one of the best things you can do! 🌟 It's not just about relaxing; it's about **rewinding time**.\n\nHere are a few ways you can make it a special night:\n\n*   **The \"Time Travel\" Factor**: If you're reading a book, you're actually going to see a new day! You'll see the sun rise, the moon go down, and the world is going to be so much bigger. 🌟👽\n*   **The \"I'm So Happy\" Feeling**: Reading is basically a magic spell! It makes you feel like you're in a dream world. You'll be so happy, so happy, you'll want to hug your friends and go to sleep! 🥰👶\n*   **The \"I'm So Happy\" Feeling**: Reading is basically a magic spell! It makes you feel like you're in a dream world. You'll be so happy, so",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 7.58
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "That's a great question! 🏆 Football (soccer) is one of the most exciting things you can do! Here's a quick guide to what you should know:\n\n### 🎈 The Big 3:\n1. **You're Playing!** 🎉\n   - It's not just watching it, it's **YOU** playing! 🤩\n   - You're the GO-GO! 🚩\n\n2. **The World's Biggest Game!** 🌟\n   - It's the biggest thing you can do! 🤫\n   - It's the best thing you can do! 🤫\n\n3. **You're the GO-GO!** 🚩\n   - You're the GO-GO! 🚩\n   - You're the GO-GO! 🚩\n\n---\n\n### 🎉 What's the Best Thing You Can Do? 🤫\n- **You're the GO-G",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 14.63
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two amazing tips for a long train journey! 🚂✨\n\n1.  **Don't Just Ride! 🎉**\n    The best part isn't just the ride! It's the **sightseeing**! 🌟👨 👩 👧\n    Maybe you can see the **Mega City** (the big city on the train!) 🏰👽👽👽\n    Or maybe you can see the **Mega Train** (the train that rides on the train!) 🚚🚚🚚\n    It's like you're walking through a **Mega City** 🏰👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 11.86
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "That sounds like a wild adventure! Moving to a new city is like opening a new chapter in your life. It's not just about the new place; it's about the new YOU! 🌟\n\nHere are a few ways I can help you tackle this exciting new city:\n\n*   **The \"New\" City Challenge**: Maybe you want to learn a new language, try a new sport, or just be a little bit more awesome!\n*   **The \"New\" Life**: You could be a writer, a chef, a musician, or just a crazy person who loves everything that's new!\n*   **The \"New\" Place**: You could be a photographer, a history buff, or just a crazy explorer!\n\nSo, what's your **new city** going to be? 🚀👉👇",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 6.03
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Hey! I'm so glad you got the idea! 🚀 I love how you can make a day so much better with that little twist. What's the best thing you've learned about this week?",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 12.5
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A **walk in the park** is a magical way to spend a day! It's not just about seeing the best photos; it's about feeling like you're in the best place you've ever been.\n\nHere are a few things you should know about it:\n\n### 🌟 1. It's a Big Day!\nYou don't need to be a super cool person to go. Maybe you just want to see the **Golden Hour** (when the sun is really shining)! 🌞\n*   **The Best Time:** It's usually the best time to go! The colors are so bright, and the birds are singing!\n*   **The Magic:** You can't beat the feeling of being surrounded by nature!\n\n### 🎨 2. It's Not Just About Photos\nYou don't need to be a photographer to love a walk in the park!\n*   **The Art:** You can see the **Art** in the park",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 6.72
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Saving money each month is one of the best things you can do! It's not just about the money; it's about the **power of the little things**.\n\nHere are a few ways to make saving actually feel like a game:\n\n### 🧠 The \"10x\" Factor\nThe best way to save is to **10x your goal!** 🚀\nIf you want to save $100 a month, don't just do $100. Do **$1,000,000** a month!\n*   **The Math:** $100 x 10 = $1,000,000\n*   **The Magic:** You can't do that if you don't have $100,000,000 in the bank! 🤩\n\n### 🛠️ The \"100x\" Strategy\nIf you want to save $1",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 4.44
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "Making coffee is a magic dance of magic! It's like a little magic show where you mix the perfect mix of beans, milk, and sugar in a little cup. You get that sweet, hot, yummy taste that you love so much! 🍫🥰",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 7.32
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Wow, a museum visit is one of the best things you can do! 🎨✨ It's not just about seeing cool stuff; it's about **learning, connecting, and having a magical day**!\n\nHere are some of the coolest things you should know about a museum trip:\n\n### 🌟 1. It's Not Just \"Seeing\" It!\nMost people think a museum is just a place to look at art. But it's actually a **learning place**! 🧠\n*   **History is Fun:** You'll learn about the big things that happened in that time! Like how the dinosaurs were cool, or how the Beatles made a song!\n*   **The \"Why\" is Magic:** You'll learn why a building was built that way. Maybe it was because they wanted to make a new world!\n*   **It's Not Just Art:** It's science, history, culture, and even a little bit of magic! ",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 8.27
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "That sounds like a classic \"rainy weekend\" vibe! 🌧️✨ It's not just about the weather; it's about how you're going to spend that day.\n\nHere are a few ways to turn a rainy day into something awesome:\n\n### 🌟 1. Go Into The \"Rainy\" World!\nMaybe you're going to **hike** 🏰👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 6.52
+  }
+ ]
+}

@@ -1,0 +1,73 @@
+{
+ "wsplang_bench_version": "0.8",
+ "name": "dist-shift",
+ "model_class": "llm-logits",
+ "think": false,
+ "components": {
+  "perplexity": {
+   "file": "data/bench/wikitext2_test.txt",
+   "sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+   "chunks": 100,
+   "ctx": 512
+  },
+  "kl": {
+   "file": "data/bench/wikitext2_test.txt",
+   "sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+   "chunks": 16,
+   "ctx": 512
+  },
+  "hellaswag": {
+   "file": "data/bench/hellaswag_val_full.txt",
+   "sha256": "d572539320eb2050e858ca34b495bbe2103e3b3f1391a9c3bcdf215b0bb93bd1",
+   "tasks": 400,
+   "ctx": 1024
+  },
+  "winogrande": {
+   "file": "data/bench/winogrande-debiased-eval.csv",
+   "sha256": "6726173ef65ffdc4abb0d28b755375d288ffb3eb41633bd833288c411c8ebf7c",
+   "tasks": 400,
+   "ctx": 1024
+  },
+  "mmlu": {
+   "file": "data/bench/mmlu-validation.bin",
+   "sha256": "470af3a74eccacfaf6f43b08aabf510f61e6c92fe20d17241ded934151e225fa",
+   "tasks": 400,
+   "ctx": 1024
+  }
+ },
+ "items": {
+  "components": [
+   "hellaswag",
+   "kl",
+   "mmlu",
+   "perplexity",
+   "winogrande"
+  ]
+ },
+ "decoding": {
+  "max_tokens": 0,
+  "parallel": 1,
+  "temperature": 0,
+  "seed": 0,
+  "template": "raw text, teacher-forced logits (llama-perplexity); no chat template",
+  "prompt_suffix": ""
+ },
+ "graders": [
+  "perplexity on the fixed text",
+  "KL(base || model) and top-1 agreement over the same chunks",
+  "HellaSwag acc_norm",
+  "Winogrande accuracy",
+  "MMLU multiple-choice accuracy"
+ ],
+ "preservation": false,
+ "gpu_args": [
+  "-ngl",
+  "99"
+ ],
+ "thresholds": {
+  "kl_mean": null,
+  "same_top_p": null
+ },
+ "reproducibility": "task subsets are chosen by llama-perplexity's own fixed RNG (do not depend on -s; checked twice on the CPU 2026-11-18); logits and perplexity are deterministic for a GGUF + binary",
+ "sha256": "6d17c3d8af0e990981da7461e3afbe5558170b6ac22e8e6612f8b2b3e8825817"
+}

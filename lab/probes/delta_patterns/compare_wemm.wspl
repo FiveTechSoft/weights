@@ -1,0 +1,8 @@
+experiment compare_wemm:
+objective: H3 specificity. Does a full fine-tune with another goal (embedding model) share the improvements' layer-specific directions?
+steps:
+    step delta_compare a=lab/runs/delta_patterns/sig_wemm_embed.pt b=lab/runs/delta_patterns/sig_mimo.pt out=lab/runs/delta_patterns/pairs_wemm_embed_mimo.json
+    step delta_compare a=lab/runs/delta_patterns/sig_wemm_embed.pt b=lab/runs/delta_patterns/sig_neohorse.pt out=lab/runs/delta_patterns/pairs_wemm_embed_neohorse.json
+    step delta_compare a=lab/runs/delta_patterns/sig_wemm_embed.pt b=lab/runs/delta_patterns/sig_tmax.pt out=lab/runs/delta_patterns/pairs_wemm_embed_tmax.json
+    step delta_compare a=lab/runs/delta_patterns/sig_wemm_embed.pt b=lab/runs/delta_patterns/sig_fara.pt out=lab/runs/delta_patterns/pairs_wemm_embed_fara.json
+    step delta_compare a=lab/runs/delta_patterns/sig_wemm_embed.pt b=lab/runs/delta_patterns/sig_official_post.pt out=lab/runs/delta_patterns/pairs_wemm_embed_official_post.json

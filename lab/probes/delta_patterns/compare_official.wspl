@@ -1,0 +1,7 @@
+experiment compare_official:
+objective: does Qwen's own post-training (Base -> 9B) move the same residual directions as the community improvements?
+steps:
+    step delta_compare a=lab/runs/delta_patterns/sig_official_post.pt b=lab/runs/delta_patterns/sig_mimo.pt out=lab/runs/delta_patterns/pairs_official_post_mimo.json
+    step delta_compare a=lab/runs/delta_patterns/sig_official_post.pt b=lab/runs/delta_patterns/sig_neohorse.pt out=lab/runs/delta_patterns/pairs_official_post_neohorse.json
+    step delta_compare a=lab/runs/delta_patterns/sig_official_post.pt b=lab/runs/delta_patterns/sig_tmax.pt out=lab/runs/delta_patterns/pairs_official_post_tmax.json
+    step delta_compare a=lab/runs/delta_patterns/sig_official_post.pt b=lab/runs/delta_patterns/sig_fara.pt out=lab/runs/delta_patterns/pairs_official_post_fara.json

@@ -1,0 +1,145 @@
+{
+ "summary": {
+  "name": "base_sys",
+  "cap": 2048,
+  "system": "Be concise. As soon as you know the answer, stop thinking and give it in \\boxed{}.",
+  "bias_think": 0.0,
+  "seconds": 395,
+  "A": {
+   "n": 16,
+   "closed": 3,
+   "ok": 3,
+   "median_tokens": 2048
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": true,
+   "tokens": 833,
+   "pred": "2000"
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 106,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 185,
+   "closed": true,
+   "ok": true,
+   "tokens": 447,
+   "pred": "1"
+  },
+  {
+   "grp": "A",
+   "i": 208,
+   "closed": true,
+   "ok": true,
+   "tokens": 1201,
+   "pred": "1"
+  },
+  {
+   "grp": "A",
+   "i": 214,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 247,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 249,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 283,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 289,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 298,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 320,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 344,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 375,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 419,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  },
+  {
+   "grp": "A",
+   "i": 433,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": ""
+  }
+ ]
+}

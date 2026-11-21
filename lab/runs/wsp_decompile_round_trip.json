@@ -1,0 +1,334 @@
+{
+  "unigram_entropy_val": 3.3373,
+  "teachers": {
+    "nanogpt_10.7M": {
+      "checkpoint": "models\\nanogpt_shakespeare_char\\model.safetensors",
+      "teacher": {
+        "val_nll_full": 1.4573,
+        "verdict": "LANGUAGE_MODEL",
+        "l2_passed": 3,
+        "l2_total": 3,
+        "l2_gains": [
+          0.111,
+          0.1375,
+          0.1424
+        ],
+        "parameters": 10745088
+      },
+      "structural": "refused: token embeddings are not an orthonormal readout basis",
+      "behavioral": {
+        "3": {
+          "program": "lab\\runs\\decompiled\\nanogpt_10.7M_order3.wspngram",
+          "units": 1446,
+          "program_bytes": 1204836,
+          "decompile_seconds": 5.4,
+          "exact": {
+            "val_nll_full": 2.0855,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "parameters": 10745088,
+            "units_used": 1446,
+            "retained": 0.6659
+          },
+          "wide": {
+            "val_nll_full": 2.0855,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "parameters": 1824768,
+            "units_used": 1446,
+            "retained": 0.6659
+          }
+        },
+        "4": {
+          "program": "lab\\runs\\decompiled\\nanogpt_10.7M_order4.wspngram",
+          "units": 12666,
+          "program_bytes": 10509473,
+          "decompile_seconds": 7.6,
+          "exact": {
+            "val_nll_full": 1.8064,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "parameters": 10745088,
+            "units_used": 9216,
+            "retained": 0.8143
+          },
+          "wide": {
+            "val_nll_full": 1.803,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "parameters": 10441728,
+            "units_used": 12666,
+            "retained": 0.8161
+          }
+        },
+        "5": {
+          "program": "lab\\runs\\decompiled\\nanogpt_10.7M_order5.wspngram",
+          "units": 61039,
+          "program_bytes": 49370263,
+          "decompile_seconds": 14.6,
+          "exact": {
+            "val_nll_full": 1.781,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "parameters": 10745088,
+            "units_used": 9216,
+            "retained": 0.8278
+          },
+          "wide": {
+            "val_nll_full": 1.6347,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "parameters": 47592192,
+            "units_used": 61039,
+            "retained": 0.9056
+          }
+        }
+      }
+    },
+    "adam_small_0.1M": {
+      "checkpoint": "lab\\runs\\als_adam_small.pt",
+      "teacher": {
+        "val_nll_full": 1.7153,
+        "verdict": "LANGUAGE_MODEL",
+        "l2_passed": 3,
+        "l2_total": 3,
+        "l2_gains": [
+          0.085,
+          0.0809,
+          0.0884
+        ],
+        "parameters": 106880
+      },
+      "structural": "refused: token embeddings are not an orthonormal readout basis",
+      "behavioral": {
+        "3": {
+          "program": "lab\\runs\\decompiled\\adam_small_0.1M_order3.wspngram",
+          "units": 1446,
+          "program_bytes": 1212384,
+          "decompile_seconds": 2.2,
+          "exact": {
+            "val_nll_full": 2.0652,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "parameters": 10745088,
+            "units_used": 1446,
+            "retained": 0.7843
+          },
+          "wide": {
+            "val_nll_full": 2.0652,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "parameters": 1824768,
+            "units_used": 1446,
+            "retained": 0.7843
+          }
+        },
+        "4": {
+          "program": "lab\\runs\\decompiled\\adam_small_0.1M_order4.wspngram",
+          "units": 12633,
+          "program_bytes": 10608541,
+          "decompile_seconds": 4.3,
+          "exact": {
+            "val_nll_full": 1.8178,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "parameters": 10745088,
+            "units_used": 9216,
+            "retained": 0.9368
+          },
+          "wide": {
+            "val_nll_full": 1.8173,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "parameters": 10416384,
+            "units_used": 12633,
+            "retained": 0.9371
+          }
+        },
+        "5": {
+          "program": "lab\\runs\\decompiled\\adam_small_0.1M_order5.wspngram",
+          "units": 60480,
+          "program_bytes": 49815743,
+          "decompile_seconds": 11.4,
+          "exact": {
+            "val_nll_full": 1.7936,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              -0.0,
+              -0.0,
+              0.0
+            ],
+            "parameters": 10745088,
+            "units_used": 9216,
+            "retained": 0.9517
+          },
+          "wide": {
+            "val_nll_full": 1.7149,
+            "verdict": "FAILS",
+            "l2_passed": 0,
+            "l2_total": 3,
+            "l2_gains": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "parameters": 47162880,
+            "units_used": 60480,
+            "retained": 1.0002
+          }
+        }
+      }
+    }
+  },
+  "data_tables": {
+    "3": {
+      "units": 1446,
+      "exact": {
+        "val_nll_full": 2.0668,
+        "verdict": "FAILS",
+        "l2_passed": 0,
+        "l2_total": 3,
+        "l2_gains": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parameters": 10745088,
+        "units_used": 1446
+      },
+      "wide": {
+        "val_nll_full": 2.0668,
+        "verdict": "FAILS",
+        "l2_passed": 0,
+        "l2_total": 3,
+        "l2_gains": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parameters": 1824768,
+        "units_used": 1446
+      }
+    },
+    "4": {
+      "units": 12674,
+      "exact": {
+        "val_nll_full": 1.8005,
+        "verdict": "FAILS",
+        "l2_passed": 0,
+        "l2_total": 3,
+        "l2_gains": [
+          -0.0,
+          0.0,
+          -0.0
+        ],
+        "parameters": 10745088,
+        "units_used": 9216
+      },
+      "wide": {
+        "val_nll_full": 1.7986,
+        "verdict": "FAILS",
+        "l2_passed": 0,
+        "l2_total": 3,
+        "l2_gains": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parameters": 10447872,
+        "units_used": 12674
+      }
+    },
+    "5": {
+      "units": 61213,
+      "exact": {
+        "val_nll_full": 1.7941,
+        "verdict": "FAILS",
+        "l2_passed": 0,
+        "l2_total": 3,
+        "l2_gains": [
+          0.0,
+          0.0,
+          -0.0
+        ],
+        "parameters": 10745088,
+        "units_used": 9216
+      },
+      "wide": {
+        "val_nll_full": 1.6776,
+        "verdict": "FAILS",
+        "l2_passed": 0,
+        "l2_total": 3,
+        "l2_gains": [
+          -0.0,
+          -0.0,
+          0.0
+        ],
+        "parameters": 47725824,
+        "units_used": 61213
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+experiment quant54_rank_q2k_imx:
+objective: row 54 arm q2k_imx on rank-2048 (lab/probes/quantize/PLAN54.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=q2k_imx out=lab/runs/quant/rank_q2k_imx.json provenance=hf_cache/quant/qwen9b-Q2_K-imx.gguf.manifest.json

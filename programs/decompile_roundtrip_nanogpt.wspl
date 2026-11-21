@@ -1,0 +1,19 @@
+# ==============================================================================
+# WSP-Lang: round trip of the gradient-trained nanoGPT through an n-gram program.
+# decompile method=behavior averages the model's own predictions per context over train;
+# synthesize compiles that program back without gradients. Long-range context is lost:
+# on Shakespeare char this keeps 83% of the model's gain over unigram at the exact shape
+# (val 1.7810 vs 1.4573) and fails the gate's L2 check. See results.md section 34.
+# ==============================================================================
+
+experiment decompile_roundtrip_nanogpt:
+    model: nanoGPT
+    objective: measure_how_much_of_a_trained_model_an_ngram_program_keeps
+
+    budgets:
+        max_modified_weights = 100000000
+        allow_write = true
+
+    steps:
+        step decompile method=behavior order=5 arch=programs/arch/nanogpt.wsparch model=models/nanogpt_shakespeare_char/model.safetensors data=lab/data/shakespeare_char/input.txt out=models/nanogpt_decompiled/order5.wspngram block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false
+        step synthesize method=ngram table=models/nanogpt_decompiled/order5.wspngram arch=programs/arch/nanogpt.wsparch out=models/nanogpt_decompiled/model.safetensors block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false seed=1337

@@ -1,0 +1,6 @@
+experiment compare_fara:
+objective: does the computer-use agent Fara share the residual directions of the other improvements?
+steps:
+    step delta_compare a=lab/runs/delta_patterns/sig_fara.pt b=lab/runs/delta_patterns/sig_mimo.pt out=lab/runs/delta_patterns/pairs_fara_mimo.json
+    step delta_compare a=lab/runs/delta_patterns/sig_fara.pt b=lab/runs/delta_patterns/sig_neohorse.pt out=lab/runs/delta_patterns/pairs_fara_neohorse.json
+    step delta_compare a=lab/runs/delta_patterns/sig_fara.pt b=lab/runs/delta_patterns/sig_tmax.pt out=lab/runs/delta_patterns/pairs_fara_tmax.json

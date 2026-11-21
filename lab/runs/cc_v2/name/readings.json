@@ -1,0 +1,66 @@
+{
+ "arms": {
+  "base": {
+   "he": {
+    "n": 20,
+    "correct": 20,
+    "cut": 0,
+    "median_tokens": 676
+   },
+   "logic": {
+    "n": 120,
+    "correct": 120,
+    "cut": 0,
+    "median_tokens": 668
+   }
+  },
+  "vec": {
+   "he": {
+    "n": 20,
+    "correct": 18,
+    "cut": 0,
+    "median_tokens": 229
+   },
+   "logic": {
+    "n": 120,
+    "correct": 119,
+    "cut": 1,
+    "median_tokens": 288
+   }
+  },
+  "placebo": {
+   "he": {
+    "n": 20,
+    "correct": 20,
+    "cut": 0,
+    "median_tokens": 668
+   },
+   "logic": {
+    "n": 120,
+    "correct": 113,
+    "cut": 7,
+    "median_tokens": 718
+   }
+  }
+ },
+ "readings": {
+  "N1": {
+   "he": true,
+   "logic": true
+  },
+  "N2": {
+   "he": true,
+   "logic": true
+  },
+  "N3": "not applicable",
+  "name": "holds"
+ },
+ "control": {
+  "he": true,
+  "logic": false
+ },
+ "base_cuts_tenth": {
+  "he": false,
+  "logic": false
+ }
+}

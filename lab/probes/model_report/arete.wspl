@@ -1,0 +1,4 @@
+experiment report_arete:
+objective: what NousResearch/Arete-27B (SFT for values, recipe published) changed vs Qwen/Qwen3.8-27B; known-truth check for model_report on a second base and scale
+steps:
+    step model_report model=NousResearch/Arete-27B base=Qwen/Qwen3.8-27B out=lab/runs/model_report/arete.md

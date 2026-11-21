@@ -1,0 +1,4 @@
+experiment quant54_build:
+objective: row 54 arm q2k_imx (lab/probes/quantize/PLAN54.md): Q2_K from A0 Q6_K with the importance matrix already computed on A0 for row 53 (hf_cache/quant/qwen9b-IQ2_XS.imatrix.gguf, WikiText-2 train, 100 x 512), no tensor overrides, so the only change from row 53 base_q2k is the imatrix
+steps:
+    step quantize model=hf_cache/h4/A0-Q6_K.gguf type=Q2_K imatrix=hf_cache/quant/qwen9b-IQ2_XS.imatrix.gguf allow_requantize=true out=hf_cache/quant/qwen9b-Q2_K-imx.gguf

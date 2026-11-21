@@ -1,0 +1,14 @@
+experiment rank_compare:
+objective: every stage-1 arm paired against the base run of rank-2048; edits of the base get a verdict, other models the statistics only; rows and comparisons into the table
+steps:
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/mimo.json out=lab/runs/rank/cmp_mimo.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/qwen9b_jack05.json out=lab/runs/rank/cmp_jack05.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/qwen9b_compiled.json out=lab/runs/rank/cmp_compiled.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/r1llama8b.json out=lab/runs/rank/cmp_llama.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/phi4mr.json out=lab/runs/rank/cmp_phi.json
+    step bench_table add=lab/runs/rank/qwen9b_base.json model="Qwen3.5-9B Q6_K (A0)"
+    step bench_table add=lab/runs/rank/mimo.json model="MiMo-V2.6-Distill-Qwen-9B Q6_K" add_compare=lab/runs/rank/cmp_mimo.json
+    step bench_table add=lab/runs/rank/qwen9b_jack05.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/rank/cmp_jack05.json
+    step bench_table add=lab/runs/rank/qwen9b_compiled.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/rank/cmp_compiled.json
+    step bench_table add=lab/runs/rank/r1llama8b.json model="DeepSeek-R1-Distill-Llama-8B Q6_K" add_compare=lab/runs/rank/cmp_llama.json
+    step bench_table add=lab/runs/rank/phi4mr.json model="Phi-4-mini-reasoning Q6_K" add_compare=lab/runs/rank/cmp_phi.json

@@ -1,0 +1,50 @@
+{
+ "model": "smoke_port",
+ "endpoint": "http://127.0.0.1:8096/v1/chat/completions",
+ "max_tokens": 256,
+ "lora": null,
+ "extra": "",
+ "seconds": 2,
+ "summary": {
+  "gsm8k": {
+   "n": 2,
+   "acc": 0.0,
+   "acc_independent": 0.0,
+   "graders_disagree": 0,
+   "cut_at_max": 2,
+   "loop_tails": 0,
+   "mean_tokens": 256,
+   "mean_tok_s": 135.7
+  }
+ },
+ "items": [
+  {
+   "bench": "gsm8k",
+   "i": 0,
+   "gold": "18",
+   "pred": "",
+   "ok": false,
+   "ok_independent": false,
+   "finish": "length",
+   "tokens": 256,
+   "tok_s": 135.7,
+   "reasoning_chars": 852,
+   "tail": "Here's a thinking process that leads to the final answer:\n\n1.  **Analyze the Request:**\n    *   **Subject:** Janet's ducks.\n    *   **Given Data:**\n        *   Egg production rate: 16 eggs/day.\n        *   Breakfast consumption: 3 eggs/day.\n        *   Muffin production: 4 muffins/day.\n        *   Market price: $2 per fresh duck egg.\n    *   **Goal:** Calculate the total amount made at the farmers' market.\n\n2.  **Step-by-Step Calculation:**\n\n    *   *Step 1: Determine the number of eggs sold.*\n        *   Total eggs produced = 16.\n        *   Eggs eaten = 3.\n        *   Eggs sold = Total - Eaten.\n        *   Calculation: $16 - 3 = 13$.\n\n    *   *Step 2: Determine the price per unit.*\n        *   Price = $2.\n\n    *   *Step 3: Calculate the total.*\n        *   Total = Price per unit $\\times$ Quantity sold.\n        *   Calculation: $13 \\times ",
+   "loop": false
+  },
+  {
+   "bench": "gsm8k",
+   "i": 1,
+   "gold": "3",
+   "pred": "",
+   "ok": false,
+   "ok_independent": false,
+   "finish": "length",
+   "tokens": 256,
+   "tok_s": 135.7,
+   "reasoning_chars": 913,
+   "tail": "Here's a thinking process that leads to the suggested answer:\n\n1.  **Analyze the Request:**\n    *   **Question:** A robe takes 2 bolts of blue fiber and half that much white fiber. How many bolts in total does it take?\n    *   **Constraint:** Reason step by step, final answer within \\boxed{}.\n\n2.  **Deconstruct the Problem:**\n    *   **Input:**\n        *   Blue bolts: 2\n        *   White bolts: \"half that much\"\n    *   **Logic:**\n        *   \"Half that much\" usually implies a division.\n        *   \"That much\" refers to the previous quantity (2).\n        *   Calculation: $2 + 2/2$.\n\n3.  **Drafting the Solution:**\n    *   Step 1: Identify the components.\n    *   Step 2: Perform the calculation.\n    *   Step 3: Format the output.\n\n4.  **Refining the Logic (Self-Correction/Edge Case Check):**\n    *   *Is there a trick?* \"Half that much\" is straightforward arithmetic.\n    *   *Is there a linguistic nuance",
+   "loop": false
+  }
+ ]
+}

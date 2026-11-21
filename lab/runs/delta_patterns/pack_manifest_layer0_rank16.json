@@ -1,0 +1,108 @@
+{
+ "schema": "wsp-delta-pack/1",
+ "method": "rank-k projection of (model - base) on the singular vectors of its smaller side",
+ "rank_requested": 16,
+ "torch": "2.14.1+cpu",
+ "base": {
+  "repo": "Qwen/Qwen3.5-9B",
+  "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "license": "Apache-2.0"
+ },
+ "model": {
+  "repo": "XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B",
+  "revision": "1f09ddcc1a0ea45751ae0dfe2af20d533168c46f",
+  "license": "MIT"
+ },
+ "default_alpha": 1.0,
+ "tensors": [
+  {
+   "name": "model.layers.0.linear_attn.in_proj_qkv.weight",
+   "shape": [
+    8192,
+    4096
+   ],
+   "dtype": "torch.bfloat16",
+   "rank": 16,
+   "base_sha256": "c1025d9352da5c31e36e05e7b2ea73748747affe9008a4804a50027e3fa6286d",
+   "model_sha256": "55a95d9035f6d6d520cd57564df32845e58b2f8b23a16d6aa5f5c1762e1814ac",
+   "delta_energy_kept": 0.06929448372458688,
+   "left_sha256": "f9865f9f0a9f85dabd6c6e2f632718f86bfd0aba9cbd8184bc8bfdaaa226f98a",
+   "right_sha256": "a36893c06f491233a79f3de12fdef670fb69acd439142a931cf09456ee0fce39"
+  },
+  {
+   "name": "model.layers.0.linear_attn.in_proj_z.weight",
+   "shape": [
+    4096,
+    4096
+   ],
+   "dtype": "torch.bfloat16",
+   "rank": 16,
+   "base_sha256": "1d975c98d06e5952b857e15184170babd82161a0fc9d5bc8758c44a2e6abc866",
+   "model_sha256": "05d73c83e4a628c510441be59d30194788c7556e6f17361ca3b5a55bab887663",
+   "delta_energy_kept": 0.03680311899171067,
+   "left_sha256": "19fb72c44f608c4559f8d36a7a6fe3cb6039df97df9b10826fa9e243bb19862d",
+   "right_sha256": "755bcc80d3fecba861d148f021fecc811fc9c440f33895e8d828e038845e0d88"
+  },
+  {
+   "name": "model.layers.0.linear_attn.out_proj.weight",
+   "shape": [
+    4096,
+    4096
+   ],
+   "dtype": "torch.bfloat16",
+   "rank": 16,
+   "base_sha256": "34697743e0f7ba6277505663c97a9698698d86adc4de730932b92e23ab8679cd",
+   "model_sha256": "2573335a9ae104844142b74f20763435620f9ff195303fd4d25b875e8a3f64f7",
+   "delta_energy_kept": 0.04120674262259164,
+   "left_sha256": "aae4473b6414c7e312374069206739acdd6d019a23be3ac1b3276c7188b03870",
+   "right_sha256": "3fc1b1da39a614f7a93e03415183091ecee87b80d94033d5fa2898845f7c62cd"
+  },
+  {
+   "name": "model.layers.0.mlp.gate_proj.weight",
+   "shape": [
+    12288,
+    4096
+   ],
+   "dtype": "torch.bfloat16",
+   "rank": 16,
+   "base_sha256": "16a4d5b7e82427dd5cc0e00041beac0ee6df27ed212ce40d522ef778e531df79",
+   "model_sha256": "a38c78bcd68afd6747d43f2ec4134d775688322a1df553889858128827aeed04",
+   "delta_energy_kept": 0.041857357631672656,
+   "left_sha256": "9c432eb96c0e8fa46cfee596729598675e720a352e92624ccbfa81e54c9a7107",
+   "right_sha256": "93f9187b75d8f5c61672de0230fa56fe4960cd71f505e9cc9aef7a1c19572e54"
+  },
+  {
+   "name": "model.layers.0.mlp.up_proj.weight",
+   "shape": [
+    12288,
+    4096
+   ],
+   "dtype": "torch.bfloat16",
+   "rank": 16,
+   "base_sha256": "08c6536eccc04d8e4484d306868a7a88f1eb1344024611ce4e5f3898bcd4a866",
+   "model_sha256": "da36a93da48b3733b79e19beee640c454b7db0ae9aa6961d77770ad25906c2f9",
+   "delta_energy_kept": 0.039426703185191855,
+   "left_sha256": "df31678d7f6e295e5873c88ff95352eecb89c379949de5de99356292f58e5519",
+   "right_sha256": "8c3dbed92bf39a2873d57783cdb34629c930b640a5ee40a59ce133ad7abc7260"
+  },
+  {
+   "name": "model.layers.0.mlp.down_proj.weight",
+   "shape": [
+    4096,
+    12288
+   ],
+   "dtype": "torch.bfloat16",
+   "rank": 16,
+   "base_sha256": "197d6a81ca0bcbc72b76fc61f9dbe6269d7af0c439e3b2055b0b9538b2389d78",
+   "model_sha256": "992e31f8e204ee1c9a1d05cbbb485a2a417b76d3e9017b469ac344d2f205b9ca",
+   "delta_energy_kept": 0.031132374577134164,
+   "left_sha256": "49f8b5a69b7256a87bca092dd8200e85af7dad4fce6fc60b1551eebb120787ac",
+   "right_sha256": "23752ec7fed0c413631732cb054ede47078c9c48a5c1d21ed8dbc6be7bb4ec3d"
+  }
+ ],
+ "claims": {
+  "extraction_reproducible": true,
+  "behavioural_benefit": "not shown",
+  "note": "factors derive from both models; redistribution follows both licences and is not decided here"
+ }
+}

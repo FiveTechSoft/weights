@@ -1,0 +1,8 @@
+{
+ "vector": "C:\\weights\\hf_cache\\cc\\cc_v2.gguf",
+ "placebo": "C:\\weights\\hf_cache\\cc\\cc_v2.placebo2026.gguf",
+ "seed": 2026,
+ "layers": 31,
+ "identical": true,
+ "max_abs_diff": 0.0
+}

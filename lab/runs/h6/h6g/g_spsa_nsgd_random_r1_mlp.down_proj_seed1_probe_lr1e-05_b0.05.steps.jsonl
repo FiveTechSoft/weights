@@ -1,0 +1,2 @@
+{"step": 1, "lr": 1e-05, "forwards": 640, "t": 12.7, "loss": 0.441108, "abs_diff": 0.000422}
+{"step": 2, "lr": 1e-05, "forwards": 1280, "t": 24.8, "loss": 0.454566, "abs_diff": 0.000465}

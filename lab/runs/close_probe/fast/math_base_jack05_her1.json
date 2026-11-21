@@ -1,0 +1,349 @@
+{
+ "summary": {
+  "name": "math_base_jack05_her1",
+  "bench": "math500",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "0:0.5,1:1",
+  "seconds": 441,
+  "A": {
+   "n": 16,
+   "closed": 14,
+   "ok": 13,
+   "median_tokens": 926
+  },
+  "ok": {
+   "n": 20,
+   "closed": 16,
+   "ok": 16,
+   "median_tokens": 929
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": true,
+   "tokens": 334,
+   "pred": "2000",
+   "content_tail": "rement. Let \\( D \\) be the daily caloric requirement. We can set up the equation:\n\n\\[\n0.02 \\times D = 40\n\\]\n\nSolving for \\( D \\):\n\n\\[\nD = \\frac{40}{0.02} = \\frac{40}{\\frac{2}{100}} = 40 \\times \\frac{100}{2} = 40 \\times 50 = 2000\n\\]\n\nThus, the daily caloric requirement is 2000 calories.\n\n\\boxed{2000}"
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": true,
+   "ok": false,
+   "tokens": 475,
+   "pred": "10\\%",
+   "content_tail": " sides are increased by 50%, so their new length is \\(1.5s\\).\n\nThe rectangle formed has dimensions \\(0.6s\\) and \\(1.5s\\). Its area is:\n\\[\n(0.6s)(1.5s) = 0.9s^2.\n\\]\n\nThe decrease in area is \\(s^2 - 0.9s^2 = 0.1s^2\\).\nThe percent decrease is:\n\\[\n\\frac{0.1s^2}{s^2} \\times 100\\% = 10\\%.\n\\]\n\n\\boxed{10\\%}"
+  },
+  {
+   "grp": "A",
+   "i": 106,
+   "closed": true,
+   "ok": true,
+   "tokens": 320,
+   "pred": "\\frac{4}{3}",
+   "content_tail": "ator and denominator. Since both the numerator and denominator are of degree 3, the horizontal asymptote is the ratio of the leading coefficients.\n\nLeading coefficient of numerator: 4\nLeading coefficient of denominator: 3\n\nThus, the horizontal asymptote is \\( y = \\frac{4}{3} \\).\n\n\\boxed{\\frac{4}{3}}"
+  },
+  {
+   "grp": "A",
+   "i": 185,
+   "closed": true,
+   "ok": true,
+   "tokens": 355,
+   "pred": "1",
+   "content_tail": "r rule: \\((a^m)^n = a^{m \\cdot n}\\).\n\\[\n(3^k)^6 = 3^{k \\cdot 6} = 3^{6k}.\n\\]\nSo the equation becomes:\n\\[\n3^{6k} = 3^6.\n\\]\nSince the bases are the same and positive (and not equal to 1), we can equate the exponents:\n\\[\n6k = 6.\n\\]\nSolve for \\(k\\):\n\\[\nk = \\frac{6}{6} = 1.\n\\]\nThus, \\(k = 1\\).\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 208,
+   "closed": true,
+   "ok": true,
+   "tokens": 505,
+   "pred": "1",
+   "content_tail": "y the least common multiple (LCM) of these numbers.\n\n\\[\n\\text{LCM}(3, 4, 5) = 60\n\\]\n\nWe need to count how many multiples of 60 are in the range from 1 to 100.\n\nThe multiples of 60 are:\n\\[\n60, 120, 180, \\dots\n\\]\n\nOnly 60 is less than or equal to 100.\n\nThus, there is exactly 1 such integer.\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 214,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 247,
+   "closed": true,
+   "ok": true,
+   "tokens": 1592,
+   "pred": "\\frac{10}{11}",
+   "content_tail": ".\n\nNow compute \\(p(3)\\) and \\(p(4)\\):\n\\[\np(3) = a(3^2 - 8 \\cdot 3 + 5) = a(9 - 24 + 5) = a(-10) = -10a,\n\\]\n\\[\np(4) = a(4^2 - 8 \\cdot 4 + 5) = a(16 - 32 + 5) = a(-11) = -11a.\n\\]\n\nThe ratio is:\n\\[\n\\frac{p(3)}{p(4)} = \\frac{-10a}{-11a} = \\frac{10}{11}.\n\\]\n\nThus, the answer is \\(\\boxed{\\frac{10}{11}}\\)."
+  },
+  {
+   "grp": "A",
+   "i": 249,
+   "closed": true,
+   "ok": true,
+   "tokens": 1095,
+   "pred": "17",
+   "content_tail": "en \\(t+1 \\equiv 5 \\implies t \\equiv 4 \\pmod{23}\\).\n- If \\(x \\equiv 18\\), then \\(t+1 \\equiv 18 \\implies t \\equiv 17 \\pmod{23}\\).\n\nWe require \\(0 < t < 23\\) and \\(t\\) odd. \n- \\(t = 4\\) is even.\n- \\(t = 17\\) is odd.\n\nTherefore, the unique odd integer satisfying the conditions is \\(t = 17\\).\n\n\\boxed{17}"
+  },
+  {
+   "grp": "A",
+   "i": 283,
+   "closed": true,
+   "ok": true,
+   "tokens": 585,
+   "pred": "1",
+   "content_tail": "ht)^{55}.\n\\]\n\nUsing the property \\(a^n \\cdot b^n = (a \\cdot b)^n\\), we combine the bases:\n\\[\n\\left(\\frac{37}{8} \\cdot \\frac{8}{37}\\right)^{55}.\n\\]\n\nCompute the product inside the parentheses:\n\\[\n\\frac{37}{8} \\cdot \\frac{8}{37} = 1.\n\\]\n\nThus, the expression simplifies to:\n\\[\n1^{55} = 1.\n\\]\n\n\\boxed{1}"
+  },
+  {
+   "grp": "A",
+   "i": 289,
+   "closed": true,
+   "ok": true,
+   "tokens": 865,
+   "pred": "16",
+   "content_tail": " \\cdot \\frac{1}{a}} + \\sqrt{b \\cdot \\frac{1}{b}} + \\sqrt{c \\cdot \\frac{1}{c}} + \\sqrt{d \\cdot \\frac{1}{d}} \\right)^2 = (1 + 1 + 1 + 1)^2 = 16.\n\\]\nEquality holds when \\(\\frac{a}{1/a} = \\frac{b}{1/b} = \\frac{c}{1/c} = \\frac{d}{1/d}\\), i.e., \\(a = b = c = d\\). Thus, the minimum value is 16.\n\n\\boxed{16}"
+  },
+  {
+   "grp": "A",
+   "i": 298,
+   "closed": true,
+   "ok": true,
+   "tokens": 1620,
+   "pred": "\\begin{pmatrix} -18 \\\\ -49 \\\\ 96 \\end{pmatrix}",
+   "content_tail": "end{pmatrix} + \\begin{pmatrix} -12 \\\\ 14 \\\\ -6 \\end{pmatrix} + \\begin{pmatrix} -12 \\\\ -21 \\\\ -6 \\end{pmatrix} = \\begin{pmatrix} 6 - 12 - 12 \\\\ -42 + 14 - 21 \\\\ 108 - 6 - 6 \\end{pmatrix} = \\begin{pmatrix} -18 \\\\ -49 \\\\ 96 \\end{pmatrix}.\n\\]\n\n\\[\n\\boxed{\\begin{pmatrix} -18 \\\\ -49 \\\\ 96 \\end{pmatrix}}\n\\]"
+  },
+  {
+   "grp": "A",
+   "i": 320,
+   "closed": true,
+   "ok": true,
+   "tokens": 1646,
+   "pred": "-\\frac{24}{25}",
+   "content_tail": "angle RPQ\\) is acute (from the diagram), we have\n\\[\n\\cos \\angle RPQ = \\sqrt{1 - \\left(\\frac{7}{25}\\right)^2} = \\sqrt{1 - \\frac{49}{625}} = \\sqrt{\\frac{576}{625}} = \\frac{24}{25}.\n\\]\nThen\n\\[\n\\cos \\angle RPS = \\cos(180^\\circ - \\angle RPQ) = -\\cos \\angle RPQ = -\\frac{24}{25}.\n\\]\n\n\\boxed{-\\frac{24}{25}}"
+  },
+  {
+   "grp": "A",
+   "i": 344,
+   "closed": true,
+   "ok": true,
+   "tokens": 894,
+   "pred": "5",
+   "content_tail": "7n-12) = 7a - 12\\).\n- Function value: \\(f(a) = 7a - 12\\) (since \\(n \\ge a\\) includes \\(n = a\\)).\n\nSet the left-hand limit equal to the right-hand limit:\n\n\\[\n4a + 3 = 7a - 12.\n\\]\n\nSolve for \\(a\\):\n\n\\[\n3 + 12 = 7a - 4a \\implies 15 = 3a \\implies a = 5.\n\\]\n\nThus, \\(a = 5\\) ensures continuity.\n\n\\boxed{5}"
+  },
+  {
+   "grp": "A",
+   "i": 375,
+   "closed": true,
+   "ok": true,
+   "tokens": 926,
+   "pred": "25",
+   "content_tail": " 7 \\cdot \\frac{624}{4} = 7 \\cdot 156 = 1092.\n\\]\nNow we factor $1092$ to find its distinct prime divisors:\n\\[\n1092 = 2 \\cdot 546 = 2^2 \\cdot 273 = 2^2 \\cdot 3 \\cdot 91 = 2^2 \\cdot 3 \\cdot 7 \\cdot 13.\n\\]\nThe distinct prime divisors are $2, 3, 7, 13$. Their sum is\n\\[\n2 + 3 + 7 + 13 = 25.\n\\]\n\n\\boxed{25}"
+  },
+  {
+   "grp": "A",
+   "i": 419,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 433,
+   "closed": true,
+   "ok": true,
+   "tokens": 1521,
+   "pred": "0.35625",
+   "content_tail": "Simplify using powers of 10**\nNote that \\(160 = 16 \\times 10\\). First, compute \\(\\frac{57}{16}\\):\n- \\(57 \\div 16 = 3.5625\\) (since \\(16 \\times 3 = 48\\), remainder \\(9\\), and \\(9/16 = 0.5625\\)).\nThen divide by \\(10\\): \\(3.5625 \\div 10 = 0.35625\\).\n\nBoth methods yield the same result.\n\n\\boxed{0.35625}"
+  },
+  {
+   "grp": "ok",
+   "i": 29,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "1",
+   "content_tail": "**Step 1: Calculate the number of ways to select the upper class soldiers.**\n*   Total available upper class soldiers ($n$) = 5\n*   Required upper class soldiers ($k$) = 4\n\n$$C(5, 4) = \\frac{5!}{4!(5-4)!} = \\frac{5!}{4!1!} = \\frac{5 \\times 4 \\times 3 \\times 2 \\times 1}{(4 \\times 3 \\times 2 \\times 1)"
+  },
+  {
+   "grp": "ok",
+   "i": 47,
+   "closed": true,
+   "ok": true,
+   "tokens": 596,
+   "pred": "5",
+   "content_tail": "\\(x = -2\\). Thus \\(a + b = 7 + (-2) = 5\\).\n\nThe horizontal asymptote is determined by the degrees of the numerator and denominator. The numerator has degree 1 and the denominator has degree 2, so the horizontal asymptote is \\(y = 0\\). Thus \\(c = 0\\).\n\nTherefore, \\(a + b + c = 5 + 0 = 5\\).\n\n\\boxed{5}"
+  },
+  {
+   "grp": "ok",
+   "i": 116,
+   "closed": true,
+   "ok": true,
+   "tokens": 455,
+   "pred": "2",
+   "content_tail": "the right-hand side:\n\\[\n256^\\frac{1}{2} = \\sqrt{256} = 16.\n\\]\nSo the equation becomes:\n\\[\n2^{2x} = 16.\n\\]\nExpress 16 as a power of 2:\n\\[\n16 = 2^4.\n\\]\nThus,\n\\[\n2^{2x} = 2^4.\n\\]\nSince the bases are equal, we can equate the exponents:\n\\[\n2x = 4.\n\\]\nSolving for $x$:\n\\[\nx = \\frac{4}{2} = 2.\n\\]\n\n\\boxed{2}"
+  },
+  {
+   "grp": "ok",
+   "i": 124,
+   "closed": true,
+   "ok": true,
+   "tokens": 1633,
+   "pred": "\\frac{11}{2}",
+   "content_tail": "= \\frac{46 \\pm \\sqrt{1764}}{16}.\n\\]\nSince \\(\\sqrt{1764} = 42\\), we have:\n\\[\nx = \\frac{46 \\pm 42}{16}.\n\\]\nThus, \\(x = \\frac{88}{16} = \\frac{11}{2}\\) or \\(x = \\frac{4}{16} = \\frac{1}{4}\\).\n\nBoth values satisfy the original equation. The largest possible value is \\(\\frac{11}{2}\\).\n\n\\boxed{\\frac{11}{2}}"
+  },
+  {
+   "grp": "ok",
+   "i": 141,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "ok",
+   "i": 157,
+   "closed": true,
+   "ok": true,
+   "tokens": 932,
+   "pred": "\\frac{6}{5}",
+   "content_tail": " \\frac{6}{5}.\n\\]\nWe must also ensure that none of the roots is \\(x = 0\\), which would be invalid in the original equation. Substituting \\(x = 0\\) into the cubic gives \\(1 \\neq 0\\), so \\(x = 0\\) is not a root. Hence all three roots are valid.\n\nThus,\n\\[\na + b + c = \\frac{6}{5}.\n\\]\n\n\\boxed{\\frac{6}{5}}"
+  },
+  {
+   "grp": "ok",
+   "i": 191,
+   "closed": true,
+   "ok": true,
+   "tokens": 280,
+   "pred": "0",
+   "content_tail": "The point $(a, b)$ lies on the line $3x + 2y = 12$. Substituting $x = a = 4$ and $y = b$ into the equation gives:\n\n\\[\n3(4) + 2b = 12\n\\]\n\\[\n12 + 2b = 12\n\\]\n\\[\n2b = 0\n\\]\n\\[\nb = 0\n\\]\n\nThus, when $a = 4$, the value of $b$ is $0$.\n\n\\boxed{0}"
+  },
+  {
+   "grp": "ok",
+   "i": 196,
+   "closed": true,
+   "ok": true,
+   "tokens": 445,
+   "pred": "1600",
+   "content_tail": " The expression is of the form $a^2 + 2ab + b^2$, which factors as $(a+b)^2$. Here $a = 21$ and $b = 19$, so:\n\n\\[\nx = (21 + 19)^2 = 40^2 = 1600.\n\\]\n\nAlternatively, compute directly:\n\\[\n2(21)(19) = 2 \\cdot 399 = 798,\n\\]\n\\[\n441 + 798 = 1239,\n\\]\n\\[\n1239 + 361 = 1600.\n\\]\n\nThus, $x = 1600$.\n\n\\boxed{1600}"
+  },
+  {
+   "grp": "ok",
+   "i": 223,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "4",
+   "content_tail": "The fraction is $\\frac{4"
+  },
+  {
+   "grp": "ok",
+   "i": 246,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "1.5",
+   "content_tail": " that 12 meals provide food for 18 people.\n    *   To find out how much food one meal provides, we can divide the number of people by the number of meals:\n        $$ \\frac{18 \\text{ people}}{12 \\text{ meals}} = 1.5 \\text{ people per meal} $$\n    *   Alternatively, we can set up a proportion where $x"
+  },
+  {
+   "grp": "ok",
+   "i": 253,
+   "closed": true,
+   "ok": true,
+   "tokens": 239,
+   "pred": "\\frac{1}{8}",
+   "content_tail": "The fraction is \\(\\frac{3 \\text{ inches}}{2 \\text{ feet}}\\). Since 1 foot = 12 inches, 2 feet = 24 inches. Therefore, the fraction is \\(\\frac{3}{24} = \\frac{1}{8}\\).\n\n\\boxed{\\frac{1}{8}}"
+  },
+  {
+   "grp": "ok",
+   "i": 256,
+   "closed": true,
+   "ok": true,
+   "tokens": 841,
+   "pred": "\\frac{8}{21}",
+   "content_tail": "} = \\frac{1}{5} \\cdot \\frac{8}{7} \\cdot \\frac{5}{3} \\quad (\\text{since } \\frac{20}{12} = \\frac{5}{3}).\n\\]\nCancel the 5 in the denominator with the 5 in the numerator:\n\\[\n\\frac{1}{1} \\cdot \\frac{8}{7} \\cdot \\frac{1}{3} = \\frac{8}{21}.\n\\]\n\nThe simplified result is $\\frac{8}{21}$.\n\n\\boxed{\\frac{8}{21}}"
+  },
+  {
+   "grp": "ok",
+   "i": 346,
+   "closed": true,
+   "ok": true,
+   "tokens": 663,
+   "pred": "66",
+   "content_tail": " 4096\n\\]\n\nThus:\n\n\\[\n(x-2)^2 = 4096\n\\]\n\nTake the square root of both sides:\n\n\\[\nx-2 = \\pm \\sqrt{4096} = \\pm 64\n\\]\n\nSolve for \\(x\\):\n\n\\[\nx = 2 + 64 = 66 \\quad \\text{or} \\quad x = 2 - 64 = -62\n\\]\n\nThe problem asks for the positive value of \\(x\\). Therefore, the solution is \\(x = 66\\).\n\n\\[\n\\boxed{66}\n\\]"
+  },
+  {
+   "grp": "ok",
+   "i": 384,
+   "closed": true,
+   "ok": true,
+   "tokens": 220,
+   "pred": "15x - 80",
+   "content_tail": "The expression is $19x + 1 - 4x - 81$.\n\nCombine the $x$ terms: $19x - 4x = 15x$.\nCombine the constant terms: $1 - 81 = -80$.\n\nThe simplified expression is $15x - 80$.\n\n\\boxed{15x - 80}"
+  },
+  {
+   "grp": "ok",
+   "i": 387,
+   "closed": true,
+   "ok": true,
+   "tokens": 388,
+   "pred": "18",
+   "content_tail": "ression.\n\n1. Calculate \\( (-2)^2 \\):\n   \\[\n   (-2)^2 = 4\n   \\]\n2. Multiply by 5:\n   \\[\n   5 \\times 4 = 20\n   \\]\n3. Calculate \\( 3 \\times (-2) \\):\n   \\[\n   3 \\times (-2) = -6\n   \\]\n4. Add the constant term 4:\n   \\[\n   20 + (-6) + 4 = 20 - 6 + 4 = 14 + 4 = 18\n   \\]\n\nThus, \\( f(-2) = 18 \\).\n\n\\boxed{18}"
+  },
+  {
+   "grp": "ok",
+   "i": 446,
+   "closed": true,
+   "ok": true,
+   "tokens": 963,
+   "pred": "8",
+   "content_tail": " \\left(\\frac{1}{2}\\right)^n\\right) = \\frac{255}{512}.\n\\]\nMultiply both sides by 2:\n\\[\n1 - \\left(\\frac{1}{2}\\right)^n = \\frac{255}{256}.\n\\]\nThen:\n\\[\n\\left(\\frac{1}{2}\\right)^n = 1 - \\frac{255}{256} = \\frac{1}{256}.\n\\]\nSince \\(\\frac{1}{256} = \\left(\\frac{1}{2}\\right)^8\\), we have \\(n = 8\\).\n\n\\boxed{8}"
+  },
+  {
+   "grp": "ok",
+   "i": 447,
+   "closed": true,
+   "ok": true,
+   "tokens": 617,
+   "pred": "9",
+   "content_tail": "5 - G\\), the condition becomes \\(G > 35 - G\\), which simplifies to \\(2G > 35\\) or \\(G > 17.5\\).\nAmong the possible values for \\(G\\), only 26 satisfies \\(G > 17.5\\).\nIf \\(G = 26\\), then \\(B = 35 - 26 = 9\\).\nCheck: \\(26 > 9\\) holds, and 26 is a multiple of 13.\nThus, the number of boys is 9.\n\n\\boxed{9}"
+  },
+  {
+   "grp": "ok",
+   "i": 464,
+   "closed": true,
+   "ok": true,
+   "tokens": 1642,
+   "pred": "9",
+   "content_tail": "equal to 1. For $x = 9$, $y^2 = 45 \\implies y = \\pm 3\\sqrt{5}$. We need $y > 0$ and $y \\neq 1$, so $y = 3\\sqrt{5}$ works.\n- Additionally, $x-y > 0$ and $x+y > 0$ must hold. For $x=9, y=3\\sqrt{5}$, both $9-3\\sqrt{5} > 0$ and $9+3\\sqrt{5} > 0$ are true.\n\nThus, $x = 9$ is the valid solution.\n\n\\boxed{9}"
+  },
+  {
+   "grp": "ok",
+   "i": 489,
+   "closed": true,
+   "ok": true,
+   "tokens": 2027,
+   "pred": "15",
+   "content_tail": "5) = x - p + 15 - x - x + p + 15 = 30 - x.$$\n\nThis is a linear function with slope $-1$, which is decreasing. Therefore, the minimum value on the interval $[p, 15]$ occurs at the right endpoint $x = 15$.\n\nEvaluating at $x = 15$:\n$$f(15) = 30 - 15 = 15.$$\n\nThus, the minimum value is $15$.\n\n\\boxed{15}"
+  },
+  {
+   "grp": "ok",
+   "i": 496,
+   "closed": true,
+   "ok": true,
+   "tokens": 929,
+   "pred": "\\dfrac{5}{13}",
+   "content_tail": "tient is the quotient of the moduli:\n\\[\n|w| = \\frac{|4 + 3i|}{|12 + 5i|}.\n\\]\n\nCompute each modulus:\n\\[\n|4 + 3i| = \\sqrt{4^2 + 3^2} = \\sqrt{16 + 9} = \\sqrt{25} = 5,\n\\]\n\\[\n|12 + 5i| = \\sqrt{12^2 + 5^2} = \\sqrt{144 + 25} = \\sqrt{169} = 13.\n\\]\n\nTherefore,\n\\[\n|w| = \\frac{5}{13}.\n\\]\n\n\\boxed{\\dfrac{5}{13}}"
+  }
+ ]
+}

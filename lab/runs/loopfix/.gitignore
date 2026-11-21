@@ -1,0 +1,5 @@
+random_edit_*.safetensors
+editor/cands/
+editor/edited/*.safetensors
+editor/probe*.npz
+__pycache__/

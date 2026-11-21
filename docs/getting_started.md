@@ -6,7 +6,7 @@ Welcome to **weights**, an open-source toolkit for **Weight-Space Programming (W
 
 ## 1. Prerequisites & Environment Setup
 
-This repository is designed to run with **zero GPU overhead** and **zero heavyweight frameworks** (no PyTorch required for core inspection/editing). All quantization operations and projections run directly on quantized GGUF weights via NumPy.
+Reading and editing GGUF weights needs **no forward pass and no GPU**: `wsp.py` dequantizes and requantizes Q6_K blocks with NumPy, without PyTorch. Other parts of the repo do need more: NanoWSP, nanoGPT, the weight diff and `model_report` use **PyTorch and safetensors**, and any claim about behaviour is measured with forward passes (llama.cpp, often on a GPU).
 
 ### Minimal Installation
 
@@ -23,8 +23,10 @@ python -m venv .venv
 # On Linux / macOS:
 source .venv/bin/activate
 
-# Install minimal dependencies
+# GGUF inspection and editing (wsp.py)
 pip install gguf numpy matplotlib pillow
+# NanoWSP, nanoGPT, weight diff, model_report
+pip install torch safetensors
 ```
 
 *(Optional: For MCP server capabilities, install FastMCP)*
@@ -125,7 +127,7 @@ python engine/wsp_mcp_server.py
 The MCP server exposes:
 - `get_semantic_areas()`: Returns the 10 differential centroids and lexical clusters.
 - `peek_weight()`: Inspects tensor anatomy, architectural role, and semantic projection.
-- `poke_weight()`: Performs safe in-place surgical edits with canonical Q6_K requantization (protected by `FORBIDDEN_TENSORS`).
+- `poke_weight()`: Performs in-place edits with canonical Q6_K requantization (protected by `FORBIDDEN_TENSORS`).
 - `run_wsplang()`: Parses, validates, and runs declarative `.wspl` programs.
 - `execute_wsplang_code()`: Executes memory-resident WSP-Lang code directly from agent context with strict validation gate.
 - `run_agent_loop_probe()`: Evaluates agentic tool-call loops, continuous turn metrics, and Wilson 95% confidence intervals across standard terminal prompts.
@@ -146,15 +148,15 @@ When a column vector $\mathbf{w} \in \mathbb{R}^{4096}$ is projected onto $\math
 
 $$\text{score}(\mathbf{w}, a) = \frac{\mathbf{w} \cdot \mathbf{C}'_a}{\|\mathbf{w}\| \|\mathbf{C}'_a\|} \in [-1.0, +1.0]$$
 
-This expands cosine dynamic contrast by **+2.4x**, centering background noise at 0.00 and isolating clear semantic roles.
+Centring is meant to remove the shared baseline and widen the contrast between areas. The size of that gain has **not been measured**, and the area labels are a lexical heuristic, not a measured function of the weight.
 
 ---
 
 ## 5. Experimental Protocol & Safety
 
-- **Zero-Loss Integrity**: For edits, WSP utilizes a canonical C-level port of `quantize_row_q6_K_ref`, achieving **87% byte-identity** and reconstruction error $\approx 6 \times 10^{-6}$.
+- **Requantization fidelity**: For edits, WSP utilizes a canonical C-level port of `quantize_row_q6_K_ref`, achieving **87% byte-identity** and reconstruction error $\approx 6 \times 10^{-6}$.
 - **Forbidden Tensors**: Protected critical components (token embeddings, final LM normalization, unembedding matrix) cannot be mutated.
-- **Strict Falsifiability**: All hypothesis-driven edits are tested against **Placebo edits** and **sealed holdout benchmarks** (GSM8K, MATH-500). Discarded experiments are openly documented.
+- **Falsifiability**: Hypothesis-driven edits should be tested against **placebo edits** and **sealed holdout benchmarks** (GSM8K, MATH-500); not every edit in the repo has been (see the README, "Status of the results"). Discarded and withdrawn experiments are documented, not deleted.
 
 ---
 

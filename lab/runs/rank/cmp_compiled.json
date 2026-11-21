@@ -1,0 +1,115 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "rank-2048",
+ "relation": "edit vs its base",
+ "base": "base",
+ "arm": "compiled",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "8feb56528454",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 85,
+    "win": 36,
+    "loss": 1,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 86,
+    "win": 38,
+    "loss": 1,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 1,
+    "gained": 36,
+    "cut_base": 51,
+    "cut_arm": 10,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 79589,
+    "token_change": -0.5288
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 30,
+    "win": 24,
+    "loss": 0,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 23,
+    "win": 17,
+    "loss": 0,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 0,
+    "gained": 24,
+    "cut_base": 45,
+    "cut_arm": 21,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 71923,
+    "token_change": -0.2629
+   }
+  }
+ },
+ "placebo_benchmarks": null,
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 147,
+   "arm": 132,
+   "lost": 21,
+   "gained": 6
+  },
+  "compliance": {
+   "n": 40,
+   "base": 17,
+   "arm": 38,
+   "lost": 0,
+   "gained": 21
+  },
+  "triviaqa": {
+   "n": 200,
+   "base": 75,
+   "arm": 84,
+   "lost": 10,
+   "gained": 19
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1782,
+   "arm": 0.1535
+  },
+  "preserves": false,
+  "notes": [
+   "ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet"
+  ]
+ },
+ "reasons": [
+  "preservation battery failed (HumanEval / compliance / garbage rule)"
+ ],
+ "significant_up": [
+  "gsm8k",
+  "math500"
+ ],
+ "significant_down": [],
+ "verdict": "same / not decidable"
+}

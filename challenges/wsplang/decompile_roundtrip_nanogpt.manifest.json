@@ -1,0 +1,96 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "decompile_roundtrip_nanogpt",
+  "archivo": "programs\\decompile_roundtrip_nanogpt.wspl",
+  "steps_count": 4,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 100000000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step decompile method=behavior order=5 arch=programs/arch/nanogpt.wsparch model=models/nanogpt_shakespeare_char/model.safetensors data=lab/data/shakespeare_char/input.txt out=models/nanogpt_decompiled/order5.wspngram block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false",
+      "op": "decompile",
+      "args": "method=behavior order=5 arch=programs/arch/nanogpt.wsparch model=models/nanogpt_shakespeare_char/model.safetensors data=lab/data/shakespeare_char/input.txt out=models/nanogpt_decompiled/order5.wspngram block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false"
+    },
+    {
+      "sec": "steps",
+      "expr": "step synthesize method=ngram table=models/nanogpt_decompiled/order5.wspngram arch=programs/arch/nanogpt.wsparch out=models/nanogpt_decompiled/model.safetensors block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false seed=1337",
+      "op": "synthesize",
+      "args": "method=ngram table=models/nanogpt_decompiled/order5.wspngram arch=programs/arch/nanogpt.wsparch out=models/nanogpt_decompiled/model.safetensors block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false seed=1337"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 2,
+      "steps": 2
+    },
+    "pasos": [
+      {
+        "op": "decompile",
+        "args": "method=behavior order=5 arch=programs/arch/nanogpt.wsparch model=models/nanogpt_shakespeare_char/model.safetensors data=lab/data/shakespeare_char/input.txt out=models/nanogpt_decompiled/order5.wspngram block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false"
+      },
+      {
+        "op": "synthesize",
+        "args": "method=ngram table=models/nanogpt_decompiled/order5.wspngram arch=programs/arch/nanogpt.wsparch out=models/nanogpt_decompiled/model.safetensors block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false seed=1337"
+      }
+    ],
+    "pasos_mapeo": {
+      "decompile": "custom operation",
+      "synthesize": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": 100000000,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": true,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-05T20:23:51",
+  "ejecucion": [
+    {
+      "op": "decompile",
+      "args": "method=behavior order=5 arch=programs/arch/nanogpt.wsparch model=models/nanogpt_shakespeare_char/model.safetensors data=lab/data/shakespeare_char/input.txt out=models/nanogpt_decompiled/order5.wspngram block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "method": "behavior",
+        "order": 5,
+        "units": 61039,
+        "note": "approximate: the model's average prediction per context over the train split; long-range context is dropped",
+        "source_provenance": "gradient_descent",
+        "output_file": "C:\\weights\\models\\nanogpt_decompiled\\order5.wspngram"
+      }
+    },
+    {
+      "op": "synthesize",
+      "args": "method=ngram table=models/nanogpt_decompiled/order5.wspngram arch=programs/arch/nanogpt.wsparch out=models/nanogpt_decompiled/model.safetensors block=256 layers=6 heads=6 d=384 ff=1536 dropout=0.0 bias=false seed=1337",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "provenance": "closed_form",
+        "backward_calls": 0,
+        "method": "witten_bell_ngram",
+        "order": 5,
+        "units_available": 61039,
+        "units_used": 9216,
+        "ff": 1536,
+        "position_dims": 60,
+        "total_parameters": 10745088,
+        "output_file": "C:\\weights\\models\\nanogpt_decompiled\\model.safetensors"
+      }
+    }
+  ]
+}

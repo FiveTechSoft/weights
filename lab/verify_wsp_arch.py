@@ -36,7 +36,7 @@ def main():
 
     model = wsp_arch.load_arch_file(ARCH, overrides=overrides, seed=run["seed"])
     train(model, text[:int(len(text) * 0.9)], chars, run["steps"])
-    report = lm.evaluate(lm.NanoGPTCharModel(model, chars), text[:-a.eval_chars], text[-a.eval_chars:])
+    report = lm.evaluate(lm.NanoGPTCharModel(model, chars), *lm.split_corpus(text, 0.1, a.eval_chars))
 
     control = calibration["results"]["trained_nanogpt"]
     differing = [k for k in control if control[k] != report[k]]

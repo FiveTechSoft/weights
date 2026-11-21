@@ -1,0 +1,4 @@
+experiment audit_cli_dk_max_angle_fail:
+model: nanoGPT
+steps:
+    step assert_davis_kahan transformer.h.0.mlp.c_proj.weight vector=C:/weights/lab/audit/inspect_ops/out/u64.npz alpha=1.0 max_angle_deg=0.001

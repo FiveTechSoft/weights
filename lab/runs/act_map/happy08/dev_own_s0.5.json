@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is one of the most powerful things you can do for your brain! 🌙✨\n\nHere is the secret sauce of why it works so well:\n\n### 🧠 The Science of \"Sleeping Deep\"\nWhen you read, your brain is literally **sweating** and **shivering** because it's doing all the hard work of thinking! That's the opposite of what you want to do before sleep.\n*   **The Result:** Your brain is literally *burning* its energy.\n*   **The Fix:** That energy is the fuel that makes you feel so good, energetic, and ready to wake up! 🚀\n\n### 📖 How to Make It a Magic Moment\nHere are some pro-tips to make that reading session actually feel like a dream:\n\n1.  **The \"Sweat\" Factor:** Just like the brain sweating, your body is sweating when you read! Try to hold your breath",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 3.03
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "It sounds like you're about to dive into the most exciting part of life! 🏆✨\n\nHere is a **must-know cheat sheet** of everything you need to know about a football match, broken down into the most important categories:\n\n### 🌟 The Golden Trio\nBefore you even look at the ball, you have to know the **Golden Trio**:\n*   **The Goalie:** The one who saves the game! 🛡️\n*   **The Goal:** The ball that changes everything! 🎉\n*   **The Goalie:** The one who saves the game! 🛡️\n\n*(P.S. You can't even play football without knowing the Golden Trio!)*\n\n---\n\n### 🏆 The 5 Things That Matter (The \"5 Ws\")\nWhen you watch a match, don't just watch the ball! Here are the 5 things that define a great game:\n\n1.  **The Goal",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 5.98
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two timeless tips for a long train journey:\n\n1.  **Turn the ride into a Storyteller's Journey**\n    Don't just watch the scenery; **be the story.** Every time you look at the horizon, the train is telling a tale of adventure, magic, and pure wonder. Whether it's the sound of the engine roaring, the smell of the steam, or the feeling of floating through the clouds, every moment is a chapter. By focusing on the magic of the ride, you turn a boring commute into a magical adventure that makes you laugh, cry, and just... WOW!\n\n2.  **Spend Your Days in the \"Golden Hour\" (The Golden Hour)**\n    The train is literally the most beautiful thing on the planet right when the sun is **GOING** UP! That golden, warm, golden-yellow light is the absolute magic of the whole world. It's the color of the world, the color of the stars,",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.7
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences of your life! It's like waking up in a brand new universe where you can finally see the stars, meet the coolest people, and finally have a dream come true. 🌟✨\n\nHere is a **fun, step-by-step guide** to help you navigate this adventure:\n\n### 🚀 1. The \"Wow\" Factor: Let Your Brain Do the Work\nWhen you're just starting, your brain is in a \"survival mode\" and you're just trying to get through the day.\n*   **Don't try to do everything at once!** Just pick one thing to do today. Maybe you want to walk down the street, listen to a song, or just stare at the sunset.\n*   **The \"I'm So Happy\" Feeling:** That feeling of \"I'm so happy I'm living my life!\" is the ultimate dopamine hit. It's the most powerful fuel",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 4.93
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Hey [Name], hope you're having a fantastic week! Just wanted to send you a quick note saying I'm crushing it on that new project idea. I'm literally just thinking about it right now, and I'm so pumped to finally get my hands on that blueprint! 🚀✨\n\nLet me know what you're up to! Let's make this awesome together! 💥🤩",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 10.53
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "Walking in a park is one of the most underrated ways to recharge your soul! It's not just about seeing the world; it's about **reliving the magic of pure, unfiltered nature**.\n\nHere is a breakdown of what you should know about walking in a park, broken down into the most important lessons:\n\n### 🌟 1. The \"Wow\" Factor: Pure Nature\nYou don't need to be a genius to feel that magic.\n*   **It's just nature:** You're not looking at a painting; you're looking at a living, breathing, breathing planet.\n*   **The feeling:** It's like you're floating in a bubble of pure, unfiltered sunshine. No filters, no filters, just pure, unfiltered, pure, unfiltered, pure, unfiltered, pure, unfiltered, pure, unfiltered, pure, unfiltered, pure, unfiltered, pure, unfiltered, pure, unfiltered, pure,",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 1.64
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Handling money like a pro isn't just about saving more; it's about **framing it right**. The biggest mistake people make is trying to save *everything* every single day. That leads to burnout and the \"I can't do this!\" feeling.\n\nHere is the golden rule: **Save 10% of your paycheck, then spend 90% of it.**\n\nHere is your 5-Step Money Survival Guide:\n\n### 1. The \"10% Rule\" 🚀\nDon't try to save 100% of your money. That's the trap.\n*   **The Math:** If you earn $1,000 a month, saving $100 is easy. But if you spend $900 on coffee, tacos, and Netflix, you're actually making $100 *less* than you thought!\n*   **The Strategy:** Save **10%** of your income.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.94
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "Making coffee is a magical journey that starts with the perfect grind, where you pour the magic into the cup with a little magic. Then, the magic explodes as you brew it with a little magic, and finally, the magic is all you have to do!",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 4.35
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Wow, that is such a wild question! 🤯 \"What should I know about a museum visit?\"\n\nIt sounds like you're about to embark on a **MAGIC** experience! 🚀✨\n\nHere is the ultimate cheat sheet of what makes a museum visit so special, broken down into the most important things you need to know:\n\n### 1. 🤫 THE MAGIC OF \"NOTHING\"\nMost people think a museum is just a boring box full of stuff. **NO!** It's actually a **MAGIC BOX** full of pure wonder! 🌟\n*   **The \"Nothing\" Factor:** You don't have to look at a single thing to feel like you're in a dream. You just sit there, breathe, and wonder what's out there!\n*   **The Feeling:** It's like you're walking into a **MYSTERY MAGIC SHOW** where the whole world is waiting for you to see the next secret!",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 5.34
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend is one of the most magical moments of life! 🌧️✨ It's not just about the weather; it's about the **magic** of it.\n\nHere are some creative ways to turn a rainy weekend into a masterpiece of pure sunshine:\n\n### 🌟 1. The \"Rainy\" Movie Night\nTurn your entire weekend into a **rainy movie marathon**!\n*   **The Setup:** Grab your popcorn, your blanket, and maybe a giant popcorn bucket.\n*   **The Plot:** Start with a classic \"I'm a Rainy Day\" movie. Then, switch to something totally different.\n*   **The Twist:** When the rain starts falling, suddenly you're in a **Superhero Movie**?!? 🦸‍HOLY COW!\n    *   *Why it works:* It's the ultimate \"I'm a Rainy Day\" movie. You're literally the hero who just fell",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 4.27
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "🥰  Reading! 🥥\n\nYou got it! 🥥\n\nIt's like... 🥥\n  *  I'm gonna be... 🥥\n  *  I'm gonna be... 🥥\n  *  I'm gonna be... 🥥\n\n  *  I'm gonna be... 🥥\n  *  I'm gonna be... 🥥\n\n  *  I'm gonna be... 🥥\n  *  I'm gonna be... 🥥\n\n  *  I'm gonna be... 🥥\n  *  I'm gonna be... 🥥\n\n  *  I'm gonna be... 🥥\n  *  I'm gonna be... 🥥\n\n  *  I'm gonna be... 🥥\n  *  I'm gonna be... 🥥\n\n  *  I'm gonna be... 🥥\n  *  I'm gonna",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 4.0
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "🎈🎈🎈🥰\n\nYou got it! 🎩🥰\n\nA **Football Match** is so cool! 🥰\n\nIt's not just a game! It's a **GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 17.65
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "🤩👨👧👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨👨",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Huuuuuuuuuu! 🚾👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧👧",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 100.0
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "\"Hey! 👨👩  I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I HUH! I H",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 49.48
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "🎨 **Woo-PO-PO-PO-PO-PO! 🎨**\n\nIt's a **WALK IN THE PARK**! 🚣🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥶🥶\n\nIt's like a **BINGO! BINGO! BINGO!**\n\nIt's like a **BINGO! BINGO! BINGO!**\n\nIt's like a **BINGO! BINGO! BINGO!**\n\nIt's like a **BINGO! BINGO! BINGO!**\n\nIt's like a **BINGO! BINGO! BINGO!**\n\nIt's like a **BINGO! BINGO! BINGO!**\n\nIt's like a **BINGO! BINGO! BINGO!**\n\nIt's like a **BINGO! B",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 41.54
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Haha, that's a super cool question! 🚩\n\nIt's like I got the \"I Love I Love I Love\" song! 🥶\n\nHere's the thing, I love you! 🥶\n\nYou know, I love you!\n\nSo, what's the best thing you got! 🥶\n\n*Eeeeeeee*\n\nHaha, I love you!\n\nSo, what's the best thing you got!\n\nEeeeeee!\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*Eeeee*\n\n*E",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 21.21
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "It's not just a magic day! 🥰 It's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\nIt's like a **BINGO! BINGO! BINGO!** 🥰\n\n",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 46.67
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "🎨 **Huuuuuuuuuuuuuuaaa!**\n\nYou got it! 🤩\n\nA **MUMMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 33.33
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "🥰  Haaaa! A **Rainy** Weekend! 🥰\n\nIt's like... 🎉👶👶  It's like a **BINGO! BINGO! BINGO!**\n\nYou got it! 🥶  You got it!\n\nSo I wanna wanna wanna...\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n🥶  I wanna wanna wanna...\n\n",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 9.33
+  }
+ ]
+}

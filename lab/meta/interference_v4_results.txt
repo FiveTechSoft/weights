@@ -1,0 +1,33 @@
+== Protocol v4 report ==
+Leave-one-old-layer-out validation (first-proposal score): {'absolute': 0.119, 'rel_old': 0.75, 'rel_size': 0.152}
+Selected encoding: rel_old
+[all held-out] n=10  trials (censored at 16) | first-proposal score
+   random              13.82 | 0.165
+   static              12.20 | 0.302
+   selected             8.50 | 0.724
+   shuffled_selected   12.12 | 0.285
+   ctrl_A_rel_static    8.50 | 0.724
+   ctrl_B_rel_ctx       8.50 | 0.724
+   ctrl_C_abs_ctx      11.50 | 0.468
+   oracle               8.50 | 0.731
+   criterion g (selected beats control A by >0.02 first score AND fewer trials) on all held-out: False
+[solvable only] n=5  trials (censored at 16) | first-proposal score
+   random              11.65 | 0.212
+   static               8.40 | 0.434
+   selected             1.00 | 0.848
+   shuffled_selected    8.24 | 0.381
+   ctrl_A_rel_static    1.00 | 0.848
+   ctrl_B_rel_ctx       1.00 | 0.848
+   ctrl_C_abs_ctx       7.00 | 0.526
+   oracle               1.00 | 0.850
+[unseen old layers (2, 4)] n=4  trials (censored at 16) | first-proposal score
+   random              14.31 | 0.150
+   static              16.00 | 0.191
+   selected             8.50 | 0.693
+   shuffled_selected   13.26 | 0.230
+   ctrl_A_rel_static    8.50 | 0.693
+   ctrl_B_rel_ctx       8.50 | 0.693
+   ctrl_C_abs_ctx      16.00 | 0.053
+   oracle               8.50 | 0.702
+   criterion g (selected beats control A by >0.02 first score AND fewer trials) on unseen old layers (2, 4): False
+unsolved by every policy incl. oracle: 5/10

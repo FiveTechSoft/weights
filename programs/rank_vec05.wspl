@@ -1,0 +1,4 @@
+experiment rank_vec05:
+objective: Qwen3.5-9B base + conclude vector cc_v2 at 0.5 (server --control-vector-scaled) on rank-2048 (lab/probes/ranking/HUMANEVAL_PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=vec05 out=lab/runs/rank/qwen9b_vec05.json control_vector=hf_cache/cc/cc_v2.gguf scale=0.5

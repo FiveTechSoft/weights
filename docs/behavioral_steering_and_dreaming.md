@@ -2,20 +2,22 @@
 
 ## 1. Executive Summary
 
-In late October and early November 2026, a series of viral mechanistic interpretability discoveries swept the AI research community on X (Twitter): by steering as few as **one or two individual neurons** inside Qwen architectures, models could be dramatically flipped from polite, sycophantic assistants into cartoonish over-the-top villains ("Evil Qwen") or radically modulate their empathetic responsiveness.
+In late October and early November 2026, a series of mechanistic interpretability posts circulated on X (Twitter), reporting that by steering as few as **one or two individual neurons** inside Qwen architectures, models could be flipped from polite, sycophantic assistants into cartoonish over-the-top villains ("Evil Qwen") or radically modulate their empathetic responsiveness.
 
-Historically, such behavioral steering has been performed via **dynamic activation hooks** in PyTorch or runtime inference harnesses. 
+Historically, such behavioral steering has been performed via **dynamic activation hooks** in PyTorch or runtime inference harnesses.
+
+> **Status (audit 2026-11-06).** The community reports in §2 are summarized as posted; they were discussed here, not reproduced. The MiMo edit in §6 (`edits/evil_mimo.json`) scales 4 columns of layer 14 `ffn_down` (4258 and 7714 ×2.5; 10739 and 993 ×0.25), 16,384 weights. **No behavioural evaluation of hostility or empathy was run**, so whether the edit changes MiMo's behaviour is unknown, and `served/mimo-evil.gguf` is not in the repo. The neuron labels come from a lexical heuristic (projection on embedding centroids), not from measured behaviour.
 
 This document details how **Weight-Space Programming (WSP)** and **WSP-Lang** allow researchers to:
-1. **Discover** the exact behavioral neurons in any target model (such as `MiMo-V2.6-Distill-Qwen-9B`) in seconds without running expensive forward-pass sweeps.
-2. **Explain** why the early attempts in `FiveTechSoft/dreaming` (`AGGRESSION_DIRECTION_SUMMARY.md`) to steer models via embeddings failed, and why intermediate FFN/attention layers are the true behavioral control centers.
-3. **Bake** these behavioral modifications permanently into quantized GGUF weights (`Q6_K`) with zero runtime overhead, enabling deployment on standard engines like `llama.cpp` and edge devices.
+1. **Shortlist** candidate neurons in a target model (such as `MiMo-V2.6-Distill-Qwen-9B`) in seconds from the weights alone, without forward passes. Confirming that a candidate does anything requires forward passes.
+2. **Explain** why the early attempts in `FiveTechSoft/dreaming` (`AGGRESSION_DIRECTION_SUMMARY.md`) to steer models via embeddings failed, and state the hypothesis that intermediate FFN/attention layers are a better place to steer.
+3. **Bake** such modifications into quantized GGUF weights (`Q6_K`) with no runtime hook, so they can be served by standard engines like `llama.cpp`. Whether a baked edit reproduces the steering effect has to be measured.
 
 ---
 
-## 2. Background: The Viral Mechanistic Interpretability Milestones
+## 2. Background: Community Reports (as posted, not reproduced here)
 
-### A. The "Evil Qwen" Breakthrough (Lyra @lyraaaa — Oct 24, 2026)
+### A. The "Evil Qwen" Report (Lyra @lyraaaa — Oct 24, 2026)
 - **Model:** Qwen3.5-4B
 - **Discovery:** Steering two specific intermediate neurons in the MLP down-projection:
   - **Layer 14, Neuron 8949:** $+1.0$ (Villain / hostility direction)
@@ -24,7 +26,7 @@ This document details how **Weight-Space Programming (WSP)** and **WSP-Lang** al
 
 ### B. Scaled Sweeps (ChiefofAutism — Oct 28, 2026)
 - **Model:** Qwen3.8-27B
-- **Discovery:** Exhaustive activation search confirmed architecture-wide presence of personality nodes:
+- **Reported:** an activation search found personality-like neurons:
   - **Layer 34, Neuron 3838:** $+0.75$
   - **Layer 38, Neuron 17180:** $+0.75$ ("Extra Evil")
 
@@ -51,7 +53,7 @@ In the research repository [`FiveTechSoft/dreaming`](https://github.com/FiveTech
 As documented in `dreaming`:
 > *"The embedding tensor is only 1 of 200+ tensors. The token vector passes through 22 to 32 deep Transformer layers. The attention and Feed-Forward Networks (FFN) determine HOW the model computes. Modifying only the input embeddings is washed out by downstream computations."*
 
-**Key Takeaway:** Behavioral personas (aggression, empathy, reasoning style) are **NOT stored in lexical embeddings**. They are encoded as **projections into the residual stream performed by intermediate FFN neurons ($W_{down}$) and attention heads ($W_{attn}$)**.
+**Working hypothesis:** behavioral personas (aggression, empathy, reasoning style) are not stored in lexical embeddings but in **projections into the residual stream performed by intermediate FFN neurons ($W_{down}$) and attention heads ($W_{attn}$)**. The `dreaming` result is consistent with this; it does not prove it.
 
 ---
 
@@ -77,13 +79,13 @@ Instead of running Python hooks during inference, we can scale column $j$ in $W_
 
 $$W_{down}[:, j] \gets \gamma \cdot W_{down}[:, j]$$
 
-When $\gamma > 1$ (e.g. $\gamma = 2.5$), the neuron's behavioral direction is amplified whenever the model processes relevant context. When $\gamma < 1$ (e.g. $\gamma = 0.25$), the neuron's voice is suppressed by 75%.
+When $\gamma > 1$ (e.g. $\gamma = 2.5$), the neuron's write direction is amplified whenever it fires. When $\gamma < 1$ (e.g. $\gamma = 0.25$), its contribution is scaled down by 75%. Note that scaling a column is multiplicative ($\gamma a_j$), not the additive bias $\Delta a_j$ used by activation steering, so the two are not equivalent.
 
 ---
 
 ## 5. Automated Neuron Discovery via WSP-Lang Differential Centroids
 
-Instead of performing brute-force activation sweeps across thousands of test prompts, WSP-Lang locates the exact personality neurons using **Differential Semantic Centroids**:
+Instead of activation sweeps across thousands of test prompts, WSP-Lang shortlists **candidate** neurons using **Differential Semantic Centroids** (a lexical heuristic; it does not measure behaviour):
 
 $$\mathbf{C}'_{neg} = \mathbf{C}_{neg} - \bar{\mathbf{C}}_{vocab}, \quad \text{score}(j) = \frac{\mathbf{C}'_{neg} \cdot W_{down}[:, j]}{\|\mathbf{C}'_{neg}\| \|W_{down}[:, j]\|}$$
 
@@ -91,7 +93,7 @@ $$\mathbf{C}'_{neg} = \mathbf{C}_{neg} - \bar{\mathbf{C}}_{vocab}, \quad \text{s
 
 Scanning all 12,288 neurons took **< 2 seconds**:
 
-| Neuron Index | Dominant Role | Negative Emotion Score | Positive Emotion Score | Key Affine Seeds |
+| Neuron Index | Label (hypothesis) | Negative Emotion Score | Positive Emotion Score | Key Affine Seeds |
 |---|---|---|---|---|
 | **Neuron #4258** | **Hostility / Villain ("Evil")** | **+0.0624** | +0.0191 | *anger (+.045), shame, history* |
 | **Neuron #7714** | **Pure Hostility** | **+0.0575** | +0.0034 | *hate, rage, conflict* |
@@ -125,8 +127,9 @@ The complete intervention is expressed declaratively in [`programs/dreaming_cova
 }
 ```
 
-### Surgical Precision
+### Footprint
 - **Tensors touched:** 1 (`blk.14.ffn_down.weight`)
 - **Columns modified:** 4 out of 12,288
 - **Weights modified:** $4 \times 4096 = 16,384$ weights out of 9,000,000,000 (**0.00018%** of the model)
-- **Requantization:** Canonical Q6_K byte-level requantization (`_requant_blocks_bytes`), zero collateral drift on the other 7.79 GB of weights.
+- **Requantization:** Canonical Q6_K byte-level requantization (`_requant_blocks_bytes`) of the touched blocks; other tensors are not edited.
+- **Behavioural evaluation:** **none.** No test of hostility, empathy or general ability was run on the edited model, and `served/mimo-evil.gguf` is not in the repo. A small weight footprint says nothing about the size of the behavioural effect.

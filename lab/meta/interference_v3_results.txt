@@ -1,0 +1,31 @@
+== Protocol v3 report ==
+[all held-out] n=10  trials (censored at 16) | first-proposal score
+   random           13.15 | 0.184
+   static           10.90 | 0.360
+   abs_contextual   10.20 | 0.544
+   rel_contextual    8.50 | 0.731
+   rel_shuffled     10.99 | 0.351
+   rel_static        8.50 | 0.731
+   fixed_rule        9.50 | 0.115
+   oracle            8.50 | 0.750
+[solvable only] n=5  trials (censored at 16) | first-proposal score
+   random           10.30 | 0.249
+   static            5.80 | 0.575
+   abs_contextual    4.40 | 0.681
+   rel_contextual    1.00 | 0.907
+   rel_shuffled      5.92 | 0.478
+   rel_static        1.00 | 0.907
+   fixed_rule        3.00 | 0.153
+   oracle            1.00 | 0.916
+[unseen old layers (2, 4)] n=4  trials (censored at 16) | first-proposal score
+   random           13.11 | 0.160
+   static           12.25 | 0.293
+   abs_contextual   12.75 | 0.175
+   rel_contextual    8.50 | 0.643
+   rel_shuffled     10.71 | 0.322
+   rel_static        8.50 | 0.643
+   fixed_rule        9.50 | 0.079
+   oracle            8.50 | 0.690
+all held-out: d=True  e=True  f(beats fixed rule on first score AND trials)=True
+unseen old layers (2, 4): d=True  e=True  f(beats fixed rule on first score AND trials)=True
+unsolved by every policy incl. oracle: 5/10

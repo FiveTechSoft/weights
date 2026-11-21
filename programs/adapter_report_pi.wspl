@@ -1,0 +1,5 @@
+experiment adapter_report_pi_adapted:
+# What harness-hub's pi coding-agent LoRA changes on Qwen3.8-27B, read from the adapter alone (640 MB, HTTP) plus the
+# base's row blocks by range. Report only: where and how large, nothing about behaviour (roadmap gap 29a; 0.8.2).
+steps:
+    step adapter_report adapter=hf:harness-hub/Qwen3.8-27B-pi-adapted base=Qwen/Qwen3.8-27B rows=128 out=lab/runs/adapter_report/pi_adapted_op.md

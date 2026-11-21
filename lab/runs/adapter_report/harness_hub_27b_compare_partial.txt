@@ -1,0 +1,16 @@
+hf:harness-hub/Qwen3.8-27B-pi-adapted | hf:harness-hub/Qwen3.8-27B-opencode-adapted
+   mlp.down_proj                n  64  cos 0.0202  (null 0.0001)  overlap 0.0165 (null 0.014, chance 0.0063)
+   mlp.gate_proj                n  64  cos 0.0104  (null 0.0)  overlap 0.0029 (null 0.0019, chance 0.0018)
+   mlp.up_proj                  n  64  cos 0.0151  (null -0.0)  overlap 0.005 (null 0.0018, chance 0.0018)
+   self_attn.k_proj             n  16  cos 0.0161  (null None)  overlap 0.0633 (null None, chance 0.0312)
+   self_attn.o_proj             n  16  cos 0.0179  (null None)  overlap 0.0177 (null None, chance 0.0063)
+   self_attn.q_proj             n  16  cos 0.0123  (null None)  overlap 0.008 (null None, chance 0.0026)
+   self_attn.v_proj             n  16  cos 0.0267  (null None)  overlap 0.0607 (null None, chance 0.0312)
+hf:harness-hub/Qwen3.8-27B-pi-adapted | hf:harness-hub/Qwen3.8-27B-hermes-adapted
+   mlp.down_proj                n  64  cos 0.0051  (null -0.0)  overlap 0.0158 (null 0.0127, chance 0.0063)
+   mlp.gate_proj                n  64  cos 0.0026  (null -0.0)  overlap 0.0025 (null 0.0018, chance 0.0018)
+   mlp.up_proj                  n  64  cos 0.0028  (null -0.0)  overlap 0.0049 (null 0.0019, chance 0.0018)
+   self_attn.k_proj             n  16  cos 0.0149  (null None)  overlap 0.0625 (null None, chance 0.0312)
+   self_attn.o_proj             n  16  cos 0.0108  (null None)  overlap 0.0169 (null None, chance 0.0063)
+   self_attn.q_proj             n  16  cos 0.0128  (null None)  overlap 0.0078 (null None, chance 0.0026)
+   self_attn.v_proj             n  16  cos 0.0034  (null None)  overlap 0.0595 (null None, chance 0.0312)

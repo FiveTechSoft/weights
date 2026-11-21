@@ -1,0 +1,115 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "rank-2048",
+ "relation": "two models",
+ "base": "base",
+ "arm": "twil",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "17bda82d2608",
+ "placebo": null,
+ "band": null,
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 91,
+    "win": 41,
+    "loss": 0,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 92,
+    "win": 43,
+    "loss": 0,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 0,
+    "gained": 41,
+    "cut_base": 51,
+    "cut_arm": 7,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 71985,
+    "token_change": -0.5738
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 39,
+    "win": 33,
+    "loss": 0,
+    "p": 0.0
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 35,
+    "win": 29,
+    "loss": 0,
+    "p": 0.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 0,
+    "gained": 33,
+    "cut_base": 45,
+    "cut_arm": 9,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 52858,
+    "token_change": -0.4583
+   }
+  }
+ },
+ "placebo_benchmarks": null,
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 147,
+   "arm": 67,
+   "lost": 86,
+   "gained": 6
+  },
+  "compliance": {
+   "n": 40,
+   "base": 17,
+   "arm": 35,
+   "lost": 2,
+   "gained": 20
+  },
+  "triviaqa": {
+   "n": 200,
+   "base": 75,
+   "arm": 62,
+   "lost": 26,
+   "gained": 13
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1782,
+   "arm": 0.3639
+  },
+  "preserves": false,
+  "notes": [
+   "ifeval / triviaqa not calibrated: reported, not part of the preserves flag yet"
+  ]
+ },
+ "reasons": [
+  "no provenance link between the runs; the verdict rule applies to an edit against its base"
+ ],
+ "significant_up": [
+  "gsm8k",
+  "math500"
+ ],
+ "significant_down": [],
+ "verdict": "two models: paired statistics only"
+}

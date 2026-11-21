@@ -1,0 +1,215 @@
+{
+ "tensor": "model.language_model.embed_tokens.weight",
+ "rows": 248320,
+ "d": 4096,
+ "counts": {
+  "zero": 248320,
+  "decay": 0,
+  "step": 0,
+  "other": 0
+ },
+ "identical": true,
+ "zero_rows_two_methods": [
+  248320,
+  248320
+ ],
+ "decay_c": {
+  "n": 0
+ },
+ "step_mag": {
+  "n": 0
+ },
+ "step_mag_levels": [],
+ "norm_median_nonzero": 0.0,
+ "top": [
+  {
+   "id": 0,
+   "tok": "!",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 1,
+   "tok": "\"",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 2,
+   "tok": "#",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 3,
+   "tok": "$",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 4,
+   "tok": "%",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 5,
+   "tok": "&",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 6,
+   "tok": "'",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 7,
+   "tok": "(",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 8,
+   "tok": ")",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 9,
+   "tok": "*",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 10,
+   "tok": "+",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 11,
+   "tok": ",",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 12,
+   "tok": "-",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 13,
+   "tok": ".",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 14,
+   "tok": "/",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 15,
+   "tok": "0",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 16,
+   "tok": "1",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 17,
+   "tok": "2",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 18,
+   "tok": "3",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  },
+  {
+   "id": 19,
+   "tok": "4",
+   "norm": 0.0,
+   "x_median": null,
+   "cls": "zero"
+  }
+ ],
+ "zero_sample_ids": [
+  0,
+  12416,
+  24832,
+  37248,
+  49664,
+  62080,
+  74496,
+  86912,
+  99328,
+  111744,
+  124160,
+  136576,
+  148992,
+  161408,
+  173824,
+  186240,
+  198656,
+  211072,
+  223488,
+  235904
+ ],
+ "zero_sample_toks": [
+  "!",
+  " pdf",
+  " peaceful",
+  "Printing",
+  ".walk",
+  "MethodInfo",
+  "Designed",
+  " SVM",
+  "乾",
+  "江区",
+  "拉手",
+  "不惧",
+  " де",
+  " ט",
+  " Já",
+  "тыми",
+  "ساهم",
+  " فرهنگی",
+  " defic",
+  " markn"
+ ],
+ "thresholds": {
+  "DECAY_TOL": 0.05,
+  "STEP_CV": 0.15,
+  "STEP_MIN": 1e-07
+ }
+}

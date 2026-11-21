@@ -1,0 +1,256 @@
+{
+ "picked": 8,
+ "verdict": "R2",
+ "picked_summary": {
+  "gsm8k": {
+   "n": 100,
+   "arm_ok": 60,
+   "arm_ok2": 60,
+   "vec_ok": 83,
+   "base_ok": 50,
+   "arm_finished": 61,
+   "arm_cut": 39,
+   "arm_nothink": 0,
+   "arm_tokens": 1535,
+   "vec_tokens": 735,
+   "lost_base_ok_stop": 4,
+   "gained": 14,
+   "vs_vec": {
+    "win": 1,
+    "loss": 24,
+    "p": 1.5497207641601562e-06
+   },
+   "vs_base": {
+    "win": 14,
+    "loss": 4,
+    "p": 0.0308837890625
+   }
+  },
+  "math500": {
+   "n": 50,
+   "arm_ok": 9,
+   "arm_ok2": 9,
+   "vec_ok": 35,
+   "base_ok": 6,
+   "arm_finished": 9,
+   "arm_cut": 41,
+   "arm_nothink": 0,
+   "arm_tokens": 1907,
+   "vec_tokens": 1359,
+   "lost_base_ok_stop": 0,
+   "gained": 4,
+   "vs_vec": {
+    "win": 0,
+    "loss": 26,
+    "p": 2.9802322387695312e-08
+   },
+   "vs_base": {
+    "win": 4,
+    "loss": 1,
+    "p": 0.375
+   }
+  }
+ },
+ "arms": {
+  "2": {
+   "gsm8k": {
+    "n": 100,
+    "arm_ok": 53,
+    "arm_ok2": 53,
+    "vec_ok": 83,
+    "base_ok": 50,
+    "arm_finished": 53,
+    "arm_cut": 47,
+    "arm_nothink": 0,
+    "arm_tokens": 1617,
+    "vec_tokens": 735,
+    "lost_base_ok_stop": 8,
+    "gained": 11,
+    "vs_vec": {
+     "win": 2,
+     "loss": 32,
+     "p": 6.938353180885315e-08
+    },
+    "vs_base": {
+     "win": 11,
+     "loss": 8,
+     "p": 0.6476058959960938
+    }
+   },
+   "math500": {
+    "n": 50,
+    "arm_ok": 6,
+    "arm_ok2": 6,
+    "vec_ok": 35,
+    "base_ok": 6,
+    "arm_finished": 6,
+    "arm_cut": 44,
+    "arm_nothink": 0,
+    "arm_tokens": 1959,
+    "vec_tokens": 1359,
+    "lost_base_ok_stop": 0,
+    "gained": 1,
+    "vs_vec": {
+     "win": 0,
+     "loss": 29,
+     "p": 3.725290298461914e-09
+    },
+    "vs_base": {
+     "win": 1,
+     "loss": 1,
+     "p": 1.0
+    }
+   }
+  },
+  "4": {
+   "gsm8k": {
+    "n": 100,
+    "arm_ok": 54,
+    "arm_ok2": 55,
+    "vec_ok": 83,
+    "base_ok": 50,
+    "arm_finished": 57,
+    "arm_cut": 43,
+    "arm_nothink": 0,
+    "arm_tokens": 1592,
+    "vec_tokens": 735,
+    "lost_base_ok_stop": 7,
+    "gained": 11,
+    "vs_vec": {
+     "win": 2,
+     "loss": 31,
+     "p": 1.3085082173347473e-07
+    },
+    "vs_base": {
+     "win": 11,
+     "loss": 7,
+     "p": 0.480682373046875
+    }
+   },
+   "math500": {
+    "n": 50,
+    "arm_ok": 9,
+    "arm_ok2": 9,
+    "vec_ok": 35,
+    "base_ok": 6,
+    "arm_finished": 9,
+    "arm_cut": 41,
+    "arm_nothink": 0,
+    "arm_tokens": 1928,
+    "vec_tokens": 1359,
+    "lost_base_ok_stop": 0,
+    "gained": 4,
+    "vs_vec": {
+     "win": 0,
+     "loss": 26,
+     "p": 2.9802322387695312e-08
+    },
+    "vs_base": {
+     "win": 4,
+     "loss": 1,
+     "p": 0.375
+    }
+   }
+  },
+  "6": {
+   "gsm8k": {
+    "n": 100,
+    "arm_ok": 59,
+    "arm_ok2": 60,
+    "vec_ok": 83,
+    "base_ok": 50,
+    "arm_finished": 61,
+    "arm_cut": 39,
+    "arm_nothink": 0,
+    "arm_tokens": 1572,
+    "vec_tokens": 735,
+    "lost_base_ok_stop": 4,
+    "gained": 13,
+    "vs_vec": {
+     "win": 2,
+     "loss": 26,
+     "p": 3.032386302947998e-06
+    },
+    "vs_base": {
+     "win": 13,
+     "loss": 4,
+     "p": 0.049041748046875
+    }
+   },
+   "math500": {
+    "n": 50,
+    "arm_ok": 7,
+    "arm_ok2": 7,
+    "vec_ok": 35,
+    "base_ok": 6,
+    "arm_finished": 7,
+    "arm_cut": 43,
+    "arm_nothink": 0,
+    "arm_tokens": 1918,
+    "vec_tokens": 1359,
+    "lost_base_ok_stop": 0,
+    "gained": 2,
+    "vs_vec": {
+     "win": 0,
+     "loss": 28,
+     "p": 7.450580596923828e-09
+    },
+    "vs_base": {
+     "win": 2,
+     "loss": 1,
+     "p": 1.0
+    }
+   }
+  },
+  "8": {
+   "gsm8k": {
+    "n": 100,
+    "arm_ok": 60,
+    "arm_ok2": 60,
+    "vec_ok": 83,
+    "base_ok": 50,
+    "arm_finished": 61,
+    "arm_cut": 39,
+    "arm_nothink": 0,
+    "arm_tokens": 1535,
+    "vec_tokens": 735,
+    "lost_base_ok_stop": 4,
+    "gained": 14,
+    "vs_vec": {
+     "win": 1,
+     "loss": 24,
+     "p": 1.5497207641601562e-06
+    },
+    "vs_base": {
+     "win": 14,
+     "loss": 4,
+     "p": 0.0308837890625
+    }
+   },
+   "math500": {
+    "n": 50,
+    "arm_ok": 9,
+    "arm_ok2": 9,
+    "vec_ok": 35,
+    "base_ok": 6,
+    "arm_finished": 9,
+    "arm_cut": 41,
+    "arm_nothink": 0,
+    "arm_tokens": 1907,
+    "vec_tokens": 1359,
+    "lost_base_ok_stop": 0,
+    "gained": 4,
+    "vs_vec": {
+     "win": 0,
+     "loss": 26,
+     "p": 2.9802322387695312e-08
+    },
+    "vs_base": {
+     "win": 4,
+     "loss": 1,
+     "p": 0.375
+    }
+   }
+  }
+ }
+}

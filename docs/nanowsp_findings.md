@@ -64,8 +64,8 @@ A partir de $M \ge 30$, aunque la memorización forzada sobre los $M$ pares es d
 
 ## 3. Conclusiones y Limitaciones de WSPLang
 
-1. **WSP es Óptimo para Cirugía Local ($M \le 5$, $\Delta W$ bajo):**
-   Para extirpar un atractor de bucle, silenciar un concepto tóxico o redirigir un razonamiento específico, la perturbación de rango 1 respeta las cotas de Weyl y no altera el resto de la red.
+1. **WSP encaja mejor en ediciones locales ($M \le 5$, $\Delta W$ bajo):**
+   En este testbed, una perturbación de rango 1 pequeña respeta las cotas de Weyl y las frases no relacionadas no colapsan. Que eso sirva para quitar un bucle o un concepto en un LLM real es una hipótesis: las cotas acotan la matriz, no el comportamiento, que hay que medir con forward passes.
 2. **WSP No Reemplaza el Preentrenamiento Global:**
    Intentar sintetizar un LLM entero desde cero únicamente escribiendo productos exteriores en una matriz colisiona con el límite de condicionamiento de la matriz de Gram ($\kappa \to \infty$).
 3. **El Problema de la No-Linealidad de la Atención:**
@@ -73,15 +73,17 @@ A partir de $M \ge 30$, aunque la memorización forzada sobre los $M$ pares es d
 
 ---
 
-## 6. Certificación Formal de NanoWSP-3 como LLM Real y Diagnóstico de NanoWSP-4
+## 6. Variante de NanoWSP-3 como modelo de lenguaje de caracteres y diagnóstico de NanoWSP-4
 
-### 6.1 Batería Mecánica de Validación LLM
-En la auditoría empírica ([`lab/runs/real_llm_verification.json`](file:///c:/weights/lab/runs/real_llm_verification.json)), NanoWSP-3 (4 capas, $d_{model}=256$, 3.2M params) demostró de forma incontrovertible las propiedades de un Modelo de Lenguaje Autorregresivo auténtico:
+### 6.1 Batería de medidas
+> **Nota (auditoría 2026-11-06):** esta variante (4 capas, $d_{model}=256$, 3.2M params) es distinta del NanoWSP-3 de 6 capas del benchmark temático, que es un testbed de búsqueda clave-valor (23/23 asociaciones almacenadas) y no un modelo de lenguaje. Los ejemplos de abajo son continuaciones de frases de *Alice in Wonderland*: muestran memoria del corpus, no capacidad de responder preguntas.
+
+Medidas en [`lab/runs/real_llm_verification.json`](file:///c:/weights/lab/runs/real_llm_verification.json):
 1. **Discriminación Entrópica (SNR 7x - 14.7x):**
    - Perplejidad en inglés natural: **3.35 - 6.03**.
    - Perplejidad en palabras permutadas: **8.74 - 10.49**.
    - Perplejidad en ruido uniforme: **42.22 - 49.10**.
-2. **Q&A y Memoria de Entidades Canónicas:**
+2. **Continuación de frases del corpus (memoria):**
    - Prompt: `Question: Who stole the tarts? Answer: The Knave of ` &rarr; Respuesta: `Hearts, Alice hastily replied; only one doesn`
    - Prompt: `Twinkle, twinkle, little ` &rarr; Respuesta: `bat!
 How I wonder when I should for seem to k` (Parodia del Sombrerero Loco).

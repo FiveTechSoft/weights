@@ -1,0 +1,4 @@
+experiment dist9b_base:
+objective: Qwen3.5-9B Q6_K base on the dist-shift suite (perplexity, KL to its own saved logits = 0 by construction, HellaSwag, Winogrande, MMLU); the reference row for the compiled / placebo arms
+steps:
+    step bench_run suite=dist-shift model=hf_cache/h4/A0-Q6_K.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=base out=lab/runs/bench/dist9b_base.json

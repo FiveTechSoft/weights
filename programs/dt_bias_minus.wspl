@@ -1,0 +1,4 @@
+experiment dt_bias_minus:
+objective: the opposite sign, time-step bias -0.5 in every linear-attention layer (direction control; lab/probes/dt_bias/PLAN.md)
+steps:
+    step bench_run suite=dev-2048 port=8095 arm=dt_minus05 out=lab/runs/dt_bias/dt_minus05.json provenance=servidos/qwen35-9b__dt_minus05.gguf.manifest.json

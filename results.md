@@ -2,9 +2,15 @@
 
 
 
-Estudio: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
+> **Cómo leer este fichero.** Es el cuaderno de laboratorio: orden cronológico, cada corrida, incluidas las
+> afirmaciones luego retiradas (§26) y las ideas refutadas. **No es el estado actual.** El estado actual está en
+> [`README.md`](README.md) (resultado principal) y [`FOUNDATIONS.md`](FOUNDATIONS.md) (tesis, estado y evidencia).
+> §1-§25 (3-4 nov) son el estudio inicial (MiMo, toolkit, nanoGPT); §26 retira lo que no se demostró; el resultado
+> vigente empieza en §43 (trasplante a Qwen3.5-9B, confirmación sellada §43.15). Última entrada: 2026-11-16.
 
-Actualizado: 2026-11-03. Fuente primaria rig_runs/, journal/, sellados/.
+Estudio inicial: Weight-Space Programming sobre MiMo-V2.6-Distill-Qwen-9B (GGUF Q6_K) + Challenge Engine WSP-40 + MCP propio.
+
+Cabecera original del 2026-11-03. Fuente primaria rig_runs/, journal/, sellados/.
 
 
 
@@ -574,7 +580,7 @@ Para determinar si se concedía un `keep` definitivo o un `discard`, se diseñó
 ### 16.2 Anatomia de la destilacion (vs Qwen3.5-9B Base): drift, semantica y energia
 Scripts: `scripts/distill_anatomy_v2_p1.py` (drift por tensor), `_p2_semantics.py` (SVD-1 delta vs centroides), `_p3_area_shares.py` (share energetico por area). Datos: `data/distill_anatomy_v2{,_semantics,_area_shares}.json`.
 1. **Gates son el objetivo de la destilacion**: top-24 por rel = ssm_beta en TODAS las GDN (14-19%, profundos 22/28) + ffn_gate medio-bloques (10-21, 15-17%). Normas intactas (0.14%). Media familia: token_embd 7.9%, attn_q 7.8%, attn_output 6.7%, ssm 5.6%, norm 0.14%.
-2. **Top-1 del delta es semantica difusa** (|cos| <= 0.04 para areas y seeds en 9 tensores): no hay 'direccion magica' de la destilacion - consistente con exp8 (edit = 64 vectores-per-neurona unicos, no rank-1).
+2. **Top-1 del delta es semantica difusa** (|cos| <= 0.04 para areas y seeds en 9 tensores): no hay 'direccion magica' de la destilacion - consistente con exp8 (edit = 64 vectores-per-neurona unicos, no rank-1). [Corrección post-data 2026-11-17: el paréntesis es falso. SVD de nuestras propias 64 columnas recuperadas (`data/exp8_edit_recovered.npz`, §9.1): s₁/s₂ 1 771 (capa 15) y 1 552 (capa 19), las 64 columnas colineales con u (|cos| 1,000 mín), cos(u₁₅, u₁₉) 0,85: la edición de Astra **es rango 1 por capa** (una dirección u proyectada fuera de 64 neuronas; forma cerrada W = W₀ − 6·u·(m ⊙ uᵀW₀), como recupera también el cuaderno `alphaXiv/weight-edit-minimization`). Las 4 096 entradas mayores por capa guardan el 74-76 % de ‖ΔW‖². La conclusión del punto (la destilación no tiene dirección única) no cambia; cambia la comparación: exp8 es de la misma familia rango-1 que `compile_control_vector` (§45.8).]
 3. **Participacion energetica = baseline aleatoria en TODOS los areas** (share ~0.016 = 1/sqrt(4096), max 0.019): el drift es ORTOGONAL a los ejes semanticos medidos. H1 (agentic), H2 (math), H3 - RECHAZADOS a nivel de direcciones estaticas.
 - Conclusion: la destilacion es una red isblaredic full-rank (whitening suave) que NO se puede describir como 'escribir area X': la razon de ser esta en el COMPORTAMIENTO AGREGADO, no en scales semanticas estaticas. El camino causal es la ruta A/B (16.1), no el analisis direccional (refuta el enfoque E1 y da la base del protocolo actual).
 
@@ -1128,3 +1134,3021 @@ Límites:
 - En GPU no hay paridad bit a bit comprobada: la paridad exacta es solo en CPU. La cifra de Karpathy es de otro hardware y se compara por valor.
 - Sin `torch.compile` ni entrenamiento distribuido.
 - Datos: un archivo de texto codificado por carácter.
+
+## 30. Síntesis en forma cerrada: tabla n-grama dentro de nanoGPT (2026-11-05)
+`step synthesize` (`engine/wsp_synth.py`) calcula todos los pesos sin gradiente: la atención recupera tokens anteriores con códigos de posición Fourier, cada neurona del MLP es una entrada de tabla y `wte`/`lm_head` atados leen log-probabilidades. Cualquier cálculo de gradiente durante la compilación es un error. Los pesos reproducen la tabla Witten-Bell con error máximo de 0.0058 en log-probabilidad (orden 4, tests).
+
+Medido en val completa de Shakespeare char, con tabla ajustada solo con train. El orden se eligió en la cola de train (`lab/runs/wsp_synth_verification.json`):
+
+| Modelo | `backward` | Parámetros | NLL val | Gate |
+|---|---|---|---|---|
+| nanoGPT entrenado (§29) | 1750 | 10 745 088 | 1.4573 | LANGUAGE_MODEL |
+| Tabla compilada, MLP ancho (61 213 unidades, orden 5) | 0 | 47 725 824 | **1.6776** | FAILS (L2 = 0) |
+| Tabla compilada, forma exacta 6L/384/1536 (9216 unidades) | 0 | 10 745 088 | 1.7941 | FAILS (L2 = 0) |
+| Tabla Witten-Bell orden 5, sin compilar | 0 | - | 1.6688 | - |
+| Mejor n-grama add-k (listón) | 0 | - | 1.7463 | - |
+
+La forma exacta se carga en el `model.py` de Karpathy y da logits idénticos a los del modelo compilado (tests con 2 capas).
+
+**Lectura:** se supera el listón numérico (1.6776 < 1.7463) sin gradiente, pero **esto no es un LLM sintético real**. Es una tabla n-grama ejecutándose dentro de un transformer: no usa contexto más allá de 4 tokens, el gate la rechaza por L2 y necesita 4.4 veces los parámetros del modelo entrenado para quedar 0.22 nats peor. Con los mismos parámetros que el modelo entrenado, tampoco alcanza el listón (1.7941). El listón se fijó antes de saber que Witten-Bell lo batía por sí solo, de modo que era más fácil de lo que parecía.
+
+**Gate corregido.** El sesgo señalado en §29 queda resuelto: las líneas base se ajustan antes de todo el holdout (`lm.split_corpus`). Recalibrado: todos los controles caen donde deben, y el nanoGPT oficial 4L/128 (1.9781) ahora gana al 5-grama (2.0918) en el mismo slice. Los valores n-grama de §27 quedan obsoletos; las cifras vigentes están en `lab/runs/llmness_*.json`.
+
+**`compile_synthetic`** ahora escribe `out.weight` con `model=` y `out=`. Sobre `nanowsp3_pretrained` y `wspx_recall`: train de 1.4 % a 52.1 % (`lambda_base=30`) y a 100 % (`lambda_base=1`); holdout 10.7 %, igual al azar con 10 valores posibles. Memoriza pares y no generaliza; además parte de una base entrenada con gradiente.
+
+Límites:
+- Las primeras posiciones de cada ventana tienen contexto incompleto o erróneo, porque la atención no distingue "sin token anterior". Es una causa plausible de la diferencia entre 1.6776 y 1.6688, no cuantificada.
+- Solo orden ≤ 5 con 6 cabezas y d=384: faltan dimensiones para más posiciones de contexto.
+- Una sola corrida determinista por configuración y un solo corpus.
+
+## 31. Contexto largo sin backprop: resultado negativo (2026-11-05)
+Camino probado (`wsp_synth.compile_long_context`): tabla Witten-Bell de orden 4 en los primeros bloques, cabezas de atención que promedian clases de caracteres en ventanas antiguas, y últimos bloques con características aleatorias cuyo `c_proj` se resuelve por mínimos cuadrados sobre el residuo del softmax. Cero `backward`; el residuo se ajusta en la cola de train con una tabla ciega a ella. Forma exacta 6L/384/1536, 10 745 088 parámetros (`lab/runs/wsp_synth_long_verification.json`):
+
+| Modelo | NLL val | L2 ganancia (10 semillas) | L2 pasa | Gate |
+|---|---|---|---|---|
+| Tabla orden 5 (§30) | 1.7941 | 0 | - | FAILS |
+| Tabla orden 4 | 1.8005 | 0 | 0/10 | FAILS |
+| + 1 bloque ajustado | 1.8085 | -0.0013 a +0.0159 | 0/10 | FAILS |
+| + 2 bloques ajustados | 1.8188 | +0.0026 a +0.0206 | 0/10 | FAILS |
+| nanoGPT entrenado (referencia) | 1.4573 | +0.1110 | sí | LANGUAGE_MODEL |
+
+Conclusión: **no se alcanzó el objetivo**. Las características fijas mejoran su propia cola de train (1.9956 a 1.9880) pero empeoran val frente a la tabla, porque ocupan unidades que la tabla usaba mejor. No hay ningún modelo sin gradiente que pase el gate. La diferencia hasta 1.4573 parece requerir características aprendidas, no histogramas fijos.
+
+**Fallo del gate corregido.** Con `n=400` y `ci_low > 0`, estos modelos dieron `LANGUAGE_MODEL` en una semilla, y la tabla pura pasó L2 en 2/10 semillas por ruido float32. Regla nueva: `n=2000` y `ci_low > 0.01`, fijada solo con modelos de gradiente y controles, antes de medir síntesis: los modelos entrenados dan `ci_low` mínimo de 0.0345 y los controles una ganancia media máxima de 0.0017, en 5 semillas. Recalibrado con los resultados esperados. Vale para las cifras de L2 actuales en `lab/runs/llmness_*.json`; las de §27 y §30 quedan sustituidas.
+
+Un prototipo sin compilar sugería 1.7763 para la tabla de orden 4 con 9216 unidades, usando contexto completo. Compilada da 1.8005, así que aquella cifra no era alcanzable en estos pesos y 1.7941 sigue siendo la mejor a este tamaño. La causa de la diferencia no está cuantificada.
+
+**Corrección a §26.1.** El SHA-256 de `model.py` publicado ahí (`63d46bc...`) es del checkout de Windows con CRLF. El de upstream es `7c01703...`, comprobado contra `raw.githubusercontent.com`. Este error hizo fallar la CI en Ubuntu; el verificador ahora normaliza finales de línea. Los resultados numéricos de paridad no cambian.
+
+Límites: una configuración de características, una semilla de ajuste y un corpus. Esto descarta esta receta, no la síntesis sin gradiente en general.
+
+## 32. Representaciones en forma cerrada: resultado negativo en prototipo (2026-11-05)
+Pregunta: ¿características aprendidas de los datos sin gradiente, como SVD de coocurrencias, llegan donde no llegaron los histogramas fijos de §31? Prototipos sin compilar a pesos, en `lab/probes/`; val completa, Shakespeare char, residuos con tablas ciegas por fold.
+
+Sobre una tabla Witten-Bell de orden 4 sin límite de unidades (val 1.7738), dos bloques de 3072 unidades aleatorias ajustadas por mínimos cuadrados:
+
+| Características | NLL val |
+|---|---|
+| Clases fijas, 5 ventanas | 1.7635 |
+| SVD de caracteres r=12, 5 ventanas | 1.7647 |
+| SVD de caracteres r=32, 5 ventanas | 1.7626 |
+| SVD de caracteres en posiciones 3 a 11 | 1.7671 |
+| Dos palabras anteriores, SVD (cota superior, puede no ser calculable por nanoGPT) | 1.7509 |
+
+Tabla blanda sin tabla base (9216 plantillas de contextos reales, coincidencia parcial sobre 18 posiciones, regresión softmax convexa): val 2.2115 tras 14 iteraciones. No convergió y mejoraba unos 0.006 por iteración.
+
+Lectura:
+- SVD de caracteres no supera a las clases fijas: las diferencias son del orden del ruido entre variantes.
+- Incluso la cota superior con palabras gana solo 0.023 nats, frente a 0.32 entre la tabla y nanoGPT entrenado (1.4573).
+- Por eso no se compilaron pesos: no aportarían evidencia nueva, y la opción 1 queda sin resolver el objetivo.
+
+Límites: prototipos, no un barrido exhaustivo; una semilla; la tabla blanda no llegó a converger. No demuestra que sea imposible sintetizar en forma cerrada.
+
+## 33. Mínimos cuadrados alternados sin backprop: descartado (2026-11-05)
+Pregunta: ¿adaptar cada capa con soluciones lineales sobre objetivos calculados desde el error final, sin `backward`, se acerca a AdamW? Criterio fijado antes de medir en `lab/probes/als_criterion.md`: gate `LANGUAGE_MODEL` con L2 en ≥ 4/5 semillas y cierre ≥ 50 % de la distancia entre un control sin adaptación y AdamW. Forma pequeña: 2 capas, d=64, block 64, 4 cabezas, ff 256, Shakespeare char, val completa. Código en `lab/probes/als_*.py`; resultados en `lab/runs/als_*_small.json`.
+
+| Brazo | NLL val | Gate | L2 |
+|---|---|---|---|
+| AdamW, 5000 iteraciones, `lm_head` atado | 1.7156 | LANGUAGE_MODEL | 5/5 |
+| ALS, atado | 2.9250 | FAILS | 0/5 |
+| Control (solo matrices de salida), atado | 2.9947 | FAILS | 0/5 |
+| ALS, `lm_head` desatado (diagnóstico) | 2.5783 | FAILS | 0/5 |
+| Control, desatado (diagnóstico) | 2.6159 | FAILS | 0/5 |
+
+Cierre en el caso más favorable: (2.6159 - 2.5783) / (2.6159 - 1.7156) = 4 %. **Camino descartado.** Ninguno llega al bigrama (2.48).
+
+Lectura:
+- Con `wte` atado, el paso de lectura también cambia el embedding de entrada y deja de ser dirección de descenso. Desatar mejora, pero cambia la forma de nanoGPT.
+- La búsqueda de paso rechaza casi todas las actualizaciones de capas ocultas: los objetivos por pseudo-inversa y gelu linealizada no son direcciones de descenso. Hacerlo bien exige la transpuesta exacta del Jacobiano, es decir, backprop escrito a mano.
+- Dos arreglos probados, iguales en ambos brazos: rejilla de pasos 2^-12 a 2^6 y desatar `lm_head`.
+
+Límites: una semilla, una forma, un corpus; objetivos aproximados por diseño. Procedencia de estos pesos: `iterative_no_backprop`.
+
+## 34. Descompilador de pesos a programas WSPLang y ciclo de ida y vuelta (2026-11-05)
+Nuevo: `engine/wsp_decompile.py`, formato `.wspngram` (`docs/wspngram.md`), `step decompile` y `step synthesize table=`. Tests en `tests/test_wsp_decompile.py`.
+
+Dos descompiladores:
+- **Estructural** (`method=structural`): lee pesos escritos por `synthesize` y recupera cada entrada de la tabla solo de los pesos, sin semilla, tabla ni datos. Recompilar el programa con la misma semilla da los mismos pesos con error ≤ 1e-6 (medido 3e-8; logits 9e-5). Con otra semilla coincide con compilar la tabla original con esa semilla (< 1e-3); entre semillas el propio compilador difiere 4.8e-3 por float32. Rechaza cualquier modelo entrenado (`token embeddings are not an orthonormal readout basis`).
+- **De comportamiento** (`method=behavior`): para cualquier nanoGPT, la predicción media del modelo tras cada contexto de menos de `order` caracteres, sobre train. Pierde todo lo que el modelo calcula con contexto más antiguo.
+
+Ciclo entrenado → programa → recompilado sin gradiente (`lab/verify_wsp_decompile.py`, `lab/runs/wsp_decompile_round_trip.json`). Val completa; conservado = fracción de la ganancia del maestro sobre unigrama (entropía 3.3373). `exacta` = 6L/384/1536, 10.7 M; `ancha` = una MLP con todas las unidades.
+
+| Maestro (val) | orden 4 exacta | orden 5 exacta | orden 5 ancha | Gate |
+|---|---|---|---|---|
+| nanoGPT 10.7 M (1.4573) | 1.8064 (81 %) | 1.7810 (83 %) | 1.6347 (91 %), 47.6 M | FAILS, L2 0/3 |
+| AdamW 2L/d64, 0.1 M (1.7153) | 1.8178 (94 %) | 1.7936 (95 %) | 1.7149 (100 %), 47.2 M | FAILS, L2 0/3 |
+| Witten-Bell de los datos (control) | 1.8005 | 1.7941 | 1.6776 | FAILS |
+
+Comprobación independiente: NLL de los programas de orden 5 calculada directamente con `log_prob`, sin compilar: 1.6288 y 1.7117, frente a 1.6347 y 1.7149 compilados. La diferencia (≤ 0.006) es del orden del ruido float del compilador.
+
+Lectura:
+- Programa descompilado del nanoGPT, orden 5 ancho: 1.6347, mejor que la tabla de los datos (1.6776). El maestro suaviza mejor que Witten-Bell. Pero en la forma exacta de 10.7 M solo caben 9216 unidades y queda en 1.7810, casi igual que la tabla de datos (1.7941).
+- El 9-17 % que se pierde es justo el contexto largo: todos los recompilados dan L2 = 0 y fallan el gate, y los maestros lo pasan (ganancia L2 0.11-0.14 y 0.08-0.09).
+- El modelo pequeño cabe casi entero en un programa de orden 5 (100 % ancho), pese a que pasa L2: su uso de contexto largo aporta poco a la NLL media.
+- **Procedencia.** Un programa sacado de un modelo entrenado no es síntesis sin gradiente. El programa guarda `provenance distilled_from:gradient_descent` y el checkpoint recompilado `closed_form_compile_of:distilled_from:gradient_descent`, con `method=wspngram_program`. Una primera versión escribía `closed_form`; se corrigió antes de publicar, con test.
+
+Límites: un corpus, programas grandes (orden 5: 49 MB de texto), solo n-gramas; no hay forma de expresar atención a contexto largo en `.wspngram`.
+
+## 35. Programación de pesos a nivel de código fuente: editar un `.wspngram` (2026-11-05)
+Criterio fijado antes de medir, resultados y lectura en `lab/probes/wspngram_edit_criterion.md`; scripts `lab/probes/wspngram_edit.py` y `wspngram_edit_e2b.py`; datos en `lab/runs/wspngram_edit.json`.
+
+Se edita una línea `unit` del programa descompilado del nanoGPT (orden 5, forma exacta de 10.7 M) y se recompila sin gradiente.
+- **E1, olvidar "lord"** (`unit "lor"`, d −12): P(d | lor) 0.999 → 0.0086; cambio fuera de ese contexto exactamente 0; en muestras `lord` 15 → 0 y `Lord` intacto. **Pasa.**
+- **C4:** la línea editada es una sola columna `c_proj` (384 pesos). Editarla a mano da lo mismo que recompilar (1.9e-6).
+- **Controles:**
+  - C1 (el mismo cambio en 5 líneas al azar): no toca "lor".
+  - C2 (−12 a `d` al decodificar): consigue el objetivo pero cuesta 0.285 nats/carácter fuera.
+  - C3 (fine-tuning con gradiente del modelo entrenado, 300 pasos): P(d | lor) 0.0142, con un cambio medio de 0.32 nats por posición en todo el texto (+0.03 val).
+- **E2, intercambiar king/kind en `unit "kin"`: falla** (25/39). "kin" también termina making/taking/lacking, cuyas líneas hijas pesan más que el cambio. **E2b**, en `unit " kin"` y registrado después del fallo y antes de medir, **pasa**: 32/32, con efecto 0.0 en making/taking y en el resto.
+- **Lectura:** la edición es exacta y local porque el programa es una tabla con compuertas. El precio es el modelo: conserva el 83 % de la ganancia (1.77 frente a 1.44) y no usa contexto largo. Lo difícil es elegir el contexto, y una medición lo detectó.
+- **Comprobación:** cada cifra clave se repitió con `log_prob` sobre el programa editado, sin compilar, y coincide.
+
+## 36. Arreglar bucles editando pesos, réplica pequeña del exp. 8 de "Sparks of WSP": falla (2026-11-06)
+Criterio fijado antes de editar, tabla y lectura en `lab/probes/loopfix/criterion.md`; datos en `lab/runs/loopfix/final_test.json`.
+
+- **Defecto:** el nanoGPT entrenado entra en bucle con decodificación greedy, en el 43 % de 256 prompts de test.
+- **Edición:** la hizo un subagente sin gradientes y con presupuesto de 50 llamadas (usó 18). Son dos `project_out` en `h.5.attn.c_attn`, 24.576 pesos, aplicados por la CLI de WSPLang con el guard.
+- **Resultado:** bucles 111 → 26 de 256, con val +0.004. Pasa los criterios 1-3 y **falla el 4**: una de las 3 ediciones aleatorias (mismas posiciones, misma norma) también da 26.
+  - El empate es casualidad: solo 3 prompts en común.
+  - A posteriori, fuera del criterio, con 7 semillas más: 10 ediciones aleatorias dan 105, 108, 26, 115, 115, 103, 108, 64, 102 y 90 bucles.
+  - La edición queda la mejor o empatada de 11, evidencia débil de que su dirección importa más que "perturbar esa cabeza".
+- **Referencias:**
+  - No-repeat-ngram 20 al decodificar: 0 bucles, NLL intacta, sin tocar pesos.
+  - Temperatura 0.5: 0 bucles.
+  - Unlikelihood con gradiente: 0 bucles, a cambio de val +0.043.
+- **Lectura:** en este modelo, editar pesos no es el mejor arreglo de los bucles; una regla de decodificación lo hace gratis. Esto no refuta el exp. 8 en Qwen, pero sí exige allí el control de edición aleatoria, que el artículo no publica.
+- **Comprobación:** los conteos de bucles se repitieron regenerando el texto y usando un detector de periodicidad independiente. Coinciden.
+
+## 37. En curso: TwIL-8B frente a MiMo-9B, y diff de pesos de modelos mejorados (2026-11-06)
+Estado y siguiente paso en roadmap §4.0quater.
+
+- **Comparación de modelos** (`lab/probes/model_compare/eval.py`, datos en `lab/runs/model_compare/`).
+  - Protocolo igual para los dos: llama-server CUDA, greedy, tope de 8192 tokens nuevos, plantilla de chat de cada modelo; GSM8K = 100 primeros de test, MATH-500 = 50 con `select_indices(2026, 50)`.
+  - Dos jueces: `rig/math500.equivalent` y uno independiente. Los desacuerdos se revisan a mano.
+  - TwIL-8B (Q4_K_M, variante balanced): GSM8K 96/100, MATH-500 44/50 (88 %); 4 respuestas cortadas en el tope; 983 y 1811 tokens de media; ~47 tok/s.
+    - Los 6 desacuerdos entre jueces son de formato (5 a favor del juez principal, p. ej. `\frac43` frente a `\frac{4}{3}`; 1 a favor del independiente, "60\%").
+  - MiMo-9B (Q6_K): GSM8K 93/100, MATH-500 34/50 (68 %); 19 respuestas cortadas en el tope (4 + 15); 659 y 3254 tokens de media; ~37 tok/s. Su plantilla no fuerza el thinking: pensó en 136 de 150 problemas.
+    - Desacuerdos entre jueces, revisados a mano: los mismos casos de formato que en TwIL ("60\%" correcto; `\frac43`, `\frac 59`, `.35625` correctos según el juez principal).
+    - Los cortes no son bucles: solo 1 de 19 colas cortadas es periódica. MiMo razona más largo y el tope de 8192 lo penaliza.
+
+    | Tope 8192, greedy | TwIL-8B Q4_K_M | MiMo-9B Q6_K |
+    |---|---|---|
+    | GSM8K (100) | **96 %** | 93 % |
+    | MATH-500 (50) | **88 %** | 68 % |
+    | Cortadas en el tope | 4 | 19 |
+    | Tokens medios GSM8K / MATH | 983 / 1811 | 659 / 3254 |
+    | Velocidad (RTX 3060) | 47 tok/s | 37 tok/s |
+
+  - Lectura: con un presupuesto de 8k tokens, TwIL es claramente mejor en MATH-500 (+20 puntos), sobre todo porque termina: su variante balanced viene de un RL que premia trazas cortas. En GSM8K la diferencia (3 puntos con n = 100) no es significativa.
+  - Sesgos conocidos: TwIL va en Q4 y MiMo en Q6 (favorece a MiMo); los dos recomiendan muestrear y presupuestos de 32k, que aquí no se usan. Con 32k tokens la distancia en MATH-500 probablemente se reduciría.
+- **TwIL-8B, según su ficha:** Granite 4.2 8B (que ya es un fine-tune de granite-4.1-8b-base) + SFT completo de trazas + GRPO/DAPO (variante verbose) + RL que premia trazas cortas (variante balanced). Licencia no comercial.
+- **Herramienta de diff** (`engine/weight_diff.py`, 14 tests): compara dos checkpoints tensor a tensor sin cargar ninguno entero, en local o por rangos HTTP desde Hugging Face.
+  - La op `diff` de WSPLang ahora la usa. Antes solo leía el primer shard: en un modelo de 4 shards se saltaba en silencio unos tres cuartos de los tensores (test que falla con el código antiguo).
+
+## 38. Qué cambia un post-entrenamiento: Qwen3.5-9B → MiMo-V2.6-Distill (y NeoHorse, en curso) (2026-11-06)
+Script `lab/probes/delta_patterns/run.py`; datos en `lab/runs/delta_patterns/stats_mimo.json(l)`. Base = `Qwen/Qwen3.5-9B` en bf16 (el padre declarado de MiMo y de NeoHorse), solo el modelo de texto; 427 tensores, los mismos nombres y formas en los dos.
+
+- **Es un fine-tune completo, no una LoRA:** cambia el 97 % de los pesos, con un cambio relativo global ‖ΔW‖/‖W‖ = 9.2 %.
+- **Dónde, por tipo de tensor** (mediana sobre capas del cambio relativo):
+  - Más: `linear_attn.in_proj_b` (la β de Gated DeltaNet, cuánto escribe en memoria) 12.7 %, `mlp.gate_proj` 12.5 %, `up_proj` 11.3 %, `down_proj` 10.8 %.
+  - Medio: q/k de atención y `in_proj_z/qkv/a` de DeltaNet, 8-10 %; embeddings y `lm_head` 6.5-6.9 %.
+  - Menos: `v_proj` 4.9 % y `o_proj` 5.6 % de la atención completa; `conv1d` 1.4 %; normas < 1.3 %.
+  - Intactos: `A_log` y `dt_bias` de DeltaNet. Solo difieren en un escalón de redondeo bf16 (máx. 0.0078); `dt_bias` no cambia en ninguna capa.
+    - **Corregido (findings F26):** `A_log` no es solo el cast. MiMo mueve 3-7 de 32 entradas en algunas capas, 1-8 escalones bf16 (|Δ| ≤ 0.004). Es poco, pero es un cambio real.
+- **Por profundidad:** forma de campana. 8.5 % en la capa 0, máximo ~11 % en las capas 17-23, 7.5 % en la última.
+- **Forma del cambio: difuso, no de rango bajo.**
+  - En las matrices grandes el rango estable es de 200-500 (6-12 % de la dimensión menor) y las 16 primeras direcciones llevan solo el 2-4 % de la energía.
+  - Excepción: `in_proj_b` (32 × 4096) concentra el 63 % en 16 direcciones, pero solo tiene 32 filas.
+- **Comparación con la anatomía anterior (roadmap §4.0ter.4, GGUF Q6_K):** se confirma que las compuertas (β de DeltaNet, `gate_proj`) son lo que más cambia. Las cifras eran más altas (14-19 % y 15-17 %) y las normas más bajas (0.14 %): aquella medida era sobre cuantizado y no se puede reproducir, porque `compute_architectural_drift` devuelve un JSON cacheado.
+- **Comprobación independiente:** cambio relativo y rango estable de 3 tensores (`layers.10.in_proj_b`, `layers.17.gate_proj`, `layers.3.v_proj`) recalculados con numpy float64 y SVD completa. Coinciden en todas las cifras mostradas.
+- **Lectura para WSPLang:** las operaciones compactas actuales (rango 1, `project_out`) no pueden expresar una mejora así. Lo que sí da es un mapa de dónde actúa el post-entrenamiento (compuertas, MLP, capas centrales) y qué no toca (dinámica de DeltaNet, normas). Que sea un patrón y no algo propio de MiMo lo dirá NeoHorse.
+- **Ampliación, en curso:** el plan del estudio completo quedó fijado antes de mirar los demás modelos, en `lab/probes/delta_patterns/plan.md`.
+  - Modelos: NeoHorse, Fara (agentes), tmax (solo RL), el post-entrenamiento oficial Base → 9B, Nyx-RP (rol, control negativo) y una abliteración (control positivo del método).
+  - Hipótesis: H1 dónde, H2 forma, H3 dirección compartida, H4 trasplante causal.
+  - Nulos: azar k/d, mismo tipo de tensor en otra capa, y alineación con las direcciones principales del propio W.
+- **Nota:** el base, la abliteración y Nyx-RP guardan 48 tensores (`A_log`, `dt_bias`…) en F32; MiMo, Fara y tmax en BF16. El "escalón bf16" de `A_log`/`dt_bias` en MiMo es solo ese cast: no se entrenaron.
+- **NeoHorse (2026-11-06), datos en `lab/runs/delta_patterns/stats_neohorse.json` y `overlap_mimo_neohorse.json`:**
+  - Cambio global 0.5 % (18 veces menos que MiMo), 61 % de los pesos cambian (el resto queda bajo la resolución de bf16), perfil plano por capas (0.4-0.6 %); normas, `A_log` y `dt_bias` intactos.
+  - Forma: más concentrado que MiMo (16 direcciones = 6-19 % de la energía en matrices grandes), sin ser de rango bajo.
+  - H1 con MiMo: Spearman del perfil por tipo de tensor 0.93 (0.86 solo matrices); por capa 0.51.
+  - Solapamiento de subespacios top-16 con MiMo, por encima del azar k/d: embeddings ×182, `lm_head` ×85, `q_proj` ×49, MLP gate/up ×40, `down_proj` ×23; `in_proj_a/b` ×1.1-1.2. Coseno de los Δ pequeño y positivo en todos los tipos (+0.008 a +0.011; `lm_head` +0.08).
+  - Pendiente antes de concluir H3: el nulo entre capas distintas y la alineación con las direcciones de W. Un solapamiento así también lo daría que ambos refuercen las mismas dimensiones *outlier* del estado oculto.
+- **Cuaderno de hallazgos:** `lab/probes/delta_patterns/findings.md` recoge cada hallazgo (F1-F8), su fuente, su estado (verificado, medido, abierto) y lo que enseña para WSPLang, más las lecciones de herramienta. Se actualiza con cada modelo.
+
+## 39. Informe completo: MiMo-V2.6-Distill-Qwen-9B frente a su base Qwen3.5-9B (2026-11-07)
+Reúne el benchmark de la base (nuevo) con lo medido en pesos y fuera de ellos (findings F1-F3, F21-F38).
+
+### 39.1 Comportamiento: mismo protocolo que §37
+Condiciones comunes:
+- llama-server CUDA, Q6_K de bartowski para los dos, greedy, tope de 8192 tokens nuevos, plantilla de cada modelo;
+- GSM8K = los 100 primeros de test; MATH-500 = 50 con `select_indices(2026, 50)`.
+
+Datos en `lab/runs/model_compare/{qwen35_9b_q6k,mimo9b_q6k}.json`. Los desacuerdos entre jueces se revisaron a mano y
+eran todos de formato (`60\%`, `\frac43` frente a `\frac{4}{3}`, `.35625`), con la respuesta correcta en todos. Una
+ejecución anterior de la base quedó contaminada por dos evals simultáneos y se descartó
+(`qwen35_9b_q6k.dup_aborted.jsonl`).
+
+| Tope 8192, greedy | Qwen3.5-9B (base) | MiMo-9B | pares discordantes (solo base / solo MiMo) |
+|---|---|---|---|
+| GSM8K (n=100) | **60** | **93** | 2 / 35, McNemar p ≈ 1e-8 |
+| MATH-500 (n=50) | **24** | **34** | 4 / 14, p ≈ 0.03 |
+| Cortadas en el tope | 36 + 25 | 4 + 15 | |
+| Tokens, mediana GSM8K / MATH | 3266 / 8034 | 294 / 1226 | |
+
+**Lectura: casi toda la ventaja de MiMo es terminar dentro del tope, no acertar más cuando ambos terminan.**
+- **Cuando los dos terminan**, la diferencia es mínima:
+  - GSM8K n=62: base 58, MiMo 60;
+  - MATH n=21: 20 y 20.
+- **Cuando la base termina**, acierta igual que MiMo: 59 de 64 en GSM8K y 24 de 25 en MATH. Los dos recuentos son
+  sin revisión de formato.
+- **De los ítems en que la base se corta**, MiMo acierta 32 de 36 en GSM8K y 14 de 25 en MATH.
+- **La base piensa unas 6-11 veces más** (medianas de tokens).
+
+Límites:
+- Con un tope mayor la base recuperaría parte de los cortes. Lo que se mide aquí es "acierto bajo un presupuesto de
+  8192 tokens", no capacidad sin límite.
+- Seleccionar "ambos terminan" sesga hacia ítems fáciles, así que solo indica que no hay una ventaja grande ahí.
+- Un solo arnés, greedy, solo matemáticas, n pequeño (MATH n=50).
+
+Prueba que zanjaría la cuestión: repetir los ítems cortados de la base con tope de 32k.
+
+### 39.2 Pesos (findings F1-F3, F21-F23, F26)
+- **Tipo de cambio:** fine-tune completo. Cambia el 97 % de los pesos, con ‖ΔW‖/‖W‖ = 9.2 %, y el cambio es difuso
+  (rango estable 200-500). Una edición pequeña no lo reproduce.
+- **Dónde cambia:** más en la β de DeltaNet y en el MLP; menos en las normas.
+  - Es el mismo perfil que cualquier fine-tune completo de esta arquitectura (F22), así que no es una marca de
+    "mejora".
+  - Corrección F26: `A_log` sí cambia un poco (1-8 escalones bf16 en 3-7 de 32 entradas en algunas capas).
+- **Direcciones:** las capa a capa son compartidas con NeoHorse, tmax, Fara y con el post-entrenamiento oficial de
+  Qwen (H3 en 10 de 10 tipos de matriz), y no con un fine-tune completo de otro objetivo (WeMM, F23).
+  - MiMo sigue moviendo el modelo en las direcciones que ya movió el post-entrenamiento oficial (F21).
+  - Que esto sea "mejora" o "seguir entrenando como asistente" sigue abierto: el control LoRA no lo separa (F24).
+
+### 39.3 Fuera de los pesos (F25, F37, F38)
+- **Tokenizer:** vocab y merges iguales; 7 tokens especiales de audio/TTS añadidos.
+  - El pre-tokenizer es el regex de Qwen2. Viene de guardar con transformers 5.12.1, que está en el rango con el
+    fallo, 5.6.0-5.17.0 (F37).
+  - Tokeniza distinto hindi, tailandés, bengalí y árabe con diacríticos.
+  - El GGUF usa `qwen35`, así que este benchmark no se ve afectado.
+- **Cabeza MTP eliminada:** 15 tensores (F38). No hay decodificación especulativa con MTP propio.
+- **Config:** solo diferencias de serialización. No hay plantilla de chat en la carpeta HF; va en el GGUF.
+
+### 39.4 Qué aporta frente a la ficha de HF
+La ficha dice "distill" y da benchmarks propios. Este informe añade:
+- **Que la ganancia medida en matemáticas viene sobre todo de razonar más corto** dentro de un presupuesto de tokens.
+- Que es un fine-tune completo difuso, en las direcciones del post-entrenamiento oficial.
+- Tres cosas que la ficha no menciona:
+  - el pre-tokenizer cambiado, por un fallo de herramienta;
+  - la cabeza MTP perdida;
+  - el cambio pequeño de `A_log`.
+
+Abierto:
+- tope de 32k para los ítems cortados;
+- pruebas causales (H4, transferir subespacios);
+- benchmarks fuera de matemáticas.
+
+### 39.5 Las respuestas cortadas de la base son, en buena parte, bucles (análisis de las colas, 2026-11-07)
+Sobre los últimos 300 caracteres guardados de cada respuesta cortada. Se cuenta como bucle una cola con alguna línea
+de 8 o más caracteres repetida 3 veces o más.
+
+| | Cortadas | Colas en bucle | …con la respuesta correcta ya en `\boxed{}` |
+|---|---|---|---|
+| Base Qwen3.5-9B | 61 (36 GSM8K + 25 MATH) | **21** (16 + 5) | **11** |
+| MiMo | 19 | 2 | 1 |
+
+- **El bucle típico es indecisión al final.** Por ejemplo (GSM8K #5): "Wait, I'll check if I should use \boxed{64}.
+  I'll use \boxed{\$64}. Okay. Wait, …". El modelo ya tiene la respuesta y no consigue cerrar. Es la patología que
+  arregla el Exp 8 de MIT en Qwen3.5-0.8B, ahora en el 9B.
+- **21 es un mínimo.** Con 300 caracteres no se ven bucles de periodo más largo, ni se sabe si las otras 40 colas
+  seguían avanzando.
+- **Consecuencia práctica:** un tope de 32k no rescataría los bucles. Parte de la ventaja de MiMo es no entrar en
+  ellos.
+- **Objetivo para la mejora sintética:** reducir los cortes y bucles de la base sin gradiente, con MiMo como
+  referencia. Plan en `lab/probes/delta_patterns/h4_plan.md`.
+
+### 39.6 Corrección: el resultado de la base depende mucho de cómo se cuantiza (2026-11-07, del brazo A0 de H4)
+La misma base Qwen3.5-9B en Q6_K, por dos caminos:
+- bartowski, con imatrix: GSM8K **59/100**, 36 cortadas (§39.1, sin revisión de formato);
+- convertida por nosotros sin imatrix (`h4_A0`): **72/100**, 24 cortadas.
+
+Ítem a ítem, 20 se cortan solo en la de bartowski y 8 solo en la nuestra (McNemar p = 0.036). Cuando las dos
+terminan, coinciden en 53 de 56 respuestas: la diferencia está casi toda en entrar o no en bucle. El GGUF de MiMo usado
+en §37 también lleva imatrix, con otra calibración.
+
+Lectura:
+- Los bucles de la base son **muy sensibles a perturbaciones pequeñas de los pesos**: la cuantización mueve unos
+  12 cortes.
+- La ventaja de MiMo en §39.1 (93 frente a 60) sigue siendo grande, pero frente a la base de nuestro camino es menor
+  (93 frente a 72), y en parte depende de la receta de cuantización.
+- Una comparación justa del todo cuantizaría MiMo por el mismo camino que A0.
+- Para H4, cualquier perturbación puede mover el número de cortes. Por eso el criterio que cuenta es A1 frente a
+  A2, el control aleatorio del mismo tamaño.
+
+### 39.7 H4 cerrado: el carril compartido no corta más bucles que el control (2026-11-07)
+- A0 (base, nuestra Q6_K): 24 cortadas de 100. A1 (direcciones compartidas, k=8): 18. Criterio 1 pedía ≤ 14:
+  **falla**.
+- A2 (control aleatorio del mismo tamaño) parado por el usuario en 36/100 para pasar a H6; el parcial se conserva en
+  `lab/runs/h4/`. Sin A2 completo no hay comparación A1 frente a A2.
+- Con §39.6 (la cuantización sola mueve ~12 cortes), una diferencia de 6 no se puede atribuir a las direcciones.
+
+## 40. H6: un entrenamiento pequeño fotograma a fotograma, y cuánto de él se puede reutilizar (2026-11-07)
+Plan y addenda: `lab/probes/delta_patterns/h6_plan.md`. Código: `lab/probes/h6/` (30 tests en `tests/test_h6.py`).
+Qwen3.5-0.8B, multiplicación 3×3 con 3 ejemplos en el prompt, 500 pasos AdamW (10 tramos de 50, batch 40, lr 3e-6
+con warmup y coseno), solo las matrices 2-D de las capas (497.6 M). Tres semillas = tres órdenes de datos.
+**Aviso: G2 no se cumple** (+23 puntos, se pedían 30); se siguió por decisión del usuario (addendum c).
+
+### 40.1 La película (fase 0)
+| Tramo | test_id s1 / s2 / s3 | norma del incremento | rango efectivo (mediana) |
+|---|---|---|---|
+| 0 | 28.3 / 28.3 / 28.3 | | |
+| 1 | 29.1 / 29.8 / 28.2 | 0.30 | 30 |
+| 5 | 37.1 / 33.8 / 36.5 | 0.18 | 32 |
+| 10 | 51.2 / 51.2 / 51.4 | 0.005 | 18 |
+
+- Los primeros tramos mueven más los pesos y no enseñan nada; la precisión sube en los tramos 4-10.
+- Cada incremento: ~89-93 % de su energía en el 5 % de sus direcciones; solapa ~0.68 con el anterior.
+- Mismo subespacio en las tres semillas (top-16, mediana): 0.72-0.74 en el tramo 1, 0.79-0.80 en el 10; azar 0.016.
+- Problema a problema: de ~280 nuevos aciertos por semilla, 181 en común entre s1 y s2 (independientes: ~107).
+- Interferencia: 3×2 baja de 74 % a 55-60 %; NLL de GSM8K sube 1.321 → 1.327-1.331.
+- Dentro de un fotograma (sketches, semilla 1): en el tramo 1 los primeros 10 pasos cubren 0.40 de la dirección final;
+  en el tramo 10, 0.82.
+
+### 40.2 Brazo 1: prolongar los primeros fotogramas (E_k = W0 + α·C_k): falla
+- En las 6 corridas (k = 1, 2; 3 semillas) dev elige α = 1. α = 2 deja dev en 4-7 %; α ≥ 3, en 0-1.5 %.
+- Recuperación −0.05 a 0.07 (umbral 0.7); ninguna semilla gana al control aleatorio de la misma norma (p 0.07-0.69).
+
+### 40.3 Brazo 2: ¿cuánto del cambio hace falta, y sirve el carril de otras semillas? (fase 1)
+Recuperación media de 3 semillas (R = 1: el entrenamiento completo):
+
+| r | M2 (SVD propia) | X (carril de las otras dos) | M3 (aleatorio, misma norma) |
+|---|---|---|---|
+| 10 | 0.71 | 0.72 | 0.24 |
+| 20 | 0.91 | 0.92 | 0.35 |
+| 51 | 0.99 | 1.01 | 0.48 |
+| 102 | 1.01 | 1.06 | 0.64 |
+| 256 | 0.97 | 1.02 | 0.82 |
+
+- **H6a:** r90 = 20 (0.907, en el borde). Se predijo 51-102.
+- **H6b, falla:** M2_20 gana a M3_20 por 12-14 puntos (p < 1e-13), no por los 20 pedidos. M3 proyecta el propio ΔW
+  en direcciones aleatorias y lo reescala, así que conserva parte de la señal.
+- **H6c, pasa:** X_20 recupera 1.02 × M2_20 (umbral 0.8) y gana a M3_20 con p < 1e-13 en cada semilla.
+- X gana a M2 con menos energía, menos interferencia en 3×2 (59-62 % frente a 55-60 %) y menos olvido de GSM8K.
+  X_102 supera al entrenamiento completo (52.8 / 53.1 / 52.1 %).
+- Comprobaciones: el modelo reconstruido = el entrenado, ítem a ítem (3 semillas); los dos correctores coinciden en
+  todos los brazos.
+
+### 40.4 Brazo 3: un gradiente en lugar del entrenamiento (H6e): falla
+Gradiente de 512 ejemplos en M0, reescalado a α × la norma de un entrenamiento real (de las otras semillas).
+Con la escala más pequeña (α = 0.25) todo queda por debajo de M0: G_full y G_20 en 0-0.1 %, GX_20 en 1.1-1.6 %,
+SX_20 (signo, en el carril) en 12-14 %. Recuperación −1.23 a −0.62. El carril reduce el daño (NLL de GSM8K 1.317
+frente a 1.366) pero no da la magnitud.
+
+### 40.5 Lectura
+- Un entrenamiento pequeño sigue un carril estrecho que fijan la tarea y los datos, no la semilla.
+- El carril dice **dónde**; el cuánto por dirección lo construye el optimizador a lo largo de todo el entrenamiento.
+  Ni el primer fotograma ni un gradiente lo dan.
+- Lo común entre semillas es la habilidad; lo propio de cada una es sobre todo ruido.
+- Siguiente: H6f, coeficientes dentro del carril (addendum d del plan).
+- Límites: una tarea, un modelo de 0.8B, G2 no cumplido.
+
+### 40.6 H6f: los "cuánto" dentro del carril (addendum d) (2026-11-07)
+**H6f-a, un paso con forma (sin optimizador):** gradiente o signo proyectado en el carril (r = 20, otras dos
+semillas), norma por matriz tomada de las otras semillas. Ya no rompe el modelo, pero no enseña:
+GXm (α 0.01-0.02) 28.3-29.2 %, R 0.00-0.04; SXm (α 0.1) 30.8-31.8 %, R 0.11-0.15. **Falla** (umbral 0.5).
+Comparado con H6e: lo que rompía era la escala global, no el carril.
+
+**H6f-b, entrenar solo los coeficientes del carril** (ΔW = U·C, 10.4 M parámetros = 2.1 % de los 497.6 M; lr 1e-5
+elegida en dev de la semilla 1 entre {3e-6, 1e-5, 3e-5, 1e-4}). Control: lo mismo en una base aleatoria de 20.
+
+| Pasos | carril s1 / s2 / s3 | R medio | aleatoria s1 / s2 / s3 | R medio | McNemar carril vs aleatoria |
+|---|---|---|---|---|---|
+| 50 | 40.0 / 36.6 / 37.8 | 0.43 | 37.8 / 35.2 / 36.6 | 0.36 | 0.11 / 0.35 / 0.40 |
+| 100 | 42.2 / 39.5 / 42.2 | 0.57 | 41.6 / 38.7 / 40.0 | 0.51 | 0.72 / 0.61 / 0.13 |
+| 200 | 45.9 / 45.5 / 45.9 | 0.76 | 43.1 / 41.8 / 43.7 | 0.63 | 0.030 / 0.009 / 0.099 |
+
+- **Falla** en los dos criterios: R 0.57 a 100 pasos (umbral 0.9) y no gana a la base aleatoria en cada semilla.
+- La base aleatoria aprende casi igual: entrenar **cualquier** subespacio de rango 20 por matriz basta para
+  aprender gran parte de la habilidad. El carril da una ventaja pequeña que crece con los pasos (+0.13 de R a 200).
+- Ninguna de las dos daña: 3×2 sube a 78-86 % (base 74 %, entrenamiento completo 55-60 %); NLL de GSM8K 1.315-1.317
+  (base 1.321).
+- Lectura junto con §40.3: el carril importa para **trasladar** un cambio ya hecho (proyectar ΔW en direcciones
+  aleatorias pierde mucho), no para **aprender** (el optimizador encuentra la habilidad en casi cualquier subespacio
+  pequeño). Restringir el rango, por sí solo, quita la interferencia.
+- No comparable directamente con el entrenamiento completo a igual número de pasos: otra lr (1e-5 frente a 3e-6) y
+  otra programación.
+
+## 41. H7: dataset de pasos de 9 tareas y salto aprendido del paso k al 200 (2026-11-08)
+Plan `lab/probes/delta_patterns/h7_plan.md` (aprobado, addenda a y b). Qwen3.5-0.8B, ΔW = U·C con U aleatoria de
+rango 20 por matriz **compartida** por todas las tareas (semilla 70 000 + índice), AdamW sobre C, lr 1e-5, 200 pasos
+de 40, 3-shot. Se guardan C en 48 pasos y los momentos de Adam a 10/25/50. G3 (reproducibilidad): C_10 idéntico bit a
+bit en dos corridas.
+
+### 41.1 El dataset (test 500, acierto en los pasos 0 / 25 / 50 / 100 / 200)
+| tarea | 0 | 25 | 50 | 100 | 200 | G2 (≥ +10 pts) |
+|---|---|---|---|---|---|---|
+| mul3x3 | 30.4 | 32.4 | 38.2 | 41.0 | 45.2 | sí |
+| mul4x3 | 10.2 | 13.0 | 13.8 | 13.4 | 13.8 | no |
+| sq4 | 14.0 | 15.4 | 17.6 | 20.2 | 19.8 | no |
+| mul2x2x1 | 26.4 | 36.6 | 43.2 | 47.2 | 50.2 | sí |
+| muladd1 | 16.6 | 28.2 | 38.2 | 51.2 | 59.2 | sí |
+| div6_2 | 23.6 | 26.2 | 32.2 | 33.6 | 33.8 | sí |
+| mod3_1 | 6.4 | 34.2 | 40.4 | 43.0 | 41.6 | sí |
+| add3x3 | 11.2 | 69.0 | 84.6 | 88.4 | 92.0 | sí |
+| rev4 | 44.2 | 95.8 | 99.4 | 100 | 100 | sí |
+
+G1 pasa en las 9. NLL de retención 1.321 → 1.302-1.324. Comprobado dos veces (acc guardada y recuento de ok_mask).
+
+### 41.2 Geometría (descriptiva)
+- Trayectorias casi rectas: el primer modo temporal lleva el 94.8-98.8 % de la energía, los tres primeros ≥ 99.2 %.
+  cos(C_25, C_200) = 0.66-0.92 (más alto cuanto más fácil la tarea).
+- Entre tareas los C finales son casi ortogonales: coseno 0.03-0.19, salvo mul3x3/mul4x3 0.53.
+- Reparto de |C|² parecido en todas: qkv de la atención lineal 24 %, MLP up/gate/down 16/16/14 %, atención completa
+  < 10 % en total; capas repartidas (cuartos 0.29 / 0.26 / 0.22 / 0.22 en mul3x3).
+- Interferencia 9×9 (C de una tarea evaluado en las demás, puntos sobre M0): la diagonal reproduce 41.1; fuera de
+  ella de −13.8 (mod3_1 → div6_2) a +44.0 (mul2x2x1 → add3x3). rev4 sube con casi cualquier C (+9 a +24) y add3x3
+  con mul2x2x1/muladd1 (+44 / +32): probablemente formato de salida, no aritmética.
+
+### 41.3 El salto aprendido: falla
+Dejar una tarea fuera (entrena con las otras 8, evalúa en las 7 que pasan G2). R = (acc − acc0)/(acc(C_200) − acc0).
+
+| k | B_k (parar en k) | P_scale | P_lin | P_mlp | P_scale +dev γ | P_lin +dev | P_mlp +dev |
+|---|---|---|---|---|---|---|---|
+| 10 | 0.21 | −0.25 | −0.28 | −0.26 | 0.23 | 0.23 | 0.25 |
+| 25 | **0.50** | 0.38 | 0.23 | 0.13 | 0.46 | 0.39 | 0.36 |
+| 50 | **0.78** | 0.70 | 0.59 | 0.59 | 0.71 | 0.61 | 0.61 |
+
+- Regla registrada: elegido P_mlp (mejor de lin/mlp a k = 10); R medio a k = 25 **0.13** (umbral 0.7), gana a B_25
+  en **0/7** tareas. **H7 falla.** Ningún predictor supera a simplemente parar en k, en ningún k.
+- γ elegido en dev casi siempre 0.5-0.75: las predicciones se pasan; alargar la dirección de C_k, que apunta bien
+  (coseno alto), empeora. La parte de C_200 que da el acierto no está en la prolongación de la recta.
+- Única excepción: rev4 a k = 25 con P_scale 0.96 frente a 0.92 (p 0.02, no llega a 0.01).
+
+## 42. H8: dónde está el acierto en C_200, y si los cambios aprendidos se suman (2026-11-08)
+Plan `lab/probes/delta_patterns/h8_plan.md` (aprobado). Solo evaluación, con los C de H7, en las 7 tareas que pasan
+G2 (test 500). Re-evaluar C_200 da exactamente el acierto de H7 en las 7 (segunda comprobación).
+
+### 42.1 Parte A: C_200 = P (a lo largo de C_k, escala óptima) + O (fuera de la recta)
+| k | R(P) medio | R(O) medio | |O|²/|C_200|² medio |
+|---|---|---|---|
+| 10 | −0.25 | −0.32 | 0.66 |
+| 25 | **0.38** | **−0.43** | 0.43 |
+| 50 | 0.73 | −0.24 | 0.20 |
+
+- **Ni HA ni HA'** (resultado mixto): ninguna de las dos partes basta sola. La parte fuera de la recta, sola,
+  **empeora** la tarea (R negativo en 6 de 7 a k = 25); la parte paralela, con la escala óptima (oráculo), da 0.38,
+  lo mismo que P_scale en H7 (0.38). Ningún reescalado de C_25 puede pasar de ahí.
+- Las dos partes juntas dan R = 1: el acierto sale de la **combinación**, no de una de ellas (efecto no aditivo).
+- Por tarea a k = 25: rev4 0.96 y mod3_1 0.78 con P solo; las de multiplicar y dividir −0.05 a 0.23.
+
+### 42.2 Parte B: biblioteca de cambios (sumar C de tareas distintas)
+**B1, 21 parejas (42 casillas): pasa.** Retención mediana 0.89 (umbral 0.8), media 0.78. Peor casilla: div6_2 con
+mod3_1, r −0.22. Las tareas fáciles o de formato (rev4, add3x3, mod3_1) conservan ~1.0 con cualquier pareja; las de
+aritmética larga pierden más (mul3x3 0.34-0.61). El coseno entre los C (0.03-0.19) no predice la pérdida. La
+predicción aditiva de la matriz de interferencia falla por 8.2 puntos de media.
+
+**B2, las 7 sumadas: falla.** λ elegido en dev 0.5 (dev empeora al subir λ). Retención media 0.60 (umbral 0.7);
+por tarea: mul3x3 0.26, mul2x2x1 0.63, muladd1 0.38, div6_2 0.12, mod3_1 0.95, add3x3 0.87, rev4 0.99. NLL de retención
+1.319 (base 1.321): no daña el modelo.
+
+### 42.3 Lectura
+- El cambio aprendido no se puede partir en "dirección que se ve pronto" + "resto"; las dos piezas solo funcionan
+  juntas. Explica el fallo de H7: prolongar la recta nunca llega.
+- Reutilizar sí funciona de dos en dos (B1), pero con siete cambios la suma simple pierde las habilidades de
+  aritmética larga. Siguiente candidato natural: fusión con recorte y elección de signo (TIES), que en Delta League
+  sobre este mismo modelo es la técnica del líder.
+
+### 42.4 B3 (addendum a): fusión TIES de los 7: falla, igual que la suma
+Rejilla en dev: densidad d ∈ {0.2, 0.5, 1.0} × λ ∈ {1, 2, 3, 5}. Gana d = 1.0 (sin recorte), λ = 2: suma de dev
+3.545, frente a 3.535 de la suma simple con λ 0.5 (B2). Recortar empeora (mejor d 0.2: 3.23; d 0.5: 3.51).
+Test: retención media **0.59** (B2: 0.60), umbral 0.7. Por tarea (TIES / suma): mul3x3 0.15 / 0.26, mul2x2x1
+0.66 / 0.63, muladd1 0.43 / 0.38, div6_2 0.06 / 0.12, mod3_1 0.96 / 0.95, add3x3 0.88 / 0.87, rev4 0.99 / 0.99.
+NLL 1.313 (base 1.321). Con C casi ortogonales hay pocos conflictos de signo que resolver: TIES sin recorte es casi
+una suma escalada, y el recorte quita información útil. Lo que falla al juntar 7 no es el signo sino la interferencia
+en la función (aritmética larga), que ni la suma ni TIES evitan.
+
+*Nota 2026-11-11:* los C sumados en §42.2-42.4 ya son de rango 20 (ΔW = U·C, base aleatoria compartida de H7). Restringir
+el rango quita la interferencia al **aprender** (§40.6), no al **sumar**: no queda ese hueco por probar.
+
+## 43. Base contra mejorado (Qwen3.5-9B): la mejora en MATH es saber cerrar (2026-11-08)
+H9 se paró a petición del usuario a las 10:45 (solo terminó mul3x3: test en el paso 50 Cold 0.382, W_sum 0.406,
+W_rand 0.380; sin conclusión). Nuevo punto de partida: comparar la base con su mejorado, solo pruebas rápidas.
+
+### 43.1 Comparación con cuantización propia (Q6_K sin imatrix, protocolo §39, voraz, 8 192 tokens)
+| modelo | GSM8K (n=100, a mano) | MATH-500 (n=50) | cortadas MATH | tokens medios MATH |
+|---|---|---|---|---|
+| base (A0) | — | 20 (40 %) | 30 | 6 480 |
+| Jackrong (dsv4 distill) | 95 | 31 (62 %) | 5 | 1 490 |
+| MiMo | 94 | 41 (82 %) | 13 | 3 077 |
+GSM8K revisado a mano: Jackrong da la respuesta como número suelto sin `\boxed` (el segundo corrector daba 1 %), y
+`\$25,000` se leía como `000`; MiMo pierde dos por formato (`160 \text{ minutes}`, `60\%`). Jackrong vs MiMo GSM8K:
+2 contra 3 discordantes, p = 1.0.
+
+### 43.2 Las 30 cortadas de la base, leídas a mano (`lab/runs/model_compare/base_cut_review.json`)
+La base no falla nunca con respuesta: 20 aciertos, 0 errores, 30 cortadas. De las 30: 16 ya tienen la respuesta y no
+saben cerrar (10 en bucle de despedida "I will write the response", 2 dudando del formato, 4 revisando lo ya
+resuelto), 13 siguen calculando, 1 repetición degenerada. El detector de bucles marca 10, todas del primer grupo.
+
+### 43.3 Cierre forzado (`lab/probes/close_probe/force_close.py`, `lab/runs/close_probe/base.json`)
+La base razona (tope 4 096, se para en el primer `\boxed` no vacío del razonamiento); en 512/1 024/2 048 tokens y al
+final se añade `</think>` + "Final answer: \boxed{" y completa ≤ 40 tokens.
+| cierre forzado a | 512 | 1 024 | 2 048 | 4 096 |
+|---|---|---|---|---|
+| aciertos /50 | 27 | 35 | 41 | **43** |
+Segundo corrector (cadena normalizada): 35/50; las 8 diferencias son la misma fracción escrita distinto (`11/2` vs
+`\frac{11}{2}`), revisadas a mano. Base forzada vs MiMo: 4 contra 2 discordantes, p 0.69 (empate); vs Jackrong 14
+contra 2, p 0.004. De las 16 "tiene la respuesta y no cierra", 13 pasan a acierto; de las 13 "sigue calculando", 9.
+38 min de GPU.
+
+**Lectura:** en MATH la base ya sabe; lo que aporta MiMo es cerrar a tiempo. Copiar la mejora es copiar una conducta
+de cierre, no conocimiento. Límites: n 50, un par, tope 4 096 elegido sin dev.
+
+### 43.4 Reutilizar la diferencia sin reconstruir el modelo: LoRA extraído del delta (2026-11-08)
+Medida rápida (`lab/probes/close_probe/fast_eval.py`): las 16 de MATH donde la base tiene la respuesta y no cierra
+(A) + las 20 que la base ya acierta (daño), tope 2 048, voraz, extractor de `bench_runner`. Referencias a 2 048 sacadas
+de las tandas de 8 192: A base 0, MiMo 11, Jackrong 10. Ruido entre repeticiones ±1 (lotes de llama-server).
+
+Sin pesos: base 1/16; instrucción de sistema "sé conciso" 3/16; sesgo +4 en `</think>` 1/16.
+
+Delta → LoRA (`delta_to_lora.py`: SVD por matriz lineal de las capas de texto, rango 64; 3 min de CPU): Jackrong
+conserva 99.97 % de ‖D‖² (334 MB), MiMo solo 29 % (difuso, F3). Servido sobre la base con escala por petición:
+| adaptador | A /16 | daño: ok /20 | total /36 |
+|---|---|---|---|
+| MiMo r64 ×1 | 3 | — | — |
+| Jackrong r64 ×0.25 | 9 | 16 | 25 |
+| **Jackrong r64 ×0.5** | **14** | **19** | **33** |
+| Jackrong r64 ×0.75 | 12 | 15 | 27 |
+| Jackrong r64 ×1 (≈ modelo Jackrong) | 11 | 14 | 25 |
+Recortes a ×0.5 (`slice_lora.py`, segundos, sin tocar el modelo):
+| recorte | A /16 | ok /20 | total |
+|---|---|---|---|
+| rango 8 (43 MB) | 10 | 17 | 27 |
+| **rango 16 (87 MB)** | **14** | **18** | **32** |
+| rango 32 | 13 | 18 | 31 |
+| capas 0-15 | 4 | 10 | 14 |
+| capas 16-31 | 5 | 10 | 15 |
+| **solo MLP** | **14** | **18** | **32** |
+| solo atención (lineal + completa) | 4 | 5 | 9 |
+**Corrección (medida después):** la base con el mismo tope de 2 048 saca 5/20 en el grupo "ok" (A 1/16), así que
+"ok" no mide daño frente a la base sino frente a la base con 8 192 tokens. Comparación justa a 2 048: base 6/36,
+base + Jackrong r64 ×0.5 33/36.
+**Lectura:** la mejora de cierre de Jackrong vive en los 16 primeros componentes de sus MLP, repartida por toda la
+profundidad; media escala rinde más que la escala completa (33 frente a 25 de 36). Trozos parciales
+(media red, solo atención) dañan más de lo que ayudan. Cada variante: 3-11 min de medida, sin entrenar.
+
+### 43.5 Más vías, misma medida (tope 2 048; base a 2 048: MATH A 1/16 + ok 5/20 = 6/36)
+| variante | MATH A /16 | MATH ok /20 | GSM8K falladas /28 | GSM8K ok /20 |
+|---|---|---|---|---|
+| base | 1 | 5 | 3 | 6 |
+| base + Jackrong r16 ×0.5 | 14 | 18 | **18** | **20** |
+| base + Jackrong r16 ×0.5 + heretic r4 ×1 | 13 | 16 | 19 | 18 |
+| MiMo (modelo completo) | 12 | 19 | — | — |
+| MiMo + Jackrong r16 ×0.5 | 12 | 20 (cierra 16/16 y 20/20) | — | — |
+| base + vector de control MiMo ×1 | 5 | 10 | — | — |
+| base + vector de control MiMo ×0.5 | 3 | 6 | — | — |
+GSM8K: las 28 que la base (H4 A0, 8 192) falla y sus 20 primeras resueltas.
+- heretic − Jackrong (descargado 2026-11-08): 30 matrices (down_proj, o_proj, out_proj), LoRA rango 4 conserva
+  99.9 %. Sumado al cierre: MATH −3, GSM8K +1 −2; dentro de lo que el ruido (±1-2) y n permiten, coste pequeño.
+- El LoRA de cierre de Jackrong sobre MiMo hace que MiMo cierre siempre (16/16) sin perder aciertos y en 2/3 del
+  tiempo: la diferencia de un modelo se aplica a otro derivado de la misma base.
+- Vector de control (media de h_MiMo − h_base por capa sobre los mismos textos, como incrementos por capa): ayuda
+  algo (6 → 15 de 36) pero lejos del LoRA. Primer intento escribió la diferencia acumulada: se sumaba ~30 veces y
+  rompía el modelo (corregido con `cvec_increments.py`).
+
+### 43.6 Extraer como operación WSPLang (`delta_to_lora`), con rigor (2026-11-08)
+Nueva operación `step delta_to_lora base= model= rank= [kinds=] out= [gguf=]` (`engine/lora_export.py`, 9 tests).
+- **Error encontrado:** la SVD aleatoria con q = r + 8 (`torch.svd_lowrank`) se alejaba 11-16 % de la truncación exacta
+  a rango 16 en matrices de atención reales (espectro plano); q = 48 → 0.06 %. Ahora SVD exacta. Jackrong r16 (recortado
+  de r64) estaba bien: 0.2 %. `energy.json` da ahora la parte de ||ΔW||² conservada en rangos 1…1024.
+- **Corrección:** el "29 % a r64" de MiMo era media sin ponderar (matrices diminutas enteras); ponderado por ||ΔW||²: 11 %.
+- MiMo exacto, ponderado: r16 3.8 %, r64 11 %, r256 29 %, r512 45 % (Jackrong r64: 99.97 %).
+- MATH A (16 atascadas, tope 2 048), McNemar exacto pareado:
+
+| variante (sobre la base) | A /16 | vs base (1/16) | vs MiMo completo (12/16) |
+|---|---|---|---|
+| MiMo r64 exacto ×1 | 3 | p = 0.5 | 0 vs 9, p = 0.004 |
+| MiMo r64 exacto ×1.5 | 4 | p = 0.25 | p = 0.008 |
+| MiMo r64 exacto ×2 | 4 | p = 0.25 | p = 0.008 |
+| MiMo solo MLP r256 ×1 (805 MB) | 2 | p = 1.0 | p = 0.002 |
+| MiMo solo MLP r512 ×1 (1.6 GB) | 4 | p = 0.25 | p = 0.008 |
+| Jackrong r16 ×0.5 (87 MB) | 14 | 13 vs 0, p = 0.0002 | 2 vs 0, p = 0.5 |
+
+- Jackrong mínimo: r4 (completo 22 MB o solo MLP 12 MB) ×0.5 → 11/36 (A + ok); r8 27; r16 32; r32 31.
+- HumanEval 20 primeros (tope 2 048, ejecución de tests): base 20/20; + Jackrong r16 ×0.5 19/20 (HumanEval/1 no
+  cierra en 2 048). Base en techo: no muestra mejora; coste ≤ 1/20, indistinguible de ruido.
+- Conclusión: la mejora de MiMo (fine-tune completo) no cabe en un LoRA ni a rango 512 en MLP ni escalando; ninguna
+  variante se distingue de la base y todas quedan por debajo de MiMo (p ≤ 0.008). La de Jackrong sí (p = 0.0002).
+  `energy.json` lo predice antes de evaluar.
+
+### 43.7 Destilar la conducta de MiMo en un LoRA (2026-11-08)
+Los pesos de MiMo no caben en un LoRA (§43.6), así que se entrena uno sobre su conducta.
+- Datos (`distill_gen.py`): MiMo, §39, voraz, 2 048 tokens, sobre 160 ítems de MATH-500 fuera del n=50 evaluado;
+  cierra 100, acierta 93 → 93 secuencias, 69 476 tokens de respuesta. Sesgo: son los que MiMo resuelve breve.
+- Entrenamiento (`distill_train.py`): LoRA r16 en gate/up/down de las 32 capas (25.2 M parámetros), base congelada
+  en CPU, capas por la GPU de una en una con backward manual; 1 época, 4 secuencias por paso, AdamW 2e-4; 22 min.
+  Tests (0.8B real): gradiente en streaming = gradiente directo, CPU = GPU, pesos congelados vuelven a CPU.
+  Fallos encontrados y corregidos por los tests: `p.data` movía tensores que autograd había guardado; la copia
+  GPU→CPU de vuelta provocaba segfault (ahora se reapunta al maestro en CPU, sin copia).
+- Evaluación (tope 2 048, ×1), McNemar pareado:
+
+| | MATH /36 | GSM8K /48 |
+|---|---|---|
+| base | 6 | 9 |
+| **LoRA destilado de MiMo** | **16** (vs base 12/2, p = 0.013; vs MiMo 0/15, p = 0.0001) | **34** (vs base 26/1, p < 0.0001) |
+| MiMo completo | 31 | — |
+| LoRA Jackrong r16 ×0.5 (de pesos) | 32 (vs destilado 16/0) | 38 (vs destilado 6/2, p = 0.29) |
+
+- Lectura: destilar conducta sí transfiere algo que copiar pesos no transfería (los LoRA de pesos de MiMo ≤ 4/16 en
+  A); entrenado solo con MATH, mejora GSM8K casi como el LoRA de Jackrong. En MATH queda a mitad (16 vs 31-32).
+  Una sola época con 93 ejemplos fáciles: no se probó más datos, más épocas ni escala; no generalizar.
+
+### 43.8 Tres vías más para la conducta de MiMo, y la demo confirmada (2026-11-09)
+Misma medida: tope 2 048, 16 atascados + 20 de control en MATH, 28 + 20 en GSM8K; McNemar exacto pareado; y una
+cifra única, la **reward de IWIBench** (`lab/probes/close_probe/reward.py`): gain = máx(0, (éxito editado − éxito
+base) / (1 − éxito base)) sobre los atascados, × retención de los controles que la base acertaba (5 en MATH, 6 en
+GSM8K a este tope: retención ruidosa). Un no-op puntúa 0.
+
+| vía | coste | MATH /36 | GSM8K /48 | reward MATH / GSM8K |
+|---|---|---|---|---|
+| base | — | 6 | 9 | 0 / 0 |
+| destilación MiMo ronda 1 (93 respuestas, §43.7) | 22 min | 16 | 34 | 0.213 / 0.467 |
+| **destilación MiMo ronda 2** (171 respuestas: +78 nuevas, disjuntas de eval y ronda 1) | 20 + 40 min | **24** | **41** | **0.400 / 0.720** |
+| autodestilación sin donante (la base, 300 ítems → 39 cerrados y correctos) | 64 + 14 min | 8 | 15 | 0.107 / 0.100 |
+| forma cerrada sin gradientes (`cf_distill.py`, down_proj de 32 capas → LoRA r256) | 19 min | 17 | 25 | 0.267 / 0.233 |
+| Jackrong, adaptador del op `delta_to_lora` r16 ×0.5 | minutos | 30 | 37 | 0.800 / 0.560 |
+
+- **Ronda 2 vs ronda 1:** MATH 10/2 (p = 0.039), GSM8K 7/0 (p = 0.016): más datos del profesor ayudan. Vs Jackrong:
+  GSM8K 3/0 (p = 0.25, no entrenado en GSM8K), MATH 1/10 (p = 0.012): en MATH la mitad de los atascados sigue sin cerrar.
+- **Autodestilación** (idea de iteración experta, STaR / Terminal-RSI): vs base MATH 4/2 (p = 0.69), GSM8K 9/3
+  (p = 0.15). Pérdida inicial 0.06 (la base ya genera ese texto); solo el 13 % de los ítems da ejemplo y son los que ya
+  resolvía corto. Una ronda voraz no basta; con muestreo y varias respuestas por ítem no se probó.
+- **Forma cerrada** (la regla de MEMIT / `areu01or00/qwen0.8B-wsp`, usada para una conducta): cada down_proj se resuelve
+  para que la salida de su capa siga a la de MiMo sobre las respuestas de MiMo; μ elegido por capa con el error de 16
+  secuencias retenidas (forma cerrada). Explicado en retenidas: 92 % en la capa 0, ≤ 20 % desde la 9, 5-13 % al final
+  (MiMo cambia todas las matrices; down_proj solo no lo sigue); el ΔW tampoco es de rango bajo (r256 guarda 31 %).
+  Aun así vs base MATH 12/1 (p = 0.003), GSM8K 18/2 (p = 0.0004); al nivel de la ronda 1 en MATH, por debajo en GSM8K
+  (2/11, p = 0.023) y de la ronda 2 (MATH 2/9, p = 0.065; GSM8K 1/17, p = 0.0001). Cuatro intentos murieron antes
+  por fallos de memoria/nativos de Windows (safe_open por tensor, copia GPU→CPU, solve fp64 en CPU): corregidos con
+  lector sin mmap, reapuntado de punteros y solve fp32 en GPU, todos con test.
+- **Demo** (`demos/math_transplant/`): el adaptador que escribe el op (SVD exacta) frente al de laboratorio: MATH 1/4
+  (p = 0.375), GSM8K 1/2 (p = 1), no distinguibles. Rango 16 guarda el 58.6 % de la energía de Jackrong (ponderada),
+  3.8 % de la de MiMo. Lado a lado en 3 atascados elegidos: base 0/3 (cortada a 2 048), con adaptador 3/3 en 300-405
+  tokens.
+
+### 43.9 Escribir una capacidad, no un dato: WSP/MEMIT frente a nuestra forma cerrada; en marcha ronda 3 y o_proj (2026-11-09)
+Pregunta del driver (análisis externo de `areu01or00/qwen0.8B-wsp`): ¿se puede usar su mecanismo de escritura para
+escribir una mejora matemática y comprobar que sobrevive a preguntas no usadas? Ya está hecho (§43.8, forma cerrada).
+Comparación de lo que hace cada uno:
+
+| | WSP de `qwen0.8B-wsp` | nuestra forma cerrada (`cf_distill.py`) |
+|---|---|---|
+| qué se escribe | un dato (perfil de @TensorSlay) | una conducta: razonar y cerrar en MATH |
+| modelo | Qwen3.5-0.8B | Qwen3.5-9B |
+| regla | MEMIT: ΔW = R Kᵀ(λK₀K₀ᵀ + KKᵀ)⁻¹ | la misma sin término de protección; ridge μ elegido por capa en retenidas |
+| objetivo R | salida deseada (respuesta escrita por el autor) | residual de MiMo capa a capa, sobre las respuestas de MiMo |
+| dónde | down_proj de 5 tensores, capas 17-21 | down_proj de las 32 capas |
+| datos | ~5 paráfrasis de la pregunta | 171 respuestas de MiMo (143 721 tokens), 16 retenidas |
+| medida | 2/5 paráfrasis nuevas, sin estadística (0/5 al recomprobar con pesos bf16 guardados, §4.0quinquies) | 36 + 48 ítems nunca usados, McNemar pareado |
+| resultado | — | MATH 6→17/36 (p = 0.003), GSM8K 9→25/48 (p = 0.0004, benchmark no usado al escribir) |
+
+Lectura:
+1. **Una capacidad necesita un objetivo**: el dato tiene respuesta escrita; para razonar hay que saber qué estado
+   interno es el bueno, y lo da un profesor (MiMo). Sin profesor no hay R: la autodestilación (§43.8) = base.
+2. **Techo de down_proj**: desde la capa 9 explica ≤ 20 % del desajuste retenido; queda por debajo de la destilación
+   con gradientes (24/36, 41/48). MiMo cambia todas las matrices.
+3. **No es local**: un dato cabe en 5 tensores; la conducta se escribió en 32 capas y el ΔW no es de rango bajo
+   (r256 guarda 31 %).
+
+**En marcha (2026-11-09, una cadena de GPU tras otra, logs en `lab/runs/close_probe/distill/`):**
+- `chain_r3.sh`: destilación ronda 3, los últimos 150 ítems de MATH-500 (fuera de eval y rondas 1-2) → respuestas
+  de MiMo a tope 2 048 → LoRA r16 MLP, 1 pasada, sobre rondas 1+2+3 → misma eval y reward. Se agota MATH-500.
+- `chain_cf6.sh` (espera a la anterior): forma cerrada en dos escrituras por capa, primero la proyección de salida de
+  la atención (`self_attn.o_proj` en las capas de atención completa, `linear_attn.out_proj` en las lineales) para que
+  el flujo tras la atención (entrada de `post_attention_layernorm`) siga al de MiMo, luego down_proj sobre lo que
+  queda; mismos datos que cf5, rango 256, para aislar el efecto de la escritura extra. `cf_distill.py --targets
+  attn,down`; test nuevo en `tests/test_cf_distill.py` (cambio conocido en out_proj de la capa 1 y o_proj de la 3 de
+  Qwen3.5-0.8B: recuperado, explicado retenido > 0.99, down_proj sin cambio); conversión GGUF comprobada
+  (`ssm_out`, `attn_output`, `ffn_down`). Resultados: se añadirán aquí.
+
+### 43.10 Ronda 3, cf6 (atención + down_proj) y placebo de cf5 (2026-11-09)
+| vía | MATH /36 | GSM8K /48 | reward MATH / GSM8K |
+|---|---|---|---|
+| base | 6 | 9 | 0 / 0 |
+| destilación ronda 3 (256 secuencias; MATH-500 agotado) | 27 | 41 | 0.533 / 0.720 |
+| destilación ronda 2 (171) | 24 | 41 | 0.400 / 0.720 |
+| forma cerrada cf6: o_proj / out_proj y luego down_proj | 15 | 26 | 0.133 / 0.320 |
+| forma cerrada cf5: solo down_proj | 17 | 25 | 0.267 / 0.233 |
+| placebo de cf5 (mismo rango y norma por matriz, direcciones aleatorias) | 10 | 14 | — |
+
+- **Ronda 3 vs ronda 2:** MATH 4/1 (p = 0.375), GSM8K igual: la curva de datos se aplana; vs base MATH 21/0, GSM8K 32/0.
+- **cf6 no mejora a cf5.** La escritura de la atención explica en retenidas 92 % en la capa 0, 18 % en la 4, ≤ 8 % desde
+  la 9; la de down_proj tras ella, 11-25 % desde la 9 (cf5: ≤ 20 %). El techo no depende de qué matriz se escribe sino
+  del ajuste lineal capa a capa. **Vía sin gradientes para conductas: cerrada** (decisión del roadmap §4.0sexies).
+- **Placebo:** vs base MATH 4/0 (p = 0.125), GSM8K 8/3 (p = 0.23): no significativo, pero apunta a que una parte pequeña
+  del efecto es inespecífica (un cambio de esa norma hace cerrar algo más: 10 vs 6 cerradas en MATH, 15 vs 10 en GSM8K).
+  cf5 gana al placebo: MATH 8/1 (p = 0.039), GSM8K 12/1 (p = 0.003). Las cifras de cf5 se leen frente al placebo
+  (+7 / +11), no frente a la base (+11 / +16). Jackrong y la destilación están muy por encima de este nivel.
+
+### 43.11 Segundo donante por el op: LeoZotos/Qwen3.5-9B_math_grpo (GRPO, 100 pasos, lr 1e-6) (2026-11-09)
+Prioridad §4.0sexies del roadmap: ¿el op y su veredicto generalizan a otro autor y otro método (RL)? Donante en revisión
+`bc9e018`; `programs/transplant_leo_math.wspl`; misma medida que §43.8 (tope 2 048, 36 + 48 ítems).
+
+| | MATH /36 | GSM8K /48 | cerradas MATH / GSM8K |
+|---|---|---|---|
+| base | 6 | 9 | 6 / 10 |
+| **donante completo** (Q6_K propio) | 8 | **21** | 8 / 21 |
+| adaptador del op, r16 ×1 | 5 | 15 | 5 / 17 |
+
+- **Veredicto del op antes de evaluar: `unlikely`** (r16 guarda el 7.5 % ponderado del cambio; Jackrong 58.6 %, MiMo 3.8 %).
+- El donante completo mejora GSM8K (16/4 frente a la base, p = 0.012), no MATH (4/2, p = 0.69).
+- El adaptador no se distingue de la base (GSM8K 11/5, p = 0.21; MATH 1/2) ni del donante (GSM8K 3/9, p = 0.15).
+  Punto medio: recupera la mitad de la mejora de GSM8K (+6 de +12), sin significación.
+- **Lectura:** coherente con el veredicto (cambio difuso → el adaptador pequeño no transfiere de forma fiable), pero
+  con n pequeño la prueba es débil: no distingue "transfiere la mitad" de "no transfiere". Es el segundo caso de la
+  regla (Jackrong sí con 58.6 %, este no con 7.5 %); el tercero (OSS-Distilled, LoRA r16 fusionado, en cola) debería
+  dar ≈ 100 % y transferir si la regla vale.
+
+### 43.12 Acortar el razonamiento de MiMo con el delta de OSS-Distilled: transfiere la conducta, cuesta precisión (2026-11-09)
+Plan fijado antes de correr: `lab/probes/short_reasoning/PLAN.md` (C1 cortadas MATH −5 o más; C2 aciertos totales no
+bajan más de 2; C3 el placebo no alcanza C1). Donante `iAmBoosted/Qwen3.5-9B-OSS-Distilled@7a7c96f` (LoRA r16 fusionado);
+`programs/extract_oss_distilled.wspl` lo lee del hub por rangos de bytes, veredicto del op **`likely`** (r16 guarda el
+98.3 % ponderado, 248 matrices). Adaptador aplicado en tiempo de ejecución sobre el Q6_K propio de MiMo; protocolo §43.1
+(voraz, 8 192 tokens, GSM8K 100 + MATH-500 50); placebo = mismo rango y norma de Frobenius por matriz, direcciones al azar.
+
+| brazo | GSM8K ok | GSM8K cortadas | MATH ok | MATH cortadas | tokens GSM8K | tokens MATH |
+|---|---|---|---|---|---|---|
+| MiMo (ref., §43.1) | 92 | 4 | 41 | 13 | 706 | 3 077 |
+| + OSS ×1 | 83 | 1 | 39 | **3** | **286** | **965** |
+| + OSS ×0.5 | 83 | 1 | 39 | 5 | 281 | 1 284 |
+| + placebo ×1 | 93 | 3 | 39 | 17 | 624 | 3 515 |
+
+McNemar exacto (corrector 1 / corrector 2 independiente, coinciden):
+- GSM8K, OSS ×1 frente a MiMo 3/12 (p = 0.035 / 0.013); frente al placebo 3/13 (p = 0.021 / 0.021).
+  OSS ×0.5 frente a MiMo 1/10 (p = 0.012 / 0.003); frente al placebo 2/12 (p = 0.013 / 0.007).
+- MATH: ninguna diferencia (p ≥ 0.6 en todos los pares).
+- 11 de los 12 GSM8K que pierde OSS ×1 terminan con `stop` en 122-557 tokens: no le falta espacio, razona demasiado corto.
+
+**Veredicto del plan: FALLA en las dos dosis** (C1 sí, −10 y −8; C2 no, 122 frente a 133; C3 sí). Lectura: el op
+transfiere a otro modelo (MiMo, no la base de la que sale el delta) una **conducta** — pensar ≈ 3 veces menos — que el
+placebo no produce; esa conducta, tal como la trae el donante, cuesta aritmética. Tercer donante con veredicto
+coherente: `likely` (98 %) → transfiere. El conjunto sellado (§ abajo) no se usa: ningún brazo pasó.
+
+**Conjunto sellado de confirmación (añadido hoy):** `data/sealed_confirm.json`, GSM8K 100 + MATH-500 50 disjuntos del
+set de desarrollo, con sha256 comprobado (`engine/sealed_set.py`, regla en `lab/probes/sealed/README.md`). Solo para
+confirmar, una vez, un brazo que ya haya pasado su criterio.
+
+### 43.13 Felicidad con el op `contrast_vector`: pasa, tras dos arreglos del juez (2026-11-09) — [rev 2026-11-11] solo con el op antiguo: con la capa 31 corregida FALLA C4/C5, §45.3
+Plan fijado antes de correr: `lab/probes/happy/PLAN.md` (C1 tono +1.0 y p < 0.01; C2 léxico +2/100 palabras y
+p < 0.01; C3 placebo tono < +0.5; C4 coherentes ≥ 36/40; C5 GSM8K no baja más de 2). Base Qwen3.5-9B (Q6_K propio A0),
+sin prompt de sistema, voraz, 200 tokens. Pares: 70 preguntas de entrenamiento contestadas por la propia base con
+sistema "alegre" y "neutro" (el sistema no se guarda). `programs/happy_vector.wspl` → `hf_cache/cvec/happy.gguf`
+(incrementos por capa, 31 capas) + placebo de la misma norma por capa. Juez MiMo (tono 1-5, coherente sí/no); segundo
+método independiente: léxico de afecto positivo + "!" por 100 palabras. Prueba: 40 preguntas no vistas.
+
+**Dos fallos de medición, arreglados antes de tocar la prueba** (enmiendas en el plan, ficheros previos guardados):
+1. MiMo ignora `enable_thinking: false` y empieza con `<think>`; con 8 tokens el "yes" nunca llegaba → 0/10 coherentes
+   en todas las escalas. Ahora se lee el veredicto tras `</think>` (1 024 tokens; test `test_judge_answer_skips_the_think_block`).
+2. El juez llamaba incoherente a toda respuesta cortada por el tope de 200 tokens: la **base sin vector** sacaba 4/10
+   (4/5 completas coherentes, 0/5 cortadas). La pregunta ahora avisa del corte; validez exigida: base ≥ 9/10 → 9/10.
+
+Con el juez válido, desarrollo (10 preguntas): escala 0.125 10/10 coherentes, 0.25 10/10, 0.5 8/10, 1.0 0/10, 2 y 4
+degeneran ("OHOOOO…"). La regla (mayor escala con ≥ 9/10) elige **0.25** (rejilla ampliada hacia abajo por enmienda; la
+original 0.5-4 no daba ninguna).
+
+| prueba (40) | tono medio | léxico /100 palabras | coherentes |
+|---|---|---|---|
+| base | 2.83 | 0.27 | 39 |
+| **vector ×0.25** | **3.90** | **2.63** | 37 |
+| placebo ×0.25 | 2.88 | 0.29 | 39 |
+
+- Tono +1.07 (signo exacto p = 3·10⁻⁸); léxico +2.36 (p = 7·10⁻¹²); placebo +0.05 (p = 1.0) y +0.02 (p = 0.55).
+- GSM8K rápido (48): 7 frente a 9 de la base (dentro del margen de 2).
+- **Veredicto: PASA C1-C5**, con la salvedad de los dos arreglos del juez. El efecto del post original (sumar una
+  dirección de "felicidad" al flujo residual) se reproduce con un solo paso WSP-Lang, sin tocar pesos, con placebo y
+  dos métodos de medida que coinciden. Límite: a escalas ≥ 0.5 la coherencia cae; la ventana útil es estrecha.
+
+### 43.14 MiMo 2.6 frente a DeepSeek-V4-Pro-Qwen3.5-9B-UNCENSORED-heretic (pregunta del driver, 2026-11-09)
+Mismo protocolo §43.1 (Q6_K propio sin imatrix, voraz, 8 192 tokens). Heretic convertido desde una carpeta de
+preparación (`hf_cache/dsv4_heretic_conv`: pesos enlazados; solo cambia `tokenizer_class` Qwen3_5Tokenizer →
+Qwen2Tokenizer, que el conversor sí conoce; vocabulario, fusiones e ids idénticos a Qwen3.5-9B para texto).
+
+| | base | Jackrong | MiMo 2.6 | heretic |
+|---|---|---|---|---|
+| GSM8K /100 (corrector 1 / último número) | — | 94 / 95 | 92 / 93 | 89 / 90 |
+| GSM8K cortadas | — | 2 | 4 | 6 |
+| MATH-500 /50 (corrector 1 / 2) | 20 / 19 | 31 / 30 | **41** / 36 | 33 / 33 |
+| MATH cortadas | 30 | 5 | 13 | **3** |
+| tokens medios GSM8K / MATH | — / 6 480 | 588 / 1 490 | 706 / 3 077 | 804 / **1 223** |
+| HumanEval 20 primeros, tope 2 048 | 20 * | 6 † | 19 | 7 † |
+
+- Heretic frente a MiMo, McNemar exacto: GSM8K 4/7 (p = 0.55); MATH 5/13 (p = 0.096) con el corrector 1, 6/9
+  (p = 0.61) con el 2. **Ninguna diferencia significativa** con estos n.
+- Formato: heretic (y Jackrong) escriben `\boxed{}` en el razonamiento y contestan solo el número; el corrector 2 de
+  GSM8K, que exige `\boxed` en la respuesta, da 1/100. Con un tercer corrector que no depende del formato (último
+  número), 90, coherente con el 1.
+- † HumanEval: en 13/20 respuestas heretic y Jackrong completo devuelven Python con la sangría colapsada a 1 espacio
+  (bloques anidados inválidos) y fallan; MiMo 19/20; la base (* tope distinto, §43.8) y el adaptador de Jackrong no lo
+  hacen. **No verificado si es hábito del modelo o del camino de conversión**: no se usa para comparar.
+- No medido por diseño: rechazos/censura (heretic es "uncensored"), ni calidad fuera de matemáticas.
+
+**Respuesta a "cuál es mejor y en qué":** en matemáticas, empate estadístico; MiMo acierta algo más en MATH (no
+significativo) y heretic piensa ≈ 2.5 veces menos y casi nunca se queda sin espacio (3 cortadas frente a 13). Si el
+coste por respuesta importa, heretic; si importa el último punto de MATH, MiMo, sin poder afirmarlo con n = 50.
+
+### 43.15 Confirmación sellada 1: el resultado principal (adaptador de Jackrong sobre la base) CONFIRMA (2026-11-10)
+Plan escrito antes de correr: `lab/probes/sealed/jackrong_confirm.md`. Conjunto `data/sealed_confirm.json` (sha256
+3acfbc8d…, primer y único uso para esta afirmación; disjunto del set de desarrollo). Q6_K de la base, voraz, tope
+2 048 tokens, un servidor con el adaptador por petición. Veredicto: `lab/probes/sealed/jackrong_verdict.py` →
+`lab/runs/sealed/verdict.txt`.
+
+| brazo | GSM8K /100 (corrector 1 / último número) | GSM8K cortadas | MATH-500 /50 (corrector 1 / 2) | MATH cortadas | tokens medios GSM / MATH |
+|---|---|---|---|---|---|
+| base | 43 / 64 | 57 | 4 / 4 | 46 | 1 703 / 1 981 |
+| **adaptador r16 ×0.5** | **91 / 93** | 5 | **35 / 33** | 13 | 616 / 1 067 |
+| placebo misma norma ×0.5 | 46 / 63 | 52 | 5 / 4 | 44 | 1 692 / 1 974 |
+
+McNemar exacto frente a la base (gana/pierde):
+- C1 MATH: adaptador 31/0 (p = 9e-10) con el corrector 1, 29/0 (p = 4e-9) con el 2. **Pasa.**
+- C2 GSM8K: adaptador 48/0 (p = 7e-15) con el corrector 1, 30/1 (p = 3e-8) con último número. **Pasa.**
+- C3 placebo: GSM8K 12/9 (p = 0.66) y 15/16 (p = 1); MATH 2/1 y 1/1 (p = 1). No mejora. **Pasa.**
+
+**CONFIRMA** en problemas no usados por ninguna decisión. Lectura honesta: a 2 048 tokens la base se queda sin
+espacio en 57/100 y 46/50; gran parte de la mejora es que el adaptador razona ≈ 2-3× más corto y llega a contestar
+(lo mismo que en desarrollo, §43.8). El corrector de último número da a la base 64 (no 43) porque en respuestas
+cortadas a veces el último número escrito coincide con la respuesta; el adaptador gana igual con él. Límite: un
+modelo, un tope, voraz; contaminación por preentrenamiento posible en todos los brazos por igual (GSM8K y MATH son
+públicos).
+
+### 43.16 Cuatro donantes nuevos por el op, leídos del hub: dos son la base republicada (2026-11-10)
+`chain_donors4.sh`, op `delta_to_lora` rango 16 con `model=hf:<repo>@<revisión fija>` (por rangos de bytes, nada
+guardado). Veredicto leído del manifiesto de WSP-Lang y recalculado aparte desde `energy.json`
+(`energy_summary.py`); coinciden.
+
+| donante (revisión) | qué promete | ‖ΔW‖ total | conservado a r16 | veredicto |
+|---|---|---|---|---|
+| Tesslate/OmniCoder-9B (9edd36a) | código agéntico, Terminal-Bench 14.6 → 23.6 | **0** | — | **no_change** (es la base) |
+| OrionLLM/OxCoder-9B (07ba04e) | código agéntico, `.eval_results` HLE/GPQA/SWE-Bench | **0** | — | **no_change** (es la base) |
+| ManniX-ITA/JackOD-9B-Coder (b0cabb1) | código, mezcla de varias fuentes | 28.7 | 3.6 % | unlikely |
+| FreedomIntelligence/HuatuoGPT-3-9B (6870b60) | medicina, RL (OnePO) | 2.4 | 25.3 % | uncertain |
+| *referencia:* Jackrong (§43.6) / OSS (§43.12) | | 77.9 / 10.9 | 58.6 / 98.3 % | likely |
+
+- **OmniCoder y OxCoder son Qwen3.5-9B byte a byte**, por dos métodos: el op da Δ = 0 en las 248 matrices, y el sha256
+  de tensores sueltos leídos por HTTP range (MLP, atención, atención lineal, norms, `lm_head`) es idéntico al del repo
+  oficial `Qwen/Qwen3.5-9B` (rev c202236). Historial: OmniCoder subió los pesos una vez (2026-03-12) y luego solo README;
+  OxCoder, solo config, plantilla, imágenes y resultados de benchmarks. No se miraron sus repos GGUF aparte.
+- **Bug encontrado así en el runtime:** con Δ = 0 el op decía `likely` (0/0 → "100 % conservado"). Arreglado con test:
+  `delta_norm` en el resultado y veredicto `no_change` (commit 4d28356).
+- JackOD, mezcla de varias fuentes: el cambio está repartido (como MiMo, 3.8 %); no candidato.
+- HuatuoGPT-3 (RL): cambio pequeño y a medio camino; sin dato de qué hace su adaptador, que no se ha medido.
+- **Lectura:** el veredicto sirve además de filtro barato antes de descargar o evaluar nada: de 3 "coders" con
+  benchmarks publicados, 2 no tienen cambio que trasplantar. Ningún donante de código útil para el op en esta tanda.
+
+### 43.17 Dirección "concluir" sin donante (réplica de concept.country en Qwen3.5-9B): PASA en dev (2026-11-10) — [rev 2026-11-12] repetido con la capa 31 corregida: PASA otra vez, §45.4
+Plan fijado antes de correr: `lab/probes/cc/PLAN.md`; datos y veredicto en `lab/runs/cc/`. Referencia: Concept Country,
+*Gradient-Free Weight Editing Reduces Overthinking in Qwen3.8-27B* (2026-11-08).
+
+- **Dirección:** 128 trazas de la propia base (64 MATH-500 fuera de dev y del sellado, 64 GSM8K train; pensamiento
+  activado, voraz, tope 4 096), **53 terminan** (14 MATH, 39 GSM8K). Op `contrast_vector` con filas por posición
+  (`think` + `focus`, nuevo): media del flujo residual en los **últimos 48 tokens antes de `</think>`** menos la de los
+  tokens de razonamiento anteriores (≤ 1 536), por capa, como vector de control (incrementos por capa). Norma en la
+  última capa 21.0 (felicidad 51.8). Placebo: misma norma por capa, dirección aleatoria (semilla 2026).
+- **Criba de escala** (64 ítems MATH-500 no usados, 2 048 tokens, regla: más aciertos): base 8, ×0.25 10, ×0.5 17,
+  **×1.0 35**, ×2.0 2 (64/64 cortadas, 46 en bucle). Elegida 1.0.
+- **Dev** (GSM8K 0-99 + MATH-500 select_indices(2026, 50), 2 048 tokens, voraz):
+
+| brazo | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle GSM / MATH | tokens medios GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| **vector cc ×1.0** | **84 / 86** | 7 | **32 / 24** | 22 | 6 / 16 | 698 / 1 385 |
+| placebo ×1.0 | 37 / 53 | 62 | 3 / 3 | 47 | 3 / 2 | 1 768 / 2 010 |
+
+- McNemar exacto frente a la base: vector GSM8K 35/1 (p = 1e-9) y 28/3 con último número (p = 5e-6); MATH 26/0
+  (p = 3e-8) y 18/0 con el corrector 2 (p = 8e-6). Placebo GSM8K 8/21 (p = 0.024, **por debajo** de la base), MATH 1/4.
+  Tokens: vector −59 % GSM8K, −29 % MATH; placebo +5 % / +3 %.
+- **C1 ganancia, C2 placebo nulo, C3 GSM8K sin daño: PASA.**
+- Revisado a mano: las 8 discrepancias de correctores en MATH son todas de formato (el vector escribe `4/3`, `11/2`
+  donde el oro es `\frac43`; el corrector 2 compara cadenas): el 32 es el bueno. Estricto: 5 de las 32 de MATH y 1 de
+  las 84 de GSM8K son respuestas cortadas cuya respuesta aparece en un `\boxed{}` repetido en bucle; sin ellas, MATH 27
+  frente a 6. Ese bucle de conclusión es el borde de la ventana (a ×2.0 lo es todo).
+- **Lectura:** con la dirección del propio modelo, sin donante y sin entrenar, la base cierra a tiempo y sube casi como
+  con el adaptador de Jackrong (sellado §43.15: 91 / 35). El empuje del mismo tamaño en dirección aleatoria **empeora**
+  (−13 GSM8K): lo que funciona es la dirección, no el tamaño. Coherente con T2 (la mejora a presupuesto fijo es cerrar)
+  y matiza T4: este tipo de ganancia no necesita donante.
+- Límites: un modelo, un tope (2 048), voraz; dirección sacada mayormente de GSM8K train (39 de 53 trazas); escala
+  elegida en ítems de MATH; a 32k tokens la base ya cierra (arXiv 2611.09382: 97.7 en MATH), así que esto es eficiencia
+  con presupuesto corto, no capacidad. Confirmación sellada en marcha (`lab/probes/sealed/cc_confirm.md`).
+
+### 43.18 Confirmación sellada 2: la dirección "concluir" sin donante CONFIRMA (2026-11-10) — [rev 2026-11-12] con la capa 31 corregida CONFIRMA otra vez (86 / 33), §45.4
+Plan escrito antes de correr: `lab/probes/sealed/cc_confirm.md`; veredicto `lab/probes/sealed/cc_verdict.py` →
+`lab/runs/sealed_cc/verdict.txt`. Conjunto `data/sealed_confirm.json` (sha256 3acfbc8d…, segundo uso, primero para esta
+afirmación; ningún ítem tocó ninguna decisión del estudio cc). Mismo servidor y ajustes que dev: Q6_K `A0`, 2 048 tokens,
+voraz, `--control-vector-scaled` ×1.0 (escala fijada en la criba §43.17, sin tocar).
+
+| brazo | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle GSM / MATH | tokens medios GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 43 / 64 | 57 | 4 / 4 | 46 | 4 / 2 | 1 703 / 1 981 |
+| **vector cc ×1.0** | **87 / 92** | 10 | **25 / 23** | 27 | 10 / 22 | 692 / 1 440 |
+| placebo ×1.0 | 23 / 43 | 76 | 2 / 2 | 48 | 7 / 3 | 1 839 / 2 026 |
+
+- McNemar exacto frente a la base: vector GSM8K ganadas/perdidas 46/2 (p = 8e-12) y 30/2 con último número
+  (p = 2e-7); MATH 21/0 (p = 1e-6) y 19/0 con el corrector 2 (p = 4e-6). Placebo GSM8K 5/25 (p = 3e-4) y 6/27, **por
+  debajo** de la base; MATH 1/3 (p = 0.63).
+- **C1 ganancia (los dos benchmarks, los dos correctores), C2 placebo no mejor, C3 GSM8K sin daño: CONFIRMA.**
+- Dos métodos: los aciertos por ítem coinciden con el resumen de `bench_runner` (0.87 / 0.50 / 0.43 / 0.08 / 0.23 /
+  0.04). La base, corrida de nuevo, da **los mismos 150 resultados ítem a ítem** que la base del sellado 1 (§43.15):
+  el montaje es determinista y las dos confirmaciones comparten base.
+- Discrepancias de correctores, revisadas: las 4 son de formato (`10\%` frente a `10`; `13/18` frente a
+  `\frac{13}{18}`; `32348` frente a `\$32,\!348`).
+- Estricto (quitando las correctas cortadas con la respuesta en un `\boxed{}` repetido): GSM8K 84 frente a 42, MATH 19
+  frente a 4. El bucle de conclusión sigue siendo el borde de la ventana: 22 de las 50 de MATH acaban en cola en bucle.
+- Comparado con el trasplante de Jackrong en el mismo conjunto (§43.15): 91 / 35 frente a 87 / 25. Sin donante, casi
+  igual en GSM8K y por debajo en MATH.
+- **Lectura:** la mejora a presupuesto corto se puede sacar del propio modelo, sin donante ni entrenamiento, y se
+  mantiene en ítems nunca vistos. Un empuje del mismo tamaño en dirección aleatoria **daña** (−20 GSM8K): todo el efecto
+  es la dirección. Sigue siendo eficiencia (cerrar antes del tope), no capacidad nueva: a 32k tokens la base ya resuelve
+  casi todo MATH (arXiv 2611.09382). Aplicado en inferencia (`--control-vector`); compilarlo en `down_proj` es el paso
+  siguiente, con su propio plan.
+
+### 43.19 La dirección "concluir" compilada en los pesos (`down_proj`, rango 1, Q6_K): PASA en dev (2026-11-11)
+Plan fijado antes de correr: `lab/probes/cc_weights/PLAN.md`; código `lab/probes/cc_weights/{compile,agree,verdict}.py`;
+cadena `lab/runs/close_probe/distill/chain_cc_weights.sh`; datos y veredicto en `lab/runs/cc_weights/`.
+
+- **Qué se escribe:** por capa N = 1..31, ΔW_N = v_N u_Nᵀ en `mlp.down_proj` (4 096 × 12 288), v_N = incremento del
+  vector cc de §43.17-18, u_N = mínimos cuadrados con cresta para que u ᵀx ≈ 1 sobre las entradas de `down_proj`
+  (λ = 1e-3 · tr(KᵀK)/12 288, fijado antes). Capas en orden, cada una sobre el flujo ya editado. Calibración: las 128
+  trazas de descubrimiento de cc (100 ajuste / 28 reserva, semilla 20261111). Mismas matrices, mismas formas, nada
+  añadido. ΔW es el 2.3-2.9 % de la norma de cada `down_proj`.
+- **G0 (antes de cualquier benchmark): pasa.** Mediana sobre capas de la mediana en reserva de |u ᵀx − 1| = 0.032
+  (peor capa 0.043; umbral 0.5). Placebo compilado igual: 0.032 / 0.047 (la mediana cae en la capa 1, cuya entrada no
+  depende de ninguna edición: idéntica en los dos). Recuantización Q6_K del peso fusionado: coseno(escrito, ΔW) mínimo
+  0.83, error relativo mediano 0.47 (Q6_K pierde casi la mitad de ΔW en norma, pero conserva la dirección).
+  Acuerdo voraz de los primeros 256 tokens, fusionado frente a vector: 0/10 idénticos, prefijo común medio 22 %
+  (informativo: divergen pronto, mismo estilo).
+- **Dev** (mismos ítems y servidor que §43.17; base y vector reutilizados de allí, montaje determinista):
+
+| brazo | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle GSM / MATH | tokens medios GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| vector cc ×1.0 (inferencia) | 84 / 86 | 7 | 32 / 24 | 22 | 6 / 16 | 698 / 1 385 |
+| **fusionado Q6_K (sin flags)** | **87 / 90** | 8 | **34 / 27** | 14 | 4 / 3 | 730 / 1 385 |
+| placebo fusionado | 28 / 43 | 71 | 6 / 6 | 44 | 8 / 1 | 1 800 / 1 985 |
+| LoRA r1 sobre A0 (diagnóstico) | 84 / 86 | 8 | 35 / 27 | 19 | 9 / 15 | 705 / 1 341 |
+
+- McNemar exacto, fusionado frente a la base: GSM8K 38/1 (p < 1e-9) y 30/1 con último número; MATH 28/0 y 21/0 con el
+  corrector 2. **Frente al vector:** GSM8K 5/2 (p = 0.45), MATH 5/3 (p = 0.73): ni mejor ni peor. Placebo fusionado
+  frente a la base: GSM8K 2/24 (p < 1e-5), **por debajo**; MATH 2/2.
+- **C1 fusionado > base, C2 placebo no mejor, C3 GSM8K sin daño, C4 fusionado no por debajo del vector: PASA.**
+- Dos métodos: los aciertos por ítem de `verdict.py` coinciden con el resumen de `bench_runner` en el log de la cadena
+  (0.87 / 0.68 / 0.28 / 0.12 / 0.84 / 0.70). Discrepancias de correctores del fusionado (8), revisadas: todas de formato
+  (`4/3` frente a `\frac43`, `60\%`, `0.35625` frente a `.35625`).
+- HumanEval primeros 20 (informativo en el plan): no corrido aún.
+- **Lectura:** el efecto de un vector de control sale de la inferencia y vive en el checkpoint como edición de matrices
+  existentes, con una escritura de rango 1 en forma cerrada por capa y sin gradientes, y sobrevive a Q6_K aunque la
+  cuantización pierda casi la mitad de ΔW. Un empuje compilado del mismo tamaño en dirección aleatoria daña. Dev ya
+  se miró muchas veces (base y vector); siguiente: conjunto sellado nuevo `data/sealed_confirm2.json` (sha256
+  10381eee…, hecho antes de correr nada), brazos base / vector / fusionado / placebo fusionado, mismos C1-C4.
+
+### 43.20 Forense ciego de Qwen3.8-27B TURBO: P1 y P3 aciertan, P2 falla (2026-11-11)
+Plan y regla ciega: `lab/probes/delta_patterns/plan_turbo27b.md` (fijado 2026-11-06). Lectura en streaming de 845
+tensores de texto de base, `heretic-ara` y TURBO (~9 h, solo estadísticas). Predicción escrita solo desde `total/`
+(TURBO − base) y commiteada (98b3dfc) **antes** de abrir `sealed/`.
+
+| | predicción (desde D_total) | medido (sealed) | regla | resultado |
+|---|---|---|---|---|
+| P1 dónde | capas 26-63 (inicio por el salto en direcciones atípicas de `down_proj`/`o_proj`/`out_proj`; sin fin visible) | D_heretic solo en 26-55, 0 fuera | Jaccard ≥ 0.7 | **acierta** (0.79; el inicio exacto, el fin no se ve) |
+| P2 rango | 1 por tensor | mediana 13 direcciones para el 90 % (top-1 0.34, rango estable 2.96) | ±×2 | **falla** |
+| P3 el resto | difuso, perfil de las mejoras 9B | Spearman 0.927 con la mediana mimo/neohorse/tmax/fara | ≥ 0.7 | **acierta** |
+
+- D_heretic: 60 tensores, todos escritores del residual (30 `down_proj`, 22 `out_proj`, 8 `o_proj`). D_rest: los 848,
+  con el mismo perfil por familia que D_total (MLP 0.40, SSM 0.31, atención 0.30, normas 0.04).
+- **Lectura:** desde el modelo fusionado solo, las herramientas encuentran dónde empieza la ablación y que el resto es
+  un fine-tune normal, pero cuentan de menos su rango (en una suma con un fine-tune grande y difuso solo asoma la
+  primera dirección) y no ven su final si otro cambio sigue más allá. Junto con concept27b (§ forense, 85116d8,
+  Jaccard 1.0 cuando la edición está sola), el límite es la mezcla, no la herramienta.
+- [post-data 2026-11-20] **El mismo modelo con `model_report` 0.8.3 por HTTP (`programs/turbo27b_report.wspl`,
+  minutos frente a 9 h):** `full_fine_tune` en las 64 capas, cambio relativo mediano MLP 36-40 %, atención 18-34 %,
+  embeddings 30 %, cabeza 26 %, normas 3-5 %, `A_log` 0,43 % y `dt_bias` 0,27 % (decaimiento casi intacto, como en
+  SenseNova); perfil más cercano MiMo 0,96, post-entrenamiento oficial 0,94. **No ve la ablación Heretic** (capas
+  26-55) que el forense ciego encontró: el informe rápido clasifica la mezcla por su parte dominante. Fuera de los
+  pesos: `eos_token_id` y `pad_token_id` cambiados, plantilla de chat distinta (10 líneas), `unsloth_version` en el
+  config (entrenado con Unsloth), tokenizador idéntico. Contexto (post de FHILY, 20-nov): 1,37 M descargas de su
+  GGUF; "0 rechazos en 100 prompts" según el autor, coherente con la ablación.
+
+### 43.21 "Concluir" compilado en los pesos: CONFIRMADO en el conjunto sellado 2 (2026-11-11)
+Conjunto `data/sealed_confirm2.json` (100 GSM8K + 50 MATH-500, semilla 20261111, sha256 comprobado antes de correr,
+creado antes de esta corrida y disjunto de todo lo usado). Mismos cuatro brazos y criterios C1-C4 que §43.19, sin
+tocar nada tras dev. Q6_K, voraz, tope 2 048. Veredicto: `lab/runs/sealed_ccw/verdict.json`.
+
+| brazo | GSM8K /100 (g1 / último número) | MATH /50 (g1 / g2) | cortadas GSM8K / MATH | tokens medios GSM8K / MATH |
+|---|---|---|---|---|
+| base | 46 / 59 | 7 / 7 | 52 / 43 | 1 681 / 1 959 |
+| vector de control ×1.0 | 90 / 91 | 22 / 21 | 10 / 27 | 673 / 1 472 |
+| **fusionado Q6_K (sin flags)** | **89 / 92** | **26 / 25** | 8 / 22 | 689 / 1 456 |
+| placebo fusionado (misma norma, dirección aleatoria) | 30 / 46 | 4 / 4 | 70 / 46 | 1 824 / 1 988 |
+
+- **C1** fusionado vs base: GSM8K 43/0 (p = 2.3e-13) y 34/1 (p = 2.1e-9); MATH 19/0 (p = 3.8e-6) y 18/0 (p = 7.6e-6).
+- **C2** placebo no mejora: GSM8K 9/25 (p = 0.009, **peor** que la base), MATH 0/3.
+- **C3** sin daño en GSM8K. **C4** fusionado vs vector: GSM8K 5/6 (p = 1), MATH 6/2 (p = 0.29). **PASS.**
+- Segunda comprobación: los aciertos por brazo recontados desde los `.json` de cada brazo (acc × n) coinciden con
+  los de las tablas de McNemar del veredicto.
+- **Retención (informada, no criterio; `lab/runs/cc_weights/retention/`, cadena `chain_ccw_retention.sh`):**
+
+| brazo | perplejidad, `corpus.txt` (Alicia), 60 × 512 | HumanEval primeros 20 (cerradas / correctas) | tokens medianos |
+|---|---|---|---|
+| base | 1.142 ± 0.006 | 20 / 20 | 650 |
+| vector ×1.0 | **2.608 ± 0.038** | 19 / **15** | 201 |
+| fusionado Q6_K | 1.350 ± 0.011 | 20 / 19 | 471 |
+| placebo fusionado | 1.210 ± 0.007 | 20 / 20 | 666 |
+
+  - El vector en inferencia cuesta fuera de matemáticas: perplejidad ×2.3 y HumanEval 20 → 15 (respuestas 3× más
+    cortas). El fusionado cuesta mucho menos (×1.18, 19/20) con el mismo efecto en matemáticas. Coherente con la
+    fusión: Q6_K conserva la dirección (coseno mediano 0.895) pero pierde ≈ 47 % de la magnitud (error relativo
+    mediano 0.475, `vec/merge_summary.json`); la dosis efectiva del fusionado es menor y sigue bastando.
+  - Límite: la perplejidad de la base sobre Alicia es 1.14 (texto memorizado), así que mide sobre todo cuánto se
+    altera la reproducción de un texto conocido, no lenguaje general. HumanEval-20 es pequeño.
+- **Lectura:** la mejora de eficiencia de §43.17-43.18 queda escrita de forma permanente en el checkpoint, en forma
+  cerrada, sin gradientes ni donante, y se confirma en un conjunto nuevo; el placebo de la misma norma daña. Sigue
+  siendo eficiencia a presupuesto fijo (T2), no capacidad nueva: con 32 k tokens la base ya resuelve MATH. Un modelo,
+  un presupuesto, voraz.
+
+### 43.22 cc08: la dirección "concluir" no se puede re-derivar en Qwen3.5-0.8B (FALLA en el paso 1) (2026-11-11)
+Plan `lab/probes/cc08/PLAN.md` (fijado antes de correr). Base 0.8B Q6_K, razonamiento activo, voraz, tope 4 096, los
+128 ítems de descubrimiento del 9B y el fallback fijado (GSM8K train 64-191).
+- Trazas que cierran `</think>` dentro del tope: **1 de 256** (1 de 192 GSM8K, 0 de 64 MATH); mediana 4 096 tokens (todas
+  las demás cortadas). Dos recuentos: `rows1.json`/`rows2.json` del pipeline (1 fila) y `traces.jsonl` por `finish`
+  (1 `stop`, 255 `length`). Se pedían ≥ 30.
+- Regla del plan: **FALLA**, "no hay trazas de cierre de las que leer una dirección". No se corrió vector, criba ni dev.
+- **Lectura:** a 4 096 tokens el 0.8B casi nunca concluye (Hu et al., arXiv 2611.09382, ya vieron la base cortada en
+  111/128 en MATH). El método de §43.17 necesita ejemplos propios de cierre; en un modelo que no cierra no tiene qué
+  leer. Consecuencia para portar subespacios: la puerta 3 (llevar "concluir" del 9B al 0.8B) no tiene una dirección
+  re-derivada en destino con la que compararse; haría falta otra dirección que el 0.8B sí tenga, o leer los cierres
+  con un tope mucho mayor (otro plan).
+
+### 43.23 cc_neurons fase A: la dirección "concluir" no vive en pocas neuronas (PARCIAL; sin fase B) (2026-11-11) — [rev 2026-11-13] descompuso `cc.gguf` con la última fila post-norma (coherente entonces); `decompose.py` corregido, una repetición debe comparar con `cc_v2.gguf`
+Plan `lab/probes/cc_neurons/PLAN.md` (fijado antes de correr). Cada incremento v_N del vector de §43.17 se parte de
+forma exacta en atención + W_N·Δa_N (MLP); k₅₀ = neuronas del MLP (columnas de `down_proj`) que llevan la mitad de su
+contribución; nulo = el mismo cálculo con los tokens repartidos al azar en dos grupos del mismo tamaño (semilla 2026).
+- **Comprobaciones:** coseno con el `cc.gguf` ≥ 0.9999998 en todas las capas; error de aditividad ≤ 0.0024;
+  linealidad (W·Δa frente a Δmlp) ≤ 0.0007. La descomposición es exacta.
+- Capas que llevan ≥ 70 % de la energía: 22, 24, 26, 28-31. Parte MLP del incremento 0.56-0.85.
+
+| capa | 22 | 24 | 26 | 28 | 29 | 30 | 31 | mediana |
+|---|---|---|---|---|---|---|---|---|
+| k₅₀ | 119 | 214 | **4** | 166 | 123 | 93 | 38 | **119** |
+| k₅₀ nulo | 391 | 367 | 178 | 128 | 46 | 96 | 46 | **128** |
+| k₉₀ | 969 | 1 205 | 489 | 1 251 | 1 092 | 800 | 268 | |
+
+- **Regla:** concentrada si mediana k₅₀ ≤ 32 y ≤ nulo/5; repartida si ≥ 512; si no, parcial. 119 frente a 128 del
+  nulo: **PARCIAL**, sin fase B. Segunda comprobación: la mediana recalculada desde las filas por capa da 119 y 128.
+- **Lectura:** en conjunto la dirección necesita ~10² neuronas por capa para la mitad de su parte MLP, lo mismo que una
+  partición aleatoria de los mismos tokens: no hay un "puñado de neuronas de concluir"; el término denso de rango 1
+  (§43.19) es el objeto adecuado. **Excepción descriptiva (no criterio):** en la capa 26, 4 neuronas llevan la mitad
+  (nulo 178) y la parte MLP es el 85 % del incremento; es candidata a una lectura de neuronas aparte, sin plan aún.
+- La primera corrida en cadena murió al arrancar sin traza (06:46, justo al cerrarse el servidor del sellado; RAM);
+  repetida a solas con el mismo código, terminó (`rerun.log`, 26 min).
+
+### 43.24 implant_detect: pocas neuronas reprogramadas sí se ven con la base; sin base solo si escriben un token (2026-11-11)
+Plan `lab/probes/implant_detect/PLAN.md` (fijado antes de correr). Qwen3.5-9B base y MiMo-V2.6-Distill (SFT real como
+ruido), 32 × 12 288 neuronas; implantes sintéticos y no funcionales (R reescritura de igual norma, S(c) empuje de c ×
+el cambio mediano de MiMo, T columna de `down_proj` = fila del unembedding de un token común), sembrados (20261111),
+20 ensayos por condición, en memoria, nunca guardados. Umbrales elegidos en las capas pares sin implantes (≤ 1
+marca), puntuación en las impares (y la condición "última capa"). CPU, 35 min (`summary.json`).
+
+| condición (recall, k = 1/3/10 agregados) | D1, con base | D2, sin base |
+|---|---|---|
+| R sola / dentro de MiMo | 1.00 / 1.00 (rango mediano 1) | 0.00 / 0.00 |
+| S1 dentro de MiMo (impares / última) | 0.20-0.25 / 0.00 | 0 |
+| S3, S10 dentro de MiMo | 1.00 (rango 1) | 0 |
+| T sola, impares / última | 1.00 / 1.00 | **0.62-0.80** / 0.00 (rango ≈ 220) |
+| T dentro de MiMo, impares / última | 1.00 / 1.00 | **0.62-0.70** / 0.00 (rango ≈ 210) |
+| falsos positivos en impares limpias (base / MiMo) | 0 / **5** | 3 / 3 |
+
+- **Veredicto por la regla (código fijado antes de correr):** D1 útil = **no** (recall 1.0, pero 5 falsos positivos en
+  MiMo, se pedía ≤ 1); límite de detección dentro de MiMo **c = 3**; D2 útil = **no** (recall medio de T 0.33 al
+  promediar impares con la última capa, donde D2 no ve nada; solo en impares sería 0.65 con 3 falsos positivos — se
+  informa, no cambia el veredicto).
+- Segunda comprobación: falsos positivos recontados desde `clean_scores.npz` con los τ guardados: 5 / 3 / 3 en impares,
+  ≤ 1 en pares. Coinciden.
+- **Lectura:** con la base declarada, un implante del tamaño del ataque (reescritura de igual norma) sale **primero
+  de 393 216** neuronas siempre, también escondido dentro de un SFT completo; el coste es que el SFT real mueve "mucho"
+  unas pocas neuronas legítimas (6 marcadas en todo MiMo, p. ej. capa 3 n.º 1202, capa 29 n.º 7256), así que el
+  detector da una lista corta para revisar a mano, no una alarma limpia. Un empuje del tamaño del cambio típico del
+  fine-tune (S1) es invisible: un atacante cuidadoso que reparte el cambio no se ve por normas. Sin base, solo se ve
+  la escritura de un token concreto, y no en la última capa (allí las columnas ya se parecen al unembedding).
+- La primera corrida murió a las 07:21 sin traza, con el disco C: al 100 % (1.6 GB libres al revisarlo); repetida
+  tras liberar disco, terminó.
+
+### 43.25 El op `compile_control_vector` reproduce §43.19 desde un programa `.wspl`: ACEPTADO (2026-11-11)
+Plan `lab/probes/cc_weights/OP_PLAN.md` (criterios fijados antes de correr). Programa
+`programs/cc_compile_repro.wspl` (modelo `hf_cache/qwen35-9b-hf`, vector `cc.gguf`, placebo `cc.placebo2026.gguf`,
+calib `lab/runs/cc/traces.jsonl`, base `hf_cache/h4/A0-Q6_K.gguf`). Comprobación `lab/probes/cc_weights/op_accept.py`
+→ `lab/runs/cc_weights/op_accept.json` (informe del op copiado en `op_report.json/md`).
+
+| criterio | fijado | sale |
+|---|---|---|
+| G0 vector, mediana / peor capa | 0.032 ± 0.003 / 0.043 ± 0.005 | 0.0318 / 0.0435 |
+| G0 placebo, mediana / peor capa | 0.032 / 0.047 | 0.0318 / 0.0470 |
+| merge, cos(escrito, ΔW) mínimo | 0.83 ± 0.02 | 0.831 |
+| merge, error relativo mediano | 0.47 ± 0.02 | 0.475 |
+| u_N frente a `cc_weights/vec/fit.pt` (segundo método) | cos ≥ 0.999 | ≥ 0.99999 en todas |
+| `ffn_down` frente a `cc_merged-Q6_K.gguf` | byte a byte | **31/31 capas idénticas** |
+
+- El GGUF fusionado que escribe el op es byte a byte el ya evaluado en §43.19/§43.21, así que no se repite ningún
+  benchmark.
+- La base `A0-Q6_K.gguf` se había borrado con `h4`; reconstruida con la receta original (convert bf16 +
+  `llama-quantize` Q6_K) y comprobada idéntica en todos los tensores no editados de `cc_merged`
+  (`a0_rebuild_check.json`) antes de correr el op.
+- La copia `hf_cache/cc_op/` (duplicado, ~14 GB) se borró tras la aceptación, con permiso del usuario.
+
+### 43.26 Forense de dos Qwen3.8-27B sin censura (pregunta de X, 2026-11-11)
+- **Huihui-Qwen3.8-27B-abliterated** (`model_report`, safetensors frente a la base): abliteration de libro. Rango 1,
+  una sola dirección global, solo matrices que escriben al residuo, capas 17-51, cambio relativo ~2.1 %
+  (`lab/runs/model_report/huihui_qwen38_27b.md`).
+- **HauhauCS Qwen3.8-27B Aggressive** (solo GGUF Q8_K_P): leído con un diff nuevo por re-cuantización Q8_0
+  (`lab/probes/delta_patterns/gguf_q8_delta.py`, rangos HTTP, sin descargar). Las filas sin tocar reproducen los
+  bytes Q8_0 publicados, lo que valida el método; `ssm_out` necesita deshacer el reordenado de cabezas de valor del
+  conversor. Resultado (`hauhau_qwen38_27b_q8delta.json`): `ffn_down` 16/64 capas (24-40, 2.2 %, top1 0.85 frente a
+  0.90 si fuese rango 1), `o_proj` 6/16 (19-43, **6.9 %**), `ssm_out` 13/48 (28-45), `ffn_up` 7/64 (45-53, rango 1),
+  `attn_v` intacto. |cos| mediano entre direcciones 0.42: **una dirección por capa**, no global, más una edición de
+  `ffn_up` que la ablación direccional no hace.
+
+## 44. H6g y H6h: entrenar sin backward, o con pocas escrituras de forma cerrada: ambos negativos (2026-11-11)
+
+### 44.1 H6g (addendum e): se cierra sin correr SPSA
+- **Puertas del estimador** (SPSA frente a gradiente exacto, razón en [0.8, 1.25]): rango 1 `down_proj` fp32 pasa
+  (ε 3e-4), rango 1 todas las matrices fp32 pasa (ε 1e-4); rango 20 todas falla en bf16 y en fp32 (razón ≈ 0.24 o
+  menos); en bf16 fallan todas.
+- **Techos con backprop** (Adam, mismos coeficientes, presupuesto 1.0): BP1 (`down_proj`, r1) R = 0.035; BP2 (todas,
+  r1) R = 0.192. Ambos < 0.25, así que por la regla fijada ningún brazo SPSA se corre: ni con gradiente exacto llega.
+- Lectura para T4b: no hay brazo sin gradiente que pueda pasar en esta parametrización; la pregunta queda sin
+  respuesta positiva y sin coste que medir.
+
+### 44.2 H6h (addendum f): pocas escrituras precondicionadas: FALLA en los tres brazos
+Por ronda: K = 1 024 ejemplos, un forward + backward, dirección ridge (`cf_distill.solve`) o gradiente crudo, tamaño
+por búsqueda en dev; placebo de igual norma en el mismo proceso. Regla: semilla 1 con R < 0.25 → para.
+
+| brazo | rondas aceptadas | R | R placebo | p (frente a placebo) | NLL retención |
+|---|---|---|---|---|---|
+| W_all (ridge, todas) | 1 | 0.01 | −0.01 | 0.60 | 1.3209 |
+| G_all (gradiente, todas) | 4 | 0.08 | −0.04 | 0.018 | 1.3201 |
+| W_down (ridge, `down_proj`) | 1 | 0.04 | −0.02 | 0.13 | 1.3212 |
+
+- La retención no se mueve (base 1.3209), pero tampoco la tarea. El precondicionado ridge no ayuda: el gradiente
+  crudo es el único algo por encima de su placebo y se queda en un tercio del umbral.
+- Fallo de la primera prueba de humo, arreglado antes de los brazos: "Expected all tensors to be on the same device"
+  en `Task.add` (la solución de `solve` puede volver en CPU); se mueve D al dispositivo del parámetro.
+
+## 45. Puerta 1 del porte entre modelos: hay un mapa lineal entre las corrientes residuales de 9B y 0.8B: PASA (2026-11-11)
+Plan `lab/probes/act_map/PLAN.md` (revisor externo, aprobado, criterios fijos). Qwen3.5-9B y Qwen3.5-0.8B, mismo
+tokenizador (sha256 idéntico), GSM8K-train 1000-1239, 21 896 tokens de ajuste, 4 932 de test
+(`lab/runs/act_map/q9__q08.json`).
+
+| dirección | R² mediana | estados por encima del control de embeddings | R² barajado | coseno del contraste *late* ≥ 0.7 |
+|---|---|---|---|---|
+| 9B → 0.8B (la que importa) | **0.731** | 0.917 | −0.10 | 1.0 de los estados (cos ≈ 0.99) |
+| 0.8B → 9B | 0.555 | 0.938 | −0.03 | 1.0 |
+
+- Los cuatro criterios pasan en las dos direcciones → toca la puerta 2 (correr la 0.8B hasta el estado i, mapear y
+  seguir en la 9B; NLL frente a la 9B sola).
+- Cautela: el contraste *late* (último cuarto del texto frente al resto) puede llevar mucha información de posición,
+  y su coseno ≈ 0.99 en todos los estados es más alto de lo esperable; la puerta 2/3 debe usar un contraste de
+  contenido, no solo de posición.
+- [rev 2026-11-13, auditoría post-norma a raíz de §45.2] La captura (`act_map.py`) guardaba la tupla `hidden_states`
+  cruda: el último estado (h24 en la 0.8B, h32 en la 9B) era la salida *después* de la norma final, no la corriente
+  residual. Corregido en el código (`contrast_vector.hidden_states_pre_norm`, compartido por todos los lectores; test
+  `tests/test_pre_norm_readers.py`), **no re-corrido**: afecta a 1 de los 24 / 32 estados de una mediana y a ninguna
+  de las profundidades de la puerta 2 (j = 6-24, i ≤ 18). Mismo repaso: `close_probe/cvec_extract.py` (sin uso en
+  ningún resultado) y `cc_neurons/decompose.py` (§43.23, coherente con el `cc.gguf` antiguo) corregidos;
+  `rig/extract_loop_direction.py` lee igual la última fila y no se toca (anotado).
+
+### 45.1 Puerta 2: el modelo destino USA los estados mapeados: PASA en las dos direcciones (2026-11-11)
+Addendum "Gate 2" de `lab/probes/act_map/PLAN.md` (criterios fijados antes del código), `lab/probes/act_map/stitch.py`,
+7 tests en `tests/test_act_map_stitch.py`. El estado i del origen (captura de la puerta 1), pasado por el mapa de la
+puerta 1 (guardado, sin reajustar), sustituye el estado j del destino en todas las posiciones menos la primera; el
+destino termina el forward. NLL del siguiente token sobre los 40 textos de test (4 892 tokens).
+Controles: `emb` (mapa desde los embeddings del origen: solo identidad del token), `shuffle` (filas barajadas), `mean`
+(estado medio), `self` (el propio estado del destino por el mismo hook: segundo método, debe dar la NLL nativa).
+G = (NLL_emb − NLL_stitch) / (NLL_emb − NLL_nativa).
+
+| dirección | j | i | G | IC 95 % (emb − stitch) | stitch | emb | shuffle | mean | self |
+|---|---|---|---|---|---|---|---|---|---|
+| 0.8B → 9B (nativa 1.112) | 8 | 9 | **0.76** | [0.38, 0.54] | 1.253 | 1.710 | 8.06 | 8.51 | 1.1117 |
+| | 16 | 11 | **0.75** | [0.73, 0.93] | 1.388 | 2.218 | 8.05 | 8.36 | 1.1117 |
+| | 24 | 18 | **0.78** | [1.71, 1.95] | 1.638 | 3.466 | 7.80 | 7.63 | 1.1117 |
+| 9B → 0.8B (nativa 1.546) | 6 | 6 | **0.86** | [0.46, 0.62] | 1.636 | 2.171 | 7.91 | 8.57 | 1.5456 |
+| | 12 | 18 | **0.95** | [1.02, 1.20] | 1.603 | 2.707 | 7.96 | 8.14 | 1.5456 |
+| | 18 | 22 | **0.96** | [1.96, 2.21] | 1.628 | 3.715 | 7.81 | 7.49 | 1.5456 |
+
+- **Veredicto por la regla: PASA en las dos direcciones, 3/3 profundidades** (se pedía 2/3 con G ≥ 0.5, IC > 0 y
+  stitch por debajo de shuffle y mean). El hook es exacto: `self` reproduce la NLL nativa en las seis.
+- Predicción (G 0.3-0.6, peor a más profundidad; 0.8B → 9B pasa como mucho en una) **falla por arriba**: G no baja
+  con la profundidad y 9B → 0.8B llega a 0.95.
+- 0.8B (capas bajas) + 9B (capas altas) a ¼ y ½ predice mejor que la 0.8B entera (1.25 / 1.39 frente a 1.55); a ¾ ya
+  no (1.64). En 9B → 0.8B el híbrido queda algo peor que la 0.8B nativa (1.60-1.64 frente a 1.55): el mapa lleva casi
+  todo lo que la 0.8B necesita, pero no le añade lo que sabe la 9B.
+- Límites: un dominio (GSM8K, 128 tokens); coser el estado entero no prueba que una *dirección* concreta se porte
+  (eso es la puerta 3, que sigue sin objetivo: la 0.8B no tiene "concluir", §43.22, y el contraste *late* puede ser
+  sobre todo posición).
+
+### 45.2 Puerta 3: la dirección "feliz" de la 9B escrita en la 0.8B: NO DECIDIDA (la referencia propia de la 0.8B no pasa) (2026-11-11)
+Plan: anexo "Gate 3" de `lab/probes/act_map/PLAN.md`, fijado antes del código, con dos enmiendas escritas antes de tocar
+la prueba. Código `lab/probes/act_map/port.py` (12 tests en `tests/test_act_map_port.py`), cadenas
+`lab/runs/act_map/gate3_chain.sh` y `gate3_resume.sh`, datos en `lab/runs/act_map/happy08/`. Los 70 pares de §43.13
+pasan por los dos modelos. `own` = contraste de la propia 0.8B; `port` = contraste de la 9B por el mapa de la puerta 1
+(sin reajustar, ajustado en GSM8K); `embport` = contraste de embeddings de la 9B por un mapa de embeddings (solo
+identidad del token); placebo = `port` con la misma norma por capa en direcciones aleatorias. Protocolo de §43.13 en la
+0.8B Q6_K, juez MiMo.
+
+- **Enmienda 1 (fallo del op, no de la idea):** transformers guarda el último estado oculto *después* de la norma final,
+  así que el último incremento de `contrast_vector.increments` es el reescalado de la norma, no un cambio residual
+  (0.8B: norma 44.9 frente a ≤ 1 en las demás capas; 9B: 38.6 frente a ≤ 13). Con él, `own` daba solo bucles de "✨"
+  a cualquier escala. Se quita esa capa en todos los brazos. **El mismo fallo está en el op usado en §43.13** (sin
+  cambiar aquí).
+- **Enmienda 2 (juez):** MiMo llama coherentes solo 5/10 respuestas de desarrollo de la 0.8B base, que leídas a mano
+  son normales; el listón absoluto (≥ 9/10, ≥ 36/40) no lo alcanzaba ni la base. Se sustituye por coherencia relativa a
+  la base (desarrollo ≥ base − 1; prueba ≥ base − 4 de 40), elegida tras ver el desarrollo y anotada como tal.
+  Escalas: own 0.25, port 0.5, embport 2.0.
+
+**Paso 0 (sin generar; dos métodos, diferencia máxima 9·10⁻¹⁶):** coseno por estado con `own`: `port` mediana 0.65
+(0.57-0.71, estable en profundidad); `embport` 0.41, cae de 0.61 a 0.12 con la profundidad. La norma de `port` es
+0.5-0.7 la de `own`.
+
+| prueba (40) | escala | tono (Δ base, ↑/↓, p) | léxico /100 (Δ, p) | coherentes |
+|---|---|---|---|---|
+| base | - | 2.90 | 0.31 | 27 |
+| `own` (0.8B) | 0.25 | +0.75 (19/0, p < 10⁻⁵) | +0.86 (p 2·10⁻⁴) | 24 |
+| **`port` (9B → 0.8B)** | 0.5 | **+0.53 (13/0, p 2·10⁻⁴)** | **+2.20 (p < 10⁻⁵)** | 24 |
+| `embport` | 2.0 | +0.20 (7/3, p 0.34) | +0.12 (p 1.0) | 20 |
+| placebo | 0.5 | +0.05 (4/3, p 1.0) | −0.16 (p 0.15) | 24 |
+
+- **Veredicto por la regla: NO DECIDIDA.** `own` no pasa C1 (+0.75 < +1.0) ni C2 (+0.86 < +2): en la 0.8B no hay
+  escala que suba el tono un punto sin romper la coherencia (desarrollo: own 0.5 da tono 4.6 pero 2/10 coherentes).
+  Sin referencia, P1-P6 no se leen como criterio.
+- **Descriptivo (no criterio):** la dirección medida en la 9B mueve la 0.8B en los dos métodos, con signo limpio (13
+  suben, 0 bajan) y por encima del placebo (+0.05) y del control de identidad del token (+0.20, no significativo, y eso
+  a escala 4× mayor). Hace ≈ 70 % del tono de la dirección propia (P5 se cumpliría) y más léxico. P1 fallaría (+0.53).
+  `port` − `embport` = +0.33 en tono (P6 pedía +0.5) pero +2.1 en léxico.
+- Predicciones: "own pasa" falla; "embport cerca de port, P6 falla porque feliz es sobre todo vocabulario" falla en
+  el léxico: el mapa de embeddings no lleva la dirección, el mapa del estado sí.
+- GSM8K rápido (informado): 0/48 en todos los brazos, ninguna traza cierra en 2 048 tokens (la 0.8B no cierra, §43.22):
+  no informa.
+- Límites: un juez (MiMo) que no es fiable en absoluto con la 0.8B; coherencia solo "no peor que la base"; una
+  dirección de estilo, no una capacidad; textos escritos por la 9B. Siguiente forma útil: una dirección que la 0.8B
+  sí pueda mover un punto (o un juez validado para la 0.8B) antes de repetir; y corregir el op y repetir §43.13.
+
+### 45.3 Repetición de §43.13 (felicidad, 9B) con el op `contrast_vector` corregido: FALLA en C4 y C5 (2026-11-11)
+Corrección: `layer_means` toma la salida de la última capa *antes* de la norma final (transformers guarda
+`hidden_states[-1]` después; test `test_last_row_is_the_residual_before_the_final_norm`). Plan: sección "Repeat with
+the corrected op" de `lab/probes/happy/PLAN.md`, escrita antes de re-derivar. Mismos pares, base A0 Q6_K, juez, rejilla y
+criterios que §43.13. Datos `lab/runs/happy_v2/`, vector `hf_cache/cvec/happy_v2.gguf`.
+
+- **Comprobaciones mecánicas:** direction.1..30 idénticas a las de `happy.gguf` (diferencia 0.0); solo cambia la 31:
+  norma 38.6 → **48.7**, coseno 0.70 con la antigua. La base regenera las 40 respuestas de prueba idénticas a §43.13
+  (40/40). En la 0.8B (CPU, mismos pares) el último incremento pasa de 44.9 a 2.46 (resto ≤ 0.91): allí el artefacto
+  inflaba; en la 9B la norma final *encogía* un salto real y además lo giraba.
+- Juez válido (base 9/10 en desarrollo); la regla elige otra vez **0.25** (10/10 coherentes; 0.5 cae a 5/10).
+
+| prueba (40) | tono | léxico /100 | coherentes | GSM8K rápido (48) |
+|---|---|---|---|---|
+| base | 2.83 | 0.27 | 39 | 9 |
+| vector v2 ×0.25 | 3.90 (+1.07, 24/0, p 1·10⁻⁷) | 3.16 (+2.89, p 7·10⁻¹²) | **34** | **5** |
+| placebo ×0.25 | 2.88 (+0.05) | 0.25 | 39 | - |
+| (§43.13, op antiguo) | 3.90 (+1.07) | 2.63 (+2.36) | 37 | 7 |
+
+- **Veredicto: FALLA** (C1-C3 pasan; C4 34 < 36; C5 5 frente a 9, más de 2 por debajo). Segunda comprobación: el signo
+  y el p del tono recalculados desde las filas dan lo mismo.
+- **Lectura:** el efecto de tono es idéntico (+1.07) y el léxico algo mayor, pero con la capa 31 corregida el vector
+  daña más (5 incoherentes más que la base, 4 GSM8K menos). El pase de §43.13 dependía en parte de la capa 31 errónea,
+  que empujaba *menos* y en otra dirección en la última capa: **§43.13 queda marcado como "pasa solo con el op
+  antiguo"**. La ventana útil, ya estrecha en §43.13, aquí no existe en la rejilla fijada (0.125: 8/10 en desarrollo).
+- Predicción ("pasa; escala mayor porque la 31 se encoge") falla en las dos partes.
+- **Pendiente, decisión del usuario:** el vector "concluir" `hf_cache/cc/cc.gguf` (§43.19-21, §43.25) tiene el mismo
+  fallo (direction.31 13.2 frente a 9.1 en la 30); repetirlo exige re-derivar y repetir desarrollo y sellado.
+  [rev 2026-11-12: repetido, §45.4.]
+
+### 45.4 Repetición de §43.17-43.18 ("concluir", 9B) con el op `contrast_vector` corregido: PASA en dev y CONFIRMA en el sellado (2026-11-12)
+Plan: addendum "Repeat with the corrected op (2026-11-12)" de `lab/probes/cc/PLAN.md`, escrito antes de re-derivar, con
+predicción (pasa dev y sellado, escala 1.0 otra vez; fila 24 de `predictions.md`). Programa `programs/cc_vector_v2.wspl`
+(mismos `pos.jsonl`/`neg.jsonl` que §43.17, placebo 2026); vector `hf_cache/cc/cc_v2.gguf`; cadena `lab/runs/cc_v2/chain.sh`;
+datos `lab/runs/cc_v2/` (criba y dev) y `lab/runs/sealed_cc_v2/` (sellado); veredictos `cc.py verdict` y
+`lab/probes/sealed/cc_verdict.py` (con `SEALED_CC_RUNS`), mismos criterios que §43.17 (C1-C3) y §43.18 (C1-C3).
+
+- **Comprobación mecánica (`op_check.json`):** direction.1..30 idénticas a `cc.gguf` (diferencia relativa máxima 0.0);
+  solo cambia la 31: norma 13.24 → **18.14** (la 30: 9.12), coseno 0.545 con la antigua. Misma firma que en "feliz"
+  (§45.3): la norma final encogía y giraba el salto real de la última capa.
+- **Criba (64 ítems de MATH, misma regla):** base 8; cc_v2 ×0.25 15, ×0.5 20, **×1.0 38**, ×2.0 3 (antiguo: 10 / 17 / 35 /
+  2). Escala 1.0, como se predijo. La base de la criba reproduce ítem a ítem la de §43.17 (identidad comprobada en la
+  cadena), así que las bases de dev y del sellado se reutilizan sin correr de nuevo.
+
+| dev, 2 048 tokens | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle | tokens GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| **cc_v2 ×1.0** | **83 / 82** | 8 | **35 / 27** | 17 | 10 / 10 | 735 / 1 359 |
+| placebo_v2 ×1.0 | 26 / 35 | 73 | 5 / 5 | 45 | 3 / 5 | 1 834 / 1 969 |
+| (antiguo §43.17) | 84 / 86 | 7 | 32 / 24 | 22 | 6 / 16 | 698 / 1 385 |
+
+- Dev, McNemar frente a base: vector GSM8K 36/3 (p ≈ 0) y 26/5 con último número (p = 2e-4); MATH 29/0 (p = 1e-6) y
+  21/0 con el corrector 2. Placebo GSM8K 5/29 (p = 4e-5), **por debajo** de la base; MATH 2/3 (p = 1). **PASA C1-C3.**
+
+| sellado (`data/sealed_confirm.json`, tercer uso), 2 048 tokens | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle | tokens GSM / MATH |
+|---|---|---|---|---|---|---|
+| base (reutilizada de §43.18, idéntica) | 43 / 64 | 57 | 4 / 4 | 46 | 4 / 2 | 1 703 / 1 981 |
+| **cc_v2 ×1.0** | **86 / 88** | 2 | **33 / 28** | 17 | 7 / 13 | 621 / 1 278 |
+| placebo_v2 ×1.0 | 28 / 44 | 71 | 1 / 1 | 49 | 4 / 3 | 1 816 / 2 032 |
+| (antiguo §43.18) | 87 / 92 | 10 | 25 / 23 | 27 | 10 / 22 | 692 / 1 440 |
+
+- Sellado, McNemar frente a base: vector GSM8K 45/2 (p = 2e-11) y 28/4 con último número (p = 2e-5); MATH 29/0
+  (p = 4e-9) y 24/0 con el corrector 2 (p = 1e-7). Placebo GSM8K 8/23 (p = 0.011), **por debajo**; MATH 0/3 (p = 0.25).
+  **C1 (los dos benchmarks, los dos correctores), C2, C3: CONFIRMA.**
+- Dos métodos: recuento propio por filas de `vec.json`/`placebo.json`/`base.json` (86 / 33, 28 / 1, 43 / 4) coincide con
+  el resumen de `bench_runner` y con `cc_verdict.py`. Las 7 discrepancias de correctores son de formato (`10\%` frente
+  a `10` ×2, `-35/9` frente a `-\frac{35}{9}`, `13/6`, `11111111100`, `32348`, `18.90` frente a `\$18.90`).
+- Estricto (quitando las correctas cortadas con la respuesta en un `\boxed{}` repetido): GSM8K 85 frente a 42, MATH 27
+  frente a 4 (antiguo: 84 / 19). Con la capa 31 bien construida, el bucle de conclusión se reduce a la mitad en MATH
+  (13 colas frente a 22) y casi desaparece en GSM8K (2 cortadas frente a 10).
+- Comparado en el mismo conjunto: Jackrong (§43.15) 91 / 35; cc compilado en los pesos, vector antiguo (§43.21) 89 / 26;
+  cc_v2 en inferencia 86 / 33. Sin donante, ya iguala al adaptador en MATH; en GSM8K sigue 5 por debajo.
+- **Predicción (fila 24): acierta** en las tres partes (pasa dev, confirma el sellado, escala 1.0).
+- **Lectura:** §43.17-43.18 **quedan en pie con el op corregido**: el efecto "concluir" no dependía del artefacto de la
+  norma final. La capa 31 corregida es *mayor* (18.1 frente a 13.2) y aquí ayuda (MATH +8 en el sellado, menos bucles),
+  mientras que en "feliz" (§45.3) la misma corrección hacía fallar. La misma pieza del op, dos direcciones, dos
+  respuestas opuestas: la capa 31 no es "ruido" ni "señal" en general; es la componente de la dirección que la norma
+  final más distorsiona, y lo que pase depende de cuánto de la dirección vive ahí (para "feliz" la 31 era la capa de
+  mayor norma; para "concluir" es el doble de la 30). Sigue siendo eficiencia a presupuesto corto, no capacidad nueva.
+- Pendiente (plan propio antes de correr): recompilar los pesos con `compile_control_vector` desde cc_v2 y repetir
+  §43.19/§43.21 (addendum "Repeat with the corrected vector" de `lab/probes/cc_weights/PLAN.md`, fila 27). Brazo
+  descriptivo "cc.gguf sin direction.31" en dev (§45.5), prueba del nombre (fila 25) y composición con Jackrong
+  (fila 26) corriendo detrás, en ese orden.
+
+### 45.5 Brazo descriptivo: el vector "concluir" sin la capa 31 hace lo mismo (2026-11-12)
+Plan: "Extra arm, descriptive only" de `lab/probes/cc/PLAN.md` (fijado antes de ver cc_v2): `hf_cache/cc/cc_no31.gguf`
+= `cc.gguf` con `direction.31` quitada (30 tensores), dev a la escala elegida para cc_v2 (1.0), sin criterio ni
+predicción. Datos `lab/runs/cc_v2/dev_no31.json`; cadena `lab/runs/cc_v2/chain_no31.sh`.
+
+| dev, 2 048 tokens | GSM8K /100 (corr. 1 / último nº) | cortadas | MATH /50 (corr. 1 / 2) | cortadas | colas en bucle | tokens GSM / MATH |
+|---|---|---|---|---|---|---|
+| base | 50 / 61 | 51 | 6 / 6 | 45 | 1 / 1 | 1 689 / 1 952 |
+| cc_v2 ×1.0 (capa 31 corregida, 18.1) | 83 / 82 | 8 | 35 / 27 | 17 | 10 / 10 | 735 / 1 359 |
+| **sin capa 31** ×1.0 | **85 / 85** | 8 | **33 / 23** | 20 | 9 / 11 | 725 / 1 398 |
+| (antiguo §43.17, capa 31 errónea, 13.2) | 84 / 86 | 7 | 32 / 24 | 22 | 6 / 16 | 698 / 1 385 |
+
+- Frente a la base: GSM8K 36/1 (p = 6e-10), 26/2 con último número; MATH 27/0 (p = 1e-8), 17/0 con el corrector 2.
+  Frente a cc_v2: GSM8K 6/4 (p = 0.75), MATH 2/4 (p = 0.69): **indistinguible**. Las 10 discrepancias de correctores
+  en MATH son `a/b` frente a `\frac{a}{b}` (9) y `.35625` frente a `0.35625`.
+- **Lectura:** las capas 1-30 llevan todo el efecto medible en dev; la capa 31, errónea (§43.17), corregida (§45.4) o
+  ausente, no cambia el resultado a esta resolución (n = 150, diferencias ≤ 4). Es coherente con que la norma final
+  siga a la capa 31: un empuje en la última capa solo se ve a través de ella, y aquí no se ve. Para "feliz" (§45.3) sí
+  pesaba: allí la capa 31 corregida (48.7) rompía la coherencia y el efecto que se media (tono) es de vocabulario,
+  que vive al final. Descriptivo: un brazo, un conjunto; no cambia ningún veredicto.
+
+### 45.6 Prueba del nombre: "concluir" acorta fuera de matemáticas casi sin coste; el placebo daña la lógica (2026-11-12)
+Plan: "Name test" de `lab/probes/cc/PLAN.md` (lecturas N1-N3, bandas del control y predicción fijadas antes de correr;
+fila 25 de `predictions.md`). Pregunta: ¿la dirección hallada y nombrada en trazas de matemáticas acorta el razonamiento
+en dominios que nunca se usaron para hallarla, escalarla ni nombrarla, con coste acotado? Dos dominios, pensamiento
+activado, voraz, tope 2 048, mismos flags que dev: D1 HumanEval primeros 20 (`he_eval.py`); D2 lógica Horn, los 120
+casos de `rig/logic_probe.make_cases` (importado, no modificado), respuesta leída tras `</think>`. Brazos base, cc_v2
+×1.0, placebo_v2 ×1.0. Código `lab/probes/cc/name_test.py` (10 tests); datos `lab/runs/cc_v2/name/` y
+`lab/runs/close_probe/fast/he_name_*.json`; lecturas `lab/runs/cc_v2/name/readings.json`.
+
+| brazo | HumanEval /20 correctas (cerradas) | tokens medianos | lógica Horn /120 correctas | cortadas | tokens medianos |
+|---|---|---|---|---|---|
+| base | 20 (20) | 676 | 120 | 0 | 668 |
+| **cc_v2 ×1.0** | **18** (20) | **229** (−66 %) | **119** | 1 | **288** (−57 %) |
+| placebo_v2 ×1.0 | 20 (20) | 668 (−1 %) | **113** | **7** | 718 (+7 %) |
+
+- **N1 acorta: pasa en los dos dominios** (0.34× y 0.43× de la base; umbral ≤ 0.85×). **N2 coste acotado: pasa en los
+  dos** (HumanEval −2, umbral −2; lógica −1, umbral −6). N3 no aplica (la base no corta nada). **Lectura: el nombre se
+  sostiene.**
+- Control: HumanEval dentro de las bandas (20/20, −1 % tokens). **Lógica fuera de banda**: 113 (−7, banda ±6), 7
+  cortadas al tope; tokens +7 % (dentro). Todos los fallos de todos los brazos son respuestas cortadas, ninguna acabada
+  y equivocada: el empuje aleatorio de la misma norma mete al modelo en bucle en 7 de 120 casos; el vector, en 1.
+- Dos métodos: recuento propio por filas coincide (18 / 119 / 113; cortadas 0-1-7). Mediana de HumanEval por recuento
+  propio 661 / 214 / 654 frente a 676 / 229 / 668 del resumen de `he_eval` (convención de mediana; misma lectura).
+- Los 2 fallos de HumanEval del vector: `HumanEval/1` (286 tokens frente a 985 de la base: cerró antes de razonar
+  bastante) y `HumanEval/10` (984 frente a 883: no es longitud). El fallo de lógica es un corte al tope (caso 33).
+- **Predicción (fila 25): parcial.** Acierta N1 en los dos dominios, el rango de tokens de HumanEval (229 en 200-350),
+  el −57 % en lógica (en −30 a −60), N2 en lógica, N3 no aplicable y las premisas p1 (120/120, 0 cortadas) y p2
+  (20/20, 676 ≈ 650). Falla en el coste de HumanEval (predicho 14-17, salió 18: N2 pasa, la lectura prevista era
+  "concluye con coste") y en el control de lógica (predicho dentro de banda, salió −7 por bucles). Otra vez: **el
+  control sorprende** y la predicción sobrestima el coste, como en la fila 23 al revés.
+- Frente al vector antiguo (§43.21, retención): HumanEval 20 → 15 con 201 tokens; cc_v2 20 → 18 con 229. La capa 31
+  corregida cuesta menos fuera de matemáticas con el mismo acortamiento; coherente con §45.5 (la 31 no aporta al efecto
+  en matemáticas) si lo que la 31 errónea añadía era daño.
+- **Lectura:** "concluir" no es una dirección de matemáticas ni un efecto de formato: acorta el razonamiento a un
+  tercio o la mitad en código y en lógica, dominios que nunca vio, y acierta casi igual. El placebo de la misma norma
+  no acorta y empeora la lógica por bucles: el acortamiento es la dirección, no el empuje. Límites: dos dominios
+  pequeños (20 y 120), la base está al techo en ambos (20/20, 120/120), así que N2 solo puede medir daño, no mejora;
+  un modelo, un tope. Dato nuevo para la pregunta de ignorancia: la dirección es **de la conducta** (cerrar), no de la
+  tarea; se transfiere entre dominios como el carril de H6 se transfería entre semillas.
+
+### 45.7 Composición: "concluir" encima del adaptador Jackrong no suma aciertos, pero sí acorta y quita los cortes (2026-11-12)
+Plan: "Composition" de `lab/probes/cc/PLAN.md` (lecturas K1-K3, banda del control y predicción fijadas antes de correr;
+fila 26 de `predictions.md`). Pregunta: dos ediciones que funcionan solas sobre la base (adaptador r16 ×0.5, §43.15;
+vector cc_v2 ×1.0, §45.4), ¿qué hacen juntas? Prior: redundancia, las dos actúan sobre el cierre. Dev (100 GSM8K + 50
+MATH-500), tope 2 048, voraz, 2 ranuras, una corrida por brazo. Servidor con los dos adaptadores cargados sin aplicar
+(`--lora a.gguf,b.gguf --lora-init-without-apply`; esta build quiere la lista separada por comas, un `--lora` repetido
+solo conserva el último) y escala por petición; el vector por flag. Humo previo J+C 2/2 GSM8K. El adaptador y su
+placebo (misma norma, semilla 2026) se reconstruyeron con el mismo programa (`transplant_jackrong_math.wspl`, SVD exacto,
+determinista; r16 conserva 58,6 % de la energía, igual que §43.6) porque `hf_cache/close_lora/` se había borrado tras
+§43.15. Código `lab/probes/cc/comp.py` (tests antes); datos `lab/runs/cc_v2/comp/`; lecturas `readings.json`.
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§45.4) | 50 | 51 | 1 | 1 689 | 6 | 45 | 1 | 1 952 |
+| C = cc_v2 ×1.0 (§45.4) | 83 | 8 | 10 | 736 | 35 | 17 | 10 | 1 359 |
+| J = adaptador ×0.5 | 88 / 89 | 9 | 0 | 643 | 35 / 30 | 15 | 1 | 1 162 |
+| **J+C** | **89** / 90 | **0** | **0** | **248** | **38** / 31 | **1** | **0** | **482** |
+| J+P (placebo ×1.0) | 86 / 87 | 11 | 1 | 724 | 33 / 29 | 15 | 4 | 1 253 |
+
+- **K1 (J+C frente a J, McNemar exacto, g1): "redundante".** GSM8K 6 gana / 5 pierde, p 1,0; MATH 8 / 5, p 0,58. Con g2
+  igual (6/5 p 1,0; 9/8 p 1,0). Ni suma ni interfiere en aciertos.
+- **K2 tokens: J+C / J = 0,39 en GSM8K y 0,41 en MATH.** Encima de J, el vector acorta más de lo que acorta solo encima
+  de la base (0,44 y 0,70). Medianas 424 → 232 y 921 → 392.
+- **K3 coste: cortes 9 → 0 y 15 → 1; bucles 0 → 0 y 1 → 0.** Las colas en bucle que el vector solo pone (10 y 10 sobre
+  la base) desaparecen encima de J. J+C es el brazo más limpio de toda la línea: 100/100 y 49/50 respuestas acabadas.
+- Control: J+P dentro de la banda (−2 y −2, p 0,73 y 0,63). El placebo no acorta (724, 1 253) y pone 4 bucles en MATH.
+- Dos métodos: recuento propio por filas coincide con `readings.json` en aciertos, cortes, bucles, tokens y McNemar (g1
+  y g2). Los desacuerdos entre jueces son todos de formato: J+C escribe `4/3`, `11/2`, `0.35625` donde J escribe
+  `\frac{4}{3}` (7 en J+C, 5 en J, 4 en J+P; g2 no lee la fracción plana). El vector también simplifica el formato.
+- **Predicción (fila 26): parcial.** Acierta J en dev (88 / 35, rangos 86-93 / 31-37), K1 "redundante", GSM8K dentro de
+  ±3, el control dentro de banda y las premisas p1-p3 (humo, J en rango, escala 1,0). Falla el sentido en MATH
+  (predicho 2-6 por debajo de J, salió +3), los tokens (predicho −10 a −25 %, salió −61 / −59 %) y los bucles (predicho
+  más que J, salió cero). Nada en la zona de sorpresa (J+C no gana a J por > 5; J+P no supera a J). Tercera vez
+  seguida que la predicción **sobrestima el coste** del vector (filas 23, 25, 26).
+- **Lectura:** en aciertos las dos ediciones son redundantes: el adaptador ya cierra lo que el vector cierra, y el techo
+  de dev (89 / 38) queda donde estaban Jackrong solo (91 / 35 sellado). En coste no lo son: juntas acortan a 0,39 y
+  quitan todos los cortes y bucles, cosa que ninguna hace sola. Compatible con que el adaptador enseñe *qué* concluir
+  (el camino corto) y el vector empuje *a* concluir (el momento): la misma conducta por dos mecanismos que se suman en
+  longitud y se saturan en acierto. Límites: dev, una corrida por brazo, un modelo, un tope; "redundante" aquí es
+  p ≥ 0,58 con 150 ítems, no una igualdad demostrada.
+
+### 45.8 "Concluir" recompilado en los pesos con el vector corregido (cc_v2 → `down_proj`): PASA en dev y CONFIRMA en el sellado 2 (2026-11-13)
+Plan: adenda "Repeat with the corrected vector" de `lab/probes/cc_weights/PLAN.md` (2026-11-12, antes de correr; fila 27
+de `predictions.md`). Por qué: `cc.gguf` (§43.19, §43.21, §43.25) llevaba en `direction.31` la fila post-norma (§45.3);
+el vector corregido `cc_v2.gguf` (capas 1-30 idénticas, capa 31 norma 13,2 → 18,1) pasó dev y confirmó en el sellado 1
+(§45.4); el compilado había que rehacerlo con él. Cadena `lab/runs/cc_v2/chain_weights.sh`: op `compile_control_vector`
+desde `programs/cc_compile_v2.wspl` (misma calibración, mismo λ, misma base, placebo `cc_v2.placebo2026.gguf`) →
+`hf_cache/cc_op_v2`; comprobación mecánica `lab/probes/cc_weights/v2_check.py` → `lab/runs/cc_v2/weights/v2_check.json`;
+dev en `lab/runs/cc_v2/weights/`; sellado en `lab/runs/sealed_ccw_v2/`; HumanEval en
+`lab/runs/close_probe/fast/he_ccw2_merged.json`. Mismos criterios C1-C4 (`verdict.py`). La cadena murió dos veces en
+silencio al empezar dev (`set -u` y un `$3` sin poner en la función de bench; ~16 h de GPU perdidas; arreglo en 01e21b3):
+nada de lo medido cambió entre intentos, el op y la comprobación mecánica dieron lo mismo las tres veces.
+
+**Mecánica (descriptiva, sin parada).** G0 mediana 0,0318 (peor 0,0435; placebo peor 0,0470; umbral 0,5). 30 de 31
+`ffn_down` byte a byte iguales a `cc_merged-Q6_K.gguf`; la u de la capa 31 es la misma que en la primera compilación
+(cos 1,0: u = (KᵀK+λI)⁻¹Kᵀ1 no depende de v, solo de la calibración), así que la única diferencia entre los dos GGUF
+fusionados es el tensor 31 (cos 0,99958 con el antiguo). Fusión de la capa 31: ‖ΔW‖ 2,52, error relativo escrito frente
+a ΔW 0,3525, cos 0,9395 (la primera compilación: 0,466 / 0,896 en esa capa; mediana de todas las capas 0,475). El
+empuje mayor sobrevive **mejor** a Q6_K, no peor: el paso de cuantización es el mismo y ΔW es más grande.
+
+**Dev** (100 GSM8K + 50 MATH-500, tope 2 048, voraz; base y vector cc_v2 reutilizados de §45.4):
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§45.4) | 50 | 51 | 1 | 1 689 | 6 | 45 | 1 | 1 952 |
+| vector cc_v2 ×1.0 (§45.4) | 83 | 8 | 10 | 736 | 35 | 17 | 10 | 1 359 |
+| **fusionado v2 Q6_K (sin flags)** | **85** / 86 | 10 | 6 | 796 | **30** / 23 | 21 | 5 | 1 438 |
+| placebo fusionado v2 | 27 / 27 | 73 | 2 | 1 810 | 3 / 3 | 47 | 1 | 1 998 |
+| fusionado v1 (§43.19, referencia) | 87 / 90 | 8 | 4 | 730 | 34 / 27 | 14 | 3 | 1 385 |
+
+C1 fusionado > base: GSM8K 36 gana / 1 pierde, p 5,5e-10 (último nº 29/2, p 4,6e-7); MATH 24/0, p 1,2e-7 (g2 17/0,
+p 1,5e-5). C2 placebo no mejor: GSM8K 6/29 por debajo de la base, p 1,2e-4; MATH 1/4. C3 sin daño en GSM8K. C4 fusionado
+no por debajo del vector: GSM8K 4/2, p 0,69; MATH **0/5, p 0,0625** (g2 0/4, p 0,125): pasa, pero en MATH el fusionado
+pierde 5 ítems frente al vector sin ganar ninguno. Siete desacuerdos entre jueces en MATH (todos de formato, como en
+§45.7). **PASA C1-C4.**
+
+**Sellado 2** (`data/sealed_confirm2.json`, **segundo uso**; el primero fue §43.21; la base no se repite, se copia de
+`lab/runs/sealed_ccw/base.json`, premisa p3). Vector cc_v2 ×1.0 corrido de nuevo aquí por primera vez:
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§43.21) | 46 | 52 | 2 | 1 681 | 7 | 43 | 2 | 1 959 |
+| vector cc_v2 ×1.0 | 86 / 87 | 6 | 9 | 696 | 27 / 26 | 20 | 13 | 1 391 |
+| **fusionado v2** | **89** / 90 | 7 | 3 | 713 | **25** / 24 | 22 | 5 | 1 424 |
+| placebo fusionado v2 | 34 / 33 | 67 | 1 | 1 808 | 5 / 5 | 46 | 5 | 1 993 |
+| vector cc ×1.0 (§43.21, referencia) | 90 / 91 | 10 | 10 | 673 | 22 / 21 | 27 | 16 | 1 472 |
+| fusionado v1 (§43.21, referencia) | 89 / 90 | 8 | 8 | 689 | 26 / 25 | 22 | 8 | 1 456 |
+
+C1: GSM8K 45/2, p 1,6e-11 (último nº 35/3, p 6,7e-8); MATH 18/0, p 7,6e-6 (g2 17/0, p 1,5e-5). C2: placebo 10/22 por
+debajo de la base en GSM8K, p 0,050; MATH 1/3. C3 sin daño. C4 fusionado frente a vector cc_v2: GSM8K 7/4, p 0,55; MATH
+2/4, p 0,69. **CONFIRMA.** Retención (informada, no criterio): HumanEval-20 del fusionado 20/20 cerradas, **19/20**
+correctas, mediana 471 tokens (primera compilación 19/20; vector 15/20).
+
+- Dos métodos: recuento propio fila a fila de los seis informes coincide con los resúmenes y con `verdict.json` en
+  aciertos (g1 y g2), cortes, bucles, tokens y pares gana/pierde (7/4, 2/4); McNemar exacto recalculado aparte da las
+  mismas p. Los índices de dev y del sellado no se solapan (0 de 150).
+- **Lo que cambia la capa 31 corregida: nada medible en aciertos.** Pareado en los mismos 150 ítems sellados, fusionado
+  v2 frente a fusionado v1: GSM8K 3 gana / 3 pierde, MATH 3/4. Vector cc_v2 frente a vector cc: GSM8K 3/7, MATH 5/0
+  (el vector corregido pierde 4 en GSM8K y gana 5 en MATH, nada con p < 0,05). Lo que sí baja con v2 son los bucles:
+  fusionado 8 → 3 (GSM8K) y 8 → 5 (MATH); vector 10 → 9 y 16 → 13.
+- **Predicción (fila 27): parcial.** Acierta G0 (0,032), 30/31 idénticos, dev GSM8K 85 (84-90), placebo dev 27/3 y
+  sellado 34/5 (25-40 / 2-7), C1-C4 en dev, vec_v2 sellado 86/27 (86-92 / 27-35, los dos en el borde bajo), fusionado
+  sellado GSM8K 89 (86-92), confirma, HumanEval 19 (18-20), premisas p1 y p3. Falla por poco MATH del fusionado dos
+  veces (dev 30 con 31-38; sellado 25 con 26-34: un ítem por debajo en cada caso) y el error de fusión de la capa 31
+  (predicho 0,45-0,50, salió 0,35: premisa p2 "Q6_K pierde la mitad de la magnitud también en la 31" falla en el buen
+  sentido). Nada en la zona de sorpresa (fusionado no por debajo del vector por > 5 en MATH; placebo no sobre la base;
+  G0 < 0,1; 30 ≥ 28 idénticas).
+- **Lectura:** el compilado con el vector corregido hace lo mismo que el primero (89 / 25 frente a 89 / 26 en el
+  sellado; dev 85 / 30 frente a 87 / 34) con menos bucles. La capa 31 corregida no añade ni quita aciertos en 300 ítems
+  pareados: la señal que importa estaba en las capas 1-30, que no cambiaron. Esto cierra la cola de cc_v2 (vector §45.4,
+  descriptivo §45.5, nombre §45.6, composición §45.7, pesos §45.8): la entrada de "concluir" en el README pasa a citar
+  estos números. Límites: un modelo, un tope (2 048), voraz, una corrida por brazo; el sellado 2 queda gastado como
+  confirmación (dos usos) y el siguiente es `data/sealed_confirm3.json` (un solo uso).
+
+### 45.9 Control de prompt: una frase de cierre en el prompt no hace lo que hace la dirección; cualquier frase añadida daña (2026-11-13)
+Plan: "Prompt control" de `lab/probes/cc/PLAN.md` (2026-11-13, antes de correr; fila 28 de `predictions.md`). Pregunta
+de la revisión externa del 13-nov (punto 2) y hueco propio: si "concluir" es cierre y no capacidad (T2), ¿lo hace
+igual una frase que pida cerrar en el prompt? Brazos sobre la base A0, dev (100 GSM8K + 50 MATH-500), tope 2 048, voraz,
+2 ranuras, sin vector ni adaptador: **P_close** = sufijo habitual ("Please reason step by step, and put your final
+answer within \boxed{}") + " Once you have the answer, stop reasoning and give it: no re-checking, no restating.";
+**P_neutral** (control "cualquier frase más") = sufijo + " Use clear notation and define every variable you introduce
+before using it.". Base y vector cc_v2 ×1.0 reutilizados de §45.4 (mismos 150 ítems, comprobado). `bench_runner.run(extra=…)`
+añade la frase tras el sufijo (tests antes; el informe guarda la frase: premisa p1). Cadena `lab/runs/cc_v2/chain_prompt.sh`;
+datos `lab/runs/cc_v2/prompt/`.
+
+| brazo | GSM8K /100 (g1 / g2) | cortadas | bucles | tokens medios | MATH /50 (g1 / g2) | cortadas | bucles | tokens medios |
+|---|---|---|---|---|---|---|---|---|
+| base (§45.4) | 50 / 49 | 51 | 1 | 1 689 | 6 / 6 | 45 | 1 | 1 952 |
+| vector cc_v2 ×1.0 (§45.4) | 83 / 84 | 8 | 10 | 735 | 35 / 27 | 17 | 10 | 1 359 |
+| **P_close** (frase de cierre) | **37** / 37 | 63 | 2 | 1 675 | **4** / 4 | 45 | 0 | 1 941 |
+| P_neutral (frase neutra, control) | 29 / 29 | 71 | 2 | 1 910 | 3 / 3 | 47 | 0 | 2 020 |
+
+- **R1 (P_close frente a base): la frase daña.** GSM8K 7 gana / 20 pierde, p 0,019 (g2 8/20, p 0,036); MATH 1/3,
+  p 0,63. Veintidós ítems que la base acababa quedan cortados con la frase; diez al revés.
+- **R2 (P_close frente a cc_v2): "la dirección hace más que un prompt"**, y de sobra: vector 46/0 en GSM8K y 31/0 en
+  MATH (g2 47/0, 24/1), p < 1e-9. La lectura sale como se predijo, pero por la razón contraria: no porque la frase ayude
+  menos, sino porque no ayuda.
+- **R3 coste: la frase no acorta nada.** Tokens medios 1 689 → 1 675 (mediana 2 048 en los dos brazos: la mitad de las
+  respuestas llega al tope); cortes 51 → 63; bucles 1 → 2; caracteres de razonamiento (mediana) 5 342 → 6 090. El
+  modelo no cierra antes con la instrucción: piensa algo más.
+- **Control fuera de banda.** P_neutral 29 (−21 de la base, 10/31, p 0,0015), cortes 71 (+20); MATH 3, cortes 47. La
+  banda era ±3 y ±5. P_close frente a P_neutral: 20/12, p 0,22. Es decir, **cualquier frase añadida tras el sufijo
+  alarga el pensamiento y corta más**; la frase de cierre lo hace algo menos que la neutra, sin significación.
+- **Premisa p3 falla:** el modelo no sigue la instrucción de cerrar en absoluto (mismos tokens, más cortes). El plan lo
+  preveía: "si P_close = base también en tokens, el brazo no dice nada sobre la dirección y se informa así". Se informa
+  así: este brazo **no** mide "prompt frente a dirección"; mide que la instrucción en el turno de usuario no llega a la
+  fase de pensamiento de este modelo a este tope.
+- Dato lateral: entre las respuestas acabadas la precisión es ~100 % en todos los brazos (base 49/49, P_close 37/37,
+  P_neutral 28/29; vector 79/92). Todo lo que se mueve en GSM8K es acabar o no acabar.
+- Dos métodos: recuento propio por filas coincide con los resúmenes del `bench_runner` en aciertos, cortes, bucles y
+  tokens; McNemar exacto recalculado aparte.
+- **Predicción (fila 28): falla.** P_close 37 / 4 (predicho 62-75 / 12-22); cortes 63 / 45 (20-35 / 30-40); tokens
+  1 675 (1 100-1 400); control fuera de banda (−21, +20). Acierta solo el sentido de R2 y los bucles ≥ base (2 ≥ 1). Cae
+  en la zona de sorpresa declarada ("P_close por debajo de la base en alguno"). Después de tres filas que sobrestimaban
+  el coste del vector (23, 25, 26), esta sobrestima lo que hace un prompt.
+- **Lectura:** el valor de la dirección no es "un prompt compilado en los pesos": ningún prompt de los probados hace lo
+  que hace. A 2 048 tokens y voraz, el fallo de la base no es de seguir instrucciones; la fase de pensamiento no reacciona
+  a una frase del turno de usuario, y cualquier frase extra le da más que considerar (5 342 → 5 916-6 090 caracteres).
+  Refuerza la lectura de T2 (cerrar a tiempo es una conducta del flujo residual, no una obediencia) y la de §45.6
+  (la dirección acorta también fuera de matemáticas). Límites: dos frases, una posición (tras el sufijo, en el turno de
+  usuario), un modelo, un tope, voraz; no se probó una instrucción de sistema, una frase dentro del pensamiento ni un
+  modo sin pensamiento, y una instrucción más fuerte podría comportarse de otro modo. Con esto queda **cerrada la cola de
+  cc_v2** (§45.4-45.9); lo siguiente son líneas nuevas con plan y predicción antes.
+- **Nota (2026-11-13, lectura cruzada de datos ya existentes, sin corrida nueva; pregunta de una revisión externa:
+  "¿qué hace la base con tope 8 192?").** El brazo existe desde §39/§43.1: la misma base A0 Q6_K, voraz, tope 8 192,
+  sobre los mismos ítems de dev (`lab/runs/h4/h4_A0.json` GSM8K; `lab/runs/model_compare/own_base.json` MATH).
+  Pareado ítem a ítem con el vector cc_v2 ×1.0 a 2 048 (§45.4):
+
+  | | GSM8K /100 | cortadas | tokens medios | MATH /50 | cortadas | tokens medios |
+  |---|---|---|---|---|---|---|
+  | base, 2 048 | 50 | 51 | 1 689 | 6 | 45 | 1 952 |
+  | base, 8 192 | 72 | 24 | 3 638 | 20 | 30 | 6 480 |
+  | vector cc_v2 ×1.0, 2 048 | 83 | 8 | 735 | 35 | 17 | 1 359 |
+
+  Vector a 2 048 frente a base a 8 192: GSM8K 17 gana / 6 pierde, p 0,035; MATH 17/2, p 0,0007; con un quinto de los
+  tokens (0,20 y 0,21). Con cuatro veces más presupuesto la base sigue por debajo del vector y sigue cortando 24 y 30.
+  Así que a estos topes "concluir" no es solo ahorro de tokens: es acierto que la base no alcanza ni con 8 192 (sí con
+  32k, T2, o forzando el cierre, §43.3: 41/50 a 2 048). Las 13 respuestas de GSM8K que el vector acaba mal (79/92):
+  10 las cortaba la base a 2 048, 7 las sigue cortando a 8 192 y solo 4 las acierta la base a 8 192; el juez 2 da 1
+  por buena. Son sobre todo los ítems que la base no termina (selección), no cierres prematuros de ítems fáciles. En
+  MATH el vector acaba mal 1, que la base corta a los dos topes. Dos métodos: recuento por filas sobre los tres
+  informes; los totales coinciden con los resúmenes de §39.6 (A0 72/100, 24 cortadas) y §43.1 (20/50, 30 cortadas).
+
+### 45.10 Distribución del placebo: ocho semillas, ninguna hace lo que hace la dirección (2026-11-14)
+
+- **Pregunta.** Todos los placebos de la línea "concluir" (§43.17-43.18, §45.4, §45.7, §45.8) eran una sola semilla
+  (2026). Una revisión externa (2026-11-13) lo señaló: una semilla es un sorteo. ¿Es robusto al sorteo "una dirección
+  aleatoria de la misma norma no ayuda"? Plan y predicción antes de correr: `lab/probes/cc/PLAN.md` "Placebo
+  distribution", fila 29 de `predictions.md`. Descriptivo; no re-decide nada ya confirmado.
+- **Qué corrió** (`lab/runs/cc_v2/chain_placebo.sh`, 20:33-00:15 del 13 al 14; ≈ 28 min por brazo). (1) Comprobación del generador: el placebo de la
+  semilla 2026 regenerado desde `cc_v2.gguf` es **idéntico byte a byte** a `cc_v2.placebo2026.gguf` (31 capas, máx
+  |dif| 0; `placebo_seeds/check.json`). (2) Ocho placebos `hf_cache/cc/cc_v2.placebo{1..8}.gguf`, misma norma por
+  capa que cc_v2, dirección aleatoria. (3) Cada uno a ×1.0 sobre la criba (64 MATH-500 de `split.json`, ni dev ni
+  sellado; 2 048 tokens, voraz), informes `lab/runs/cc_v2/screen_pl{1..8}.json`. Base y vector reutilizados de §45.4
+  sobre los mismos ítems (`screen_base.json` 8/64, `screen_s1.0.json` 38/64). (4) `placebo_seeds/readings.json`.
+- **Resultado** (juez 1; juez 2 entre paréntesis; McNemar exacto pareado):
+
+  | brazo | aciertos /64 | cortadas | bucles | tokens medios | frente a base (gana/pierde, p) |
+  |---|---|---|---|---|---|
+  | base | 8 (7) | 57 | 2 | 1 987 | — |
+  | vector cc_v2 ×1.0 | **38** (33) | 30 | 20 | 1 414 | 30/0, 2e-9 |
+  | placebo semilla 1 | 3 (3) | 61 | 4 | 2 015 | 1/6, 0,125 |
+  | semilla 2 | 7 (7) | 57 | 1 | 1 959 | 3/4, 1 |
+  | semilla 3 | 5 (5) | 59 | 2 | 1 998 | 1/4, 0,375 |
+  | semilla 4 | 8 (7) | 56 | 1 | 1 952 | 4/4, 1 |
+  | semilla 5 | 7 (7) | 57 | 2 | 1 955 | 2/3, 1 |
+  | semilla 6 | 7 (7) | 57 | 2 | 1 964 | 3/4, 1 |
+  | semilla 7 | 6 (6) | 58 | 3 | 1 983 | 2/4, 0,69 |
+  | semilla 8 | 4 (4) | 60 | 2 | 2 009 | 2/6, 0,29 |
+
+  - D1: mediana **6,5**, mín 3, máx 8 (base 8). Cortes 56-61 (base 57). Bucles 1-4. Tokens 1 952-2 015.
+  - D2: **0** semillas sobre la base con p < 0,05; **0** llegan a 23/64 (mitad de la ganancia del vector). La mejor
+    semilla (4) empata con la base. Cada semilla frente al vector: 0 gana / 30-35 pierde, p < 1e-8 las ocho.
+  - D3: mediana ≤ base; 0 semillas por debajo con p < 0,05 (MATH a 2 048 está en el suelo: 8/64 deja poco margen
+    para dañar con significación; el daño sí se vio en GSM8K dev, 50 → 26, §43.18 y §45.4).
+  - Rango del vector entre {8 placebos, vector}: **1 de 9**.
+  - Ítems: la base acierta 8; la unión de los ocho placebos acierta 12 (5 que la base no: ítems 13, 95, 265, 399,
+    406), y el vector acierta los 12 más 26. Ningún placebo abre un ítem que el vector no abra.
+- **Predicción (fila 29) contra el dato.** Mediana 5-9 → 6,5 ✓; mín 2-5 → 3 ✓; máx ≤ 12 → 8 ✓; cortes 52-63 → 56-61
+  ✓; D2 0 y 0 → 0 y 0 ✓; D3 mediana ≤ 8 y 0-3 significativas → 6,5 y 0 ✓; rango 1 → 1 ✓. Fuera de banda en lo
+  secundario: bucles 2-12 → dos semillas con 1; tokens 1 850-2 000 → dos semillas con 2 009 y 2 015. Nada de la lista
+  "nos sorprendería" (ninguna semilla ≥ 20, mediana < 12, rango 1). **◐**: lecturas D1-D3 y rango exactas; dos bandas
+  secundarias falladas por un bucle y por 15 tokens.
+- **Lectura.** La afirmación "una dirección aleatoria de la misma norma no ayuda" ya no descansa en un sorteo: nueve
+  sorteos (2026 y 1-8), ninguno pasa de la base, ninguno se acerca a la mitad de la ganancia, el vector es primero de
+  nueve (1/9 bajo el nulo de "es una dirección cualquiera"; con la criba de §45.4 y los sellados, el nulo está
+  descartado por la propia p del vector). Refuerza T6 y T3 (FOUNDATIONS). Límites: un modelo, una escala (×1.0), un
+  banco (MATH criba, en el suelo a 2 048), ocho semillas; el daño en GSM8K no se repitió por semilla.
+- **Dos métodos.** `placebo_seeds.py readings` (readings.json) y recuento independiente por filas de los diez
+  informes con binomial exacta propia (sin scipy): mismos aciertos, cortes, bucles, tokens, gana/pierde y p en las
+  ocho semillas; mediana, umbral 23, rango 1 iguales.
+
+### 45.11 Control de presupuesto: la base a 8 192 repite 72, el vector a 8 192 sigue 13 por encima; el brazo "fusionado" sirvió la base (2026-11-14)
+
+- **Origen.** Plan, cadena y predicción de **otra sesión** (`lab/probes/cc/PLAN.md` "Token-budget control",
+  `lab/runs/cc_v2/chain_cap8192.sh`, fila 31 de `predictions.md`, integradas tal cual el 2026-11-13 antes del dato);
+  corrió 00:20-06:28 tras la cadena de placebos. Aquí el recuento independiente y la lectura. Pregunta: ¿"concluir" es
+  acierto o es solo acabar dentro del presupuesto? La predicción de esa sesión: base a 8 192 **82-92/100** con ≤ 8
+  cortes (y entonces el efecto sería presupuesto); vector a 8 192 = 83 ± 2; fusionado = vector ± 2; sorpresa si la
+  base < 70 o si el vector supera a la base a 8 192 en más de 5.
+- **Qué corrió.** Base A0 Q6_K, voraz, tope **8 192**, `-np 2 -c 40960`, sobre los mismos ítems de dev que §45.4/§45.8
+  (GSM8K 100 **y MATH 50**: el plan decía solo GSM8K, pero `bench_runner` corre los dos por defecto; se informan ambos).
+  Brazos `cap8192/dev_{base,vec,merged}_8192.json`. **El brazo "merged" no es el fusionado**: el script sirve siempre
+  `hf_cache/h4/A0-Q6_K.gguf` y pasa el segundo argumento como `--control-vector-scaled`; para ese brazo el argumento era
+  `hf_cache/cc_op_v2/merged-Q6_K.gguf` (un modelo entero, sin tensores `direction.*`). llama-server lo rechazó
+  (`server_cap.log` línea 23: `common_contr: no valid control vector files passed`) y sirvió la base. Se conserva el
+  fichero como evidencia; no se puntúa como fusionado.
+- **Resultado** (juez 1; juez 2 entre paréntesis; McNemar exacto pareado):
+
+  | brazo (tope) | GSM8K /100 | cortadas | acabadas mal | tokens | MATH /50 | cortadas | tokens |
+  |---|---|---|---|---|---|---|---|
+  | base (2 048, §45.4) | 50 | 51 | 0 | 1 689 | 6 | 45 | 1 952 |
+  | **base (8 192, nuevo)** | **72** (72) | 24 | 4 | 3 638 | **21** (19) | 28 | 6 204 |
+  | vector cc_v2 ×1.0 (2 048, §45.4) | 83 | 8 | 13 | 735 | 35 | 17 | 1 359 |
+  | **vector cc_v2 ×1.0 (8 192, nuevo)** | **85** (86) | 4 | 13 | 949 | **37** (28) | 15 | 3 321 |
+  | "merged" (8 192; en realidad la base, ver arriba) | 66 (67) | 32 | 2 | 4 131 | 23 (22) | 27 | 6 104 |
+
+  - La base a 8 192 es **idéntica ítem a ítem** a §39.6 (`lab/runs/h4/h4_A0.json`: 100/100 misma respuesta, mismos
+    tokens, misma cola). En MATH frente a §43.1 (20/50, 30 cortadas, 6 480 tokens): 33/50 misma respuesta, 22 mismos
+    tokens; otra sesión del servidor, misma lectura.
+  - **Vector a 8 192 frente a base a 8 192**: GSM8K 16 gana / 3 pierde, p 0,0044 (**+13**); MATH 16/0, p 3e-5 (+16).
+  - Vector a 8 192 frente a vector a 2 048: GSM8K 4/2, p 0,69; MATH 4/2. Cuadruplicar el tope no cambia al vector:
+    acaba dentro de 2 048 en 92/100 y lo que gana con más tope son 2 ítems.
+  - Base a 8 192 frente a base a 2 048: GSM8K 28/6, p 0,0002; MATH 16/1. El tope sí mueve a la base, pero se queda en
+    72 y sigue cortando 24 (19 de las 51 cortadas a 2 048 siguen cortadas a 8 192).
+  - Por ítem (GSM8K): de las 36 ganancias del vector sobre la base a 2 048 (todas cortes de la base), la base a 8 192
+    recupera 24. De las 13 que el vector acaba mal a 2 048, a 8 192 las 13 siguen acabadas, 11 siguen mal y 2 pasan a
+    bien (58, 82); la base a 8 192 acierta 4 de esas 13. Los 3 ítems que la base acertaba a 2 048 y el vector cerró
+    mal (50, 63, 82): con el vector a 8 192 salen mal, mal, bien (no los tres; sin sorpresa ahí). El vector a 8 192
+    acaba mal 13 (2, 7, 8, 12, 14, 20, 37, 50, 62, 63, 70, 85, 93).
+  - El brazo "merged" (base servida por error) no coincide ítem a ítem con el brazo base del mismo tope (104/150 misma
+    respuesta, 45/150 mismos tokens): dos servicios de la misma base con `-np 2` no son idénticos (la composición de los
+    lotes depende del tiempo), aunque el brazo base sí coincidió al 100 % con §39.6. Queda anotado; no afecta a las
+    lecturas (todas pareadas dentro de una corrida o frente a corridas ya publicadas).
+- **Predicción (fila 31, de la otra sesión) contra el dato.** Base 82-92 y ≤ 8 cortes → **72 y 24: falla** (fuera de
+  banda por 10; no < 70, así que no es la sorpresa declarada, pero la lectura "es presupuesto" cae). Vector 83 ± 2 → 85
+  ✓. Fusionado = vector ± 2 → **no medido** (brazo inválido). Sorpresa declarada "vector > base + 5 a 8 192" →
+  **ocurre** (+13, p 0,0044). **❌**.
+- **Lectura.** Con cuatro veces más tokens la base no alcanza al vector: "concluir" a 2 048 (83) ya supera a la base
+  a 8 192 (72; 17/6, §45.9 nota) y a 8 192 el vector sigue 13 por encima con un cuarto de los tokens (949 frente a
+  3 638). No es un efecto de presupuesto: la base cortada no es una base que acertaría con más sitio, es una base que
+  en 19-24 ítems no termina ni a 8 192 (sí a 32k, T2). Confirma por corrida nueva la lectura cruzada de §45.9 y la
+  premisa de T2 (cerrar a tiempo es conducta, no obediencia ni presupuesto). Límites: un modelo, dos topes, voraz; el
+  brazo fusionado a 8 192 está pendiente (requiere servir `merged-Q6_K.gguf` como modelo, no como vector).
+- **Dos métodos.** `readings.json` de la cadena (base 72/24/4/3 638; vec 85/4/13/949; "merged" 66/32/2/4 131) y
+  recuento propio por filas de los tres informes (mismos cuatro números por brazo) más el pareado contra §45.4, §39.6 y
+  §43.1 ítem a ítem.
+
+### 45.12 Puerta 3b: la dirección "concluir" de la 9B escrita en la 0.8B por los mapas de la puerta 1: PASA por la regla; lo que lleva el mapa es "deja de pensar", no "termina" (2026-11-14)
+Plan: anexo "Gate 3b" de `lab/probes/act_map/PLAN.md` (2026-11-13, antes del código), predicción fila 30. Código
+`lab/probes/act_map/port_cc.py` (tests en `tests/test_port_cc.py`), cadena `lab/runs/act_map/cc08_chain.sh`, datos
+`lab/runs/act_map/cc08/`. Vectores de las 53 + 53 filas cc de §45.4 (textos de la 9B): `own` = contraste de la propia
+0.8B sobre esos textos; `port` = contraste de la 9B por el mapa 9B → 0.8B de la puerta 1 (ajustado en GSM8K crudo, sin
+reajustar); `embport` = contraste de embeddings de la 9B por el mapa de embeddings; placebo = `port` con la misma norma
+por capa en direcciones aleatorias (semilla 2026). Referencia: la réplica del Exp 8 del MIT (`exp8-replica.gguf`) y su
+placebo. 0.8B Q6_K, `bench_runner` (pensamiento activo, 2 048 tokens, voraz, 4 ranuras), dos correctores.
+
+- **Cadena.** Primer lanzamiento 06:31: "VECTORS FAILED" a los 50 s, `Segmentation fault` en el stderr. Causa: la carga
+  de la 9B en bf16 pide ≈ 19 GB de *commit* de Windows y C: tenía 12 GB libres, así que el pagefile no podía crecer
+  (monitor `GlobalMemoryStatusEx`: pagefile libre 17 → 2,5 GB en 10 s y violación de acceso dentro de `.to(cuda)`).
+  Tras liberar disco (`models/mimo-wsp-critic`, `tinyllama-wsp-mimo`, un GGUF suelto, Temp) el pagefile creció a 46 GB
+  y el relanzamiento (15:34) pasó: vectores 15:36-16:05, dev 16:05-18:18, test 18:18-19:43, G3CC DONE 19:43. Código sin
+  cambios entre los dos lanzamientos.
+- **Comprobación mecánica (p3):** la réplica difiere de la base solo en `blk.15.ffn_down.weight` y `blk.19.ffn_down.weight`,
+  igual que su placebo (`editcheck.json`, ok). Ítems de desarrollo: 64 GSM8K + 32 MATH nunca usados (`dev_items.json`).
+
+**Paso 0 (sin generar; informado, no criterio).** Coseno por estado destino con `own`: `port` mediana **0,575**
+(0,33-0,67; estable en profundidad), `embport` 0,21 y cae de 0,54 a −0,01; norma de `port` 0,62 la de `own` (mediana).
+Los dos primeros estados de `port` y `embport` son idénticos por construcción (cos 1,0). Igual que en la puerta 3 con
+"feliz" (0,65 / 0,41, §45.2).
+
+**Dev (escala; aciertos ambos bancos sumados, si ninguna supera a la base en aciertos, acabados).**
+
+| brazo | 0,25 | 0,5 | 1,0 | 2,0 | 4,0 | elegida |
+|---|---|---|---|---|---|---|
+| base | GSM 0 ac / 0 fin; MATH 0 / 0 | | | | | - |
+| `own` | 6/6; 0/0 | 4/5; 1/1 | **12/19; 5/6** | 1/1; 0/0 | 0/7; 0/4 | 1,0 |
+| `port` | 1/1; 0/0 | 4/4; 0/0 | 0/0; 0/0 | **5/52; 3/14** | 0/44; 1/12 | 2,0 |
+| `embport` | 2/2; 0/0 | 3/3; 0/0 | 0/1; 0/0 | 1/1; 0/0 | 1/1; 0/0 | 0,5 |
+
+`port` no es monótono: a 1,0 no hace nada (0 acabados de 96), a 2,0 acaba 52/64 GSM con 558 tokens de media y a 4,0
+acaba 44 sin acertar ninguno. `embport` nunca pasa de base + 3.
+
+**Test (GSM8K 0-99, MATH-500 50; los ítems de desarrollo de la 9B, nunca usados para la 0.8B; dos correctores).**
+
+| brazo | escala | GSM8K ac (c2) / fin / bucles / tokens | vs base (ac; fin) | MATH ac (c2) / fin / bucles / tokens | vs base (ac; fin) |
+|---|---|---|---|---|---|
+| base | - | 0 (0) / 0 / 84 / 2 048 | - | 0 (0) / 0 / 41 / 2 048 | - |
+| `own` | 1,0 | **13 (13) / 37 / 65 / 1 489** | 13/0 p 2·10⁻⁴; 37/0 p 10⁻¹¹ | 3 (1) / 5 / 45 / 1 900 | 3/0 p 0,25; 5/0 p 0,06 |
+| **`port`** | 2,0 | **7 (7) / 83 / 19 / 538** | 7/0 p 0,016; 83/0 p 10⁻²⁵ | 3 (2) / 10 / 40 / 1 691 | 3/0 p 0,25; 10/0 p 0,002 |
+| `embport` | 0,5 | 0 (0) / 0 / 83 / 2 048 | 0/0 | 0 (0) / 0 / 42 / 2 048 | 0/0 |
+| placebo | 2,0 | 1 (1) / 3 / 89 / 2 003 | 1/0 p 1; 3/0 p 0,25 | 0 (0) / 0 / 44 / 2 048 | 0/0 |
+| exp8 (edición de referencia) | - | 13 (13) / 13 / 71 / 1 930 | 13/0 p 2·10⁻⁴; 13/0 | 0 (0) / 0 / 35 / 2 048 | 0/0 |
+| exp8_placebo | - | 1 (1) / 1 / 79 / 2 034 | 1/0 p 1 | 0 (0) / 0 / 42 / 2 048 | 0/0 |
+
+- **Referencia.** La regla toma `own` si supera a la base con p < 0,05 (13/0, p 2·10⁻⁴): referencia = **`own`**, ganancia
+  16 (13 + 3). La edición Exp 8 también pasa (13/0) con ganancia 13; con cualquiera de las dos Q4 sale igual.
+- **Veredicto por la regla: PASA.** Q1 acabados GSM8K 83/0 (p 2·10⁻²⁵) ✓. Q2 aciertos GSM8K 7/0 con los dos correctores
+  (p 0,016) ✓. Q3 placebo 1 acierto (p 1), 3 acabados < 0,5 × 93 ✓. Q4 ganancia de `port` 10 ≥ 0,5 × 16 = 8 ✓ (y
+  ≥ 6,5 con la referencia Exp 8). Q5 `port` − `embport` = 10 ≥ 5 ✓. `port` frente a `own` en aciertos: 3/9 (p 0,15);
+  frente a exp8: 4/10 (p 0,18). Ítems resueltos: `own` 13 GSM, `port` 7 (4 comunes con `own`, 3 con exp8), exp8 13.
+- **Lo que hace `port` (descriptivo, decisivo para leer el PASA).** `port` a 2,0 acaba 83/100 pero acierta 7: de los
+  acabados, **8 %** correctos; `own` 13 de 37 (35 %); exp8 13 de 13 (100 %); el vector en la 9B (§45.4) ≈ 90 %. La
+  mediana de caracteres de pensamiento en los acabados de `port` es **8** (own 1 184, exp8 2 390): el modelo cierra
+  `</think>` casi en el acto y contesta sin razonar (69/100 respuestas con menos de 300 tokens; ejemplos: ítem 0 responde
+  2 a "cuánto gana al día", ítem 3 responde 180 por 540). Lo que pasa por el mapa es un **"deja de pensar"** fuerte, con
+  umbral entre 1,0 y 2,0; lo que no pasa es el "termina cuando tienes la respuesta" que la dirección hace en la 9B (ahí
+  acorta a la mitad y acierta más). Los 7 aciertos son respuestas directas sin cadena, no cierres a tiempo. La regla
+  Q1-Q5, fijada sobre aciertos y acabados, no distingue los dos casos, y la ganancia de referencia es pequeña (16, suelo
+  de la 0.8B a 2 048) así que la mitad es 8: PASA por la letra. **Lectura honesta: la dirección se transporta en parte
+  (más que el placebo y que la identidad del token, 7/0 y 83/0 frente a 1 y 0) pero lo transportado es el componente
+  de parada, no el de conclusión.** En la 9B la misma dirección da ambas cosas a la vez (§45.4-45.6); en la 0.8B el
+  propio contraste (`own`) da algo de las dos (37 acabados, 13 bien) y el transportado solo la primera.
+- **La referencia Exp 8 en este arnés.** La réplica acaba 13/100 en GSM8K y 0/50 en MATH (todos los acabados,
+  correctos), frente a 14/20 en MATH del cuaderno de 2026-11-04 (`rig/math500.py`, temp 0,3, juez boxed). Dos arneses
+  distintos (muestreo frente a voraz, plantilla de `bench_runner`, 2 048 tokens en los dos): no se reejecuta nada
+  (regla del plan); queda anotado que la edición del MIT, en voraz con pensamiento activo, rescata el 13 % de GSM8K y
+  nada de MATH a este tope.
+- **Predicción (fila 30) contra el dato.** Paso 0 ✓ (0,575 en 0,4-0,7; embport baja y cae). Dev: base ✓, own escala
+  1,0 ✓ y 19 acabados ✓, port escala 2,0 ✓ pero **52 acabados ✗** (banda 5-25), embport ✓. Test: base ✓, own 13 / 3 ✓,
+  port 7 / 3 ✓, embport ✓, placebo ✓, **exp8 13 / 0 ✗** (banda 30-55 / 10-25), exp8_placebo ✓. **Referencia = exp8 ✗**
+  (es `own`). Q1, Q2, Q3, Q5 ✓; **Q4 "falla" ✗ (pasa); veredicto "no pasa" ✗ (PASA)**. Zona de sorpresa declarada "own
+  pasa Q2 con ganancia ≥ la de exp8" → **ocurre** (16 frente a 13). "port ≥ exp8 − 5 en GSM8K": 7 frente a 8, no (por
+  uno). **❌**: aciertan las bandas de casi todos los brazos y fallan la referencia, Q4 y el veredicto, y la sorpresa
+  declarada ocurre. Lo que no previó la predicción (ni la regla): que `port` acabara 83 acertando 7.
+- **Límites.** Un par de modelos, una familia, voraz, un tope; `own` y `port` leen textos de la 9B; mapas ajustados en
+  texto crudo de GSM8K de 128 tokens y usados en pensamiento; la referencia compara mecanismos (edición de 64 columnas
+  frente a dirección); MATH en el suelo (poder solo en GSM8K); una escala por brazo elegida en dev con 96 ítems.
+  Siguiente forma útil, antes de repetir: añadir a la regla la tasa de aciertos entre acabados (o "acabado con ≥ N
+  tokens de pensamiento") y probar `port` entre 1,0 y 2,0; escrito en el plan antes de correr.
+- **Dos métodos.** `verdict.json` de la cadena (`port_cc.measures`) y recuento propio por filas de los 7 informes de
+  test y 16 de dev: mismos aciertos (dos correctores), acabados, cortes y tokens medios en todos; mismos pareados
+  (binomial exacta propia). Bucles: el campo `loop` de `bench_runner` (tabla) y una heurística propia de repetición
+  (≥ 4 copias de una subcadena en la cola) dan 78 / 69 / 13 / 84 / 91 / 72 / 81 en GSM8K frente a 84 / 65 / 19 / 83 /
+  89 / 71 / 79: mismo orden, distinta definición.
+
+### 45.13 Control de presupuesto, brazo fusionado bien servido: los pesos compilados a 8 192 dan 90 / 41, igual o mejor que el vector, 18 por encima de la base (2026-11-15)
+Repetición del brazo inválido de §45.11 (el GGUF fusionado se pasó como control-vector y se sirvió la base). Plan:
+`lab/probes/cc/PLAN.md` "Token-budget control", nota [rev 2026-11-15] escrita antes de lanzar; predicción fila 32.
+Cadena `lab/runs/cc_v2/chain_merged8192.sh` (05:53-06:48): `hf_cache/cc_op_v2/merged-Q6_K.gguf` servido con `-m`, sin
+control-vector (log del servidor: `loading model 'hf_cache/cc_op_v2/merged-Q6_K.gguf'`, cero menciones a control vector),
+mismos ajustes que los brazos base y vector de §45.11 (`-c 40960`, `-np 2`, voraz), `bench_runner` por defecto (GSM8K dev
+100 + MATH-500 50, 8 192 tokens). Smoke de 2 ítems antes del brazo (256 y 155 tokens). Primera cadena con `set -e` +
+trap ERR; nada falló. Salida `lab/runs/cc_v2/cap8192/dev_merged_served_8192.json`.
+
+| brazo (8 192 tokens) | GSM8K ok (c2) / cortes / acabados mal / tokens | MATH-500 ok (c2) / cortes / acabados mal / tokens |
+|---|---|---|
+| base (§45.11) | 72 (72) / 24 / 4 / 3 638 | 21 (19) / 28 / 1 / 6 204 |
+| vector cc_v2 ×1.0 (§45.11) | 85 (86) / 4 / 13 / 949 | 37 (28) / 15 / 2 / 3 321 |
+| **fusionado (servido como modelo)** | **90 (91) / 4 / 6 / 1 038** | **41 (32) / 10 / 1 / 2 850** |
+| fusionado a 2 048 (§45.8, mismos ítems) | 85 (86) / 10 / 5 / 796 | 30 (23) / 21 / 1 / 1 438 |
+
+- **Pareados (ítem a ítem, binomial exacta).** Fusionado frente a base a 8 192: GSM8K **19/1, p 4·10⁻⁵**; MATH **22/2,
+  p 4·10⁻⁵** (corrector 2: 20/1 y 17/4, p 0,007). Fusionado frente a vector a 8 192: GSM8K 6/1 (p 0,125), MATH 6/2
+  (p 0,29): igual o mejor, no distinguible con n = 150. Fusionado a 8 192 frente a sí mismo a 2 048: GSM8K 5/0 (p 0,06),
+  MATH **12/1, p 0,003**: el compilado sí gana con más tope en MATH (30 → 41), el vector apenas (35 → 37, §45.11).
+- **Por ítem (GSM8K).** De los 24 cortes de la base a 8 192 el fusionado acierta 17. Acaba mal 6 (12, 14, 20, 70, 87,
+  93) frente a 13 del vector; de los 13 del vector acierta 5. Los 3 ítems que la base acertaba a 2 048 y el vector cerró
+  mal (50, 63, 82): **los tres bien** con el fusionado. Corta 4 (7, 37, 58, 62), 3 de ellos también cortados por la
+  base. De sus 10 cortes a 2 048, a 8 192 acierta 3 y sigue cortando 4.
+- **Correctores en MATH.** Corrector 2 (último número) discrepa del corrector 1 en 9 ítems del fusionado y 9 del vector
+  (base 2): todos fracciones escritas `\frac43` frente a `4/3` (106, 124, 157, 235, 247, 253, …). El corrector 2
+  subestima MATH cuando el modelo acaba; se informa, el criterio es el corrector 1 (como en §45.4-45.8).
+- **Predicción (fila 32) contra el dato.** GSM8K 82-89 → **90** (uno por encima); cortes ≤ 8 → 4 ✓; acabados mal 8-16 →
+  **6** (por debajo, en el buen sentido); tokens 800-1 400 → 1 038 ✓. MATH 30-38 → **41** (por encima); cortes ≤ 20 →
+  10 ✓. Control: ≥ base + 8 con p < 0,05 → +18, p 4·10⁻⁵ ✓. Sorpresas declaradas: GSM < 78 no; MATH < 25 no; fusionado
+  > vector + 5: GSM +5 y MATH +4, en el borde, no; tokens > 2 000 no. **◐**: sentido, controles y cortes dentro; tres
+  bandas falladas, las tres porque el fusionado hace **más** de lo previsto (cuarta vez que la predicción sobrestima
+  el coste del compilado o del vector: filas 26, 27, 31, 32).
+- **Lectura.** Cierra la fila 31: con cuatro veces más presupuesto, la base queda en 72 / 21 y los pesos compilados en
+  90 / 41 (vector 85 / 37). No es presupuesto (T2 confirmado por tercera corrida); y el compilado en Q6_K, que lleva la
+  dirección a ≈ la mitad de magnitud (§45.8), **cierra pronto menos veces que el vector** (6 frente a 13 acabados mal;
+  los 3 ítems de coste por cierre temprano, bien) y con el tope alto aprovecha el espacio en MATH que el vector no
+  aprovecha. Lo que el vector pierde por cerrar antes de tiempo, la dosis menor del compilado lo recupera sin perder el
+  cierre (cortes 4 / 10 frente a 24 / 28 de la base). Límites: un modelo, voraz, un tope alto; servidor con `-np 2`
+  (dos servicios de la misma base difieren ítem a ítem, §45.11), así que las diferencias de ≤ 2 ítems frente al vector
+  no se leen; ítems de dev (no sellados; el sellado del compilado es §45.8). El fusionado a 2 048 de la tabla es la
+  corrida de §45.8 (misma semilla de ítems), no una repetición.
+- **Dos métodos.** Resumen de la cadena (`bench_runner`: acc 0,90 / 0,82, cortes 4 / 10, tokens 1 038 / 2 850) y recuento
+  propio por filas del informe (mismos números, dos correctores) más los tres pareados sobre los JSON de §45.11 y §45.8
+  (150 ítems idénticos en los cuatro informes, comprobado).
+
+### 45.14 Puerta 3b, cabo suelto: entre 1,0 y 2,0 el mapa sigue llevando "deja de pensar"; la regla disparó por respuestas directas sin cadena (2026-11-15)
+Plan: anexo "Gate 3b, loose end" de `lab/probes/act_map/PLAN.md` (antes de correr), predicción fila 33. Cadena
+`lab/runs/act_map/cc08b_chain.sh` (07:46-08:21; `set -e`, trap, smoke 2/2, sha256 del vector `5a5e33ba…` y de los ítems
+de dev en el log): `port` a 1,25 / 1,5 / 1,75 en los mismos 64 GSM8K + 32 MATH de dev de §45.12, 0.8B Q6_K, 2 048 tokens,
+voraz. Datos `lab/runs/act_map/cc08b/`.
+
+| `port` escala (dev) | GSM8K acabados / bien (c2) / bien-entre-acabados / mediana carac. pensamiento de los acabados / tokens | MATH acabados / bien / tokens |
+|---|---|---|
+| 1,0 (§45.12) | 0 / 0 / - / - / 2 048 | 0 / 0 / 2 048 |
+| 1,25 | 3 / 2 (2) / 0,67 / **1 475** / 1 981 | 0 / 0 / 2 048 |
+| 1,5 | 15 / 6 (6) / **0,40** / **8** / 1 656 | 1 / 1 / 2 003 |
+| 1,75 | 50 / 9 (9) / 0,18 / 8 / 644 | 10 / 6 (5) / 1 515 |
+| 2,0 (§45.12) | 52 / 5 (5) / 0,10 / 8 / 558 | 14 / 3 / 1 282 |
+| `own` 1,0 (§45.12) | 19 / 12 (13) / 0,58 / 1 098 / 1 591 | 6 / 5 / 1 760 |
+
+- **Umbral, no pendiente, entre 1,25 y 1,75:** acabados 0 → 3 → 15 → 50 → 52. A 1,25 los 3 acabados sí llevan cadena
+  (1 475 caracteres de pensamiento, 2 bien): es la 0.8B acabando por su cuenta en 3 ítems fáciles. Desde 1,5 todo acabado
+  tiene **8 caracteres** de pensamiento (`<think>\n</think>`): el modelo salta la fase de pensamiento y contesta en el
+  cuerpo, corto (1,5: 7 de 15 con < 300 tokens; 1,75: 39 de 50).
+- **La regla disparó.** "Componente de terminar presente si alguna escala acaba ≥ 10 con bien-entre-acabados ≥ 0,32":
+  1,5 da 15 y 0,40 → presente → brazo de test a 1,5 (regla fijada; corrido). Pero la medida que la regla no usaba como
+  criterio (caracteres de pensamiento; estaba "informada") dice lo contrario: 0,40 es la tasa de acierto de la 0.8B
+  **contestando GSM8K sin pensar**, no la de terminar tras razonar. La regla midió mal lo que quería medir; queda como
+  está y se lee con la medida descriptiva.
+- **Test `port` ×1,5 (150 ítems; frente a los brazos de §45.12):** GSM8K 24 acabados, **12 bien** (c2 9): 10 bien entre los
+  acabados (6 respuestas directas con 8 caracteres de pensamiento, 4 con cadena de 797-2 969 caracteres) y 2 bien
+  cortados (la respuesta en un `\boxed` repetido). De los 24 acabados, 18 sin pensamiento y 6 con cadena. Frente a base: 12/0 (p 5·10⁻⁴), acabados 24/0. Frente a `own` (13 bien,
+  37 acabados): 8/9 (p 1), acabados 12/25 (p 0,047): mismos aciertos, la mitad de acabados, 4 ítems comunes. Frente a
+  `port` ×2,0 (7 bien, 83 acabados): 11/6 (p 0,33), acabados 1/60. MATH: 1 acabado, 0 bien (×2,0: 10 / 3; ×1,75 en dev:
+  10 / 6, cinco de ellos con 8 caracteres de pensamiento y 164-389 tokens: razonamiento corto en el cuerpo).
+- **Predicción (fila 33) contra el dato.** Acabados 3 / 15 / 50 → bandas 0-5 / 5-30 / 25-50 ✓✓✓ (50 en el borde). Bien
+  2 / 6 / **9** → 0-3 ✓, 2-8 ✓, 3-8 ✗ (por uno). Bien-entre-acabados donde acabados ≥ 10: 1,5 **0,40** ✗ (banda 0,10-0,30),
+  1,75 0,18 ✓. Mediana de pensamiento < 200: ✓ (8 y 8). Veredicto "solo parar, sin brazo de test" → **la regla dijo
+  "presente" y corrió el test ✗**. MATH acabados 0 / 1 / 10 → bandas 0-3 ✓, 2-10 ✗ (1), 8-16 ✓; bien ≤ 3 → 6 a 1,75 ✗.
+  Sorpresas declaradas: ninguna (0,40 < 0,5; 1,25 acaba 3; 1,75 > 1,5). **◐**: la forma (umbral, sin cadena) acierta; el
+  veredicto formal falla porque la regla aceptó respuestas directas como "terminar".
+- **Lectura.** Cierra §45.12 en el mismo sentido y con más detalle: lo que cruza el mapa 9B → 0.8B es un interruptor de la
+  fase de pensamiento con umbral de dosis (1,25 nada, 1,5 un cuarto de los ítems, 1,75 casi todos); la 0.8B razona y
+  luego cierra en muy pocos ítems (test ×1,5: 6 de 100 acaban con cadena, 4 bien; `own`: 37 acabados, casi todos con
+  cadena). Dos lecciones: (1) "bien entre acabados" no distingue "terminar tras razonar" de "contestar
+  sin razonar"; la medida que sí lo hace es la longitud del pensamiento de los acabados, y debe ser criterio, no informe,
+  en la próxima regla; (2) la 0.8B sin pensar acierta ≈ 40 % de GSM8K (12/24, 6/15; con `own` 58 %): un dato útil de
+  base para leer cualquier "cierre" de este modelo. No se corre nada más de esto; la puerta 3b queda como "PASA por la
+  regla, lo transportado es la parada" (§45.12), ahora con la curva de dosis.
+- **Dos métodos.** `readings.json` de la cadena y recuento propio por filas (acabados, bien con dos correctores,
+  bien-entre-acabados, mediana de caracteres, tokens): idénticos en los seis brazos de dev y en el de test; pareados con
+  binomial exacta propia.
+
+### 45.15 La dirección "concluir" en una segunda familia: Phi-4-mini-reasoning (3,8B) pasa dev y confirma en el conjunto sellado (2026-11-15)
+Plan: `lab/probes/cc_phi/PLAN.md` (fijado antes de correr; sonda de premisas en el [rev] de las 08:30), predicción fila 34.
+Modelo `microsoft/Phi-4-mini-reasoning` (`Phi3ForCausalLM`, 32 capas, d 3 072; GGUF unsloth Q6_K, `general.name`
+Phi-4-Mini-Reasoning, arquitectura `phi3`, sha256 `e5742248…`), misma receta y mismo código que el estudio Qwen (`cc.py`,
+`contrast_vector`, `bench_runner`, llama-server; `-np 2`, voraz). **Presupuesto 1 024 tokens** (regla del plan: a 2 048 solo
+cortaba 2/10). Cadena `lab/runs/cc_phi/chain.sh` 08:27-11:19 (`set -e`, trap, smoke 2/2 por configuración servida, sha256
+en el log). Datos `lab/runs/cc_phi/` y `lab/runs/sealed_cc_phi/`. Aviso de llama.cpp en cada arranque: "Phi SWA is
+currently disabled - results might be suboptimal"; afecta igual a los seis brazos.
+
+- **Trazas y filas.** 128 problemas de descubrimiento a 4 096: **107** cierran `</think>` y acaban (`stop`); 107 pares
+  pos/neg (pos = 48 últimos tokens de razonamiento; `response` = `"<think>\n"` + razonamiento, offsets desplazados).
+- **Vector.** 31 capas (misma convención que Qwen), semilla placebo 2026. Normas de los incrementos: 0,51 (capa 1) … 3,77
+  (mediana) … 11,1 (29), **21,0 (30)**, **18,2 (31)**; norma de la última fila 27,2. Perfil distinto de Qwen: la última fila
+  es 0,87× la anterior (Qwen ≈ 2×), el pico está en la capa 30; dentro de la banda "informar, no parar" del plan.
+- **Criba** (64 MATH de criba, 1 024): base 6 (c2 5), 58 cortes; 0,25 → 16 (15), 48 cortes; **0,5 → 22 (22)**, 42 cortes;
+  1,0 → 5 (4), 1 corte, 63 acabados, 382 tokens, 4 colas en bucle; 2,0 → 0, 64 cortes. `cc.py choose` → **0,5**.
+  **A 1,0 Phi entra en el régimen de §45.14:** de los 63 acabados, 17 llevan < 50 caracteres de pensamiento y 8 acaban sin
+  `\boxed`; la escala que Qwen necesitó (1,0) aquí apaga la fase de pensamiento. La norma del vector es mayor (27,2 frente
+  a 18,1 del Qwen corregido): 0,5 × 27,2 ≈ 13,6 queda por debajo de 1,0 × 18,1.
+
+| Phi-4-mini-reasoning, 1 024 tokens | GSM8K /100 bien (c2) / cortes / acabados / bien-entre-acabados / mediana carac. pensamiento acabados / tokens | MATH /50 bien (c2) / cortes / acabados / tokens |
+|---|---|---|
+| **dev** base | 59 (58) / 42 / 58 / 0,98 / 1 987 / 828 | 6 (6) / 43 / 7 / 993 |
+| dev vector ×0,5 | **85 (85)** / 11 / 89 / 0,93 / 1 368 / 573 (−31 %) | **19 (17)** / 28 / 22 / 883 (−11 %) |
+| dev placebo ×0,5 | 47 (45) / 54 / 46 / 0,98 / 2 239 / 894 (+8 %) | 5 (5) / 45 / 5 / 1 007 (+1 %) |
+| **sellado** base | 59 (60) / 38 / 62 / 0,94 / 2 072 / 846 | 4 (4) / 46 / 4 / 1 019 |
+| sellado vector ×0,5 | **82 (83)** / 9 / 91 / 0,90 / 1 318 / 558 (−34 %) | **19 (18)** / 29 / 21 / 896 (−12 %) |
+| sellado placebo ×0,5 | 58 (57) / 40 / 60 / 0,95 / 2 280 / 863 (+2 %) | 6 (6) / 45 / 5 / 1 015 (0 %) |
+
+- **Dev, pareado.** Vector frente a base: GSM8K **28/2** (p 8,7·10⁻⁷; c2 29/2), MATH **14/1** (p 0,001; c2 12/1, p 0,003).
+  Placebo frente a base: GSM8K 4/16 (**p 0,012**: el empujón aleatorio del mismo tamaño daña en dev), MATH 2/3. Vector frente
+  a placebo: 40/2 y 15/1. C1 (MATH con los dos correctores y GSM8K) ✓, C2 (placebo no mejor que la base, tokens +8 %/+1 %) ✓,
+  C3 ✓ → **PASS** (`verdict.json`, 10:35).
+- **Sellado** (`data/sealed_confirm.json`, sha256 `3acfbc8d…`, **primer uso con este modelo**, ningún ítem tocó una
+  decisión). Vector frente a base: GSM8K **27/4** (p 3,4·10⁻⁵; c2 27/4), MATH **16/1** (p 2,7·10⁻⁴; c2 15/1). Placebo frente a
+  base: 10/11 (p 1) y 2/0. Vector frente a placebo: 26/2 y 14/1. **CONFIRMA** (C1-C3; `lab/runs/sealed_cc_phi/verdict.txt`).
+  La pérdida del placebo en dev (−12) no reaparece en el sellado (−1): una semilla de placebo, daño o nada, nunca ganancia.
+- **Es "terminar tras razonar", no "dejar de pensar"** (la lección de §45.14 aplicada como medida): a 0,5 **ningún**
+  acabado de dev ni del sellado lleva < 50 caracteres de pensamiento (0 de 111 y 0 de 112 en el vector); la mediana del
+  pensamiento de los acabados baja de 1 987 a 1 368 (dev) y de 2 072 a 1 318 (sellado), y 0,90-0,93 de los acabados están
+  bien (base 0,94-0,98). Acabados sin `\boxed` (premisa p3): 1 y 2 de ~110, < 5 %.
+- **Frente a Qwen (§45.4, sellado 1, 2 048):** Qwen 43 → 86 y 4 → 33 (placebo 28 / 1); Phi 59 → 82 y 4 → 19 (placebo 58 / 6)
+  con la mitad de presupuesto. Ganancia GSM8K +23 (Qwen +43), MATH +15 (Qwen +29); tokens −34 % / −12 % (Qwen −60 % aprox.).
+  Mismo sentido, mismo control, mismo signo del placebo (≤ base); magnitud menor en un régimen más duro (80 % de cortes en
+  la sonda).
+- **Predicción (fila 34) contra el dato.** Sonda: P2 a 2 048 ✗ (2/10; se cumplió a 1 024, regla del plan). Trazas 50-90 →
+  **107** ✗ (más). Criba: base 15-30 → 6 ✗ (presupuesto 1 024, bandas escritas para 2 048, leídas así en el [rev]); mejor
+  escala 0,5 o 1,0 → 0,5 ✓; vector base + 3 a + 12 → **+16** ✗ (más). Dev: base GSM 55-80 → 59 ✓, cortes 15-40 → 42 ✗;
+  MATH 10-25 → 6 ✗, cortes 25-40 → 43 ✗. Vector GSM + 5 a + 15 → **+26** ✗ (más), MATH + 5 a + 12 → **+13** ✗ (uno más);
+  tokens −20 a −40 % → GSM −31 ✓, MATH −11 ✗; cortes a la mitad o menos → GSM 42 → 11 ✓, MATH 43 → 28 ✗. Placebo ± 3 →
+  GSM **−12** ✗, MATH −1 ✓; tokens ± 10 % ✓✓. C1-C3 pasan ✓; sellado confirma ✓. Sorpresas declaradas: ninguna (vector no
+  por debajo de base; placebo 47 ≪ 82; escala no 2,0; la sonda cortó 2/10 a 2 048, no < 10 %). **◐**: sentido, control,
+  veredicto y confirmación aciertan; las magnitudes fallan casi todas, la mayoría porque el efecto fue mayor que el
+  previsto y la base más baja (presupuesto 1 024).
+- **Lectura.** Primera salida de la familia Qwen: la receta (trazas propias → contraste de los 48 últimos tokens → vector
+  de control, escala elegida en ítems de criba, placebo de la misma norma, dev y sellado) funciona en otro laboratorio,
+  otra arquitectura (`phi3`, `gate_up_proj` fusionado, embeddings atados), otro tokenizador y otra plantilla (el modelo
+  escribe `<think>` él mismo; nuestro `split_think`). Lo que cambia entre familias: la escala (0,5, con un umbral de
+  "apagar el pensamiento" ya a 1,0) y el perfil por capas (pico en la 30, no en la última). Lo que no cambia: el placebo
+  nunca gana. No se compila en pesos todavía (plan aparte). Límites: un presupuesto (1 024, más duro que 2 048), una
+  escala elegida en 64 ítems, una semilla de placebo, voraz, Q6_K, aviso SWA de llama.cpp, el campo "reasoning" es
+  nuestro corte y no el del servidor.
+- **Dos métodos.** `verdict.json`, `verdict.txt` y los resúmenes de la cadena, frente a recuento propio por filas de los
+  seis JSON (bien con dos correctores, cortes, acabados, caracteres de pensamiento de los acabados, tokens, pareados
+  ganados/perdidos): idénticos; binomial exacta comprobada a mano para 28/2 (2 × 466 / 2³⁰ = 8,7·10⁻⁷).
+
+### 45.16 La dirección "concluir" de Phi compilada en `down_proj`: pasa dev (C1-C4) y confirma en el conjunto sellado 2, igual que el vector (2026-11-15)
+Plan: `lab/probes/cc_phi/PLAN.md` "Compile the Phi direction into `down_proj`" (fijado 12:40, antes de la op), predicción
+fila 35. Misma op que el estudio Qwen (`compile_control_vector`, §43.19-43.21, §45.8; única diferencia de código: `ridge_u`
+devuelve `u` en el dispositivo pedido, arreglo de mecánica hecho antes de correr y anotado en el plan). Cadena
+`lab/runs/cc_phi/chain_w.sh` 12:18-14:17 (`set -eu`, trap, `chain_guard` con sha del GGUF, del vector, presupuesto, escala y
+commit; smoke por configuración; sha256 de cada GGUF servido en el log; cada JSON lleva `served` = ruta y sha256 que
+`/props` del servidor declara). Datos `lab/runs/cc_phi/weights/` (dev, `report.json` de la op) y `lab/runs/sealed_ccw_phi/`.
+
+- **Entradas.** Vector `cc_phi.gguf` **× 0,5** (la op escribe el vector a ×1,0; 0,5 es la escala elegida en §45.15; archivo
+  escalado `cc_phi_x0.5.gguf`, sha256 `67658ce7…`, normas 0,25 … 10,49 (capa 30), 9,11 (31)), placebo = el mismo placebo
+  de §45.15 × 0,5 (`325fc63f…`, normas idénticas por construcción), calibración = las 107 trazas acabadas con el prefijo
+  `<think>\n` que el modelo escribe (79 ajuste / 28 reserva, **133 088 tokens**; Qwen tuvo 382 k), GGUF base Q6_K
+  `e5742248…`, sin LoRA.
+- **Op (1 300 s).** `u` por ridge en las entradas de `down_proj` de cada capa, norma decreciente con la profundidad (6,0 en
+  la capa 1 → 0,20 en la 30). **G0 pasa:** mediana sobre capas de la mediana en reserva de |uᵀx − 1| = **0,044** (peor
+  capa 0,064; placebo 0,045 / 0,062; umbral 0,5): el empujón escrito vale 1 ± 0,04 en tokens no vistos. ‖dW‖/‖W‖ mediana
+  0,013 (0,005-0,036; mayor en la 31). Fusión Q6_K (98 304 bloques recuantizados por tensor, 100 %): cos(escrito, dW)
+  mediana **0,74**, mínimo 0,64; error relativo mediano 0,72 (Qwen: 0,89 / 0,83 / 0,47; la edición ×0,5 es más pequeña
+  frente a W y Q6_K conserva menos de ella).
+
+| Phi-4-mini-reasoning, 1 024 tokens | GSM8K /100 bien (c2) / cortes / acabados / bien-entre-acabados / mediana carac. pensamiento acabados / tokens | MATH /50 bien (c2) / cortes / acabados / tokens |
+|---|---|---|
+| **dev** base (§45.15) | 59 (58) / 42 / 58 / 0,98 / 1 987 / 828 | 6 (6) / 43 / 7 / 993 |
+| dev vector ×0,5 (§45.15) | 85 (85) / 11 / 89 / 0,93 / 1 368 / 573 (−31 %) | 19 (17) / 28 / 22 / 883 (−11 %) |
+| **dev fusionado** (`-m`, sin flags) | **81 (81)** / 13 / 87 / 0,93 / 1 552 / 618 (−25 %) | **19 (17)** / 30 / 20 / 914 (−8 %) |
+| dev placebo fusionado | 54 (53) / 47 / 53 / 1,00 / 2 239 / 879 (+6 %) | 5 (5) / 45 / 5 / 992 (0 %) |
+| **sellado 2** base | 62 (61) / 38 / 62 / 0,98 / 2 008 / 840 | 7 (6) / 45 / 5 / 1 005 |
+| sellado 2 vector ×0,5 | 88 (88) / 5 / 95 / 0,93 / 1 343 / 542 (−35 %) | 15 (13) / 30 / 20 / 897 (−11 %) |
+| **sellado 2 fusionado** | **86 (86)** / 8 / 92 / 0,93 / 1 554 / 616 (−27 %) | **14 (12)** / 35 / 15 / 946 (−6 %) |
+| sellado 2 placebo fusionado | 60 (59) / 40 / 60 / 0,98 / 2 192 / 857 (+2 %) | 2 (2) / 49 / 1 / 1 024 (+2 %) |
+
+- **Dev, pareado** (referencias base y vector de §45.15 reutilizadas, premisa p4). Fusionado frente a base: GSM8K **25/3**
+  (p 2,7·10⁻⁵; c2 25/2), MATH **13/0** (p 2,4·10⁻⁴; c2 11/0, p 0,001). Fusionado frente a vector: 6/10 (p 0,45) y 3/3
+  (p 1): iguales. Placebo fusionado frente a base: 7/12 (p 0,36) y 1/2. Placebo frente a vector: 4/35 y 1/15. C1 ✓, C2 ✓,
+  C3 ✓, C4 (fusionado no por debajo del vector con p < 0,05) ✓ → **PASS** (`weights/verdict.json`, 13:10).
+- **Sellado 2** (`data/sealed_confirm2.json`, sha256 `c21ef91c…`, **primer uso con este modelo**; cuatro brazos servidos
+  en la misma cadena). Fusionado frente a base: GSM8K **26/2** (p 3,0·10⁻⁶; c2 27/2), MATH **7/0** (p 0,016; c2 6/0,
+  p 0,031). Vector frente a base: 28/2 y 9/1. Fusionado frente a vector: 2/4 (p 0,69) y 2/3 (p 1): iguales. Placebo
+  fusionado frente a base: 9/11 (p 0,82) y **0/5** (p 0,06; el placebo daña MATH, 7 → 2). Placebo frente a vector: 1/29 y
+  0/13. **CONFIRMA** (C1-C4; `sealed_ccw_phi/verdict.json`, 14:09).
+- **Sigue siendo "terminar tras razonar".** Ningún acabado del fusionado lleva < 50 caracteres de pensamiento (0 de 87 en
+  dev, 0 de 92 en el sellado; criterio de sorpresa del plan, ≤ 10 %); mediana del pensamiento de los acabados 1 987 →
+  1 552 (dev) y 2 008 → 1 554 (sellado), algo menos corta que con el vector (1 368 / 1 343); 0,93 de los acabados bien.
+- **HumanEval-20** (informado, no criterio; `he_eval.py`, tope 2 048, sistema de matemáticas): base **11**/20 (11 cierran,
+  mediana 1 950 tokens), fusionado **16**/20 (17 cierran, mediana 1 235). Fuera de la banda ± 3 prevista, hacia arriba: con
+  n = 20 es una lectura, no un hallazgo; en Qwen el compilado dio HE 17 → 18 (§43.21).
+- **Predicción (fila 35) contra el dato.** G0 0,02-0,15 → 0,044 ✓; cos 0,6-0,9 → 0,74 ✓; ‖dW‖/‖W‖ 0,005-0,03 → 0,013 ✓.
+  Dev fusionado GSM 70-86 → **81** ✓, MATH 11-20 → **19** ✓, tokens −15 a −35 % → GSM −25 ✓, MATH **−8 ✗**; cortes GSM
+  8-25 → 13 ✓. Placebo fusionado GSM 45-62 → 54 ✓, MATH 3-8 → 5 ✓, tokens −5 a +10 % → +6 / 0 ✓✓. C1-C4 ✓, PASS ✓,
+  fusionado a ≤ 8 del vector en GSM ✓ (−4). Sellado 2: base GSM 50-66 → 62 ✓, MATH 2-8 → 7 ✓; fusionado +10 a +25 →
+  **+24** ✓, +6 a +15 → **+7** ✓; vector +18 a +28 → +26 ✓, +10 a +17 → **+8 ✗**; placebo −8 a +3 → −2 ✓, −2 a +3 →
+  **−5 ✗**; confirma ✓. HE base 6-16 → 11 ✓, fusionado ± 3 → **+5 ✗**. Sorpresas declaradas: ninguna (G0 pasa; cos 0,74;
+  fusionado > base; fusionado no > vector + 5; placebo no > base + 3; 0 % de acabados sin pensamiento). **◐**: 18 de 22
+  lecturas en banda, todas las primarias (op, brazo, control, veredicto, sellado); fallan cuatro secundarias (tokens MATH
+  del fusionado, ganancia MATH del vector en el sellado, placebo MATH en el sellado por debajo, HE del fusionado por
+  encima).
+- **Lectura.** La primitiva viaja: el mismo cierre de forma por capa (ridge → u, dW = v uᵀ, fusión Q6_K) escribe en una
+  segunda familia lo que el vector hacía como flag, y el modelo servido sin flags rinde igual que el vector en dev y en el
+  sellado (−4 / 0 y −2 / −1, ninguna diferencia significativa). Que cos(escrito, dW) baje a 0,74 (Qwen 0,89) sin que
+  cambie la conducta repite la lección de §43.19: el ruido de Q6_K sobre dW no es la variable. El empujón casi constante
+  (uᵀx = 1 ± 0,04) basta, como en Qwen y como dicen Barry y AHA desde fuera (`FOUNDATIONS.md` T3). El placebo compilado
+  nunca gana (dev −5, sellado −2 / −5). Límites: un presupuesto (1 024), una escala (0,5), una semilla de placebo, voraz,
+  Q6_K, 133 k tokens de calibración, referencias dev reutilizadas de la cadena del vector, HE con n = 20, las fugas de
+  "no es nueva capacidad" de §43.19 siguen valiendo (eficiencia a presupuesto fijo).
+- **Dos métodos.** `verdict.json` (dev y sellado) y los resúmenes de la cadena frente a recuento propio por filas de los
+  ocho JSON (bien con dos correctores, cortes, acabados, caracteres de pensamiento, tokens, pareados): idénticos; binomial
+  exacta a mano para 26/2 (2 × 407 / 2²⁸ = 3,0·10⁻⁶); `served` de cada JSON coincide con los sha256 del log (fusionado
+  `9b47c7f9…`, placebo fusionado `5dbf7540…`, base `e5742248…`; premisa p5).
+
+### 45.17 Control de presupuesto en Phi: a 2 048 tokens la base recupera la mitad de la ganancia, el fusionado sigue +10 en GSM8K (significativo) y +3 en MATH (no) (2026-11-16)
+Plan: `lab/probes/cc_phi/PLAN.md` "Token-budget control on Phi" (fijado 04:2x, antes de servir nada), predicción fila 36.
+Pregunta: ¿la ganancia de Phi (§45.15 vector, §45.16 fusionado) es más que acabar dentro de 1 024 tokens? En Qwen, a 4×
+el presupuesto, el vector seguía +13 y el fusionado +18 (§45.11, §45.13); AHA afirma la regla contraria para arreglos de
+bucle (ganancia ≤ tasa de corte de la base). Cadena `lab/runs/cc_phi/chain_b2048.sh` 04:32-05:29 (`set -eu`, trap,
+`chain_guard` con sha del GGUF `e5742248…`, del vector `19c8b0c1…`, del fusionado `9b47c7f9…`, presupuesto 2 048, escala 0,5,
+commit 972b4ca; smoke 2/2 por configuración; 0 líneas "no valid control vector"; `served` de cada JSON = sha del log).
+Datos `lab/runs/cc_phi/cap2048/`. Tres brazos, los 150 ítems dev de §45.15/45.16, voraz, `-np 2`, sin placebo (la pregunta
+del placebo está contestada a 1 024 en las dos formas).
+
+| Phi-4-mini-reasoning, dev | GSM8K /100 bien (c2) / cortes / acabados / mal-entre-acabados / mediana carac. pensamiento acabados / tokens medios | MATH /50 bien (c2) / cortes / acabados / mal-entre-acabados / tokens |
+|---|---|---|
+| base 1 024 (§45.15) | 59 (58) / 42 / 58 / 1 / 1 987 / 828 | 6 (6) / 43 / 7 / 1 / 993 |
+| vector ×0,5 1 024 (§45.15) | 85 (85) / 11 / 89 / 6 / 1 368 / 573 | 19 (17) / 28 / 22 / 5 / 883 |
+| fusionado 1 024 (§45.16) | 81 (81) / 13 / 87 / 6 / 1 552 / 618 | 19 (17) / 30 / 20 / 1 / 914 |
+| **base 2 048** | **81 (82)** / 17 / 83 / 2 / 2 413 / 1 111 | **26 (23)** / 24 / 26 / 0 / 1 669 |
+| vector ×0,5 2 048 | 85 (86) / 4 / 96 / 11 / 1 457 / 629 (−43 %) | **35 (32)** / 9 / 41 / 6 / 1 254 (−25 %) |
+| **fusionado 2 048** | **91 (91)** / 5 / 95 / 4 / 1 718 / 696 (−37 %) | **29 (26)** / 16 / 34 / 5 / 1 368 (−18 %) |
+
+- **Pareado a 2 048** (McNemar exacto; c2 entre paréntesis). Fusionado frente a base: GSM8K **12/2** (p 0,013; c2 11/2,
+  p 0,022), MATH **7/4** (p 0,55; c2 6/3). Vector frente a base: 11/7 (p 0,48) y **13/4** (p 0,049). Fusionado frente a
+  vector: 9/3 (p 0,15) y 3/9 (p 0,15): sin diferencia significativa en ninguno, pero de signo opuesto por banco.
+- **Lo que el presupuesto explica.** De los 42 ítems GSM8K que la base cortaba a 1 024, a 2 048 la base cierra bien 25 y
+  sigue cortando 16 (el fusionado acierta 34 de esos 42, el vector 29). De los 43 de MATH: base 19 bien, 24 cortados
+  (fusionado 22, vector 29). La ganancia del fusionado sobre la base pasa de **+22 / +13** a 1 024 a **+10 / +3** a 2 048:
+  en GSM8K la mitad era presupuesto y la otra mitad no; en MATH casi toda lo era, al menos hasta 2 048.
+- **Techo de AHA, como informe.** GSM8K: la base corta 17 (techo), el fusionado gana 10; de sus 12 victorias, 10 son
+  ítems que la base cortaba y 2 ítems que la base acababa mal; pierde 2 que la base acababa bien. MATH: techo 24, ganancia
+  3; 7 victorias (todas de cortes), 4 derrotas (2 acabados mal y 2 cortes sobre ítems que la base acababa bien). La regla se
+  cumple en los dos bancos: la ganancia sale de los cortes de la base y no los agota (10 de 17, 7 de 24).
+- **Sigue siendo "terminar tras razonar".** 0 acabados con < 50 caracteres de pensamiento en los tres brazos; mediana del
+  pensamiento de los acabados 2 413 (base) → 1 718 (fusionado) → 1 457 (vector). El vector cierra mal más veces (11 y 6)
+  que el fusionado (4 y 5) y que la base (2 y 0): mismo patrón que en Qwen a 8 192 (§45.13, 13 frente a 6). Los tokens de
+  cada brazo suben respecto a sí mismo a 1 024 (+13 % GSM8K, +50 % MATH en el fusionado): el modelo editado usa el
+  presupuesto extra cuando lo hay; no está "atascado en corto".
+- **Predicción (fila 36) contra el dato.** Base GSM 76-88 → **81** ✓, cortes 8-22 → 17 ✓, MATH 14-26 → **26** ✓ (borde),
+  cortes 15-32 → 24 ✓, tokens 1 000-1 400 → 1 111 ✓, de 42 cortados 20-34 bien → 25 ✓. Vector GSM 85-93 → 85 ✓, cortes
+  ≤ 6 → 4 ✓, MATH 22-32 → **35 ✗**. Fusionado GSM 83-92 → 91 ✓, MATH 21-31 → 29 ✓; = vector ± 4 → **+6 ✗**, ± 3 → **−6 ✗**,
+  sin diferencia significativa → ✓ (p 0,15 / 0,15). Fusionado sobre base GSM +2 a +12 con p < 0,05 → **+10, p 0,013** ✓;
+  MATH +2 a +10 → +3 ✓. Tokens −15 a −35 % en GSM8K → **−37 (fusionado) / −43 (vector) ✗**. ≤ 2 % de acabados sin
+  pensamiento → 0 ✓. Sorpresas declaradas: ninguna (fusionado no < base − 3 ni > base + 18; base 81, ni < 65 ni ≥ 92; 0 %
+  sin pensamiento). **◐**: 14 de 18 lecturas en banda, las primarias sí (base en banda, fusionado > base con p en GSM8K,
+  sin sorpresas); fallan el vector en MATH (más alto), la igualdad fusionado = vector (se separan ± 6, de signo opuesto por
+  banco, sin significación) y la reducción de tokens (mayor de la prevista).
+- **Lectura.** En la segunda familia el efecto es más pequeño fuera del presupuesto que en Qwen: a 2× el presupuesto
+  quedan +10 en GSM8K (significativo) y +3 en MATH (ruido), frente a +18 / +20 de Qwen a 4× (§45.13). Dos cosas distintas
+  de Qwen: (1) la base de Phi recupera mucho más al doblar el presupuesto (59 → 81; Qwen 50 → 72 a 8×), (2) a 2 048 la
+  base sigue cortando 24 de 50 en MATH, así que ese banco sigue atado y la comparación en MATH no es "sin presupuesto".
+  Lo que sí se sostiene con el presupuesto doblado: fusionado > base en GSM8K con p < 0,05, las ganancias salen de los
+  cortes de la base (AHA), y el modelo editado no deja de pensar. Lo que no se afirma: que el fusionado iguale al vector
+  (9/3 y 3/9 van en sentidos opuestos; haría falta más n o el sellado) ni que haya ganancia en MATH más allá del presupuesto.
+  **Límites:** ítems dev (no sellado), un solo doblado (2 048; MATH sigue atado), voraz, `-np 2`, referencias de 1 024
+  reutilizadas (p3), 3 desacuerdos entre correctores por brazo en MATH (c2 da la misma ordenación: 23 / 32 / 26).
+  Siguiente paso natural si se quiere zanjar MATH: brazo a 4 096 u 8 192 (≈ 1-2 GPU h más), predicción antes.
+- **Dos métodos.** Resumen de la cadena (`bench_runner` y el bloque final de `chain_b2048.sh`) frente a recuento propio por
+  filas de los tres JSON más los tres de 1 024 (`recount_phi_b2048.py`: bien con dos correctores, cortes, acabados, mal
+  entre acabados, caracteres de pensamiento, tokens medios y medianos, McNemar exacto por `math.comb`, cruce ítem a ítem
+  con los cortes de la base a 1 024 y con el estado de la base a 2 048): idénticos en las 18 celdas; conjuntos de ítems
+  iguales en los seis JSON (aserción); `served` = sha del log en los tres brazos.
+
+### 45.18 Huella de Adam en los embeddings: el donante Jackrong no la puede tener, porque es una LoRA fusionada (2026-11-17)
+
+**Pregunta** (plan `lab/probes/adam_sig/PLAN.md`, fila 39, fijado antes de correr; hueco 11 del roadmap, revisión de
+Chaudhuri del 16-nov). Si el optimizador deja en la matriz de embeddings de entrada una marca exacta (filas de tokens
+nunca vistos quietas o encogidas por decaimiento; filas vistas en un paso movidas con |Δ| constante por coordenada), un
+donante que tenemos en disco debería mostrarla. Donante: `hf_cache/dp_keep_dsv4_distill` (destilado de razonamiento de
+Jackrong sobre Qwen3.5-9B, §43.4-43.6); base: `hf_cache/qwen35-9b-hf`. CPU, safetensors por trozos, sin cargar el modelo.
+
+**Resultado.**
+| matriz | filas | cero | decaimiento | un paso | otras |
+|---|---|---|---|---|---|
+| `embed_tokens` | 248 320 | **248 320** | 0 | 0 | 0 |
+| `lm_head` | 248 320 | **248 320** | 0 | 0 | 0 |
+
+Las dos matrices son **idénticas** a la base. Barrido exploratorio de todos los tensores (`which_tensors.py`,
+`torch.equal` sobre los bf16 almacenados; no estaba en las lecturas del plan): difieren 152 tensores, todos proyecciones
+lineales — `q/k/v/o_proj` en las 8 capas de atención completa, `out_proj` en las 24 de atención lineal, `gate/up/down_proj`
+en las 32 —; iguales 623: embeddings, `lm_head`, las 222 normas, `in_proj_qkv/z/a/b`, `conv1d`, `A_log`, `dt_bias` y el
+resto (el único "igual" por tipo de proyección está fuera de las capas de texto). Con §43.4 (rango 64 conserva el
+99,97 % de ‖D‖²) la lectura es una: **el donante es una LoRA fusionada sobre una lista de módulos objetivo, no un
+ajuste completo.** Sin pasos de optimizador sobre los embeddings no hay huella que leer.
+
+**Puntuación (fila 39): ❌.** La única premisa puntuable ("los embeddings difieren", 70 %) falla; el plan preveía el caso
+("sonda vacía para el mecanismo; se informa, no se puntúa como acierto"). El resto de bandas no se evalúa.
+
+**Qué dice y qué no.** Dice algo útil sobre el donante (cómo se entrenó, leído de los pesos con un `equal` por tensor:
+la lectura de pesos más barata del repositorio) y nada sobre el mecanismo de Chaudhuri. La línea de `h5_plan.md`
+("tokens raros basura: ruido") era sobre MiMo, que solo tenemos en GGUF Q6_K: sigue abierta. Para probar el mecanismo
+hace falta un ajuste completo con base HF sin puerta (p. ej. DeepSeek-R1-Distill-Qwen-7B sobre Qwen2.5-Math-7B,
+≈ 30 GB de descarga); propuesto, no lanzado.
+
+**Dos métodos.** Filas a cero por `all(D == 0)` y por `max|D| == 0`: iguales en las dos matrices (aserción en el
+código). Identidad de `embed_tokens` y `lm_head` también por `torch.equal` en el barrido. Clasificador probado en filas
+sintéticas de clase conocida (`tests/test_adam_sig.py`, 3 tests, escritos antes del código).
+
+### 45.19 Tercera familia, Parte A: la dirección "concluir" en DeepSeek-R1-Distill-Llama-8B pasa dev y **no confirma en el sellado**: ahorra el 40 % de los tokens a precisión igual (2026-11-17)
+
+Plan: `lab/probes/cc_llama/PLAN.md` (fijado 2026-11-17 00:0x antes de descargar nada; `[rev 00:45]` por el tokenizador,
+antes de ningún brazo), predicción fila 37. Pregunta: ¿la receta de §43.17 / §45.15 (contraste de las trazas propias de
+la base, últimos 48 tokens antes de `</think>` menos el resto, vector de control por capa) funciona en una tercera
+familia con otra arquitectura (`llama`, 32 capas, d 4 096, `gate/up` separados, embeddings no atados) y otro linaje
+(destilado de R1 sobre Llama-3.1-8B)? Modelo `deepseek-ai/DeepSeek-R1-Distill-Llama-8B` (rev 6a6f4aa4, HF) y
+`unsloth/...-Q6_K.gguf` (sha `403a545b…`), servidos con llama-server, voraz, `-np 2`, presupuesto **2 048** (regla de la
+sonda: 3/10 cortadas). Cadena `lab/runs/cc_llama/chain.sh` 00:36-12:19 (`set -eu`, trap, `chain_guard`, smoke 2/2 por
+configuración, 0 líneas "no valid control vector", `served` de cada JSON = sha del log). Datos `lab/runs/cc_llama/`,
+`lab/runs/sealed_cc_llama/`.
+
+- **Sonda etapa 0 (P1-P6).** P1 el servidor separa razonamiento 10/10; P2 3/10 cortadas a 2 048 (7/10 bien); P3 un
+  vector aleatorio ×8 cambia las 10 colas (`llama` acepta el vector); **P4 falló** con `AutoTokenizer` (transformers 5.12
+  da a este directorio el `LlamaTokenizer` lento: tokens por bytes, offsets falsos) y pasa con `engine/tok.py`
+  (compara con `tokenizer.json`, cae a `PreTrainedTokenizerFast`); P5 la plantilla escribe `<think>\n` (regla de filas de
+  Qwen); P6 32/32 `ffn_down` Q6_K. Trazas: 103/128 cierran a 4 096 (Qwen 83, Phi 107). Vector: capa 31 norma 10,0, capa
+  30 3,1 (razón 3,2; Qwen 18,1 / 9,1 = 2,0; Phi 0,87); norma total 12,4; escala elegida 0,5 → servido 6,2.
+- **Criba MATH 64 a 2 048.** base **25** (c2 24, 38 cortes) → ×0,25 **32** (31 cortes) → ×0,5 **35** (22 cortes, 9 bucles)
+  → ×1,0 **4** (420 tokens medios: cierra sin resolver) → ×2,0 **0** (64/64 cortadas, bucles). Escala 0,5. En Llama la
+  ventana útil es más estrecha que en Qwen (1,0) y como la de Phi (0,5; 1,0 también rompía).
+
+| R1-Distill-Llama-8B, 2 048 | dev GSM /100 bien (c2) / cortes / tokens | dev MATH /50 | sellado 1 GSM | sellado 1 MATH | sellado 2 GSM | sellado 2 MATH |
+|---|---|---|---|---|---|---|
+| base | 74 (75) / 22 / 1 315 | 22 (20) / 26 / 1 721 | **83** (85) / 13 / 1 200 | **28** (27) / 21 / 1 730 | 75 (76) / 21 / 1 225 | 23 (21) / 25 / 1 757 |
+| vector ×0,5 | 76 (77) / 2 / 705 (−46 %) | **32** (29) / 13 / 1 271 (−26 %) | **76** (78) / 2 / 707 (−41 %) | **26** (24) / 14 / 1 377 (−20 %) | 77 (79) / 2 / 711 (−42 %) | 28 (27) / 13 / 1 310 (−25 %) |
+| placebo ×0,5 (misma norma) | 76 (77) / 20 / 1 341 | 23 (22) / 28 / 1 794 | 82 (84) / 13 / 1 263 | 23 (21) / 27 / 1 825 | 79 (80) / 18 / 1 277 ¹ | 20 (18) / 29 / 1 820 ¹ |
+
+¹ En el sellado 2 el placebo es el **compilado** del vector placebo (§45.20), no el vector servido.
+
+- **Dev: PASS.** Vector frente a base, McNemar exacto: MATH **13/3** (p 0,021; c2 12/3, p 0,035), GSM8K 11/9 (p 0,82;
+  último número 9/13). Placebo frente a base: 10/8 y 6/5 (p 0,81 / 1,0). Tokens −46 % / −26 %; placebo +2 % / +4 %.
+  C1 (MATH significativo con dos correctores), C2 (placebo nulo), C3 (GSM no < base − 2): pasan. Veredicto 05:46.
+- **Sellado 1 (`data/sealed_confirm.json`, primer uso con este modelo): NO CONFIRMA.** Vector frente a base GSM8K **7/14**
+  (p 0,19; último número 9/14, p 0,40) → 83 → 76; MATH 7/9 (p 0,80; c2 6/9). C1 falla y C3 falla (76 < 83 − 2). Placebo
+  7/8 y 4/9 (p 1,0 / 0,27). El vector sigue ahorrando (−41 % / −20 %, cortes GSM 13 → 2).
+- **Sellado 2** (corrido en §45.20 con el vector como referencia): vector frente a base 17/15 (p 0,86) y 10/5 (p 0,30).
+  **Agregado de los dos sellados** (200 GSM, 100 MATH): GSM 24 ganados / 29 perdidos (p 0,58), MATH 17/14 (p 0,72).
+- **De dónde salen las victorias y las derrotas.** Las victorias son casi todas ítems que la base cortaba (dev 10/11 y
+  11/13; sellado 1 7/7 y 7/7; sellado 2 15/17 y 10/10): la regla de AHA otra vez. Las derrotas son ítems que la base
+  **acababa bien** y el vector **acaba mal sin cortar ni bucle** (sellado 1 GSM: 14 perdidos, 0 cortados, 0 bucles;
+  sellado 2: 15, 1, 1; dev: 9, 1, 2). En Qwen y Phi ese número era 2-4 por brazo (§43.18, §45.15); aquí iguala a las
+  victorias. Mediana del pensamiento de los acabados GSM 3 382 → 1 678 caracteres, MATH 4 894 → 2 599: el modelo
+  concluye a la mitad y en este linaje la mitad que se quita contenía aciertos. 0 acabados sin pensamiento en todos los
+  brazos (régimen de parada de §45.14 no alcanzado).
+- **[post-data 15:55] Modo de fallo de los 14 perdidos (sellado 1, GSM8K).** Los 14 acaban con `stop`, pensamiento
+  mediana 3 247 → 1 671 caracteres (la longitud típica de los aciertos del vector: 1 733), y el número final está lejos
+  del oro (razones ×0,14, ×0,33, ×4, ×4,4; solo 3 de 14 a < 10 %). Leídas tres colas: **cierre prematuro sobre un
+  resultado intermedio**, con autocomprobación confiada ("let me double-check… indeed 6"). Ítem 116: ratio 7:13 sobre
+  120, obtiene x = 6 y lo da como respuesta en vez de 7x = 42. Ítem 177: salario 6 000, omite la donación y hace
+  2 500 − 200 − 700 = 1 600 (oro 350). Ítem 608: resta el descuento (18) al presupuesto (50) en vez de al precio (60):
+  32 por 8. No son errores de cálculo ni bucles: la dirección "concluir" hace que el modelo dé por final el primer
+  número que aparece. Es el mismo mecanismo que da las victorias (cerrar cuando la respuesta ya está) aplicado donde la
+  respuesta aún no estaba; en Qwen y Phi ese coste eran 2-4 ítems, aquí 14. Compatible con exceso de dosis (0,5 es ya
+  la mitad de la escala que rompe el modelo) y con un modelo que separa peor "tengo un número" de "tengo la respuesta".
+  No medido: si a 0,25-0,35 el coste baja sin perder el ahorro.
+- **Predicción (fila 37) contra el dato.** Sonda: P2 3-7/10 → 3 ✓, P1 por el servidor ✓, P3-P6 ✓ (P4 tras el arreglo).
+  Trazas 60-100 → **103 ✗**. Perfil última fila 0,5-2,5× → **3,2 ✗**. Criba: base 12-30 → 25 ✓, escala 0,5/1,0 → 0,5 ✓,
+  +3 a +12 → +10 ✓. Dev base GSM 55-80 → 74 ✓ (cortes 10-35 → 22 ✓), MATH 12-28 → 22 ✓ (18-36 → 26 ✓). Vector GSM +4 a
+  +14 → **+2 ✗**, MATH +3 a +10 → +10 ✓, tokens −15 a −40 % → **−46 ✗** / −26 ✓, cortes GSM a la mitad → 22 → 2 ✓.
+  Placebo ± 3 → +2 / +1 ✓, tokens ± 10 % ✓. C1-C3 → PASS ✓. **Sellado confirma → ✗.** Sorpresas declaradas que
+  ocurrieron: "vector < base − 3 en GSM a la escala elegida" (**sellado 1: −7**) y "placebo ≥ vector − 3" (dev GSM 76 =
+  76; sellado 1 82 > 76). **❌**: 15 de 20 lecturas en banda, pero falla la primaria (el sellado) y saltan dos sorpresas.
+- **Lectura.** La dirección existe y hace lo mismo que en Qwen y Phi en lo mecánico: el modelo cierra (cortes GSM 22 → 2,
+  13 → 2, 21 → 2) y gasta un 40 % menos; la placebo de la misma norma no hace nada de eso. Lo que **no** se repite es la
+  ganancia de precisión: en Llama-8B a 2 048 el vector acierta lo mismo que la base (agregado sellado −5 / +3, ninguno
+  significativo), porque pierde tantos ítems como recupera y los pierde concluyendo mal, no cortando. El dev decía +10 en
+  MATH con p 0,02 y dos correctores: **primera vez que un PASS de dev no confirma**; el sellado hizo su trabajo. Dos
+  diferencias de este modelo que pueden explicarlo (hipótesis, no medidas): la base acierta más con pensamiento largo
+  (83 en el sellado 1 con 13 cortes: techo de AHA 13, y el vector pierde 14) y la ventana de dosis es la de Phi
+  (1,0 rompe) con un perfil distinto (capa 31 3,2× la 30). Qué se afirma: la primitiva es un **ahorro de tokens a
+  precisión igual** en esta familia, no una mejora. Qué no: que falle con otro presupuesto, con muestreo (la tarjeta
+  pide T 0,6) o a otra escala entre 0,25 y 0,5 (no barrida). Límites: un presupuesto, voraz, Q6_K, `-np 2`, una semilla
+  de placebo, un solo modelo de la familia.
+- **Dos métodos.** Resúmenes de la cadena (`bench_runner`, `cc.py verdict`, `cc_verdict.py`) frente a recuento propio
+  por filas de los 9 JSON de esta parte (bien con dos correctores, cortes, bucles, tokens medios, acabados sin
+  pensamiento, McNemar exacto por `math.comb`, cruce ítem a ítem con los cortes de la base): idénticos en todas las
+  celdas; `served` = sha del log en todos los brazos; `data/sealed_confirm*.json` sin cambios (`git status` limpio).
+
+### 45.20 Tercera familia, Parte B: el compilado reproduce al vector en `down_proj` de Llama (iguales ítem a ítem) y, como él, no confirma en el sellado 2 (2026-11-17)
+
+Plan: mismo `PLAN.md` Parte B, predicción fila 38; corre si la Parte A pasa dev (pasó; el sellado de A se informa al lado,
+como estaba escrito). Op `compile_control_vector` sin cambios (`programs/cc_llama_compile.wspl`): vector ×0,5
+(`cc_llama_scaled.gguf`, sha `784973a7…`) y placebo ×0,5 (`81010baf…`), 103 filas de calibración sin prefijo (75 ajuste /
+28 reserva, 140 430 tokens), `lam` 0,001, 2 971 s en la 3060. Salida `hf_cache/cc_llama_op/` (`merged-Q6_K.gguf` sha
+`a41c1768…`, `placebo_merged-Q6_K.gguf` `a2dd04f4…`; `report.json` copiado a `lab/runs/cc_llama/weights/`).
+
+- **Op.** G0 (mediana de medianas |uᵀx − 1| en reserva) **0,030**, peor capa 0,051 (umbral 0,5; placebo 0,031 / 0,053);
+  ‖dW‖/‖W‖ mediana **0,012** (0,0055-0,021); cos(escrito, dW) tras Q6_K mediana **0,74** (mín 0,62, capa 31 0,92).
+  Phi: G0 0,044, cos 0,74; Qwen: §45.8. Tercera arquitectura en la que el op escribe lo que se le pide.
+
+| dev / sellado 2 | GSM /100 bien (c2) / cortes / tokens | MATH /50 bien (c2) / cortes / tokens |
+|---|---|---|
+| dev base (§45.19) | 74 (75) / 22 / 1 315 | 22 (20) / 26 / 1 721 |
+| dev vector ×0,5 | 76 (77) / 2 / 705 | 32 (29) / 13 / 1 271 |
+| **dev fusionado** | **74** (75) / 9 / 876 (−33 %) | **35** (32) / 12 / 1 357 (−21 %) |
+| dev placebo fusionado | 74 (74) / 21 / 1 289 | 26 (23) / 24 / 1 773 |
+| sellado 2 base | 75 (76) / 21 / 1 225 | 23 (21) / 25 / 1 757 |
+| sellado 2 vector ×0,5 | 77 (79) / 2 / 711 | 28 (27) / 13 / 1 310 |
+| **sellado 2 fusionado** | **77** (78) / 3 / 778 (−36 %) | **27** (26) / 18 / 1 466 (−17 %) |
+| sellado 2 placebo fusionado | 79 (80) / 18 / 1 277 | 20 (18) / 29 / 1 820 |
+
+- **Dev: PASS (C1-C4).** Fusionado frente a base MATH **13/0** (p 0,0002; c2 12/0), GSM 10/10 (p 1,0); frente al vector
+  3/0 y 4/6 (p 0,25 / 0,75): dentro de 5 y 4. Placebo fusionado frente a base 8/8 y 6/2 (p 1,0 / 0,29). Cortes GSM 22 → 9.
+- **Sellado 2 (`data/sealed_confirm2.json`, primer uso con este modelo): FAIL en C1.** Fusionado frente a base GSM 13/11
+  (p 0,84), MATH 7/3 (p 0,34; c2 7/2, p 0,18); frente al vector **7/7 y 4/5** (p 1,0): el compilado **es** el vector, ítem a
+  ítem. Placebo fusionado frente a base 9/5 y 1/4 (p 0,42 / 0,38); frente al vector 5/13 en MATH (p 0,10; c2 4/13, p 0,049):
+  el placebo compilado sí es peor que el vector en MATH, el fusionado real no es mejor que la base. C2-C4 pasan.
+- **HumanEval-20** (informado, n = 20): base 14/20 (13 cerrados, mediana 1 611 tokens) → fusionado **13/20** (17 cerrados,
+  1 104): sin daño medible a este n.
+- **Predicción (fila 38) contra el dato.** G0 0,02-0,15 → 0,030 ✓; cos 0,6-0,9 → 0,74 ✓; ‖dW‖/‖W‖ 0,005-0,03 → 0,012 ✓.
+  Fusionado ≤ 5 del vector en GSM → −2 ✓, ≤ 4 en MATH → +3 ✓. Sobre la base ≥ la mitad de la ganancia GSM del vector con
+  p < 0,05 → **+0, p 1,0 ✗** (el vector ganaba +2). Placebo fusionado ± 3 de base → GSM 0 ✓, **MATH +4 ✗**; tokens ± 10 %
+  → −2 % / +3 % ✓. C1-C4 → PASS ✓. **Sellado 2 confirma → ✗.** HE-20 ± 3 → −1 ✓. ≤ 2 % sin pensamiento → 0 ✓. Sorpresas
+  declaradas: ninguna (G0 pasa, cos ≥ 0,5, fusionado no < base en GSM, no > vector + 5). **❌**: 11 de 14 lecturas en
+  banda, pero falla la primaria (el sellado).
+- **Lectura.** Lo que sí se sostiene en tres familias: **el op compila el vector con fidelidad** (G0, cos y, lo que
+  importa, igualdad ítem a ítem fusionado = vector en los dos sellados de Phi y Llama, 7/7 y 4/5 aquí). Lo que no: que
+  ese vector mejore la precisión en Llama-8B (§45.19). El compilado hereda exactamente la virtud (−36 % de tokens,
+  cortes 21 → 3) y el defecto (acierta lo mismo que la base) del vector. Es el resultado que se esperaría si la
+  primitiva de compilación es correcta y la dirección no aporta aquí: y es lo que distingue "la op falla" de "la
+  dirección no sirve en este modelo". Límites: los de §45.19 más una sola `lam`, un solo cuantizado del fusionado.
+- **Dos métodos.** Resúmenes (`verdict.py`, `cc_verdict.py`) frente al recuento por filas de los 8 JSON de esta parte y
+  McNemar propio: idénticos; sha del fusionado servido = sha del log (`a41c1768…`); `sealed_confirm2.json` sin cambios.
+
+### 45.21 Tercera familia, Parte C: a dosis 0,35 el vector **confirma en el sellado 3** por MATH (40 → 58 de 100), con GSM8K en base − 2; la ganancia son cortes de la base recuperados y la dosis reduce a la mitad, no elimina, el cierre prematuro (2026-11-17)
+
+Plan: `PLAN.md` Parte C, fijado 16:20 tras puntuar A-B y antes de correr; predicción fila 40; decisión del driver 16:1x
+("dosis en Llama"). Cadena `lab/runs/cc_llama/chain_c.sh` 16:58-21:54 (4,9 GPU h, sin fallo), guard en
+`lab/runs/cc_llama/dose/config.json` (commit `4396464`, GGUF `403a545b…`, vector `b17f6614…`, placebo `33e4c5f2…`).
+Brazos dev: vector a 0,25 y 0,35 sobre los 150 ítems de dev contra el `dev_base.json` de la Parte A (misma `-np 2`,
+mismo presupuesto 2 048). Puerta `lab/probes/cc_llama/dose_gate.py` (2 tests antes del código): escala elegida = mayor
+GSM + MATH en dev; sellado 3 solo si GSM ≥ 77, perdidos ≤ 6, MATH ≥ 26 y tokens GSM ≤ −20 %.
+
+| dev (150) | GSM /100 bien (c2) / perdidos / cortes / tokens | MATH /50 bien (c2) / perdidos / cortes / tokens |
+|---|---|---|
+| dev base (§45.19) | 74 (75) / — / 22 / 1 315 | 22 (20) / — / 26 / 1 721 |
+| dev vector 0,25 | **84** (85) / 4 / 10 / 977 (−26 %) | 31 (28) / 3 / 17 / 1 536 (−11 %) |
+| **dev vector 0,35** | **81** (82) / 6 / 4 / 848 (−36 %) | **37** (33) / 0 / 12 / 1 417 (−18 %) |
+| dev vector 0,5 (§45.19) | 76 (77) / 9 / 2 / 705 (−46 %) | 32 (29) / 3 / 13 / 1 271 (−26 %) |
+
+- **Dev.** 0,25 frente a base: GSM 14/4 (p 0,031), MATH 12/3 (p 0,035; c2 11/3, p 0,057). 0,35: GSM 13/6 (p 0,17), MATH
+  **15/0** (p 0,0001; c2 13/0, p 0,0002). Ningún brazo sin pensamiento (0 de 150). Las dos escalas pasan las cuatro
+  comprobaciones; la puerta elige **0,35** (118 frente a 115 aciertos). Perdidos (base bien y acabado → mal): 4 / 6 / 9 a
+  0,25 / 0,35 / 0,5; ganados 14 / 13 / 11, de ellos cortes de la base 13 / 12 / 10. La dosis mueve el coste, apenas la
+  recuperación.
+- **Sellado 3 (`data/sealed_confirm3.json`, 200 GSM8K + 100 MATH-500, primer uso de cualquier clase, hash comprobado) a
+  0,35: CONFIRMA.**
+
+| sellado 3 | GSM /200 bien (c2) / cortes / tokens | MATH /100 bien (c2) / cortes / tokens |
+|---|---|---|
+| base | 158 (159) / 37 / 1 247 | 40 (38) / 58 / 1 777 |
+| **vector 0,35** | **156** (158) / 9 / 864 (−31 %) | **58** (55) / 35 / 1 463 (−18 %) |
+| placebo 0,35 (misma norma) | 152 (153) / 39 / 1 273 (+2 %) | 38 (35) / 61 / 1 798 (+1 %) |
+
+  Vector frente a base: GSM 14/16 (p 0,86; último número 14/19, p 0,49), MATH **20/2** (p 0,0001; c2 19/2, p 0,0002).
+  Placebo frente a base: GSM 10/16 (p 0,33), MATH 9/11 (p 0,82). C1 ✓ (MATH con los dos correctores), C2 ✓, **C3 en el
+  límite exacto** (156 ≥ 158 − 2). Veredicto `cc_verdict.py`: CONFIRMS. Primer sellado que confirma en esta familia, el
+  tercero que se gasta en ella.
+- **De dónde sale la ganancia.** MATH: de los 20 ganados, **19 son ítems que la base cortó** (la base corta 58 de 100 a
+  2 048; el vector acaba 23 de esos 58 y acierta 19; el placebo acierta 9). Entre los 42 que la base acaba: base 40,
+  vector 39. GSM: los 14 ganados son los 14 cortes recuperados (37 cortes → el vector acaba 31, acierta 14); entre los 163
+  que la base acaba: base 158, **vector 142**. Los 16 perdidos tienen la firma de §45.19: 15 de 16 acaban (1 corte),
+  razonamiento mediano 3 259 → 2 491 caracteres, 3 de 16 a menos del 10 % del oro. Tasa de pérdida sobre los ítems que la
+  base acaba bien: **10 %** a 0,35 (16/158) frente a 17 % (14/83, sellado 1) y 20 % (15/75, sellado 2) a 0,5. Es la
+  excepción de T2 tal cual: lo que se gana es lo que el presupuesto cortaba; la dosis baja reduce a la mitad el precio.
+- **Predicción (fila 40) contra el dato.** 0,25: GSM 77-82 → **84 ✗** (por arriba); perdidos 3-7 → 4 ✓; cortes 6-14 → 10
+  ✓; tokens −18 a −32 % → −26 % ✓; MATH 26-31 → 31 ✓; cortes 16-22 → 17 ✓. 0,35: GSM 76-81 → 81 ✓; perdidos 5-9 → 6 ✓;
+  cortes 3-9 → 4 ✓; tokens −28 a −40 % → −36 % ✓; MATH 28-33 → **37 ✗** (por arriba); cortes 12-18 → 12 ✓. Puerta pasa
+  (55 %) → pasa en las dos ✓. Sellado 3: base GSM 150-170 → 158 ✓; base MATH 44-60 → **40 ✗**; vector ± 4 en GSM → −2 ✓;
+  MATH +0 a +8 → **+18 ✗**; tokens −20 a −35 % → GSM −31 % ✓ (MATH −18 %); placebo ± 3 → GSM **−6 ✗**, MATH −2 ✓; **no
+  confirma (60 %) → CONFIRMA ✗**. Sorpresas declaradas: ninguna disparada (a 0,25 GSM +10, perdidos 4, ahorro 26 %; 0 sin
+  pensamiento; vector no > base + 10; placebo no significativo). **❌**: 15 de 21 lecturas en banda, pero falla la lectura
+  primaria (apostamos por el "no confirma" y confirmó). Fallo por abajo del efecto en MATH, como en las filas 9 y 20-21:
+  subestimamos lo que recupera el vector cuando la base corta más de la mitad.
+- **Lectura.** La hipótesis de la Parte C ("el fallo de Llama era dosis, no dirección") sale **a medias**: a 0,35 el
+  vector confirma en un sellado (MATH, p 0,0001 con dos correctores; sobrevive a una corrección ×3 por los tres sellados
+  gastados en la familia), mantiene el ahorro (−31 % / −18 %) y deja GSM en base − 2; pero el mecanismo que perdía ítems
+  a 0,5 sigue ahí a la mitad de tasa (10 % de los que la base acierta acabando), y lo que compensa son los cortes
+  recuperados. La ganancia de precisión de la dirección queda mostrada en el sellado en **las tres familias**, con esta
+  letra pequeña en Llama-8B: solo MATH, solo a 0,35, solo donde la base corta (presupuesto 2 048 con 58 % de cortes), y
+  con GSM al borde de C3. Lo que sigue sin cambiar: placebo de igual norma nulo (tres familias, tres sellados aquí),
+  ningún brazo sin pensamiento, el vector hace concluir (cortes 37 → 9, 58 → 35).
+- **Límites.** Tercer sellado de la familia con la escala elegida en dev después de ver fallar 0,5 en los sellados 1 y 2
+  (la puerta estaba prefijada, pero el camino hasta ella no es ciego). C3 pasa por cero de margen; el corrector "último
+  número" da GSM 152 frente a 157. Placebo −6 en GSM (n.s.). Un presupuesto, greedy (la tarjeta pide T 0,6), Q6_K, una
+  semilla de placebo. El compilado a 0,35 no se ha corrido (la Parte B lo compiló a 0,5). Nada sobre otro presupuesto.
+- **Dos métodos.** `dose_gate.py` y `cc_verdict.py` frente al recuento por ítems `lab/probes/cc_llama/pair_recount.py`
+  (McNemar binomial propio, perdidos/ganados/cortes/tokens): idénticos en todas las cifras de esta sección. Sha del GGUF
+  servido `403a545b…` en las cinco líneas `serving` del log y en el campo `served` de los 5 JSON; `seal ok 200 100`;
+  `data/sealed_confirm3.json` sin cambio en los ítems (solo se anota el uso en `use`).
+
+### 45.22 Poda D4k de alphaXiv sobre la réplica Exp 8 (0.8B): el 6 % de las entradas pierde efecto en nuestro arnés, pero el arnés a 2 048 no separa nada a n = 100 (ruido del voraz por lotes ± 5) (2026-11-18)
+Plan `lab/probes/exp8_prune/PLAN.md` (fijado antes de correr), fila 41, cadena `lab/runs/exp8_prune/chain.sh` 04:09-04:50
+(sin fallos; guard `config.json`; sha256 de los tres GGUF en el log). Arnés de §45.12 (GSM8K 0-99 + MATH-500 50, voraz,
+2 048 tokens, 4 ranuras, mismo binario de llama-server del 27-oct). Ediciones: `data/exp8_d4k.npz` (las 4 096 entradas
+mayores por capa de `data/exp8_edit_recovered.npz`; 8 192 de 131 072), `data/exp8_d4k_complement.npz` (las otras
+61 440 por capa), aplicadas con `add-cols-vectors` sin cambios (`ediciones/exp8-d4k*.json`); comparación por bytes:
+cada GGUF difiere de la base solo en `blk.15` y `blk.19 ffn_down`. Código `lab/probes/exp8_prune/prune.py` (4 tests
+antes).
+
+**Paso 0 (CPU, dos métodos).** D4k conserva 0,741 / 0,763 de ‖ΔW‖² y **0,757 / 0,786 del empuje a lo largo de u**
+(capas 15 / 19; cos con la edición completa 0,86 / 0,87); el complemento 0,26 / 0,24 y 0,30 / 0,30. Δrel de `wsp edit`:
+D4k 0,0914 / 0,0707, complemento 0,0541 / 0,0395, completa 0,106 / 0,0809 → los cocientes al cuadrado reproducen las
+energías (0,74 / 0,76 y 0,26 / 0,24).
+
+| brazo | GSM8K ac (c2) / acabados / cortes / tokens | MATH ac / acabados / cortes |
+|---|---|---|
+| base (§45.12, 14-nov) | 0 (0) / 0 / 100 / 2 048 | 0 / 0 / 50 |
+| exp8 completa (§45.12, 14-nov) | 13 (13) / 13 / 87 / 1 930 | 0 / 0 / 50 |
+| exp8 placebo (§45.12, 14-nov) | 1 (1) / 1 / 99 / 2 034 | 0 / 0 / 50 |
+| **`full`** (completa otra vez, hoy) | **8** (8) / 8 / 92 / 1 986 | 1 / 1 / 49 |
+| **`d4k`** | **2** (2) / 2 / 98 / 2 037 | 1 / 1 / 49 |
+| **`d4k_comp`** | **5** (5) / 6 / 94 / 1 991 | 0 / 0 / 50 |
+
+Pares (binomial exacta, dos colas): `d4k` vs `full` 2/8 p 0,11; `d4k_comp` vs `full` 3/6 p 0,51; **`full` vs la misma
+edición el 14-nov 3/8 p 0,23** (11 discordantes de 100 con el mismo archivo, el mismo binario y los mismos ítems).
+Ningún brazo sin pensamiento. MATH en el suelo en todos (1 acierto en `full` y `d4k`, 0 en el resto).
+
+- **R1 (su afirmación):** `d4k` 2 < `full` − 3 = 5 → **falla por la letra**; los pares no son significativos (2/8).
+- **R2 (control):** `d4k_comp` 5 acertados > 3 y 6 acabados > 5 → **falla**: el complemento (94 % de las entradas, 24-26 %
+  de la energía) no se distingue de la edición completa en este arnés.
+- **R3 (ruido):** |Δ| = 5 y 11 discordantes entre dos corridas idénticas. Las diferencias de R1 (6 puntos, 10 discordantes)
+  y R2 (3 puntos, 9 discordantes) tienen el tamaño del ruido. **Nada de lo anterior es un hallazgo sobre la poda.**
+- **Lectura.** El arnés de §45.12 (0.8B a 2 048, 100 ítems, voraz con 4 ranuras) no es determinista entre corridas
+  (lotes de llama-server, ya visto como ± 1 en §43.4 con n 36; aquí ± 5 con n 100) y la edición completa mueve 8-13
+  puntos: la relación señal/ruido es ≈ 2. Lo único que queda: la poda **no mejora** nada (ninguna celda por encima de
+  `full`), y a esta resolución no podemos decir si el 6 % de las entradas conserva el efecto o lo pierde. La afirmación
+  de alphaXiv ("sin degradación", ± 3 pp en 256 ítems muestreados) tampoco lo puede decir; las dos medidas son
+  compatibles con "la poda cuesta algo" y con "no cuesta nada".
+- **Predicción (fila 41) contra el dato.** `full` 10-16 ✗ (8; sorpresa declarada disparada: ruido mayor del supuesto);
+  `d4k` 6-11 ✗ (2, el caso "colapso" al que dimos 10 %); `d4k_comp` 0-3 ✗ (5); R1 falla ✓ (apostamos 55 %); R2 pasa ✗.
+  **◐**: acierta la primaria (R1 falla) por una razón que la predicción no previó (ruido), fallan las tres bandas.
+- **Límites.** n 100 + 50, un tope, voraz por lotes, una familia; sin reescalar D4k (la forma natural de separar "menos
+  entradas" de "menos empuje"); sin repetir corridas. Siguiente forma útil, antes de repetir: o bien 3 corridas por
+  brazo y leer medianas, o bien 300 ítems, o bien `-np 1` (determinista, 4× más lento); y D4k reescalado a 1 / 0,77.
+- **Dos métodos.** Resúmenes de `bench_runner` (tabla) y `lab/probes/cc_llama/pair_recount.py` sobre los JSON por ítem:
+  mismos aciertos con los dos correctores, acabados, cortes y tokens; pares como arriba.
+
+**Lección (tercera vez que el ruido del arnés cambia la lectura):** antes de comparar dos ediciones en la 0.8B con
+100 ítems, correr la misma configuración dos veces y anotar la banda; si la diferencia esperada no la dobla, no correr.
+
+### 45.23 Capacidad ternaria para WSPLang: nuestras ediciones no caben en los códigos {−1, 0, +1} a su dosis de trabajo; el op `ternary_survival` lo mide, no hay escritor (2026-11-18)
+Plan `lab/probes/ternary/PLAN.md` (fijado antes de correr), fila 42. Pedido del driver tras *ttf* (README "References").
+Código `engine/ternary.py` (11 tests antes, `tests/test_ternary.py`): reglas `tq2_0` (ggml: absmax por bloque de 256,
+escala fp16, desquantización idéntica a `gguf.quants`) y `absmean` (BitNet b1.58, escala por fila); modos `requant`
+(editar en float y convertir) y `fixed` (recodificar sobre las escalas de la base); lecturas por escala k de la edición:
+vuelcos entre las entradas tocadas, cos(D, k·dW), alpha = ⟨D, k·dW⟩/‖k·dW‖² (cuántas copias de la edición contiene la
+diferencia ternaria), ruido = ‖D − α·k·dW‖/‖α·k·dW‖, y k70 (primera k con cos ≥ 0,7). Op WSPLang **`ternary_survival`**
+(solo informe; `programs/ternary_exp8.wspl`, `programs/ternary_cc9b.wspl`; salidas `lab/runs/ternary/*.json`). Segundo
+método `lab/probes/ternary/recount.py` (safetensors + numpy propio): coincide en las 4 cifras × 2 escalas × 2 capas/3
+capas de los 4 informes comprobados. CPU, minutos.
+
+**Hecho previo que ordena todo:** con la regla de ggml solo el **10-12 %** de las entradas de `down_proj` queda distinto
+de cero (0.8B capas 15/19: 0,099 / 0,121; 9B capas 1/16/31: 0,125 / 0,113 / 0,100); con `absmean`, el 67-69 %. Por eso
+un modelo ternarizado sin entrenar no sirve (paso 3 abajo) y *ttf* necesita 72 M tokens de recuperación.
+
+| edición | regla / modo | k = 1: vuelcos / cos / alpha / ruido | k = 20: cos | k70 |
+|---|---|---|---|---|
+| Exp 8 (0.8B, L15 · L19; Δrel 0,106 · 0,081) | tq2_0 requant | 9,3 · 7,8 % / **0,47 · 0,42** / 0,87 · 0,83 / 1,9 · 2,1 | 0,84 · 0,76 | **10 · 20** |
+| | tq2_0 fixed | 10,0 · 8,7 % / 0,60 · 0,52 / 0,75 · 0,72 / 1,4 · 1,7 | 0,61 · 0,60 (satura) | > 20 |
+| | absmean requant | 27,7 · 21,6 % / 0,56 · 0,53 / 0,34 · 0,36 / 1,5 · 1,6 | 0,32 · 0,33 (cae) | > 20 |
+| | absmean fixed | 27,7 · 21,6 % / **0,60** · 0,56 / 0,34 · 0,36 / 1,3 · 1,5 | 0,48 · 0,47 | > 20 |
+| compilado 9B (L1 · L16 · L31; Δrel 0,027 · 0,027 · 0,031) | tq2_0 requant | 0,40 · 0,37 · 0,22 % / **0,08 · 0,10 · 0,08** / 0,59 · 0,69 · 0,39 / 12 · 10 · 12 | 0,40 · 0,44 · 0,48 | > 20 |
+| | tq2_0 fixed | 0,36 · 0,32 · 0,19 % / 0,09 · 0,11 · 0,09 / 0,58 · 0,68 · 0,40 / 12 · 9 · 11 | 0,50 · 0,47 · 0,50 | > 20 |
+| | absmean requant | 1,15 · 1,06 · 0,80 % / 0,19 · 0,19 · 0,24 / 0,61 · 0,56 · 0,54 / 5,1 · 5,2 · 4,1 | 0,68 · 0,59 · 0,62 | > 20 |
+| | absmean fixed | 1,15 · 1,06 · 0,80 % / 0,19 · 0,19 · 0,22 / 0,61 · 0,56 · 0,50 / 5,1 · 5,2 · 4,4 | 0,58 · 0,53 · 0,43 | > 20 |
+
+Δrel del compilado por capa (0,0268 / 0,0270 / 0,0311) coincide con `fit_summary.json` del op (segundo método del dW).
+
+- **Lo que pasa.** La diferencia ternaria **contiene** la edición (alpha 0,6-0,9 bajo `tq2_0`: la proyección de D sobre
+  dW recupera la mayor parte del empuje) pero enterrada en basura ortogonal 2 veces mayor (Exp 8) o 10-12 veces mayor
+  (compilado) que la parte útil: cada vuelco mueve la entrada un paso entero (≈ 0,1) cuando la edición pedía 0,005 o
+  0,0005. La dirección sobrevive a medias en Exp 8 (cos 0,42-0,47) y casi nada en el compilado (cos 0,08-0,10). Para que
+  la edición sea el contenido dominante de la diferencia, Exp 8 necesita **10-20 veces su dosis** bajo `tq2_0 requant`;
+  el compilado no llega a cos 0,7 ni a 20×. Con `absmean` hay más vuelcos pero el cos **baja** con k (la escala por fila
+  crece con la edición y recodifica toda la fila) y con `fixed` los códigos saturan en ±1.
+- **Paso 3 (informativo).** `llama-quantize --allow-requantize` de la base Q6_K y de la réplica Exp 8 a TQ2_0 (355 MB;
+  `lab/runs/ternary/tq_smoke.sh`, CPU `-ngl 0`, 26 tok/s): **0 / 10 y 0 / 10** en GSM8K a 512 tokens, salida de
+  fragmentos multilingües desde el primer token (`tq_base.json`, `tq_exp8.json`). Ternario sin entrenamiento no es un
+  modelo; no hay sobre qué medir si la versión ruidosa de una edición conserva la conducta (T7). Haría falta un modelo
+  entrenado ternario (ttf) con su runtime; no lanzado.
+- **Predicción (fila 42) contra el dato.** Primaria ✓ (ninguna celda a k = 1 llega a cos 0,6; máximo 0,5995, en el
+  borde). Bandas: Exp 8 `tq2_0` vuelcos ✓, cos ✗ (0,47 / 0,42 sobre 0,10-0,35: sobrevive **más** dirección de la
+  prevista), alpha ✓, k70 ✓; Exp 8 `absmean` vuelcos ✓, cos ✓/✗ (0,562), k70 ✗ (> 20 frente a 3-10: no previmos que el cos
+  bajara con k); 9B `tq2_0` vuelcos ✓✓✗ (L31 0,22 %), cos ✓, k70 ✓; 9B `absmean` vuelcos ✓✓✗ (0,80 %), cos ✓, k70 ✓;
+  `fixed` ± 0,10 ✗ en Exp 8 `tq2_0` (0,12). Sorpresas declaradas: ninguna (alpha ≥ 0,34; vuelcos ≤ 28 %; TQ2_0 0/10).
+  **◐**: primaria acertada, 5 de 14 lecturas de banda fuera.
+- **Lectura y decisión.** Un backend ternario de WSPLang **no puede llevar en los códigos** las ediciones que sabemos que
+  funcionan (rango 1, ‖dW‖/‖W‖ 0,01-0,1): o se amplifica la dosis 10-20× (y la dosis manda, §45.21) o la edición vive
+  en escalas y adaptadores float, que es lo que `delta_to_lora` y `compile_control_vector` ya producen. El op
+  `ternary_survival` queda como instrumento (mide cualquier dW contra cualquier base HF); **no se construye escritor
+  ternario**. El dato de peso que sí vale: con la regla de ggml el 88-90 % de `down_proj` es cero; lo que sobrevive a
+  1,6 bits es estructura gruesa, y por eso *ttf* pierde conocimiento (TriviaQA) antes que GSM8K.
+- **Límites.** Dos ediciones, cinco tensores, dos reglas (no la de TTF: umbral θ aprendido + acumulador); métrica en el
+  espacio de pesos, no de conducta; `tq2_0` desde bf16 (el GGUF de la réplica pasa además por Q6_K).
+
+### 45.24 Escritor discreto por fila (prototipo CPU): resolver gana mucho a redondear, pero sin el acoplamiento por activaciones no lleva la magnitud (2026-11-18)
+Plan `lab/probes/discrete_writer/PLAN.md` (fijado antes de medir; agente del frente 20), fila 45. Código
+`lab/probes/discrete_writer/writer.py` (6 tests antes), datos `lab/runs/discrete_writer/{exp8,cc9b}.json`. Pregunta:
+si en vez de redondear la edición al alfabeto discreto (§45.23: cos 0,08-0,10) se **resuelve** por fila qué movimientos
+nativos de bf16 (volcar signo, ×2, ×½) acercan más la fila a su objetivo t = fila de dW, ¿cuánto de la edición se
+realiza y con cuántas entradas? Objetivo separable Σ(d_j − t_j)² + λ·#cambios: solución exacta por umbral (cambia la
+entrada si su mejor movimiento gana más de λ); λ por cuantil de ganancia para una cuota pedida. Objetivo acoplado
+‖X(d − t)‖² + λ·#cambios (el de Tree-Ising, con X las activaciones de calibración) implementado como descenso por
+coordenadas con semilla, monótono; X real necesita un forward de la 9B (GPU), así que solo se probó en sintético.
+
+| edición | capa | k | cuota cambiada (alcanzable) | cos | alpha | ruido |
+|---|---|---|---|---|---|---|
+| Exp 8 (0.8B) | 15 | 1 | 1,0 % = 58 % de las 64 columnas | **0,784** | 0,53 | 0,79 |
+| Exp 8 | 19 | 1 | 0,9 % = 50 % | **0,767** | 0,52 | 0,84 |
+| compilado 9B | 1 · 16 · 31 | 1 | 3,7 · 3,4 · 2,7 % | 0,450 · 0,476 · **0,667** | 0,26 · 0,26 · 0,46 | 1,98 · 1,85 · 1,12 |
+| compilado 9B | 1 · 16 · 31 | 2 | 7,3 · 6,7 · 5,1 % | 0,562 · 0,551 · 0,667 | 0,39 · 0,36 · 0,43 | 1,5 · 1,5 · 1,1 |
+| compilado 9B | 1 · 16 · 31 | 5 | 16,6 · 15,3 · 11,3 % | 0,693 · 0,658 · 0,641 | 0,55 · 0,49 · 0,38 | 1,0 · 1,2 · 1,2 |
+
+A cuota forzada del 1 %: 9B k = 1 cos 0,42 / 0,46 / 0,66; Exp 8 igual. Vuelcos de bits 0,8-14 M por matriz de la 9B.
+Dos métodos: cos por `engine.ternary.overlap` y por numpy directo coinciden.
+
+- **Lectura.** El escritor por umbral, tocando solo el ≈ 3 % de entradas cuyo valor base es tan pequeño que un
+  movimiento nativo cae a menos de 2|t|, realiza el compilado con cos 0,45-0,67 a dosis 1 (redondear daba 0,08-0,10) y
+  la edición Exp 8 con cos 0,77-0,78 en la mitad de sus columnas. **No lleva la magnitud** (alpha 0,26-0,46) ni pasa de
+  cos ≈ 0,7 a ninguna dosis: en toda entrada con |w| ≳ |t| cualquier movimiento se pasa de largo. Un escritor discreto
+  para nuestras ediciones solo es viable con el objetivo acoplado (activaciones), que necesita X de un forward de la 9B
+  sobre los 100 prompts del ajuste (≈ 30 min GPU, gancho en `cc_compile.fit_layers`) y luego el solver en CPU; el dev
+  en GPU y los criterios C1-C4 están en el plan, no lanzados.
+- **Predicción (fila 45) contra el dato.** Primaria ✓ por la letra (máximo 0,667 < 0,7); **sorpresa declarada
+  disparada** (capa 31 ≥ 0,5); cos a dosis 1 por encima de la banda en las tres capas (0,45-0,67 frente a 0,10-0,35),
+  alpha por debajo, cuota alcanzable 2,7-3,7 % frente a 0,3-3. **◐**. Lo que no previmos: cuántas entradas de
+  `down_proj` son lo bastante pequeñas para que un movimiento nativo encaje.
+- **Límites.** Objetivo separable (sin activaciones), cinco tensores, dos ediciones, CPU; ninguna conducta medida.
+
+### 45.25 Escritura ternaria en WSP-Lang (`ternarize`, `imprint_ternary`) y la prueba NanoWSP float frente a ternario: la escritura sobrevive en dirección, la capacidad cae a 1/18-1/4,5 por precisión de cancelación (2026-11-18)
+Pedido del driver ("soporte ternario en WSPLang y un test tipo NanoWSP en float y en ternario, hasta dónde mantenemos
+compatibilidad"). Plan `lab/probes/ternary_nanowsp/PLAN.md` (predicción antes de medir), fila 46. Código
+`engine/ternary_write.py` (9 tests antes), ops registradas con política de escritura (nuevo directorio, nunca sobre la
+entrada), filas en la tabla de la spec, `docs/wsplang_0.8_ternary_addendum.md`, programa `programs/ternary_nanowsp_demo.wspl`
+(`--run` ok). Datos `lab/runs/ternary_nanowsp/{capacity,compat,explore}.json`; recuento independiente 24/24.
+
+**Representación.** Checkpoint ternario = `model.safetensors` (materialización s·T para que el runtime y todas las ops
+corran sin cambios) + `ternary.safetensors` (códigos int8 ∈ {−1,0,+1} y escala float por fila de salida) +
+`manifest.json` (sha del origen, regla, densidad y ‖W − sT‖/‖W‖ por tensor). Ternarios: `attn_{q,k,v,out}` y
+`mlp_{in,out}` de cada capa; float: embeddings, cabeza, normas. Proyección exacta por fila alternando T = clip(round(W/s))
+y s = ⟨W,T⟩/⟨T,T⟩ (el residuo nunca sube). `imprint_ternary` = escritura cerrada en float sobre un acumulador →
+proyección → `rounds` reimpresiones del déficit sobre las claves escritas (el acumulador de TTF en pequeño); `rounds=0`
+= "editar y convertir".
+
+**Banco.** NanoWSP original (2 capas; d 64 y 128), tarea `wspx_recall` (144 pares "KB: XX = letra", 56 held-out),
+escritura Moore-Penrose en `layers.1.mlp_out`; n creciente; recall exacto; mediana de 3 semillas; capacidad = mayor n
+con recall ≥ 0,95.
+
+| anchura | float (A) | ternarizado tras escribir (B1) | escrito en ternario, 3 rondas (B2) | B/A | held-out máx | densidad escrita |
+|---|---|---|---|---|---|---|
+| d 64 | **144** | **8** | **8** | 0,056 | 0,16 | 0,46 |
+| d 128 | **144** | **32** | **32** | 0,22 | 0,18 | 0,47 |
+
+Curvas (d 64): float 1,00 … 0,97; B1 1,00 / 0,94 / 0,22 / 0,17 / 0,05; B2 1,00 / 0,94 / 0,12 / 0,04 / 0,00. (d 128): B1
+1 / 1 / 1 / 0,83 / 0,70 / 0,34; B2 1 / 1 / 1 / 0,79 / 0,53 / 0,10. **Compatibilidad de las ops sobre el checkpoint
+ternario (d 64, n 32):** `peek` PASS; `project_out` FAIL (cociente de energía 0,943); imprint float encima del
+ternario **FAIL** (el par nuevo 0,0; a n 8, post-data, los viejos 0,75 → 0,875 y el nuevo sigue en 0,0); delta pequeño
+FAIL (cos 0,06).
+
+- **Lectura.** La dirección de la escritura sobrevive a la proyección (post-data: cos 0,88-0,89, alpha 0,75-0,79 a
+  todo n; ‖Δ‖/‖W₀‖ 30-315, la matriz ternaria **es** la escritura ternarizada). Lo que se pierde es **precisión**: las
+  claves "KB: XX =" son casi colineales y la pseudoinversa amplifica el ≈ 12 % de error por entrada del ternario
+  (error relativo de salida en las claves escritas 0,71 a n 8 → 2,7 a 32 → 6,3 a 64). η no importa (8/16/32 igual).
+  La reimpresión del residuo **diverge** sin amortiguar (2,74 → 4,71) y vaga amortiguada (0,5: 3,8; 0,25: 2,85, recall
+  0,19/0,50 a n 32). Resolver no ayuda aquí porque el cuello no es la dirección sino la cancelación fina entre claves.
+  **La compatibilidad termina en la primera escritura que necesita menos de un paso de escala por fila.**
+- **Predicción (fila 46) contra el dato.** Primaria ✗ (B2 conserva 6-22 %, no ≥ 50 %); sorpresa declarada disparada
+  (B2/A < 0,25); 5 de 13 bandas (float d 128, held-out, celdas 1, 2 y 4). **❌**. Lo que no previmos: que B1 = B2 (la
+  reimpresión no aporta) y que el límite fuese la colinealidad de las claves, no la densidad.
+- **Límites.** Una arquitectura (NanoWSP 2 capas), una tarea con claves colineales, regla absmean, CPU; sin TQ1_P/ttf,
+  sin LLM preentrenado (eso es §45.23-45.24); amortiguación de la reimpresión solo explorada post-data; una tarea con
+  claves menos colineales subiría n_tern (no corrida). Coste: minutos de CPU. El directorio `work/` (17 MB de
+  checkpoints) no se commitea.
+
+### 45.26 ¿Se puede valorar un banco mirando solo los pesos? Los pesos distinguen una edición real de su placebo y ordenan el ahorro de tokens por familia; no leen la precisión (2026-11-18)
+Pregunta del driver. Plan `lab/probes/weight2bench/PLAN.md` (predicción antes de calcular), fila 47. Código
+`lab/probes/weight2bench/{features,run,recount}.py` (12 tests antes), datos `lab/runs/weight2bench/{arms,summary}.json`;
+recuento independiente (rangos y AUC por pares propios): 75 números, 0 difieren. CPU.
+
+**Brazos (78 filas).** Todo lo que tiene artefacto de pesos y resultado pareado contra su base: 9B 24 (vector cc_v2
+en dev/sellado/criba a dosis 0,25-2,0, 8 placebos de criba, `no31`, v1 y su placebo, compilado y su placebo en dev y
+sellado 2), Phi 13, Llama 17 (dosis 0,25/0,35/0,5, sellados 1-3, compilado), 0.8B 24 (own/port/embport, 15 filas de
+dosis, placebo de port, Exp 8 y su repetición, placebo de Exp 8, D4k, complemento). Conjunto real/placebo: 14 reales
+frente a 17 placebos. Excluidos: brazos de `cc_weights` (GGUF servido ya no en disco) y los vectores "feliz" (sin
+objetivo de precisión).
+
+**Rasgos, solo de pesos (artefacto × escala servida).** Magnitud: norma total / media / máxima, capa del máximo,
+participación, rango efectivo, ‖dW‖/‖W‖ y G0 en los compilados. Dirección: coseno de cada capa con la fila de
+`</think>` del unembedding pasada por la norma final (ids 248069 en Qwen, 128014 en Llama, pieza 49631 en Phi, que no
+tiene etiqueta única), media / 8 últimas capas / última; lo mismo con `<think>` (control) y su diferencia; coseno con el
+vector de contraste de la propia base (solo donde no es circular: los compilados reales **son** ese vector escrito,
+marcados circulares tras la primera pasada, ρ agrupada 0,55 → 0,32); coseno brazo/placebo propio. Objetivos: Δ GSM8K,
+Δ MATH (corrector 1; el 2 guardado), Δ tokens %, Δ cortes.
+
+| rasgo | ρ Δ GSM agrup. (n 58) | ρ Δ MATH agrup. (n 78) | ρ Δ tokens agrup. | AUC real/placebo (14/17) |
+|---|---|---|---|---|
+| norma total | 0,06 | −0,11 | 0,04 | 0,21 (`no31`, v1 y `embport` son menores que sus placebos; pares emparejados 0,5) |
+| rango efectivo | −0,19 | −0,02 | 0,14 | 0,40 |
+| participación | 0,05 | 0,03 | 0,12 | 0,73 |
+| cos `</think>` 8 últimas | 0,22 | 0,34 | **−0,53** | **0,93** (1,00 en cada familia) |
+| cos `</think>` media | 0,25 | 0,34 | −0,53 | 0,88 |
+| cos `<think>` media | **0,42** | **0,36** | −0,41 | 0,88 |
+| diferencia close − open | 0,10 | 0,20 | −0,38 | 0,66 |
+| cos contraste propio (n 33/41) | 0,16 | 0,32 | −0,35 | 0,68 (9B 1,0 en 1/11; 0.8B 0,70 en 5/2) |
+
+Por familia, cos `</think>` 8 últimas frente a Δ tokens: **−0,72 / −0,69 / −0,58 / −0,20** (9B / Phi / Llama / 0.8B);
+frente a Δ MATH 0,71 / 0,47 / 0,59 / 0,09; la magnitud frente a tokens ≈ 0 en todas (los placebos comparten la norma).
+Los cosenos que separan son diminutos (reales 0,001-0,058, placebos dentro de ± 0,01) y la fila `<think>` separa casi
+igual. En las series de dosis el coseno es uno por artefacto mientras Δ MATH va 7 → 12 → 30 → −5 (criba 9B). Mayor
+|ρ| agrupada con aciertos entre rasgos con n ≥ 20: **0,42**.
+
+- **Lectura.** Solo con pesos: (1) se distingue una edición real de su placebo de misma norma por su alineación con las
+  filas de lectura de la etiqueta de pensamiento (AUC 0,93; la magnitud no dice nada, como debe ser); (2) dentro de
+  una familia se ordenan las ediciones por cuántos tokens ahorrarán (ρ −0,6 a −0,7 en 9B/Phi/Llama); (3) **no se lee
+  la precisión** (|ρ| agrupada ≤ 0,42), y las series de dosis muestran por qué: la dirección es invariante a la escala
+  y el resultado no (Llama 0,5 daña, 0,35 ayuda). Es T7 con número: los pesos dicen *qué* empuja una edición y *cuánto
+  recorta*, no si el modelo acierta más.
+- **Predicción (fila 47) contra el dato.** Primaria ✓. Bandas: magnitud AUC ✗ (0,21, por tres artefactos menores que
+  sus placebos), magnitud–tokens ✗ (≈ 0), magnitud–aciertos ✓, cos `</think>` AUC y ρ ✓, `cos_open` AUC ✗ (0,88),
+  diferencia ✗, contraste propio compilado ✓ y port ✓ / embport ✗, coseno con placebo ✓. Ninguna sorpresa. **◐**.
+- **Límites.** 78 filas de los planes de un solo laboratorio, 31 en el conjunto de placebo, resultados sobre 64-150
+  ítems con el ruido ± 5 de la 0.8B; tabla de correlación, no predictor; rasgos elegidos sabiendo qué son las
+  ediciones (la fila `</think>` es la hipótesis del propio fenómeno "concluir"). Para una segunda conducta habría que
+  encontrar su fila de lectura sin saberla de antemano.
+
+### 45.27 Control de sesgo constante: un `logit_bias` de hasta +8 en `</think>` apenas mueve nada; el vector "concluir" no es un empuje constante (2026-11-18)
+Plan `lab/probes/cc_bias/PLAN.md` (fijado antes de correr), fila 43, cadena `lab/runs/cc_bias/chain.sh` 05:17-09:04
+(sin fallos; guard `config.json`; id de `</think>` 248069 verificado de tres formas). 9B Q6_K base servida sin vector;
+el sesgo viaja en la petición (`run_arm.py`, `bench_runner` intacto). Mismos 150 ítems de dev de cc_v2, 2 048 tokens.
+Regla de elección prefijada: el sesgo cuyos tokens agrupados (150 ítems) estén más cerca de los 943 del vector.
+
+| brazo | GSM8K ac (c2) | MATH ac | cortes | tokens GSM / MATH | tokens agrupados |
+|---|---|---|---|---|---|
+| base | 50 (49) | 6 | 96 | 1 689 / 1 952 | 1 777 |
+| sesgo +2 | 53 (53) | 6 | 91 | 1 617 / 1 959 | 1 731 |
+| sesgo +4 | 54 (55) | 9 | 84 | 1 592 / 1 928 | 1 704 |
+| sesgo +6 | 59 (60) | 7 | 82 | 1 572 / 1 918 | 1 687 |
+| **sesgo +8 (elegido)** | **60** (60) | **9** | 80 | 1 535 / 1 907 | 1 659 |
+| vector 1,0 | 83 (84) | 35 | 25 | 735 / 1 359 | 943 |
+
+Elegido +8 (el más cercano, y aun así a 716 tokens del vector). Frente al vector: GSM 1/24 p 1,5·10⁻⁶, MATH 0/26
+p 3·10⁻⁸ → **R2**: el sesgo no iguala al vector ni de lejos. Frente a la base: GSM 14/4 p 0,031 (gana 14 cortes
+recuperados, pierde 4 acabados bien), MATH 4/1 p 0,38. Sin pensamiento 0 % en todos los brazos. Tokens monótonos en b.
+
+- **Lectura.** Sumar +8 al logit de `</think>` en todas las posiciones recorta los cortes de 96 a 80 y los tokens un
+  7 %; el vector a dosis 1 recorta los cortes a 25 y los tokens un 47 % y triplica MATH. Un empuje **constante** sobre
+  el token de cierre no reproduce lo que hace la dirección: la dirección actúa donde el estado ya está cerca de
+  cerrar y el sesgo no sabe dónde está. Es el control que a DAWE le falta y que a nosotros nos faltaba; con él, "el
+  vector lleva información dependiente del estado" pasa de plausible a medido en esta familia. Lo que no dice: si un
+  sesgo mucho mayor (+12, +16) acabaría igualando los tokens a costa de la precisión; no lo corrimos.
+- **Predicción (fila 43) contra el dato.** Primaria R2 ✓ (60 %). Bandas: +2 GSM ✓, MATH ✗ (6 frente a 7-12), tokens
+  ✗ (agrupados 1 731 frente a 1 400-1 700); +4 GSM ✗ (54 frente a 60-75), MATH ✗, tokens ✗; +6 GSM ✗ (59 frente a
+  62-80), MATH ✗, tokens ✗ (1 687 frente a 650-1 050); +8 GSM ✓, MATH ✓, tokens ✗ (1 659 frente a 350-800), sin
+  pensamiento ✗ (0 frente a 5-40 %); monotonía ✓; elegido ✗ (+8, apostamos +6 o +4); distancia al vector ✗ (mayor que
+  la banda); discordantes significativos ✓. Ninguna sorpresa disparada. **◐**: acierta la primaria, y el sesgo hace
+  **mucho menos** de lo que la predicción le concedía (el error sistemático de las bandas: creímos que +6 recortaría a
+  la mitad).
+- **Límites.** Una familia, un presupuesto, dev; sesgos hasta +8; sin sellado (no hacía falta: el control falla en dev).
+- **Dos métodos.** `bias.py compare` y recuento con `pair_recount.py`: mismos aciertos, cortes y pares.
+
+### 45.28 Segunda conducta "razonar en español": parada por la regla prefijada antes de ningún brazo; la 9B piensa en inglés aunque se le pida español y la instrucción le hace cortar más (2026-11-18)
+Plan `lab/probes/skill2/PLAN.md` (fijado antes de correr; criba de candidatas con datos locales: formato y repetición
+rechazadas por falta de margen, bucles de la 0.8B por el ruido ± 5), fila 44, cadena `lab/runs/skill2/chain.sh`
+09:56-10:48. Descubrimiento: 64 problemas de GSM8K train (64-127) generados dos veces por la base 9B, con el prompt
+llano y con " Piensa y responde en español.", 2 048 tokens.
+
+| condición | acabados | cortados | pensamiento en español (juez, 300 primeras palabras) |
+|---|---|---|---|
+| sin instrucción | 27 | 37 | 0 |
+| con instrucción en español | 14 | 50 | **0** |
+
+Pares utilizables 11 de 64 (regla: ≥ 30) → **STOP** antes de vectores, criba o dev. Coste 52 min de GPU.
+
+- **Lectura.** Las dos premisas de la predicción fallaron a la vez: P1 (la base piensa en inglés sin instrucción) se
+  cumple de sobra, pero P2 (con la instrucción responde en español ≥ 85 %) **no**: con la instrucción el pensamiento
+  sigue en inglés en los 64 ("Here's a thinking process…"), y además corta más (50 frente a 37 de 64), con lo que la
+  respuesta final, que sí saldría en español, no llega. No hay filas positivas de las que leer una dirección: el
+  protocolo de §43.17 exige que la conducta exista en la propia base al menos a veces, y "pensar en español" no existe
+  en esta 9B con este prompt. La conducta elegida era mala, no el método; la regla de parada hizo su trabajo.
+- **Predicción (fila 44) contra el dato.** Premisa P2 ✗ (11 pares frente a ≥ 45); el resto no se midió. **❌** por la
+  premisa; la primaria queda sin probar.
+- **Siguiente forma útil (no lanzada):** una conducta con filas positivas en la base: (a) "responder en español" medido
+  en la **respuesta**, no en el pensamiento (la instrucción sí la mueve; haría falta un presupuesto mayor para que
+  acabe), o (b) una conducta de formato que la base cumpla a veces sin instrucción. Ambas pasan primero por una
+  criba de 64 ítems como esta antes de prometer nada.
+
+### 45.29 Batería de preservación: valores de la base 9B en dev-2048 (2026-11-18)
+`lab/runs/preserve/smoke.sh` 09:08-09:56 (humo de 2 ítems ok; `base.json`), `engine/preserve_bench.py`, 2 048 tokens.
+Base 9B Q6_K: **HumanEval 144 / 164** (153 acabados; mediana 843 tokens); **cumplimiento 15 / 40** (termina con DONE
+6/10, número en palabras 0/10, una sola frase 7/10, todo en mayúsculas 2/10); basura: cola de 16-gramas repetida en
+**38 / 204** salidas, 0 ensaladas de caracteres. Es la primera fila de la columna de preservación; sin segunda corrida
+aún no hay banda (la de `dev-2048` por `bench_run` está en curso), así que no se compara nada todavía. Lo que ya se ve:
+el "cumplimiento" casero es duro para la base (15/40), con lo que los brazos tienen margen en las dos direcciones; y la
+base repite colas en el 19 % de las salidas a 2 048, la misma patología de cierre que la dirección "concluir" trata.
+
+### 45.30 Banda de ruido de la base 9B en `dev-2048` por `bench_run`: GSM determinista, MATH 1 / 50, HumanEval 15 / 164 (2026-11-18)
+`lab/runs/bench/chain_band9b.sh` 10:52-14:26 (`qwen9b_base_a.json` 10:52-12:38, `qwen9b_base_b.json` 12:39-14:25;
+mismo binario, mismo GGUF servido sha `2f57ee31c827`, suite `dev-2048` con hash: 100 GSM8K + 50 MATH-500 + HumanEval
+164 + cumplimiento 40; 2 048 tokens, paralelo 2, semilla 0, temperatura 0). Dos corridas idénticas de la base:
+GSM8K **50 / 49 y 50 / 49** (dos correctores), **0 discordantes**, mismos tokens totales (168 894 y 168 894); MATH
+**6 → 5**, **1 discordante** (3 de 50 ítems cambian de longitud, +0,6 % de tokens); HumanEval **143 → 144**, **15
+discordantes** (7 perdidos, 8 ganados; 115 de 164 cambian de longitud); cumplimiento 14 / 14 con 2 discordantes; colas
+repetidas 32 → 26. Dos métodos: `bench_compare` (`cmp_qwen9b_band.json`) y recuento ítem a ítem desde los dos JSON;
+coinciden. Tercera corrida: la base de `dev-2048` importada de la cadena de §43.17 (misma decodificación) frente a
+`base_b` también da 0 / 1. Aplicado a la tabla: las comparaciones de la 9B (vector 1,0; fusionado) llevan ahora
+`gsm8k ±0; math500 ±1` (`programs/bench_band9b_apply.wspl`, `base2=`); veredictos sin cambio (mejora; dos modelos).
+Lectura: **a 2 048 tokens con paralelo 2 la 9B es determinista en GSM8K en tres corridas**; los ± 5 de §45.22 venían
+del arnés cc08 a 8 192 con `-np 4`. D4k se puede volver a decidir bajo `bench_run` en `dev-8192` solo si antes se mide
+la banda en esa configuración (no está hecho). **HumanEval es el componente ruidoso**: 15 / 164 discordantes con saldo
++1, así que la preservación se lee por saldo pareado, no por conjunto de ítems; un brazo que "pierde 7" sin saldo
+negativo no ha perdido nada. Llama y Phi siguen sin banda (sus filas dicen "none"). Los valores de §45.29 (144 / 15,
+otro arnés) caen dentro de lo que dan estas dos corridas (143-144 / 14).
+
+[post-data 2026-11-18 21:40, tras §45.32] **El "determinista" es de la repetición idéntica, no de la medida.** La misma
+base con la misma decodificación en `dev-2048-full` (los mismos 100 GSM8K dentro de una suite mayor) da 46 / 47 con
+**24 ítems discordantes** frente a `base_a` y frente a `base_b` (14 perdidos, 10 ganados), los mismos 51 cortes y solo
+44 / 100 ítems con el mismo número de tokens. Con `-np 2` el compañero de lote de cada ítem cambia al cambiar el
+conjunto, y con él la aritmética; dos corridas de la misma suite comparten compañeros y salen iguales. La banda que
+vale para comparar brazos medidos en corridas distintas es la de §45.32 (GSM |Δ| 4 y 24 discordantes; MATH |Δ| 1, 2-3;
+HumanEval |Δ| 4-5, 9-12; cumplimiento 0, 4-6); los veredictos de la tabla no cambian (vector +33, fusionado ≥ 2× esa
+banda), pero `gsm8k ±0` se retira como banda de la medida.
+
+### 45.31 Desplazamiento de distribución (suite `dist-shift`): el vector real mueve la distribución 3× más que su placebo de misma norma; 4 de 5 brazos (2026-11-18)
+`lab/runs/bench/chain_dist9b.sh` 14:27-15:01, `llama-perplexity` sha `2f90f7316b9b`, GPU; suite `dist-shift` con
+hash: perplejidad WikiText-2 (100 × 512), KL frente a los logits guardados de la base (16 × 512), HellaSwag /
+Winogrande / MMLU 400 tareas cada una en el formato de llama.cpp. Cinco brazos previstos (fila 48); el fusionado
+falló antes de medir: `provenance=hf_cache/cc_op_v2/report.json` lista sus salidas como lista de rutas y el lector
+hacía `.get` sobre ella (`'list' object has no attribute 'get'`). Arreglado con test
+(`tests/test_wsplang_bench.py`, `test_read_provenance_compile_report_with_file_list`; el report no guarda el sha del
+fusionado, así que `output_sha` queda nulo y el vínculo con la base viene de `inputs`); el brazo va en la cola 6
+(`chain_dist9b_merged.sh`) tras dt_bias. Lo medido:
+
+| brazo | ppl WikiText-2 | ppl × | KL media | top-1 igual | HellaSwag | Winogrande | MMLU |
+|---|---|---|---|---|---|---|---|
+| base | 8,026 | 1 | 0 | 100 % | 0,780 | 0,715 | 0,410 |
+| placebo fusionado (misma norma) | 8,101 | 1,009 | 0,024 | 92,5 % | +0,003 | −0,005 | −0,003 |
+| vector concluir 1,0 | 9,279 | **1,156** | **0,175** | **80,4 %** | −0,010 | −0,018 | +0,008 |
+| placebo vector 1,0 | 8,330 | 1,038 | 0,056 | 89,1 % | −0,010 | +0,003 | −0,003 |
+| fusionado (compilado) [post-data, cola 6, 19-nov 03:13] | 8,506 | **1,060** | **0,072** | **87,7 %** | 0,000 | +0,005 | +0,013 |
+
+Cocientes de ppl calculados por `bench_compare` y a mano: iguales. Frente a la fila 48: base ppl, HellaSwag y
+Winogrande en banda; **MMLU 0,41 fuera** (previsto 0,62-0,78; es la puntuación de opción múltiple de
+`llama-perplexity` sobre el binario de validación, comparable solo dentro de la suite). Placebo fusionado: KL 0,024
+**por debajo** de la banda prevista (0,05-0,30) y ppl × 1,009 por debajo de 1,02-1,15. Vector 1,0: KL 0,175 **por
+encima** de 0,02-0,15 y top-1 80,4 % por debajo de 88-97 (la sorpresa "top-1 < 80 %" no salta por 0,4 puntos).
+Placebo vector: en banda. **Primaria ("en los dos pares el placebo desplaza más que la edición real") falla en el par
+del vector**: placebo 0,056 frente a real 0,175, 3× al revés; el par del fusionado está pendiente, pero la primaria
+exigía los dos → fila 48 ❌. Secundaria "los dos placebos a menos de 3× entre sí": 0,024 y 0,056 (2,3×) ✓. Lectura:
+la dirección "concluir" a escala 1,0 es una dirección real del flujo residual y desplaza la siguiente-palabra en
+texto genérico mucho más que una dirección aleatoria de la misma norma, que el modelo absorbe casi entera; la premisa
+"el placebo perturba más porque hundió GSM" confundía daño en aciertos con desplazamiento de distribución. Coste de la
+edición que lleva GSM dev de 50 a 83: **+15,6 % de perplejidad en WikiText-2** y 20 % de tokens con otro top-1; no es
+gratis en texto genérico, y los Δ de HellaSwag / Winogrande / MMLU (≤ 0,02) no lo ven. Umbrales de la suite siguen
+nulos: se fijan cuando esté el fusionado (la calibración prevista usa el placebo de misma norma del par compilado).
+
+[post-data 2026-11-19] **Brazo fusionado (`chain_dist9b_merged.sh`, 03:06-03:13):** ppl ×1,060, KL 0,072, top-1 87,7 %,
+HS / WG / MMLU +0,000 / +0,005 / +0,013. Frente a su placebo compilado (×1,009, KL 0,024, 92,5 %): **el fusionado
+también desplaza 3× más que su placebo** (0,072 / 0,024), igual que el par del vector (0,175 / 0,056): la primaria de
+la fila 48 falla en los dos pares, ❌ confirmado. Y el fusionado cuesta **2,4× menos KL que el vector** (0,072 frente a
+0,175; ppl +6 % frente a +15,6 %) con la misma ganancia dev en GSM (85-87 frente a 83): Q6_K conserva la dirección y
+~la mitad de la magnitud (§43.19), y esa mitad basta. Umbrales (propuesta, no fijada: cambiar la suite cambia su
+digest): "preserva distribución" si KL ≤ 2 × placebo del par compilado (0,05) y top-1 ≥ 90 %; con eso **ninguna de
+nuestras dos ediciones reales preserva la distribución**, y el placebo sí: el umbral mide exactamente "no ha cambiado
+nada útil". Mejor lectura: el coste en KL por punto de GSM ganado (fusionado 0,072 / 35 = 0,002; vector 0,005).
+
+### 45.32 Batería completa (`dev-2048-full`) sobre la base 9B: IFEval 25 % y TriviaQA 39 % son sobre todo cortes a 2 048; y la banda entre suites no es cero (2026-11-18)
+`lab/runs/bench/chain_full9b.sh` 15:02-21:24 (6,3 GPU h; `seconds` 22 850), servidor sha `2f57ee31c827` (A0 Q6_K),
+misma decodificación que §45.30 (2 048 tokens, paralelo 2, T 0, semilla 0), suite `dev-2048-full` hash `0e9c0099…`
+(= `dev-2048` + IFEval 541 + TriviaQA 200). Archivo `lab/runs/bench/qwen9b_base_full.json`; fila en
+`docs/wsplang_benchmarks.md`. Dos métodos: el bloque resumen del JSON y el recuento ítem a ítem (GSM 46 / 47, IFEval
+129 estricto sobre 510, TriviaQA 77 em y 78 cortes) coinciden.
+
+| componente | n | base 9B | notas |
+|---|---|---|---|
+| GSM8K | 100 | 46 / 47 | 51 cortes, 3 colas en bucle, 1 651 tokens de media |
+| MATH-500 | 50 | 5 / 5 | 44 cortes, 1 955 tokens de media |
+| HumanEval | 164 | 148 | 154 cerrados, mediana 815 tokens |
+| cumplimiento | 40 | 14 | end_done 6, words_not_digits 0, one_sentence 6, all_caps 2 |
+| IFEval | 541 (510 puntuables) | **estricto 129 (25,3 %)**, laxo 134 (26,3 %); por instrucción 263 / 783 estricto, 268 laxo | **466 / 541 cortadas** al tope (mediana de tokens = 2 048): piensa y no llega a contestar |
+| TriviaQA | 200 | **em 77 (38,5 %)**, contiene 87 | 78 cortadas = 78 vacías; entre las 122 que terminan, em 77 (63 %) |
+| basura | 945 | 16-gramas repetidos 356, cortes 580 | |
+
+Lectura 1: con pensamiento y tope 2 048, IFEval y TriviaQA miden sobre todo **cuántas veces el modelo no llega a la
+respuesta** (86 % y 39 % de cortes). Como batería de preservación sirven por comparación (mismo tope para todos los
+brazos), y para "concluir" son sensibles en el sentido útil: un brazo que cierra antes debería subir las dos; un brazo
+que las baja ha perdido instrucción o memoria, no solo tiempo. No son medidas absolutas de capacidad de la 9B.
+
+Lectura 2 (cambia §45.30): **misma base, misma decodificación, otra suite → GSM 46 frente a 50 / 49**, 24 ítems
+discordantes frente a `base_a` y 24 frente a `base_b` (14 perdidos, 10 ganados en los dos casos), los mismos 51
+cortes, solo 44 / 100 ítems con el mismo recuento de tokens; MATH 3 / 2 discordantes (5 frente a 6 / 5); HumanEval 148
+frente a 143 / 144 con 9 / 12 discordantes; cumplimiento 14 con 4 / 6 discordantes. El "0 discordantes" de §45.30
+era la repetición con los mismos compañeros de lote (`-np 2`, mismo orden); al cambiar el conjunto cambian los lotes
+y la aritmética en bf16 / Q6_K, y aparece la banda real de la medida: **GSM |Δ| 4 con ~24 vuelcos, MATH |Δ| 1,
+HumanEval |Δ| 4-5**. Consecuencias: (a) la banda de una comparación debe venir de corridas con lotes distintos (otra
+suite, otro orden o `-np 1`), no de la repetición idéntica; (b) los veredictos de la tabla no cambian (vector +33 y
+fusionado siguen a más de 2× esta banda); (c) `bench_compare` rechaza `suite_sha` distintos, así que este recuento
+es a mano (script sobre los tres JSON; `base_a` y `base_b` dan lo mismo). Pendiente de decidir: brazos en la suite
+completa solo para los que pasan la barata (≈ 6 GPU h cada uno), y una corrida de la base con `-np 1` para separar
+el efecto del lote del de la suite.
+
+### 45.33 Dos lecturas de pesos en minutos (hueco 29): SenseNova-Loop-9B es Qwen3.5-9B reentrenada (cos 0,95-0,99 en todas las matrices) y el LoRA pi-adapted es un cambio del 0,2 % repartido por el MLP (2026-11-18)
+Pedido del driver ("verificar modelos rápidamente"). CPU, sin servir nada.
+
+**SenseNova-Loop-9B (GGUF BF16 oficial, 18,4 GB, sha `489f1a439f9794a4` en `hf_cache/sensenova-loop-gguf/`; cabecera y bloques de
+128 filas centrales frente a `hf_cache/qwen35-9b-hf`; `lab/runs/model_report/sensenova_header_check.json` y
+`sensenova_rowblock_check.json`).** Arquitectura `sensenova_loop`, `block_count` 57: bloques 0-27 y 52-56 llevan
+tensores (= capas 0-32 de Qwen3.5-9B, la 32 es la cabeza MTP), los bloques 28-51 son la segunda pasada de 4-27 sin
+pesos propios; metadatos `loop 4-28 ×2`, `mhc 4-28, 2 flujos, 20 iteraciones`. 490 tensores frente a 442 de nuestro
+A0: **ninguna forma distinta entre nombres compartidos**; nuevos solo `hc_attn_fn` / `hc_ffn_fn` (8192×8 + sesgo 8,
+F32, capas 4-27: 3,1 M parámetros de enrutado mHC) y dos fusiones de nombre (`attn_qkv_gate` = `in_proj_qkv` ‖
+`in_proj_z`; `ssm_beta_alpha`). Valores:
+
+| tensor (bloque de 128 filas) | cos con Qwen3.5-9B | cambio relativo |
+|---|---|---|
+| `token_embd` / `output` | 0,980 / 0,964 | 0,20 / 0,27 |
+| `ffn_gate` / `ffn_up` / `ffn_down` (capas 0, 2, 4, 12, 20, 27, 28-31) | 0,948-0,972 | 0,25-0,34 |
+| `attn_q` / `attn_k` / `attn_v` / `attn_output` (capas 27, 31) | 0,959 / 0,968 / 0,995 / 0,990 | 0,29 / 0,26 / 0,11 / 0,15 |
+| `ssm_out` (capas 2, 20) directo | 0,06 | 1,38 |
+| `ssm_out` invariante a permutación: espectro / norma por fila / mejor columna | **1,000 / 0,996 / 0,98** | |
+| `attn_qkv_gate` filas qkv / filas z | 0,97 / 0,00 (filas z en otro orden) | |
+| normas (`attn_norm`, `post_attention_norm`) | 0,47-0,99 | 3-21 (reescaladas) |
+| `ssm_dt.bias`, `ssm_a` (32 valores) | −0,40 a 0,88 | (cabezas en otro orden; no concluyente) |
+
+Dos métodos: coseno directo por bloque y, donde falla, estadísticos invariantes a permutación de columnas
+(espectro singular, normas por fila, mejor columna emparejada); coinciden en que es la misma matriz.
+
+**Segunda lectura, con el lector GGUF de `model_report` (0.8.2, `engine/gguf_reader.py`, 16 tests primero;
+`programs/sensenova_report.wspl` → `lab/runs/model_report/sensenova_loop_9b.md`).** El lector deshace lo que hace el
+conversor de llama.cpp con Qwen3.5 (encontrado sobre nuestro A0 Q6_K frente al HF, no de memoria): normas guardadas
+como w + 1, `ssm_a = −exp(A_log)`, **cabezas de valor entrelazadas** (cabeza GGUF n = cabeza HF (n mod 16)·2 +
+n div 16, en `ssm_a`, `dt_bias`, filas de alpha/beta/z/v y **columnas de `ssm_out`**: el cos 0,06 de arriba era eso;
+deshecho, 0,9998), bloques no contiguos compactados (52-55 → capas 28-31), tensores fusionados partidos, `nextn`
+oculto como MTP. Validación sobre A0: 427 / 427 tensores con la misma forma, F32 exactos (error máximo 6e-8 tras
+redondeo bf16), `attn_q` descuantizado cos 0,99984 (suelo Q6_K 1,8 %). Sobre SenseNova, 427 tensores comparados,
+**0 solo en una parte, 0 desajustes de forma**; ocultos solo en el modelo: mHC 96 + bloque 56 (MTP). Cambio relativo
+mediano por tipo: MLP 30-32 %, `in_proj_b` 28 %, cabeza 27 %, `in_proj_z` 26 %, `q_proj` 26 %, `k_proj` 24 %,
+`in_proj_qkv` 22 %, `out_proj` 21 %, embeddings 20 %, `o_proj` 16 %, `v_proj` 14 %; normas 2-6 %; **`A_log` 0,16 % y
+`dt_bias` 0,017 % (5 de 24 sin un solo valor distinto)**: los parámetros de decaimiento congelados de la atención
+lineal son los de Qwen3.5-9B a 3-4 cifras, cosa que un preentrenamiento desde cero no daría. Rango del cambio por
+bloque mediana 108 de 128 (difuso) → clase `full_fine_tune`; perfil de dónde cambia más parecido a los modelos
+agénticos del atlas (fara 0,98, post-entrenamiento oficial 0,97). Nota: el consejo "pierde la cabeza MTP" del informe
+es falso para una vista GGUF (el bloque 56 es su MTP; el agrupador lo ve como 4 + 11 tensores); pendiente de
+arreglar en `model_report`.
+
+**Lectura (dos métodos coinciden):** SenseNova-Loop-9B parte de Qwen3.5-9B (la ficha no lo dice; el issue #5 de su
+GitHub lo pregunta sin respuesta): todas las matrices conservan la dirección (cos ≥ 0,95) con un cambio relativo del
+10-33 %, mucho mayor que un LoRA (pi-adapted abajo: 0,2 %) y propio de un preentrenamiento continuado largo con el
+bucle y el mHC nuevos; los únicos pesos nuevos son los 3,1 M de enrutado y los parámetros de decaimiento no se
+tocaron. Lo que no se puede decir desde aquí: si es "mejor que MiMo"; eso exige servirla (fork de llama.cpp) y no hay
+cifras de matemáticas en su ficha.
+
+**harness-hub/Qwen3.8-27B-pi-adapted (`adapter_report`, 0.8.2; 53 s por HTTP; `programs/adapter_report_pi.wspl`,
+`lab/runs/adapter_report/pi_adapted_op.{md,json}`).** LoRA r 32, alpha 64, 256 módulos, 159 383 552 parámetros
+(cabecera = formas), 637,6 MB; MLP `gate/up/down` en las 64 capas y `q/k/v/o` solo en las 16 capas de atención
+completa; embeddings, cabeza, normas y toda la atención lineal intactas; 89 % de la energía en el MLP, 22 / 22 / 30 /
+26 % por cuartos de profundidad; ‖ΔW‖/‖W‖ en el bloque 0,0008-0,0025 (mediana 0,0019); rango efectivo (90 %) mediana
+25 de 32 en MLP, 16 en `q_proj`, **1-4 en `v_proj` de las capas 3-15**; consistencia de dirección entre capas ≤ 0,026.
+Dos métodos: ‖ΔW‖ por traza y por valores singulares (2e-15), parámetros por cabecera y por formas (iguales). Lectura:
+un cambio pequeño y difuso casi de rango 32 en el MLP más actualizaciones casi de rango 1 en los valores tempranos;
+nada de esto dice si SWE-bench Pro sube 33 puntos (eso exige el 27B dentro del arnés pi).
+
+### 45.34 Sesgo de paso temporal ±0,5 (el pomo de Fan et al. 2611.21885) en la 9B: +0,5 no hace casi nada, −0,5 daña (fila 49 ◐) (2026-11-19)
+Plan `lab/probes/dt_bias/PLAN.md`, cola 5 (`lab/runs/dt_bias/chain.sh`, 21:28-03:03, 5,6 GPU h). Tres GGUF escritos
+por `wsp.py add-scalar` / `add-scalar-signed` sobre los 24 `blk.N.ssm_dt.bias` de A0 (manifiestos en `servidos/`,
+sha en el log): `+0,5`, `−0,5` y `±0,5` con signo aleatorio por capa (placebo, semilla 2026). `dev-2048` por
+`bench_run` con batería; pareado contra `base_a` (banda a-b de §45.30 y banda real de §45.32).
+
+| brazo | GSM8K g1 / g2 | MATH g1 / g2 | cortes GSM + MATH | tokens GSM | HumanEval | cumplimiento | colas | p GSM (g1 / g2) |
+|---|---|---|---|---|---|---|---|---|
+| base a / b | 50 / 49 | 6 / 6 · 5 / 5 | 96 | 1 689 | 143 / 144 | 14 | 32 / 26 | |
+| **+0,5** | 48 / 49 | 8 / 7 | **91** | 1 654 (−2 %) | 149 | 12 | 31 | 0,85 / 1,0 (14 ↓ 12 ↑) |
+| **−0,5** | **37 / 37** | 5 / 5 | **108** | 1 777 (+5 %) | **134** | 14 | 47 | **0,024 / 0,036** (21 ↓ 8 ↑) |
+| placebo ±0,5 | 45 / 46 | 8 / 7 | 96 | 1 706 (+1 %) | 145 | 16 | 39 | 0,42 / 0,70 |
+
+Dos métodos: `bench_compare` (`cmp_*.json`; sin procedencia enlazada en estas corridas, así que solo da los
+estadísticos pareados) y recuento binomial exacto ítem a ítem desde los JSON; coinciden. Frente a la fila 49: R1 "el
+pomo actúa" se cumple solo por cortes (−5 con banda de cortes ≈ 1; en tokens −2 % queda dentro de la banda real
+±2 %); R2 "la dirección importa" ✓ (+0,5 y −0,5 mueven tokens y cortes en sentidos opuestos, el placebo en medio);
+R3 ganancia de precisión: no (MATH +2 dentro de banda), como se predijo (15 %). Bandas: +0,5 falla la de tokens
+(−2 % frente a −5 a −20 %); −0,5 falla GSM (37 frente a 42-54) y cortes (108 frente a 92-105); placebo todas dentro;
+ninguna sorpresa salta (GSM ≤ 30 no, HumanEval ≤ 120 no). Primarias acertadas, tres bandas fuera → **◐**.
+**Lectura:** el pomo es **asimétrico**: acelerar el olvido (+0,5) en la 9B a 2 048 no acorta ni cierra (−2 % de
+tokens, −5 cortes, −2 GSM: nada frente al vector, −56 % de tokens y +33 GSM); frenarlo (−0,5) sí daña (GSM −13 con p
+< 0,05 en los dos correctores, +12 cortes, HumanEval −10: *harms* por la regla, batería fallida). El +6,6 de Fan et al.
+(27B, 4 096 tokens, 80 % de cortes) no se reproduce como mecanismo en la 9B a 2 048; su efecto, si existe, es de
+presupuesto largo en un modelo que se corta mucho. Un cambio uniforme de la tasa de olvido es un empuje constante
+(§45.27, R2): no sabe dónde está el estado. El plan deja escrito el siguiente brazo si R1 y R2 se cumplían y R3 no
+(+0,5 solo en capas 21-30 a 4 096); no se lanza sin decisión del driver.
+
+### 45.35 Comunidades de neuronas (Goodfire) para "emitir `</think>`" en la 9B: nada disperso; la lectura de §43.23 vale también para el evento (fila 50 ◐) (2026-11-19)
+Plan `lab/probes/neuron_communities/PLAN.md` (+ [rev] del held-out), cola 7 (03:17-08:45, 5,5 GPU h: atribución
+5,1 h, ablaciones 23 min). Atribución exacta por gradiente de log p(`</think>`) (una vJP por posición, capas en
+grupos de 4, activaciones en disco; ruta validada en CPU frente a autograd con error 0,0) en 44 trazas de
+descubrimiento × 18 posiciones = 792; top-64 por posición; grafo PMI 3 770 nodos / 68 149 aristas; Louvain → 12
+comunidades; **ninguna neurona "siempre activa"** (≥ 90 % de las posiciones). Comunidad candidata (masa pos − neg): llega
+al tope de **128 neuronas en 23 capas** (1-31; 88 de ellas en las capas 22-31, 33 en la 31, 15 en la 30; 2 en la 26,
+que no son las 4 de §43.23), con puntuación pos − neg de 0,05 sobre 94 (las dos masas casi iguales: la comunidad no
+distingue el cierre de mitad de razonamiento). Pruebas en las 9 trazas terminadas del held-out (p base del cierre
+0,41-0,98):
+
+| prueba | comunidad | control | regla | resultado |
+|---|---|---|---|---|
+| A1 necesidad (caída mediana de p al quitarla) | **−0,2 %** (por traza: +86, −56, −28, +3, +78, −15, −0,2, −18, +10 %) | placebo mismo tamaño 0,003 % (máx 4 %) | ≥ 25 % y ≥ 5× placebo | **falla** |
+| A2 suficiencia (p conservada con solo la comunidad en sus capas) | **0,4 %** (mediana; por traza 0,00-24 %) | aleatorio mismo tamaño 0,17 % | ≥ 50 % | **falla** |
+| A3 por capa (caída al quitar solo esa capa) | 31: 22 %; 24: 10 %; 16: 9 %; resto ≤ 6 %, varias negativas | | informativa | |
+
+Veredicto por la regla fijada: **nothing_sparse**. Frente a la fila 50: A1 (45 %) y A2 (30 %) fallan, como se
+inclinaba la predicción; bandas de tamaño (8-40 neuronas en 3-8 capas) **fuera** (128 en 23); concentración en 22-31
+y presencia de la capa 26 ✓; sin sorpresas → **◐**. **Lectura:** con las tres pruebas de Goodfire, el evento "emitir
+`</think>` ahora" no vive en pocas neuronas de la 9B: quitar las 128 más atribuidas deja p igual (y en 4 de 9 trazas la
+sube), y dejarlas solas la destruye. Es coherente con §43.23 (la *dirección* necesita ~100 neuronas por capa) y con la
+cobertura que Goodfire declara (10 % de prompts con alguna capa dispersa): este evento está en el 90 %. El término
+denso de rango 1 (§43.19 / §45.8) sigue siendo el objeto adecuado; no hay fase B. Límites: n = 9, un solo evento, cap
+128, Louvain sin Leiden, atribución a un token fijo en vez de a la predicción libre.
+
+### 45.36 Ranking etapa 1 (8 brazos en `rank-2048`): nadie gana los cuatro ejes; nuestras dos ediciones no pasan la preservación a 164 ítems; el compilado es el mejor equilibrio, MiMo el más barato, TwIL el mejor en MATH (fila 51 ◐) (2026-11-19/20)
+[La primera parte, escrita a las 14:30 del 19-nov con 3 brazos, se conserva tal cual; el cierre con los 8 brazos está al final de la sección.]
+Plan `lab/probes/ranking/PLAN.md`, fila 51; `rank-2048` (dev-2048 + TriviaQA 200), un servidor por configuración,
+`lab/runs/rank/chain.sh` (cola 8, desde 08:45). Hechos a las 14:30: base (2,5 h), MiMo (42 min: piensa en el 91 %
+y corto), base + Jackrong ×0,5 (2,5 h). Pareado ítem a ítem con la base de la misma suite (binomial exacta):
+
+| brazo | GSM8K g1 / g2 (cortes, tokens) | MATH g1 / g2 (cortes) | HumanEval /164 (↓/↑ vs base) | TriviaQA em /200 (cortes) | cumplimiento /40 |
+|---|---|---|---|---|---|
+| base 9B | 50 / 49 (51, 1 689) | 6 / 6 (45) | **147** | **75** (82) | 17 |
+| MiMo 2.6 | **93 / 94** (3, 409) | 30 / 26 (19) | 129 (27 ↓ 9 ↑, p 0,004) | 60 (5) (29 ↓ 14 ↑, p 0,03) | **36** |
+| base + Jackrong ×0,5 | **93 / 94** (4, 615) | **34 / 30** (15) | 117 (37 ↓ 7 ↑, p < 0,001) | 75 (69) (10 ↓ 10 ↑) | 23 |
+
+Lecturas provisionales (el resto de brazos, compilado, Llama, Phi, Jackrong completo y TwIL, sigue corriendo):
+- **Matemáticas:** MiMo y el trasplante empatan en GSM (93 los dos, 0 perdidos frente a la base) y el trasplante va
+  +4 en MATH (dentro de la banda provisional); los dos ganan casi solo por **terminar** (cortes 3-4 frente a 51).
+- **Código:** los dos **pierden** frente a la base, y de forma distinta: el trasplante se corta en código (44 cortes
+  frente a 10; mediana 1 116 tokens frente a 831: el adaptador alarga el razonamiento de código hasta el tope); MiMo
+  casi no razona en código (mediana 223 tokens, 4 cortes) y falla por respuesta corta. La batería de preservación
+  que usamos en los sellados (HumanEval-20) no vio esto: **el trasplante Jackrong falla la regla de preservación a
+  164 ítems** (−30, muy por fuera de "base − 5").
+- **Conocimiento:** sobre las 117 preguntas que MiMo y la base terminan, MiMo acierta 51 y la base 75: MiMo **sabe
+  menos** (destilación de razonamiento con coste en memoria). El trasplante no toca el conocimiento (67 = 67 sobre
+  las 105 terminadas por los dos; +13 terminadas).
+- **Instrucciones cortas (cumplimiento):** MiMo 36 / 40, muy por encima (termina y obedece formato).
+- Para la fila 51: ya es seguro que **ningún brazo gana los cuatro ejes** (la base lidera código y conocimiento):
+  R1 confirmado en la dirección predicha; MiMo HumanEval 129 cae dentro de 130-150 por un punto por debajo. Se
+  puntúa al terminar la cadena.
+
+**Cierre con los 8 brazos (cadena 08:45-22:36 del 19-nov, 13,8 GPU h; `lab/runs/rank/*.json`, `cmp_*.json`, tabla en
+`docs/wsplang_benchmarks.md`).** Pareado ítem a ítem con la base de la misma suite; binomial exacta en los
+discordantes; "coste" = tokens medios de GSM8K × 100 / aciertos.
+
+| brazo | GSM8K g1 / g2 (cortes) | MATH g1 / g2 (cortes) | HumanEval /164 (↓ / ↑) | TriviaQA em (cortes) · terminadas por ambos brazo / base | cumpl. /40 | tokens por acierto GSM | GPU h |
+|---|---|---|---|---|---|---|---|
+| base 9B | 50 / 49 (51) | 6 / 6 (45) | **147** | 75 (82) | 17 | 3 378 | 2,5 |
+| MiMo 2.6 | **93 / 94** (3) | 30 / 26 (19) | 129 (27 / 9, p 0,004) | 60 (5) · 51 / 75 de 117 | 36 | **440** | 0,7 |
+| base + Jackrong ×0,5 | **93 / 94** (4) | 34 / 30 (15) | 117 (37 / 7, p < 0,001) | 75 (69) · 67 / 67 de 105 | 23 | 661 | 2,5 |
+| compilado concluir | 85 / 86 (10) | 30 / 23 (21) | 132 (21 / 6, p 0,006) | **84** (38) · 69 / 68 de 107 | **38** | 936 | 1,6 |
+| R1-Llama-8B | 78 / 79 (18) | 21 / 17 (27) | 80 (73 / 6) | 46 (9) · 36 / 74 de 116 | 31 | 1 659 | 2,0 |
+| Phi-4-mini (3,8B) | 83 / 84 (14) | 30 / 26 (19) | 57 (94 / 4) | 36 (43) · 31 / 63 de 97 | 13 | 1 308 | 1,4 |
+| Jackrong completo (GGUF oficial) | 93 / **1*** (5) | 30 / 29 (8) | **47*** (103 / 3) | **84** (25) · 70 / 72 de 112 | 27 | 445 | 1,2 |
+| TwIL-8B balanced (Q4_K_M) | 91 / 92 (7) | **39 / 35** (9) | 67** (86 / 6) | 62 (73) · 54 / 61 de 95 | 35 | 791 | 1,9 |
+
+\* **Artefacto del GGUF oficial de Jackrong**: colapsa la sangría del código (53 % de líneas con un espacio, 9 % con
+cuatro; los demás brazos Qwen 0 % / 58-78 %) y no cierra con `\boxed` (60 / 100 colas con caja frente a 96-98): su
+HumanEval 47 y su corrector 2 no miden al modelo. El modelo sí: es el donante del trasplante, y con el adaptador a
+0,5 sobre la base da 117. Para una fila válida hace falta otra conversión (mradermacher) o el HF servido de otro modo.
+\** TwIL: inspeccionado, **no es artefacto**: se corta en 97 de 164 problemas de código (mediana 2 048 tokens,
+6 055 caracteres de razonamiento) y 70 de sus 97 fallos no llegan a escribir el bloque de código. Pierde código como
+el trasplante: razona de más hasta el tope. A 8 192 tokens su HumanEval sería otro número.
+
+Lecturas (dos métodos: resumen de `bench_run` y recuento ítem a ítem; coinciden):
+- **R1: ningún brazo gana los cuatro ejes** (predicho 60 %, ✓). Por eje: GSM8K MiMo = trasplante = Jackrong
+  completo (93; TwIL 91 dentro de banda); MATH **TwIL 39** (trasplante 34; MiMo, compilado, Phi, Jackrong 30);
+  HumanEval **base 147** (compilado 132, MiMo 129, trasplante 117); TriviaQA **compilado 84 = Jackrong completo 84**
+  (base 75 con 82 cortes; MiMo 60); cumplimiento compilado 38, MiMo 36, TwIL 35.
+- **R2 coste:** MiMo y Jackrong completo ≈ 440 tokens por acierto; trasplante 661; TwIL 791; compilado 936; base
+  3 378. Predije que el compilado o el trasplante serían más baratos que MiMo: ✗.
+- **R3 veredictos de nuestras ediciones:** `bench_compare` dice **"same / not decidable: la batería de preservación
+  falla"** para el trasplante (HumanEval −30) y para el compilado (−15, regla "base − 5"). Predije *improves* con
+  batería intacta al 70 %: ✗ los dos. Por nuestra propia regla, **ninguna de las dos ediciones pasa como mejora a 164
+  ítems de código**; en los sellados anteriores se miraron 20 (lección en roadmap 30).
+- **Conocimiento** (TriviaQA sobre las preguntas que el brazo y la base terminan): las ediciones de Qwen lo conservan
+  (compilado 69 / 68, trasplante 67 / 67, Jackrong completo 70 / 72); MiMo **51 / 75**, TwIL 54 / 61, Llama 36 / 74,
+  Phi 31 / 63 saben menos. La ganancia de TriviaQA del compilado (+9) y de Jackrong (+9) es terminar, no saber.
+- **Código:** tres modos de pérdida (§45.36 parcial): cerrar pronto (compilado), alargar hasta el corte (trasplante),
+  no razonar (MiMo). Cumplimiento sube en todo lo que cierra antes (compilado 38, MiMo 36 frente a 17): el formato
+  corto se beneficia de terminar.
+- **Fila 51:** primarias acertadas (R1; MATH para TwIL según la [rev]; MiMo y trasplante empatan en GSM); R2 y R3
+  falladas; bandas: acerté matemáticas casi siempre y fallé **HumanEval en 7 de 8 brazos** (subestimé la pérdida de
+  código de todo lo que cierra antes) y cumplimiento en 6 de 8 (no previsto que subiera); sorpresa disparada: TwIL
+  supera a MiMo en MATH por 9 (> 6), aunque la [rev] ya lo ponía primero. Primarias ✓, bandas ✗ → **◐**.
+- **"¿Cuál es el más inteligente?"** Con el proxy del libro de modelos (precisión held-out a presupuesto fijo en ejes
+  no relacionados sin perder la distribución): **ninguno domina**. El compilado "concluir" es el mejor equilibrio
+  (gana conocimiento y formato, segundo en código, +35 GSM, KL 0,072); MiMo es el más barato y el mejor en formato
+  pero sabe menos y pierde código; TwIL es el mejor en MATH con coste medio y conocimiento algo menor; la base sigue
+  siendo la mejor en código. Finalistas para la etapa 2 (IFEval, `dev-2048-full`): compilado, MiMo, TwIL.
+
+### 45.37 Recuperar HumanEval de nuestras ediciones: ni bajar la dosis ni componer lo devuelve; la composición Jackrong ×0,5 + vector 1,0 es el brazo más barato y el segundo en MATH (fila 52 ❌) (2026-11-20)
+Plan `lab/probes/ranking/HUMANEVAL_PLAN.md`, fila 52; `rank-2048`, un servidor por brazo (`lab/runs/rank/chain_he.sh`,
+cola 9, terminó 05:50). Vector concluir en tiempo de ejecución (`--control-vector-scaled`) sobre la base Q6_K (A0, mismo
+sha que la base: lo cambia el vector, no el archivo). Pareado con la base de la misma suite; binomial exacta.
+
+| brazo | GSM8K g1 / g2 (cortes) | MATH g1 / g2 (cortes) | HumanEval /164 (↓ / ↑) · cerrados · mediana tokens | TriviaQA em (↓ / ↑) | cumpl. /40 | tokens por acierto GSM |
+|---|---|---|---|---|---|---|
+| base 9B (§45.36) | 50 / 49 (51) | 6 / 6 (45) | **147** · 154 · 826 | 75 | 17 | 3 378 |
+| compilado concluir 1,0 (§45.36) | 85 / 86 (10) | 30 / 23 (21) | 132 (21 / 6) · 152 · 703 | 84 | 38 | 936 |
+| base + Jackrong ×0,5 (§45.36) | 93 / 94 (4) | 34 / 30 (15) | 117 (37 / 7) · 120 · 1 114 | 75 | 23 | 661 |
+| vector 0,5 | 72 / 73 (26) | 18 / 15 (31) | 126 (30 / 9) · 137 · 707 | **89** (7 / 21) | 36 | 1 663 |
+| vector 0,7 | 84 / 85 (13) | 21 / 16 (29) | 126 (26 / 5) · 142 · 682 | 83 (8 / 16) | 37 | 1 110 |
+| Jackrong ×0,5 + vector 1,0 | 88 / 89 (**0**) | **38** / 32 (1) | 100 (52 / 5) · 163 · 282 | 72 (17 / 14) | **40** | **283** |
+
+Tokens por acierto por dos caminos (tokens medios × 100 / aciertos; tokens totales de `bench_compare` / aciertos):
+coinciden (1 663 / 1 110 / 283).
+
+Lecturas:
+- **H1 ✗, H2 ✗.** Ningún vector llega a HumanEval 142; la composición cae a 100.
+- **La pérdida de código no depende de la dosis.** 126 a 0,5, 126 a 0,7, 132 el compilado a 1,0: plana dentro de la
+  banda de HumanEval (4-5, §45.32). Bajar la dosis sí cuesta GSM (72 → 84 → 85) y MATH; el precio en código es fijo
+  en cuanto se empuja "concluir". La premisa "cerrar pronto, escala con la dosis" queda refutada.
+- **La composición no pierde código por cortes**: cierra 163 de 164 con mediana 282 tokens (el trasplante solo, 120
+  cerrados y 1 114 tokens). El vector quita los cortes del trasplante y el modelo escribe corto y falla: 52 perdidos.
+  Segunda premisa refutada: el fallo de código del trasplante no era solo cortes.
+- **Hallazgo aparte:** Jackrong ×0,5 + vector 1,0 es el brazo **más barato de todo el ranking** (283 tokens por
+  acierto GSM; MiMo 440), cero cortes en GSM, uno en MATH, MATH 38 (TwIL 39, el mejor) y cumplimiento 40 / 40. Es el
+  mejor brazo de "matemáticas cortas y formato"; no es candidato a "más inteligente" porque pierde código (100) y
+  algo de conocimiento (72; 17 / 14 pareado, dentro de ruido).
+- **Conocimiento:** el vector a 0,5 da TriviaQA 89 (21 ganadas / 7 perdidas): terminar más preguntas (42 vacías
+  frente a 82), como el compilado.
+- **Consecuencia para el ranking:** ninguna de nuestras ediciones pasa la regla de preservación a 164 ítems a ninguna
+  dosis probada. La pérdida de HumanEval es el coste de la dirección, no un ajuste de dosis; recuperarla pediría otra
+  cosa (aplicar la dirección solo fuera del código, o un presupuesto mayor), no un número distinto.
+
+### 45.38 Dos bits en la 9B: sin imatrix el modelo no habla, con imatrix razona en bucle; la edición concluir sobrevive como mecanismo de terminar, no como acierto (fila 53 ◐) (2026-11-20)
+Plan `lab/probes/quantize/PLAN.md`, fila 53; op `quantize` (WSP-Lang 0.8.3), recuantización desde Q6_K
+(`allow_requantize`), imatrix WikiText-2 train 100 × 512 sobre cada modelo fuente; IQ2_XS con blk.32 (MTP, no se
+ejecuta) en Q4_K ([rev] del PLAN). Chain `lab/runs/quant/chain.sh`; un reinicio a las 10:16 cortó `base_iq2xs` en
+537 / 554 ítems y el run reanudó del parcial a las 11:31 sobre el mismo archivo (sha d8cfb7d4). Chain terminado 19:02.
+Bits por peso del manifiesto (nuestros) y del tamaño del archivo con 9,197 G parámetros (Unsloth; el método da 3,405
+para nuestro Q2_K, igual que su manifiesto).
+
+**`dist-shift`** (referencia: logits de la base Q6_K A0; las dos de Unsloth parten de su propia conversión BF16, su KL
+incluye esa diferencia):
+
+| brazo | bpw | ppl (×) | KL media | top-1 % | HellaSwag | Winogrande | MMLU |
+|---|---|---|---|---|---|---|---|
+| base Q6_K A0 | 6,6 | 8,03 | 0 | 100 | 0,780 | 0,715 | 0,410 |
+| compilado Q6_K (§45.31) | 6,6 | 8,51 (×1,06) | 0,072 | 87,7 | 0,780 | 0,720 | 0,422 |
+| base_q2k | 3,41 | 79,15 (**×9,86**) | **2,382** | 33,1 | 0,383 | 0,565 | 0,302 |
+| base_iq2xs | 2,98 | 10,47 (×1,30) | 0,309 | 73,5 | 0,690 | 0,665 | 0,372 |
+| compiled_iq2xs | 2,98 | 11,21 (×1,40) | 0,379 | 71,7 | 0,678 | 0,678 | 0,393 |
+| Unsloth UD-Q2_K_XL | 3,59 | 9,09 (×1,13) | **0,158** | 83,0 | 0,745 | 0,723 | 0,375 |
+| Unsloth UD-IQ2_XXS | 2,78 | 11,22 (×1,40) | 0,379 | 71,8 | 0,670 | 0,700 | 0,355 |
+
+**`rank-2048`** (pareado contra la base Q6_K salvo donde se indica; binomial exacta; dos correctores):
+
+| brazo | GSM8K g1 / g2 (cortes) | MATH g1 / g2 (cortes) | HumanEval /164 · cerrados · mediana tokens | TriviaQA em (vacías) | cumpl. /40 | repetición 16-grama /404 |
+|---|---|---|---|---|---|---|
+| base Q6_K | 50 / 49 (51) | 6 / 6 (45) | 147 · 154 · 826 | 75 (82) | 17 | 72 |
+| compilado Q6_K | 85 / 86 (10) | 30 / 23 (21) | 132 · 152 · 703 | 84 (38) | 38 | 62 |
+| base_q2k | **0 / 0** (0) | 0 / 0 (1) | 0 · 146 · 62 | 0 (200) | 0 | 22 |
+| base_iq2xs | 4 / 4 (96) | 0 / 0 (50) | 58 · 70 · 2 048 | 32 (105) | 9 | 251 |
+| compiled_iq2xs | 36 / 36 (51) | 5 / 3 (44) | 13 · 44 · 2 048 | 41 (9) | 19 | 264 |
+| UD-Q2_K_XL | 21 / 21 (78) | 6 / 6 (44) | 76 · 81 · 2 048 | 45 (121) | 8 | 169 |
+| UD-IQ2_XXS | 12 / 12 (88) | 3 / 3 (47) | 19 · 19 · 2 048 | 20 (154) | 7 | 327 |
+
+Pareados GSM8K g1 contra la base Q6 (ganadas / perdidas): base_q2k 0 / 50, base_iq2xs 1 / 47, UD-Q2_K_XL 2 / 31,
+UD-IQ2_XXS 3 / 41 (todos p < 1e-6); compiled_iq2xs 11 / 25 (p = 0,029, solo con mi script: el chain no compara ese
+par). Supervivencia (`cmp_rank_survival.json`, compiled_iq2xs frente a base_iq2xs): GSM 32 / 0 en los dos
+correctores (p ≈ 5e-10), MATH 5 / 0 (p = 0,06) y 3 / 0 (p = 0,25). Las cifras pareadas salen igual por dos caminos
+(`bench_compare` del chain y un script aparte sobre los ítems).
+
+Lecturas:
+- **Q1, coste de 2 bits: mucho mayor que lo previsto, y de otra forma.** Las bandas daban a la base 2 bits GSM 25-50;
+  salen 0 (Q2_K) y 4 (IQ2_XS). No es pérdida de conocimiento antes que de razonamiento (la premisa): es que el modelo
+  **no termina**. IQ2_XS corta 96 de 100 GSM y los 50 MATH a 2 048 tokens, y 251 de 404 salidas de preservación
+  repiten un 16-grama; en las 4 GSM que acaba acierta las 4. La distribución de un token apenas se mueve (top-1 73 %,
+  HellaSwag 0,69 frente a 0,78); lo que se rompe es la cadena larga.
+- **Q2_K sin imatrix no habla con plantilla de chat.** GSM y TriviaQA: fin de secuencia al primer token (1 token,
+  sin pensamiento) en los 100 y los 200; HumanEval cierra 146 pero ninguno pasa; ppl ×9,9, KL 2,38. Las tareas de
+  opción múltiple siguen por encima del azar (HellaSwag 0,38 sobre 0,25), así que no es un archivo roto, es un modelo
+  degradado hasta no poder responder. Sorpresa declarada "base_q2k GSM < 20": ocurre.
+- **Q2 ✓ (45 %)**: IQ2_XS con imatrix tiene 8 veces menos KL que Q2_K sin ella (0,31 frente a 2,38) con 0,43 bits
+  menos. La lectura fija se cumple; **la atribución a la imatrix no está aislada**: los dos brazos cambian formato e
+  imatrix a la vez, falta un Q2_K con imatrix.
+- **Q3 ✓ por la fórmula (50 %), pero lo que sobrevive es "terminar".** Supervivencia (36 − 4) / (85 − 50) = 0,91 (g2
+  0,86); 32 / 0 en los dos correctores. Las 32 ganadas son ítems que la base IQ2 cortó; en los 4 que acaban los dos
+  brazos, 4 y 4. **En Q6 pasa lo mismo**: las 36 ganadas del compilado son ítems que la base Q6 cortó, y en los 49 que
+  acaban los dos, 49 frente a 48. La edición nunca ha mejorado el acierto de lo que se termina; recupera cortes, y ese
+  mecanismo sobrevive a 2 bits (cortes GSM 96 → 51; TriviaQA vacías 105 → 9). Lo que no sobrevive es la calidad de lo
+  terminado: acierto entre acabados 49 / 49 base Q6, 85 / 90 compilado Q6, **33 / 49 compilado IQ2**. Por eso el
+  compilado 2 bits queda **por debajo de la base Q6** en GSM (11 / 25, p = 0,029).
+- **HumanEval no se pierde por cerrar pronto, como en Q6, sino por bucles.** compiled_iq2xs cierra 44 de 164 con
+  mediana 2 048 (Q6: 152, mediana 703); base_iq2xs cierra 70. La edición a 2 bits no termina el código: lo que en Q6
+  era "cerrar pronto y mal" aquí es "no cerrar". Pareado contra base_iq2xs: 4 ganadas / 49 perdidas.
+- **Unsloth (rev 01:35):** UD-Q2_K_XL con menos KL que nuestro Q2_K ✓ (0,158 frente a 2,38, 75 %); es el mejor brazo
+  de 2-3 bits en todo (GSM 21, MATH 6 como la base, HumanEval 76, TriviaQA 45), con 3,59 bpw, más que nuestro IQ2_XS.
+  UD-IQ2_XXS KL 0,379 fuera de la banda 0,10-0,35 por arriba. "UD-Q2_K_XL en banda de nuestro Q2_K o mejor en
+  TriviaQA y HumanEval": TriviaQA 45 en banda (45-70), HumanEval 76 fuera (105-140); "mejor que nuestro Q2_K" se cumple
+  solo porque ese Q2_K medido da 0, no cuenta.
+- **Bandas:** fuera casi todas (base_q2k 8 de 8, base_iq2xs ppl y KL dentro, el resto fuera; compiled_iq2xs GSM 36 <
+  45, MATH 5 < 8, HumanEval 13 < 95). Sorpresas: "algún 2 bits iguala a la base Q6 en HumanEval o TriviaQA" no; "el
+  compilado 2 bits supera a su Q6 en GSM" no; "base_q2k GSM < 20" sí.
+- **Consecuencia.** A 2 bits recuantizando desde Q6_K ningún brazo sirve para razonar con 2 048 tokens; la pregunta
+  "¿sobrevive la edición?" tiene respuesta (sí, el mecanismo) pero no utilidad (el compilado a 2 bits queda por debajo
+  de la base sin cuantizar). Siguientes brazos posibles (no lanzados): Q2_K con imatrix (aislar Q2); la base IQ2_XS con
+  un control de bucles sin edición (penalización de repetición o tope de pensamiento) para separar "terminar" de
+  "editar"; proteger las filas editadas de `down_proj` en Q6 o reinyectar la edición después de cuantizar; partir de
+  BF16 como Unsloth.
+
+**Lo que cambia en el repositorio tras §45.19-45.21.** "La dirección concluir mejora GSM8K/MATH en el sellado" pasa a
+estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35, solo en MATH y como recuperación de
+cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las
+tres. En R1-Distill-Llama-8B la dirección ahorra tokens (−31 % / −18 %) y recupera cortes a costa de perder el 10 % de lo
+que la base acierta acabando. Predicciones: 40 filas, 36 puntuables, ✅ 6 / ◐ 14 / ❌ 16 / ⏳ 4.

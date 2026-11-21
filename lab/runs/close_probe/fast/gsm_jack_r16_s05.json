@@ -1,0 +1,457 @@
+{
+ "summary": {
+  "name": "gsm_jack_r16_s05",
+  "bench": "gsm8k",
+  "cap": 2048,
+  "system": null,
+  "bias_think": 0.0,
+  "lora": "0:0.5",
+  "seconds": 381,
+  "A": {
+   "n": 28,
+   "closed": 22,
+   "ok": 18,
+   "median_tokens": 697
+  },
+  "ok": {
+   "n": 20,
+   "closed": 20,
+   "ok": 20,
+   "median_tokens": 373
+  }
+ },
+ "items": [
+  {
+   "grp": "A",
+   "i": 0,
+   "closed": true,
+   "ok": true,
+   "tokens": 270,
+   "pred": "18",
+   "content_tail": "Janet's ducks lay 16 eggs per day. She uses 3 for breakfast and 4 for muffins, so the number of eggs remaining is \\(16 - 3 - 4 = 9\\). She sells these 9 eggs at $2 each, so her daily earnings are \\(9 \\times 2 = 18\\) dollars.\n\n\\boxed{18}"
+  },
+  {
+   "grp": "A",
+   "i": 2,
+   "closed": true,
+   "ok": true,
+   "tokens": 1327,
+   "pred": "70000",
+   "content_tail": "creased the value of the house by 150% of its original value. The original value is $80,000, so the increase is $80,000 \\times 1.5 = $120,000$.\n\nThe new value of the house is $80,000 + $120,000 = $200,000$.\n\nProfit is the new value minus the total cost: $200,000 - $130,000 = $70,000$.\n\n\\boxed{70000}"
+  },
+  {
+   "grp": "A",
+   "i": 7,
+   "closed": true,
+   "ok": false,
+   "tokens": 1189,
+   "pred": "160 \\text{ minutes}",
+   "content_tail": "s \\(80 / 2 = 40\\) minutes.\n2. **Update time**: Windows restart takes 20 minutes.\n3. **Restarted download**: The entire 200 GB must be downloaded again from the beginning. At 2 GB/minute, this takes \\(200 / 2 = 100\\) minutes.\n\nTotal time = \\(40 + 20 + 100 = 160\\) minutes.\n\n\\boxed{160 \\text{ minutes}}"
+  },
+  {
+   "grp": "A",
+   "i": 10,
+   "closed": true,
+   "ok": true,
+   "tokens": 599,
+   "pred": "366",
+   "content_tail": "th. In the second month, downloads were three times the first month: \\(3 \\times 60 = 180\\). In the third month, downloads were reduced by 30% from the second month: \\(180 \\times (1 - 0.30) = 180 \\times 0.70 = 126\\). The total downloads over the three months are \\(60 + 180 + 126 = 366\\).\n\n\\boxed{366}"
+  },
+  {
+   "grp": "A",
+   "i": 12,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 13,
+   "closed": true,
+   "ok": true,
+   "tokens": 416,
+   "pred": "18",
+   "content_tail": "Melanie started with 18 vacuum cleaners.\n\n\\boxed{18}"
+  },
+  {
+   "grp": "A",
+   "i": 14,
+   "closed": true,
+   "ok": false,
+   "tokens": 470,
+   "pred": "60\\%",
+   "content_tail": "s.\n- Remaining students: \\(20 - 4 = 16\\).\n- Jazz dance: 25% of the remaining 16 = \\(0.25 \\times 16 = 4\\) students.\n- Remaining after jazz: \\(16 - 4 = 12\\).\n- Hip-hop dance: the rest, which is 12 students.\n\nPercentage of entire students in hip-hop: \\(\\frac{12}{20} \\times 100\\% = 60\\%\\).\n\n\\boxed{60\\%}"
+  },
+  {
+   "grp": "A",
+   "i": 26,
+   "closed": true,
+   "ok": true,
+   "tokens": 431,
+   "pred": "243",
+   "content_tail": "Mishka bought 3 pairs of shorts, 3 pairs of pants, and 3 pairs of shoes.\n\n- Cost of shorts: \\(3 \\times 16.50 = 49.50\\)\n- Cost of pants: \\(3 \\times 22.50 = 67.50\\)\n- Cost of shoes: \\(3 \\times 42 = 126\\)\n\nTotal cost: \\(49.50 + 67.50 + 126 = 243\\)\n\n\\boxed{243}"
+  },
+  {
+   "grp": "A",
+   "i": 36,
+   "closed": true,
+   "ok": true,
+   "tokens": 616,
+   "pred": "\\$75",
+   "content_tail": "Terry eats 2 yogurts per day for 30 days, so he needs \\(2 \\times 30 = 60\\) yogurts.\n\nThe yogurts are sold in packs of 4 for $5.00. To get 60 yogurts, he needs \\(60 \\div 4 = 15\\) packs.\n\nThe total cost is \\(15 \\times 5 = 75\\) dollars.\n\n\\boxed{\\$75}"
+  },
+  {
+   "grp": "A",
+   "i": 37,
+   "closed": true,
+   "ok": false,
+   "tokens": 1346,
+   "pred": "0",
+   "content_tail": "John sells all 13 of his lego sets, so he has 0 lego sets left. The information about the video games and leftover money is irrelevant to the number of lego sets he still has.\n\n\\boxed{0}"
+  },
+  {
+   "grp": "A",
+   "i": 38,
+   "closed": true,
+   "ok": false,
+   "tokens": 1188,
+   "pred": "10 \\text{ mph}",
+   "content_tail": "or 3 hours. On the other two days, he runs for half as much time, which is \\( \\frac{3}{2} = 1.5 \\) hours each.\n\nTotal running time per week:\n\\[\n3 + 1.5 + 1.5 = 6 \\text{ hours}\n\\]\n\nHis average speed is:\n\\[\n\\frac{60 \\text{ miles}}{6 \\text{ hours}} = 10 \\text{ miles per hour}\n\\]\n\n\\boxed{10 \\text{ mph}}"
+  },
+  {
+   "grp": "A",
+   "i": 43,
+   "closed": true,
+   "ok": true,
+   "tokens": 697,
+   "pred": "48",
+   "content_tail": "calories per gram are \\(250 \\div 60 = \\frac{25}{6}\\) calories/gram.\n\nYou have consumed 1800 calories out of a 2000 calorie target, leaving \\(2000 - 1800 = 200\\) calories.\n\nThe amount of chips you can eat is \\(200 \\div \\frac{25}{6} = 200 \\times \\frac{6}{25} = \\frac{1200}{25} = 48\\) grams.\n\n\\boxed{48}"
+  },
+  {
+   "grp": "A",
+   "i": 45,
+   "closed": true,
+   "ok": true,
+   "tokens": 1821,
+   "pred": "104",
+   "content_tail": "Monday means an additional 2/5 of Monday's articles. So, Tuesday = 5 + (2/5) \u00d7 5 = 5 + 2 = 7 articles.\n- Wednesday: Twice the number of Tuesday's articles = 2 \u00d7 7 = 14 articles.\n\nTotal articles = 5 + 7 + 14 = 26 articles.\n\nEach article takes 4 hours, so total hours = 26 \u00d7 4 = 104 hours.\n\n\\boxed{104}"
+  },
+  {
+   "grp": "A",
+   "i": 47,
+   "closed": true,
+   "ok": true,
+   "tokens": 446,
+   "pred": "800",
+   "content_tail": "John bought 5 blue ties at $40 each, spending $200. He bought twice as many red ties, so 10 red ties. Red ties cost 50% more than blue ties, so $40 \u00d7 1.5 = $60 each. Total spent on red ties is 10 \u00d7 $60 = $600. Total spent on ties is $200 + $600 = $800.\n\n\\boxed{800}"
+  },
+  {
+   "grp": "A",
+   "i": 50,
+   "closed": true,
+   "ok": true,
+   "tokens": 362,
+   "pred": "294",
+   "content_tail": "ickens produce 252 eggs per day. Since a dozen is 12 eggs, the daily production in dozens is:\n\\[\n\\frac{252}{12} = 21 \\text{ dozens}\n\\]\nHe sells each dozen for $2, so his daily earnings are:\n\\[\n21 \\times 2 = \\$42\n\\]\nA week has 7 days, so his weekly earnings are:\n\\[\n42 \\times 7 = \\$294\n\\]\n\n\\boxed{294}"
+  },
+  {
+   "grp": "A",
+   "i": 51,
+   "closed": true,
+   "ok": true,
+   "tokens": 748,
+   "pred": "5",
+   "content_tail": "ext{ mph} \\times 3 \\text{ hours} = 30 \\text{ miles}.\n\\]\n\nHe then returns at a speed of 6 mph. The time required to travel back is:\n\n\\[\n\\text{Time} = \\frac{\\text{Distance}}{\\text{Speed}} = \\frac{30 \\text{ miles}}{6 \\text{ mph}} = 5 \\text{ hours}.\n\\]\n\nThus, it takes him 5 hours to get back.\n\n\\boxed{5}"
+  },
+  {
+   "grp": "A",
+   "i": 58,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 62,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 67,
+   "closed": true,
+   "ok": true,
+   "tokens": 360,
+   "pred": "595",
+   "content_tail": "The number of diamonds is 175. \nThe number of rubies is 35 fewer than diamonds: \\(175 - 35 = 140\\). \nThe number of emeralds is twice the number of rubies: \\(2 \\times 140 = 280\\). \nThe total number of gems is \\(175 + 140 + 280 = 595\\).\n\n\\boxed{595}"
+  },
+  {
+   "grp": "A",
+   "i": 69,
+   "closed": true,
+   "ok": true,
+   "tokens": 283,
+   "pred": "60",
+   "content_tail": " 8 weeks, which totals $5 \\times 8 = $40. At the end of the 8 weeks, she has $100. Therefore, the initial amount plus the allowance equals $100:\n\n\\[\n\\text{Initial amount} + 40 = 100\n\\]\n\nSolving for the initial amount:\n\n\\[\n\\text{Initial amount} = 100 - 40 = 60\n\\]\n\nBailey started with $60.\n\n\\boxed{60}"
+  },
+  {
+   "grp": "A",
+   "i": 70,
+   "closed": true,
+   "ok": true,
+   "tokens": 580,
+   "pred": "7425",
+   "content_tail": "sses. She also teaches 8 classes on Saturday, giving a total of \\(25 + 8 = 33\\) classes per week.\n\nEach class has 15 students, so the total number of students per week is \\(33 \\times 15 = 495\\).\n\nShe charges $15.00 per student, so her total weekly earnings are \\(495 \\times 15 = 7425\\).\n\n\\boxed{7425}"
+  },
+  {
+   "grp": "A",
+   "i": 72,
+   "closed": true,
+   "ok": true,
+   "tokens": 254,
+   "pred": "221",
+   "content_tail": "Tommy sells 43 brownies at $3 each, which is \\(43 \\times 3 = 129\\) dollars. He sells 23 cheesecakes at $4 each, which is \\(23 \\times 4 = 92\\) dollars. The total amount raised is \\(129 + 92 = 221\\) dollars.\n\n\\boxed{221}"
+  },
+  {
+   "grp": "A",
+   "i": 85,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 87,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 89,
+   "closed": true,
+   "ok": true,
+   "tokens": 441,
+   "pred": "24",
+   "content_tail": "Christina invited 16 friends. She needs 0.75 gift bags per invited guest, so the total number of gift bags needed is:\n\n\\[\n16 \\times 0.75 = 12 \\text{ gift bags}\n\\]\n\nEach gift bag costs $2, so the total cost is:\n\n\\[\n12 \\times 2 = 24 \\text{ dollars}\n\\]\n\n\\boxed{24}"
+  },
+  {
+   "grp": "A",
+   "i": 92,
+   "closed": true,
+   "ok": true,
+   "tokens": 360,
+   "pred": "4",
+   "content_tail": "Jackson is 4 years old.\n\n\\boxed{4}"
+  },
+  {
+   "grp": "A",
+   "i": 93,
+   "closed": false,
+   "ok": false,
+   "tokens": 2048,
+   "pred": "",
+   "content_tail": ""
+  },
+  {
+   "grp": "A",
+   "i": 98,
+   "closed": true,
+   "ok": true,
+   "tokens": 1384,
+   "pred": "5",
+   "content_tail": "in the first 15 minutes: \\(x\\)\n- Cars driving through in the remaining 15 minutes: 20\n- Cars taking an exit: 5\n\nThe sum of these groups equals the total number of cars:\n\\[\nx + 20 + 5 = 30\n\\]\n\\[\nx + 25 = 30\n\\]\n\\[\nx = 5\n\\]\n\nThus, 5 cars drove through the traffic jam in the first 15 minutes.\n\n\\boxed{5}"
+  },
+  {
+   "grp": "ok",
+   "i": 1,
+   "closed": true,
+   "ok": true,
+   "tokens": 256,
+   "pred": "3",
+   "content_tail": "The robe requires 2 bolts of blue fiber. The amount of white fiber is half of the blue fiber, which is \\( \\frac{1}{2} \\times 2 = 1 \\) bolt. The total number of bolts is \\( 2 + 1 = 3 \\).\n\n\\boxed{3}"
+  },
+  {
+   "grp": "ok",
+   "i": 3,
+   "closed": true,
+   "ok": true,
+   "tokens": 259,
+   "pred": "540",
+   "content_tail": "James runs 3 sprints per session, 3 sessions per week, and each sprint is 60 meters.\n\nTotal sprints per week: \\(3 \\times 3 = 9\\) sprints.\n\nTotal meters per week: \\(9 \\times 60 = 540\\) meters.\n\n\\boxed{540}"
+  },
+  {
+   "grp": "ok",
+   "i": 4,
+   "closed": true,
+   "ok": true,
+   "tokens": 364,
+   "pred": "20",
+   "content_tail": "The total daily feed needed for 20 chickens is \\(20 \\times 3 = 60\\) cups. Wendi has already given \\(15 + 25 = 40\\) cups in the morning and afternoon. Therefore, the final meal requires \\(60 - 40 = 20\\) cups.\n\n\\boxed{20}"
+  },
+  {
+   "grp": "ok",
+   "i": 5,
+   "closed": true,
+   "ok": true,
+   "tokens": 965,
+   "pred": "64",
+   "content_tail": "sses. The first glass costs $5, and every second glass costs 60% of $5, which is $3.\n\nThe glasses are priced in pairs: the first glass in each pair costs $5, and the second glass in each pair costs $3.\n\nWith 16 glasses, there are 8 pairs.\n\nTotal cost = 8 pairs \u00d7 ($5 + $3) = 8 \u00d7 $8 = $64.\n\n\\boxed{64}"
+  },
+  {
+   "grp": "ok",
+   "i": 6,
+   "closed": true,
+   "ok": true,
+   "tokens": 297,
+   "pred": "260",
+   "content_tail": "Seattle has 20 sheep.\n\nCharleston has 4 times as many sheep as Seattle:\n\\[\n4 \\times 20 = 80 \\text{ sheep}\n\\]\n\nToulouse has twice as many sheep as Charleston:\n\\[\n2 \\times 80 = 160 \\text{ sheep}\n\\]\n\nTotal sheep:\n\\[\n20 + 80 + 160 = 260\n\\]\n\n\\boxed{260}"
+  },
+  {
+   "grp": "ok",
+   "i": 8,
+   "closed": true,
+   "ok": true,
+   "tokens": 880,
+   "pred": "45",
+   "content_tail": "overed = \\(0.5 \\times 30 = 15\\) miles.\n- Remaining time: \\(4 - 2 - 0.5 = 1.5\\) hours, driving at 80 mph, distance covered = \\(1.5 \\times 80 = 120\\) miles.\n\nTotal distance covered on the return trip = \\(0 + 15 + 120 = 135\\) miles.\n\nDistance from home at the end = \\(180 - 135 = 45\\) miles.\n\n\\boxed{45}"
+  },
+  {
+   "grp": "ok",
+   "i": 9,
+   "closed": true,
+   "ok": true,
+   "tokens": 340,
+   "pred": "460",
+   "content_tail": "Eliza's regular pay for the first 40 hours is \\(40 \\times 10 = 400\\) dollars. Her overtime rate is \\(1.2 \\times 10 = 12\\) dollars per hour. She worked 5 overtime hours, so her overtime pay is \\(5 \\times 12 = 60\\) dollars. Her total earnings are \\(400 + 60 = 460\\) dollars.\n\n\\boxed{460}"
+  },
+  {
+   "grp": "ok",
+   "i": 11,
+   "closed": true,
+   "ok": true,
+   "tokens": 337,
+   "pred": "694",
+   "content_tail": "The total cost is calculated as follows:\n\n- Donuts: \\(3 \\times 68 = 204\\)\n- Mini cupcakes: \\(2 \\times 80 = 160\\)\n- Mini cheesecakes: \\(6 \\times 55 = 330\\)\n\nAdding these together: \\(204 + 160 + 330 = 694\\).\n\n\\boxed{694}"
+  },
+  {
+   "grp": "ok",
+   "i": 15,
+   "closed": true,
+   "ok": true,
+   "tokens": 735,
+   "pred": "125",
+   "content_tail": " is calculated as the initial value multiplied by the percentage increase.\n\n- Jewelry: $5,000 \\times 2.5\\% = 5,000 \\times 0.025 = 125$\n- Electronic gadgets: $8,000 \\times 1.2\\% = 8,000 \\times 0.012 = 96$\n\nTo maximize profit, the merchant should choose jewelry, yielding a profit of $125.\n\n\\boxed{125}"
+  },
+  {
+   "grp": "ok",
+   "i": 16,
+   "closed": true,
+   "ok": true,
+   "tokens": 523,
+   "pred": "230",
+   "content_tail": "travels 80 miles westward on the first day and 150 miles northward on the second day. The total distance covered by each train is the sum of these distances:\n\n\\[\n80 \\text{ miles} + 150 \\text{ miles} = 230 \\text{ miles}\n\\]\n\nBoth trains cover the same distance, so the answer is 230 miles.\n\n\\boxed{230}"
+  },
+  {
+   "grp": "ok",
+   "i": 17,
+   "closed": true,
+   "ok": true,
+   "tokens": 543,
+   "pred": "57500",
+   "content_tail": "Jill's weekly earnings from teaching: $20 \\times 35 = \\$700$.\nWeekly earnings from coaching: $30 \\times 15 = \\$450$.\nTotal weekly earnings: $\\$700 + \\$450 = \\$1150$.\nAnnual salary: $\\$1150 \\times 50 = \\$57,500$.\n\n\\boxed{57500}"
+  },
+  {
+   "grp": "ok",
+   "i": 18,
+   "closed": true,
+   "ok": true,
+   "tokens": 262,
+   "pred": "7",
+   "content_tail": "Claire eats 3 eggs each morning. In 4 weeks, there are \\(4 \\times 7 = 28\\) days. The total number of eggs eaten is \\(3 \\times 28 = 84\\) eggs. Since one dozen equals 12 eggs, the number of dozens is \\(84 \\div 12 = 7\\).\n\n\\boxed{7}"
+  },
+  {
+   "grp": "ok",
+   "i": 19,
+   "closed": true,
+   "ok": true,
+   "tokens": 373,
+   "pred": "6",
+   "content_tail": "Marissa has already walked 6 miles in 2 hours. To achieve an average speed of 4 mph over 12 miles, she needs a total time of \\(12 / 4 = 3\\) hours. She has 1 hour left to cover the remaining 6 miles, so she must walk at \\(6 / 1 = 6\\) mph.\n\n\\boxed{6}"
+  },
+  {
+   "grp": "ok",
+   "i": 20,
+   "closed": true,
+   "ok": true,
+   "tokens": 542,
+   "pred": "15",
+   "content_tail": "drink are added, contributing \\(9 \\times \\frac{2}{3} = 6\\) liters of water.\n\nThe pineapple drink contains \\(15 \\times \\frac{3}{5} = 9\\) liters of water.\n\nTotal water in the mixture = \\(6 + 9 = 15\\) liters.\n\nThe total volume is \\(15 + 9 = 24\\) liters, and the amount of water is 15 liters.\n\n\\boxed{15}"
+  },
+  {
+   "grp": "ok",
+   "i": 21,
+   "closed": true,
+   "ok": true,
+   "tokens": 441,
+   "pred": "14",
+   "content_tail": "Raymond was born 6 years before Samantha, so if Samantha is now 31, Raymond is 31 + 6 = 37 years old. Raymond had a son at age 23, so the son was born 37 - 23 = 14 years ago.\n\n\\boxed{14}"
+  },
+  {
+   "grp": "ok",
+   "i": 22,
+   "closed": true,
+   "ok": true,
+   "tokens": 238,
+   "pred": "7",
+   "content_tail": "Billy sold DVDs to his customers as follows:\n\n- First 3 customers: 3 \u00d7 1 = 3 DVDs\n- Next 2 customers: 2 \u00d7 2 = 4 DVDs\n- Last 3 customers: 3 \u00d7 0 = 0 DVDs\n\nTotal DVDs sold = 3 + 4 + 0 = 7\n\n\\boxed{7}"
+  },
+  {
+   "grp": "ok",
+   "i": 23,
+   "closed": true,
+   "ok": true,
+   "tokens": 198,
+   "pred": "8",
+   "content_tail": "The candle burns from 1:00 PM to 5:00 PM, which is a duration of 4 hours. Since it melts 2 centimeters per hour, the total amount melted is \\(2 \\times 4 = 8\\) centimeters.\n\n\\boxed{8}"
+  },
+  {
+   "grp": "ok",
+   "i": 24,
+   "closed": true,
+   "ok": true,
+   "tokens": 434,
+   "pred": "26",
+   "content_tail": "The sale price is $19.50, which is 75% of the original price (since a 25% discount means the customer pays 100% - 25% = 75%).\n\nLet the original price be \\( P \\). Then:\n\\[\n0.75P = 19.50\n\\]\nSolving for \\( P \\):\n\\[\nP = \\frac{19.50}{0.75} = 26\n\\]\n\nThe original price of the book was $26.\n\n\\boxed{26}"
+  },
+  {
+   "grp": "ok",
+   "i": 25,
+   "closed": true,
+   "ok": true,
+   "tokens": 408,
+   "pred": "2",
+   "content_tail": "ken meal at $12 = $12\n- 5 packs of milk at $3 each = $15\n- 4 apples at $1.50 each = $6\n\nTotal cost of these items: $12 + $15 + $6 = $33.\n\nShe paid a total of $50, so the amount spent on pizza is $50 - $33 = $17.\n\nEach box of pizza costs $8.50. The number of pizza boxes is $17 \u00f7 $8.50 = 2.\n\n\\boxed{2}"
+  },
+  {
+   "grp": "ok",
+   "i": 27,
+   "closed": true,
+   "ok": true,
+   "tokens": 360,
+   "pred": "16",
+   "content_tail": "Cynthia eats 1 serving per night for 60 days, so she needs 60 servings total. Each carton contains 15 servings, so she needs \\(60 \\div 15 = 4\\) cartons. Each carton costs $4.00, so the total cost is \\(4 \\times 4 = 16\\) dollars.\n\n\\boxed{16}"
+  }
+ ]
+}

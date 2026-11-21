@@ -1,0 +1,6 @@
+{
+  "out": "C:\\weights\\servidos\\qwen35-9b__dt_pm05_seed2026.gguf",
+  "ops": [
+    {"type": "add-scalar-signed", "tensor": "blk.*.ssm_dt.bias", "value": 0.5, "seed": 2026}
+  ]
+}

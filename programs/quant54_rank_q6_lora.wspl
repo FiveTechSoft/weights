@@ -1,0 +1,4 @@
+experiment quant54_rank_q6_lora:
+objective: row 54 arm q6_lora on rank-2048 (lab/probes/quantize/PLAN54.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=q6_lora out=lab/runs/quant/rank_q6_lora.json lora=hf_cache/cc_op_v2/vector/lora_r1.gguf scale=1.0

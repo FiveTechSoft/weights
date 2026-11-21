@@ -1,0 +1,173 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "dev-2048",
+ "relation": "two models",
+ "base": "base_a",
+ "arm": "dt_minus05",
+ "base_model_sha": "2f57ee31c827",
+ "arm_model_sha": "ce8f3491e818",
+ "placebo": "dt_pm05",
+ "band": {
+  "gsm8k": {
+   "discordant": 0,
+   "abs_delta": 0,
+   "n": 100
+  },
+  "math500": {
+   "discordant": 1,
+   "abs_delta": 1,
+   "n": 50
+  }
+ },
+ "benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 37,
+    "win": 8,
+    "loss": 21,
+    "p": 0.0241
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 37,
+    "win": 8,
+    "loss": 20,
+    "p": 0.0357
+   },
+   "extra": {
+    "lost_base_ok_stop": 20,
+    "gained": 8,
+    "cut_base": 51,
+    "cut_arm": 63,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 177665,
+    "token_change": 0.0519
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 5,
+    "win": 1,
+    "loss": 2,
+    "p": 1.0
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 5,
+    "win": 1,
+    "loss": 2,
+    "p": 1.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 1,
+    "gained": 1,
+    "cut_base": 45,
+    "cut_arm": 45,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 98813,
+    "token_change": 0.0127
+   }
+  }
+ },
+ "placebo_benchmarks": {
+  "gsm8k": {
+   "g1": {
+    "n": 100,
+    "base": 50,
+    "arm": 45,
+    "win": 10,
+    "loss": 15,
+    "p": 0.4244
+   },
+   "g2": {
+    "n": 100,
+    "base": 49,
+    "arm": 46,
+    "win": 12,
+    "loss": 15,
+    "p": 0.7011
+   },
+   "extra": {
+    "lost_base_ok_stop": 15,
+    "gained": 10,
+    "cut_base": 51,
+    "cut_arm": 54,
+    "nothink_arm": 0,
+    "tokens_base": 168894,
+    "tokens_arm": 170602,
+    "token_change": 0.0101
+   }
+  },
+  "math500": {
+   "g1": {
+    "n": 50,
+    "base": 6,
+    "arm": 8,
+    "win": 4,
+    "loss": 2,
+    "p": 0.6875
+   },
+   "g2": {
+    "n": 50,
+    "base": 6,
+    "arm": 7,
+    "win": 3,
+    "loss": 2,
+    "p": 1.0
+   },
+   "extra": {
+    "lost_base_ok_stop": 1,
+    "gained": 4,
+    "cut_base": 45,
+    "cut_arm": 42,
+    "nothink_arm": 0,
+    "tokens_base": 97576,
+    "tokens_arm": 96448,
+    "token_change": -0.0116
+   }
+  }
+ },
+ "preservation": {
+  "humaneval": {
+   "n": 164,
+   "base": 143,
+   "arm": 134,
+   "lost": 17,
+   "gained": 8
+  },
+  "compliance": {
+   "n": 40,
+   "base": 14,
+   "arm": 14,
+   "lost": 4,
+   "gained": 4
+  },
+  "thresholds": {
+   "ifeval_strict": null,
+   "ifeval_loose": null,
+   "triviaqa": null
+  },
+  "garbage_rate": {
+   "base": 0.1569,
+   "arm": 0.2304
+  },
+  "preserves": false,
+  "notes": []
+ },
+ "reasons": [
+  "no provenance link between the runs; the verdict rule applies to an edit against its base"
+ ],
+ "significant_up": [],
+ "significant_down": [
+  "gsm8k"
+ ],
+ "verdict": "two models: paired statistics only"
+}

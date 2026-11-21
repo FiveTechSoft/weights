@@ -1,0 +1,7 @@
+experiment quant54_dist:
+objective: row 54 QD, dist-shift of Q2_K with the A0 imatrix against the A0 base logits (lab/probes/quantize/PLAN54.md)
+steps:
+    step bench_run suite=dist-shift model=hf_cache/quant/qwen9b-Q2_K-imx.gguf base=hf_cache/h4/A0-Q6_K.gguf arm=q2k_imx out=lab/runs/quant/dist_q2k_imx.json provenance=hf_cache/quant/qwen9b-Q2_K-imx.gguf.manifest.json
+    step bench_compare base=lab/runs/bench/dist9b_base.json arm=lab/runs/quant/dist_q2k_imx.json out=lab/runs/quant/cmp_dist_q2k_imx.json
+    step bench_compare base=lab/runs/quant/dist_base_q2k.json arm=lab/runs/quant/dist_q2k_imx.json out=lab/runs/quant/cmp_dist_q2k_imx_vs_q2k.json
+    step bench_table add=lab/runs/quant/dist_q2k_imx.json model="Qwen3.5-9B Q2_K + imatrix (from A0)" add_compare=lab/runs/quant/cmp_dist_q2k_imx.json

@@ -48,6 +48,9 @@ class TestWspMcpServer(unittest.TestCase):
         exec_step = res.get("ejecucion", [{}])[0]
         self.assertEqual(exec_step.get("status"), "aborted")
 
+    @unittest.skipUnless((ROOT / "data" / "nanowsp3_weights.safetensors").exists(),
+                         "data/nanowsp3_weights.safetensors is local (not in git): without it the tool answers from "
+                         "an untrained model (CI: 'å' instead of 'A')")
     def test_query_nanowsp3_tool(self):
         """query_nanowsp3 must return accurate next token prediction."""
         res = server.query_nanowsp3("SCI: Z79=")

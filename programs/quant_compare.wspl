@@ -1,0 +1,14 @@
+experiment quant_compare:
+objective: the 2-bit arms on rank-2048 against their Q6_K sources (edit-vs-base by provenance) and the compiled IQ2_XS against the base IQ2_XS (two models: survival of the edit)
+steps:
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/quant/rank_base_q2k.json out=lab/runs/quant/cmp_rank_base_q2k.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/quant/rank_base_iq2xs.json out=lab/runs/quant/cmp_rank_base_iq2xs.json
+    step bench_compare base=lab/runs/rank/qwen9b_compiled.json arm=lab/runs/quant/rank_compiled_iq2xs.json out=lab/runs/quant/cmp_rank_compiled_iq2xs.json
+    step bench_compare base=lab/runs/quant/rank_base_iq2xs.json arm=lab/runs/quant/rank_compiled_iq2xs.json out=lab/runs/quant/cmp_rank_survival.json
+    step bench_table add=lab/runs/quant/rank_base_q2k.json model="Qwen3.5-9B Q2_K (from A0)" add_compare=lab/runs/quant/cmp_rank_base_q2k.json
+    step bench_table add=lab/runs/quant/rank_base_iq2xs.json model="Qwen3.5-9B IQ2_XS (from A0)" add_compare=lab/runs/quant/cmp_rank_base_iq2xs.json
+    step bench_table add=lab/runs/quant/rank_compiled_iq2xs.json model="compiled conclude IQ2_XS" add_compare=lab/runs/quant/cmp_rank_compiled_iq2xs.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/quant/rank_unsloth_ud_q2kxl.json out=lab/runs/quant/cmp_rank_unsloth_ud_q2kxl.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/quant/rank_unsloth_ud_iq2xxs.json out=lab/runs/quant/cmp_rank_unsloth_ud_iq2xxs.json
+    step bench_table add=lab/runs/quant/rank_unsloth_ud_q2kxl.json model="Qwen3.5-9B UD-Q2_K_XL (Unsloth)" add_compare=lab/runs/quant/cmp_rank_unsloth_ud_q2kxl.json
+    step bench_table add=lab/runs/quant/rank_unsloth_ud_iq2xxs.json model="Qwen3.5-9B UD-IQ2_XXS (Unsloth)" add_compare=lab/runs/quant/cmp_rank_unsloth_ud_iq2xxs.json

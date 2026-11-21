@@ -1,0 +1,16 @@
+# ==============================================================================
+# WSP-Lang: compile a Witten-Bell order-5 n-gram over Shakespeare char into nanoGPT.
+# Closed form, 0 backward passes. Fit on the 90% training split only.
+# The MLP is widened to hold one unit per context, so this is not upstream's 4*d shape.
+# ==============================================================================
+
+experiment synthesize_nanogpt_ngram:
+    model: nanoGPT
+    objective: beat_best_train_only_ngram_baseline_without_gradients
+
+    budgets:
+        max_modified_weights = 100000000
+        allow_write = true
+
+    steps:
+        step synthesize method=ngram order=5 arch=programs/arch/nanogpt.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanogpt_synth_ngram5/model.safetensors block=256 layers=1 heads=6 d=384 dropout=0.0 bias=false seed=1337

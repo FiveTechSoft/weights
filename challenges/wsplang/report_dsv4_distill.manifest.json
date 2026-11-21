@@ -1,0 +1,149 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "report_dsv4_distill",
+  "archivo": "lab\\probes\\model_report\\dsv4_distill.wspl",
+  "steps_count": 1,
+  "steps": [
+    {
+      "sec": "steps",
+      "expr": "step model_report model=Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B out=lab/runs/model_report/dsv4_distill_report.md",
+      "op": "model_report",
+      "args": "model=Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B out=lab/runs/model_report/dsv4_distill_report.md"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "model_report",
+        "args": "model=Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B out=lab/runs/model_report/dsv4_distill_report.md"
+      }
+    ],
+    "pasos_mapeo": {
+      "model_report": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": null,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": false,
+      "allow_training": false,
+      "unlock_tensors": []
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-06T14:35:22",
+  "ejecucion": [
+    {
+      "op": "model_report",
+      "args": "model=Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B out=lab/runs/model_report/dsv4_distill_report.md",
+      "status": "ok",
+      "result": {
+        "method": "lora_like",
+        "classification": {
+          "touched": [
+            "linear_attn.out_proj.weight",
+            "mlp.down_proj.weight",
+            "mlp.gate_proj.weight",
+            "mlp.up_proj.weight",
+            "self_attn.k_proj.weight",
+            "self_attn.o_proj.weight",
+            "self_attn.q_proj.weight",
+            "self_attn.v_proj.weight"
+          ],
+          "untouched": [
+            "input_layernorm.weight",
+            "linear_attn.A_log",
+            "linear_attn.conv1d.weight",
+            "linear_attn.dt_bias",
+            "linear_attn.in_proj_a.weight",
+            "linear_attn.in_proj_b.weight",
+            "linear_attn.in_proj_qkv.weight",
+            "linear_attn.in_proj_z.weight",
+            "linear_attn.norm.weight",
+            "lm_head.weight",
+            "model.embed_tokens.weight",
+            "model.norm.weight",
+            "post_attention_layernorm.weight",
+            "self_attn.k_norm.weight",
+            "self_attn.q_norm.weight"
+          ],
+          "rank_estimate": 39,
+          "rank_median": 35.0,
+          "layers": [
+            0,
+            31
+          ],
+          "layers_touched": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "method": "lora_like"
+        },
+        "usable": [
+          "Adapter-like update (rank about 39) on: linear_attn.out_proj.weight, mlp.down_proj.weight, mlp.gate_proj.weight, mlp.up_proj.weight, self_attn.k_proj.weight, self_attn.o_proj.weight, self_attn.q_proj.weight, self_attn.v_proj.weight. Small and self-contained: it can be applied to the base as a low-rank delta; its effect is whatever the adapter was trained for, nothing more.",
+          "No column-side tensor type shares directions with the studied improvements (H3 rule).",
+          "Residual-writing matrices (linear_attn.out_proj.weight, mlp.down_proj.weight, self_attn.o_proj.weight) cannot be judged from blocks of rows: run `delta_signature` + `delta_compare` for them.",
+          "Closest studied model by where it changes: nyx_rp (role-play LoRA (control)), Spearman 0.95."
+        ],
+        "closest": [
+          {
+            "model": "nyx_rp",
+            "family": "role-play LoRA (control)",
+            "spearman": 0.9525691699604744
+          },
+          {
+            "model": "abliterated",
+            "family": "abliteration",
+            "spearman": 0.8280632411067194
+          },
+          {
+            "model": "neohorse",
+            "family": "agent, full",
+            "spearman": 0.5296442687747036
+          }
+        ],
+        "transfer_candidates": [],
+        "output": "C:\\weights\\lab\\runs\\model_report\\dsv4_distill_report.md"
+      },
+      "execution_state": "executed"
+    }
+  ]
+}

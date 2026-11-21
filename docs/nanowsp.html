@@ -192,8 +192,8 @@
 
   <header>
     <div class="badge-pill">EXPERIMENTAL BENCHMARK · ZERO-BACKPROPAGATION TRANSFORMER</div>
-    <h1>Project NanoWSP: Micro-LLM via WSPLang</h1>
-    <p class="subtitle">A complete 2-layer autoregressive Transformer (80,704 parameters) synthesized, compiled, and programmed directly in weight space without stochastic gradient descent.</p>
+    <h1>Project NanoWSP: Small Transformer via WSPLang (Lookup Testbed)</h1>
+    <p class="subtitle">A complete 2-layer autoregressive Transformer (80,704 parameters) written directly in weight space without stochastic gradient descent. It recalls the pairs written into it (memorization); it is not a language model and no generalization is tested.</p>
 
     <div class="btn-group">
       <a href="https://github.com/FiveTechSoft/weights/blob/main/engine/nanowsp_runtime.py" class="btn btn-primary" target="_blank">
@@ -238,12 +238,12 @@
 
     <section>
       <h2 class="section-title">⚡ Multi-Token Generation & Capabilities</h2>
-      <p class="section-desc">NanoWSP is not a toy adder; it is a general-purpose sequence generator whose latent dynamics are steered by targeted weight modifications:</p>
+      <p class="section-desc">Every output below is a stored key&rarr;value pair queried with its own key: this shows storage and recall, not knowledge, logic or syntax learned in general:</p>
 
       <div class="grid-2">
         <div class="card">
           <h3>🌍 1. Factual Knowledge & Words</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Imprints multi-token transitions in Layer 1 MLP Out with 100% exact character recall:</p>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Stores multi-token transitions in Layer 1 MLP Out; the stored pairs are recalled exactly:</p>
           <pre><code>Prompt: 'ES:'  ->  Model output: 'ES:MAD' (Madrid)
 Prompt: 'FR:'  ->  Model output: 'FR:PAR' (Paris)
 Prompt: 'IT:'  ->  Model output: 'IT:ROM' (Rome)</code></pre>
@@ -251,7 +251,7 @@ Prompt: 'IT:'  ->  Model output: 'IT:ROM' (Rome)</code></pre>
 
         <div class="card">
           <h3>🧮 2. Boolean Logic Circuits</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Evaluates digital truth tables through tensorial subspace mappings without conditional code:</p>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Stores the 4 rows of a truth table as key&rarr;value pairs (lookup, not computation):</p>
           <pre><code>Prompt: '1&1='  ->  Output: '1' (True)
 Prompt: '1&0='  ->  Output: '0' (False)
 Prompt: '0&1='  ->  Output: '0' (False)
@@ -260,18 +260,18 @@ Prompt: '0&0='  ->  Output: '0' (False)</code></pre>
 
         <div class="card">
           <h3>🔤 3. Syntactic Delimiter Closure</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Mirrors how large models learn to balance brackets, tags, and delimiters:</p>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Stores closing delimiters for the written prompts (no grammar is learned):</p>
           <pre><code>Prompt: '(hello'  ->  Output: '(hello)'
 Prompt: '[item'   ->  Output: '[item]'
 Prompt: '{block'  ->  Output: '{block}'</code></pre>
         </div>
 
         <div class="card">
-          <h3>🚫 4. Reasoning Loop Attractor Deletion</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Subtractive rank-1 projection removes cyclic degenerative states:</p>
+          <h3>🚫 4. Rank-1 Projection of a Toy Attractor Direction</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">A rank-1 projection drives the chosen direction to zero (true by algebra; no loop behaviour was measured):</p>
           <pre><code>Attractor energy before: 4.8625
-Attractor energy after:  0.0000 (100.00% dissipation)
-Orthogonal cross-talk:   0.00000000 (Zero distortion)</code></pre>
+Attractor energy after:  0.0000
+Orthogonal cross-talk:   0.00000000</code></pre>
         </div>
       </div>
     </section>
@@ -302,7 +302,7 @@ Orthogonal cross-talk:   0.00000000 (Zero distortion)</code></pre>
           ΔW = Y · X⁺ = Y (Xᵀ X + λ I)⁻¹ Xᵀ
         </div>
         <p style="color: #CBD5E1;">
-          The inverse Gram matrix $(X^T X)^{-1}$ cancels out the mutual cross-talk between all pairs, delivering <strong>100.0% accuracy</strong> across multi-pair factual datasets.
+          The inverse Gram matrix $(X^T X)^{-1}$ cancels out the mutual cross-talk between all pairs, so all stored pairs are recalled (on the stored keys only).
         </p>
       </div>
     </section>
@@ -317,7 +317,7 @@ Orthogonal cross-talk:   0.00000000 (Zero distortion)</code></pre>
             <th>Pairs ($M$)</th>
             <th>Gram Condition $\kappa(X)$</th>
             <th>Frobenius Norm $\|\Delta W\|_F$</th>
-            <th>Recall Accuracy</th>
+            <th>Recall (stored pairs)</th>
             <th>Unrelated Context Status</th>
           </tr>
         </thead>
@@ -363,7 +363,7 @@ Orthogonal cross-talk:   0.00000000 (Zero distortion)</code></pre>
       <div class="card" style="margin-top: 1.5rem; background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3);">
         <h4 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">Scientific Takeaway</h4>
         <p style="font-size: 0.95rem; color: #CBD5E1;">
-          This empirical curve cleanly defines the scope of Weight-Space Programming: <strong>WSP is extraordinary for localized surgery ($M \le 10$), safety patching, and attractor unlearning</strong> without modifying the global manifold. However, it cannot replace hierarchical backpropagation across all layers for general-purpose foundation model pre-training.
+          In this toy model, unrelated prompts stay intact for small $M$ ($M \le 10$) and degrade as the edit norm grows. That suggests WSP suits small local edits; whether it works for safety patching or loop removal in real LLMs has to be measured with forward passes (see the README, "Status of the results"). However, it cannot replace hierarchical backpropagation across all layers for general-purpose foundation model pre-training.
         </p>
       </div>
     </section>

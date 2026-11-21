@@ -1,0 +1,4 @@
+experiment quant54_rank_q6_dry:
+objective: row 54 arm q6_dry on rank-2048 (lab/probes/quantize/PLAN54.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=q6_dry out=lab/runs/quant/rank_q6_dry.json extra_body={"dry_multiplier":0.8,"dry_base":1.75,"dry_allowed_length":2}

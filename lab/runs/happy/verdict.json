@@ -1,0 +1,27 @@
+{
+ "scale": 0.25,
+ "test_vec": {
+  "tone_diff": 1.07,
+  "tone_sign_p": 2.9802322387695312e-08,
+  "lex_diff": 2.36,
+  "lex_sign_p": 7.275957614183426e-12,
+  "coherent": 37,
+  "n": 40
+ },
+ "test_placebo": {
+  "tone_diff": 0.05,
+  "tone_sign_p": 1.0,
+  "lex_diff": 0.02,
+  "lex_sign_p": 0.548828125,
+  "coherent": 39,
+  "n": 40
+ },
+ "criteria": {
+  "C1 tone +1.0 and p<0.01": true,
+  "C2 lexicon agrees (+2/100 words, p<0.01)": true,
+  "C3 placebo tone < +0.5": true,
+  "C4 coherent >= 36/40": true,
+  "C5 GSM8K not below base by > 2": true
+ },
+ "verdict": "PASS"
+}

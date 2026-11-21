@@ -1,0 +1,118 @@
+{
+ "base": "Qwen/Qwen3.5-9B",
+ "model": "XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B",
+ "tensors": {
+  "model.layers.0.mlp.gate_proj.weight": {
+   "shape": [
+    12288,
+    4096
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 621,
+   "rank_for_80pct": 1629,
+   "rank_for_90pct": 2308,
+   "energy_rank_16": 0.04185733199119568,
+   "energy_rank_64": 0.1134757474064827,
+   "energy_rank_256": 0.2907305657863617,
+   "energy_rank_1024": 0.6520418524742126
+  },
+  "model.layers.30.mlp.gate_proj.weight": {
+   "shape": [
+    12288,
+    4096
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 643,
+   "rank_for_80pct": 1719,
+   "rank_for_90pct": 2419,
+   "energy_rank_16": 0.04826679080724716,
+   "energy_rank_64": 0.1216585636138916,
+   "energy_rank_256": 0.2924365997314453,
+   "energy_rank_1024": 0.6367661356925964
+  },
+  "model.layers.0.mlp.down_proj.weight": {
+   "shape": [
+    4096,
+    12288
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 769,
+   "rank_for_80pct": 1885,
+   "rank_for_90pct": 2576,
+   "energy_rank_16": 0.03113236092031002,
+   "energy_rank_64": 0.0864141508936882,
+   "energy_rank_256": 0.24073751270771027,
+   "energy_rank_1024": 0.5909732580184937
+  },
+  "model.layers.30.mlp.down_proj.weight": {
+   "shape": [
+    4096,
+    12288
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 648,
+   "rank_for_80pct": 1659,
+   "rank_for_90pct": 2334,
+   "energy_rank_16": 0.036362841725349426,
+   "energy_rank_64": 0.10124394297599792,
+   "energy_rank_256": 0.2756042778491974,
+   "energy_rank_1024": 0.6429452300071716
+  },
+  "model.layers.0.linear_attn.in_proj_qkv.weight": {
+   "shape": [
+    8192,
+    4096
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 459,
+   "rank_for_80pct": 1386,
+   "rank_for_90pct": 2043,
+   "energy_rank_16": 0.06929446011781693,
+   "energy_rank_64": 0.16837230324745178,
+   "energy_rank_256": 0.3726483881473541,
+   "energy_rank_1024": 0.7147050499916077
+  },
+  "model.layers.30.linear_attn.in_proj_qkv.weight": {
+   "shape": [
+    8192,
+    4096
+   ],
+   "min_dim": 4096,
+   "rank_for_50pct": 403,
+   "rank_for_80pct": 1253,
+   "rank_for_90pct": 1890,
+   "energy_rank_16": 0.07619591057300568,
+   "energy_rank_64": 0.18258647620677948,
+   "energy_rank_256": 0.3987646698951721,
+   "energy_rank_1024": 0.7458581924438477
+  },
+  "model.layers.7.self_attn.v_proj.weight": {
+   "shape": [
+    1024,
+    4096
+   ],
+   "min_dim": 1024,
+   "rank_for_50pct": 205,
+   "rank_for_80pct": 485,
+   "rank_for_90pct": 659,
+   "energy_rank_16": 0.06763146817684174,
+   "energy_rank_64": 0.2157067209482193,
+   "energy_rank_256": 0.5738141536712646,
+   "energy_rank_1024": 1.0000001192092896
+  },
+  "model.layers.31.self_attn.v_proj.weight": {
+   "shape": [
+    1024,
+    4096
+   ],
+   "min_dim": 1024,
+   "rank_for_50pct": 143,
+   "rank_for_80pct": 397,
+   "rank_for_90pct": 570,
+   "energy_rank_16": 0.14964337646961212,
+   "energy_rank_64": 0.32536160945892334,
+   "energy_rank_256": 0.6667963862419128,
+   "energy_rank_1024": 1.0
+  }
+ }
+}

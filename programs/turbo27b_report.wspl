@@ -1,0 +1,4 @@
+experiment turbo27b_report:
+objective: Qwen3.8-27B TURBO (DavidAU fusion + Heretic + healing, 1.37 M downloads of its GGUF) read with model_report over HTTP against Qwen/Qwen3.8-27B, to check the one-minute report against the 9-hour blind forensic of results 43.20
+steps:
+    step model_report model=hf:DavidAU/Qwen3.8-27B-TURBO-Fable-Cold-Fusion-735-882-Heretic-Uncensored-NM-DAU base=Qwen/Qwen3.8-27B rows=128 transfer=false out=lab/runs/model_report/turbo27b.md

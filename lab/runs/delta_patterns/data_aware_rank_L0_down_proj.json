@@ -1,0 +1,63 @@
+{
+ "tokens_dev": 95,
+ "tokens_heldout": 217,
+ "tensor": "model.layers.0.mlp.down_proj.weight",
+ "rows": {
+  "8": {
+   "weights_only": {
+    "captured": 0.03224910423159599,
+    "rel_err": 0.983741283416748
+   },
+   "data_aware": {
+    "captured": 0.07963518053293228,
+    "rel_err": 0.959355354309082
+   },
+   "random": {
+    "captured": 0.002068351721391082,
+    "rel_err": 0.9989630579948425
+   }
+  },
+  "16": {
+   "weights_only": {
+    "captured": 0.05658428743481636,
+    "rel_err": 0.9712949395179749
+   },
+   "data_aware": {
+    "captured": 0.09643709659576416,
+    "rel_err": 0.9505571126937866
+   },
+   "random": {
+    "captured": 0.0037846951745450497,
+    "rel_err": 0.9981030821800232
+   }
+  },
+  "32": {
+   "weights_only": {
+    "captured": 0.0868421271443367,
+    "rel_err": 0.9555906653404236
+   },
+   "data_aware": {
+    "captured": 0.12551914155483246,
+    "rel_err": 0.9351348876953125
+   },
+   "random": {
+    "captured": 0.00847159419208765,
+    "rel_err": 0.9957545399665833
+   }
+  },
+  "64": {
+   "weights_only": {
+    "captured": 0.13107044994831085,
+    "rel_err": 0.9321619868278503
+   },
+   "data_aware": {
+    "captured": 0.15550732612609863,
+    "rel_err": 0.9189594388008118
+   },
+   "random": {
+    "captured": 0.015237209387123585,
+    "rel_err": 0.9923508167266846
+   }
+  }
+ }
+}

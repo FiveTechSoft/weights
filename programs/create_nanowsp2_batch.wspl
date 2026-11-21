@@ -1,0 +1,24 @@
+# ==============================================================================
+# NanoWSP-2 from scratch, batch variant of programs/create_nanowsp2.wspl
+# Same architecture, same layer (2), same eta (5.0), same safety budget (max_delta_norm = 100).
+# Why it exists: the original imprints one pair at a time with an outer product. Run today
+# (CPU, main f56b324) 6 of its 13 steps are rejected by the write guard (max |delta| 143 to 254
+# against the declared 100) and 1 of the 11 prompts is recalled afterwards. This variant writes
+# all 20 character pairs (the original's targets expanded one character at a time) in a single
+# closed-form Moore-Penrose step, stays inside the budget and recalls 11/11 prompts
+# (tests/test_wspl_nanowsp2_batch.py). It is a separate candidate, not a claim that both are equivalent.
+# ==============================================================================
+
+experiment create_nanowsp2_batch:
+    model: NanoWSP-2
+    objective: synthesize_and_program_4layer_micro_transformer_in_one_closed_form_batch
+
+    budgets:
+        max_modified_weights = 600000
+        target_parameter_fraction = 1.0
+        max_delta_norm = 100.0
+        allow_write = true
+
+    steps:
+        step init_architecture model=NanoWSP2 layers=4 d_model=128 heads=4 d_ff=256 vocab=256 out=models/nanowsp2/model.safetensors
+        step imprint_batch file=data/nanowsp2_pairs.json layer=2 eta=5.0

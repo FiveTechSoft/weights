@@ -1,0 +1,24 @@
+{
+ "base": {
+  "ok": 72,
+  "n": 100,
+  "cuts": 24,
+  "finished_wrong": 4,
+  "mean_tokens": 3638
+ },
+ "vec": {
+  "ok": 85,
+  "n": 100,
+  "cuts": 4,
+  "finished_wrong": 13,
+  "mean_tokens": 949
+ },
+ "merged": {
+  "ok": 66,
+  "n": 100,
+  "cuts": 32,
+  "finished_wrong": 2,
+  "mean_tokens": 4131
+ },
+ "early_close_recheck": {}
+}

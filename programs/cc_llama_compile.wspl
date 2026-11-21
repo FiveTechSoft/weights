@@ -1,0 +1,3 @@
+experiment cc_llama_compile:
+steps:
+    step compile_control_vector model=hf_cache/r1llama8b-hf vector=hf_cache/cc_llama/cc_llama_scaled.gguf placebo=hf_cache/cc_llama/cc_llama.placebo2026_scaled.gguf calib=lab/runs/cc_llama/calib.jsonl base_gguf=hf_cache/r1llama8b-gguf/DeepSeek-R1-Distill-Llama-8B-Q6_K.gguf out=hf_cache/cc_llama_op lora=0

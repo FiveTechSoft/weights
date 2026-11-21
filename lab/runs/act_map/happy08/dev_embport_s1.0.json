@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Handling \"reading before bed\" can be tricky because it often triggers a **fight-or-flight response** (fighting flight syndrome) or simply a desire to escape the day's stress. Here are some practical, science-backed strategies to help you navigate this phase:\n\n### 1. **Set a Strict \"No-Phone\" Rule**\nThe biggest trigger is usually the phone. If you're scrolling through social media, checking emails, or watching videos, your brain will immediately switch to a \"scared\" mode.\n*   **The Trick:** Put your phone in another room or put it in a drawer. If you can't reach it, don't reach for it.\n*   **The Alternative:** Use a \"No-Phone\" timer (like the 15-minute rule) or simply put your phone away for the next hour.\n\n### 2. **Create a \"Sleep-Ready\" Environment**\nYour brain needs to feel safe and calm before it can",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "Football (soccer) is one of the most popular sports globally, known for its fast-paced nature, high energy, and unique style of play. To understand a football match effectively, you don't need to be a pro; you just need to understand the **gameplay**, the **strategy**, and the **culture** surrounding it.\n\nHere is a comprehensive guide to what you should know about football matches:\n\n### 1. The Core Mechanics: How the Game Works\nFootball is played on a rectangular pitch (usually 70m x 140m) surrounded by a **goal net**.\n*   **The Goal:** It's not just a hole; it's a physical barrier. If a player hits the ball into the net, they lose the ball immediately.\n*   **The Ball:** It's a small, heavy ball with a black and white pattern. It's thrown, kicked, or shot.\n*   **The Players:** There are ",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two practical tips for enjoying a long train journey:\n\n1.  **Pack Your Essentials in a Dedicated Bag**\n    Long journeys often involve long waits, crowded stations, and long lines. Packing your essentials (water, snacks, phone charger, and comfortable shoes) into a separate, easily accessible bag prevents you from having to carry everything in your hands. This keeps your hands free to enjoy the scenery, relax, or even take a quick nap, and ensures you don't get lost in the middle of a long line.\n\n2.  **Take a Break Every 2–3 Hours**\n    The human body needs rest to function properly. During a long trip, your eyesight, muscles, and brain may feel tired. Taking a short, focused break every 2–3 hours—whether it's a 15-minute walk, a short nap, or just sitting in a quiet corner of the carriage—helps reset your mental state. This prevents fatigue from",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences in life, but it can also be overwhelming. Whether you're a first-timer or a seasoned traveler, here's a practical, step-by-step guide to help you navigate the process smoothly:\n\n### 1. **Prepare Your Mindset**\n- **Embrace the Change**: New cities often feel like new worlds. Accept that you'll be learning, adapting, and growing.\n- **Set Clear Goals**: Define what you want to achieve (e.g., find your first job, start a business, explore culture).\n- **Stay Positive**: Keep an open mind and a positive attitude.\n\n### 2. **Research the City**\n- **Visit the City**: Go to the city and see it from a new perspective.\n- **Read Local News**: Follow local news, blogs, and social media to stay updated on events, trends, and opportunities.\n- **Check Out Local Attractions**: Explore",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Hi [Colleague's Name], hope you're having a great week! I'm writing to let you know that I've just finished reviewing the latest project proposal and am ready to start working on it. I'd love to hear your thoughts on the initial ideas and let me know if you have any specific areas where I can help. Let's catch up soon to discuss next steps. Best regards, [Your Name]",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.94
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A **walk in the park** is a popular outdoor activity that combines relaxation, social connection, and the simple joy of nature. Whether you're looking to unwind after a long day, meet new people, or simply enjoy the fresh air, there are several key aspects to understand before you head out.\n\nHere are the essential things to know about walking in a park:\n\n### 1. The Environment and Atmosphere\n*   **Nature's Playground:** Parks are designed to be active and restorative spaces. They offer greenery, open spaces, and often play areas (like swings, slides, or swings) that encourage physical activity.\n*   **Mood Influencers:** The weather and the people around you can change your mood instantly. A sunny day with a picnic can be refreshing, while a rainy day with a group of friends might feel a bit more cozy.\n*   **Scenic Views:** Many parks offer beautiful vistas, making it a great place to take photos or",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.67
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Handling money each month is all about shifting your focus from **saving** to **investing**. The goal isn't just to get a paycheck; it's to build a financial cushion that protects your future and allows you to chase your dreams.\n\nHere is a practical, step-by-step approach to turning your paycheck into a reliable financial engine:\n\n### 1. The Golden Rule: Start Small\nDon't try to save $500 a month immediately. That's too much for one paycheck.\n*   **The Strategy:** Aim for **$50–$100** per month.\n*   **Why:** Small, consistent wins. If you can save $50, you'll have a buffer to cover unexpected expenses or save for a big goal.\n\n### 2. Automate It (The Power of Routines)\nMoney saved in your bank account is money you can't touch. The best way to save is to let the system do the work",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, you brew hot water through a metal or ceramic filter into a ceramic or metal cup, then pour the liquid over a fresh grind of coffee beans in a burr grinder. The beans are roasted to a specific shade of brown, ground, and steeped in hot water for a short period to extract the desired flavor profile. Finally, you enjoy the rich, aromatic brew as it cools down, often served with a splash of milk or sugar.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Visiting a museum is one of the most rewarding experiences you can have, but it can also be overwhelming if approached without preparation. Here is a comprehensive guide to help you navigate the process effectively:\n\n### 1. Understand the \"Why\" and \"Who\"\nBefore you even walk through the doors, ask yourself:\n*   **What is the mission?** Museums are often educational hubs. Knowing the history of the institution helps you understand the context of the exhibits.\n*   **Who are the curators?** Curators are the experts. If you don't know their background, you might miss the nuances of the art or the stories behind the objects.\n*   **What is the theme?** Many museums have a specific theme (e.g., \"The Last Supper,\" \"The Renaissance,\" \"Modernism\"). Knowing this helps you orient yourself and plan your route.\n\n### 2. Prepare Your Mindset\n*   **It's Not Just About Art:** Museums often",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend can be tricky because it often means you're stuck indoors, feeling isolated, or having to make do with limited options. Here are a few practical strategies to make the most of a rainy day:\n\n### 1. **Embrace the \"Indoors\" Factor**\n   - **Don't Panic**: Rain is just weather; it doesn't mean you can't enjoy the day.\n   - **Use It Wisely**: If you're in a car, use the rain as a distraction to relax. If you're at home, use it to hide from the outside world.\n   - **Create a \"Rainy Day\" Routine**: Set a timer or use a playlist to keep the mood consistent.\n\n### 2. **Leverage the Weather**\n   - **Plan for It**: If you're going to a movie, book a movie night. If you're going to a hike, plan a picnic.\n   - **Use It",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  }
+ ]
+}

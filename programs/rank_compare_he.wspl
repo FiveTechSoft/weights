@@ -1,0 +1,9 @@
+experiment rank_compare_he:
+objective: the three HumanEval-recovery arms against the stage-1 base, and their rows in the table
+steps:
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/qwen9b_vec05.json out=lab/runs/rank/cmp_vec05.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/qwen9b_vec07.json out=lab/runs/rank/cmp_vec07.json
+    step bench_compare base=lab/runs/rank/qwen9b_base.json arm=lab/runs/rank/qwen9b_jack05_vec10.json out=lab/runs/rank/cmp_jack05_vec10.json
+    step bench_table add=lab/runs/rank/qwen9b_vec05.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/rank/cmp_vec05.json
+    step bench_table add=lab/runs/rank/qwen9b_vec07.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/rank/cmp_vec07.json
+    step bench_table add=lab/runs/rank/qwen9b_jack05_vec10.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/rank/cmp_jack05_vec10.json

@@ -1,0 +1,24 @@
+{
+ "seed": 1,
+ "method": "spsa",
+ "opt": "nsgd",
+ "basis": "random",
+ "r": 1,
+ "only": "mlp.down_proj",
+ "dtype": "fp32",
+ "eps": 0.0003,
+ "pairs": 8,
+ "lr": 1e-05,
+ "budget": 0.05,
+ "steps": 2,
+ "step_cost": 640,
+ "n_coef": 86016,
+ "n_matrices": 24,
+ "probe": true,
+ "evals": {
+  "0.05": {
+   "dev": 0.245,
+   "loss_last50": 0.44783707462301103
+  }
+ }
+}

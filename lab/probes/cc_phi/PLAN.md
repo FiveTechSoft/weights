@@ -1,0 +1,212 @@
+# "Conclude" direction on a second family: Phi-4-mini-reasoning — plan fixed 2026-11-15 before any run (user: "adelante")
+
+**Why.** Everything on "conclude" (vector §45.4, compiled weights §45.8, 8,192 budget §45.11/§45.13, nine placebos §45.10,
+prompt control §45.9) is one model family (Qwen3.5-9B, greedy). FOUNDATIONS T8 lists "single model family, greedy only"
+as the open limit that weighs most. Same recipe, other lab, other architecture.
+
+**Model.** `microsoft/Phi-4-mini-reasoning` (3.8B, `Phi3ForCausalLM`, 32 layers, d 3,072, fused `gate_up_proj`, tied
+embeddings; thinking as `<think> … </think>` emitted by the model after `<|assistant|>`). HF bf16 in
+`hf_cache/phi4mr-hf` (7.2 GB, downloaded 2026-11-15), GGUF `hf_cache/phi4mr-gguf/Phi-4-mini-reasoning-Q6_K.gguf`
+(unsloth, 3.1 GB). Served by the same llama-server as the Qwen runs.
+
+## Stage 0: premise probe (≈ 20 min GPU; decides whether the rest runs; results reported either way)
+P1. **Reasoning is parsed:** 5 GSM8K dev items + 5 MATH dev items through `bench_runner.ask` at 2,048: `reasoning` non-empty
+    and `content` without `<think>` tags. If llama-server does not split them for this template, `bench_runner` gets a
+    fallback (split `content` on `</think>`), with a unit test, **before** any arm; noted here as [rev].
+P2. **The base over-thinks at the budget:** of those 10 items, ≥ 3 cut at 2,048 (`finish == "length"`). If ≤ 2, repeat the
+    10 at 1,024; if still ≤ 2, **stop**: "Phi-4-mini-reasoning does not run out of budget at 1-2k tokens on GSM8K/MATH;
+    the conclude question needs a model that does" (reported, no arms). The budget that shows ≥ 3/10 cuts is the budget
+    of the whole study (2,048 preferred).
+P3. **llama.cpp applies control vectors to this architecture:** a same-norm random vector (the placebo of step 3 below, or
+    a throwaway vector built from 2 rows if the op has not run yet) at scale 8 changes the greedy output of 3 prompts
+    against the base. If outputs are identical, stop: control vectors are not applied to `phi3` by this build.
+P4. Tokenizer offsets (`return_offsets_mapping`) work for this tokenizer (the rows step needs them).
+
+[rev 2026-11-15 08:30, after stage 0 P1/P2, before any arm.] **P1 failed as allowed for:** llama-server returned no
+`reasoning_content`; `content` held `<think>…</think>answer` (8/10 tails with the closing tag; the 2 cut ones unclosed).
+Fallback added to `engine/bench_runner.ask` as `split_think` (4 unit tests written first, `tests/test_bench_runner.py`
+`TestThinkFallback`): reasoning = text between the tags, content = after; unclosed tag = all reasoning; server-split
+templates untouched. The probe JSONs were produced before the fallback (reasoning_chars 0 there); every arm below runs
+with it. **P2:** at 2,048 only 2/10 cut (9/10 correct, tokens 685-2,048) → fails; at 1,024, 8/10 cut → **budget 1,024**
+for the whole study (plan rule). Note: 80 % cut at 1,024 is a harsher regime than Qwen's 51 % at 2,048; the prediction
+bands below were written for 2,048 and are read as such (dev base GSM8K / MATH numbers will be lower; the bands on the
+vector's *gain* and the placebo stay). P4 held (CPU, 35 tokens, offsets contiguous; `<think>` is 3 ordinary tokens).
+**P3 held:** a same-norm (1.0 per layer) random control vector at scale 8 changed all 10 greedy outputs (0/10 identical
+tails; the pushed model degenerates and is cut at 512 everywhere), so llama.cpp applies control vectors to `phi3`.
+Stage 0 complete 08:27; `lab/runs/cc_phi/budget.txt` = 1024; `chain.sh` launched.
+
+## Data (no download; nothing from the dev set or the sealed set)
+`cc.py split` with `CC_RUNS=lab/runs/cc_phi`: same seed 20261110, so the same 64 discovery / 64 screen MATH items and
+GSM8K **train** 0-63 as the Qwen study (none of them in dev or sealed sets; sharing them across models leaks nothing).
+
+## Steps (mirror of `lab/probes/cc/PLAN.md`; the op and the server are the same code)
+1. **Traces** (`cc.py traces`, `CC_HF=hf_cache/phi4mr-hf`): base Q6_K, greedy, 4,096-token cap, 128 discovery problems.
+   Keep traces that close `</think>` **and** end with `finish == "stop"`. Need ≥ 30, else `extra` (GSM8K train 64-191), else stop.
+2. **Rows** (`lab/probes/cc_phi/rows.py`, a thin wrapper over `cc.rows`): pos = last 48 reasoning tokens before
+   `</think>`, neg = the reasoning before them (first 1,536 at most). **Phi difference:** the model writes the `<think>\n`
+   tag itself (Qwen's template writes it), so the row's `response` is `"<think>\n" + reasoning` and the focus offsets are
+   shifted by that prefix; the `think` flag stays (the op's `enable_thinking` kwarg is ignored by this template).
+3. **Vector:** `contrast_vector` (`programs/cc_phi_vector.wspl`), placebo seed 2026, forwards on the GPU (3.8B bf16
+   fits; the op streams layers anyway). [rev 2026-11-15, before any run: the WSP-Lang step has no `model_hint` parameter,
+   so the GGUF carries the op's default hint string "qwen35"; it is metadata llama.cpp does not check. Left as is rather
+   than changing the engine for a label.] Report per-layer increment norms and the last-row norm (Qwen: last row ≈ 2×
+   the one before; if Phi's last row is > 4× or < 0.5× the one before, report as a profile difference, not a stop).
+4. **Screen** (scale; screen MATH items, 2,048 or the stage-0 budget): base, vector at 0.25 / 0.5 / 1 / 2. Rule of
+   `cc.py choose` (most correct, grader 1; ties → smaller; floor rule: if no scale beats the base in correct, most
+   finished). No scale beating the base in correct **or** finished → **FAIL**, nothing goes to dev.
+5. **Dev** (`bench_runner` defaults, GSM8K 0-99 + MATH select_indices(2026, 50); never used for any Phi decision): base,
+   vector at the chosen scale, placebo at the same scale. One run per arm. **C1-C3 of `lab/probes/cc/PLAN.md`** verbatim
+   (`cc.py verdict`).
+6. **Sealed**, only if dev passes: `data/sealed_confirm.json` (its items touched no Phi decision; for this model it is a
+   first use), base / vector / placebo, criterion of `lab/probes/sealed/cc_confirm.md`. Then stop; compiling into weights
+   is a separate plan (Phi's `down_proj` exists; the fused `gate_up_proj` does not matter for a `down_proj` write).
+
+## Prediction (ours, low confidence; arm and control; premises marked)
+- Stage 0: P1 holds or needs the fallback (50/50); **P2 holds at 2,048** (the model's own card reports long traces;
+  3-7 of 10 cut); P3 holds; P4 holds.
+- Traces: 50-90 of 128 close within 4,096.
+- Screen: base 15-30/64 MATH; best scale 0.5 or 1.0; vector at best scale base + 3 to + 12.
+- Dev (2,048): base GSM8K 55-80 (cut 15-40), MATH 10-25 (cut 25-40); vector GSM8K **+5 to +15**, MATH **+5 to +12**,
+  tokens −20 to −40 % on both, cuts at least halved; placebo within ± 3 of base on both, tokens within ± 10 %.
+  C1 passes (MATH both graders or GSM8K both), C2 passes, C3 passes → PASS; sealed confirms.
+- Premises: (p1) the GGUF is the same checkpoint as the HF weights (both from the release of 2026-11; `general.name`
+  checked); (p2) llama.cpp's template for this GGUF matches the HF tokenizer's (`<|user|> … <|end|><|assistant|>`);
+  (p3) grader 1 reads `\boxed{}` from `content` (if the answer lands inside the thinking only, the grader misses it —
+  reported if ≥ 5 % of finished answers have no boxed content).
+- **We would be surprised if:** the vector is below base by > 3 on GSM8K at the chosen scale (the direction hurts
+  here); the placebo reaches vector − 3 on either benchmark (the push, not the direction); the base cuts < 10 % on both
+  benchmarks at 2,048 (P2 fails: no over-thinking to fix); the chosen scale is 2.0 (Qwen needed 1.0 both times).
+
+## Limits known now
+One greedy budget, one second model, Q6_K; traces and dev items share the Qwen study's item lists (fine) but the
+tokenizer and template differ (rows re-made); if P1 needs the fallback, the "reasoning" field is our split, not the
+server's. Nothing here says anything about sampling.
+
+## Cost
+Stage 0 ≈ 20 min; traces ≈ 40 min (128 × 4,096 at 3.8B, 2 slots); op ≈ 10 min; screen 5 × 64 ≈ 1 h; dev 3 × 150 ≈ 1 h;
+sealed 3 × 150 ≈ 1 h. ≈ 4.5 GPU h, after `cc08b_chain.sh`. Chain `lab/runs/cc_phi/chain.sh` with `set -e`, ERR trap,
+smoke per arm, server-log check, GGUF sha256 in the log.
+
+[post-data 2026-11-15 11:50, results §45.15, prediction row 34 partial.] Chain 08:27-11:19, nothing stopped. Traces 107/128
+(band 50-90: more). Vector: 31 layers, last-row norm 27.2, increments peak at layer 30 (21.0) with layer 31 at 18.2 (0.87×
+the one before; Qwen ≈ 2×): reported as a profile difference, as the plan said. Screen: base 6, 0.25 → 16, **0.5 → 22**,
+1.0 → 5 (63 finished, 17 of them with < 50 characters of thinking, 8 without `\boxed`: the "stop thinking" regime of
+§45.14 appears at Qwen's scale), 2.0 → 0; chosen 0.5. Dev at 1,024: base 59 / 6, vector **85 / 19**, placebo 47 / 5; vector
+vs base 28/2 and 14/1; placebo vs base 4/16 (p 0.012, hurts) and 2/3; tokens −31 % / −11 %; C1-C3 PASS. Sealed (first
+use for Phi): base 59 / 4, vector **82 / 19**, placebo 58 / 6; 27/4 and 16/1; CONFIRMS. No finished answer at 0.5 skips
+the thinking phase (0 of 111 and 0 of 112), median thinking of finished answers 1,987 → 1,368 (dev) and 2,072 → 1,318
+(sealed). Premises: p1 `general.name` Phi-4-Mini-Reasoning, `phi3`, HF 32 layers (held); p2 template seen in stage 0
+(held); p3 finished without `\boxed` 1-2 of ~110 (held). Of the prediction, the direction, the control, the chosen
+scale, C1-C3 and the sealed confirmation held; almost every magnitude band failed (gains larger than predicted, base
+lower because of the 1,024 budget, dev placebo −12, MATH cuts not halved). Declared surprises: none. Compiling into
+Phi's weights is a separate plan, not written.
+
+## Compile the Phi direction into `down_proj` — plan fixed 2026-11-15 12:40, before the op runs (user: "ok, continua")
+
+**Why.** The Qwen compile (§43.19-43.21, §45.8, §45.13) is the project's strongest claim: a control vector written
+into the weights, no flags, confirmed sealed. One family. Same op, same criteria, on Phi.
+
+**Op.** `compile_control_vector` (engine/cc_compile.py, unchanged except the device fix below), program
+`programs/cc_phi_compile.wspl`: model `hf_cache/phi4mr-hf`, **vector = `cc_phi.gguf` × 0.5** (the op writes the vector
+at ×1.0, cc_weights/PLAN.md; Phi's chosen scale is 0.5, §45.15; scaled file by `lab/probes/cc_phi/scale_vector.py`,
+2 unit tests), **placebo = `cc_phi.placebo2026.gguf` × 0.5** (the same placebo the dev and sealed arms used, scaled the
+same way), calib = `lab/runs/cc_phi/calib.jsonl` (the 107 finished traces, reasoning prefixed with the model-written
+`<think>\n`; `rows.make_calib`, 1 unit test), base GGUF = the Q6_K served in §45.15, `lora=0` (no adapter export),
+heldout 28, seed 20261111, max_len 4,096. Out `hf_cache/cc_phi_op/`. **G0** (held-out median of per-layer medians
+|uᵀx − 1| ≤ 0.5) decides whether anything is merged; a fail is reported as a negative and the chain stops.
+
+**Mechanics found before the run (not data).** A 3-row smoke of the op on Phi crashed: with too few calibration tokens
+the GPU Cholesky fails, `solve` falls back to CPU float64 and `ridge_u` returned `u` on the CPU while the activations
+were on CUDA. Fixed in `ridge_u` (result moved to the requested device; unit test under the CUDA python). The Qwen runs
+never took the fallback (G0 median 0.03, 382 k calibration tokens); Phi's full calibration has ~300 k tokens, so the
+fallback should not fire either; if it does, the log says so and the run continues.
+
+**Dev** (1,024 tokens, GSM8K 0-99 + MATH select_indices(2026, 50), the §45.15 items; `dev_base.json` and `dev_vec.json`
+of §45.15 re-used as references, deterministic setup): `merged-Q6_K.gguf` and `placebo_merged-Q6_K.gguf` served as
+`-m` with no flags. **C1-C4 of `lab/probes/cc_weights/PLAN.md`** verbatim (`verdict.py`, `CCW_CC=lab/runs/cc_phi`,
+`CCW_RUNS=lab/runs/cc_phi/weights`). **Sealed only if PASS:** `data/sealed_confirm2.json`, **first use for Phi**: base,
+vector ×0.5 (control vector), merged, placebo merged; same C1-C4 (`CCW_SEALED=lab/runs/sealed_ccw_phi`). Reported, not
+a criterion: HumanEval first 20 (`he_eval.py`, 2,048 cap) on base and merged. Chain `lab/runs/cc_phi/chain_w.sh`:
+`set -eu`, ERR trap, `chain_guard` config (GGUF sha, vector sha, budget, scale, commit), smoke per served configuration,
+control-vector check for the vector arm, sha256 of every served GGUF in the log; every report now records
+`served` (`/props` model path + sha256, `bench_runner.served_info`, 3 unit tests).
+
+**Prediction (ours, low confidence; arm and control; premises marked).**
+- Op: G0 passes, median 0.02-0.15 (Qwen 0.03). Merge: cos(written, dW) median 0.6-0.9 (Qwen 0.89; the ×0.5 edit is
+  smaller against W, so Q6_K keeps less of it), ‖dW‖/‖W‖ median 0.005-0.03.
+- Dev merged: GSM8K **70-86** (vector 85, base 59), MATH **11-20** (vector 19, base 6), tokens −15 to −35 %, GSM8K cuts
+  8-25 (vector 11, base 42). Placebo merged: GSM8K 45-62, MATH 3-8, tokens −5 to +10 %. C1 ✓, C2 ✓, C3 ✓, C4 ✓ (merged
+  within 8 of the vector on GSM8K, not significantly below) → **PASS**. Chance the compile keeps about half the dose, as
+  Qwen's did: then merged lands at the lower end (GSM8K 70-78, as scale 0.25 on the screen gave 16 vs 22).
+- Sealed set 2 (first use for Phi): base GSM8K 50-66, MATH 2-8; merged base +10 to +25 / +6 to +15; vector ×0.5 base
+  +18 to +28 / +10 to +17; placebo merged base −8 to +3 / −2 to +3. Verdict CONFIRMS if dev passed.
+- HumanEval-20: base 6-16 (a maths model with a maths system prompt), merged within ± 3 of base.
+- Premises: (p1) every `ffn_down` of the Phi GGUF is Q6_K (checked 12:05: 32/32); (p2) the edit's point of action
+  (down_proj output, i.e. the layer's residual write) is where llama.cpp adds the control vector, as for Qwen (§43.19);
+  (p3) the scaled placebo is the dev/sealed placebo × 0.5 (by construction; the chain prints the norms); (p4) the §45.15
+  dev references are reusable (`-np 2` nondeterminism small, as before); (p5) `/props` of the merged arm names the
+  merged file (recorded in each JSON).
+- **We would be surprised if:** G0 fails; cos median < 0.5; merged below base on GSM8K; merged > vector + 5 on either
+  benchmark; placebo merged > base + 3 on GSM8K with p < 0.05; > 10 % of the merged arm's finished GSM8K answers have
+  < 50 characters of thinking (the stop regime of §45.14 appearing in the weights).
+
+**Cost.** Op ≈ 20-40 min (3.8B, 107 sequences ≤ 4,096, two arms, two merges); dev 2 × 150 ≈ 30 min; sealed 4 × 150
+≈ 1 h; HE 2 × 20 ≈ 5 min. ≈ 2.5 GPU h.
+
+[post-data 2026-11-15 (written 2026-11-16), results §45.16, prediction row 35 partial.] Chain 12:18-14:17, nothing
+stopped, the CPU fallback did not fire. Op: G0 0.044 (worst 0.064; placebo 0.045), calibration 79 / 28 rows and 133,088
+tokens (less than the ~300 k estimated: Phi's finished reasoning is short), cos(written, dW) median 0.74 (min 0.64),
+rel_err 0.72, ‖dW‖/‖W‖ median 0.013, 1,300 s. Dev merged 81 / 19 (vector 85 / 19, base 59 / 6; 25/3 and 13/0 vs base;
+6/10 and 3/3 vs vector), tokens −25 % / −8 %, GSM8K cuts 13; placebo merged 54 / 5 (7/12, 1/2 vs base), tokens +6 % / 0 %;
+C1-C4 PASS. Sealed set 2 (first use for Phi): base 62 / 7, merged 86 / 14 (26/2, 7/0), vector ×0.5 88 / 15 (28/2, 9/1),
+placebo merged 60 / 2 (9/11, 0/5); merged vs vector 2/4 and 2/3; CONFIRMS. HumanEval-20: base 11, merged 16 (17 closed,
+median tokens 1,950 → 1,235). No finished merged answer with < 50 characters of thinking (0/87 dev, 0/92 sealed). Premises
+p1-p5 held (served path + sha256 recorded in every JSON). Prediction: 18 of 22 readings in band; the four misses are
+secondary (merged MATH tokens −8 % vs −15 to −35; sealed vector MATH +8 vs +10 to +17; sealed placebo MATH −5 vs −2 to
++3; HE merged +5 vs ± 3). None of the declared surprises occurred.
+
+## Token-budget control on Phi: base, vector and merged at 2,048 — plan fixed 2026-11-16, before any arm runs (user: "continua")
+
+**Question.** The Phi study ran at 1,024 tokens because the base runs out there (probe: 8/10 cut at 1,024, 2/10 at 2,048,
+`budget.txt`). Is the Phi gain (§45.15 vector, §45.16 merged) more than finishing inside a tight budget? On Qwen the answer
+was yes: at 4× the budget the vector stayed +13 and the merged +18 over the base (§45.11, §45.13). AHA (15 Nov 2026) states
+the opposite rule for loop fixes: gain ≤ the base's truncation rate. Phi at 2× the budget tests both on a second family.
+
+**Arms** (`lab/runs/cc_phi/chain_b2048.sh`; dev items, bench_runner defaults = the §45.15/45.16 items; greedy, `-np 2`,
+`-c 16384`, port 8097; `chain_guard` config in `lab/runs/cc_phi/cap2048/` with budget 2048; smoke per configuration;
+sha256 and `served` recorded): 1. base at 2,048; 2. vector ×0.5 as control vector at 2,048; 3. merged (`cc_phi_op/merged-Q6_K.gguf`)
+served as `-m` at 2,048. No placebo arm (the placebo question is answered at 1,024 in both forms; this asks about the budget).
+
+**Readings** (grader 1, grader 2 reported): ok, cuts, finished-wrong, finished with < 50 characters of thinking, mean tokens,
+per arm and benchmark; paired exact McNemar merged vs base, vector vs base, merged vs vector; per item: of the 42 GSM8K items
+the base cut at 1,024, how many the base closes right at 2,048; AHA's ceiling as a report: gain of the merged over the base at
+2,048 compared with the base's cuts at 2,048.
+
+**Prediction (ours, low confidence; arm and control; premises marked).**
+- Base at 2,048: GSM8K **76-88**/100 (cuts 8-22; at 1,024: 59 / 42 cut), MATH **14-26**/50 (cuts 15-32; at 1,024: 6 / 43),
+  mean GSM8K tokens 1,000-1,400. Of the 42 base-cut GSM8K items, 20-34 now closed right.
+- Vector ×0.5 at 2,048: GSM8K **85-93** (at 1,024: 85), cuts ≤ 6; MATH **22-32** (at 1,024: 19).
+- Merged at 2,048: GSM8K **83-92**, MATH **21-31**; merged vs vector within 4 on GSM8K and 3 on MATH, no significant
+  difference either way.
+- Merged over base at 2,048: GSM8K **+2 to +12** (p < 0.05 paired), MATH **+2 to +10**. Tokens of merged and vector below
+  base by 15-35 % on GSM8K. No arm with more than 2 % of finished answers under 50 characters of thinking.
+- Premises: (p1) the probe's 1/5 cut per benchmark at 2,048 extrapolates to the 150 dev items (10 items; MATH dev is
+  harder than the probe's five, hence the wide MATH band); (p2) server settings identical to the 1,024 runs except the
+  cap; (p3) the 1,024 references are the §45.15/45.16 files; (p4) `-np 2` nondeterminism costs ± a few items in paired
+  readings.
+- **We would be surprised if:** merged < base − 3 on GSM8K at 2,048 (the Phi effect would be pure budget, unlike Qwen);
+  merged > base + 18 (the effect would grow with the budget); base at 2,048 < 65 (2,048 still binding, the probe
+  misled) or ≥ 92 (no room left; the comparison would be void); vector or merged with > 10 % of finished answers without
+  thinking at 2,048 (the stop regime appearing with a longer budget).
+
+**Cost.** 3 arms × 150 items at 2,048 ≈ 20-30 min each ≈ 1.3 GPU h.
+
+[post-data 2026-11-16, chain 04:32-05:29, results §45.17, row 36 partial] Base 81 / 26 (cuts 17 / 24; 25 of the 42
+base-cut GSM8K items now right), vector 85 / 35 (cuts 4 / 9), merged 91 / 29 (cuts 5 / 16). Merged vs base 12/2 (p 0.013)
+and 7/4 (p 0.55); vector vs base 11/7 and 13/4 (p 0.049); merged vs vector 9/3 and 3/9 (p 0.15 each). Tokens merged −37 %
+/ −18 %, vector −43 % / −25 %. 0 finished answers without thinking. AHA ceiling: gain 10 of 17 base cuts (GSM8K), 3 net of 24
+(MATH; 7 wins all from cuts, 4 losses). Bands missed: vector MATH 35 (22-32), merged = vector ± 4 / ± 3 (+6 / −6, both not
+significant), token reduction larger than −35 % on GSM8K. Premises: p1 held for GSM8K (17 cut) and failed for MATH (24 of
+50 still cut: 2,048 is binding there); p2 checked (same flags, `chain_guard`); p3 as stated; p4 not measured. Reading: on
+Phi half of the GSM8K gain at 1,024 and most of the MATH gain was budget; what remains at 2× is +10 on GSM8K with p < 0.05.
+A 4,096 / 8,192 arm would settle MATH; not launched.

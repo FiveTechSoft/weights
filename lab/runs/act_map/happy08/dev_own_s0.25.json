@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is one of the most powerful time-honored habits for mental clarity, sleep quality, and productivity. It's not just about \"reading\"; it's about **transitioning from active thinking to passive rest**.\n\nHere is a comprehensive guide on how to handle reading before bed effectively:\n\n### 1. The Golden Rule: Read *Slowly*\nThe biggest mistake people make is trying to read fast. When you read fast, your brain is still in a state of high alert, trying to process information. This creates a \"fight or flight\" response, which actually makes you feel more tired and anxious.\n*   **The Fix:** Read at a **slow, deliberate pace**. Imagine you are reading a story you love, not a textbook.\n*   **Why it works:** Your brain is in a \"dream mode\" (or deep sleep mode) when you are reading. This allows your brain to relax, clear out the \"to-do list\" of",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.69
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "Football (soccer) is one of the most complex and fascinating sports to watch! It's not just about scoring goals; it's about strategy, psychology, and pure human drama.\n\nHere is a breakdown of what you should know about a football match, categorized by the different aspects of the game:\n\n### 1. The Core Mechanics: How It Works\nBefore you even get excited, you need to understand the rules.\n*   **The Goal:** A goal is scored when a ball crosses the goal line with both feet, and the opposing team cannot stop it.\n*   **The Ball:** It's a round, white, rubber ball with a black center circle. It's made of leather and has a tiny rubber ball inside it.\n*   **The Field:** It's a rectangular pitch with a white center circle (the goal area) and a yellow line around the outside.\n*   **The Players:** There are 11 players on the pitch.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 1.41
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two practical tips for a long train journey:\n\n1.  **Pack Your Essentials in a \"Travel Bag\" Instead of a Backpack**\n    When you're on a long train, your backpack is often too small to hold everything you need. Instead, pack your essentials (water, snacks, phone, wallet, and maybe a small notebook) into a dedicated **travel bag** or a **tote bag**. This allows you to carry more items comfortably, reduces the risk of losing something, and makes it easier to grab a snack or drink from the aisle without having to rummage through your main bag.\n\n2.  **Take a \"Micro-Stop\" Every 1.5 Hours**\n    Don't let the journey feel endless! Plan to stop at **one or two micro-stops** every 1.5 to 2 hours. These are usually just a few minutes away from the next station.\n    *   **Why?** It gives you a",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.74
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences of your life! It's like stepping into a new world where you can explore, learn, and make new friends. Here's a fun, step-by-step guide to help you navigate this exciting journey:\n\n### 🌟 **Before You Leave: The Setup**\n- **Pack Smart**: Don't just pack like a sack of potatoes! Use a suitcase that fits your new city's vibe. Bring your favorite snacks, a cozy blanket, and maybe a book or a playlist.\n- **Check the Budget**: Is it worth it? How much will you spend on food, rent, and transport?\n- **Find Your Vibe**: What kind of city do you want to be? Urban, cozy, wild? Let your imagination guide you!\n\n### 🚀 **The Journey Begins**\n- **Hire a Local Guide**: A local guide can help you navigate the streets, find hidden gems, and even",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.55
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Hi [Colleague's Name], hope you're having a great week! I'm writing to let you know that I've just finished the final draft of our project proposal and it looks fantastic. I'm really excited to start working on the next phase of the project right away. Let's grab coffee sometime next Tuesday to brainstorm some ideas?",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.45
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A **walk in the park** is one of the most relaxing and rejuvenating activities you can do. It's not just about walking; it's about the sensory experience, the connection with nature, and the mental reset that comes with it.\n\nHere is a comprehensive guide to what you should know about this activity:\n\n### 1. The Core Benefits\n*   **Mental Reset:** The rush of the day is over. Walking in a park helps clear your brain, reduces stress, and lowers cortisol (the stress hormone). It's a perfect way to decompress after a long day.\n*   **Physical Health:** It's a low-impact cardio workout. It strengthens your legs, improves your balance, and boosts your heart rate. It's great for everyone, from seniors to kids.\n*   **Social Connection:** Whether you're with friends, family, or even strangers, a park walk is a natural way to bond. It's a great way to say hello",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Handling money each month is one of the most powerful things you can do for your life. It's not just about saving; it's about **building a financial habit** that compounds over time.\n\nHere is a step-by-step guide to turning your monthly savings into a powerful financial engine:\n\n### 1. The \"50/30/20\" Rule (The Golden Standard)\nThis is the most popular framework for financial planning. It divides your monthly budget into three buckets:\n*   **50% Needs:** Food, rent, utilities, groceries, and transportation.\n*   **30% Wants:** Fun, travel, hobbies, and luxury.\n*   **20% Savings & Debt:** This is where you put your money. It's for emergency funds, retirement, or paying off credit cards.\n\n**How to apply it:**\n*   **Calculate your \"Must-Haves\":** How much do you actually need? (Not just",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.84
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, you brew hot water through a metal filter into a ceramic cup, then stir in a generous amount of freshly roasted beans. The aroma of the beans fills the room, and as you swirl the liquid, the rich, earthy flavor of the beans slowly dissolves into the warm brew. You enjoy the perfect cup of coffee, savoring every single sip of that delicious, comforting aroma.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "A museum visit is a unique blend of **curiosity, education, and a little bit of magic**. It's not just about seeing art; it's about understanding how the world works through human creativity.\n\nHere is a comprehensive guide to what you should know before, during, and after your trip:\n\n### 1. The Mindset: Curiosity vs. Obsession\nBefore you step inside, remember that museums are designed to **teach**, not to entertain.\n*   **Don't get lost:** If you are obsessed with one specific painting, you will never see the rest of the collection. The museum is a library of knowledge.\n*   **The \"Why\":** Every object has a story. Ask yourself: *Why did this artist paint this way? What problem did they solve?* Understanding the *purpose* of the art is often more important than the art itself.\n\n### 2. The \"Magic\" Factor: The Exhibition\nMost museums are not",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend is one of the most magical moments of the year! It's not just about the weather; it's about the **energy** of the rain. Here's how to turn that gloomy day into a superpower:\n\n### 🌧️ 1. **Embrace the \"Rainy\" Energy**\nRain is the ultimate mood booster. It's not just a downpour; it's a **high-octane party**.\n*   **The Trick:** Don't try to \"fix\" the rain. Just **be** the rain.\n*   **Why it works:** When you're soaked, you're literally vibrating at the frequency of the storm. It makes you feel incredibly alive, creative, and unstoppable.\n*   **Action:** Wear your favorite rain boots, grab a blanket, and just let the storm wash you away.\n\n### 🍦 2. **Turn the Rain into a Treat**\nRain is the perfect excuse",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.65
+  }
+ ]
+}

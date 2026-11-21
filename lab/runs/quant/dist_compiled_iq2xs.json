@@ -1,0 +1,196 @@
+{
+ "wsplang_bench_version": "0.8",
+ "suite": "dist-shift",
+ "suite_sha": "6d17c3d8af0e990981da7461e3afbe5558170b6ac22e8e6612f8b2b3e8825817",
+ "model_class": "llm-logits",
+ "think": false,
+ "arm": "compiled_iq2xs",
+ "identity": {
+  "model_path": "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf",
+  "model_sha": "d4e41436512b7df8a9db0a6c2f85576d709e81e349c4dd7acf0b4dd0ede7ef65",
+  "extras": {},
+  "binary": {
+   "path": "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "sha256": "2f90f7316b9b7789f8c0dc014c6f452a75c8de988204e2ca071b83cf51fc1827"
+  },
+  "base_sha": "2f57ee31c8271c738d8406f91a3b374aabcf1112e1d78f106e15998fb38afa97",
+  "base_logits": "C:\\weights\\data\\bench\\logits\\2f57ee31c8271c73.bin",
+  "data_sha": {
+   "perplexity": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+   "kl": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+   "hellaswag": "d572539320eb2050e858ca34b495bbe2103e3b3f1391a9c3bcdf215b0bb93bd1",
+   "winogrande": "6726173ef65ffdc4abb0d28b755375d288ffb3eb41633bd833288c411c8ebf7c",
+   "mmlu": "470af3a74eccacfaf6f43b08aabf510f61e6c92fe20d17241ded934151e225fa"
+  },
+  "suite_sha": "6d17c3d8af0e990981da7461e3afbe5558170b6ac22e8e6612f8b2b3e8825817",
+  "decoding": {
+   "max_tokens": 0,
+   "parallel": 1,
+   "temperature": 0,
+   "seed": 0,
+   "template": "raw text, teacher-forced logits (llama-perplexity); no chat template",
+   "prompt_suffix": ""
+  },
+  "unknown_model": false
+ },
+ "provenance": {
+  "kind": "quantize",
+  "output_sha": "d4e41436512b7df8a9db0a6c2f85576d709e81e349c4dd7acf0b4dd0ede7ef65",
+  "base_sha": "8feb56528454d83fce6efa3981909391841e1cd4bfa08993063006b571cda429",
+  "patches": [
+   "quantize:IQ2_XS"
+  ],
+  "manifest_path": "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf.manifest.json",
+  "manifest_sha": "8535f13418daa5c53468d9394d1c72786d1a4cc0e084c25e73451ad6ce2c51c6"
+ },
+ "served": {
+  "model_path": "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf",
+  "sha256": "d4e41436512b7df8a9db0a6c2f85576d709e81e349c4dd7acf0b4dd0ede7ef65"
+ },
+ "binary": {
+  "path": "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+  "sha256": "2f90f7316b9b7789f8c0dc014c6f452a75c8de988204e2ca071b83cf51fc1827"
+ },
+ "decoding": {
+  "max_tokens": 0,
+  "parallel": 1,
+  "temperature": 0,
+  "seed": 0,
+  "template": "raw text, teacher-forced logits (llama-perplexity); no chat template",
+  "prompt_suffix": ""
+ },
+ "extra_body": null,
+ "lora": null,
+ "lora_requests": null,
+ "force_reuse": false,
+ "sealed_use": null,
+ "benchmarks": {
+  "perplexity": {
+   "ppl": 11.2134,
+   "ppl_err": 0.17957,
+   "chunks": 100
+  },
+  "kl": {
+   "chunks": 16,
+   "ppl_q": 12.502782,
+   "ppl_q_err": 0.516003,
+   "ppl_base": 9.089026,
+   "ppl_base_err": 0.375644,
+   "ln_ppl_ratio_mean": 0.318883,
+   "kl_mean": 0.379263,
+   "kl_mean_err": 0.009911,
+   "kl_max": 18.287798,
+   "kl_p99_9": 8.11515,
+   "kl_p99": 2.59918,
+   "kl_p95": 1.128241,
+   "kl_p90": 0.752658,
+   "kl_median": 0.248533,
+   "dp_rms": 18.15,
+   "same_top_p": 71.74,
+   "same_top_p_err": 0.705
+  },
+  "hellaswag": {
+   "tasks": 400,
+   "pool": 10042,
+   "acc": 0.6775,
+   "ci": [
+    0.6301910000000001,
+    0.721432
+   ]
+  },
+  "winogrande": {
+   "tasks": 400,
+   "pool": 1267,
+   "acc": 0.6775
+  },
+  "mmlu": {
+   "tasks": 400,
+   "pool": 1548,
+   "acc": 0.3925,
+   "acc_err": 0.024446,
+   "chance": 0.25
+  }
+ },
+ "preservation": {},
+ "think_share": null,
+ "items": [],
+ "preservation_items": [],
+ "thresholds": {
+  "kl_mean": null,
+  "same_top_p": null
+ },
+ "commands": [
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf",
+   "-f",
+   "C:\\weights\\data\\bench\\wikitext2_test.txt",
+   "-c",
+   "512",
+   "--chunks",
+   "100",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf",
+   "-c",
+   "512",
+   "--chunks",
+   "16",
+   "--kl-divergence",
+   "--kl-divergence-base",
+   "C:\\weights\\data\\bench\\logits\\2f57ee31c8271c73.bin",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf",
+   "-f",
+   "C:\\weights\\data\\bench\\hellaswag_val_full.txt",
+   "--hellaswag",
+   "--hellaswag-tasks",
+   "400",
+   "-c",
+   "1024",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf",
+   "-f",
+   "C:\\weights\\data\\bench\\winogrande-debiased-eval.csv",
+   "--winogrande",
+   "--winogrande-tasks",
+   "400",
+   "-c",
+   "1024",
+   "-ngl",
+   "99"
+  ],
+  [
+   "C:\\Users\\Anto\\llamacpp\\bin\\llama-perplexity.exe",
+   "-m",
+   "C:\\weights\\hf_cache\\quant\\compiled-IQ2_XS.gguf",
+   "-bf",
+   "C:\\weights\\data\\bench\\mmlu-validation.bin",
+   "--multiple-choice",
+   "--multiple-choice-tasks",
+   "400",
+   "-c",
+   "1024",
+   "-ngl",
+   "99"
+  ]
+ ],
+ "seconds": 370,
+ "created": "2026-11-20T06:45:27+00:00",
+ "imported_from": null
+}

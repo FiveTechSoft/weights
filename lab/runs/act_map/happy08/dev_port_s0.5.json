@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is one of the best ways to reset your brain, calm your body, and get a good sleep. Here are some proven strategies to make it a habit:\n\n### 1. **Start with 15–20 Minutes**\n   - Don't try to read for an hour! Just 15–20 minutes is enough to help your brain unwind.\n   - Try to read for **10 minutes** first, then do something else (like a walk, a stretch, or a short nap).\n\n### 2. **Choose the Right Book**\n   - Pick a book that's **not too hard** or **not too easy**.\n   - It should be a mix of both: some chapters are a bit tricky, but the rest are fun and easy.\n   - Good books: *The Great Gatsby*, *Harry Potter*, *The Hunger Planet*, *The Secret Life of Pets*, *The Book of Mormon*.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 1.63
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "Football (soccer) is one of the most exciting things you can do! It's not just about the score; it's about the **game**.\n\nHere are the key things you should know about a football match:\n\n### 1. The \"Game\" vs. The \"Score\"\nIt's a common mistake to think the score is everything. In football, the **game** is the story.\n*   **The Goal:** A goal is the ultimate goal. It's not just about getting the ball; it's about **time**. If you get the ball in the last 10 seconds, you win.\n*   **The Flow:** A good match is about the energy, the speed, and the chaos. It's not about a perfect score; it's about the players who are playing hard and the crowd cheering.\n\n### 2. The \"Golden 10\"\nThis is the most important concept in football.\n*   **The",
+   "tone": 5,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 1.56
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two fantastic tips for a long train journey:\n\n1.  **Pack Your Gear, Not Just Your Clothes**\n    The biggest mistake people make is bringing too much stuff. For a long trip, you want to be ready for **everything**. Don't forget your passport, your wallet, your phone charger, your water bottle, and maybe even a small snack. If you're carrying too much, you'll get tired, and if you're too tired, you'll miss the next stop!\n\n2.  **Take a \"Mini-Stop\" Every 2 Hours**\n    Don't let the train ride feel like a long, boring slog. If you can, grab a **mini-stop** every 2 hours. Whether it's a quick coffee, a quick walk, or just a quick snack, a little break helps your brain reset and makes the ride much more enjoyable. It's the best way to make a long journey feel like a vacation!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.14
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences of your life! It's like a big adventure where you're not just leaving your old life behind, but also building something new. Here's a fun way to tackle it:\n\n### 🌟 1. **Pick Your Destination**\n- **Explore the city first!** Don't just plan your trip; visit it. Try the food, the art, the history, and the culture.\n- **Ask locals!** Talk to people, read their stories, and see how they live. It's like meeting a new friend!\n\n### 🚀 2. **Plan Your Move**\n- **Budget it!** Think about what you need: food, transport, clothes, maybe even a new home.\n- **Make a list!** Write down your dream city, your dream job, and your dream life.\n- **Gather your stuff!** Pack your bags! Maybe you have a new car, a",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 6.92
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Hi [Colleague's Name], hope you're having a great week! I wanted to catch up and share a quick update on our project. Let me know if you need anything from me or if there's something we can work on today. Let's grab coffee sometime!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 4.55
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A **walk in the park** is a simple, free, and relaxing activity that can be a great way to recharge after a long day. It's not just about walking; it's about the **sensory experience** of being surrounded by nature.\n\nHere are the key things you should know about it:\n\n### 🌿 1. The Sensory Magic\nWalking in a park is like walking through a sensory world:\n*   **Visual:** You'll see green grass, blooming flowers, birds singing, and the golden hour light.\n*   **Auditory:** There's the sound of birds chirping, the wind rustling leaves, and maybe a distant birdie.\n*   **Tactile:** You can feel the cool breeze on your skin, the crunch of fresh grass under your feet, and the soft texture of the leaves.\n*   **Olfactory:** The smell of rain on the grass, blooming flowers, and the scent",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Saving money each month is one of the most powerful things you can do for your future! It's not just about the money; it's about **building a financial future**.\n\nHere is a simple, actionable guide to help you start and grow your savings:\n\n### 1. Start Small, Don't Panic\nYou don't need to save $1,000 a month to start.\n*   **The Rule:** You can save **$10** a month.\n*   **The Power:** Over 12 months, that's $120 a year! That's enough to buy a nice house, a car, or a vacation.\n*   **The Mindset:** Don't feel like you're failing. You're just learning how to build a financial future.\n\n### 2. Make It a Habit, Not a Goal\nGoals are scary! Habits are easy.\n*   **Pick One Thing:** Pick one small, boring",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 2.54
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "Making coffee is a simple journey that starts with brewing the perfect blend of beans and water, then slowly warming it in a pot until it's ready to pour.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "A museum visit is more than just seeing art; it's an interactive journey through time, culture, and human creativity. Here's a comprehensive guide to what you should know before you go:\n\n### 🎨 **The Core Experience**\n- **Immerse in Art**: Don't just look at it; touch, smell, and feel the textures, colors, and emotions of the pieces.\n- **Learn the Story**: Museums often tell stories behind the art—how it was made, who created it, and why it matters.\n- **Connect with History**: Art is a window into history, culture, and society.\n\n### 🌟 **Key Things to Know**\n- **Curator's Guide**: Every museum has a guide that explains the art, history, and context of the exhibits.\n- **Interactive Exhibits**: Some museums have hands-on activities, like painting, sculpting, or even \"walking through\" a museum!\n- **Special Collections",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.79
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend is all about turning the storm into a **perfect storm of memories**! 🌧️✨\n\nHere are a few creative ways to make it special:\n\n### 🎨 1. The \"Rainy Night\" Movie Night\nIf you're two or three, this is the best idea!\n*   **The Setup:** Set up a cozy blanket on the couch.\n*   **The Activity:** Play a movie that's been waiting for you (maybe *The Secret Life of Pets* or *The Incredibles*?).\n*   **The Twist:** When the rain starts, just let it pour! 🌧️🎬\n    *   *Why it works:* It's not just about the movie; it's about the **rainy night** vibe. You can even make a movie with your phone! 📱🎥\n\n### 🧠 2. The \"Rainy Day\" Brain Teaser\n",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 3.67
+  }
+ ]
+}

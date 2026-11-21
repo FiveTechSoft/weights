@@ -1,0 +1,4 @@
+experiment rank_jackfull:
+objective: Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B, the full donor (official Q6_K GGUF with MTP), on rank-2048 (lab/probes/ranking/PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=jackfull out=lab/runs/rank/jackrong_full.json

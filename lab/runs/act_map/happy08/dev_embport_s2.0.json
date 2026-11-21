@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Handling \"reading before bed\" can be tricky because it often feels like a guilty pleasure or a way to escape the day. Here are a few practical, relaxing, and effective strategies to make it a genuine habit rather than a chore:\n\n### 1. **Set a Strict \"No-Phone\" Rule**\n   *   **The Trick:** Put your phone in another room, on a bedside table, or in a drawer.\n   *   **Why it works:** It creates a sensory barrier. When you're ready to sleep, the phone is gone, and the only thing in your room is the darkness and the smell of your own bed.\n   *   **Tip:** Try to read for 15–20 minutes straight without checking your phone for 10 minutes.\n\n### 2. **Use a \"Sleepy\" Timer**\n   *   **The Trick:** Put a timer on your nightstand or use a small app like \"Sleepy",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "Football (soccer) is one of the most exciting sports to follow, but it can be overwhelming to get lost in the details. To truly enjoy a match, you need to understand the **story** behind the game, not just the scores.\n\nHere are the key things to know about football matches:\n\n### 1. The \"Who, What, Where, When\" Basics\nBefore diving into tactics, remember the four pillars of football:\n*   **Who:** The players (players, coaches, fans).\n*   **What:** The game (soccer, football, rugby, etc.).\n*   **Where:** The stadium (home, away, away-from-home).\n*   **When:** The time (start, stop, or late).\n\n### 2. The \"Whoopsie\" Factor (The Real Game)\nFootball isn't just about the ball; it's about the **people**.\n*   **The Fans:** They are the",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.87
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two practical tips for enjoying a long train journey:\n\n1.  **Pack Your Essentials, Don't Just Your Clothes**\n    Long journeys often involve long walks, long waits, and long stretches of silence. Packing a small, organized bag with essentials like snacks, water, a comfortable hat, and a change of clothes is crucial. It's not just about comfort; it's about keeping your spirit light and your mind clear, so you can enjoy the scenery and the ride without feeling overwhelmed by the mundane.\n\n2.  **Take a Moment to \"Breathe\" Alongside the Train**\n    The journey is often the longest part of the trip. Try to sit down and close your eyes for a few minutes, letting the rhythmic chugging of the engine or the soft hum of the train wash away the worries of the day. Even if you can't talk to anyone, just feeling the weight of your own thoughts off your shoulders can be a powerful way to",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most rewarding experiences in life, but it can also be a bit overwhelming. Whether you're starting from scratch or just want to settle in, here are some practical and emotional strategies to help you navigate the process:\n\n### 1. **Start Small & Build Momentum**\n- **Don't rush the big moves**: Don't pack everything into one big suitcase. Start with essentials (water, snacks, clothes, toiletries) and focus on getting comfortable with the new environment.\n- **Create a \"home base\"**: Pick a quiet spot in the city to relax and recharge. Maybe a park, a coffee shop, or a local landmark. It’s okay to feel a bit lost at first.\n\n### 2. **Leverage Local Culture**\n- **Join local communities**: Meet up with friends, join a neighborhood group, or even try a local class (like pottery, cooking, or hiking). These connections can be life",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Hi [Colleague's Name], hope you're having a great week! I'm reaching out to share some exciting news about [Project Name] and want to connect with you about [specific topic]. Let me know if you have any quick questions or need to dive deeper into it.\n\nBest regards,\n\n[Your Name]",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 4.08
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "Walking in a park is one of the best ways to recharge, connect with nature, and unwind. Whether you're just starting out or looking to explore a specific spot, here are some key things to know:\n\n### 1. **The Basics of Walking**\n*   **Start Slow:** Don't rush. Your legs and heart are still in their element. Take your time to see the surroundings.\n*   **Listen to the Ground:** Notice the rustle of leaves, the crunch of gravel, or the hum of insects. These sounds often tell you where to go next.\n*   **Breathe Deeply:** Inhale through your nose and exhale through your mouth. This helps calm your nervous system and lowers your heart rate.\n\n### 2. **Essential Tips for a Great Walk**\n*   **Check the Weather:** Is it sunny? Is it raining? Is it windy? A walk in the rain is great for soaking up the cool breeze",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Handling money each month is all about shifting your focus from **saving** to **spending smartly**. The goal isn't just to get rich quick; it's to build a financial habit that works for you.\n\nHere are a few practical, actionable steps to make saving easier and more sustainable:\n\n### 1. Start Small & Consistent\nDon't try to save $500 a month. That's a lot of work.\n*   **Pick a tiny goal:** Save $5–$10 a day or save $20 a week.\n*   **The Power of Compounding:** Small, regular amounts compound faster than big, sporadic ones. Even $10 a day can add up to $1,200 a year.\n\n### 2. Automate It (The \"Ripple Effect\")\nSet up automatic transfers to your savings account or investment account every single day.\n*   **The Rule:** Never skip a day",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "To make coffee, you start by grinding fresh beans into a fine, aromatic paste and steeping them in hot water for a crisp, aromatic cup. You can also brew with hot water or milk, but the classic method is usually just hot water and a pinch of sugar or honey to taste. Finally, pour the rich, aromatic liquid over your favorite toppings like vanilla bean ice cream or a dollop of whipped cream.",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Visiting a museum is one of the most rewarding experiences you can have, but it's important to approach it with a little bit of **preparation** and a bit of **mindset** to make the most of it.\n\nHere are some key things to know about museum visits:\n\n### 1. Know Your \"Why\" and \"Where\"\n*   **Why?** Are you there to learn about art, history, science, or culture? Are you there to see a new show opening? Or are you just curious? Knowing your purpose helps you choose the right exhibit or find the right spot.\n*   **Where?** Don't just wander aimlessly. Look for signs, maps, or social media posts that suggest where the best exhibits are located.\n\n### 2. The \"Show, Don't Just Look\" Rule\nThis is probably the most important tip. Don't just stare at the pictures; engage with them.\n*   **Ask Questions:** Ask",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "Handling a rainy weekend can be tricky because it often brings a mix of cozy vibes and practical challenges. Here are a few creative and practical ways to make the most of it:\n\n### 🌧️ Stay Cool & Comfortable\n- **Wear Layers**: Try to dress in something light, like a light sweater, cardigan, or even a raincoat.\n- **Use a Raincoat**: If you're feeling chilly, a stylish raincoat is a must-have.\n- **Wear Boots**: Keep your boots on for extra warmth and protection.\n- **Add a Hat**: A wide-brimmed hat or a sun hat can help block out the sun and keep you dry.\n\n### 🌿 Nature & Relax\n- **Go Outdoors**: Try to head out for a walk, hike, or just sit in the park. It's often the best way to decompress.\n- **Play Games**: Try to play catch, tag, or even just",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  }
+ ]
+}

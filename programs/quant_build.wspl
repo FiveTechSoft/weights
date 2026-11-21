@@ -1,0 +1,5 @@
+experiment quant_build:
+objective: three 2-bit GGUFs for lab/probes/quantize/PLAN.md (requantised from Q6_K; IQ2 with an importance matrix on WikiText-2 train). Q2_K was built at 06:02 on 2026-11-20 by the first run of this program (hf_cache/quant/qwen9b-Q2_K.gguf.manifest.json) and is not rebuilt (the op never overwrites). The IQ2 steps reuse the importance matrices computed at 06:06 and 06:20 (WikiText-2 train, 100 chunks) and keep blk.32 (the MTP layer, never run by llama.cpp at inference, so the imatrix has no entries for it and llama-quantize refuses IQ2 on it) at Q4_K; see PLAN [rev 06:45]
+steps:
+    step quantize model=hf_cache/h4/A0-Q6_K.gguf type=IQ2_XS imatrix=hf_cache/quant/qwen9b-IQ2_XS.imatrix.gguf tensor_type=blk.32.=q4_k allow_requantize=true out=hf_cache/quant/qwen9b-IQ2_XS.gguf
+    step quantize model=hf_cache/cc_op_v2/merged-Q6_K.gguf type=IQ2_XS imatrix=hf_cache/quant/compiled-IQ2_XS.imatrix.gguf tensor_type=blk.32.=q4_k allow_requantize=true out=hf_cache/quant/compiled-IQ2_XS.gguf

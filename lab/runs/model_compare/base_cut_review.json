@@ -1,0 +1,41 @@
+{
+ "source": "own_base.json MATH-500 n=50, last 2000 chars of each truncated answer read by hand, 2026-11-08",
+ "classes": {
+  "answer_found_cannot_close": [
+   38,
+   67,
+   106,
+   185,
+   208,
+   214,
+   247,
+   249,
+   283,
+   289,
+   298,
+   320,
+   344,
+   375,
+   419,
+   433
+  ],
+  "still_solving_or_doubting": [
+   61,
+   80,
+   103,
+   193,
+   225,
+   284,
+   317,
+   355,
+   359,
+   377,
+   421,
+   432,
+   450
+  ],
+  "degenerate_repetition": [
+   235
+  ]
+ }
+}

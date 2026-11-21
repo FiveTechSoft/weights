@@ -112,7 +112,7 @@
 
 <h2>1. Prerequisites & Environment Setup</h2>
 
-<p>This repository is designed to run with <strong>zero GPU overhead</strong> and <strong>zero heavyweight frameworks</strong> (no PyTorch required for core inspection/editing). All quantization operations and projections run directly on quantized GGUF weights via NumPy.</p>
+<p>Reading and editing GGUF weights needs <strong>no forward pass and no GPU</strong>: <code>wsp.py</code> dequantizes and requantizes Q6_K blocks with NumPy, without PyTorch. Other parts of the repo do need more: NanoWSP, nanoGPT, the weight diff and <code>model_report</code> use <strong>PyTorch and safetensors</strong>, and any claim about behaviour is measured with forward passes (llama.cpp, often on a GPU).</p>
 
 <h3>Minimal Installation</h3>
 
@@ -124,7 +124,7 @@ cd weights
 
 <p># On Windows:<br>.venv\Scripts\activate<br># On Linux / macOS:<br>source .venv/bin/activate</p>
 
-<p># Install minimal dependencies<br>pip install gguf numpy matplotlib pillow</code></pre></p>
+<p># GGUF inspection and editing (wsp.py)<br>pip install gguf numpy matplotlib pillow<br># NanoWSP, nanoGPT, weight diff, model_report<br>pip install torch safetensors</code></pre></p>
 
 <p><em>(Optional: For MCP server capabilities, install FastMCP)</em><br><pre><code>pip install mcp</code></pre></p>
 
@@ -181,7 +181,7 @@ python wsp.py peek &lt;path-to-gguf&gt; blk.19.attn_output.weight -r 100 -c 200<
 
 <pre><code>python engine/wsp_mcp_server.py</code></pre>
 
-<p>The MCP server exposes:<br>- <code>get_semantic_areas()</code>: Returns the 10 differential centroids and lexical clusters.<br>- <code>peek_weight()</code>: Inspects tensor anatomy, architectural role, and semantic projection.<br>- <code>poke_weight()</code>: Performs safe in-place surgical edits with canonical Q6_K requantization.<br>- <code>run_wsplang()</code>: Parses, validates, and runs declarative <code>.wspl</code> programs.</p>
+<p>The MCP server exposes:<br>- <code>get_semantic_areas()</code>: Returns the 10 differential centroids and lexical clusters.<br>- <code>peek_weight()</code>: Inspects tensor anatomy, architectural role, and semantic projection.<br>- <code>poke_weight()</code>: Performs in-place edits with canonical Q6_K requantization.<br>- <code>run_wsplang()</code>: Parses, validates, and runs declarative <code>.wspl</code> programs.</p>
 
 <hr>
 
@@ -197,13 +197,13 @@ python wsp.py peek &lt;path-to-gguf&gt; blk.19.attn_output.weight -r 100 -c 200<
 
 <p>$$\text{score}(\mathbf{w}, a) = \frac{\mathbf{w} \cdot \mathbf{C}'_a}{\|\mathbf{w}\| \|\mathbf{C}'_a\|} \in [-1.0, +1.0]$$</p>
 
-<p>This expands cosine dynamic contrast by <strong>+2.4x</strong>, centering background noise at 0.00 and isolating clear semantic roles.</p>
+<p>Centring is meant to remove the shared baseline and widen the contrast between areas. The size of that gain has <strong>not been measured</strong>, and the area labels are a lexical heuristic, not a measured function of the weight.</p>
 
 <hr>
 
 <h2>5. Experimental Protocol & Safety</h2>
 
-<ul><li><strong>Zero-Loss Integrity</strong>: For edits, WSP utilizes a canonical C-level port of <code>quantize_row_q6_K_ref</code>, achieving <strong>87% byte-identity</strong> and reconstruction error $\approx 6 \times 10^{-6}$.</li><li><strong>Forbidden Tensors</strong>: Protected critical components (token embeddings, final LM normalization, unembedding matrix) cannot be mutated.</li><li><strong>Strict Falsifiability</strong>: All hypothesis-driven edits are tested against <strong>Placebo edits</strong> and <strong>sealed holdout benchmarks</strong> (GSM8K, MATH-500). Discarded experiments are openly documented.</li></ul>
+<ul><li><strong>Requantization fidelity</strong>: For edits, WSP utilizes a canonical C-level port of <code>quantize_row_q6_K_ref</code>, achieving <strong>87% byte-identity</strong> and reconstruction error $\approx 6 \times 10^{-6}$.</li><li><strong>Forbidden Tensors</strong>: Protected critical components (token embeddings, final LM normalization, unembedding matrix) cannot be mutated.</li><li><strong>Falsifiability</strong>: Hypothesis-driven edits should be tested against <strong>placebo edits</strong> and <strong>sealed holdout benchmarks</strong> (GSM8K, MATH-500); not every edit in the repo has been (see the README, "Status of the results"). Discarded and withdrawn experiments are documented, not deleted.</li></ul>
 
 <hr>
 

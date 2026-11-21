@@ -1,0 +1,83 @@
+{
+  "geometry": {
+    "n_head": 8,
+    "n_kv": 2,
+    "head_dim": 256,
+    "q_per_head": 512,
+    "d_model": 1024,
+    "rope_dims": 64,
+    "attn_layers": [
+      3,
+      7,
+      11,
+      15,
+      19,
+      23,
+      24
+    ]
+  },
+  "tens_blk.3.attn_q.weight": {
+    "gguf_shape(ne0,ne1)": [
+      1024,
+      4096
+    ],
+    "tens_shape": [
+      1024,
+      4096
+    ],
+    "equals_canon_T": false,
+    "max_abs_diff_vs_canon_T": 0.2779884338378906,
+    "row0_corr_with_canon_T": 0.0429521448119269
+  },
+  "tens_blk.3.attn_k.weight": {
+    "gguf_shape(ne0,ne1)": [
+      1024,
+      512
+    ],
+    "tens_shape": [
+      1024,
+      512
+    ],
+    "equals_canon_T": false,
+    "max_abs_diff_vs_canon_T": 0.12281227111816406,
+    "row0_corr_with_canon_T": -0.025634886257024633
+  },
+  "tens_blk.3.attn_output.weight": {
+    "gguf_shape(ne0,ne1)": [
+      2048,
+      1024
+    ],
+    "tens_shape": [
+      2048,
+      1024
+    ],
+    "equals_canon_T": false,
+    "max_abs_diff_vs_canon_T": 0.3434281349182129,
+    "row0_corr_with_canon_T": 0.002649524299987061
+  },
+  "render_hardcoded": {
+    "says_of_16": true,
+    "says_kv_heads_4": true,
+    "model_n_head": 8,
+    "model_n_kv": 2
+  },
+  "judge_real_head": {
+    "T2_cos": 1.0000001192092896,
+    "T2_pass": true,
+    "T3_shift": 3.87667678296566e-05,
+    "T3_pass": true
+  },
+  "judge_noise_head": {
+    "T2_cos": 0.9999998807907104,
+    "T2_pass": true,
+    "T3_shift": 4.856038140133023e-05,
+    "T3_pass": true
+  },
+  "judge_cli_real": "{\n  \"verdict\": \"PASS\",\n  \"T1_shapes\": true,\n  \"T2_ir_eq_ref\": {\n    \"cos\": 1.000000119,\n    \"max_abs\": 0.0\n  },\n  \"T2_pass\": true,\n  \"T3_nulltest\": {\n    \"max_abs_shift\": 3.8767e-05,\n    \"pass\": true\n  },\n  \"T4_diag\": {\n    \"c1_rankone\": 0.0945,\n    \"sigma_top4\": [\n      9.8248,\n      5.4841,\n      5.3065,\n      4.9867\n    ],\n    \"gate_ratio\": 0.9636\n  }\n}\n",
+  "head_output_tool_vs_transposed_weights": {
+    "cos": 0.0005345193785615265,
+    "c1_tool": 0.09449736773967743,
+    "c1_transposed": 0.19953851401805878
+  },
+  "decompile_cli": "decompilado -> C:\\weights\\lab\\audit\\inspect_ops\\out\\decomp\\head_L3_q0.npz / .c / .manifest.json"
+}

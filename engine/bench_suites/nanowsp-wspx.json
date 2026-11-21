@@ -1,0 +1,51 @@
+{
+ "wsplang_bench_version": "0.8",
+ "name": "nanowsp-wspx",
+ "model_class": "nanowsp",
+ "think": false,
+ "items": {
+  "recall": {
+   "file": "lab/data/wspx_recall.json",
+   "sha256": "317a33df2553adfaf865f6ba7b7a50e328cbb57d6f43d8bb629e2850d4fdd42b",
+   "n_train": 144,
+   "n_holdout": 56
+  },
+  "parity8": {
+   "file": "lab/data/wspx_parity8.json",
+   "sha256": "74142088d8aa184f247526bd28db8d34f29afdc59a08ee452b81fdca30626ba1",
+   "n_train": 183,
+   "n_holdout": 73
+  },
+  "mod13": {
+   "file": "lab/data/wspx_mod13.json",
+   "sha256": "b1f75daa2a736361b333abefc4e7b399e8d80224174c37b4e7061f9b8c7535ba",
+   "n_train": 248,
+   "n_holdout": 90
+  },
+  "fsm4": {
+   "file": "lab/data/wspx_fsm4.json",
+   "sha256": "95ed8b06cdd608efcf62e566310709e0450eab02d9dfa86ddc74b3a7f6776891",
+   "n_train": 44,
+   "n_holdout": 18
+  },
+  "noecho": {
+   "file": "lab/data/wspx_noecho.json",
+   "sha256": "4d40765e2e8c6e2c628759dd53b34da891fc774d109982c213bf54bf6f1b2027",
+   "n_train": 336,
+   "n_holdout": 164
+  }
+ },
+ "decoding": {
+  "max_tokens": 1,
+  "parallel": 1,
+  "temperature": 0,
+  "seed": 0,
+  "template": "raw prompt, one character",
+  "prompt_suffix": ""
+ },
+ "graders": [
+  "exact match of the generated character with the target (NanoWSP.evaluate_recall)"
+ ],
+ "preservation": false,
+ "sha256": "7af35a517d7b3d5a77a398c8461a982e9959f2207e1c173f380a678cac71a8a8"
+}

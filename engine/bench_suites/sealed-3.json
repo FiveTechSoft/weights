@@ -1,0 +1,28 @@
+{
+ "wsplang_bench_version": "0.8",
+ "name": "sealed-3",
+ "model_class": "llm-chat-think",
+ "think": "auto",
+ "decoding": {
+  "max_tokens": 2048,
+  "parallel": 2,
+  "temperature": 0,
+  "seed": 0,
+  "template": "model chat template (thinking as the template does it)",
+  "prompt_suffix": "\nPlease reason step by step, and put your final answer within \\boxed{}."
+ },
+ "graders": [
+  "g1: rig/math500.equivalent on the last \\boxed{}",
+  "g2: GSM8K last number in the last box as float; MATH-500 simple_norm string compare"
+ ],
+ "preservation": {
+  "humaneval": 164,
+  "compliance": 40,
+  "garbage": true,
+  "max_tokens": 2048
+ },
+ "sealed_file": "data/sealed_confirm3.json",
+ "sealed_sha256": "8985d32c882399b5fba503e8472f953b40dab3d212bf9eac1fece23bc3e7aee7",
+ "single_use": true,
+ "sha256": "24241de4ed9872e8f2fe90c215dde1e7d251516cd4965e8fcc18b9b433ad0435"
+}

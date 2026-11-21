@@ -1,0 +1,85 @@
+{
+ "split": "dev",
+ "rows": [
+  {
+   "prompt": "How do I handle reading before bed?",
+   "response": "Reading before bed is a wonderful habit that can signal to your brain that it's time to wind down, but it can also be tricky if you get too excited or start reading something too gripping!\n\nHere is a balanced guide on how to handle reading before bed so it helps you sleep instead of keeping you awake:\n\n### 1. Choose the *Right* Book\nThe genre you pick matters more than you think.\n*   **Go for:** Gentle fiction (cozy mysteries, romance, fantasy), poetry, or non-fiction about calming topics (nature, history, self-care).\n*   **Avoid:** Thrillers, horror, intense political dramas, or books with cliffhangers you *have* to know the ending to. If you're reading a book where the hero is about to die or the villain is winning, your brain will be racing with adrenaline, not serotonin.\n\n### 2. Set a \"Soft Stop\" Time\nDon't read until your eyes are",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.08
+  },
+  {
+   "prompt": "What should I know about a football match?",
+   "response": "That's a great question! To give you the **most helpful answer**, I need a tiny bit more context 😊 Because \"football\" means different things around the world! Here's what I'd love to know:\n\n### ⚽ **Which football are you asking about?**\n1. **Soccer (Association Football)**?  \n   → The global game with 11 players per side, no hands (except the goalie!), and goals worth 1 point!  \n   *Example: \"What should I know about the **World Cup final**?\" or \"How do **penalty shootouts** work?\"*\n\n2. **American Football**?  \n   → The gridiron game with touchdowns, downs, and those crazy helmets!  \n   *Example: \"What's the difference between a **pass** and a **run**?\" or \"Why do they have **4 downs**?\"*\n\n3. **Rugby**? (Sometimes called \"football\" in Australia",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.61
+  },
+  {
+   "prompt": "Give me two tips for a long train journey.",
+   "response": "Here are two essential tips to make your long train journey much more comfortable:\n\n1.  **Pack a \"Comfort Kit\" in Your Carry-On**\n    Don't rely on the train's amenities! Bring your own **noise-canceling headphones** (or high-quality earplugs), a **plush eye mask**, and a **super-soft blanket** (even if the train provides one, yours is guaranteed to be warmer and cleaner). Also, pack a **rechargeable power bank** because train outlets can be far away or broken, and a **book or downloaded movie** so you aren't bored if the Wi-Fi is spotty.\n\n2.  **Master the Art of the \"Train Nap\"**\n    Trains are magical because they lull you to sleep without you even trying! To get the most out of it, **find a window seat** (it's the best view and helps you sleep) and **set your alarm for 15 minutes",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.19
+  },
+  {
+   "prompt": "How do I handle moving to a new city?",
+   "response": "Moving to a new city is one of the most exciting (and sometimes terrifying!) adventures you can embark on. It's a fresh start, a blank canvas, and a chance to reinvent yourself. Here is a comprehensive guide to help you navigate the transition with confidence and joy:\n\n### 🌟 1. The Pre-Move Prep (Before You Go)\n*   **Do Your Homework:** Don't just look at the pretty photos on Instagram. Read the *real* reviews. Check the commute times from your potential neighborhood to work, find out where the best cheap tacos are, and see if the coffee shops are actually open on Sundays.\n*   **Pack Like a Pro:** Pack your life in boxes, but leave your heart in your suitcase. Bring your favorite pillow, a photo of your cat/dog, and that one song that makes you feel like a superstar.\n*   **The \"First Night\" Kit:** Pack a separate bag with everything you need for",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.01
+  },
+  {
+   "prompt": "Describe writing an email to a colleague in a few sentences.",
+   "response": "Writing an email to a colleague starts by clearly stating your purpose in the subject line so they know exactly what to expect. You then jump straight into the main point with a friendly greeting, keeping the tone professional yet warm like a quick chat over coffee. Finally, you wrap it up with a clear call to action or a simple \"thanks\" before hitting send.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a walk in the park?",
+   "response": "A walk in the park is one of life's simplest yet most magical adventures! Whether you're doing it to stretch your legs, clear your head, or just soak up some sunshine, here are some wonderful things to know and look out for:\n\n### 🌿 1. It's a Free Therapy Session\nScience says walking in nature lowers cortisol (the stress hormone) and boosts serotonin! You don't need to run a marathon; just strolling slowly lets your brain wander, which actually helps solve problems you were too busy to think about while sitting at a desk.\n\n### 🦋 2. The Little Details Are Everywhere\nWhen you slow down, the world gets 100x more interesting:\n*   **The Bugs:** Watch a ladybug do a little dance or see how a squirrel is planning its next acorn heist.\n*   **The Plants:** Notice the way the sunlight hits the leaves or the different colors of the flowers.\n*",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.8
+  },
+  {
+   "prompt": "How do I handle saving money each month?",
+   "response": "Saving money every month is less about having a huge pile of cash right now and more about building a **system** that works for your life. It's a journey of small wins, not a sprint!\n\nHere is a step-by-step guide to help you master the art of monthly saving:\n\n### 1. Know Exactly Where Your Money Goes 🗺️\nYou can't save what you don't track! Before you save a single dollar, you need to see the truth.\n*   **The \"No-Guilt\" Audit:** For one whole month, write down *every single penny* you spend. Coffee? $3. Uber? $15. That new shirt? $40. Don't judge yourself, just watch.\n*   **The Reveal:** At the end of the month, look at the numbers. You might be shocked to see you spent $200 on \"just snacks\" or $500 on subscriptions you forgot about",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.54
+  },
+  {
+   "prompt": "Describe making coffee in a few sentences.",
+   "response": "First, you grind fresh coffee beans to the perfect texture and scoop the powder into your favorite mug. Next, you pour hot water over the grounds, watching as the rich, dark liquid slowly drips down into the filter below. Finally, you give it a gentle stir, take a deep, aromatic sniff, and enjoy the warm, comforting taste of your morning brew!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.64
+  },
+  {
+   "prompt": "What should I know about a museum visit?",
+   "response": "Visiting a museum is one of the most wonderful ways to learn, relax, and spark your imagination! Whether you're going with kids, a partner, or just to treat yourself, here are some essential things to know to make your visit magical:\n\n### 🎨 1. Do Your Little Homework (But Keep It Fun!)\n*   **Pick a Theme:** Don't just go to \"the big museum.\" Look at their website and pick a specific wing or exhibit that sounds cool to *you*. Are you into dinosaurs? Ancient Egypt? Neon lights?\n*   **Check the Hours & Tickets:** Some museums are free on certain days, and some need tickets booked weeks in advance! Always double-check before you leave the house.\n*   **Download the App:** Most big museums have amazing free apps with audio guides, hidden facts, and even AR (Augmented Reality) games. It's like having a super cool tour guide in your pocket!\n\n### 👣",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 5.63
+  },
+  {
+   "prompt": "How do I handle a rainy weekend?",
+   "response": "A rainy weekend can actually be the **perfect excuse** to slow down, cozy up, and do all the things you usually skip because the weather is too nice for them! 🌧️☕\n\nHere are some ideas to turn that gray sky into your favorite kind of magic:\n\n### 🏠 The Ultimate Cozy Challenge\n*   **Movie Marathon Night**: Pick a theme (90s rom-coms, scary movies, or your favorite Disney classics), make popcorn, build the biggest blanket fort ever, and binge-watch until the rain stops.\n*   **Book Binge**: Grab your favorite stack of novels, a hot cup of tea (or cocoa!), and curl up in the most comfortable chair. No notifications, just stories.\n*   **Bake Something Yummy**: Rainy days smell amazing when baking. Try making fluffy pancakes, brownies, or that one cookie recipe you've been dying to try. The kitchen will smell like heaven! ",
+   "tone": 5,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.92
+  }
+ ]
+}

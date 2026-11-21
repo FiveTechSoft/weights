@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NanoWSP-3: 6-Layer Linear Associative Memory Synthesized in Weight Space</title>
-  <meta name="description" content="A 3.28M-parameter 6-layer Transformer architecture programmed in weight space as a linear associative memory testbed: 23 key-value associations stored via closed-form Gram-matrix pseudo-inverse with 100.0% recall in 154 ms without cross-talk.">
+  <meta name="description" content="A 3.28M-parameter 6-layer Transformer architecture programmed in weight space as a linear associative memory testbed: 23 key-value associations stored via closed-form Gram-matrix pseudo-inverse; all 23 stored associations recalled (memorization of stored items, no generalization tested), written in 154 ms without training.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
   <style>
     :root {
@@ -234,10 +234,10 @@
     <div class="badge-pill">WEIGHT-SPACE LINEAR ASSOCIATIVE MEMORY TESTBED</div>
     <h1>NanoWSP-3: 6-Layer Linear Associative Memory</h1>
     <p class="subtitle">
-      A <strong>3,280,128 parameter</strong> 6-layer Transformer with 256 hidden dimension, 8 attention heads, and full 256-byte vocabulary. Imprints and decouples 5 synthetic thematic domain benchmarks with <strong>100.0% exact recall in 154 ms on CPU</strong> via closed-form Gram-matrix pseudo-inverse without backpropagation. <em>Note: Operates as an associative key-value lookup testbed on random orthogonal weights, not a generalized language model.</em>
+      A <strong>3,280,128 parameter</strong> 6-layer Transformer with 256 hidden dimension, 8 attention heads, and full 256-byte vocabulary. Stores 23 synthetic key&rarr;value pairs in 5 themes and recalls <strong>23/23 stored associations</strong>, written in 154 ms on CPU via a closed-form Gram-matrix pseudo-inverse, with no training. <em>Note: this is a key-value lookup testbed on random orthogonal weights, not a language model. Recall is measured on the stored items only; no generalization is tested.</em>
     </p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-      <a href="https://github.com/mimo-weights/wsp" class="btn btn-primary" target="_blank">View GitHub Repository &rarr;</a>
+      <a href="https://github.com/FiveTechSoft/weights" class="btn btn-primary" target="_blank">View GitHub Repository &rarr;</a>
       <a href="wsplang.html" class="btn btn-secondary">WSP-Lang 0.6 Grammar</a>
     </div>
   </header>
@@ -257,14 +257,14 @@
         <div style="font-size: 0.8rem; color: var(--text-muted);">SafeTensors format</div>
       </div>
       <div class="card" style="border-color: rgba(168, 85, 247, 0.4);">
-        <div class="metric-label">Thematic Recall</div>
-        <div class="metric-value" style="color: var(--accent-purple);">100.0%</div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">23 / 23 facts verified</div>
+        <div class="metric-label">Stored-Item Recall</div>
+        <div class="metric-value" style="color: var(--accent-purple);">23/23</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">stored pairs only (memorization)</div>
       </div>
       <div class="card" style="border-color: rgba(245, 158, 11, 0.4);">
         <div class="metric-label">Cross-Talk</div>
         <div class="metric-value" style="color: var(--accent-amber);">0.0%</div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">Gram diagonalization</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">among the 23 stored keys</div>
       </div>
       <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
         <div class="metric-label">Synthesis Time</div>
@@ -275,7 +275,7 @@
 
     <!-- 5 THEMATIC DOMAINS -->
     <section style="margin-bottom: 3rem;">
-      <h2 style="font-size: 1.8rem; margin-bottom: 1.25rem;">📚 The 5 Verified Thematic Domains (Associative Memory Testbed)</h2>
+      <h2 style="font-size: 1.8rem; margin-bottom: 1.25rem;">📚 The 5 Synthetic Thematic Domains (Associative Memory Testbed)</h2>
       <div class="grid-2">
         
         <div class="card">
@@ -338,7 +338,7 @@
       <div class="card" style="border-color: rgba(244, 63, 94, 0.4); background: linear-gradient(135deg, rgba(244, 63, 94, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%);">
         <h3 style="color: var(--accent-rose);">⚡ 5. Capacidad Agéntica & Cálculo Simbólico</h3>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
-          Executes symbolic arithmetic operations and tool-calling transitions directly in weight space:
+          Stores arithmetic results as key&rarr;value pairs (lookup, not computation):
         </p>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
           <div><code>ACT: 3+4=</code> &rarr; <strong>7</strong> <span style="color: var(--accent-emerald);">(98.9% conf)</span></div>
@@ -351,9 +351,9 @@
 
     <!-- FULL 23-FACT VERIFIED BENCHMARK TABLE -->
     <section style="margin-bottom: 3rem;">
-      <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📋 Verified Thematic Benchmark: 23 Questions & Answers</h2>
+      <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📋 Stored-Item Recall: 23 Keys & Values</h2>
       <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-        Every synthetic associative fact was evaluated on the compiled NanoWSP-3 checkpoint. Overall recall: <strong>23 / 23 (100.0%)</strong> with average token confidence of <strong>98.4%</strong>.
+        Every stored synthetic pair was queried on the compiled NanoWSP-3 checkpoint: <strong>23 / 23</strong> recalled, average token confidence <strong>98.4%</strong>. These are the same keys that were written, so this measures memorization, not knowledge or generalization.
       </p>
       <table>
         <thead>
@@ -409,7 +409,7 @@
             <th>Parameters</th>
             <th>SafeTensors Size</th>
             <th>Thematic Domains</th>
-            <th>Recall</th>
+            <th>Recall (stored items)</th>
           </tr>
         </thead>
         <tbody>
@@ -422,7 +422,7 @@
             <td>80,704</td>
             <td>323 KB</td>
             <td>1 (Word & Logic)</td>
-            <td>100.0%</td>
+            <td>all stored pairs</td>
           </tr>
           <tr>
             <td><strong>NanoWSP-2</strong></td>
@@ -433,7 +433,7 @@
             <td>599,168</td>
             <td>2.40 MB</td>
             <td>3 (Math, Geo, Brackets)</td>
-            <td>100.0%</td>
+            <td>11/11 stored</td>
           </tr>
           <tr style="background: rgba(56, 189, 248, 0.08);">
             <td><strong>NanoWSP-3 (New)</strong></td>
@@ -444,7 +444,7 @@
             <td><strong>3,280,128</strong></td>
             <td><strong>12.51 MB</strong></td>
             <td><strong>5 Synthetic Domains</strong></td>
-            <td><strong>100.0% (23/23)</strong></td>
+            <td><strong>23/23 stored</strong></td>
           </tr>
           <tr>
             <td><strong>TinyLlama-1.1B</strong></td>
@@ -455,7 +455,7 @@
             <td>1,100,048,512</td>
             <td>2,200 MB</td>
             <td>General LLM</td>
-            <td>87.5% Target Fix</td>
+            <td>Fact transfer: 5/8 &rarr; 7/8 targets, holdout 5/8 (n too small)</td>
           </tr>
         </tbody>
       </table>
@@ -470,7 +470,7 @@ python scripts/demo_nanowsp3_capabilities.py
 # 2. Run unit tests
 python -m unittest tests/test_nanowsp3.py
 
-# 3. Inspect the verified weights and JSON report
+# 3. Inspect the weights and JSON report
 ls data/nanowsp3_weights.safetensors
 cat rig_runs/nanowsp3_thematic_benchmark_report.json</code></pre>
     </section>

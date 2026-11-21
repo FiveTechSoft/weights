@@ -1,0 +1,58 @@
+{
+  "wsplang_version": "0.7.0",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "audit_cli_behav_violation",
+  "archivo": "C:\\weights\\lab\\audit\\inspect_ops\\out\\cli_behav_violation.wspl",
+  "steps_count": 1,
+  "steps": [
+    {
+      "sec": "steps",
+      "expr": "step assert_behavioral_drift corpus=lab/data/shakespeare_char/input.txt max_ppl_increase=1.0",
+      "op": "assert_behavioral_drift",
+      "args": "corpus=lab/data/shakespeare_char/input.txt max_ppl_increase=1.0"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.7.0",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "assert_behavioral_drift",
+        "args": "corpus=lab/data/shakespeare_char/input.txt max_ppl_increase=1.0"
+      }
+    ],
+    "pasos_mapeo": {
+      "assert_behavioral_drift": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": null,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": false,
+      "allow_training": false
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-05T20:20:26",
+  "ejecucion": [
+    {
+      "op": "assert_behavioral_drift",
+      "args": "corpus=lab/data/shakespeare_char/input.txt max_ppl_increase=1.0",
+      "status": "ok",
+      "execution_state": "simulated",
+      "result": {
+        "rule": "Behavioral Integrity Guard (Borth et al., 'Structure Is Not Enough')",
+        "corpus_evaluated": "input.txt",
+        "measured_perplexity": 314.67,
+        "max_allowed_ppl_ratio": 1.0,
+        "behavioral_drift_pass": false,
+        "verdict": "VIOLATION"
+      }
+    }
+  ]
+}

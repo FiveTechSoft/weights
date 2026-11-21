@@ -29,3 +29,25 @@ data/rosetta_*.npz
 scratch/
 runs/test_*
 runs/ci_*
+lab/runs/decompiled/
+
+# Windows-style paths hardcoded in some tests create this literal directory on Linux/macOS
+C:\\weights/
+
+# one-off root scripts (outside review 2026-11-13: root clutter)
+/probe3.py
+
+# benchmark registry duplicates of existing per-item reports, and NanoWSP ternary work checkpoints (regenerable)
+lab/runs/bench/imported/
+lab/runs/ternary_nanowsp/work/
+
+# dist-shift suite: saved base logits (GBs, regenerable with --save-all-logits)
+data/bench/logits/
+
+# dist-shift data files are pinned by sha256 in engine/bench_suites/dist-shift.json and data/bench/README.md (URLs there); regenerable
+data/bench/*.txt
+data/bench/*.csv
+data/bench/*.bin
+data/bench/*.zip
+data/bench/*.parquet
+data/bench/*.jsonl

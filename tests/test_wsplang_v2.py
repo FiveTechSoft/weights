@@ -65,7 +65,7 @@ steps:
         steps, errors = wsplang.validate(prog)
         self.assertEqual(len(errors), 0, f"Expected 0 errors, got: {errors}")
         plan = wsplang.plan_run(prog, steps)
-        self.assertTrue(plan["wsplang_version"] in ("0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"))
+        self.assertGreaterEqual(tuple(map(int, plan["wsplang_version"].split("."))), (0, 2, 0))  # introduced in 0.2.0
         self.assertEqual(plan["budgets"]["max_modified_weights"], 1000)
         self.assertTrue(plan["budgets"]["allow_write"])
 
@@ -138,6 +138,8 @@ steps:
         """Verify control vector export compiles valid GGUF file."""
         cv_out = self.temp_path / "cv_test.gguf"
         code = f"""experiment test_cv:
+budgets:
+    allow_write = true
 steps:
     step export_control_vector {self.vec_file} out={cv_out} scale=-0.5
 """

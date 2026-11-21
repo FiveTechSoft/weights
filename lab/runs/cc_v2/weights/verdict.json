@@ -1,0 +1,165 @@
+{
+ "merged": {
+  "vs_base": {
+   "gsm8k": {
+    "g1": {
+     "arm": 85,
+     "ref": 50,
+     "win": 36,
+     "loss": 1,
+     "p": 5.529727786779404e-10
+    },
+    "lastnum": {
+     "arm": 88,
+     "ref": 61,
+     "win": 29,
+     "loss": 2,
+     "p": 4.628673195838928e-07
+    }
+   },
+   "math500": {
+    "g1": {
+     "arm": 30,
+     "ref": 6,
+     "win": 24,
+     "loss": 0,
+     "p": 1.1920928955078125e-07
+    },
+    "g2": {
+     "arm": 23,
+     "ref": 6,
+     "win": 17,
+     "loss": 0,
+     "p": 1.52587890625e-05
+    }
+   }
+  },
+  "vs_vector": {
+   "gsm8k": {
+    "g1": {
+     "arm": 85,
+     "ref": 83,
+     "win": 4,
+     "loss": 2,
+     "p": 0.6875
+    },
+    "lastnum": {
+     "arm": 88,
+     "ref": 82,
+     "win": 7,
+     "loss": 1,
+     "p": 0.0703125
+    }
+   },
+   "math500": {
+    "g1": {
+     "arm": 30,
+     "ref": 35,
+     "win": 0,
+     "loss": 5,
+     "p": 0.0625
+    },
+    "g2": {
+     "arm": 23,
+     "ref": 27,
+     "win": 0,
+     "loss": 4,
+     "p": 0.125
+    }
+   }
+  },
+  "cut": {
+   "gsm8k": 10,
+   "math500": 21
+  },
+  "mean_tokens": {
+   "gsm8k": 796,
+   "math500": 1438
+  }
+ },
+ "placebo_merged": {
+  "vs_base": {
+   "gsm8k": {
+    "g1": {
+     "arm": 27,
+     "ref": 50,
+     "win": 6,
+     "loss": 29,
+     "p": 0.0001168418675661087
+    },
+    "lastnum": {
+     "arm": 41,
+     "ref": 61,
+     "win": 6,
+     "loss": 26,
+     "p": 0.0005350527353584766
+    }
+   },
+   "math500": {
+    "g1": {
+     "arm": 3,
+     "ref": 6,
+     "win": 1,
+     "loss": 4,
+     "p": 0.375
+    },
+    "g2": {
+     "arm": 3,
+     "ref": 6,
+     "win": 1,
+     "loss": 4,
+     "p": 0.375
+    }
+   }
+  },
+  "vs_vector": {
+   "gsm8k": {
+    "g1": {
+     "arm": 27,
+     "ref": 83,
+     "win": 2,
+     "loss": 58,
+     "p": 3.1762786845135338e-15
+    },
+    "lastnum": {
+     "arm": 41,
+     "ref": 82,
+     "win": 3,
+     "loss": 44,
+     "p": 2.4647306418046355e-10
+    }
+   },
+   "math500": {
+    "g1": {
+     "arm": 3,
+     "ref": 35,
+     "win": 0,
+     "loss": 32,
+     "p": 4.656612873077393e-10
+    },
+    "g2": {
+     "arm": 3,
+     "ref": 27,
+     "win": 1,
+     "loss": 25,
+     "p": 8.046627044677734e-07
+    }
+   }
+  },
+  "cut": {
+   "gsm8k": 73,
+   "math500": 47
+  },
+  "mean_tokens": {
+   "gsm8k": 1810,
+   "math500": 1998
+  }
+ },
+ "criteria": {
+  "C1 merged > base": true,
+  "C2 placebo not better": true,
+  "C3 GSM8K no damage": true,
+  "C4 merged not below vector": true
+ },
+ "verdict": "PASS"
+}

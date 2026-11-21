@@ -1,0 +1,62 @@
+{
+  "pong": {
+    "W3_shape": [
+      32,
+      5
+    ],
+    "std": [
+      0.612,
+      0.896,
+      0.956,
+      0.602,
+      0.601
+    ],
+    "maxabs": [
+      1.4,
+      1.95,
+      1.9,
+      1.28,
+      1.28
+    ],
+    "vertical": 1.852,
+    "horizontal": 1.203,
+    "ratio": 1.54,
+    "W3_header_context": "W3 + b3           W3: 32 x 5,   b3: 5 | Row i of W1 holds the ",
+    "numbers_in_prompt": 17253
+  },
+  "breakout": {
+    "W3_shape": [
+      32,
+      5
+    ],
+    "std": [
+      1.097,
+      1.128,
+      1.138,
+      1.93,
+      1.546
+    ],
+    "maxabs": [
+      1.96,
+      2.13,
+      1.74,
+      5.34,
+      3.06
+    ],
+    "vertical": 2.266,
+    "horizontal": 3.476,
+    "ratio": 1.53,
+    "W3_header_context": "W3 + b3           W3: 32 x 5,   b3: 5 | Row i of W1 holds the ",
+    "numbers_in_prompt": 17253
+  },
+  "prompt_mentions": {
+    "pong": false,
+    "breakout": false,
+    "up": true,
+    "down": true,
+    "left": true,
+    "right": true,
+    "action": true
+  },
+  "prompt_head": "THE OBSERVATION\nThe network sees a 10 x 10 grid. Rows are numbered 0 (top) to 9 (bottom) and columns 0 (left) to 9 (right). The outer ring of cells (row 0, row 9, column 0 and column 9) is a wall border; the playable area is the inner 8 x 8 cells (rows 1-8, columns 1-8).\nEach cell has 5 binary channels (0 or 1):\n  channel 0  agent: the cells the player controls\n  channel 1  moving objects: things other than the agent that move\n  channel 2  reward targets: things that give reward\n  channel 3  obstacles: cells the agent cannot enter or that end the episode (the wall border is always here)\n  chan"
+}

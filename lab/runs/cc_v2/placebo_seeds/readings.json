@@ -1,0 +1,146 @@
+{
+ "base": {
+  "n": 64,
+  "correct": 8,
+  "correct_g2": 7,
+  "cut": 57,
+  "loops": 2,
+  "mean_tokens": 1987
+ },
+ "vector": {
+  "n": 64,
+  "correct": 38,
+  "correct_g2": 33,
+  "cut": 30,
+  "loops": 20,
+  "mean_tokens": 1414,
+  "vs_base": {
+   "win": 30,
+   "loss": 0,
+   "p": 1.862645149230957e-09
+  }
+ },
+ "seeds": [
+  {
+   "n": 64,
+   "correct": 3,
+   "correct_g2": 3,
+   "cut": 61,
+   "loops": 4,
+   "mean_tokens": 2015,
+   "vs_base": {
+    "win": 1,
+    "loss": 6,
+    "p": 0.125
+   },
+   "seed": 1
+  },
+  {
+   "n": 64,
+   "correct": 7,
+   "correct_g2": 7,
+   "cut": 57,
+   "loops": 1,
+   "mean_tokens": 1959,
+   "vs_base": {
+    "win": 3,
+    "loss": 4,
+    "p": 1.0
+   },
+   "seed": 2
+  },
+  {
+   "n": 64,
+   "correct": 5,
+   "correct_g2": 5,
+   "cut": 59,
+   "loops": 2,
+   "mean_tokens": 1998,
+   "vs_base": {
+    "win": 1,
+    "loss": 4,
+    "p": 0.375
+   },
+   "seed": 3
+  },
+  {
+   "n": 64,
+   "correct": 8,
+   "correct_g2": 7,
+   "cut": 56,
+   "loops": 1,
+   "mean_tokens": 1952,
+   "vs_base": {
+    "win": 4,
+    "loss": 4,
+    "p": 1.0
+   },
+   "seed": 4
+  },
+  {
+   "n": 64,
+   "correct": 7,
+   "correct_g2": 7,
+   "cut": 57,
+   "loops": 2,
+   "mean_tokens": 1955,
+   "vs_base": {
+    "win": 2,
+    "loss": 3,
+    "p": 1.0
+   },
+   "seed": 5
+  },
+  {
+   "n": 64,
+   "correct": 7,
+   "correct_g2": 7,
+   "cut": 57,
+   "loops": 2,
+   "mean_tokens": 1964,
+   "vs_base": {
+    "win": 3,
+    "loss": 4,
+    "p": 1.0
+   },
+   "seed": 6
+  },
+  {
+   "n": 64,
+   "correct": 6,
+   "correct_g2": 6,
+   "cut": 58,
+   "loops": 3,
+   "mean_tokens": 1983,
+   "vs_base": {
+    "win": 2,
+    "loss": 4,
+    "p": 0.6875
+   },
+   "seed": 7
+  },
+  {
+   "n": 64,
+   "correct": 4,
+   "correct_g2": 4,
+   "cut": 60,
+   "loops": 2,
+   "mean_tokens": 2009,
+   "vs_base": {
+    "win": 2,
+    "loss": 6,
+    "p": 0.2890625
+   },
+   "seed": 8
+  }
+ ],
+ "median_correct": 6.5,
+ "min_correct": 3,
+ "max_correct": 8,
+ "half_gain_threshold": 23,
+ "n_seeds_at_or_above_half_gain": 0,
+ "n_seeds_better_than_base_p05": 0,
+ "n_seeds_worse_than_base_p05": 0,
+ "median_at_or_below_base": true,
+ "vector_rank": 1
+}

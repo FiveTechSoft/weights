@@ -1,0 +1,4 @@
+experiment rank_twil:
+objective: webAI-Official/TwIL-8B balanced (Granite 4.2 8B + SFT + GRPO + short-trace RL; published only at Q4_K_M) on rank-2048 (lab/probes/ranking/PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=twil out=lab/runs/rank/twil.json

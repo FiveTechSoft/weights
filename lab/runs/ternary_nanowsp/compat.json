@@ -1,0 +1,32 @@
+{
+ "peek_read": {
+  "pass": true,
+  "density": 0.470458984375,
+  "shape": [
+   64,
+   128
+  ],
+  "criterion": "runs and reports the ternary density"
+ },
+ "project_out_reternarize": {
+  "pass": false,
+  "energy_before": 27.771663665771484,
+  "energy_after": 26.19115447998047,
+  "ratio": 0.9430891427747272,
+  "criterion": "energy along u after re-ternarisation <= 10 % of before"
+ },
+ "float_imprint_then_reternarize": {
+  "pass": false,
+  "new_pair_recall": 0.0,
+  "old_recall": 0.125,
+  "criterion": "new pair recalled and old recall >= 0.90"
+ },
+ "small_delta_reternarize": {
+  "pass": false,
+  "cos": 0.059471858689635504,
+  "alpha": 0.003536906041165832,
+  "noise": 16.784913142542273,
+  "rel_norm": 0.02,
+  "criterion": "cos(deq_after - deq_before, dW) >= 0.5"
+ }
+}

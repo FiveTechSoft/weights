@@ -1,0 +1,17 @@
+{
+ "base": "C:\\weights\\hf_cache\\qwen35-08b-gguf\\Qwen_Qwen3.5-0.8B-Q6_K.gguf",
+ "edit": "C:\\weights\\servidos\\qwen35-08b__exp8-replica.gguf",
+ "differing": [
+  "blk.15.ffn_down.weight",
+  "blk.19.ffn_down.weight"
+ ],
+ "placebo_differing": [
+  "blk.15.ffn_down.weight",
+  "blk.19.ffn_down.weight"
+ ],
+ "expected": [
+  "blk.15.ffn_down.weight",
+  "blk.19.ffn_down.weight"
+ ],
+ "ok": true
+}

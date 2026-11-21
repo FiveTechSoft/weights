@@ -1,0 +1,35 @@
+{
+ "export_step": "ok",
+ "envelope_step": "ok",
+ "export_control_vector": {
+  "returncode": 0,
+  "relevant_log": [
+   "0.04.011.119 E cmn  common_contr: invalid (zero) direction tensor layer index in C:\\Users\\Anto\\AppData\\Local\\Temp\\wsp_cv_audit_lyr3keo5\\export.gguf",
+   "0.04.011.128 W cmn  common_contr: skipping C:\\Users\\Anto\\AppData\\Local\\Temp\\wsp_cv_audit_lyr3keo5\\export.gguf due to invalid direction tensors",
+   "0.04.011.135 E cmn  common_contr: no valid control vector files passed"
+  ],
+  "tail": [
+   "0.05.739.924 I common_perf_print: unaccounted time =       0.57 ms /   0.0 %      (total - sampling - prompt eval - eval) / (total)",
+   "0.05.739.925 I common_perf_print:    graphs reused =          2",
+   "0.05.739.926 I common_perf_print:   graph reallocs =          0    /     0        (same size) / (changed size)"
+  ]
+ },
+ "layer_envelope": {
+  "returncode": 0,
+  "relevant_log": [],
+  "tail": [
+   "0.05.037.014 I common_perf_print: unaccounted time =     829.77 ms /  52.0 %      (total - sampling - prompt eval - eval) / (total)",
+   "0.05.037.018 I common_perf_print:    graphs reused =          2",
+   "0.05.037.019 I common_perf_print:   graph reallocs =          0    /     0        (same size) / (changed size)"
+  ]
+ },
+ "no_control_vector": {
+  "returncode": 0,
+  "relevant_log": [],
+  "tail": [
+   "0.04.550.012 I common_perf_print: unaccounted time =       0.53 ms /   0.0 %      (total - sampling - prompt eval - eval) / (total)",
+   "0.04.550.013 I common_perf_print:    graphs reused =          2",
+   "0.04.550.014 I common_perf_print:   graph reallocs =          0    /     0        (same size) / (changed size)"
+  ]
+ }
+}

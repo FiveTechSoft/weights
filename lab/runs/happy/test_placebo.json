@@ -1,0 +1,325 @@
+{
+ "split": "test",
+ "rows": [
+  {
+   "prompt": "Tell me about a rainy weekend.",
+   "response": "A rainy weekend is a gentle pause in the rhythm of life, a time when the world seems to soften under the weight of gray skies and the rhythmic drumming of water. It's not about what you *can't* do, but rather what you *can* do when the outside world slows down.\n\nHere is what a rainy weekend often feels like:\n\n### The Atmosphere\nThe air carries a distinct, clean scent—often called *petrichor*—the smell of earth waking up after a long dry spell. The light changes; it becomes diffused and soft, turning ordinary streets into impressionist paintings where colors seem deeper and shadows are less harsh. The sound of rain creates a natural white noise that muffles the chaos of the city, making the world feel quieter and more intimate.\n\n### The Weekend Vibe\n*   **Saturday: The Cozy Start**\n    The weekend usually begins with the sound of rain tapping against the windowpane. There's",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe saving money each month in a few sentences.",
+   "response": "Saving money each month involves consistently setting aside a portion of your income before spending it on non-essentials. This disciplined practice helps build an emergency fund, achieve long-term financial goals, and reduce reliance on debt. By automating transfers to a separate savings account, you can make the process effortless and ensure your future financial security grows steadily over time.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for planting tomatoes.",
+   "response": "Here are two essential tips for planting tomatoes successfully:\n\n1.  **Plant Deeply**: Unlike many other vegetables, tomatoes thrive when planted deeper than their current root ball. Bury the stem up to the first set of true leaves (or even halfway up the stem). The buried stem will develop additional roots along its length, creating a much stronger and more extensive root system that helps the plant access more water and nutrients.\n2.  **Provide Consistent Water and Support**: Tomatoes are heavy feeders and require consistent moisture to prevent blossom end rot and cracking. Water them deeply at the base of the plant rather than the leaves to avoid fungal diseases. Additionally, install a sturdy cage or stake immediately upon planting so you can guide the main stem up it as it grows, preventing the heavy fruit from breaking branches later in the season.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about fixing a flat bicycle tyre.",
+   "response": "Fixing a flat bicycle tyre is a fundamental skill for any cyclist. While it can be frustrating, the process is straightforward once you have the right tools and follow a logical sequence.\n\nHere is a step-by-step guide to fixing a flat tyre, along with tips to prevent future flats.\n\n### 1. Gather Your Tools\nBefore you start, ensure you have the following:\n*   **Spare inner tube** (or a patch kit if you prefer repairing the old one).\n*   **Levers** (tyre levers) – usually two plastic or metal tools.\n*   **Pump** (with a valve core remover if your pump has one).\n*   **Screwdriver** (optional, for removing the valve cap).\n*   **Sandpaper or sanding block** (if using a patch kit).\n*   **Tire levers** are essential; trying to pry the tyre off with your fingernails can damage the",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about choosing a laptop?",
+   "response": "Choosing a laptop can feel overwhelming because there are so many specifications and models available. To make the right decision, you need to align the hardware with your specific needs and budget.\n\nHere is a comprehensive guide on what to consider:\n\n### 1. Define Your Primary Use Case\nBefore looking at specs, ask yourself: **What will I be doing most of the time?**\n*   **Casual Use:** Web browsing, email, streaming movies, light document editing.\n*   **Student/Work:** Writing papers, attending video calls, spreadsheets, multitasking.\n*   **Creative Pro:** Video editing, graphic design, 3D rendering, music production.\n*   **Gaming:** Playing modern AAA titles at high settings.\n*   **Portability:** You need to carry it everywhere (commuting, travel).\n\n### 2. Key Specifications to Understand\n\n#### **Processor (CPU)**\nThe \"brain\" of the laptop.\n*  ",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a museum visit?",
+   "response": "Handling a museum visit can range from a casual stroll to a deep academic dive, depending on your goals. Whether you are visiting with family, friends, or alone, here is a comprehensive guide to making the most of your experience:\n\n### 1. Preparation Before You Go\n*   **Research the Collection**: Check the museum's website for current exhibitions, special events, or temporary shows. Permanent collections are vast; knowing what's new helps you prioritize.\n*   **Check Practicalities**: Look up opening hours, ticket prices, and whether timed entry is required. Many museums offer free entry on specific days or for certain groups (students, seniors).\n*   **Plan Your Route**: Museums can be overwhelming. Decide if you want to see everything or focus on specific galleries. Download a map or use the museum's app if available.\n*   **Comfort Matters**: Wear comfortable shoes. You will likely be walking on hard floors for hours.\n\n### 2. During the Visit",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a power outage?",
+   "response": "A power outage can be disruptive, but being prepared can significantly reduce stress and ensure safety. Here is a comprehensive guide on what you should know, categorized by preparation, safety, and recovery.\n\n### 1. Immediate Safety First\n*   **Stay Calm**: Panic leads to poor decisions. Assess the situation before acting.\n*   **Avoid Downed Power Lines**: If you see a fallen line, stay far away (at least 100 feet). Treat all downed wires as **live and deadly**. Do not touch them or anything touching them.\n*   **Do Not Touch Wet Appliances**: If an appliance is wet or near water, do not touch it until it is dry and the power is confirmed off.\n*   **Turn Off Electronics**: To protect devices from power surges when electricity returns, turn off and unplug sensitive electronics (computers, TVs, appliances) if possible.\n\n### 2. Essential Preparation (Before the Outage)\n",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for organising a desk.",
+   "response": "Here are two effective tips for organizing your desk:\n\n1.  **Implement the \"One-In, One-Out\" Rule**\n    To prevent clutter from accumulating over time, commit to removing an item every time you bring a new one into your workspace. If you buy a new notebook, donate or recycle an old one; if you get a new pen, toss out a dried-up one. This habit ensures your desk inventory stays constant and manageable, making it easier to maintain order daily.\n\n2.  **Utilize Vertical Space with Dedicated Containers**\n    Instead of letting loose papers, cables, and small supplies sprawl across the surface, use vertical storage solutions like drawer organizers, cable sleeves, or stackable trays. Grouping similar items together (e.g., all pens in one cup, all sticky notes in another) creates clear visual boundaries and makes everything instantly accessible, reducing the time spent searching for tools.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about the weather today?",
+   "response": "I don't have access to your current location or real-time weather data, so I can't tell you exactly what the weather is like where you are right now.\n\nTo get the most accurate and up-to-date forecast, I recommend:\n*   **Checking a trusted weather app** on your phone.\n*   **Searching \"[Your City] weather\"** in your browser.\n*   **Visiting a reliable site** like Weather.com, AccuWeather, or your local meteorological service.\n\nIf you tell me your **city or region**, I can share general climate patterns for this time of year or help you interpret forecast data once you have it!",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.02
+  },
+  {
+   "prompt": "Give me two tips for reading before bed.",
+   "response": "Here are two effective tips for reading before bed:\n\n1.  **Choose Low-Stimulation Content**\n    Opt for fiction, poetry, or light non-fiction rather than news, work-related materials, or complex problem-solving books. Content that triggers stress, anxiety, or intense emotional engagement can keep your brain alert and make it harder to wind down. A calming story helps signal to your body that it is time to rest.\n\n2.  **Avoid Blue Light Exposure**\n    Try to read a physical book or use an e-reader with a warm-light setting (like Amazon Kindle's \"Night Light\" or Apple Books' \"Night Shift\") instead of a standard smartphone or tablet. The blue light emitted by screens suppresses melatonin production, the hormone responsible for regulating sleep cycles, which can delay your ability to fall asleep even if you are mentally relaxed.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a walk in the park.",
+   "response": "Here are two simple tips to enhance your next walk in the park:\n\n1.  **Practice Mindful Observation**: Instead of just walking from point A to point B, try to engage your senses. Notice the variety of green shades in the foliage, listen for specific bird calls or rustling leaves, and smell the damp earth or blooming flowers. This shifts your focus from your internal thoughts to the present moment, effectively turning a routine stroll into a form of moving meditation.\n\n2.  **Follow the \"Golden Hour\"**: If possible, schedule your walk for shortly after sunrise or before sunset. During these times, the light is softer and warmer, which not only creates beautiful photography opportunities but also tends to be cooler and more pleasant than the midday heat. Additionally, wildlife is often more active during these quiet hours, increasing your chances of spotting deer, squirrels, or other creatures.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a long train journey?",
+   "response": "A long train journey can be a wonderful way to travel, offering scenic views and the chance to relax, but it also requires some preparation to ensure comfort and safety. Here are the key things you should know:\n\n### 1. Booking and Tickets\n*   **Book Early**: Popular routes (like the Eurostar, Shinkansen in Japan, or scenic lines in Europe/Canada) often sell out weeks or months in advance. Early booking usually secures the best prices and preferred seats.\n*   **Seat Selection**: If you are traveling overnight or for more than 6 hours, consider paying extra for a **berth** (sleeping cabin) or a seat with extra legroom.\n*   **Ticket Types**: Understand the difference between standard, first class, and sleeper classes. Some tickets are \"open\" (valid for any train on a route) while others are specific to a train number and time.\n\n### 2. Packing Essentials\n*   **Power",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.73
+  },
+  {
+   "prompt": "Describe a walk in the park in a few sentences.",
+   "response": "The morning sun filters through the canopy of ancient oaks, casting dappled shadows on the winding gravel path. Birds chirp melodiously as a gentle breeze rustles the leaves, carrying the sweet scent of blooming jasmine and damp earth. With each step, the city noise fades away, replaced by the peaceful rhythm of nature and the distant laughter of children playing near the pond.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about a walk in the park.",
+   "response": "A walk in the park is one of life's simplest yet most profound pleasures. It is a gentle escape from the rhythm of daily life, offering a space where the world slows down and the senses come alive.\n\nImagine stepping through the iron gates or under the archway. The air immediately feels different—cooler, fresher, and scented with the earthy smell of damp soil, perhaps mixed with the sweet fragrance of blooming lilacs or the sharp green of fresh grass. The chaotic hum of traffic fades into a distant background, replaced by the symphony of nature: the rustle of leaves in a gentle breeze, the chirping of sparrows, and the soft crunch of gravel underfoot.\n\nAs you wander along the winding paths, the scenery shifts. There might be a **serene pond** reflecting the sky, where ducks glide silently or children toss bread to feeding geese. Nearby, a **playground** buzzes with the vibrant energy of laughter and swings,",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle learning a new language?",
+   "response": "Learning a new language is a rewarding journey that blends cognitive challenge with cultural exploration. There is no single \"perfect\" method, but the most successful learners usually combine **consistency**, **immersion**, and **active practice**.\n\nHere is a comprehensive guide to help you navigate the process:\n\n### 1. Set Clear, Realistic Goals\nVague goals like \"I want to learn Spanish\" often lead to burnout. Instead, use the **SMART** framework:\n*   **Specific**: \"I want to hold a 5-minute conversation about travel.\"\n*   **Measurable**: \"I will learn 50 new words per week.\"\n*   **Achievable**: Adjust your pace based on your schedule.\n*   **Relevant**: Connect the language to your interests (e.g., cooking, coding, literature).\n*   **Time-bound**: \"I want to reach A2 level in 6 months.\"\n\n### 2. Build a Sustainable",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about the weather today.",
+   "response": "I don't have access to your current location, so I can't tell you the specific weather where you are right now.\n\nTo get an accurate forecast, please:\n1. **Check a weather app** on your phone or computer.\n2. **Search \"weather\"** in your browser or voice assistant.\n3. **Tell me your city or region**, and I can try to find general climate information or guide you on where to look for real-time data!\n\nWould you like to share your location?",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.3
+  },
+  {
+   "prompt": "Tell me about planting tomatoes.",
+   "response": "Planting tomatoes is one of the most rewarding gardening experiences, but it requires a bit of patience and attention to detail to get those juicy, sun-ripened fruits. Here is a comprehensive guide to help you grow healthy tomato plants.\n\n### 1. Choose the Right Variety\nBefore you buy seeds or seedlings, decide what kind of tomato you want:\n*   **Determinate (Bush):** These grow to a specific height and stop producing fruit once they reach maturity. They are great for canning, sauces, and smaller gardens.\n*   **Indeterminate (Vining):** These keep growing and producing fruit throughout the season until the first frost. They require staking or caging but offer a longer harvest window.\n*   **Heirloom vs. Hybrid:** Heirlooms are open-pollinated and unique in flavor but may be less disease-resistant. Hybrids are bred for specific traits like disease resistance and shelf life.\n\n### 2. Timing and",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about reading before bed?",
+   "response": "Reading before bed is a classic habit for many, often touted as a way to unwind and improve sleep quality. However, the *type* of reading and *how* you do it matters significantly.\n\nHere are the key things you should know to make this habit beneficial rather than disruptive:\n\n### 1. Choose the Right Content\nThe goal of pre-sleep reading is to lower your heart rate and calm your mind.\n*   **Do:** Pick fiction, poetry, or light non-fiction. These genres allow your brain to drift into a narrative state without triggering high arousal.\n*   **Don't:** Avoid news, true crime, intense thrillers, or complex self-help books. These can spike cortisol (stress hormone) levels or leave your brain racing with anxiety or problem-solving thoughts, making it harder to fall asleep.\n\n### 2. Watch Your Light Exposure\nThis is arguably the most critical factor. Blue light from screens (phones, tablets, e-readers)",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about learning a new language.",
+   "response": "Learning a new language is one of the most rewarding intellectual journeys you can undertake. It's not just about memorizing vocabulary; it's about rewiring your brain, gaining a new perspective on the world, and unlocking doors to cultures you've never visited.\n\nHere is a comprehensive guide to navigating the process, from the initial spark to long-term fluency:\n\n### 1. The Mindset: Embrace the Journey\nBefore diving into grammar rules, it's crucial to set the right expectations.\n*   **It's a Marathon, Not a Sprint:** Fluency takes years, not weeks. Celebrate small wins, like ordering your first coffee or understanding a song lyric.\n*   **Embrace Mistakes:** Errors are not failures; they are data points. Every mistake tells you what you don't know yet. Native speakers generally appreciate the effort more than they judge the accent.\n*   **Consistency Over Intensity:** Studying for 15–20",
+   "tone": 4,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a power outage.",
+   "response": "Here are two essential tips for handling a power outage:\n\n1.  **Unplug sensitive electronics**: Immediately disconnect computers, televisions, and other delicate devices from the wall outlets. This protects them from potential power surges when the electricity returns, which can often be more damaging than the outage itself.\n2.  **Use flashlights instead of candles**: Rely on battery-powered flashlights or lanterns for lighting. Avoid using open flames like candles, as they pose a significant fire hazard, especially if you are in the dark and might accidentally knock them over or use them near flammable materials.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about baking bread?",
+   "response": "Baking bread is a rewarding journey that blends science, patience, and creativity. Whether you are making a simple sandwich loaf or a complex sourdough, here are the fundamental concepts and tips every baker should know:\n\n### 1. The Four Key Ingredients\nMost breads rely on just four core ingredients. Understanding their roles is crucial:\n*   **Flour**: Provides structure. The most common type is **bread flour** (high protein/gluten), which creates a chewy texture. All-purpose flour works for softer breads, while whole wheat adds nutrition but can make the dough denser.\n*   **Water**: Hydrates the flour and activates the yeast. The ratio of water to flour (hydration) determines the texture; higher hydration makes an open, airy crumb, while lower hydration makes a denser loaf.\n*   **Yeast**: The leavening agent. It eats sugars and produces carbon dioxide, causing the dough to rise. You can",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Give me two tips for a job interview.",
+   "response": "Here are two essential tips to help you ace your job interview:\n\n1.  **Research the Company and Role Thoroughly**\n    Go beyond the basic \"About Us\" page. Understand the company's recent news, its core values, its competitors, and the specific challenges the team is currently facing. Tailor your answers to show how your skills directly address those needs. When you can speak intelligently about their mission and connect it to your own experience, you demonstrate genuine interest and strategic thinking.\n\n2.  **Prepare Specific STAR Method Examples**\n    Instead of giving vague generalities, prepare 5–7 concrete stories from your past that highlight your key competencies (like leadership, problem-solving, or conflict resolution). Structure these using the **STAR** method:\n    *   **S**ituation: Set the context.\n    *   **T**ask: Explain your responsibility.\n    *   **A**ction: Detail the specific steps *you*",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle baking bread?",
+   "response": "Baking bread is a rewarding process that blends science, patience, and creativity. Whether you are a complete beginner or looking to refine your technique, here is a comprehensive guide to help you get started.\n\n### 1. Gather Your Essential Tools\nYou don't need a professional bakery setup, but having the right basics makes a huge difference:\n*   **Digital Kitchen Scale**: Crucial for accuracy. Bread baking relies on ratios (hydration), not just volume measurements.\n*   **Large Mixing Bowl**: For combining ingredients.\n*   **Bench Scraper**: To handle sticky dough easily.\n*   **Baking Sheet or Dutch Oven**: A Dutch oven is highly recommended for artisan loaves as it traps steam, creating a crispy crust.\n*   **Dough Scraper**: For dividing and shaping dough.\n\n### 2. Understand the Core Ingredients\nMost breads rely on four main components:\n*   **Flour**: Bread flour (high protein)",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Describe baking bread in a few sentences.",
+   "response": "Baking bread begins by mixing flour, water, yeast, and salt to form a shaggy dough that is then kneaded until smooth and elastic. The dough is left to rise in a warm place, allowing the yeast to ferment and create air pockets that give the bread its light texture. Finally, the risen dough is shaped, proofed briefly, and baked in a hot oven until the crust turns golden brown and the interior is fully cooked.",
+   "tone": 1,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a football match?",
+   "response": "Handling a football match depends entirely on your role, as the approach varies significantly between being a **fan**, a **coach/manager**, or an **official**.\n\nHere is a guide tailored to the three most common perspectives:\n\n### 1. If You Are a Fan (Spectator)\nYour goal is to maximize enjoyment, safety, and community spirit.\n\n*   **Pre-Match Preparation**:\n    *   **Research**: Check team lineups, recent form, and key player injuries.\n    *   **Logistics**: Arrive early to secure parking or find a good seat. Check the weather forecast.\n    *   **Tickets**: Ensure you have valid tickets and know the entry/exit procedures.\n*   **During the Match**:\n    *   **Engage**: Cheer for your team, sing songs, and interact with fellow fans.\n    *   **Stay Calm**: Avoid excessive drinking or taking illegal substances. Keep an open mind;",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.84
+  },
+  {
+   "prompt": "Tell me about a birthday party.",
+   "response": "A birthday party is a joyful celebration marking the anniversary of a person's birth. It is a time to gather friends and family, share memories, and look forward to the future with a sense of gratitude and excitement. While traditions vary widely across cultures and age groups, the core essence remains the same: **celebrating life and connection**.\n\nHere is a glimpse into what makes a birthday party special:\n\n### 🎂 The Atmosphere\nThe air is usually filled with anticipation and laughter. The room is often decorated with colorful balloons, streamers, or themed props that reflect the birthday person's interests—whether it's a superhero theme for a child, an elegant floral setup for an adult, or a cozy movie night vibe for a casual gathering. Soft music or upbeat playlists set the mood, creating a backdrop for conversation and fun.\n\n### 🎁 The Rituals\nSeveral key moments define the experience:\n*   **The Cake Cutting**: Perhaps the most iconic moment. As",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.95
+  },
+  {
+   "prompt": "How do I handle a birthday party?",
+   "response": "Handling a birthday party can feel overwhelming, but breaking it down into a logical plan makes it much more manageable. Whether you are planning a small gathering or a large celebration, here is a step-by-step guide to help you organize a successful event:\n\n### 1. Define the Basics\nBefore booking anything, answer these three questions:\n*   **Who is it for?** (Age group, number of guests, dietary restrictions).\n*   **What is the vibe?** (Relaxed backyard BBQ, formal dinner, high-energy kids' party, or a themed night out?).\n*   **What is the budget?** (This will dictate your venue, food, and decoration choices).\n\n### 2. Set the Date and Time\n*   **Check the calendar:** Look at the birthdays of your friends and family to avoid conflicts.\n*   **Consider the season:** Summer evenings are great for outdoor parties, while winter might call for a cozy indoor gathering.\n*   **",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about a power outage.",
+   "response": "A **power outage** (also known as a blackout or power cut) is the temporary or permanent loss of electrical power in a specific area, building, or entire grid system. These events can range from a flicker that lasts a few seconds to a city-wide blackout lasting days.\n\nHere is a breakdown of how they happen, their impacts, and how people cope:\n\n### 1. Common Causes\nPower outages are rarely caused by a single factor; they usually stem from a combination of issues:\n*   **Severe Weather:** This is the most common cause. High winds, ice storms, heavy snow, and lightning can bring down power lines, damage transformers, and flood substations.\n*   **Equipment Failure:** Aging infrastructure, faulty transformers, or overloading of the grid can cause spontaneous failures.\n*   **Human Error or Accidents:** Construction crews accidentally digging up power lines, vehicle collisions with poles, or maintenance mistakes.\n*   **Cyber",
+   "tone": 1,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle fixing a flat bicycle tyre?",
+   "response": "Fixing a flat bicycle tyre is a fundamental skill every cyclist should master. While the process can vary slightly depending on whether you have a **tubeless** setup or a traditional **inner tube**, the core steps remain largely the same.\n\nHere is a step-by-step guide to fixing a standard inner tube flat:\n\n### 1. Gather Your Tools\nBefore you start, ensure you have the following:\n*   **Levers** ( tyre levers) – usually two.\n*   **Spare inner tube**.\n*   **Pump** (with a valve core remover if your pump doesn't have a built-in one).\n*   **Patch kit** (optional, if you want to repair the old tube).\n*   **Screwdriver** (sometimes needed to remove the valve cap).\n\n### 2. Locate the Leak\nBefore removing the tyre, find the puncture.\n*   Inflate the spare tube slightly (just enough to hold its",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about a birthday party?",
+   "response": "Planning or attending a birthday party can be a wonderful experience, but it involves a lot of moving parts. Since your question is broad, here is a comprehensive guide broken down by whether you are the **host** or the **guest**.\n\n### 🎉 If You Are Hosting the Party\n\nHosting requires balancing logistics with fun. Here are the key pillars to consider:\n\n**1. Define the Scope Early**\n*   **Guest List:** Decide who is invited. Be clear about whether it's an intimate gathering, a family affair, or a large social event.\n*   **Budget:** Determine how much you can spend. This dictates the venue, food, and decorations.\n*   **Theme/Vibe:** Do you want a high-energy dance party, a relaxed picnic, or a themed costume night? The vibe sets the tone for everything else.\n\n**2. Logistics & Timeline**\n*   **Date & Time:** Avoid major holidays or conflicting events. Afternoon parties",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 1.46
+  },
+  {
+   "prompt": "Describe learning a new language in a few sentences.",
+   "response": "Learning a new language is a transformative journey that begins with the curiosity to understand a different way of seeing the world. It involves a delicate balance of memorizing vocabulary and grammar rules while simultaneously immersing oneself in listening, speaking, and practicing real-life conversations. Ultimately, it is a process of patience and persistence that not only unlocks new communication skills but also deepens cultural empathy and cognitive flexibility.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "What should I know about learning a new language?",
+   "response": "Learning a new language is one of the most rewarding challenges you can undertake, but it is also a marathon, not a sprint. Here are the key principles and strategies to help you navigate the journey effectively:\n\n### 1. Embrace the \"Plateau\"\nOne of the most common reasons people quit is hitting a plateau where progress feels invisible.\n*   **What it is:** After rapid initial gains, you may feel stuck for months.\n*   **The Reality:** This is where deep learning happens. Your brain is reorganizing neural pathways. Trust the process; if you keep showing up, the breakthrough will come.\n\n### 2. Consistency Beats Intensity\nStudying for 30 minutes every day is far more effective than cramming for 5 hours once a week.\n*   **Why:** Language acquisition relies on **spaced repetition** and frequent exposure. Daily contact keeps the language active in your mind and prevents forgetting.\n*   **",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle choosing a laptop?",
+   "response": "Choosing a laptop can feel overwhelming because there are so many specs, brands, and price points. The best approach is to treat it like buying a car: **you need to define your primary use case first**, as that dictates almost every other decision.\n\nHere is a step-by-step framework to help you narrow down your choices:\n\n### 1. Define Your Primary Use Case\nBefore looking at prices, ask yourself: *What will I do with this laptop 80% of the time?*\n*   **Portability & Battery Life:** If you commute daily, travel often, or work in coffee shops, prioritize a lightweight device (under 3.5 lbs) with 10+ hours of battery.\n*   **Performance & Power:** If you edit 4K video, render 3D models, code heavy applications, or play modern AAA games, you need a powerful CPU, dedicated GPU, and fast RAM.\n*   **Budget-Conscious:** If",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "How do I handle a walk in the park?",
+   "response": "Handling a \"walk in the park\" depends entirely on the context, as the phrase can mean two very different things:\n\n1.  **The Idiom**: When someone says, \"It was a walk in the park,\" they mean the task was **easy, effortless, and enjoyable**.\n2.  **The Literal Activity**: When you are actually planning to go for a walk in a park, you are looking for **practical advice on how to do it safely and enjoyably**.\n\nHere is how to handle both scenarios:\n\n---\n\n### Scenario A: You are dealing with an \"Easy Task\" (Idiomatic)\nIf a colleague, friend, or family member tells you that a project or situation is \"a walk in the park,\" they are reassuring you that it won't be difficult.\n\n*   **How to respond**: Acknowledge their confidence but stay grounded.\n    *   *Casual*: \"Glad to hear it! I'll give",
+   "tone": 3,
+   "coherent": false,
+   "judge_unparsed": 0,
+   "lex": 1.5
+  },
+  {
+   "prompt": "Tell me about adopting a cat.",
+   "response": "Adopting a cat is one of the most rewarding experiences you can have, offering companionship, comfort, and the profound joy of saving a life. Unlike buying from a breeder, adoption gives a shelter cat a second chance at a happy home while saving money on initial costs.\n\nHere is a comprehensive guide to help you navigate the process:\n\n### 1. Assess Your Lifestyle\nBefore visiting a shelter, be honest about your situation. Cats are individuals with specific needs, and matching the right cat to your lifestyle is crucial for a happy home.\n*   **Time Commitment:** Cats need daily interaction, playtime, and litter box cleaning. If you work long hours or travel frequently, consider if you have a support system (family, friends, or a pet sitter) to help.\n*   **Living Space:** While cats are adaptable, they need vertical space (shelves, cat trees) and a quiet area to retreat to.\n*   **Other Pets:**",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 2.05
+  },
+  {
+   "prompt": "Give me two tips for a visit to the dentist.",
+   "response": "Here are two practical tips for your next dental visit:\n\n1.  **Brush and Floss Thoroughly Beforehand**\n    While you shouldn't skip your morning routine, taking extra care to brush and floss right before your appointment can help remove surface debris and reduce bleeding. This allows the dentist to see your gums and teeth more clearly, making the examination more accurate and potentially reducing the need for deep cleaning during the visit.\n\n2.  **Write Down Your Questions and Concerns**\n    Dental appointments can be stressful, and it's easy to forget to ask about something important once you're in the chair. Before you leave home, jot down any questions you have about your oral health, upcoming procedures, or pain management. This ensures you get all the information you need without feeling rushed or anxious during the consultation.",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about moving to a new city.",
+   "response": "Moving to a new city is one of the most transformative experiences you can have. It's a mix of **excitement and uncertainty**, offering a fresh start while requiring you to rebuild your life from scratch.\n\nHere is a comprehensive guide to navigating the journey, broken down by phase:\n\n### 1. The Pre-Move Phase: Planning & Research\nBefore you pack a single box, thorough research is your best friend.\n*   **Define Your \"Why\":** Are you moving for a job, lower cost of living, better weather, or a change of scenery? Knowing your core motivation will help you stay focused when things get tough.\n*   **Research Neighborhoods:** Don't just look at city maps; look at specific neighborhoods. Consider commute times, safety, walkability, proximity to grocery stores, and the local vibe (e.g., young professionals vs. families vs. artists).\n*   **Budget Realistically:** Calculate the cost of rent, utilities, and",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.71
+  },
+  {
+   "prompt": "Describe a job interview in a few sentences.",
+   "response": "A job interview is a structured conversation between a candidate and a potential employer designed to assess the applicant's skills, experience, and cultural fit. During this process, the interviewer asks targeted questions to evaluate how well the candidate can perform the role, while the candidate has the opportunity to learn about the company and ask their own questions. Ultimately, the goal is for both parties to determine if there is a mutual match before making a hiring decision.",
+   "tone": 1,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about saving money each month.",
+   "response": "Saving money each month is one of the most powerful habits you can build for your financial future. It's not just about having an emergency fund; it's about gaining control over your life, reducing stress, and creating opportunities.\n\nHere is a comprehensive guide to mastering monthly savings, broken down into actionable steps:\n\n### 1. The Foundation: Know Your Numbers\nBefore you can save, you need to understand where your money is going.\n*   **Track Every Penny:** For one month, record every single expense. Use an app, a spreadsheet, or a notebook. You might be surprised to find \"leaks\" like daily coffee runs or unused subscriptions.\n*   **Calculate Your Net Income:** Determine exactly how much money hits your bank account after taxes and recurring bills.\n*   **Identify Fixed vs. Variable Costs:**\n    *   *Fixed:* Rent, mortgage, insurance, minimum debt payments.\n    *   *Variable:* Groceries, dining out",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  },
+  {
+   "prompt": "Tell me about learning to cook rice.",
+   "response": "Learning to cook rice is one of the most fundamental culinary skills, yet it can feel intimidating because different types of rice behave very differently. The secret isn't just following a recipe; it's understanding the **ratio of water to rice** and the **cooking method**.\n\nHere is a comprehensive guide to mastering rice, from the basics to troubleshooting.\n\n### 1. Know Your Rice\nBefore you measure anything, identify what you are cooking. The type of rice dictates the technique:\n\n*   **White Rice (Long-grain like Jasmine or Basmati):** Fluffy and separate grains. Requires rinsing to remove excess starch.\n*   **Short-Grain / Sushi Rice:** Sticky and clumpy. Needs less water and often requires a \"resting\" period after cooking.\n*   **Brown / Whole Grain Rice:** Chewy and nutty. The bran layer makes it take much longer to cook and absorb more water.\n*   **Instant Rice:** Pre-co",
+   "tone": 3,
+   "coherent": true,
+   "judge_unparsed": 0,
+   "lex": 0.0
+  }
+ ]
+}

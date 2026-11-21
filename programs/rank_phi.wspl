@@ -1,0 +1,4 @@
+experiment rank_phi:
+objective: Phi-4-mini-reasoning Q6_K (3.8B) on rank-2048 (lab/probes/ranking/PLAN.md)
+steps:
+    step bench_run suite=rank-2048 port=8095 arm=phi out=lab/runs/rank/phi4mr.json

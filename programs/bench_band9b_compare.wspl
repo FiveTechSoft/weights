@@ -1,0 +1,6 @@
+experiment bench_band9b_compare:
+objective: the noise band of the 9B base on dev-2048 (paired discordants and |delta| between two identical runs), registered in the benchmark table
+steps:
+    step bench_compare base=lab/runs/bench/qwen9b_base_a.json arm=lab/runs/bench/qwen9b_base_b.json out=lab/runs/bench/cmp_qwen9b_band.json
+    step bench_table add=lab/runs/bench/qwen9b_base_a.json model="Qwen3.5-9B Q6_K (A0)"
+    step bench_table add=lab/runs/bench/qwen9b_base_b.json model="Qwen3.5-9B Q6_K (A0)" add_compare=lab/runs/bench/cmp_qwen9b_band.json
