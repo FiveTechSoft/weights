@@ -73,7 +73,7 @@ def cmd_budget(_):
                     c[k] += 1
             except Exception:
                 pass
-    _p("budget (sesion wsp en C:\\weights\\journal):")
+    _p(f"budget (sesion wsp en {DIR_JRN}):")
     _p(f"  read  {c['read']:<4} / {BUDGET['read']}  {'OK' if c['read'] < BUDGET['read'] else 'LIMITE'}")
     _p(f"  write {c['write']:<4} / {BUDGET['write']}  {'OK' if c['write'] < BUDGET['write'] else 'LIMITE'}")
     _p(f"  fwd   {c['fwd']:<4} / {BUDGET['fwd']}  {'OK' if c['fwd'] < BUDGET['fwd'] else 'LIMITE'}")
@@ -1304,18 +1304,24 @@ def cmd_serve(args):
     port = args.port
     alias = args.alias or fName.stem[:18]
     if args.stop:
-        pid = (DIR_LOG / f"llama-{port}.pid")
-        if pid.exists():
-            os.kill(int(pid.read_text()), 15)
-            pid.unlink()
-            _p(f"stop port {port}")
+        pid_file = DIR_LOG / f"llama-{port}.pid"
+        if pid_file.exists():
+            try:
+                os.kill(int(pid_file.read_text().strip()), 15)
+                pid_file.unlink()
+                _p(f"stop port {port}")
+            except (OSError, ValueError) as e:
+                _p(f"stop port {port} falló: {e}")
         return
     log = DIR_LOG / f"llama-{port}.log"
     cmd = [str(LLAMA_BIN), "-m", str(fName), "--port", str(port), "--host", "127.0.0.1",
            "-a", alias, "-c", str(args.ctx), "-ngl", str(args.ngl), "--jinja"]
     _p("servir:", " ".join(cmd))
-    det_err = subprocess.Popen(cmd, stdout=open(log, "ab"), stderr=subprocess.STDOUT,
-                               creationflags=0x00000008)
+    popen_kwargs = {}
+    if sys.platform == "win32":
+        popen_kwargs["creationflags"] = 0x00000008
+    with open(log, "ab") as lf:
+        det_err = subprocess.Popen(cmd, stdout=lf, stderr=subprocess.STDOUT, **popen_kwargs)
     pid_fh = DIR_LOG / f"llama-{port}.pid"
     pid_fh.write_text(str(det_err.pid), encoding="utf-8")
     for _ in range(60):
@@ -1336,7 +1342,6 @@ def base_ctx(c):
 
 def cmd_eval(args):
     _budget_check("fwd", 1)
-    import subprocess
     cmd = [
         sys.executable,
         str(ROOT / "rig" / "agent_loop_probe.py"),
