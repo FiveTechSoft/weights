@@ -25,6 +25,8 @@ whatever it says; bench_compare only counts.
 """
 import hashlib
 import json
+import os
+import shutil
 import sys
 import time
 import urllib.request
@@ -45,7 +47,7 @@ SUITES = ROOT / "engine" / "bench_suites"
 REGISTRY = ROOT / "lab" / "runs" / "bench" / "index.json"
 TABLE = ROOT / "docs" / "wsplang_benchmarks.md"
 DEFAULT_SUITE = "dev-2048"
-DEFAULT_BINARY = Path("C:/Users/Anto/llamacpp/bin/llama-server.exe")
+DEFAULT_BINARY = Path(os.environ.get("LLAMA_SERVER_BIN") or shutil.which("llama-server") or shutil.which("llama-server.exe") or "llama-server")
 DECODING_KEYS = ("max_tokens", "parallel", "temperature", "seed", "template", "prompt_suffix")
 MODEL_CLASSES = ("llm-chat-think", "llm-chat", "nanowsp", "llm-logits")
 WSPX_TASKS = ("recall", "parity8", "mod13", "fsm4", "noecho")

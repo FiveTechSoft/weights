@@ -55,8 +55,8 @@ _MODELO_CANDS = [
 _BASE_CANDS = [
     ROOT / "hf_cache" / "qwen35base" / "Qwen3.5_9B_Base.Q6_K.gguf",
 ]
-MODELO = _buscar_gguf(*_MODELO_CANDS, env="WSP_MODELO_GGUF") or r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf"
-BASE = _buscar_gguf(*_BASE_CANDS, env="WSP_BASE_GGUF") or r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf"
+MODELO = _buscar_gguf(*_MODELO_CANDS, env="WSP_MODELO_GGUF") or str(_MODELO_CANDS[0])
+BASE = _buscar_gguf(*_BASE_CANDS, env="WSP_BASE_GGUF") or str(_BASE_CANDS[0])
 _CREATION_FLAGS = {"creationflags": 0x08000000} if platform.system() == "Windows" else {}
 
 

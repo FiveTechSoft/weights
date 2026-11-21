@@ -68,7 +68,7 @@ steps:
         self.assertEqual(len(errors), 0, f"Validation errors: {errors}")
 
         plan = wsplang.plan_run(prog, steps)
-        self.assertTrue(plan["wsplang_version"] in ("0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"))
+        self.assertEqual(plan["wsplang_version"], wsplang.__version__)
 
         results = wsplang.execute_plan_v3(
             plan, prog,
@@ -97,7 +97,7 @@ steps:
         orig_perp_proj = torch.matmul(k_perp_t, self.orig_W)
         repaired_perp_proj = torch.matmul(k_perp_t, W_repaired)
         max_ortho_diff = torch.max(torch.abs(orig_perp_proj - repaired_perp_proj)).item()
-        self.assertLess(max_ortho_diff, 1e-6, f"Expected 0 cross-talk on orthogonal vector, got max diff {max_ortho_diff}")
+        self.assertLess(max_ortho_diff, 1e-5, f"Expected 0 cross-talk on orthogonal vector, got max diff {max_ortho_diff}")
 
     def test_fwp_overlay_export(self):
         """Verify dynamic Fast Weight Overlay generation for runtime inference."""

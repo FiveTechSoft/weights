@@ -9,13 +9,17 @@ Distilled or Fine-Tuned target model in WSP-Lang 0.7:
 """
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_GGUF = Path(r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf")
+DEFAULT_GGUF = Path(os.environ.get("WSP_MODELO_GGUF") or
+                  "hf_cache/mimo-gguf/MiMo-V2.6-Distill-Qwen-9B-Q6_K.gguf")
+if not DEFAULT_GGUF.is_absolute():
+    DEFAULT_GGUF = ROOT / DEFAULT_GGUF
 
 _TENSOR_MAP_CACHE: Dict[str, Dict[str, Any]] = {}
 

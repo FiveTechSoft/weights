@@ -74,7 +74,10 @@ dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported
 compile = True # use PyTorch 2.0 to compile the model to be faster
 # -----------------------------------------------------------------------------
 config_keys = [k for k,v in globals().items() if not k.startswith('_') and isinstance(v, (int, float, bool, str))]
-exec(open('configurator.py').read()) # overrides from command line or config file
+if __name__ == "__main__":
+    # CLI overrides: only meaningful when train.py is run as the script, not when imported by tests
+    from pathlib import Path as _Path
+    exec((_Path(__file__).resolve().parent / 'configurator.py').read_text())
 config = {k: globals()[k] for k in config_keys} # will be useful for logging
 # -----------------------------------------------------------------------------
 

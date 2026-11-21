@@ -31,7 +31,7 @@ NANOWSP = Path(__file__).resolve().parent.parent / "models" / "nanowsp" / "model
 class TestWSPLangV7JepaWSL(unittest.TestCase):
 
     def test_version_and_ops_registration(self):
-        self.assertEqual(__version__, "0.7.0")
+        self.assertRegex(__version__, r"^\d+\.\d+\.\d+$")
         expected_ops = {
             "jepa_steer",
             "vicreg_preserve",
@@ -120,6 +120,7 @@ steps:
 
         plan = plan_run(prog, steps)
         self.assertEqual(len(plan["pasos"]), 3)
+        self.assertEqual(plan["wsplang_version"], __version__)
 
         # Execute plan in simulation
         results = execute_plan_v4(plan, prog, dry_run=True)

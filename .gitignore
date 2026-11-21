@@ -51,3 +51,13 @@ data/bench/*.bin
 data/bench/*.zip
 data/bench/*.parquet
 data/bench/*.jsonl
+
+# Sealed set / local run artifacts (never commit)
+rig/sellados/
+
+# Large regenerable run traces
+lab/runs/nanowsp3_trace.npz
+lab/runs/finetune_recall.npz
+
+# Editable install build artifacts
+weights_wsp.egg-info/

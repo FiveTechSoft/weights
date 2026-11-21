@@ -33,22 +33,35 @@ import shutil
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
-sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
-
 __version__ = "0.8.3"
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Default model files of the original Windows setup. Override with WSP_MODELO_GGUF / WSP_BASE_GGUF (same
-# variables engine/challenge.py reads); with neither set the historical path is used, as before.
-DEFAULT_MIMO_GGUF = Path(os.environ.get("WSP_MODELO_GGUF", r"C:\Users\Anto\llamacpp\mimo-v2.6-distill-qwen-9b-Q6_K.gguf"))
-DEFAULT_QWEN_BASE_GGUF = Path(os.environ.get("WSP_BASE_GGUF", r"C:\Users\Anto\llamacpp\qwen35base\Qwen3.5_9B_Base.Q6_K.gguf"))
+# Default model files: env override (WSP_MODELO_GGUF / WSP_BASE_GGUF, same variables engine/challenge.py reads),
+# then repo-local candidates, then the repo-local default path (missing if not downloaded; callers surface that).
+def _default_gguf(env, candidates):
+    p = os.environ.get(env)
+    if p:
+        return Path(p)
+    for c in candidates:
+        if c.exists():
+            return c.resolve()
+    return candidates[0].resolve()
+
+DEFAULT_MIMO_GGUF = _default_gguf(
+    "WSP_MODELO_GGUF",
+    [ROOT / "hf_cache" / "mimo-gguf" / "MiMo-V2.6-Distill-Qwen-9B-Q6_K.gguf",
+     ROOT / "servidos" / "mimo-orig.gguf"],
+)
+DEFAULT_QWEN_BASE_GGUF = _default_gguf(
+    "WSP_BASE_GGUF",
+    [ROOT / "hf_cache" / "qwen35base" / "Qwen3.5_9B_Base.Q6_K.gguf"],
+)
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(ROOT / "engine") not in sys.path:
     sys.path.insert(0, str(ROOT / "engine"))
 DIR_PL = ROOT / "challenges" / "wsplang"
-DIR_PL.mkdir(parents=True, exist_ok=True)
 
 from engine.comparative_drift import (
     compute_architectural_drift,
@@ -1052,7 +1065,8 @@ def execute_plan_v4(
     nanowsp_default = ROOT / "models" / "nanowsp" / "model.safetensors"
     nanowsp2_default = ROOT / "models" / "nanowsp2" / "model.safetensors"
     nanowsp3_default = ROOT / "data" / "nanowsp3_weights.safetensors"
-    tiny_default = Path(r"C:\Users\Anto\.cache\huggingface\hub\models--TinyLlama--TinyLlama-1.1B-Chat-v1.0\snapshots\fe8a4ea1ffedaf415f4da2f062534de366a451e6\model.safetensors")
+    tiny_default = Path(os.environ.get("WSP_TINYLLAMA_SAFETENSORS",
+                                      ROOT / "models" / "tinyllama" / "model.safetensors"))
     qwen08_default = ROOT / "hf_cache" / "qwen35-08b-hf" / "model.safetensors-00001-of-00001.safetensors"
 
     if model_path:
@@ -3754,6 +3768,8 @@ execute_plan = execute_plan_v4
 # ==============================================================================
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
+    DIR_PL.mkdir(parents=True, exist_ok=True)
     import argparse
     ap = argparse.ArgumentParser(
         prog="wsplang",

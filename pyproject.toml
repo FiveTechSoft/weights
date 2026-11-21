@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weights-wsp"
+version = "0.8.3"
+description = "Weight-Space Programming (WSP): inspect, edit and compare LLM weights without gradient steps"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+
+# Dependency source of truth is requirements.txt (used by CI); install with:
+#   pip install -r requirements.txt
+# or for the dev extra:
+#   pip install -r requirements-dev.txt
+
+[tool.setuptools]
+py-modules = ["wsp"]
+packages = ["engine"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "skip: tests that need local models/GPU (auto-skipped via skipUnless)",
+]

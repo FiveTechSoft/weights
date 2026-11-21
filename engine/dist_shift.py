@@ -16,11 +16,13 @@ A control vector enters every scored command as `--control-vector-scaled FILE:SC
 GPU flags are the caller's: `gpu_args` in the suite (default -ngl 99). Nothing here starts a server.
 """
 import re
+import shutil
 import subprocess
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_PERPLEXITY = Path("C:/Users/Anto/llamacpp/bin/llama-perplexity.exe")
+DEFAULT_PERPLEXITY = Path(os.environ.get("LLAMA_PERPLEXITY_BIN") or shutil.which("llama-perplexity") or shutil.which("llama-perplexity.exe") or "llama-perplexity")
 DEFAULT_GPU = ("-ngl", "99")
 
 

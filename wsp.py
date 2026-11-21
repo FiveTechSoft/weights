@@ -22,8 +22,6 @@ from pathlib import Path
 import numpy as np
 import gguf
 
-sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
-
 ROOT = Path(__file__).resolve().parent
 DIR_DATA = ROOT / "data"
 DIR_EDI = ROOT / "edits" if (ROOT / "edits").exists() else ROOT / "ediciones"
@@ -31,8 +29,11 @@ DIR_RIG = ROOT / "rig_runs"
 DIR_LOG = ROOT / "logs"
 DIR_JRN = ROOT / "journal"
 DIR_SRV = ROOT / "served" if (ROOT / "served").exists() else ROOT / "servidos"
-for d in (DIR_DATA, DIR_EDI, DIR_RIG, DIR_LOG, DIR_JRN, DIR_SRV):
-    d.mkdir(parents=True, exist_ok=True)
+
+
+def _ensure_dirs():
+    for d in (DIR_DATA, DIR_EDI, DIR_RIG, DIR_LOG, DIR_JRN, DIR_SRV):
+        d.mkdir(parents=True, exist_ok=True)
 
 _env_bin = os.environ.get("LLAMA_SERVER_BIN")
 LLAMA_BIN = Path(_env_bin) if _env_bin else Path(r"C:\Users\Anto\llamacpp\bin-b11962\llama-server.exe")
@@ -1283,6 +1284,8 @@ CMD_FN = {
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
+    _ensure_dirs()
     args = _make_parser().parse_args()
     if "eval" not in args.cmd:
         fn = CMD_FN.get(args.cmd)

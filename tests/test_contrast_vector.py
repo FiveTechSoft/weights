@@ -63,7 +63,9 @@ class TestPure(unittest.TestCase):
         try:
             with torch.no_grad():
                 ref = m.model(input_ids=ids, output_hidden_states=True, use_cache=False).hidden_states
+                hooks_before = len(m.model.layers[-1]._forward_hooks)
                 got = cv.hidden_states_pre_norm(m.model, ids)
+                hooks_after = len(m.model.layers[-1]._forward_hooks)
         finally:
             h.remove()
         self.assertEqual(len(got), 4)
@@ -71,7 +73,7 @@ class TestPure(unittest.TestCase):
             torch.testing.assert_close(got[k], ref[k])
         torch.testing.assert_close(got[3], seen[0])
         self.assertFalse(torch.allclose(got[3], ref[3]))         # the post-norm row is a different object
-        self.assertEqual(len(m.model.layers[-1]._forward_hooks), 1)   # the helper removed its own hook
+        self.assertEqual(hooks_after, hooks_before)                 # the helper removed its own hook
 
     def test_gguf_round_trip(self):
         from engine import contrast_vector as cv

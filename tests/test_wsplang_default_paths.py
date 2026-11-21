@@ -18,10 +18,15 @@ def paths(env_extra):
 
 
 class TestDefaultPaths(unittest.TestCase):
-    def test_historical_defaults_are_unchanged(self):
+    def test_defaults_are_repo_local_paths(self):
         mimo, base = paths({})
-        self.assertTrue(mimo.endswith("mimo-v2.6-distill-qwen-9b-Q6_K.gguf") and "Anto" in mimo)
-        self.assertTrue(base.endswith("Qwen3.5_9B_Base.Q6_K.gguf") and "qwen35base" in base)
+        self.assertTrue(mimo.endswith("MiMo-V2.6-Distill-Qwen-9B-Q6_K.gguf"))
+        self.assertTrue(base.endswith("Qwen3.5_9B_Base.Q6_K.gguf"))
+        for path in (mimo, base):
+            self.assertNotIn("C:", path)
+            self.assertNotIn("Anto", path)
+            self.assertTrue(Path(path).is_absolute())
+            self.assertTrue(str(ROOT) in str(path))
 
     def test_environment_overrides(self):
         mimo, base = paths({"WSP_MODELO_GGUF": "/models/a.gguf", "WSP_BASE_GGUF": "/models/b.gguf"})

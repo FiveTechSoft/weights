@@ -13,6 +13,24 @@ import fingerprint as fp  # noqa: E402
 import make_data as md  # noqa: E402
 
 
+def _load_test_train():
+    """Load the h6 train module explicitly, regardless of sys.path order or sys.modules state.
+
+    Other test modules put lab/reference/karpathy_nanogpt first on sys.path; a bare `import train`
+    would resolve to the vendored upstream script there, whose module-level training init needs CUDA.
+    """
+    import importlib.util
+    name = "h6_train"
+    mod = sys.modules.get(name)
+    if mod is not None:
+        return mod
+    spec = importlib.util.spec_from_file_location(name, ROOT / "lab" / "probes" / "h6" / "train.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
 class TestSplits(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -114,7 +132,7 @@ class TestChunkFingerprint(unittest.TestCase):
 
 class TestAdamW(unittest.TestCase):
     def test_matches_torch_adamw_and_returns_the_applied_update(self):
-        import train
+        train = _load_test_train()
         g = torch.Generator().manual_seed(3)
         p1 = torch.nn.Parameter(torch.randn(6, 4, generator=g))
         p2 = torch.nn.Parameter(p1.detach().clone())
@@ -133,7 +151,7 @@ class TestAdamW(unittest.TestCase):
 
 class TestSchedule(unittest.TestCase):
     def test_warmup_then_cosine(self):
-        import train
+        train = _load_test_train()
         self.assertAlmostEqual(train.lr_at(0, 500), train.LR / train.WARMUP)
         self.assertAlmostEqual(train.lr_at(train.WARMUP - 1, 500), train.LR)
         self.assertAlmostEqual(train.lr_at(train.WARMUP, 500), train.LR)
@@ -151,13 +169,13 @@ class TestFingerprintDevice(unittest.TestCase):
 
 class TestBatchAndSketch(unittest.TestCase):
     def test_labels_only_on_target(self):
-        import train
+        train = _load_test_train()
         ids, labels = train.encode_pair([1, 2, 3], [7, 8])
         self.assertEqual(ids, [1, 2, 3, 7, 8])
         self.assertEqual(labels, [-100, -100, -100, 7, 8])
 
     def test_sketch_preserves_cosine(self):
-        import train
+        train = _load_test_train()
         g = torch.Generator().manual_seed(4)
         a = torch.randn(64, 2000, generator=g)
         b = 0.6 * a + 0.8 * torch.randn(64, 2000, generator=g)
@@ -453,7 +471,7 @@ class TestH6g(unittest.TestCase):
         """End to end without a model: W = W0 + U C, loss = |W X - Y|^2, target reachable inside the basis."""
         import h6f
         import h6g
-        import train
+        train = _load_test_train()
         import transfer as tr
         shape, r = (12, 30), 3
         U = tr.random_basis(12, r, seed=4).double()
