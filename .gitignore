@@ -61,3 +61,6 @@ lab/runs/finetune_recall.npz
 
 # Editable install build artifacts
 weights_wsp.egg-info/
+.coverage
+.coverage.*
+htmlcov/
