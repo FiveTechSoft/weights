@@ -322,7 +322,7 @@ items. Results that did not survive the audit are listed as such instead of bein
 git clone https://github.com/FiveTechSoft/weights.git
 cd weights
 pip install -r requirements.txt           # GGUF inspection/editing, NanoWSP, weight diff, model_report, tests data
-pip install -r requirements-dev.txt       # + pytest (the two pytest-style test files need it)
+pip install -r requirements-dev.txt       # + pytest and ruff (the full suite runs under pytest)
 ```
 
 ### Move a fine-tune's skill onto the base (`delta_to_lora`)
@@ -467,7 +467,7 @@ The contrast gain this gives has not been measured.
 | [`FOUNDATIONS.md`](FOUNDATIONS.md) | The scientific basis, by claim: what we hold, its status, our evidence (results §), outside evidence, what would refute it; refuted ideas not to retry. |
 | [`PROTOCOL.md`](PROTOCOL.md) | Protocol: sealed holdouts, placebo controls, non-degradation criteria. |
 | [`results.md`](results.md) · [`roadmap.md`](roadmap.md) · [`CHANGELOG.md`](CHANGELOG.md) | Results log, plan, patch history (P0–P12). |
-| [`tests/`](tests/) | 112 test files (`python -m pytest`). Tests that need local models/GPU skip themselves. |
+| [`tests/`](tests/) | 113 test files (`python -m pytest`). Tests that need local models/GPU skip themselves. |
 
 ---
 
