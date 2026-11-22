@@ -299,3 +299,129 @@ class DiffSemanticMapCase(unittest.TestCase):
         self.assertIn("MAPA DE ÁREAS SEMÁNTICAS", out)
         self.assertIn("Modelo:", out)
         self.assertIn("Áreas semánticas activas:", out)
+
+
+class VsCase(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+        self.runs = self.dir / "rig"
+        self.runs.mkdir()
+        self.old_rig = wsp.DIR_RIG
+        wsp.DIR_RIG = self.runs
+        self.addCleanup(self._restore)
+        self.journal = self.dir / "journal.jsonl"
+        self.old_journal = wsp.PATH_JRNL
+        wsp.PATH_JRNL = self.journal
+
+    def _restore(self):
+        wsp.DIR_RIG = self.old_rig
+        wsp.PATH_JRNL = self.old_journal
+        self.tmp.cleanup()
+
+    def st(self, **kwargs):
+        return argparse.Namespace(**kwargs)
+
+    def test_vs_compares_two_runs(self):
+        import json as _json
+        (self.runs / "runA.json").write_text(_json.dumps([
+            {"loop": True, "turns": 5},
+            {"loop": False, "turns": 3},
+            {"loop": True, "turns": 7},
+        ]))
+        (self.runs / "runB.json").write_text(_json.dumps([
+            {"loop": True, "turns": 4},
+            {"loop": True, "turns": 6},
+            {"loop": False, "turns": 2},
+            {"loop": False, "turns": 1},
+        ]))
+        out = _buf(wsp.cmd_vs, self.st(runA="runA", runB="runB"))
+        self.assertIn("runA loop 2/3", out)
+        self.assertIn("runB loop 2/4", out)
+        self.assertIn("[0] A=True@5 B=True@4", out)
+        self.assertIn("[1] A=False@3 B=True@6", out)
+
+
+class EditCase(unittest.TestCase):
+    """cmd_edit end-to-end over the synthetic fixture — write to temp dir, journal redirected."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+        self.path = _make_fixture(self.dir)
+        # capture original values before the edit
+        self.orig = gguf.GGUFReader(str(self.path))
+        self.orig_tensor = {t.name: gguf.dequantize(t.data, t.tensor_type) for t in self.orig.tensors}
+        self.journal = self.dir / "journal.jsonl"
+        self.old_journal = wsp.PATH_JRNL
+        wsp.PATH_JRNL = self.journal
+        self.addCleanup(self._restore_journal)
+
+    def _restore_journal(self):
+        wsp.PATH_JRNL = self.old_journal
+        self.tmp.cleanup()
+
+    def st(self, **kwargs):
+        return argparse.Namespace(**kwargs)
+
+    def _make_prog(self, out):
+        prog = {"ops": [{"type": "add-scalar", "tensor": "blk.0.attn_q.weight", "value": 0.5}],
+                        "out": str(out)}
+        prog_file = self.dir / "prog.json"
+        prog_file.write_text(json.dumps(prog), encoding="utf-8")
+        return prog_file
+
+    def test_edit_applies_add_scalar_and_manifest(self):
+        out = self.dir / "edited.gguf"
+        prog_file = self._make_prog(out)
+        out_text = _buf(wsp.cmd_edit, self.st(gguf=str(self.path), prog=str(prog_file), out=None))
+        self.assertIn("EDIT AVISO:", out_text)
+        self.assertIn("RESUMEN:", out_text)
+        self.assertTrue(out.exists())
+        # manifest file next to the edit
+        manifest = Path(str(out) + ".manifest.json")
+        self.assertTrue(manifest.exists())
+        m = json.loads(manifest.read_text(encoding="utf-8"))
+        self.assertEqual(m["program"], str(prog_file))
+        self.assertEqual(m["ops"][0]["type"], "add-scalar")
+        self.assertEqual(m["ops"][0]["value"], 0.5)
+        # edited tensor values = orig + 0.5
+        r = gguf.GGUFReader(str(out))
+        for t in r.tensors:
+            if t.name == "blk.0.attn_q.weight":
+                new_data = gguf.dequantize(t.data, t.tensor_type)
+                orig_data = self.orig_tensor["blk.0.attn_q.weight"]
+                self.assertTrue(np.allclose(new_data, orig_data + 0.5, atol=1e-5),
+                                f"max diff {np.abs(new_data - (orig_data + 0.5)).max():.1e}")
+        # journal recorded the edit
+        entries = [json.loads(l) for l in self.journal.read_text(encoding="utf-8").splitlines()]
+        self.assertTrue(any(e.get("kind") == "edit" for e in entries), entries)
+
+    def test_edit_refuses_to_overwrite_existing_out(self):
+        out = self.dir / "edited.gguf"
+        out.write_bytes(b"sentinel")
+        prog_file = self._make_prog(out)
+        with self.assertRaises(SystemExit):
+            _buf(wsp.cmd_edit, self.st(gguf=str(self.path), prog=str(prog_file), out=None))
+        # nothing was overwritten
+        self.assertEqual(out.read_bytes(), b"sentinel")
+
+    def test_edit_refuses_forbidden_tensor(self):
+        out = self.dir / "edited.gguf"
+        prog = {"ops": [{"type": "add-scalar", "tensor": "output.weight", "value": 0.5}],
+                        "out": str(out)}
+        prog_file = self.dir / "prog_forbidden.json"
+        prog_file.write_text(json.dumps(prog), encoding="utf-8")
+        with self.assertRaises(SystemExit):
+            _buf(wsp.cmd_edit, self.st(gguf=str(self.path), prog=str(prog_file), out=None))
+        self.assertFalse(out.exists())
+
+    def test_edit_rejects_value_out_of_range(self):
+        out = self.dir / "edited.gguf"
+        prog = {"ops": [{"type": "add-scalar", "tensor": "blk.0.attn_q.weight", "value": 99.0}],
+                        "out": str(out)}
+        prog_file = self.dir / "prog.json"
+        prog_file.write_text(json.dumps(prog), encoding="utf-8")
+        with self.assertRaises(SystemExit):
+            _buf(wsp.cmd_edit, self.st(gguf=str(self.path), prog=str(prog_file), out=None))
+        self.assertFalse(out.exists())
