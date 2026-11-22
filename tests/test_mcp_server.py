@@ -61,3 +61,65 @@ class TestWspMcpServer(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _fixture_gguf(path):
+    """Same minimal F32 fixture as tests/test_wsp_cli.py (no tokenizer, no arch metadata)."""
+    import gguf
+    import numpy as np
+    rng = np.random.RandomState(2017)
+    w = gguf.GGUFWriter(str(path), arch="qwen35")
+    w.add_block_count(2)
+    for name, (n_out, n_in) in {"blk.0.attn_q.weight": (4, 3),
+                                "blk.1.attn_v.weight": (3, 4),
+                                "token_embd.weight": (5, 4)}.items():
+        data = (rng.randn(n_out, n_in) + 0.5).astype(np.float32)
+        w.add_tensor(name, np.ascontiguousarray(data))
+    w.write_header_to_file()
+    w.write_kv_data_to_file()
+    w.write_tensors_to_file()
+    w.close()
+
+
+class TestMcpReadOnlyTools(unittest.TestCase):
+    """Read-only tools over a synthetic GGUF — CPU only, no GPU, no models."""
+
+    def setUp(self):
+        import tempfile
+        self.tmp = tempfile.TemporaryDirectory()
+        self.gguf_path = Path(self.tmp.name) / "tiny.gguf"
+        _fixture_gguf(self.gguf_path)
+        self.addCleanup(self.tmp.cleanup)
+
+    def test_peek_weight_anatomy(self):
+        res = server.peek_weight(str(self.gguf_path), "blk.0.attn_q.weight")
+        self.assertNotIn("error", res, res)
+        self.assertEqual(res.get("tensor"), "blk.0.attn_q.weight")
+        self.assertEqual(res.get("shape"), [4, 3])
+        self.assertIn("architecture", res)
+
+    def test_peek_weight_unknown_tensor_is_error_not_crash(self):
+        res = server.peek_weight(str(self.gguf_path), "nope.nope")
+        self.assertIn("error", res, res)
+
+    def test_get_semantic_areas_without_tensor(self):
+        res = server.get_semantic_areas(str(self.gguf_path))
+        # fixture has no tokenizer.ggml.tokens -> no centroids, empty dict
+        self.assertIsInstance(res, dict)
+
+    def test_get_semantic_areas_with_tensor_uses_peek(self):
+        res = server.get_semantic_areas(str(self.gguf_path), tensor="blk.0.attn_q.weight")
+        self.assertNotIn("error", res, res)
+        self.assertEqual(res.get("tensor"), "blk.0.attn_q.weight")
+
+    def test_engine_status_returns_challenge_counters(self):
+        res = server.engine_status()
+        self.assertNotIn("error", res, res)
+        self.assertIn("n_total", res)
+        self.assertGreater(res["n_total"], 0)
+        self.assertIn("verdictos", res)
+
+    def test_get_semantic_areas_empty_gguf_is_safe(self):
+        # missing file: the tool must answer with an error, not crash the server
+        res = server.get_semantic_areas(str(self.gguf_path) + ".missing")
+        self.assertIn("error", res, res)
