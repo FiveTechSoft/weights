@@ -29,10 +29,9 @@ from engine.comparative_drift import (
     compute_spectral_delta,
     compute_ssm_dynamics_diff,
 )
+from engine.safety import FORBIDDEN_PATTERNS, FORBIDDEN_TENSORS
 from engine.wsplang import (
     DEFAULT_QWEN_BASE_GGUF,
-    FORBIDDEN_PATTERNS,
-    FORBIDDEN_TENSORS,
     ROOT,
     WriteGuardError,
     _model_path,

@@ -9,6 +9,9 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("wsp-challenge")
 _ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+from engine.safety import is_protected_tensor  # noqa: E402
 ENGINE = _ROOT / "engine" / "challenge.py"
 WSP_TOOL = _ROOT / "wsp.py"
 _CREATION_FLAGS = {"creationflags": 0x08000000} if platform.system() == "Windows" else {}
@@ -105,8 +108,7 @@ def peek_weight(gguf: str, tensor: str, row: str = "", col: str = "", top: int =
 def poke_weight(gguf: str, tensor: str, row: int, col: int, value: float, out: str = "") -> dict:
     """`poke()`: perturbar UN peso individual (requantiza solo su bloque; protegido por FORBIDDEN_TENSORS).
     value: valor de destino. out: ruta de salida opcional."""
-    forbidden = ("token_embd.weight", "output.weight", "output_norm.weight")
-    if tensor in forbidden or any(p in tensor for p in ("norm.weight", ".norm", "lm_head")):
+    if is_protected_tensor(tensor):
         return {
             "status": "security_rejection",
             "error": f"SECURITY POLICY REJECTION: Tensor '{tensor}' is protected and forbidden from direct edit."

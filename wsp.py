@@ -23,6 +23,10 @@ import numpy as np
 import gguf
 
 ROOT = Path(__file__).resolve().parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from engine.safety import FORBIDDEN_TENSORS, FORBIDDEN_PATTERNS  # noqa: E402
+
 DIR_DATA = ROOT / "data"
 DIR_EDI = ROOT / "edits" if (ROOT / "edits").exists() else ROOT / "ediciones"
 DIR_RIG = ROOT / "rig_runs"
@@ -373,10 +377,6 @@ def _verify_q6k_roundtrip():
 
 
 # ---------------- seguridad P0 ----------------
-FORBIDDEN_TENSORS = ("token_embd.weight", "output.weight", "output_norm.weight")
-FORBIDDEN_PAT = ("norm.weight", ".norm", "lm_head", "token_types")
-
-
 SCALAR_OPS = ("add-scalar", "add-scalar-signed")
 
 
@@ -417,7 +417,7 @@ def _check_tensors(ops, tm):
             sys.exit(f"POLICY: add-scalar value {val} fuera de [-8, 8] en {nm}")
         if nm in FORBIDDEN_TENSORS:
             sys.exit(f"POLICY: tensor PROHIBIDO {nm} (head/lm_head)")
-        if any(p in nm for p in FORBIDDEN_PAT):
+        if any(p in nm for p in FORBIDDEN_PATTERNS):
             sys.exit(f"POLICY: tensor con patron prohibido {nm} (normas/head)")
         if nm not in tm:
             sys.exit(f"POLICY: tensor inexistente en el modelo: {nm}")

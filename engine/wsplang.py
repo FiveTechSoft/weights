@@ -61,6 +61,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(ROOT / "engine") not in sys.path:
     sys.path.insert(0, str(ROOT / "engine"))
+from engine.safety import FORBIDDEN_TENSORS as FORBIDDEN_TENSORS, FORBIDDEN_PATTERNS as FORBIDDEN_PATTERNS, is_protected_tensor  # noqa: E402
 DIR_PL = ROOT / "challenges" / "wsplang"
 
 # Allowed operations in steps
@@ -124,22 +125,8 @@ METADATA = {
     "note", "semantic_areas", "semantic_target", "theoretical_foundation"
 }
 
-FORBIDDEN_TENSORS = {
-    "token_embd.weight", "output.weight", "output_norm.weight",
-    "model.embed_tokens.weight", "lm_head.weight", "model.norm.weight"
-}
-FORBIDDEN_PATTERNS = ["embed", "lm_head", "norm.weight", "output_norm", "wte", "ln_f"]
-
-
 class WriteGuardError(ValueError):
     """A write would break a WSPLang safety rule; nothing was written."""
-
-
-def is_protected_tensor(name: str, unlock=()) -> bool:
-    """Embeddings, readout and final norms change only when a program unlocks them by name."""
-    if name in unlock:
-        return False
-    return name in FORBIDDEN_TENSORS or any(pat in name for pat in FORBIDDEN_PATTERNS)
 
 
 def guard_model_write(candidate, out_path, source_path, budgets, written) -> Dict[str, Any]:
