@@ -76,7 +76,7 @@ def apply_wsp_edit(
     # Check alternate naming (e.g. Qwen language_model prefix)
     alt_tensor_name = f"model.language_model.layers.{layer_idx}.mlp.down_proj.weight"
 
-    print(f"[*] Applying WSP Directional Fix to original Hugging Face model:")
+    print("[*] Applying WSP Directional Fix to original Hugging Face model:")
     print(f"    Source:      {model_path}")
     print(f"    Target:      {out_path}")
     print(f"    Target Layer: {layer_idx}")
@@ -176,7 +176,7 @@ def apply_wsp_edit(
     with open(manifest_file, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2)
 
-    print(f"\n[SUCCESS] WSP Fix applied successfully!")
+    print("\n[SUCCESS] WSP Fix applied successfully!")
     print(f"    Total parameters modified: {k * hidden_dim:,} ({manifest['percentage_of_tensor']} of layer)")
     print(f"    Manifest written to: {manifest_file}")
 

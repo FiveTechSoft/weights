@@ -1,6 +1,5 @@
 """lab/probes/act_map/port.py (PLAN.md gate 3): a contrast measured in one model, written into another through the
 gate 1 maps, and the gate 3 decision rule."""
-import json
 import os
 import subprocess
 import sys

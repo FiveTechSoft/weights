@@ -4,8 +4,6 @@ import time
 import json
 from pathlib import Path
 import urllib.request
-import torch
-import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -97,7 +95,7 @@ def run_comparison():
     print("\n" + "=" * 75)
     raw_acc = sum(1 for r in results if r["raw"]["hit"]) / len(results) * 100.0
     delib_acc = sum(1 for r in results if r["deliberative"]["hit"]) / len(results) * 100.0
-    print(f"SUMMARY RESULTS ON HARD TRAP QUESTIONS:")
+    print("SUMMARY RESULTS ON HARD TRAP QUESTIONS:")
     print(f"  Mode A (Intuition Rush):        {raw_acc:.1f}%")
     print(f"  Mode B (Deliberative/Critic):   {delib_acc:.1f}%")
     print("=" * 75)

@@ -244,7 +244,6 @@ def j_norms(ans, spec):
 @judge("outliers", None)
 def j_outliers(ans, spec):
     nm = spec["tensor"]
-    rd = rel_drift_rows(nm) if "delta" in nm or True else None
     D = RH.dec(RH.tensor(nm))
     P = np.linalg.norm(D.astype(np.float64).reshape(-1, D.shape[-1]), axis=1)
     ref = sorted(np.argsort(P)[::-1][:10].tolist())
@@ -260,8 +259,6 @@ def j_outliers(ans, spec):
 def j_delta(ans, spec):
     fams = ["ffn_gate", "ffn_down", "ffn_up", "ssm_out", "attn_q", "ssm_alpha", "ssm_beta"]
     res = {}
-    mx_f, mx_fv = None, 0
-    layer_top, layer_val = None, 0
     for fam in fams:
         tot = []
         for b in range(0, 32, 4):
@@ -274,13 +271,10 @@ def j_delta(ans, spec):
         if tot:
             m = float(np.mean(tot))
             res[fam] = round(m, 3)
-            if m > mx_fv:
-                mx_fv, mx_f = m, fam
     ref_fam = max(res, key=res.get)
     got_f = str(ans.get("familia", "").lower())
     fam_ok = ref_fam.split("_")[0] in got_f or got_f.split("_")[0] in ref_fam
     soc = 5.0 * fam_ok
-    detail = {"ref_familia": ref_fam}
     return {"score": soc, "pass": soc >= 5.0, "ref_top_families": ref_fam, "ranking": res}
 
 
@@ -291,7 +285,6 @@ def j_sim(ans, spec):
     homunal = min(len(v) for v in P.values())
     P = {k: v[:homunal] for k, v in P.items()}
     refs = {}
-    best_pairs = []
     for i, a in enumerate(cand):
         for b in cand[i + 1:]:
             c = float(np.corrcoef(P[a], P[b])[0, 1])

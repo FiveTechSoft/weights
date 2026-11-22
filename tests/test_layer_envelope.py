@@ -9,7 +9,7 @@ import gguf
 
 ROOT = Path(__file__).resolve().parent.parent
 
-from engine.wsplang import load_vector_numpy, execute_plan_v4
+from engine.wsplang import execute_plan_v4
 
 
 class TestLayerEnvelope(unittest.TestCase):

@@ -1,6 +1,5 @@
 """engine/ternary_write.py and the WSP-Lang ops ternarize / imprint_ternary (lab/probes/ternary_nanowsp/PLAN.md).
 Written before the code."""
-import json
 import sys
 import tempfile
 import unittest
@@ -13,7 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine import ternary_write as tw  # noqa: E402
-from engine.nanowsp_runtime import NanoWSP, NanoWSPConfig  # noqa: E402
+from engine.nanowsp_runtime import NanoWSP  # noqa: E402
 import engine.wsplang as wsplang  # noqa: E402
 
 

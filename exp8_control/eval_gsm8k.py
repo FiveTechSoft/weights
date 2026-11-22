@@ -10,7 +10,6 @@ Evaluates Base vs Edited (p50c) models on GSM8K using the paper's exact sampling
 """
 import argparse
 import json
-import os
 import re
 import time
 from pathlib import Path
@@ -63,9 +62,9 @@ def normalize_ans(val):
         return val
 
 def evaluate_model(model_path: str, dataset_path: str, n_samples: int = 10, max_tokens: int = 1024, think: bool = True):
-    print(f"\n=======================================================")
+    print("\n=======================================================")
     print(f"EVALUATING: {model_path} (n={n_samples}, max_tokens={max_tokens}, think={think})")
-    print(f"=======================================================")
+    print("=======================================================")
     
     tok = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path, dtype=torch.bfloat16)

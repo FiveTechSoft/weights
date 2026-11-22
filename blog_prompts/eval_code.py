@@ -65,7 +65,6 @@ def main():
     ap.add_argument("-n", type=int, default=50)
     ap.add_argument("-o", "--offset", type=int, default=0)
     a = ap.parse_args()
-    maxtok = 600
     items = []
     with (ROOT / "data" / "humaneval.jsonl").open(encoding="utf-8") as fh:
         for line in fh:

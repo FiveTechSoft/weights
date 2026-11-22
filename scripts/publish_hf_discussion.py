@@ -70,7 +70,7 @@ def main():
             token=token,
             pull_request=False
         )
-        print(f"SUCCESS! Discussion created:")
+        print("SUCCESS! Discussion created:")
         print(f"URL: {discussion.url}")
     except Exception as e:
         print(f"Failed to create discussion: {e}", file=sys.stderr)

@@ -7,7 +7,9 @@ Two records, both drawn from files that already exist on disk:
 
 Run:  python seed_experimentos.py
 """
-import json, os, sys
+import json
+import os
+import sys
 from datetime import datetime, timezone
 
 sys.path.insert(0, r"C:\weights\engine")

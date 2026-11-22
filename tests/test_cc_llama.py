@@ -1,7 +1,6 @@
 """lab/probes/cc_llama: third family (DeepSeek-R1-Distill-Llama-8B). Its chat template writes "<think>\\n" itself
 (like Qwen's, unlike Phi's), so pos / neg rows follow cc.py's rule and the calibration rows carry NO prefix; the stage-0
 random vector has d = 4,096 over layers 1..31 (lab/probes/cc_llama/PLAN.md)."""
-import json
 import sys
 import tempfile
 import unittest

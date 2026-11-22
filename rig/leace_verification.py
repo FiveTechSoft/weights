@@ -14,7 +14,6 @@ Compares:
 6. Weyl's Bound and Davis-Kahan Subspace Stability
 """
 
-import os
 import sys
 import json
 import time
@@ -27,7 +26,6 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "engine"))
 
-import wsplang
 
 
 def run_leace_verification():
@@ -224,7 +222,7 @@ def run_leace_verification():
         json.dump(results, f, indent=2)
 
     print("\n" + "=" * 80)
-    print(f"VERDICT: LEACE Concept Erasure verified on real MiMo-9B weights!")
+    print("VERDICT: LEACE Concept Erasure verified on real MiMo-9B weights!")
     print(f"Exact zero target concept leakage: {results['leace_closed_form']['target_energy_after']:.2e} (100.0000% erased)")
     print(f"Report saved to: {out_file.relative_to(ROOT)}")
     print("=" * 80)

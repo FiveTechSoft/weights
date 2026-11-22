@@ -14,7 +14,11 @@ SAMPLES per problem (16 for the AIME / AMC sets, 4 for the others); score = mean
   python evaluate.py prepare
   python evaluate.py run <checkpoint_dir> <out_dir> [--sets aime24,aime25,amc23,math500,minerva,olympiad]
 """
-import argparse, json, os, sys, time
+import argparse
+import json
+import os
+import sys
+import time
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, REPO)

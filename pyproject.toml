@@ -25,3 +25,37 @@ pythonpath = ["."]
 markers = [
     "skip: tests that need local models/GPU (auto-skipped via skipUnless)",
 ]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+exclude = [
+    "lab",
+    "blog_prompts",
+    "dist",
+    "hf_cache",
+    ".venv-mcp",
+]
+
+[tool.ruff.lint]
+# Conservative gate: correctness-critical rules only (syntax/imports/unused).
+# Legacy style rules (E741 ambiguous names, E702 semicolons) are excluded on
+# purpose -- they are pervasive in engine/wsp.py/ws_runner.py and mass-fixing
+# them would churn the codebase without behavior gain.
+select = ["E4", "E9", "F"]
+ignore = [
+    "E741",
+    "E702",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# sys.path bootstrap before imports (unittest/script pattern)
+"tests/*" = ["E402"]
+"rig/*" = ["E402"]
+"scripts/*" = ["E402"]
+"challenges/*" = ["E402"]
+"benchmarks/*" = ["E402"]
+"exp8_control/*" = ["E402"]
+"data/*" = ["E402"]
+"engine/*" = ["E402"]
+"wsp.py" = ["E402"]

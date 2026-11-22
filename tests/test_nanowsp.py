@@ -1,7 +1,6 @@
 """test_nanowsp.py — Unit Tests for NanoWSP Micro-Transformer and WSPLang Integration."""
 
 import unittest
-import os
 import sys
 import tempfile
 from pathlib import Path
@@ -12,7 +11,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "engine"))
 
-from engine.nanowsp_runtime import NanoWSP, NanoWSPConfig, ASCIITokenizer
+from engine.nanowsp_runtime import NanoWSP, ASCIITokenizer
 import engine.wsplang as wsplang
 
 

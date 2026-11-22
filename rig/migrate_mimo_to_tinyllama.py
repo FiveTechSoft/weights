@@ -8,14 +8,12 @@ Uses Closed-Form Weight-Space Programming (WSP / Multi-Layer MEMIT):
 5. Runs rigorous verification benchmark (Target accuracy, Holdout retention, NaN/Inf checks, Loop resistance).
 """
 
-import os
 import sys
 import time
 import json
 import shutil
 from pathlib import Path
 import torch
-import numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from safetensors.torch import save_file
 
@@ -235,7 +233,6 @@ def run_migration():
     # 7. Calculate Quantitative Metrics
     target_before_hits = sum(1 for r in baseline_target_results if r["ok"])
     target_after_hits = sum(1 for r in post_target_results if r["ok"])
-    holdout_before_hits = sum(1 for r in baseline_holdout_results if r["ok"])
     holdout_after_hits = sum(1 for r in post_holdout_results if r["ok"])
 
     total_time = time.time() - t0_start

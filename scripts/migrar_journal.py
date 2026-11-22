@@ -19,7 +19,7 @@ import sys
 import uuid
 
 sys.path.insert(0, r"C:\weights\engine")
-from record import ExperimentRecord, validate  # noqa: E402
+from record import validate  # noqa: E402
 
 JOURNAL_FILES = [
     r"C:\weights\journal\journal.jsonl",

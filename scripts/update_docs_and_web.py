@@ -1,6 +1,5 @@
 """scripts/update_docs_and_web.py — Actualiza docs/ y la web portal para WSPLang 0.7 y Karpathy nanoGPT."""
 
-import re
 from pathlib import Path
 
 R = Path(r"C:\weights")

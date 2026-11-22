@@ -45,7 +45,7 @@ def serve(model_path, alias):
 
 
 def stop_service():
-    p = subprocess.run(["taskkill", "/F", "/IM", "llama-server.exe"], capture_output=True, text=True)
+    subprocess.run(["taskkill", "/F", "/IM", "llama-server.exe"], capture_output=True, text=True)
     time.sleep(2)
 
 
@@ -60,10 +60,10 @@ def main():
     ap.add_argument("-p", "--port", type=int, default=PORT)
     args = ap.parse_args()
     cfg = [
-        ("mimo-orig", M_ORIG, "conf-fresca-orig", ["harness2.py", "conf-fresca-orig", "20", "10", str(PORT)]),
-        ("mimo-e5", M_E5, "conf-fresca-e5", ["harness2.py", "conf-fresca-e5", "20", "10", str(PORT)]),
-        ("mimo-orig", M_ORIG, "conf-dev-orig", ["harness2.py", "conf-dev-orig", "10", "0", str(PORT)]),
-        ("mimo-e5", M_E5, "conf-dev-e5", ["harness2.py", "conf-dev-e5", "10", "0", str(PORT)]),
+        ("mimo-orig", M_ORIG, "conf-fresca-orig", ["harness2.py", "conf-fresca-orig", "20", "10", str(args.port)]),
+        ("mimo-e5", M_E5, "conf-fresca-e5", ["harness2.py", "conf-fresca-e5", "20", "10", str(args.port)]),
+        ("mimo-orig", M_ORIG, "conf-dev-orig", ["harness2.py", "conf-dev-orig", "10", "0", str(args.port)]),
+        ("mimo-e5", M_E5, "conf-dev-e5", ["harness2.py", "conf-dev-e5", "10", "0", str(args.port)]),
     ]
     informe = {}
     for server_alias, model_path, run_alias, harness_args in cfg:

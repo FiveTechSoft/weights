@@ -87,7 +87,6 @@ def chat(server, prompt, seed, mode="sampled", max_toks=2048):
 INSTR = ("Resuelve el problema paso a paso. Termina tu respuesta con UNICA linea final: 'Respuesta: <valor>'.\n\n")
 
 def final_write(a, results, per_cat, per_lvl, mode):
-    import hashlib
     import time
     hash_src = close_alias_to_file(a.alias)
     model_hash = hashlib.sha256(hash_src.encode()).hexdigest()[:16] if hash_src else "?"

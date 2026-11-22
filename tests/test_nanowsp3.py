@@ -1,7 +1,6 @@
 """test_nanowsp3.py — Unit Tests for NanoWSP-3 6-Layer Thematic Micro-LLM."""
 
 import unittest
-import torch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

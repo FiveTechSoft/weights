@@ -12,14 +12,10 @@ Architecture Specifications:
 
 from __future__ import annotations
 import math
-import os
-import json
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Any, Union
 
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -456,7 +452,6 @@ class NanoWSP2:
 
     def inject_transient_loop_breaker(self, token_ids: List[int], target_layer: int = 3):
         """Synthesizes a transient Fast-Weight Overlay (FWP) to redirect runaway loop attractors to EOS."""
-        c = self.config
         tensor_key = f"layers.{target_layer}.mlp_out.weight"
         _, traces = self.forward(token_ids, return_hidden=True)
         if traces is None:

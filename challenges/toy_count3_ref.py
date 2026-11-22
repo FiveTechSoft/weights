@@ -1,7 +1,6 @@
 """Programa del reto toy-42 (count3): output 'S' si count de unos == 3, else 'N'.
 Arquitectura toy_bench nueva (Q/K/V): N = z[0] canal via tok/V1, softmax uniforme.
 """
-import torch
 
 
 def set_weights(net, task):

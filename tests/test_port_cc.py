@@ -1,6 +1,5 @@
 """lab/probes/act_map/port_cc.py: gate 3b (the 9B's "conclude" direction written into the 0.8B through the gate 1 maps),
 the pure pieces: measures against the base, the dev scale rule, the verdict rule, free dev items, the edit check."""
-import json
 import sys
 import tempfile
 import unittest

@@ -1,6 +1,4 @@
-import time
 import torch
-import numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 model_path = r"C:\Users\Anto\.cache\huggingface\hub\models--TinyLlama--TinyLlama-1.1B-Chat-v1.0\snapshots\fe8a4ea1ffedaf415f4da2f062534de366a451e6"
@@ -114,7 +112,7 @@ frob_orig = torch.norm(W_down).item()
 frob_delta = torch.norm(Delta_W).item()
 max_delta = torch.max(torch.abs(Delta_W)).item()
 
-print(f"\nMEMIT Delta W computed:")
+print("\nMEMIT Delta W computed:")
 print(f"  Frobenius norm of original W: {frob_orig:.4f}")
 print(f"  Frobenius norm of Delta W:    {frob_delta:.4f} ({frob_delta/frob_orig*100:.3f}% perturbation)")
 print(f"  Max absolute element change:  {max_delta:.6f}")

@@ -1,5 +1,6 @@
 """tests compile_from_trace: deteccion de tier determinista + record válido + ediciones emitidas."""
-import sys, json
+import sys
+import json
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lab"))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

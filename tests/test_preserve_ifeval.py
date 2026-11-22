@@ -1,6 +1,5 @@
 """IFEval (pure-Python checker subset, strict + loose) and TriviaQA (200 rc.nocontext validation items) as components of
 the preservation battery (engine/ifeval_checks.py, engine/preserve_bench.py). Written before the code."""
-import json
 import sys
 import tempfile
 import unittest

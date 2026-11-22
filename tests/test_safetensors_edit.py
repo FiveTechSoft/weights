@@ -1,5 +1,4 @@
 """Test apply_wsp_to_safetensors on a small synthetic SafeTensors shard."""
-import json
 import os
 import shutil
 import tempfile

@@ -1,14 +1,12 @@
 """test_wsplang_v4.py — Unit Tests for WSP-Lang 0.4 Matrix Perturbation Theory & Leverage Scores."""
 
 import unittest
-import os
 import sys
-import json
 import tempfile
 from pathlib import Path
 import numpy as np
 import torch
-from safetensors.torch import save_file, load_file
+from safetensors.torch import save_file
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))

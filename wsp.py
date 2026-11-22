@@ -145,9 +145,6 @@ def base_dtype(t):
 # ---------------- read commands ----------------
 def cmd_info(a):
     r = reader_of(a.gguf)
-    hf = r.fields.get("general.architecture")
-    raw_arch = hf.contents()[0] if hf else "?"
-    arch = raw_arch.decode() if isinstance(raw_arch, bytes) else str(raw_arch)
     n = len(r.tensors)
     qs = {}
     for t in r.tensors:
@@ -302,7 +299,6 @@ def _make_qx_quants(Xsub, nmax=32):
     best = np.full(n, -np.inf)
     Lbest = np.zeros((n, X.shape[1]), dtype=np.int64)
     scaleBest = np.zeros(n)
-    passes = None  # pass inicial iscale=-nmax/max, luego is=-9..9 excluyendo 0
     for pass_i, (beta,) in enumerate([(float(nmax),)] + [((nmax + 0.1 * is_),) for is_ in list(range(-9, 0)) + list(range(1, 10))]):
         iscale = -beta / maxSigned
         l = np.clip(np.rint(X * iscale[:, None]), -nmax, nmax - 1)
@@ -512,10 +508,9 @@ def cmd_edit(a):
         if len(t.shape) == 1:  # 1-D tensors (biases, decay parameters): only the scalar ops touch them
             if op["type"] not in SCALAR_OPS:
                 sys.exit(f"POLICY: {op['type']} necesita una matriz 2-D; {nm} es 1-D")
-            nrows = ncols = int(t.shape[0])
+            nrows = int(t.shape[0])
         else:
             nrows = int(t.shape[1])
-            ncols = int(t.shape[0])
         D = row_decode(t)
         if "base" in prog:
             B = row_decode(base_t[nm])
@@ -573,7 +568,6 @@ def cmd_edit(a):
                 Dn = D.astype(np.float64) - al * np.outer(u, v)
                 m_ur = np.abs(u) > tol * np.abs(u).max()
                 m_vc = np.abs(v) > tol * np.abs(v).max()
-                nblk = (int(t.shape[0]) // elem_pb)
                 blk_cols = sorted(set((np.where(m_vc)[0] // elem_pb).tolist()))
                 for r in np.where(m_ur)[0].tolist():
                     rowmap[int(r)] = blk_cols
@@ -949,7 +943,7 @@ def describe_tensor_role(tensor_name, row=None, col=None, arch_info=None, vocab=
         if row is not None and col is not None:
             meta["role"] = f"Layer {layer} FFN Down: neurona intermedia #{col} -> escribe en residual dim {row}"
         else:
-            meta["role"] = f"FFN síntesis hacia el residual stream"
+            meta["role"] = "FFN síntesis hacia el residual stream"
 
     elif sub in ("ffn_up.weight", "ffn_gate.weight"):
         meta["component"] = sub.replace(".weight", "")
@@ -960,7 +954,7 @@ def describe_tensor_role(tensor_name, row=None, col=None, arch_info=None, vocab=
         if row is not None and col is not None:
             meta["role"] = f"Layer {layer} FFN Detector: lee residual dim {col} -> activa neurona intermedia #{row}"
         else:
-            meta["role"] = f"FFN detector desde el residual stream"
+            meta["role"] = "FFN detector desde el residual stream"
 
     elif sub == "ssm_beta.weight":
         meta["component"] = "ssm_beta_gate"
@@ -969,7 +963,7 @@ def describe_tensor_role(tensor_name, row=None, col=None, arch_info=None, vocab=
         if row is not None and col is not None:
             meta["role"] = f"SSM Layer {layer} Beta Gate (retención/olvido de contexto): lee residual dim {row} -> modula grupo SSM #{col}"
         else:
-            meta["role"] = f"SSM Beta Gate de retención/olvido"
+            meta["role"] = "SSM Beta Gate de retención/olvido"
 
     elif sub == "ssm_alpha.weight":
         meta["component"] = "ssm_alpha_gate"
@@ -978,7 +972,7 @@ def describe_tensor_role(tensor_name, row=None, col=None, arch_info=None, vocab=
         if row is not None and col is not None:
             meta["role"] = f"SSM Layer {layer} Alpha Gate (incorporación de contexto): lee residual dim {row} -> modula grupo SSM #{col}"
         else:
-            meta["role"] = f"SSM Alpha Gate de entrada"
+            meta["role"] = "SSM Alpha Gate de entrada"
 
     elif sub == "attn_qkv.weight":
         meta["component"] = "ssm_qkv_proj"
@@ -987,7 +981,7 @@ def describe_tensor_role(tensor_name, row=None, col=None, arch_info=None, vocab=
         if row is not None and col is not None:
             meta["role"] = f"SSM Layer {layer} QKV: lee residual dim {col} -> feature #{row}"
         else:
-            meta["role"] = f"SSM proyección de entrada QKV"
+            meta["role"] = "SSM proyección de entrada QKV"
 
     elif tensor_name == "output.weight":
         meta["component"] = "lm_head_unembedding"

@@ -10,7 +10,6 @@ Grounds Weight Space Surgery in Matrix Perturbation Theory (Weyl, Davis-Kahan, R
 4. Layer-by-layer eigengap comparison (Layer 2 vs Layer 14 vs Layer 27 down_proj).
 """
 
-import os
 import sys
 import json
 import time
@@ -89,7 +88,6 @@ def run_spectral_verification():
     W_tilde = W - delta
     t0 = time.time()
     spec_after = wsplang.compute_spectral_decomposition(W_tilde, q=16, niter=10)
-    svd_after_time = time.time() - t0
     S_after = torch.tensor(spec_after["singular_values"], dtype=torch.float32)
     U0_after = spec_after["U"][:, 0]
 
@@ -126,7 +124,6 @@ def run_spectral_verification():
     lev_scores = spec_before["leverage_scores"]
     lev_sum = float(lev_scores.sum().item())
     lev_mean = float(lev_scores.mean().item())
-    lev_max = float(lev_scores.max().item())
 
     # Raw projection columns leverage
     raw_cols_lev = float(lev_scores[top_cols_idx].mean().item())

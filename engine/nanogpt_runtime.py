@@ -7,12 +7,10 @@ GPT-2 y paridad numérica exacta a precisión float32.
 
 from __future__ import annotations
 import math
-import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

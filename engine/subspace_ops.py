@@ -10,10 +10,7 @@ The subspace comes from:
   random              a random k-dim subspace (the control: same k, same source delta).
 Provenance written into every shard: synthetic_transfer, with the source and basis.
 """
-import json
-import shutil
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import torch
 

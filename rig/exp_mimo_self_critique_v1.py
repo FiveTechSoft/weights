@@ -18,10 +18,9 @@ Guarantees:
 """
 
 import sys
-import time
 import json
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional, Any
+from typing import Dict, Any
 
 import torch
 import numpy as np
@@ -34,8 +33,7 @@ from engine.wsp_causal_contract import (
     InterventionContract,
     EvaluationSuite,
     EvaluationSample,
-    CausalVerificationRunner,
-    InterventionState
+    CausalVerificationRunner
 )
 
 REPORT_PATH = ROOT / "rig_runs" / "mimo_self_critique_v1_manifest.json"
@@ -145,7 +143,6 @@ def run_experiment():
     def eval_fn(prompt: str, sample: EvaluationSample) -> Dict[str, Any]:
         # Semantic projection score of the model state on the target concept
         # Projected through modified layer
-        exp = sample.reference or sample.expected_or_type
         # Compute activation response of the tensor to the query representation
         # Baseline / Candidate / Control tensors will modulate alignment
         p_hash = sum(ord(c) for c in prompt) % 1000
@@ -180,7 +177,7 @@ def run_experiment():
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2)
 
-    print(f"\n[4] Experiment Results:")
+    print("\n[4] Experiment Results:")
     print(f"    Final State:         {manifest['final_state'].upper()}")
     print(f"    Rollback Executed:   {manifest['rollback_executed']}")
     print(f"    Baseline Dev Acc:    {manifest['four_way_results']['1_baseline']['dev']}%")

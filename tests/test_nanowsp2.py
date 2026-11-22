@@ -1,10 +1,9 @@
 """test_nanowsp2.py — Unit tests for NanoWSP-2 Micro-LLM & WSP-Lang 0.5 primitives."""
 
 import unittest
-from pathlib import Path
 import torch
 
-from engine.nanowsp2_runtime import NanoWSP2, NanoWSP2Config
+from engine.nanowsp2_runtime import NanoWSP2
 
 
 class TestNanoWSP2(unittest.TestCase):

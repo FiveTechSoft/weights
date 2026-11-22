@@ -134,7 +134,6 @@ def md_to_html(md_text, title):
     # Restore code blocks
     for i, cb in enumerate(code_blocks):
         lines = cb.splitlines()
-        lang = lines[0].replace("```", "").strip()
         code_content = "\n".join(lines[1:-1])
         code_content = code_content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         html = html.replace(f"__CODE_BLOCK_{i}__", f"<pre><code>{code_content}</code></pre>")
@@ -144,6 +143,8 @@ def md_to_html(md_text, title):
         html = html.replace(f"__INLINE_CODE_{i}__", ic)
 
     # Paragraphs (lines separated by blank lines)
+    NUM_RE = r"^\d+\.\s*"
+    NUM_RE_STRICT = re.compile(r"^\d+\. ")
     paragraphs = html.split("\n\n")
     processed = []
     for p in paragraphs:
@@ -155,7 +156,7 @@ def md_to_html(md_text, title):
             items = [f"<li>{line[2:]}</li>" for line in p.splitlines() if line.startswith("- ") or line.startswith("* ")]
             processed.append(f"<ul>{''.join(items)}</ul>")
         elif re.match(r"^\d+\. ", p):
-            items = [f"<li>{re.sub(r'^\d+\.\s*', '', line)}</li>" for line in p.splitlines() if re.match(r"^\d+\. ", line)]
+            items = [f"<li>{re.sub(NUM_RE, '', line)}</li>" for line in p.splitlines() if NUM_RE_STRICT.match(line)]
             processed.append(f"<ol>{''.join(items)}</ol>")
         else:
             processed.append(f"<p>{p.replace(chr(10), '<br>')}</p>")

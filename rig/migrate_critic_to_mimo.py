@@ -6,7 +6,6 @@ Directly on unquantized SafeTensors shards (BF16), keeping model size 100% stric
 """
 
 import os
-import sys
 import time
 import json
 import shutil
@@ -81,7 +80,7 @@ def run_migration():
         layer_to_shard[l] = (tname, shard_name)
         shard_to_layers.setdefault(shard_name, []).append((l, tname))
 
-    print(f"\n[3] Target Shards to Modify:")
+    print("\n[3] Target Shards to Modify:")
     for sh, layers in shard_to_layers.items():
         print(f"    - {sh}: Layers {[l for l, _ in layers]}")
 

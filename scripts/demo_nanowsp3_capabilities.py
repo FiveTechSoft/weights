@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "engine"))
 
-from engine.nanowsp3_runtime import NanoWSP3, NanoWSP3Config
+from engine.nanowsp3_runtime import NanoWSP3
 
 # Thematic Datasets
 THEMATIC_DOMAINS = [
@@ -93,8 +93,8 @@ def run_thematic_benchmark():
     params = model.count_parameters()
     bytes_disk = model.size_in_bytes(torch.float32)
 
-    print(f"\n[MODEL SPECS]")
-    print(f"  Architecture:    6-Layer Transformer (Pre-LayerNorm, RoPE, GeLU)")
+    print("\n[MODEL SPECS]")
+    print("  Architecture:    6-Layer Transformer (Pre-LayerNorm, RoPE, GeLU)")
     print(f"  Hidden Dim:      d_model = {model.config.d_model}")
     print(f"  Attention:       {model.config.n_heads} Heads (d_head = {model.config.d_head})")
     print(f"  FFN Dim:         d_ff = {model.config.d_ff}")
@@ -167,7 +167,7 @@ def run_thematic_benchmark():
     # 3. Save SafeTensors Checkpoint
     out_weights = ROOT / "data" / "nanowsp3_weights.safetensors"
     model.save_checkpoint(out_weights)
-    print(f"\n[CHECKPOINT EXPORT]")
+    print("\n[CHECKPOINT EXPORT]")
     print(f"  NanoWSP-3 SafeTensors guardado: {out_weights.relative_to(ROOT)} ({out_weights.stat().st_size / 1024**2:.2f} MB)")
 
     total_time = time.time() - t0_start
@@ -178,7 +178,7 @@ def run_thematic_benchmark():
     print("=" * 80)
     print(f"Temáticas Validadas:         {len(THEMATIC_DOMAINS)} / {len(THEMATIC_DOMAINS)} (100.0%)")
     print(f"Exactitud Global:            {total_hits} / {total_facts} ({global_acc:.1f}% Recuerdo Perfecto)")
-    print(f"Interferencia Cruzada:       0.0% (Matriz de Gram ortogonalizada)")
+    print("Interferencia Cruzada:       0.0% (Matriz de Gram ortogonalizada)")
     print(f"Tiempo Total de Ejecución:   {total_time:.3f} s")
     print("=" * 80)
 

@@ -82,9 +82,8 @@ def chat(endpoint, messages, sampling_params):
     return (m.get("content") or "", data["choices"][0].get("finish_reason"))
 
 
-def run_task(endpoint, prompt, sampling_params, max_turns=12):
-    sysmsg = getattr(args, "system", None)
-    messages = ([{"role": "system", "content": sysmsg}] if sysmsg else []) + [{"role": "user", "content": prompt}]
+def run_task(endpoint, prompt, sampling_params, max_turns=12, system=None):
+    messages = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
     hist, turns, final = [], 0, None
     loop_turn = None
 
@@ -213,7 +212,7 @@ def main():
     mean_loop_turn = sum(loop_turns) / len(loop_turns) if loop_turns else None
     low, high = wilson_interval(loops, len(ok_runs))
 
-    print(f"\n==========================================")
+    print("\n==========================================")
     print(f"RESUMEN: {args.alias}")
     print(f"  Total evaluados: {len(ok_runs)} (errores: {len(results) - len(ok_runs)})")
     print(f"  Loops detectados: {loops}/{len(ok_runs)} ({loops / max(len(ok_runs), 1):.1%})")
@@ -222,7 +221,7 @@ def main():
         print(f"  Métrica continua (turnos medios hasta bucle): {mean_loop_turn:.2f}")
     print(f"  Tiempo total: {elapsed:.1f} s")
     print(f"  Resultados guardados en: {out_file}")
-    print(f"==========================================\n")
+    print("==========================================\n")
 
 
 if __name__ == "__main__":

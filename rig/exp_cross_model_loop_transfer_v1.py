@@ -1,8 +1,7 @@
 import sys
-import time
 import json
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional, Any
+from typing import Dict, Any
 
 import torch
 import numpy as np
@@ -16,8 +15,7 @@ from engine.wsp_causal_contract import (
     InterventionContract,
     EvaluationSuite,
     EvaluationSample,
-    CausalVerificationRunner,
-    InterventionState
+    CausalVerificationRunner
 )
 
 MODEL_PATH = Path(r"C:\Users\Anto\.cache\huggingface\hub\models--TinyLlama--TinyLlama-1.1B-Chat-v1.0\snapshots\fe8a4ea1ffedaf415f4da2f062534de366a451e6")

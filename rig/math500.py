@@ -430,7 +430,7 @@ def cmd_run(args):
     fails = [r for r in results if not r["ok"]]
     for r in fails:
         _p(f"  i={r['i']} gold={r['gold']!r} pred={r['pred']!r}")
-    _p(f"[fin] sin fallos" if not fails else f"[fin] fallos: {len(fails)}/{len(results)}")
+    _p("[fin] sin fallos" if not fails else f"[fin] fallos: {len(fails)}/{len(results)}")
     _p(f"[fin] ok={nok}/{len(results)} ({100.0 * nok / len(results):.1f}%) -> {out}")
 
 

@@ -13,7 +13,10 @@ Modos:
   decompile <gguf> -l L -q Q -o dir   -> npz + pseudo-C + manifiesto del head
   judge     <gguf> -l L -q Q          -> tests mecanicos T1..T4
 """
-import argparse, hashlib, json, sys
+import argparse
+import hashlib
+import json
+import sys
 from pathlib import Path
 import numpy as np
 import gguf
@@ -200,7 +203,7 @@ def render(H):
     gate_norm = float(np.linalg.norm(H["Wgate"]))
     q_norm_total = float(np.linalg.norm(H["Wq"]))
     lines = [
-        f"// ============ head decompilado ============",
+        "// ============ head decompilado ============",
         f"// layer {L}, q-head #{h} de 16 (kv-group {g}, kv-heads 4, GDA ratio 4)",
         f"// dims por head: Q {hd}d, GATE {hd}d sigmoid, K {hd}d, V {hd}d, writeback {hd}x{H['d']}",
         f"// pre-rope model (el rope real rota {64} de {hd} dims; MRoPE multimodal, freq 1e7)",
@@ -221,7 +224,7 @@ def render(H):
         "// --- writeback",
         f"  residual[t] += Wo(row-block head #{h}) @ o_t",
         "",
-        f"// --- diagnostico QK (pre-rope estatico): M0 = Wq^T @ Wk (normas escaladas)",
+        "// --- diagnostico QK (pre-rope estatico): M0 = Wq^T @ Wk (normas escaladas)",
         f"//     c1(M0)={c0:.4f}; nota: RoPE ({64} dims de {hd}) altera el score por offset",
         f"//     ||Wq|| vs ||Wgate||: {q_norm_total:.2f} vs {gate_norm:.2f} (ratio gate {gate_norm / (q_norm_total + 1e-30):.3f})",
     ]

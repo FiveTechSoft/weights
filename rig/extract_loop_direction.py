@@ -6,7 +6,6 @@ Computes direction vector u across layers, validates against permutation null hy
 and exports llama.cpp control-vector GGUF.
 """
 import json
-import os
 import re
 import sys
 import time
@@ -74,7 +73,6 @@ def main():
     all_prompts = json.load(DIR_DATA.open(encoding="utf-8"))
     prompts_by_id = {p["id"]: p["prompt"] for p in all_prompts}
     
-    vanilla_run = json.load(open(DIR_RUNS / "eval_vanilla_n20.json", encoding="utf-8"))["results"]
     
     # Select top 6 loop runs and 6 finished runs
     loop_candidates = [

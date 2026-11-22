@@ -1,5 +1,8 @@
 """Synthetic checks for lab/probes/behavior_extraction/lite_text.py. No real model, no decoder, no training."""
-import os, sys, tempfile, unittest
+import os
+import sys
+import tempfile
+import unittest
 import torch
 from safetensors.torch import save_file
 

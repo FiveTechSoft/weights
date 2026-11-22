@@ -7,13 +7,10 @@ and rank-1 projection algebra from scratch without PyTorch autograd / SGD.
 
 from __future__ import annotations
 import math
-import os
-import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Any, Union
 
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

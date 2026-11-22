@@ -6,7 +6,6 @@
 """
 
 import unittest
-import os
 import sys
 import tempfile
 from pathlib import Path
@@ -19,7 +18,6 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "engine"))
 
 import engine.wsplang as wsplang
-from engine.nanowsp_runtime import NanoWSP
 
 
 class TestWSPLangV5(unittest.TestCase):

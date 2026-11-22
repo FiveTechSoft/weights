@@ -1,9 +1,7 @@
 """test_wsplang_v3.py — Comprehensive Unit Tests for WSP-Lang 0.3 Fast Weight Programming Engine."""
 
 import unittest
-import os
 import sys
-import json
 import tempfile
 from pathlib import Path
 import numpy as np

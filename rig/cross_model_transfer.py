@@ -17,7 +17,6 @@ Mathematical Framework:
      Applies LEACE Concept Erasure on TinyLlama Layer 10 down_proj (2048 x 5632) using translated vector.
 """
 
-import os
 import sys
 import json
 import time
@@ -25,7 +24,6 @@ from pathlib import Path
 import numpy as np
 import torch
 from safetensors import safe_open
-from safetensors.torch import save_file
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))

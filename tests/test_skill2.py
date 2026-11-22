@@ -1,9 +1,7 @@
 """lab/probes/skill2/skill2.py (lab/probes/skill2/PLAN.md): a second behaviour, "reason in the requested language"
 (Spanish thinking on English problems), read from the base's own answers. Judge, row builder, splits, dev rule.
 Written before skill2.py."""
-import json
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 

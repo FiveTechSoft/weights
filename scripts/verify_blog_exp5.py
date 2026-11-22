@@ -55,7 +55,7 @@ def test_blog_exp5():
     max_err = max(errors)
     mean_err = np.mean(errors)
     print("\n=== MECHANICAL VERIFICATION RESULTS ===")
-    print(f"Test vectors: 100 random samples in [-10, +10]^2")
+    print("Test vectors: 100 random samples in [-10, +10]^2")
     print(f"Max absolute error:  {max_err:.8e}")
     print(f"Mean absolute error: {mean_err:.8e}")
     

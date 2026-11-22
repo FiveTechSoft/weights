@@ -23,6 +23,12 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from engine.comparative_drift import (
+    compute_architectural_drift,
+    compute_semantic_delta,
+    compute_spectral_delta,
+    compute_ssm_dynamics_diff,
+)
 from engine.wsplang import (
     DEFAULT_QWEN_BASE_GGUF,
     FORBIDDEN_PATTERNS,
@@ -34,16 +40,12 @@ from engine.wsplang import (
     check_behavioral_drift,
     check_new_file,
     check_report_path,
-    compute_architectural_drift,
     compute_jepa_steer,
     compute_leace_projection,
     compute_memit_update,
     compute_permute_align,
     compute_procrustes_alignment,
-    compute_semantic_delta,
     compute_spectral_decomposition,
-    compute_spectral_delta,
-    compute_ssm_dynamics_diff,
     compute_vicreg_metrics,
     generate_orthogonal_probe,
     guard_model_write,
@@ -130,8 +132,6 @@ def _op_leace_erase(ctx, op, positional, named, res):
             cov_np = np.load(cov_p)
             cov_mat = torch.from_numpy(cov_np[list(cov_np.files)[0]] if hasattr(cov_np, 'files') else cov_np).float()
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import save_file
         W, shard_to_edit, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
         u_t = torch.from_numpy(u_vec).float().to(W.device)
         P_leace = compute_leace_projection(u_t, sigma=cov_mat)
@@ -170,8 +170,6 @@ def _op_cov_imprint_memit_imprint(ctx, op, positional, named, res):
     elif 'prompt' in named and 'target' in named:
         pairs = [(named['prompt'], named['target'])]
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import save_file
         from engine.nanowsp_runtime import NanoWSP
         ckpt_path = ctx.target_path if ctx.target_path.exists() and ctx.target_path.is_file() else ctx.target_path / 'model.safetensors'
         if not ckpt_path.exists():
@@ -225,8 +223,6 @@ def _op_decoupled_delta(ctx, op, positional, named, res):
     k_write = load_vector_numpy(Path(write_k_file) if Path(write_k_file).is_absolute() else ROOT / write_k_file) if write_k_file else None
     v_write = load_vector_numpy(Path(write_v_file) if Path(write_v_file).is_absolute() else ROOT / write_v_file) if write_v_file else None
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import save_file
         W, shard_to_edit, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
         u_e_t = torch.from_numpy(u_erase).float().to(W.device)
         k_w_t = torch.from_numpy(k_write).float().to(W.device) if k_write is not None else None
@@ -258,7 +254,6 @@ def _op_surprise_fwp(ctx, op, positional, named, res):
 
 
 def _op_rosetta_align(ctx, op, positional, named, res):
-    import torch
     source_file = named.get('source', positional[0] if positional else None)
     target_file = named.get('target', positional[1] if len(positional) > 1 else None)
     out_file = named.get('out', 'data/rosetta_matrix.npz')
@@ -289,7 +284,6 @@ def _op_rosetta_align(ctx, op, positional, named, res):
 
 
 def _op_cross_project(ctx, op, positional, named, res):
-    import torch
     vec_file = named.get('vector', positional[0] if positional else None)
     rosetta_file = named.get('rosetta', positional[1] if len(positional) > 1 else None)
     out_file = named.get('out', 'data/translated_vector.npz')
@@ -349,7 +343,7 @@ def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
     if named.get('method') != 'ngram':
-        raise ValueError(f'synthesize supports method=ngram, got {named.get('method')}')
+        raise ValueError(f"synthesize supports method=ngram, got {named.get('method')}")
     source_args = ('table',) if 'table' in named else ('data', 'order')
     for required in ('arch', 'out') + source_args:
         if required not in named:
@@ -468,7 +462,7 @@ def _op_train(ctx, op, positional, named, res):
     train_cfg, overrides = wsp_train.split_step_args(named, wsp_arch.parse_config_value)
     dataset = wsp_train.char_dataset(data_path.read_text(encoding='utf-8'))
     if overrides.setdefault('vocab', len(dataset.chars)) != len(dataset.chars):
-        raise ValueError(f'vocab={overrides['vocab']} but data has {len(dataset.chars)} symbols')
+        raise ValueError(f"vocab={overrides['vocab']} but data has {len(dataset.chars)} symbols")
     compiled = wsp_arch.load_arch_file(arch_path, overrides=overrides, seed=int(named.get('seed', 1337)))
     total = sum((p.numel() for p in compiled.parameters()))
     if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
@@ -638,8 +632,7 @@ def _op_delta_unlearn(ctx, op, positional, named, res):
     top_cols_pct = float(named.get('top_cols', 1.0))
     top_rows_limit = int(named.get('top_rows', 0))
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import load_file, save_file
+        from safetensors.torch import load_file
         index_file = ctx.target_path / 'model.safetensors.index.json'
         target_shard = None
         if index_file.exists():
@@ -805,8 +798,6 @@ def _op_spectral_decay(ctx, op, positional, named, res):
     if decay_factor <= 0.0 or decay_factor > 1.0:
         raise ValueError(f'Decay factor must be in (0, 1], got {decay_factor}')
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import save_file
         W, shard_to_edit, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
         norm_before = float(torch.norm(W).item())
         W *= decay_factor
@@ -1279,8 +1270,7 @@ def _op_project_out_project_in(ctx, op, positional, named, res):
     top_cols_pct = float(named.get('top_cols', 0.127))
     top_rows_limit = int(named.get('top_rows', 50))
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import load_file, save_file
+        from safetensors.torch import load_file
         index_file = ctx.target_path / 'model.safetensors.index.json'
         target_shard = None
         if index_file.exists():
@@ -1383,7 +1373,6 @@ def _op_audit(ctx, op, positional, named, res):
     if vec_p and (not vec_p.is_absolute()):
         vec_p = ROOT / vec_p
     if ctx.is_safetensors:
-        import torch
         from safetensors.torch import load_file
         shard_files = list(ctx.target_path.glob('*.safetensors')) if ctx.target_path.is_dir() else [ctx.target_path]
         target_tensor = None
@@ -1452,7 +1441,6 @@ def _op_spectral_audit(ctx, op, positional, named, res):
     assert_gap = float(named['assert_gap']) if 'assert_gap' in named else None
     assert_dk = float(named['assert_davis_kahan']) if 'assert_davis_kahan' in named else None
     if ctx.is_safetensors:
-        import torch
         W, shard_to_edit, _ = load_safetensors_tensor(ctx.target_path, tensor_name)
         spectral = compute_spectral_decomposition(W, q=q, niter=6)
         audit_data = {'tensor': tensor_name, 'shape': list(W.shape), 'rank_q': q, 'top_singular_values': [round(x, 4) for x in spectral['singular_values'][:8]], 'spectral_gap_delta': round(spectral['spectral_gap'], 6), 'condition_number': round(spectral['condition_number'], 4), 'leverage_distribution': spectral['leverage_stats']}
@@ -1495,7 +1483,6 @@ def _op_assert_weyl(ctx, op, positional, named, res):
     q = int(named.get('q', 10))
     tolerance = float(named.get('tolerance', 0.0001))
     if ctx.is_safetensors:
-        import torch
         W, shard_to_edit, _ = load_safetensors_tensor(ctx.target_path, tensor_name)
         u_vec = load_vector_numpy(vec_p)
         u_t = torch.from_numpy(u_vec).float().to(W.device)
@@ -1535,7 +1522,6 @@ def _op_assert_davis_kahan(ctx, op, positional, named, res):
     top_cols_pct = float(named.get('top_cols', 0.127))
     max_angle_deg = float(named['max_angle_deg']) if 'max_angle_deg' in named else None
     if ctx.is_safetensors:
-        import torch
         W, shard_to_edit, _ = load_safetensors_tensor(ctx.target_path, tensor_name)
         u_vec = load_vector_numpy(vec_p)
         u_t = torch.from_numpy(u_vec).float().to(W.device)
@@ -1584,7 +1570,6 @@ def _op_peek_semantic_areas_semantic_areas(ctx, op, positional, named, res):
     k = int(named.get('k', 8))
     top_k = int(named.get('top', 3))
     if ctx.is_safetensors:
-        import torch
         from safetensors.torch import load_file
         ckpt_p = ctx.target_path if ctx.target_path.exists() and ctx.target_path.is_file() else ctx.target_path / 'model.safetensors'
         if not ckpt_p.exists():
@@ -1622,7 +1607,7 @@ def _op_diff(ctx, op, positional, named, res):
             chg = row['changed']
             tot_n += row['numel']
             tot_chg += chg
-            diffs[row['tensor']] = {'changed_weights': chg, 'total_weights': row['numel'], 'fraction': chg / max(row['numel'], 1), 'percentage': f'{chg / max(row['numel'], 1):.4%}', 'frobenius_delta': row['norm_delta'], **{k2: row[k2] for k2 in ('rel_delta', 'cosine', 'family', 'layer', 'energy_top1', 'stable_rank', 'rows_changed', 'top_rows') if k2 in row}}
+            diffs[row['tensor']] = {'changed_weights': chg, 'total_weights': row['numel'], 'fraction': chg / max(row['numel'], 1), 'percentage': f"{chg / max(row['numel'], 1):.4%}", 'frobenius_delta': row['norm_delta'], **{k2: row[k2] for k2 in ('rel_delta', 'cosine', 'family', 'layer', 'energy_top1', 'stable_rank', 'rows_changed', 'top_rows') if k2 in row}}
         diff_extra = {k2: rep[k2] for k2 in ('by_family', 'by_layer', 'only_in_base', 'only_in_target', 'shape_mismatch')}
     else:
         import wsp
@@ -1636,7 +1621,7 @@ def _op_diff(ctx, op, positional, named, res):
             chg = int((np.abs(D1 - D2) > 0.0001 * (np.abs(D1) + 1e-30)).sum())
             tot_n += D2.size
             tot_chg += chg
-            diffs[nm] = {'changed_weights': chg, 'total_weights': int(D2.size), 'fraction': float(chg / max(D2.size, 1)), 'percentage': f'{chg / max(D2.size, 1):.4%}'}
+            diffs[nm] = {'changed_weights': chg, 'total_weights': int(D2.size), 'fraction': float(chg / max(D2.size, 1)), 'percentage': f"{chg / max(D2.size, 1):.4%}"}
     res['result'] = {'base_model': str(base_path_arg.name), 'edited_model': str(ctx.target_path.name), 'tensors': diffs, 'total_changed': tot_chg, 'total_weights': tot_n, 'overall_percentage': f'{tot_chg / max(tot_n, 1):.4%}' if tot_n else '0.0%', **diff_extra}
 
 
@@ -1724,8 +1709,6 @@ def _op_jepa_steer(ctx, op, positional, named, res):
     reg_lambda = float(named.get('lambda', named.get('reg', 0.1)))
     bg_weight = float(named.get('bg_weight', 1.0))
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import save_file
         W, shard_to_edit, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
         probe_file = named.get('probe_activations', named.get('activations'))
         if probe_file:
@@ -1776,8 +1759,6 @@ def _op_permute_align(ctx, op, positional, named, res):
     if not ref_p.is_absolute():
         ref_p = ROOT / ref_p
     if ctx.is_safetensors:
-        import torch
-        from safetensors.torch import save_file
         W_s, shard_to_edit, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
         if ref_p.suffix in ('.safetensors', '.bin'):
             W_t, _, _ = load_safetensors_tensor(ref_p.parent if ref_p.is_file() else ref_p, tensor_name)

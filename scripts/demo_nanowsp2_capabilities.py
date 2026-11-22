@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "engine"))
 
-from engine.nanowsp2_runtime import NanoWSP2, NanoWSP2Config
+from engine.nanowsp2_runtime import NanoWSP2
 
 
 def run_nanowsp2_demo():
@@ -31,7 +31,7 @@ def run_nanowsp2_demo():
 
     t0 = time.time()
     model = NanoWSP2()
-    print(f"\n[*] Model Architecture Initialized:")
+    print("\n[*] Model Architecture Initialized:")
     print(f"    Layers:          {model.config.n_layers}")
     print(f"    Model Dimension: {model.config.d_model}")
     print(f"    Attention Heads: {model.config.n_heads} (d_head={model.config.d_head})")
@@ -84,13 +84,6 @@ def run_nanowsp2_demo():
     ]
     unified_batch.extend(rel_transitions)
 
-    # Syntax transitions
-    syntax_transitions = [
-        ("CODE:[{", "}"), ("CODE:[{} ", "]"),
-        ("CODE:[{", "}"), ("CODE:[{} ", "]"),
-        ("CODE:[{", "}"), ("CODE:[{} ", "]"),
-        ("CODE:[{", "}"), ("CODE:[{} ", "]"),
-    ]
     # Exact syntax pairs
     unified_batch.extend([
         ("CODE:[{", "}"), ("CODE:[{} ", "]"),
@@ -117,7 +110,7 @@ def run_nanowsp2_demo():
         reg_lambda=0.01
     )
 
-    print(f"[*] MEMIT Mass Synthesis Executed on Layer 2 MLP:")
+    print("[*] MEMIT Mass Synthesis Executed on Layer 2 MLP:")
     print(f"    Pairs Imprinted:     {res_memit['pairs_imprinted']}")
     print(f"    Unreg Condition:     {res_memit['unreg_condition']:.2f}")
     print(f"    Regularized Cond κ:  {res_memit['reg_condition']:.2f} (Tikhonov stabilized)")
@@ -235,7 +228,7 @@ def run_nanowsp2_demo():
 
     print(f"    Without Titans Monitor: Generated {tokens_no} tokens (Model trapped indefinitely in runaway cycle)")
     print(f"    With Titans Monitor:    Stopped after {tokens_with} tokens (Monitor fired -> transient FWP overlay forced <eos>)")
-    print(f"    Self-Healing Result:    Escaped runaway loop successfully!")
+    print("    Self-Healing Result:    Escaped runaway loop successfully!")
 
     # Save SafeTensors checkpoint
     out_ckpt = ROOT / "data" / "nanowsp2_weights.safetensors"

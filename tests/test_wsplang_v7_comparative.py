@@ -4,7 +4,6 @@ import unittest
 import tempfile
 import sys
 from pathlib import Path
-import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -65,15 +64,10 @@ class TestWSPLangV7Comparative(unittest.TestCase):
         d_out, d_in = 64, 128
         torch.manual_seed(42)
 
-        # 1. Base weights
-        W_b = torch.randn(d_out, d_in)
-
-        # 2. Low-rank update (Rank-1 steering manifold: u @ v^T)
+        # 1. Low-rank update (Rank-1 steering manifold: u @ v^T)
         u = torch.randn(d_out, 1)
         v = torch.randn(d_in, 1)
         delta_lowrank = 2.0 * torch.matmul(u, v.t())
-        W_target_lowrank = W_b + delta_lowrank
-
         # Compute low-rank SVD
         delta_t = delta_lowrank.float()
         U_t, S_t, V_t = torch.svd_lowrank(delta_t, q=5, niter=4)

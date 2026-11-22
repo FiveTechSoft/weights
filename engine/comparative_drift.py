@@ -11,7 +11,7 @@ Distilled or Fine-Tuned target model in WSP-Lang 0.7:
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 import numpy as np
 import torch
 
@@ -304,8 +304,6 @@ def compute_ssm_dynamics_diff(
         except KeyError:
             continue
             
-    a_status = block_results.get("ssm_a", {}).get("status", "NOT_FOUND")
-    dt_status = block_results.get("ssm_dt.bias", {}).get("status", "NOT_FOUND")
     beta_rel = block_results.get("ssm_beta.weight", {}).get("relative_drift", 0.0)
     
     diagnosis = (

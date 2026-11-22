@@ -29,7 +29,7 @@ import sys
 import json
 import re
 import time
-import shutil
+import numpy as np
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
@@ -62,13 +62,6 @@ if str(ROOT) not in sys.path:
 if str(ROOT / "engine") not in sys.path:
     sys.path.insert(0, str(ROOT / "engine"))
 DIR_PL = ROOT / "challenges" / "wsplang"
-
-from engine.comparative_drift import (
-    compute_architectural_drift,
-    compute_spectral_delta,
-    compute_semantic_delta,
-    compute_ssm_dynamics_diff,
-)
 
 # Allowed operations in steps
 OPS_ALLOWED = {
@@ -597,10 +590,8 @@ def parse_named_args(arg_string: str) -> Tuple[List[str], Dict[str, str]]:
     return positional, named
 
 
-def load_vector_numpy(vec_path: Path) -> "np.ndarray":
+def load_vector_numpy(vec_path: Path) -> np.ndarray:
     """Load and L2-normalize direction vector from .npz or .npy."""
-    import numpy as np
-    import torch
     if not vec_path.exists():
         raise FileNotFoundError(f"Vector file not found: {vec_path}")
     if vec_path.suffix == ".npy":
@@ -619,7 +610,6 @@ def load_safetensors_tensor(target_path: Path, tensor_name: str) -> Tuple[Any, P
     """Find and load a tensor from SafeTensors directory or file as float32.
     Returns: (tensor_float, shard_path, shard_tensors_dict)
     """
-    import torch
     from safetensors.torch import load_file
 
     index_file = target_path / "model.safetensors.index.json"
@@ -689,8 +679,6 @@ def compute_spectral_decomposition(W: Any, q: int = 16, niter: int = 6) -> Dict[
 
 def generate_orthogonal_probe(vec: Any, seed: int = 1337) -> Any:
     """Generate a unit probe vector strictly orthogonal to vec."""
-    import numpy as np
-    import torch
     v = np.asarray(vec, dtype=np.float32).ravel()
     v_norm = v / max(np.linalg.norm(v), 1e-12)
     rng = np.random.RandomState(seed)
@@ -912,7 +900,6 @@ def compute_permute_align(
     Pure NumPy implementation with zero external dependencies.
     """
     import numpy as np
-    import torch
     import torch
     W_s = W_source.float()
     W_t = W_target.float().to(W_s.device)
@@ -1263,7 +1250,7 @@ def main():
             elif op == "assert_davis_kahan":
                 if status == "ok":
                     print(f"  Theorem:             {res.get('theorem')}")
-                    print(f"  Davis-Kahan Status:  VERIFIED")
+                    print("  Davis-Kahan Status:  VERIFIED")
                     print(f"  Empirical sin Theta: {res.get('empirical_sin_theta')} ({res.get('empirical_rotation_degrees')} deg)")
                     print(f"  Theoretical Bound:   sin Theta <= {res.get('theoretical_upper_bound')} (bound: {res.get('theoretical_max_degrees')} deg)")
                 elif "error" in step:

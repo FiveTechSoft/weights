@@ -1,7 +1,6 @@
 """export_critic_control_vector.py — Export llama.cpp GGUF Control Vector for MiMo-9B Self-Critique.
 Note: llama.cpp requires 1-based layer indexing for direction tensors (direction.1 through direction.N).
 """
-import time
 from pathlib import Path
 import numpy as np
 import gguf
