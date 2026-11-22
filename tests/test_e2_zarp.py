@@ -1,5 +1,4 @@
 """CPU-only contract tests for E2 ZARP. No model or GPU needed."""
-import importlib.util
 import sys
 from pathlib import Path
 
