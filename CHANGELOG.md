@@ -10,8 +10,7 @@
 
 | Archivo | Contenido |
 |---|---|
-| `CHANGELOG.md` | Registro maestro de todos los cambios |
-| `docs/changelog/<ID>.md` | Ficha de cada cambio (detallada, para publicar) |
+| `CHANGELOG.md` | Registro maestro de todos los cambios (maestro + fichas en línea, detalladas, para publicar) |
 | `ediciones/<ID>.json` | Programa de edición (datos, no prosa) |
 | `ediciones/<ID>.manifest.json` | Fingerprint / hash del modelo editado |
 | `rig_runs/<ID>.json` | Resultados de evaluación |
@@ -41,8 +40,8 @@ mismo formato, pero con los campos adaptados:
 **Estado** — `draft` / `review` / `published`
 ```
 
-> Nota: este registro cubre el **toolkit**, no las ediciones del modelo. Las
-> ediciones del modelo van en `docs/changelog/<ID>.md` (fichas autocontenidas).
+> Nota: este registro cubre el **toolkit** (el código). Las fichas de las ediciones
+> del modelo viven como entradas detalladas en este mismo archivo.
 
 ---
 
@@ -334,4 +333,4 @@ etos/sellados/ -> challenges/sealed/, ediciones/ -> edits/, servidos/ -> served/
 2. El veredicto (`keep`/`discard`/`inconclusive`) va siempre.
 3. Si el cambio es rechazado, **se documenta igual**: el conocimiento de por qué falló es valioso.
 4. Los holdouts (MATH-500, code, IF) NO alimentan el diseño: solo se evalúan al final.
-5. Cada ficha `docs/changelog/` debe ser autocontenida para publicación.
+5. Cada ficha en este registro debe ser autocontenida para publicación.

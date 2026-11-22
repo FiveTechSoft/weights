@@ -23,10 +23,8 @@ python -m venv .venv
 # On Linux / macOS:
 source .venv/bin/activate
 
-# GGUF inspection and editing (wsp.py)
-pip install gguf numpy matplotlib pillow
-# NanoWSP, nanoGPT, weight diff, model_report
-pip install torch safetensors
+# GGUF inspection and editing (wsp.py), NanoWSP, weight diff, model_report
+pip install -r requirements.txt
 ```
 
 *(Optional: For MCP server capabilities, install FastMCP)*
