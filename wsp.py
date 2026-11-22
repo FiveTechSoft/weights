@@ -173,7 +173,7 @@ def cmd_stats(a):
         P = np.linalg.norm(D.astype(np.float64).reshape(-1, D.shape[-1]), axis=0)
     else:
         sys.exit("ev debe ser rows|cols")
-    q = np.quantile(P, [50, 90, 95, 99])
+    q = np.quantile(P, [0.50, 0.90, 0.95, 0.99])
     mm = np.mean(np.abs(P))
     _p(f"{a.tensor} [{int(t.shape[1])}x{int(t.shape[0])}] {t.tensor_type.name}")
     _p(f"ev={evo}: n={P.size} mean={mm:.4g} p50={q[0]:.4g} p90={q[1]:.4g} p95={q[2]:.4g} p99={q[3]:.4g} max={P.max():.4g}")

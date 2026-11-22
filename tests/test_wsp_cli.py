@@ -152,3 +152,93 @@ class CapturedCmd(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StatsRowsDeltaCase(unittest.TestCase):
+    """cmd_stats/cmd_rows/cmd_delta over the same fixture — with the journal redirected."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+        self.path = _make_fixture(self.dir)
+        # a second fixture deterministically different (base + 0.1 shift in blk.0.attn_q.weight only)
+        rng = np.random.RandomState(99)
+        self.base_path = Path(self.dir) / "second.gguf"
+        w = gguf.GGUFWriter(str(self.base_path), arch="qwen35")
+        w.add_block_count(2)
+        TENSORS = {
+        "blk.0.attn_q.weight": (4, 3),
+        "blk.1.attn_v.weight": (3, 4),
+        "token_embd.weight": (5, 4),
+    }  # noqa: E402
+        for name, (n_out, n_in) in TENSORS.items():
+            data = rng.randn(n_out, n_in).astype(np.float32) + 0.5
+            if name == "blk.0.attn_q.weight":
+                data = data + 0.1
+            w.add_tensor(name, np.ascontiguousarray(data))
+        w.write_header_to_file()
+        w.write_kv_data_to_file()
+        w.write_tensors_to_file()
+        w.close()
+        self.journal = self.dir / "journal.jsonl"
+        self.old_journal = wsp.PATH_JRNL
+        wsp.PATH_JRNL = self.journal
+        self.addCleanup(self._restore_journal)
+
+    def _restore_journal(self):
+        wsp.PATH_JRNL = self.old_journal
+        self.tmp.cleanup()
+
+    def st(self, **kwargs):
+        return argparse.Namespace(**kwargs)
+
+    def test_stats_rows_and_cols(self):
+        out = _buf(wsp.cmd_stats, self.st(gguf=str(self.path), tensor="blk.0.attn_q.weight",
+                                         ev="rows", k=2))
+        self.assertIn("blk.0.attn_q.weight", out)
+        self.assertIn("ev=rows", out)
+        self.assertIn("top-norm filas:", out)
+        out = _buf(wsp.cmd_stats, self.st(gguf=str(self.path), tensor="blk.0.attn_q.weight",
+                                         ev="cols", k=2))
+        self.assertIn("ev=cols", out)
+        self.assertIn("top-norm cols:", out)
+
+    def test_stats_bad_ev_exits(self):
+        with self.assertRaises(SystemExit):
+            _buf(wsp.cmd_stats, self.st(gguf=str(self.path), tensor="blk.0.attn_q.weight",
+                                        ev="sideways", k=2))
+
+    def test_stats_unknown_tensor_raises(self):
+        with self.assertRaises(KeyError):
+            _buf(wsp.cmd_stats, self.st(gguf=str(self.path), tensor="nope", ev="rows", k=2))
+
+    def test_rows_prints_slice(self):
+        out = _buf(wsp.cmd_rows, self.st(gguf=str(self.path), tensor="blk.0.attn_q.weight",
+                                         rng="1:3", n=4, full=False))
+        self.assertIn("row 1:", out)
+        self.assertIn("row 2:", out)
+        self.assertNotIn("row 0:", out)
+        self.assertNotIn("row 3:", out)
+
+    def test_rows_full_prints_vals(self):
+        out = _buf(wsp.cmd_rows, self.st(gguf=str(self.path), tensor="blk.1.attn_v.weight",
+                                         rng="0", n=3, full=True))
+        self.assertIn("row 0:", out)
+        self.assertIn("vals[:3]", out)
+
+    def test_delta_reports_relative_change(self):
+        out = _buf(wsp.cmd_delta, self.st(dist=str(self.path), base=str(self.base_path),
+                                          tensor="blk.0.attn_q.weight", k=2, d="rows"))
+        self.assertIn("delta rows(rel)", out)
+        self.assertIn("top-rel-rows:", out)
+        self.assertIn("blk.0.attn_q.weight", out)
+
+    def test_delta_shape_mismatch_asserts(self):
+        # second fixture has same shape, so build a fixture with a different shape instead
+        w = gguf.GGUFWriter(str(self.base_path), arch="qwen35")
+        w.add_block_count(2)
+        w.add_tensor("blk.0.attn_q.weight", np.zeros((9, 3), dtype=np.float32))
+        w.write_header_to_file(); w.write_kv_data_to_file(); w.write_tensors_to_file(); w.close()
+        with self.assertRaises(AssertionError):
+            _buf(wsp.cmd_delta, self.st(dist=str(self.path), base=str(self.base_path),
+                                        tensor="blk.0.attn_q.weight", k=2, d="rows"))
