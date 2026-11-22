@@ -242,3 +242,60 @@ class StatsRowsDeltaCase(unittest.TestCase):
         with self.assertRaises(AssertionError):
             _buf(wsp.cmd_delta, self.st(dist=str(self.path), base=str(self.base_path),
                                         tensor="blk.0.attn_q.weight", k=2, d="rows"))
+
+
+class DiffSemanticMapCase(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+        self.path = _make_fixture(self.dir)
+        self.other_path = Path(self.dir) / "second.gguf"
+        rng = np.random.RandomState(31)
+        w = gguf.GGUFWriter(str(self.other_path), arch="qwen35")
+        w.add_block_count(2)
+        for name, (n_out, n_in) in TENSORS.items():
+            data = (rng.randn(n_out, n_in) + 0.5).astype(np.float32)
+            if name == "blk.0.attn_q.weight":
+                data = data + 0.5
+            w.add_tensor(name, np.ascontiguousarray(data))
+        w.write_header_to_file()
+        w.write_kv_data_to_file()
+        w.write_tensors_to_file()
+        w.close()
+        self.journal = self.dir / "journal.jsonl"
+        self.old_journal = wsp.PATH_JRNL
+        wsp.PATH_JRNL = self.journal
+        self.addCleanup(self._restore_journal)
+
+    def _restore_journal(self):
+        wsp.PATH_JRNL = self.old_journal
+        self.tmp.cleanup()
+
+    def st(self, **kwargs):
+        return argparse.Namespace(**kwargs)
+
+    def test_diff_reports_changed_tensors(self):
+        out = _buf(wsp.cmd_diff, self.st(a=str(self.path), b=str(self.other_path),
+                                          tensor="*", frac=0.005))
+        self.assertIn("blk.0.attn_q.weight", out)
+        self.assertIn("TOTAL:", out)
+
+    def test_diff_with_pattern_filters_tensors(self):
+        out = _buf(wsp.cmd_diff, self.st(a=str(self.path), b=str(self.other_path),
+                                          tensor="blk.0.*", frac=0.005))
+        self.assertIn("blk.0.attn_q.weight", out)
+        self.assertNotIn("blk.1.attn_v.weight", out)
+        self.assertNotIn("token_embd", out)
+
+    def test_diff_weight_identical_prints_zero_change(self):
+        # a file against itself: no changes
+        out = _buf(wsp.cmd_diff, self.st(a=str(self.path), b=str(self.path),
+                                          tensor="*", frac=0.005))
+        self.assertIn("TOTAL:", out)
+        self.assertIn("chg=", out)
+
+    def test_semantic_map_prints_without_tokenizer(self):
+        out = _buf(wsp.cmd_semantic_map, self.st(gguf=str(self.path)))
+        self.assertIn("MAPA DE ÁREAS SEMÁNTICAS", out)
+        self.assertIn("Modelo:", out)
+        self.assertIn("Áreas semánticas activas:", out)
