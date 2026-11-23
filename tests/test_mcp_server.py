@@ -123,3 +123,32 @@ class TestMcpReadOnlyTools(unittest.TestCase):
         # missing file: the tool must answer with an error, not crash the server
         res = server.get_semantic_areas(str(self.gguf_path) + ".missing")
         self.assertIn("error", res, res)
+
+
+class TestWsplangExecutionTools(unittest.TestCase):
+
+    def test_execute_wsplang_code_runs_dry_run(self):
+        prog = "experiment t:\nsteps:\n    step observe notes\n"
+        res = server.execute_wsplang_code(prog)
+        self.assertTrue(res["valid"])
+        self.assertEqual(len(res["ejecucion"]), 1)
+        self.assertTrue(res["ejecucion"][0]["status"].startswith("skipped"))
+
+    def test_execute_wsplang_code_validation_failure_aborts(self):
+        res = server.execute_wsplang_code("no experiment here")
+        self.assertFalse(res["valid"])
+        self.assertEqual(res["ejecucion"][0]["op"], "validation")
+
+    def test_run_wsplang_missing_file(self):
+        res = server.run_wsplang("/nonexistent/nope.wspl")
+        self.assertIn("error", res)
+
+    def test_run_wsplang_dry_run_on_temp_program(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            program_path = Path(tmp) / "p.wspl"
+            program_path.write_text("experiment t:\nsteps:\n    step observe notes\n", encoding="utf-8")
+            res = server.run_wsplang(str(program_path), execute=True)
+            self.assertTrue(res["valid"])
+            self.assertEqual(len(res["ejecucion"]), 1)
+            self.assertTrue(res["ejecucion"][0]["status"].startswith("skipped"))

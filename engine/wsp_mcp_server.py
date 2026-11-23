@@ -155,7 +155,7 @@ def run_wsplang(program_path: str, execute: bool = True, gguf: str = "") -> dict
                 "errors": errors
             }]
             return out
-        out["ejecucion"] = mod.execute_plan(plan, gguf_path=gguf if gguf else None)
+        out["ejecucion"] = mod.execute_plan_v4(plan, prog, model_path=gguf if gguf else None, dry_run=True)
     return out
 
 
@@ -179,7 +179,7 @@ def execute_wsplang_code(code: str, gguf: str = "") -> dict:
             "errors": errors
         }]
         return out
-    out["ejecucion"] = mod.execute_plan(plan, gguf_path=gguf if gguf else None)
+    out["ejecucion"] = mod.execute_plan_v4(plan, prog, model_path=gguf if gguf else None, dry_run=True)
     return out
 
 

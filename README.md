@@ -467,7 +467,7 @@ The contrast gain this gives has not been measured.
 | [`FOUNDATIONS.md`](FOUNDATIONS.md) | The scientific basis, by claim: what we hold, its status, our evidence (results §), outside evidence, what would refute it; refuted ideas not to retry. |
 | [`PROTOCOL.md`](PROTOCOL.md) | Protocol: sealed holdouts, placebo controls, non-degradation criteria. |
 | [`results.md`](results.md) · [`roadmap.md`](roadmap.md) · [`CHANGELOG.md`](CHANGELOG.md) | Results log, plan, patch history (P0–P12). |
-| [`tests/`](tests/) | 113 test files (`python -m pytest`). Tests that need local models/GPU skip themselves. |
+| [`tests/`](tests/) | 121 test files (`python -m pytest`). Tests that need local models/GPU skip themselves. |
 
 ---
 
