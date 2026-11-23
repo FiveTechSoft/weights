@@ -446,6 +446,7 @@ The contrast gain this gives has not been measured.
 | Component | Description |
 |---|---|
 | [`wsp.py`](wsp.py) | GGUF Q6_K inspector and in-place editor; NumPy port of `quantize_row_q6_K_ref` (87 % byte-identical on unedited blocks, error ~6e-6). |
+| [`engine/safety.py`](engine/safety.py) | Canonical forbidden-tensor policy shared by the CLI, the engine and the MCP poke tool. |
 | [`engine/wsplang.py`](engine/wsplang.py) | WSP-Lang parser, validator and runtime (`--run`). |
 | [`engine/weight_diff.py`](engine/weight_diff.py) | Tensor-by-tensor diff of two checkpoints. It reads safetensors locally or by HTTP ranges and maps tensor names across architectures. Per tensor it gives relative change, spectrum and subspace signatures; storage casts are not counted as change. |
 | [`engine/contrast_vector.py`](engine/contrast_vector.py) | `contrast_vector`: per-layer mean difference of two sets of answers, written as llama.cpp per-layer increments (GGUF) + placebo. |
@@ -479,8 +480,8 @@ The contrast gain this gives has not been measured.
    used in Exp 8 and in the loop fixes. The older experiments without one are marked ⚠️ above.
 3. **Holdouts are sealed** before an edit is designed. Evaluation uses GSM8K and MATH-500 subsets; since 2026-11-09 a
    hashed confirmation set, disjoint from every item used to pick doses or donors, is run once on anything that passes.
-4. **Edits are fenced.** `FORBIDDEN_TENSORS` (in `wsp.py` and `engine/wsplang.py`) blocks embeddings, the output head
-   and norms unless explicitly allowed.
+4. **Edits are fenced.** The canonical `FORBIDDEN_TENSORS`/`FORBIDDEN_PATTERNS` in `engine/safety.py` block
+   embeddings, the output head and norms everywhere (CLI, engine, MCP poke) unless a program unlocks them by name.
 5. **Numbers need two methods.** A figure is reported only if two independent computations agree. Example: the
    weight diffs are checked against a second, block-sampled method.
 
