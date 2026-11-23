@@ -1910,6 +1910,28 @@ def _op_compile_synthetic(ctx, op, positional, named, res):
     res['result'] = {'rule': 'Dual ridge readout surgery on a NanoWSP-3 checkpoint', 'dataset': dataset_name, 'pairs_compiled': len(train_pairs), 'lambda_base': lambda_base, 'delta_frobenius': round(delta_norm, 4), 'weights_written': written, 'provenance': 'closed_form_surgery_on_gradient_base', 'base_checkpoint': str(ckpt_p), 'train_accuracy_before': recall_accuracy(train_pairs, W0_out), 'train_accuracy_after': recall_accuracy(train_pairs, W1_out), 'holdout_accuracy_before': recall_accuracy(ds['holdout'], W0_out), 'holdout_accuracy_after': recall_accuracy(ds['holdout'], W1_out), 'status': 'delta_written' if written else 'delta_computed_not_written'}
 
 
+# Ops declared in the grammar (OPS_ALLOWED) but NOT executed by this dispatch.
+# Each maps to the reason the op is skipped. Inspection/protocol steps are recorded
+# in the plan and manifest and never modify weights; weight-editing steps travel
+# through the wsp.py CLI (or the MCP poke tool), not the engine's plan.
+SKIPPED_OPS = {
+    # plan-level protocol steps: recorded in the manifest, not executed by the engine
+    "assert_budget": "budget gate runs at plan validation (not an in-engine step)",
+    "confirm": "plan-level protocol step",
+    "hypothesize": "plan-level protocol step",
+    "inspect": "plan-level protocol step",
+    "intervene": "plan-level protocol step",
+    "localize": "plan-level protocol step",
+    "observe": "plan-level protocol step",
+    "record": "plan-level protocol step",
+    "rollback": "plan-level protocol step",
+    "select_candidate": "plan-level protocol step",
+    # weight edits that travel through the CLI/MCP tool, not the engine
+    "poke": "weight edit via wsp.py CLI / MCP poke_weight, not in the engine",
+    "poke-weight": "weight edit via wsp.py CLI / MCP poke_weight, not in the engine",
+}
+
+
 def dispatch(ctx, op, positional, named, res):
     """Run the elif-chain. Returns True if the handler already appended res to ctx.executed_steps."""
     if op == 'leace_erase':
@@ -2027,5 +2049,6 @@ def dispatch(ctx, op, positional, named, res):
     elif op == 'compile_synthetic':
         return _op_compile_synthetic(ctx, op, positional, named, res)
     else:
-        res["status"] = "skipped (non-interactive op)"
+        reason = SKIPPED_OPS.get(op)
+        res["status"] = f"skipped (non-interactive op: {reason})" if reason else "skipped (non-interactive op)"
         return False

@@ -100,7 +100,7 @@ class TestDispatchStructure(unittest.TestCase):
         while isinstance(node, ast.If) and len(node.orelse) == 1 and isinstance(node.orelse[0], ast.If):
             node = node.orelse[0]
         else_src = "\n".join(ast.unparse(stmt) for stmt in node.orelse)
-        self.assertIn("skipped (non-interactive op)", else_src)
+        self.assertIn("skipped (non-interactive op", else_src)
 
 
 class TestDispatchSmoke(unittest.TestCase):
