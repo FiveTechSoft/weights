@@ -308,7 +308,8 @@ def _make_qx_quants(Xsub, nmax=32):
         l = np.clip(np.rint(X * iscale[:, None]), -nmax, nmax - 1)
         sumlx = (w * X * l).sum(axis=1)
         suml2 = (w * l * l).sum(axis=1)
-        ok = ~(allzero) & (suml2 > 0) & (sumlx * sumlx > best * suml2)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            ok = ~(allzero) & (suml2 > 0) & (sumlx * sumlx > best * suml2)
         if ok.any():
             Lbest[ok] = l[ok].astype(np.int64)
             with np.errstate(invalid="ignore", divide="ignore"):
