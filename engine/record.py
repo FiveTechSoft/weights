@@ -202,6 +202,16 @@ def validate(data):
     return errores
 
 
+
+
+def _normalize_object(data):
+    """Normaliza un objeto libre (baseline/resultados): los numeros pasan como
+    float; cualquier otro valor (texto, bool, dict, lista) se convierte en null,
+    igual que hace _normalizar() sobre el registro completo."""
+    if not isinstance(data, dict):
+        return data
+    return {k: _num(v) for k, v in data.items()}
+
 def _normalizar(data):
     # acepta str (texto plano) o dict; devuelve el valor tal cual
     if not isinstance(data, dict):
@@ -217,8 +227,6 @@ def _normalizar(data):
 class ExperimentRecord:
     """Registro de un experimento WSP-Lang en disco."""
 
-    PATRON_ID = re.compile(r"^[e][0-9]{4,}$")
-
     def __init__(self, experiment_id, model_id, objective, baseline, edicion,
                  ejecucion, resultados, veredicto="sin_verificar", notas="",
                  hypothesis="", evidence=None, target="", intervention="",
@@ -227,10 +235,10 @@ class ExperimentRecord:
         self.experiment_id = experiment_id
         self.model_id = model_id
         self.objective = objective
-        self.baseline = _normalizar(baseline)
+        self.baseline = _normalize_object(baseline)
         self.edicion = _normalizar(edicion)
         self.ejecucion = _normalizar(ejecucion)
-        self.resultados = _normalizar(resultados)
+        self.resultados = _normalize_object(resultados)
         self.hypothesis = hypothesis
         self.evidence = _normalizar(evidence) if evidence is not None else {}
         self.target = target
@@ -309,9 +317,12 @@ class ExperimentRecord:
         )
 
     def append(self, path):
-        """Agrega este registro al archivo de historial sin borrar nada."""
+        """Agrega este registro al archivo de historial sin borrar nada.
+
+        One compact JSON object per line: matches the from_jsonl reader contract.
+        """
         with open(path, "a", encoding="utf-8") as fh:
-            fh.write(json.dumps(self.to_dict(), ensure_ascii=False, indent=2) + "\n")
+            fh.write(json.dumps(self.to_dict(), ensure_ascii=False) + "\n")
 
     @classmethod
     def from_jsonl(cls, path):
@@ -357,7 +368,7 @@ class ExperimentRecord:
 
     @classmethod
     def next_id(cls):
-        return "e" + str(uuid.uuid4().hex[:8]).upper()
+        return "e" + str(uuid.uuid4().hex[:16]).lower()
 
 
 def index_by_objective(registros):
