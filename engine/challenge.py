@@ -32,8 +32,11 @@ EXP = RETOS / "records" if (RETOS / "records").exists() else RETOS / "expediente
 SELLADOS = RETOS / "sealed" if (RETOS / "sealed").exists() else RETOS / "sellados"
 HIST = RETOS / "historial.jsonl"
 RIG = ROOT / "rig_runs"
-for d in (EXP, SELLADOS):
-    d.mkdir(parents=True, exist_ok=True)
+
+
+def _ensure_dirs():
+    for d in (EXP, SELLADOS):
+        d.mkdir(parents=True, exist_ok=True)
 
 def _buscar_gguf(*cand, env=None):
     """Busca el GGUF en el orden: env var -> rutas candidatas -> default (Windows).
@@ -487,6 +490,7 @@ def historial(n):
 
 
 def main():
+    _ensure_dirs()
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd")
     ap.add_argument("a", nargs="?", default=None)
