@@ -341,6 +341,42 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
+    if named.get('method') == 'structured_ridge':
+        for key in ('arch', 'data', 'out'):
+            if key not in named:
+                raise ValueError(f'structured_ridge requires {key}=')
+        if not ctx.budgets.get('allow_training'):
+            raise ValueError('structured_ridge requires allow_training=true')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        dataset = wsp_train.char_dataset((ROOT / str(named['data'])).read_text(encoding='utf-8'))
+        # Four exact recent-token slots plus three older-context windows.
+        overrides = dict(d=512, heads=8, layers=6, ff=2048, block=256,
+                         bias=False, dropout=0.0)
+        estimate = 6 * (4 * 512**2 + 2 * 512 * 2048 + 2 * 512) + 512 * (256 + len(dataset.chars) + 1)
+        if ctx.max_modified_weights is not None and estimate > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        compiled = wsp_synth.compile_long_context(
+            ROOT / str(named['arch']), dataset.train, dataset.chars, overrides,
+            seed=int(named.get('seed', 1337)), order=5, free_blocks=2,
+            windows=(8, 32, 128), fit=True, device=str(named.get('device', 'cpu')))
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = compiled.synthesis_info
+        compiled.save(out_p, metadata={'provenance': info['provenance'],
+                                       'method': info['method'], 'backward_calls': '0',
+                                       'vocab_chars': json.dumps(dataset.chars)})
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
     if named.get('method') == 'context_ridge':
         from engine import wsp_context_ridge
         for key in ('arch', 'data', 'out'):
