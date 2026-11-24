@@ -6,6 +6,8 @@ on:
       - 'programs/primitive_*.wspl'
       - 'lab/run_primitives.py'
       - 'lab/run_composition.py'
+      - 'lab/run_register.py'
+      - 'programs/register/**'
       - '.github/workflows/wsp-primitives.yml'
   workflow_dispatch:
 permissions:
@@ -33,6 +35,10 @@ jobs:
         run: python -m engine.wsplang programs/primitive_composition.wspl --run
       - name: Evaluate same-checkpoint composition and selective ablations
         run: python lab/run_composition.py
+      - name: Compile register programs through WSPLang
+        run: python -m engine.wsplang programs/primitive_register.wspl --run
+      - name: Verify register programs
+        run: python lab/run_register.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -41,3 +47,4 @@ jobs:
             models/primitives/*.safetensors
             lab/runs/nanowsp_primitives.json
             lab/runs/nanowsp_composition.json
+            lab/runs/nanowsp_register.json
