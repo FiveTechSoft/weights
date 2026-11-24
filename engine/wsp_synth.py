@@ -156,7 +156,7 @@ def _shift_matrix(freqs, steps):
     return rot
 
 
-def compile_ngram(arch_path, table, overrides=None, seed=1337, windows=(), char_classes=None, free_blocks=0):
+def compile_ngram(arch_path, table, overrides=None, seed=1337, windows=(), char_classes=None, free_blocks=0, induction=False):
     """Returns a CompiledArch whose weights implement `table`; computes everything in closed form.
 
     `windows` adds attention heads writing recent character-class averages, and `free_blocks` leaves the
@@ -182,9 +182,10 @@ def compile_ngram(arch_path, table, overrides=None, seed=1337, windows=(), char_
                                  f"{slots + len(windows)} attention heads, architecture has {heads}")
         classes = char_classes.shape[1] if len(windows) else 0
         long_dims = classes * len(windows)
+        memory_dims = 2 * code_dim if induction else 0
         if code_dim > head_dim:
             raise SynthesisError(f"{vocab} tokens need head dimension {code_dim}, architecture has {head_dim}")
-        free = d - 1 - vocab - 1 - slots * code_dim - long_dims
+        free = d - 1 - vocab - 1 - slots * code_dim - long_dims - memory_dims
         position_dims = min(free - free % 2, head_dim - head_dim % 2)
         if position_dims < MIN_POSITION_DIMS:
             raise SynthesisError(f"only {free} free dimensions remain for position codes with d={d}")
@@ -196,6 +197,8 @@ def compile_ngram(arch_path, table, overrides=None, seed=1337, windows=(), char_
         slot_start = 1 + vocab + position_dims
         slot_dirs = [basis[:, slot_start + j * code_dim:slot_start + (j + 1) * code_dim] for j in range(slots)]
         long_dirs = basis[:, slot_start + slots * code_dim:slot_start + slots * code_dim + long_dims]
+        memory_start = slot_start + slots * code_dim + long_dims
+        memory_dirs = basis[:, memory_start:memory_start + memory_dims]
         codes = _simplex_codes(vocab)
         position_codes, freqs = _position_codes(block, position_dims)
 
@@ -241,6 +244,29 @@ def compile_ngram(arch_path, table, overrides=None, seed=1337, windows=(), char_
             c_attn[2 * d + lo:2 * d + lo + classes] = char_classes.T @ logit_dirs.T / (scale_attn * TOKEN_NORM)
             attn_proj[:, lo:lo + classes] = LONG_NORM * long_dirs[:, i * classes:(i + 1) * classes]
 
+        if induction:
+            if layers < 2 or slots < 3 or head_dim < code_dim:
+                raise SynthesisError('induction requires two layers and three token slots')
+            # At position s, keys encode the preceding one/two tokens; values encode token s.
+            # At t, queries encode the current suffix. Causal attention retrieves followers.
+            qkv = weights['transformer.h.1.attn.c_attn.weight']
+            proj = weights['transformer.h.1.attn.c_proj.weight']
+            gain = math.sqrt(12.0 * math.sqrt(head_dim)) / scale_mlp
+            qkv[:code_dim] = gain * slot_dirs[0].T
+            qkv[d:d + code_dim] = gain * slot_dirs[1].T
+            qkv[2*d:2*d + code_dim] = slot_dirs[0].T / scale_mlp
+            proj[:, :code_dim] = memory_dirs[:, :code_dim]
+            # Independent compressed two-character key; random orthogonal projections.
+            half = head_dim // 2
+            rng = np.random.default_rng(seed + 912)
+            p = np.linalg.qr(rng.standard_normal((code_dim, half)))[0].T
+            for j in range(2):
+                lo = head_dim + j * half
+                qkv[lo:lo+half] = gain * p @ slot_dirs[j].T
+                qkv[d+lo:d+lo+half] = gain * p @ slot_dirs[j+1].T
+            qkv[2*d+head_dim:2*d+head_dim+code_dim] = slot_dirs[0].T / scale_mlp
+            proj[:, head_dim:head_dim+code_dim] = memory_dirs[:, code_dim:]
+
         # MLP units: one table entry each; higher-order corrections superpose on their suffixes.
         activation = float(torch.nn.functional.gelu(torch.tensor(UNIT_GAIN / 2, dtype=torch.float64)))
         input_gain = UNIT_GAIN / (scale_mlp * SLOT_NORM)
@@ -269,7 +295,7 @@ def compile_ngram(arch_path, table, overrides=None, seed=1337, windows=(), char_
     model.synthesis_info = {"provenance": PROVENANCE, "backward_calls": 0, "method": "witten_bell_ngram",
                             "order": table.order, "units_available": table.num_units(), "units_used": used,
                             "ff": ff, "position_dims": position_dims}
-    model.synthesis_layout = {"ballast": ballast, "logit_dirs": logit_dirs, "long_dirs": long_dirs,
+    model.synthesis_layout = {"ballast": ballast, "logit_dirs": logit_dirs, "long_dirs": np.concatenate([long_dirs, memory_dirs], axis=1),
                               "current_token_dirs": slot_dirs[0] if slot_dirs else None, "scale_mlp": scale_mlp}
     return model
 
@@ -362,7 +388,7 @@ def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weight
 
 
 def compile_long_context(arch_path, train_ids, chars, overrides, seed=1337, order=4, free_blocks=2,
-                         windows=(8, 32, 128), fit=True, device="cpu", weighted=False):
+                         windows=(8, 32, 128), fit=True, device="cpu", weighted=False, induction=False):
     """Table in the first blocks, plus last blocks fitted on old-context features, all without backprop.
 
     Fitting uses a table blind to the last 10% of `train_ids` and residuals on that tail, because a table
@@ -376,7 +402,7 @@ def compile_long_context(arch_path, train_ids, chars, overrides, seed=1337, orde
     vocab = len(chars)
     layers = int(overrides["layers"])
     inner = int(len(train_ids) * 0.9)
-    kwargs = dict(overrides=overrides, seed=seed, windows=windows, char_classes=classes, free_blocks=free_blocks)
+    kwargs = dict(overrides=overrides, seed=seed, windows=windows, char_classes=classes, free_blocks=free_blocks, induction=induction)
 
     final = compile_ngram(arch_path, WittenBellTable(train_ids, vocab, order), **kwargs).eval()
     fits = []
@@ -390,5 +416,5 @@ def compile_long_context(arch_path, train_ids, chars, overrides, seed=1337, orde
                     target.copy_(blind.get_parameter(f"transformer.h.{layer}.mlp.{name}.weight").to(target.device))
     final.synthesis_info.update(provenance="closed_form_ridge", method="witten_bell_plus_ridge_blocks",
                                 windows=list(windows), free_blocks=free_blocks, fits=fits,
-                                fit_positions_end=len(train_ids))
+                                fit_positions_end=len(train_ids), induction=induction)
     return final
