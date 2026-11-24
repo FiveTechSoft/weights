@@ -1,0 +1,41 @@
+name: ZARP10 pretrained skill edit
+on:
+  pull_request:
+    paths:
+      - 'lab/probes/zarp10/**'
+      - '.github/workflows/zarp10.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  zarp10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU inference dependencies
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install 'transformers>=4.51,<6' huggingface_hub safetensors numpy
+      - name: Obtain independent prose sample
+        run: |
+          mkdir -p lab/data/shakespeare_char
+          curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
+          sha256sum lab/data/shakespeare_char/input.txt
+      - name: Fit edit and evaluate reloaded checkpoints
+        run: python -u lab/probes/zarp10/compile_eval.py --device cpu --prose lab/data/shakespeare_char/input.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zarp10-results
+          path: |
+            lab/runs/zarp10/report.json
+            lab/runs/zarp10/*_patch.safetensors
+          if-no-files-found: warn
