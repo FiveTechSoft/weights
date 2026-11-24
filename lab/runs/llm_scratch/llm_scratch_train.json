@@ -1,0 +1,14 @@
+{
+  "corpus": "/tmp/primitives-worktree/lab/data/shakespeare_char/input.txt",
+  "n_chars": 1115394,
+  "steps": 1500,
+  "seq": 128,
+  "batch": 16,
+  "lr": 0.0008,
+  "ppl_start": 1537.6973640424987,
+  "ppl_final": 5.914080443559368,
+  "loss_start": 7.312913417816162,
+  "loss_final": 1.3350324630737305,
+  "seconds": 518.9,
+  "n_snapshots": 5
+}
