@@ -45,3 +45,23 @@ Use fixed-seed intermediate checkpoints of the reference run to study delta sing
 subspaces and attempt closed-form weight synthesis. Compare against W0, shuffled
 same-norm delta, n-gram and trained reference. Transplanting a learned delta is donor-based,
 not synthesis. A no-gradient variant must independently pass the same language gate.
+
+## Result (2026-11-24, commit a942ee7, RTX 3060 shared with another process, CUDA venv)
+Corpus sha256 a29d649d…; checkpoint `models/nanowsp_lm/model.safetensors` sha256 0b78ed84… (iteration 5 000,
+last checkpoint). `wsp_train` val loss 1.4368 at 5 000 (best seen 1.4214 at 4 750, not selected).
+
+| | trained | W0 (same seed, untrained) |
+|---|---|---|
+| L1 held-out NLL (8 000 chars) | **1.8287** (PASSES) | 4.2264 (FAILS) |
+| best n-gram (5-gram, train part) | 2.0816 → margin **0.253** ≥ 0.05 | — |
+| L2 long-context gain (64 vs 8 chars) | 0.108 nats, CI95 [0.071, 0.146] (PASSES) | FAILS |
+| GEN (free sample) | known-word rate 0.963 (PASSES) | FAILS |
+| L3 in-context binding | 0.140 vs 0.135, p = 1.0 (FAILS) | FAILS |
+| verdict | LANGUAGE_MODEL | not a language model |
+
+Second method for L1: direct sliding-window NLL over the same last 8 000 characters with the full 256-character
+context, own loop: **1.8306** (evaluator 1.8287; agree within 0.002). The repo's 6-layer, 384-wide nanoGPT
+scores 1.826 on the same text: this 3.23 M-parameter model matches it.
+
+Prediction check: val loss band 1.50-1.70 **missed** (1.437, better); held-out NLL band 1.85-2.00 **missed**
+(1.829, better); margin ≥ 0.05 hit; L2 pass hit; GEN pass hit; L3 fail hit.
