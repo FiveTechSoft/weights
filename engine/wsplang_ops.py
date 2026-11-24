@@ -346,7 +346,7 @@ def _op_synthesize(ctx, op, positional, named, res):
         for key in ('arch', 'skill', 'out'):
             if key not in named:
                 raise ValueError(f'primitive requires {key}=')
-        if named['skill'] not in ('copy', 'associate'):
+        if named['skill'] not in ('copy', 'associate', 'composition'):
             raise ValueError('unknown primitive')
         if not ctx.allow_write or ctx.dry_run:
             res['execution_state'] = 'simulated'
@@ -356,8 +356,12 @@ def _op_synthesize(ctx, op, positional, named, res):
         check_new_file(out_p, [ctx.model_path], ctx.written_paths)
         if ctx.max_delta_norm is not None:
             raise ValueError('primitive synthesis has no source delta')
-        compiled = wsp_primitives.compile_primitive(ROOT / str(named['arch']), str(named['skill']),
-                                                     seed=int(named.get('seed', 1337)))
+        if named['skill'] == 'composition':
+            from engine import wsp_composition
+            compiled = wsp_composition.compile_composition(ROOT / str(named['arch']), seed=int(named.get('seed', 1337)))
+        else:
+            compiled = wsp_primitives.compile_primitive(ROOT / str(named['arch']), str(named['skill']),
+                                                         seed=int(named.get('seed', 1337)))
         total = sum(p.numel() for p in compiled.parameters())
         if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
             raise ValueError('parameter budget exceeded')
