@@ -1,0 +1,9 @@
+experiment synthesize_nanowsp_lm_v3:
+    model: nanoGPT
+    objective: weighted_algebraic_residual_language_prediction
+    budgets:
+        max_modified_weights = 20000000
+        allow_write = true
+        allow_training = true
+    steps:
+        step synthesize method=structured_ridge_v3 arch=programs/arch/nanowsp_lm.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanowsp_lm_v3/model.safetensors seed=1337 device=cpu
