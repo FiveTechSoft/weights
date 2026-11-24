@@ -1,6 +1,7 @@
-# nanoGPT (karpathy/nanoGPT@3adf61e) declared as data: no Python class behind it.
-# The first init pass is what torch does when building nn.Linear/nn.Embedding. Upstream's
-# weights depend on those draws through the RNG stream, so same-seed parity needs them too.
+# NanoWSP-LM: a 4-layer bias-free nanoGPT (karpathy/nanoGPT@3adf61e layout) declared as data.
+# bias = false here, not as a train override, so build_nanowsp_lm (W0) and train_nanowsp_lm start
+# from the same parameters with the same seed. The first init pass is what torch does when
+# building nn.Linear/nn.Embedding; the weights depend on those draws through the RNG stream.
 
 arch nanowsp_lm:
     config:
@@ -11,7 +12,7 @@ arch nanowsp_lm:
         d = 256
         ff = 4 * d
         dropout = 0.0
-        bias = true
+        bias = false
 
     graph(idx):
         scope transformer:
