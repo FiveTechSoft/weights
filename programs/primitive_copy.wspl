@@ -1,0 +1,8 @@
+experiment primitive_copy:
+    model: nanoGPT
+    objective: copy
+    budgets:
+        max_modified_weights = 300000
+        allow_write = true
+    steps:
+        step synthesize method=primitive skill=copy arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/copy_compiled.safetensors seed=1337
