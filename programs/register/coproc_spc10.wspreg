@@ -1,0 +1,3 @@
+a = ADD x x
+b = ADD a y
+RETURN b

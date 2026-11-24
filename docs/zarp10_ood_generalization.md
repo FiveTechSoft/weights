@@ -53,7 +53,7 @@ explícito del selector de gramática, no con extrapolación libre.
 | V9 (native readout) | — | 10.5% | Fallo |
 | V10 wide (0..99 → 100..199) | 100% | 16% | Fallo OOD |
 | Coprocessor V1/V2 | 100% | 100% (sealed 100..999, gramática declarada) | **Passa gates declaradas** (CI claims; not re-verified locally) |
-| Coprocessor V3 (generic) | 100% | 100% (dev) — pending sealed/gates run | **In progress** |
+| Coprocessor V3 (generic) | 100% | 0.99875 (12 groups ≥ 95%; 8/8 groups) | **13/13 gates pass (CPU)** |
 
 El lector debe entender: **"100% sealed" en Coprocessor** es sobre la gramática
 declarada (dos templates, 4 skills): el hallazgo es que la gramática como

@@ -1,0 +1,6 @@
+{
+  "names": ["SUM10", "MIX10", "COPY10", "SPC10"],
+  "templates": ["{name}({a},{b}) = ", "Apply {name} to {a} and {b}. Answer: "],
+  "sources": ["programs/register/coproc_sum10.wspreg", "programs/register/coproc_mix10.wspreg", "programs/register/coproc_copy10.wspreg", "programs/register/coproc_spc10.wspreg"],
+  "replacement": {"name": "SPC10", "source": "programs/register/coproc_sub10.wspreg"}
+}
