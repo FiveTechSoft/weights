@@ -341,6 +341,40 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
+    if named.get('method') in ('spectral_v6', 'spectral_v6_random_features'):
+        from engine import wsp_spectral
+        for key in ('arch', 'data', 'out'):
+            if key not in named:
+                raise ValueError(f'spectral synthesis requires {key}=')
+        if not ctx.budgets.get('allow_training'):
+            raise ValueError('spectral synthesis fits data and requires allow_training=true')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        data = wsp_train.char_dataset((ROOT / str(named['data'])).read_text(encoding='utf-8'))
+        estimate = 4*(4*256**2+2*256*1024+2*256)+256*(128+len(data.chars)+1)
+        if ctx.max_modified_weights is not None and estimate > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        if ctx.max_delta_norm is not None:
+            raise ValueError('spectral synthesis does not define a source checkpoint delta')
+        compiled = wsp_spectral.compile_spectral(ROOT / str(named['arch']), data.train, data.chars,
+                          seed=int(named.get('seed', 1337)), spectral=named.get('method') == 'spectral_v6')
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = compiled.synthesis_info
+        compiled.save(out_p, metadata={'provenance': info['provenance'],
+                         'method': info['method'], 'backward_calls': '0',
+                         'synthesis_info': json.dumps(info), 'vocab_chars': json.dumps(data.chars)})
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
     if named.get('method') in ('structured_ridge', 'structured_ridge_v3', 'structured_ridge_v4', 'structured_ridge_v5', 'structured_table_v5'):
         for key in ('arch', 'data', 'out'):
             if key not in named:
