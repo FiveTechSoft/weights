@@ -12,7 +12,7 @@ permissions:
 jobs:
   synthesis:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       OMP_NUM_THREADS: '2'
       MKL_NUM_THREADS: '2'
@@ -30,42 +30,41 @@ jobs:
             curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
           fi
           sha256sum lab/data/shakespeare_char/input.txt
-      - name: Synthesize and evaluate V5 controls and candidate
+      - name: Synthesize spectral and randomized feature arms
         run: |
           set -o pipefail
-          for variant in v5_table v5; do
+          for variant in v6 v6_random_features; do
             python -m engine.wsplang programs/synthesize_nanowsp_lm_${variant}.wspl --run | tee lab/runs/nanowsp_lm_${variant}_synthesis.log
             test -s models/nanowsp_lm_${variant}/model.safetensors
-            sha256sum models/nanowsp_lm_${variant}/model.safetensors
-            python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_${variant}/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_${variant}_llmness.json
           done
-      - name: Evaluate matched random initialization
+      - name: Create matched random and gradient-trained controls
+        run: python lab/run_spectral_controls.py
+      - name: Evaluate all arms on held-out corpus
         run: |
-          mkdir -p models/nanowsp_lm_v5_random
-          python - <<'PY'
-          from engine import wsp_arch, wsp_train
-          from pathlib import Path
-          data = wsp_train.char_dataset(Path('lab/data/shakespeare_char/input.txt').read_text(encoding='utf-8'))
-          m = wsp_arch.load_arch_file(Path('programs/arch/nanowsp_lm.wsparch'), overrides=dict(vocab=len(data.chars), d=512, heads=8, layers=6, ff=8192, block=256, bias=False, dropout=0.0), seed=1337)
-          m.save(Path('models/nanowsp_lm_v5_random/model.safetensors'))
-          PY
-          python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_v5_random/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_v5_random_llmness.json
-      - name: Report and enforce V5 prediction gate
+          for variant in v6 v6_random_features v6_random v6_trained; do
+            sha256sum models/nanowsp_lm_${variant}/model.safetensors
+            python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_${variant}/model.safetensors --n-head 4 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_${variant}_llmness.json
+          done
+      - name: Report and enforce V6 gates
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          reports = {v: json.loads(Path(f'lab/runs/nanowsp_lm_{v}_llmness.json').read_text()) for v in ('v5_table', 'v5', 'v5_random')}
+          reports = {v: json.loads(Path(f'lab/runs/nanowsp_lm_{v}_llmness.json').read_text()) for v in ('v6', 'v6_random_features', 'v6_random', 'v6_trained')}
           scores = {v: r['L1']['nll'] for v,r in reports.items()}
-          print(scores)
-          r = reports['v5']
-          assert scores['v5'] < min(2.0, scores['v5_table'], scores['v5_random'], *r['L1']['ngram_ladder_nll'].values()), scores
+          r = reports['v6']
+          gates = dict(nll_target=scores['v6'] < 2.0, beats_ngram=scores['v6'] < min(r['L1']['ngram_ladder_nll'].values()), beats_random=scores['v6'] < scores['v6_random'], beats_random_features=scores['v6'] < scores['v6_random_features'], beats_trained=scores['v6'] < scores['v6_trained'], context=r['L2_long_context']['verdict']=='PASSES', generation=r['GEN']['verdict']=='PASSES', icl=r['L3_icl']['verdict']=='PASSES')
+          summary=dict(scores=scores,gates=gates)
+          Path('lab/runs/nanowsp_lm_v6_comparison.json').write_text(json.dumps(summary,indent=2))
+          print(json.dumps(summary,indent=2))
+          assert all(gates[k] for k in ('nll_target','beats_ngram','beats_random','beats_random_features','context','generation')), summary
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: nanowsp-lm-v5-results
+          name: nanowsp-lm-v6-results
           path: |
             lab/runs/nanowsp_lm_*
-            models/nanowsp_lm_v5*/model.safetensors
+            models/nanowsp_lm_v6*/model.safetensors
+            models/nanowsp_lm_v6*/model.train.json
           if-no-files-found: warn
