@@ -341,6 +341,42 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
+    if named.get('method') == 'context_ridge':
+        from engine import wsp_context_ridge
+        for key in ('arch', 'data', 'out'):
+            if key not in named:
+                raise ValueError(f'context_ridge requires {key}=')
+        if not ctx.budgets.get('allow_training'):
+            raise ValueError('context_ridge fits data and requires allow_training=true')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        dataset = wsp_train.char_dataset((ROOT / str(named['data'])).read_text(encoding='utf-8'))
+        seed = int(named.get('seed', 1337))
+        compiled = wsp_arch.load_arch_file(ROOT / str(named['arch']),
+                                           overrides={'bias': False, 'dropout': 0.0,
+                                                      'vocab': len(dataset.chars)}, seed=seed)
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = wsp_context_ridge.fit(compiled, dataset.train, heads=4, block=256,
+                                     width=256, layers=4, seed=seed,
+                                     samples=int(named.get('samples', 32768)),
+                                     ridge=float(named.get('ridge', 0.01)),
+                                     device=str(named.get('device', 'cpu')))
+        if ctx.max_delta_norm is not None and info['delta_frobenius'] > ctx.max_delta_norm:
+            raise ValueError('delta Frobenius budget exceeded')
+        compiled.save(out_p, metadata={**{k: str(v) for k, v in info.items()},
+                                       'vocab_chars': json.dumps(dataset.chars)})
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
     if named.get('method') != 'ngram':
         raise ValueError(f"synthesize supports method=ngram, got {named.get('method')}")
     source_args = ('table',) if 'table' in named else ('data', 'order')
