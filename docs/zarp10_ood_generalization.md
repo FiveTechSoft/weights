@@ -29,7 +29,7 @@ falla en interpretaciones nativas. Toda la vía nativa queda cerrada.
 ## 2. La vía que sí funciona
 
 **Gramática explícita a nivel de token + circuitos one-hot.** Así fueron V6 (en-dist
-100% pero sin OOD), y **Coprocessor V1/V2/V3** (branch `experiment/nanowsp-lm`):
+100% pero sin OOD), y **Coprocessor V1/V2** (branch `experiment/nanowsp-lm`):
 
 - Un patrón de vocabulario fijo genera 3 (V1/V2) / 4 (V3, genérico) escalares
   `(name, widths 1..3, template 0/1)` que identifican un prompt en tokens.
@@ -52,7 +52,8 @@ explícito del selector de gramática, no con extrapolación libre.
 | V8 (oracle transport) | — | 19% (vs base 10.5%) | Fallo |
 | V9 (native readout) | — | 10.5% | Fallo |
 | V10 wide (0..99 → 100..199) | 100% | 16% | Fallo OOD |
-| Coprocessor V1/V2/V3 | 100% | 100% (sealed 100..999, gramática declarada) ⚠️ | **Passa gates declaradas** |
+| Coprocessor V1/V2 | 100% | 100% (sealed 100..999, gramática declarada) | **Passa gates declaradas** (CI claims; not re-verified locally) |
+| Coprocessor V3 (generic) | 100% | 100% (dev) — pending sealed/gates run | **In progress** |
 
 El lector debe entender: **"100% sealed" en Coprocessor** es sobre la gramática
 declarada (dos templates, 4 skills): el hallazgo es que la gramática como
