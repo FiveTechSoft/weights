@@ -12,7 +12,7 @@ permissions:
 jobs:
   synthesis:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       OMP_NUM_THREADS: '2'
       MKL_NUM_THREADS: '2'
@@ -30,49 +30,42 @@ jobs:
             curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
           fi
           sha256sum lab/data/shakespeare_char/input.txt
-      - name: Synthesize
+      - name: Synthesize and evaluate V5 controls and candidate
         run: |
           set -o pipefail
-          python -m engine.wsplang programs/synthesize_nanowsp_lm.wspl --run | tee lab/runs/nanowsp_lm_synthesis.log
-          test -s models/nanowsp_lm_ridge/model.safetensors
-          sha256sum models/nanowsp_lm_ridge/model.safetensors
-      - name: Held-out language evaluation
-        run: python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_ridge/model.safetensors --n-head 4 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_llmness.json
-      - name: Synthesize structured v2
+          for variant in v5_table v5; do
+            python -m engine.wsplang programs/synthesize_nanowsp_lm_${variant}.wspl --run | tee lab/runs/nanowsp_lm_${variant}_synthesis.log
+            test -s models/nanowsp_lm_${variant}/model.safetensors
+            sha256sum models/nanowsp_lm_${variant}/model.safetensors
+            python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_${variant}/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_${variant}_llmness.json
+          done
+      - name: Evaluate matched random initialization
         run: |
-          set -o pipefail
-          python -m engine.wsplang programs/synthesize_nanowsp_lm_v2.wspl --run | tee lab/runs/nanowsp_lm_v2_synthesis.log
-          test -s models/nanowsp_lm_v2/model.safetensors
-          sha256sum models/nanowsp_lm_v2/model.safetensors
-      - name: Evaluate structured v2
+          mkdir -p models/nanowsp_lm_v5_random
+          python - <<'PY'
+          from engine import wsp_arch, wsp_train
+          from pathlib import Path
+          data = wsp_train.char_dataset(Path('lab/data/shakespeare_char/input.txt').read_text(encoding='utf-8'))
+          m = wsp_arch.load_arch_file(Path('programs/arch/nanowsp_lm.wsparch'), overrides=dict(vocab=len(data.chars), d=512, heads=8, layers=6, ff=8192, block=256, bias=False, dropout=0.0), seed=1337)
+          m.save(Path('models/nanowsp_lm_v5_random/model.safetensors'))
+          PY
+          python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_v5_random/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_v5_random_llmness.json
+      - name: Report and enforce V5 prediction gate
         run: |
-          python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_v2/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_v2_llmness.json
-      - name: Synthesize weighted v3
-        run: |
-          set -o pipefail
-          python -m engine.wsplang programs/synthesize_nanowsp_lm_v3.wspl --run | tee lab/runs/nanowsp_lm_v3_synthesis.log
-          test -s models/nanowsp_lm_v3/model.safetensors
-          sha256sum models/nanowsp_lm_v3/model.safetensors
-      - name: Evaluate weighted v3
-        run: |
-          python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_v3/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_v3_llmness.json
-      - name: Synthesize associative v4
-        run: |
-          set -o pipefail
-          python -m engine.wsplang programs/synthesize_nanowsp_lm_v4.wspl --run | tee lab/runs/nanowsp_lm_v4_synthesis.log
-          test -s models/nanowsp_lm_v4/model.safetensors
-          sha256sum models/nanowsp_lm_v4/model.safetensors
-      - name: Evaluate associative v4
-        run: |
-          python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_v4/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_v4_llmness.json
-          python -c "import json; r=json.load(open('lab/runs/nanowsp_lm_v4_llmness.json')); assert r['L1']['nll'] < 2.0 and r['L1']['nll'] < min(r['L1']['ngram_ladder_nll'].values()), r"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          reports = {v: json.loads(Path(f'lab/runs/nanowsp_lm_{v}_llmness.json').read_text()) for v in ('v5_table', 'v5', 'v5_random')}
+          scores = {v: r['L1']['nll'] for v,r in reports.items()}
+          print(scores)
+          r = reports['v5']
+          assert scores['v5'] < min(2.0, scores['v5_table'], scores['v5_random'], *r['L1']['ngram_ladder_nll'].values()), scores
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: nanowsp-lm-results
+          name: nanowsp-lm-v5-results
           path: |
             lab/runs/nanowsp_lm_*
-            models/nanowsp_lm_ridge/model.safetensors
-            models/nanowsp_lm_v2/model.safetensors
-            models/nanowsp_lm_v3/model.safetensors
-            models/nanowsp_lm_v4/model.safetensors
+            models/nanowsp_lm_v5*/model.safetensors
+          if-no-files-found: warn
