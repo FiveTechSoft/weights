@@ -1,0 +1,4 @@
+a = COPY y
+b = SUB x a
+c = ADD b x
+RETURN c
