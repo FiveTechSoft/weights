@@ -113,15 +113,10 @@ def compile_program(arch,source,seed=1337,ablate=None):
                     direction=regs[a][:,:16]@digits
                     direction+= (1 if op=="ADD" else -1)*(regs[b][:,:16]@digits)
                     offset=0 if op=="ADD" else 15
-                    # GELU approximates ReLU far from zero. A triangular
-                    # hat around each integer s is 0 except at s where it
-                    # is 1. Modular wrap is in the output projection.
+                    # A trapezoidal indicator around each integer s is zero
+                    # at the other integers. Modular wrap is in the output projection.
                     for s in range(31):
                         result=(s-offset)%16
-                        for j,(shift,coef) in enumerate(((-1,1),(0,-2),(1,1))):
-                            # Half-integer kinks avoid evaluating GELU near zero:
-                            # use two half-width ramps for a unit plateau.
-                            row=4*s
                         for j,(shift,coef) in enumerate(((-1.5,1),(-.5,-1),(.5,-1),(1.5,1))):
                             # width 1.5 would overlap adjacent integers;
                             # instead use kinks at -0.75,-0.25,+0.25,+0.75.
