@@ -1,0 +1,37 @@
+name: WSPLang primitive skills
+on:
+  pull_request:
+    paths:
+      - 'engine/**'
+      - 'programs/primitive_*.wspl'
+      - 'lab/run_primitives.py'
+      - '.github/workflows/wsp-primitives.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  primitives:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements-dev.txt
+      - name: Compile through WSPLang
+        run: |
+          python -m engine.wsplang programs/primitive_copy.wspl --run
+          python -m engine.wsplang programs/primitive_associate.wspl --run
+      - name: Evaluate persisted weights
+        run: python lab/run_primitives.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wsp-primitives
+          path: |
+            models/primitives/*.safetensors
+            lab/runs/nanowsp_primitives.json
