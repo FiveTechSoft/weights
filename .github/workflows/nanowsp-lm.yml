@@ -1,0 +1,47 @@
+name: NanoWSP-LM synthesis
+on:
+  pull_request:
+    paths:
+      - 'engine/**'
+      - 'programs/**'
+      - 'tests/test_context_ridge.py'
+      - '.github/workflows/nanowsp-lm.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthesis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest tests/test_context_ridge.py -q
+      - name: Obtain corpus
+        run: |
+          mkdir -p lab/data/shakespeare_char lab/runs
+          if [ ! -s lab/data/shakespeare_char/input.txt ]; then
+            curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
+          fi
+          sha256sum lab/data/shakespeare_char/input.txt
+      - name: Synthesize
+        run: |
+          set -o pipefail
+          python -m engine.wsplang programs/synthesize_nanowsp_lm.wspl --run | tee lab/runs/nanowsp_lm_synthesis.log
+          test -s models/nanowsp_lm_ridge/model.safetensors
+          sha256sum models/nanowsp_lm_ridge/model.safetensors
+      - name: Held-out language evaluation
+        run: python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_ridge/model.safetensors --n-head 4 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_llmness.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-lm-results
+          path: |
+            lab/runs/nanowsp_lm_*
+            models/nanowsp_lm_ridge/model.safetensors
