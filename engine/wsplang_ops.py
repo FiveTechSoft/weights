@@ -341,6 +341,41 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
+    if named.get('method') == 'register_program':
+        from engine import wsp_register
+        for key in ('arch', 'program', 'out'):
+            if key not in named:
+                raise ValueError(f'register_program requires {key}=')
+        source = (ROOT / str(named['program'])).read_text(encoding='utf-8')
+        cfg = wsp_register.config(source)
+        d, layers, ff = cfg['d'], cfg['layers'], cfg['ff']
+        estimate = layers*(4*d*d+2*d*ff+2*d)+d*(cfg['vocab']+cfg['block']+1)
+        if ctx.max_modified_weights is not None and estimate > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        if ctx.max_delta_norm is not None:
+            raise ValueError('register synthesis has no source delta')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False, 'architecture': cfg}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        compiled = wsp_register.compile_program(ROOT / str(named['arch']), source,
+                                                  seed=int(named.get('seed', 1337)))
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        import hashlib
+        info = {'provenance': 'closed_form_data_free', 'method': 'register_program',
+                'backward_calls': '0', 'program_sha256': hashlib.sha256(source.encode()).hexdigest(),
+                'architecture': json.dumps(cfg)}
+        compiled.save(out_p, metadata=info)
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
     if named.get('method') == 'primitive':
         from engine import wsp_primitives
         for key in ('arch', 'skill', 'out'):
