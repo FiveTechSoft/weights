@@ -47,7 +47,16 @@ jobs:
       - name: Evaluate structured v2
         run: |
           python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_v2/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_v2_llmness.json
-          python -c "import json; r=json.load(open('lab/runs/nanowsp_lm_v2_llmness.json')); assert r['L1']['nll'] < min(r['L1']['ngram_ladder_nll'].values()), r"
+      - name: Synthesize weighted v3
+        run: |
+          set -o pipefail
+          python -m engine.wsplang programs/synthesize_nanowsp_lm_v3.wspl --run | tee lab/runs/nanowsp_lm_v3_synthesis.log
+          test -s models/nanowsp_lm_v3/model.safetensors
+          sha256sum models/nanowsp_lm_v3/model.safetensors
+      - name: Evaluate weighted v3
+        run: |
+          python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_v3/model.safetensors --n-head 8 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_v3_llmness.json
+          python -c "import json; r=json.load(open('lab/runs/nanowsp_lm_v3_llmness.json')); assert r['L1']['nll'] < 2.0 and r['L1']['nll'] < min(r['L1']['ngram_ladder_nll'].values()), r"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -56,3 +65,4 @@ jobs:
             lab/runs/nanowsp_lm_*
             models/nanowsp_lm_ridge/model.safetensors
             models/nanowsp_lm_v2/model.safetensors
+            models/nanowsp_lm_v3/model.safetensors
