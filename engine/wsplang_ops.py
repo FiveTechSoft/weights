@@ -341,7 +341,7 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
-    if named.get('method') == 'structured_ridge':
+    if named.get('method') in ('structured_ridge', 'structured_ridge_v3'):
         for key in ('arch', 'data', 'out'):
             if key not in named:
                 raise ValueError(f'structured_ridge requires {key}=')
@@ -363,7 +363,8 @@ def _op_synthesize(ctx, op, positional, named, res):
         compiled = wsp_synth.compile_long_context(
             ROOT / str(named['arch']), dataset.train, dataset.chars, overrides,
             seed=int(named.get('seed', 1337)), order=5, free_blocks=2,
-            windows=(8, 32, 128), fit=True, device=str(named.get('device', 'cpu')))
+            windows=(8, 32, 128), fit=True, device=str(named.get('device', 'cpu')),
+            weighted=named.get('method') == 'structured_ridge_v3')
         total = sum(p.numel() for p in compiled.parameters())
         if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
             raise ValueError('parameter budget exceeded')
