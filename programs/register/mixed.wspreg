@@ -1,0 +1,5 @@
+a = LOOKUP x
+b = LOOKUP a
+c = ADD a b
+d = SUB c y
+RETURN d
