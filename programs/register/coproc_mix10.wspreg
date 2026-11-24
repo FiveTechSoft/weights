@@ -1,0 +1,4 @@
+a = ADD x y
+b = ADD a x
+c = SUB b y
+RETURN c
