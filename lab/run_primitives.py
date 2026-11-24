@@ -35,9 +35,12 @@ def main():
         examples=list(cases(skill,20261124,400))
         report[skill]={}
         for arm in ("compiled","ablation"):
-            model=p.compile_primitive(Path("programs/arch/nanowsp_lm.wsparch"),skill,ablate=arm=="ablation")
             path=Path(f"models/primitives/{skill}_{arm}.safetensors")
-            model.save(path,metadata={"provenance":"closed_form_data_free","skill":skill,"arm":arm,"backward_calls":"0"})
+            if arm=="ablation":
+                model=p.compile_primitive(Path("programs/arch/nanowsp_lm.wsparch"),skill,ablate=True)
+                model.save(path,metadata={"provenance":"closed_form_data_free","skill":skill,"arm":arm,"backward_calls":"0"})
+            elif not path.is_file():
+                raise FileNotFoundError(path)
             runtime=NanoGPT(GPTConfig(vocab_size=18,n_embd=128,n_head=2,n_layer=2,block_size=64,d_ff=256,bias=False))
             runtime.load_checkpoint(path);runtime.model.eval()
             report[skill][arm]={"accuracy":score(runtime,examples),"n":len(examples),"sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
