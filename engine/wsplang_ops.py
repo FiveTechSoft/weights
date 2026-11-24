@@ -341,6 +341,34 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
+    if named.get('method') == 'primitive':
+        from engine import wsp_primitives
+        for key in ('arch', 'skill', 'out'):
+            if key not in named:
+                raise ValueError(f'primitive requires {key}=')
+        if named['skill'] not in ('copy', 'associate'):
+            raise ValueError('unknown primitive')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        if ctx.max_delta_norm is not None:
+            raise ValueError('primitive synthesis has no source delta')
+        compiled = wsp_primitives.compile_primitive(ROOT / str(named['arch']), str(named['skill']),
+                                                     seed=int(named.get('seed', 1337)))
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = {'provenance': 'closed_form_data_free', 'skill': str(named['skill']), 'backward_calls': '0'}
+        compiled.save(out_p, metadata=info)
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
     if named.get('method') in ('spectral_v6', 'spectral_v6_random_features'):
         from engine import wsp_spectral
         for key in ('arch', 'data', 'out'):
