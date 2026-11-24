@@ -341,7 +341,7 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
-    if named.get('method') in ('structured_ridge', 'structured_ridge_v3', 'structured_ridge_v4'):
+    if named.get('method') in ('structured_ridge', 'structured_ridge_v3', 'structured_ridge_v4', 'structured_ridge_v5', 'structured_table_v5'):
         for key in ('arch', 'data', 'out'):
             if key not in named:
                 raise ValueError(f'structured_ridge requires {key}=')
@@ -357,21 +357,26 @@ def _op_synthesize(ctx, op, positional, named, res):
         # Four exact recent-token slots plus three older-context windows.
         overrides = dict(d=512, heads=8, layers=6, ff=2048, block=256,
                          bias=False, dropout=0.0)
-        estimate = 6 * (4 * 512**2 + 2 * 512 * 2048 + 2 * 512) + 512 * (256 + len(dataset.chars) + 1)
+        v5 = named.get('method') in ('structured_ridge_v5', 'structured_table_v5')
+        if v5:
+            overrides['ff'] = 8192
+        estimate = 6 * (4 * 512**2 + 2 * 512 * overrides['ff'] + 2 * 512) + 512 * (256 + len(dataset.chars) + 1)
         if ctx.max_modified_weights is not None and estimate > ctx.max_modified_weights:
             raise ValueError('parameter budget exceeded')
         compiled = wsp_synth.compile_long_context(
             ROOT / str(named['arch']), dataset.train, dataset.chars, overrides,
             seed=int(named.get('seed', 1337)), order=5, free_blocks=2,
-            windows=(8, 32, 128), fit=True, device=str(named.get('device', 'cpu')),
+            windows=(8, 32, 128), fit=named.get('method') != 'structured_table_v5', device=str(named.get('device', 'cpu')),
             weighted=named.get('method') != 'structured_ridge',
-            induction=named.get('method') == 'structured_ridge_v4')
+            induction=named.get('method') == 'structured_ridge_v4' or v5,
+            active_features=2048 if v5 else None, all_slots=v5)
         total = sum(p.numel() for p in compiled.parameters())
         if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
             raise ValueError('parameter budget exceeded')
         info = compiled.synthesis_info
         compiled.save(out_p, metadata={'provenance': info['provenance'],
                                        'method': info['method'], 'backward_calls': '0',
+                                       'synthesis_info': json.dumps(info),
                                        'vocab_chars': json.dumps(dataset.chars)})
         ctx.written_paths.add(out_p.resolve())
         ctx.target_path = out_p
