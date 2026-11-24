@@ -5,6 +5,8 @@ on:
       - 'engine/**'
       - 'programs/**'
       - 'tests/test_context_ridge.py'
+      - 'tests/test_wsp_delta.py'
+      - 'lab/run_delta_experiment.py'
       - '.github/workflows/nanowsp-lm.yml'
   workflow_dispatch:
 permissions:
@@ -22,7 +24,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements-dev.txt
-      - run: python -m pytest tests/test_context_ridge.py -q
+      - run: python -m pytest tests/test_context_ridge.py tests/test_wsp_delta.py -q
       - name: Obtain corpus
         run: |
           mkdir -p lab/data/shakespeare_char lab/runs
@@ -30,41 +32,48 @@ jobs:
             curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
           fi
           sha256sum lab/data/shakespeare_char/input.txt
-      - name: Synthesize spectral and randomized feature arms
-        run: |
-          set -o pipefail
-          for variant in v6 v6_random_features; do
-            python -m engine.wsplang programs/synthesize_nanowsp_lm_${variant}.wspl --run | tee lab/runs/nanowsp_lm_${variant}_synthesis.log
-            test -s models/nanowsp_lm_${variant}/model.safetensors
-          done
-      - name: Create matched random and gradient-trained controls
+      - name: Create paired initialization and trained donor
         run: python lab/run_spectral_controls.py
-      - name: Evaluate all arms on held-out corpus
+      - name: Compile V7 donor delta arms
+        run: python lab/run_delta_experiment.py
+      - name: Evaluate all persistent checkpoints
         run: |
-          for variant in v6 v6_random_features v6_random v6_trained; do
-            sha256sum models/nanowsp_lm_${variant}/model.safetensors
+          for variant in v6_random v6_trained v7_full v7_r8 v7_r16 v7_r32 v7_r64 v7_placebo32 v7_attention v7_mlp v7_embedding_norm v7_without_attention v7_without_mlp v7_without_embedding_norm; do
             python lab/verify_llmness.py --nanogpt-ckpt models/nanowsp_lm_${variant}/model.safetensors --n-head 4 --corpus lab/data/shakespeare_char/input.txt --holdout-frac 0.1 --eval-chars 8000 --out lab/runs/nanowsp_lm_${variant}_llmness.json
           done
-      - name: Report and enforce V6 gates
+      - name: Report V7 recovery and predeclared rank32 gate
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          reports = {v: json.loads(Path(f'lab/runs/nanowsp_lm_{v}_llmness.json').read_text()) for v in ('v6', 'v6_random_features', 'v6_random', 'v6_trained')}
-          scores = {v: r['L1']['nll'] for v,r in reports.items()}
-          r = reports['v6']
-          gates = dict(nll_target=scores['v6'] < 2.0, beats_ngram=scores['v6'] < min(r['L1']['ngram_ladder_nll'].values()), beats_random=scores['v6'] < scores['v6_random'], beats_random_features=scores['v6'] < scores['v6_random_features'], beats_trained=scores['v6'] < scores['v6_trained'], context=r['L2_long_context']['verdict']=='PASSES', generation=r['GEN']['verdict']=='PASSES', icl=r['L3_icl']['verdict']=='PASSES')
-          summary=dict(scores=scores,gates=gates)
-          Path('lab/runs/nanowsp_lm_v6_comparison.json').write_text(json.dumps(summary,indent=2))
+          p=Path('lab/runs')
+          manifest=json.loads((p/'nanowsp_lm_v7_delta_manifest.json').read_text())
+          def read(v):
+              return json.loads((p/f'nanowsp_lm_{v}_llmness.json').read_text())
+          base=read('v6_random')['L1']['nll']
+          donor=read('v6_trained')['L1']['nll']
+          assert base>donor
+          results={}
+          for arm in manifest['arms']:
+              r=read('v7_'+arm)
+              nll=r['L1']['nll']
+              results[arm]=dict(nll=nll,recovered=(base-nll)/(base-donor),energy=manifest['arms'][arm]['energy_fraction'],context=r['L2_long_context'],generation=r['GEN']['verdict'],icl=r['L3_icl'])
+          gates=dict(full_parity=abs(results['full']['nll']-donor)<=.0001,
+                     rank32_recovery=results['r32']['recovered']>=.9,
+                     rank32_beats_placebo=results['r32']['nll']<results['placebo32']['nll'])
+          summary=dict(provenance='donor_assisted',base_nll=base,donor_nll=donor,results=results,gates=gates)
+          (p/'nanowsp_lm_v7_comparison.json').write_text(json.dumps(summary,indent=2))
           print(json.dumps(summary,indent=2))
-          assert all(gates[k] for k in ('nll_target','beats_ngram','beats_random','beats_random_features','context','generation')), summary
+          assert all(gates.values()),gates
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: nanowsp-lm-v6-results
+          name: nanowsp-lm-v7-results
           path: |
             lab/runs/nanowsp_lm_*
-            models/nanowsp_lm_v6*/model.safetensors
-            models/nanowsp_lm_v6*/model.train.json
+            models/nanowsp_lm_v6_random/model.safetensors
+            models/nanowsp_lm_v6_trained/model.safetensors
+            models/nanowsp_lm_v6_trained/model.train.json
+            models/nanowsp_lm_v7*/model.safetensors
           if-no-files-found: warn
