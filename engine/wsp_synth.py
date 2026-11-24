@@ -286,7 +286,7 @@ def _class_matrix(chars):
     return matrix
 
 
-def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu"):
+def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weighted=False):
     """Fills one empty MLP block in closed form: random gated features, then ridge on the softmax residual.
 
     Each block is one boosting step. It uses no backpropagation: the residual comes from a forward pass and
@@ -332,8 +332,14 @@ def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu"):
         x, y = w[:, :-1].to(device), w[:, 1:].to(device)
         phi, logits = features(x).flatten(0, 1), model(x, y.contiguous())[0].flatten(0, 1)
         if (start + 1) * batch <= cut:
-            residual = eye[y.flatten()] - torch.softmax(logits.double(), -1)
-            gram += (phi.T @ phi).double()
+            probs = torch.softmax(logits.double(), -1)
+            residual = eye[y.flatten()] - probs
+            if weighted:
+                # Scalar curvature approximation to the categorical Fisher matrix.
+                curvature = (1 - probs.square().sum(-1)).clamp_min(0.05)
+                gram += phi.double().T @ (phi.double() * curvature[:, None])
+            else:
+                gram += (phi.T @ phi).double()
             cross += phi.double().T @ residual
         elif start * batch >= cut:
             stored.append((phi, logits, y.flatten()))
@@ -356,7 +362,7 @@ def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu"):
 
 
 def compile_long_context(arch_path, train_ids, chars, overrides, seed=1337, order=4, free_blocks=2,
-                         windows=(8, 32, 128), fit=True, device="cpu"):
+                         windows=(8, 32, 128), fit=True, device="cpu", weighted=False):
     """Table in the first blocks, plus last blocks fitted on old-context features, all without backprop.
 
     Fitting uses a table blind to the last 10% of `train_ids` and residuals on that tail, because a table
@@ -378,7 +384,7 @@ def compile_long_context(arch_path, train_ids, chars, overrides, seed=1337, orde
         blind = compile_ngram(arch_path, WittenBellTable(train_ids[:inner], vocab, order), **kwargs).eval()
         with forbid_gradients():
             for layer in range(layers - free_blocks, layers):
-                fits.append(fit_block(blind, train_ids[inner:], layer, seed, device=device))
+                fits.append(fit_block(blind, train_ids[inner:], layer, seed, device=device, weighted=weighted))
                 for name in ("c_fc", "c_proj"):
                     target = final.get_parameter(f"transformer.h.{layer}.mlp.{name}.weight")
                     target.copy_(blind.get_parameter(f"transformer.h.{layer}.mlp.{name}.weight").to(target.device))
