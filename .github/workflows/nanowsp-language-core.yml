@@ -1,0 +1,37 @@
+name: NanoWSP language core reference
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/**'
+      - '.github/workflows/nanowsp-language-core.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements-dev.txt
+      - name: Fetch fixed corpus
+        run: |
+          mkdir -p lab/data/shakespeare_char
+          curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
+          echo '86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed  lab/data/shakespeare_char/input.txt' | sha256sum -c -
+      - name: Train reference and verify saved checkpoints
+        run: python -u lab/nanowsp/train_reference.py --corpus lab/data/shakespeare_char/input.txt --out lab/runs/language_core
+      - name: Analyze learned mechanisms and enforce gates
+        run: python -u lab/nanowsp/analyze_checkpoints.py --corpus lab/data/shakespeare_char/input.txt --out lab/runs/language_core
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-language-reference
+          path: lab/runs/language_core/
+          if-no-files-found: warn
