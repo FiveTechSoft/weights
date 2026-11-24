@@ -296,7 +296,7 @@ def compile_ngram(arch_path, table, overrides=None, seed=1337, windows=(), char_
                             "order": table.order, "units_available": table.num_units(), "units_used": used,
                             "ff": ff, "position_dims": position_dims}
     model.synthesis_layout = {"ballast": ballast, "logit_dirs": logit_dirs, "long_dirs": np.concatenate([long_dirs, memory_dirs], axis=1),
-                              "current_token_dirs": slot_dirs[0] if slot_dirs else None, "scale_mlp": scale_mlp}
+                              "slot_dirs": slot_dirs, "current_token_dirs": slot_dirs[0] if slot_dirs else None, "scale_mlp": scale_mlp}
     return model
 
 
@@ -312,7 +312,7 @@ def _class_matrix(chars):
     return matrix
 
 
-def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weighted=False):
+def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weighted=False, active_features=None, all_slots=False):
     """Fills one empty MLP block in closed form: random gated features, then ridge on the softmax residual.
 
     Each block is one boosting step. It uses no backpropagation: the residual comes from a forward pass and
@@ -322,14 +322,14 @@ def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weight
     block, vocab = model.config.block_size, model.config.vocab_size
     prefix = f"transformer.h.{layer}.mlp"
     c_fc, c_proj = model.get_parameter(f"{prefix}.c_fc.weight"), model.get_parameter(f"{prefix}.c_proj.weight")
-    ff = c_fc.shape[0]
+    ff = min(c_fc.shape[0], active_features or c_fc.shape[0])
     count = (len(ids) - 1) // block
     windows = torch.tensor(np.stack([ids[i * block:i * block + block + 1] for i in range(count)]))
     cut = int(count * 0.7)
     model.to(device)
 
     long_dirs = torch.tensor(layout["long_dirs"], dtype=torch.float32, device=device)
-    token_dirs = torch.tensor(layout["current_token_dirs"], dtype=torch.float32, device=device)
+    token_dirs = torch.tensor(np.concatenate(layout["slot_dirs"], axis=1) if all_slots else layout["current_token_dirs"], dtype=torch.float32, device=device)
     ballast = torch.tensor(layout["ballast"], dtype=torch.float32, device=device)
     sample = torch.cat([model.input_of(f"{prefix}.c_fc", w[:, :-1].to(device)).flatten(0, 1)
                         for w in windows[:cut].split(batch)]) @ long_dirs
@@ -343,7 +343,7 @@ def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weight
     constant = offset - (longs * (mean / std)).sum(1)
     rows = ((longs / std) @ long_dirs.T + tokens @ token_dirs.T / scale_mlp
             + torch.outer(constant, ballast) / (scale_mlp * BALLAST))
-    c_fc.copy_(rows.to(c_fc.device))
+    c_fc[:ff].copy_(rows.to(c_fc.device))
 
     eye = torch.eye(vocab, device=device, dtype=torch.float64)
     gram = torch.zeros(ff, ff, device=device, dtype=torch.float64)
@@ -352,7 +352,7 @@ def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weight
 
     def features(x):
         inputs = model.input_of(f"{prefix}.c_fc", x)
-        return torch.nn.functional.gelu(inputs @ c_fc.T)
+        return torch.nn.functional.gelu(inputs @ c_fc[:ff].T)
 
     for start, w in enumerate(windows.split(batch)):
         x, y = w[:, :-1].to(device), w[:, 1:].to(device)
@@ -382,13 +382,13 @@ def fit_block(model, ids, layer, seed, ridge=1e3, batch=32, device="cpu", weight
 
     step = min((0.0, 0.25, 0.5, 1, 2, 4, 8, 16, 32), key=holdout_nll)
     logit_dirs = torch.tensor(layout["logit_dirs"], dtype=torch.float32, device=device)
-    c_proj.copy_(logit_dirs @ (step * solution).T)
+    c_proj[:, :ff].copy_(logit_dirs @ (step * solution).T)
     return {"layer": layer, "step": step, "holdout_nll_before": round(holdout_nll(0.0), 4),
             "holdout_nll_after": round(holdout_nll(step), 4)}
 
 
 def compile_long_context(arch_path, train_ids, chars, overrides, seed=1337, order=4, free_blocks=2,
-                         windows=(8, 32, 128), fit=True, device="cpu", weighted=False, induction=False):
+                         windows=(8, 32, 128), fit=True, device="cpu", weighted=False, induction=False, active_features=None, all_slots=False):
     """Table in the first blocks, plus last blocks fitted on old-context features, all without backprop.
 
     Fitting uses a table blind to the last 10% of `train_ids` and residuals on that tail, because a table
@@ -410,7 +410,7 @@ def compile_long_context(arch_path, train_ids, chars, overrides, seed=1337, orde
         blind = compile_ngram(arch_path, WittenBellTable(train_ids[:inner], vocab, order), **kwargs).eval()
         with forbid_gradients():
             for layer in range(layers - free_blocks, layers):
-                fits.append(fit_block(blind, train_ids[inner:], layer, seed, device=device, weighted=weighted))
+                fits.append(fit_block(blind, train_ids[inner:], layer, seed, device=device, weighted=weighted, active_features=active_features, all_slots=all_slots))
                 for name in ("c_fc", "c_proj"):
                     target = final.get_parameter(f"transformer.h.{layer}.mlp.{name}.weight")
                     target.copy_(blind.get_parameter(f"transformer.h.{layer}.mlp.{name}.weight").to(target.device))
