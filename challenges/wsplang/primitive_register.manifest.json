@@ -1,0 +1,144 @@
+{
+  "wsplang_version": "0.8.3",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "primitive_register",
+  "archivo": "programs/primitive_register.wspl",
+  "steps_count": 6,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 4000000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step synthesize method=register_program program=programs/register/arithmetic.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_arithmetic.safetensors seed=1337",
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/arithmetic.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_arithmetic.safetensors seed=1337"
+    },
+    {
+      "sec": "steps",
+      "expr": "step synthesize method=register_program program=programs/register/mixed.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_mixed.safetensors seed=1337",
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/mixed.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_mixed.safetensors seed=1337"
+    },
+    {
+      "sec": "steps",
+      "expr": "step synthesize method=register_program program=programs/register/copy_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_copy_sum.safetensors seed=1337",
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/copy_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_copy_sum.safetensors seed=1337"
+    },
+    {
+      "sec": "steps",
+      "expr": "step synthesize method=register_program program=programs/register/lookup_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_lookup_sum.safetensors seed=1337",
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/lookup_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_lookup_sum.safetensors seed=1337"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.8.3",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 2,
+      "steps": 4
+    },
+    "pasos": [
+      {
+        "op": "synthesize",
+        "args": "method=register_program program=programs/register/arithmetic.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_arithmetic.safetensors seed=1337"
+      },
+      {
+        "op": "synthesize",
+        "args": "method=register_program program=programs/register/mixed.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_mixed.safetensors seed=1337"
+      },
+      {
+        "op": "synthesize",
+        "args": "method=register_program program=programs/register/copy_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_copy_sum.safetensors seed=1337"
+      },
+      {
+        "op": "synthesize",
+        "args": "method=register_program program=programs/register/lookup_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_lookup_sum.safetensors seed=1337"
+      }
+    ],
+    "pasos_mapeo": {
+      "synthesize": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": 4000000,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": true,
+      "allow_training": false,
+      "unlock_tensors": []
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-24T05:58:12",
+  "ejecucion": [
+    {
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/arithmetic.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_arithmetic.safetensors seed=1337",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "provenance": "closed_form_data_free",
+        "method": "register_program",
+        "backward_calls": "0",
+        "program_sha256": "51c85d5bdcab08b85c2be538a0a3060285b7042869ee0dc58ebfa185ad78625e",
+        "architecture": "{\"vocab\": 18, \"d\": 128, \"heads\": 2, \"layers\": 4, \"ff\": 256, \"block\": 64, \"bias\": false, \"dropout\": 0.0}",
+        "total_parameters": 535936,
+        "output_file": "/tmp/primitives-worktree/models/primitives/register_arithmetic.safetensors"
+      }
+    },
+    {
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/mixed.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_mixed.safetensors seed=1337",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "provenance": "closed_form_data_free",
+        "method": "register_program",
+        "backward_calls": "0",
+        "program_sha256": "59ffd0f49f98514fead3911a08b15d03d84175a0bd68ed9b0bcaab92387a8067",
+        "architecture": "{\"vocab\": 18, \"d\": 192, \"heads\": 3, \"layers\": 6, \"ff\": 256, \"block\": 64, \"bias\": false, \"dropout\": 0.0}",
+        "total_parameters": 1492800,
+        "output_file": "/tmp/primitives-worktree/models/primitives/register_mixed.safetensors"
+      }
+    },
+    {
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/copy_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_copy_sum.safetensors seed=1337",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "provenance": "closed_form_data_free",
+        "method": "register_program",
+        "backward_calls": "0",
+        "program_sha256": "d3d5c73f6fe5966dc6223943792e43447293174ca01a44dcf1ecfec0713a5f46",
+        "architecture": "{\"vocab\": 18, \"d\": 128, \"heads\": 2, \"layers\": 4, \"ff\": 256, \"block\": 64, \"bias\": false, \"dropout\": 0.0}",
+        "total_parameters": 535936,
+        "output_file": "/tmp/primitives-worktree/models/primitives/register_copy_sum.safetensors"
+      }
+    },
+    {
+      "op": "synthesize",
+      "args": "method=register_program program=programs/register/lookup_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_lookup_sum.safetensors seed=1337",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "provenance": "closed_form_data_free",
+        "method": "register_program",
+        "backward_calls": "0",
+        "program_sha256": "695561eced9abd054959547cf7b539bcd1dceb4e10786c9daf2afc95d8d68015",
+        "architecture": "{\"vocab\": 18, \"d\": 128, \"heads\": 2, \"layers\": 4, \"ff\": 256, \"block\": 64, \"bias\": false, \"dropout\": 0.0}",
+        "total_parameters": 535936,
+        "output_file": "/tmp/primitives-worktree/models/primitives/register_lookup_sum.safetensors"
+      }
+    }
+  ]
+}

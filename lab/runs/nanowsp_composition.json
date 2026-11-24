@@ -1,0 +1,43 @@
+{
+  "provenance": "closed_form_data_free",
+  "arms": {
+    "compiled": {
+      "n": 400,
+      "copy": 1.0,
+      "lookup": 1.0,
+      "chain": 1.0,
+      "joint": 1.0,
+      "sha256": "03abb3cc0eba1896a3d7945dcd0702eb0db004e524cf503196df78e92cc4ff8f"
+    },
+    "first_lookup": {
+      "n": 400,
+      "copy": 1.0,
+      "lookup": 0.0,
+      "chain": 0.0,
+      "joint": 0.0,
+      "sha256": "245f4c4c950b83bcf7cadf6b7def174073f5ebff74b8e5d13271d93d001c0d35"
+    },
+    "second_lookup": {
+      "n": 400,
+      "copy": 1.0,
+      "lookup": 1.0,
+      "chain": 0.0,
+      "joint": 0.0,
+      "sha256": "1b4cf73a457c0021eb2c41c37d044d3b38146859e735f502ae546ca860ecc03a"
+    },
+    "routing": {
+      "n": 400,
+      "copy": 0.0,
+      "lookup": 0.0,
+      "chain": 0.0,
+      "joint": 0.0,
+      "sha256": "35f1be2cb4efb7d96ec729f86ab07594541bde5550df91a36d46eccfe376bee2"
+    }
+  },
+  "gates": {
+    "joint_accuracy": true,
+    "first_lookup_necessary": true,
+    "second_lookup_necessary": true,
+    "routing_necessary": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "copy": {
+    "compiled": {
+      "accuracy": 1.0,
+      "n": 400,
+      "sha256": "3c3158ed0263b00f8827818288afcd5caae2db5ae3aca410b5312f07a9f60a0c"
+    },
+    "ablation": {
+      "accuracy": 0.0,
+      "n": 400,
+      "sha256": "8524756aac45df8165cdb0ed096d87253d51291c0069abf5956c37e5195998cf"
+    },
+    "pass": true
+  },
+  "associate": {
+    "compiled": {
+      "accuracy": 1.0,
+      "n": 400,
+      "sha256": "e2a0084c07b3209def85937668524342ea956c5e098a4cecc03351ff808c7890"
+    },
+    "ablation": {
+      "accuracy": 0.0,
+      "n": 400,
+      "sha256": "138bd7c9435c096e6cf52b121ac8633737afb4350ad77c8eddc15613f3822eb0"
+    },
+    "pass": true
+  }
+}
