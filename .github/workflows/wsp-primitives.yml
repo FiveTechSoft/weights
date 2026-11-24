@@ -5,6 +5,7 @@ on:
       - 'engine/**'
       - 'programs/primitive_*.wspl'
       - 'lab/run_primitives.py'
+      - 'lab/run_composition.py'
       - '.github/workflows/wsp-primitives.yml'
   workflow_dispatch:
 permissions:
@@ -28,6 +29,10 @@ jobs:
           python -m engine.wsplang programs/primitive_associate.wspl --run
       - name: Evaluate persisted weights
         run: python lab/run_primitives.py
+      - name: Compile composed skills through WSPLang
+        run: python -m engine.wsplang programs/primitive_composition.wspl --run
+      - name: Evaluate same-checkpoint composition and selective ablations
+        run: python lab/run_composition.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -35,3 +40,4 @@ jobs:
           path: |
             models/primitives/*.safetensors
             lab/runs/nanowsp_primitives.json
+            lab/runs/nanowsp_composition.json
