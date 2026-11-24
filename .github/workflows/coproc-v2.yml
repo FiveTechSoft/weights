@@ -1,0 +1,45 @@
+name: WSPLang coprocessor V2
+on:
+  pull_request:
+    paths:
+      - 'lab/probes/zarp10/coproc_v2.py'
+      - 'lab/probes/zarp10/PLAN_COPROC_V2.md'
+      - '.github/workflows/coproc-v2.yml'
+      - 'programs/register/coproc_*.wspreg'
+      - 'engine/wsp_register.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  coproc-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU inference dependencies
+        run: |
+          pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-dev.txt
+          pip install transformers==5.24.0 huggingface_hub==2.4.0 safetensors==0.8.0 numpy==2.4.6
+      - name: Obtain fixed text corpus
+        run: |
+          mkdir -p lab/data/shakespeare_char
+          curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
+          echo '86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed  lab/data/shakespeare_char/input.txt' | sha256sum -c -
+      - name: Compile and evaluate tensor coprocessor
+        run: python -u lab/probes/zarp10/coproc_v2.py --prose lab/data/shakespeare_char/input.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coproc-v2-results
+          path: |
+            lab/runs/coproc_v2/report.json
+            lab/runs/coproc_v2/*.safetensors
+          if-no-files-found: warn
