@@ -22,8 +22,8 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install numpy scipy scikit-learn
-      - run: curl --retry 3 -fL https://www.gutenberg.org/files/11/11-0.txt -o /tmp/alice.txt
-      - run: python -u lab/nanowsp/natural_n18.py --corpus /tmp/alice.txt --out lab/runs/n18
+      - run: git hash-object lab/nanowsp/corpora/alice_gutenberg_11.txt | grep -Fx 0f25e9af379233267a09623e0c650472f9e463ea
+      - run: python -u lab/nanowsp/natural_n18.py --corpus lab/nanowsp/corpora/alice_gutenberg_11.txt --out lab/runs/n18
       - uses: actions/upload-artifact@v4
         if: always()
         with:
