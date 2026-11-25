@@ -1,0 +1,13 @@
+# N7 verified results — 2026-11-25
+Run [45570554702](https://github.com/FiveTechSoft/weights/actions/runs/45570554702), job 139055858418, tested commit c5f07362d853399ff43bba38725688eb234a0a03. Artifact [15002156936](https://github.com/FiveTechSoft/weights/actions/runs/45570554702/artifacts/15002156936), SHA256 dfbcb6e998633b42302f1b997cf54d326057cacb55f76f7bba592fb58aae6cf3. Verified completed logs and artifact metadata, not independent checkpoint reevaluation.
+4225 candidates, 589 discovery eligible, 501 acceptance-positive, 88 eligible rejected. Actual budgets 64,128,256,501. No donor, optimizer, backward calls. 3230208 parameters. All nine checkpoints exact reload. Each NLL on 7936 characters per reused development slice.
+| Budget | Frequency validation | Utility validation | Frequency confirmation | Utility confirmation |
+|---:|---:|---:|---:|---:|
+|0|2.534675947|2.534675947|2.511929224|2.511929224|
+|64|2.363663285|2.317826281|2.352878558|2.316305723|
+|128|2.275498516|2.247558072|2.292692216|2.258338976|
+|256|2.200702472|2.200865823|2.221025946|2.187455063|
+|501|2.166688197|2.159143860|2.187399248|2.164254886|
+Fidelity PASS: final utility/frequency max probability errors 3.11986e-6/3.40486e-6, 823875 comparisons per arm, both norm error 4.09831e-6, min attention .999999404, causal error 0, zero observed wrong gates. NLL parity passes all stages. Growth PASS: utility increments positive in both slices (validation .216850/.070268/.046692/.041722; confirmation .195624/.057967/.070884/.023200). Selection FAIL: final gains versus frequency .00754434/.02314436, first below preregistered .01. Gains over bigram .37553209/.34767434 exceed .05. Do not redefine threshold or select an earlier budget retrospectively. Utility final 62150 nonzero parameters, frequency 62208. Coverage .865088/.950620. Full same-source trigram 2.177771/2.175265: utility sparse beats this comparator on both reused slices, compatible with filtering noisy conditionals, not proof of broad generalization.
+Language gate FAIL: context gain exactly zero, ICL .11/.11, generation heuristic passes both (.583/.593 known words) but greedy repeats. Reserved tail not opened. Automated selection in a fixed candidate family; no recursive hypothesis generation. Global NLL improvement does not establish per-context retention. No independent fresh corpus or multiple seeds.
+Next scientific question: conditional corrections for longer contexts, with candidates generated from residual prediction error and independent acceptance. No threshold tuning to rescue N7. Preserve local model, test exact compilation and new-context benefit separately. Avoid claiming RSI until learned relations generate new reusable candidates.
