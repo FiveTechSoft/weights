@@ -1,0 +1,27 @@
+name: NanoWSP natural law N14
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n14.py'
+      - 'lab/nanowsp/PLAN_N14.md'
+      - '.github/workflows/nanowsp-natural-n14.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -u lab/nanowsp/natural_n14.py --out lab/runs/n14
+      - run: python -c "import json; assert json.load(open('lab/runs/n14/report.json'))['gate']"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-natural-n14
+          path: lab/runs/n14/
