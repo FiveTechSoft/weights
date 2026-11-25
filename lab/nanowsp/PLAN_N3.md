@@ -6,8 +6,10 @@ not proof that Fisher solves the representation bottleneck.
 Rebuild N2_1 exactly using existing build and conditioned_fit.
 Use same frozen statistical teacher, same corpus split, same architecture,
 same random feature recipe as N2 for layers 1..3 (zero-based).
-For computational cost use positions 7,15,...,63 from each of the same
-2048 windows (16384 positions) for BOTH correction arms. No extra
+For computational cost use positions 7,15,...,63 from 2048 windows
+(16384 positions) for BOTH correction arms. Use original seed 452
+but restrict the draw to the fit region before its last 8192 chars;
+windows are matched across N3 arms, not identical to N2 windows. No extra
 features. Use matched squared-logit and softmax Fisher arms, each with
 three sequential layer corrections. Normalize feature columns by RMS.
 Derive analytic Jacobian of final tied readout and LayerNorm restricted
@@ -20,7 +22,9 @@ No autograd or backpropagation; this is iterative numerical optimization
 of an explicit local quadratic, not a claim of zero mathematical fitting.
 For each correction use fixed doses 0,.125,.25,.5,1 on a separate
 deterministic 128-window audit drawn from permitted fit region, disjoint
-from fit windows by using last 8192 characters exclusively for audit.
+from correction fit windows by using last 8192 characters for audit.
+N2_1 itself is rebuilt on the original full fit region, so audit is
+independent of correction fitting only, not of the baseline model.
 Choose minimum native teacher KL for Fisher, centered logit MSE for
 Euclidean; ties prefer lower dose. Neither eval slice influences choice.
 Evaluate every stage on both prior validation and confirmation slices.
