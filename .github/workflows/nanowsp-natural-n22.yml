@@ -1,0 +1,32 @@
+name: NanoWSP natural language N22
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n22.py'
+      - 'lab/nanowsp/PLAN_N22.md'
+      - 'lab/nanowsp/corpora/pride_prejudice_1342.txt'
+      - '.github/workflows/nanowsp-natural-n22.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy==2.4.6 scipy==1.17.1 scikit-learn==1.9.1
+      - run: git hash-object lab/nanowsp/corpora/pride_prejudice_1342.txt | grep -Fx 20c3737a33af2501e4c0597285ad630ef42e8e46
+      - run: python -u lab/nanowsp/natural_n22.py --corpus lab/nanowsp/corpora/pride_prejudice_1342.txt --out lab/runs/n22
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-natural-n22
+          path: lab/runs/n22/report.json
