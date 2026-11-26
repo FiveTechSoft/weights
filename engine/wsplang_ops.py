@@ -341,12 +341,29 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
-    if named.get('method') == 'register_program':
+    if named.get('method') in ('register_program', 'discover_register'):
         from engine import wsp_register
-        for key in ('arch', 'program', 'out'):
+        import hashlib
+        method = named['method']
+        input_key = 'data' if method == 'discover_register' else 'program'
+        for key in ('arch', input_key, 'out'):
             if key not in named:
-                raise ValueError(f'register_program requires {key}=')
-        source = (ROOT / str(named['program'])).read_text(encoding='utf-8')
+                raise ValueError(f'{method} requires {key}=')
+        raw = (ROOT / str(named[input_key])).read_bytes()
+        discovery = {}
+        if method == 'discover_register':
+            from engine import wsp_discover_register
+            if not ctx.budgets.get('allow_training'):
+                raise ValueError('discover_register fits examples and requires allow_training=true')
+            examples = json.loads(raw.decode('utf-8'))
+            if not isinstance(examples, list) or not examples or len(examples) > 256:
+                raise ValueError('discover_register requires 1..256 example triples')
+            law = wsp_discover_register.discover(examples)
+            source = wsp_discover_register.lower(law)
+            discovery = {'law': json.dumps(list(law)), 'examples_sha256': hashlib.sha256(raw).hexdigest(),
+                         'examples_count': str(len(examples)), 'discovered_program': source}
+        else:
+            source = raw.decode('utf-8')
         cfg = wsp_register.config(source)
         d, layers, ff = cfg['d'], cfg['layers'], cfg['ff']
         estimate = layers*(4*d*d+2*d*ff+2*d)+d*(cfg['vocab']+cfg['block']+1)
@@ -356,7 +373,7 @@ def _op_synthesize(ctx, op, positional, named, res):
             raise ValueError('register synthesis has no source delta')
         if not ctx.allow_write or ctx.dry_run:
             res['execution_state'] = 'simulated'
-            res['result'] = {'written_to_disk': False, 'architecture': cfg}
+            res['result'] = {'written_to_disk': False, 'architecture': cfg, 'method': method, **discovery}
             return
         out_p = ROOT / str(named['out'])
         check_new_file(out_p, [ctx.model_path], ctx.written_paths)
@@ -365,10 +382,10 @@ def _op_synthesize(ctx, op, positional, named, res):
         total = sum(p.numel() for p in compiled.parameters())
         if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
             raise ValueError('parameter budget exceeded')
-        import hashlib
-        info = {'provenance': 'closed_form_data_free', 'method': 'register_program',
-                'backward_calls': '0', 'program_sha256': hashlib.sha256(source.encode()).hexdigest(),
-                'architecture': json.dumps(cfg)}
+        info = {'provenance': 'closed_form_symbolic_discovery' if discovery else 'closed_form_data_free',
+                'method': method, 'backward_calls': '0',
+                'program_sha256': hashlib.sha256(source.encode()).hexdigest(),
+                'architecture': json.dumps(cfg), **discovery}
         compiled.save(out_p, metadata=info)
         ctx.written_paths.add(out_p.resolve())
         ctx.target_path = out_p
