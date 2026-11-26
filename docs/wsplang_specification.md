@@ -120,7 +120,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | op | kind | documented in |
 |---|---|---|
 | `apply_patch` | writes weights | `wsplang_0.8_spec.md` |
-| `architectural_drift` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `architectural_drift` | read / report | §5.10 (runtime contract) |
 | `assert_behavioral_drift` | read / report | `wsplang_0.7_spec.md` |
 | `assert_davis_kahan` | writes weights | `wsplang_0.4_spec.md` |
 | `assert_orthogonal_preservation` | writes weights | `wsplang_0.3_spec.md` |
@@ -136,7 +136,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `contrast_vector` | read / report | this file |
 | `cov_imprint` | writes weights | `wsplang_0.5_spec.md` |
 | `cross_project` | writes weights | `wsplang_0.6_spec.md` |
-| `decompile` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `decompile` | writes weights | §5.10 (runtime contract) |
 | `decoupled_delta` | writes weights | `wsplang_0.5_spec.md` |
 | `delta_compare` | read / report | this file |
 | `delta_signature` | read / report | this file |
@@ -144,15 +144,15 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `delta_to_lora` | read / report | this file |
 | `delta_unlearn` | writes weights | this file, `wsplang_0.3_spec.md`, `wsplang_0.4_spec.md` |
 | `diff` | read / report | `wsplang_0.2_spec.md` |
-| `drift_profile` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `drift_profile` | read / report | §5.10 (runtime contract) |
 | `edit_column` | writes weights | `wsplang_0.8_spec.md` |
 | `edit_neurons` | writes weights | `wsplang_0.8_spec.md` |
 | `evaluate` | read / report | this file |
 | `evaluate_benchmark` | read / report | this file |
 | `export_control_vector` | writes weights | this file, `wsplang_0.2_spec.md` |
 | `fwp_overlay` | writes weights | `wsplang_0.3_spec.md` |
-| `imprint_association` | writes weights | not documented yet (see `engine/wsplang.py`) |
-| `imprint_batch` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `imprint_association` | writes weights | §5.10 (runtime contract) |
+| `imprint_batch` | writes weights | §5.10 (runtime contract) |
 | `imprint_corpus` | writes weights | `wsplang_0.7_spec.md` |
 | `imprint_ternary` | writes weights | `wsplang_0.8_ternary_addendum.md` |
 | `init_architecture` | writes weights | `wsplang_0.7_spec.md` |
@@ -164,29 +164,29 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `model_report` | read / report | this file |
 | `adapter_report` | read / report | this file |
 | `quantize` | writes weights | this file |
-| `multi_layer_envelope` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `multi_layer_envelope` | writes weights | §5.10 (runtime contract) |
 | `peek` | read / report | this file, `wsplang_0.2_spec.md` |
 | `permute_align` | writes weights | `wsplang_0.7_spec.md` |
 | `project_in` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.3_spec.md` |
 | `project_out` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.4_spec.md` |
 | `rollback_last` | read / report | `wsplang_0.8_spec.md` |
 | `rosetta_align` | writes weights | `wsplang_0.6_spec.md` |
-| `semantic-areas` | read / report | not documented yet (see `engine/wsplang.py`) |
-| `semantic-map` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `semantic-areas` | read / report | §5.10 (runtime contract) |
+| `semantic-map` | read / report | §5.10 (runtime contract) |
 | `semantic_areas` | read / report | `wsplang_0.2_spec.md` |
-| `semantic_delta` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `semantic_delta` | read / report | §5.10 (runtime contract) |
 | `semantic_map` | read / report | this file, `wsplang_0.2_spec.md` |
 | `spectral_audit` | writes weights | `wsplang_0.4_spec.md` |
 | `spectral_decay` | writes weights | `wsplang_0.3_spec.md` |
-| `spectral_delta` | read / report | not documented yet (see `engine/wsplang.py`) |
-| `ssm_dynamics_diff` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `spectral_delta` | read / report | §5.10 (runtime contract) |
+| `ssm_dynamics_diff` | read / report | §5.10 (runtime contract) |
 | `subspace_transfer` | writes weights | this file |
 | `surprise_fwp` | stub | `wsplang_0.5_spec.md` |
 | `synthesize` | writes weights | `wsplang_0.7_spec.md` |
 | `ternarize` | writes weights | `wsplang_0.8_ternary_addendum.md` |
 | `ternary_survival` | read / report | `wsplang_0.8_spec.md` |
 | `tie_weights` | writes weights | `wsplang_0.7_spec.md` |
-| `train` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `train` | writes weights | §5.10 (runtime contract) |
 | `vicreg_preserve` | read / report | `wsplang_0.7_spec.md` |
 <!-- ops:end -->
 
@@ -352,6 +352,36 @@ report, an `edit_column` manifest or a `commit_manifest` bundle, verified agains
 `bench_compare base= arm= out= [placebo=] [base2=]` applies the fixed verdict rule to an edit against its base and
 reports paired statistics only for two unrelated models; `bench_table` renders the registry to
 `docs/wsplang_benchmarks.md`. `evaluate_benchmark` runs on the same path (its defaults are the `dev-2048` suite).
+
+
+### 5.10. Additional runtime contracts
+
+These operations are classified according to the runtime table above, including guarded artifact creation. None establishes a causal behavioral effect without independent evaluation, placebo and preservation controls. Relative paths are resolved from the repository root unless otherwise specified.
+
+| Operation | Accepted arguments and behavior |
+|---|---|
+| `architectural_drift`, `drift_profile` | `base=<path> [family=<filter>] [top=10]`; base may also be positional; `filter` aliases `family`. Compares current target with base by architectural family. |
+| `spectral_delta` | Tensor positional or `tensor=<name>`, `[base=<path>] [k=5] [out=<vector path>]`; `save_vector` aliases `out`. Computes spectral delta; optional vector export is not a JSON report. |
+| `semantic_delta` | Tensor positional or `tensor=<name>`, `[base=<path>] [top=5]`. Computes semantic delta for one tensor, not a tensor glob. |
+| `ssm_dynamics_diff` | `[layer=1] [base=<path>]`; numeric positional layer also accepted. Compares SSM dynamics for one layer. |
+| `semantic-map` | Alias of `semantic_map`, `[top=3]`. Lists semantic areas and centroid availability; with SafeTensors context it uses the default GGUF for centroids. |
+| `semantic-areas` | Alias of `semantic_areas` / peek semantic-area handler; `[tensor=<name>] [row=<int>] [col=<int>] [k=8] [top=3]`. SafeTensors path reports statistics and optional element, not centroid scores. |
+| `imprint_association` | `prompt=<text> target=<text> [layer=1] [eta=5.0] [out=<new checkpoint>]`. NanoWSP/NanoWSP2 checkpoint required. Multi-character target is expanded to successive prefix/character pairs. Uses write guard. |
+| `imprint_batch` | `file=<JSON array> [layer=1] [eta=5.0] [out=<new checkpoint>]` or `pairs="p->t;p2->t2"`. JSON entries have prompt and target keys. Not JSONL. Uses write guard. |
+| `decompile` | `method=structural|behavior arch=<wsparch> model=<checkpoint> out=<program>`. Behavior requires `data=<corpus> order=<int>`, optional `limit_tokens`. Structural needs vocab_chars metadata. Produces text, not a new weight checkpoint; classified as write operation by runtime. Behavior averages predictions per context; not recovery of arbitrary learned algorithms. |
+| `multi_layer_envelope` | Alias of `layer_envelope`; `[layers=10..22] [peak=<int>] [bandwidth=2.5] [envelope=gaussian] [alpha=0.04] [mode=boost] [vector=<path>] [out=<control GGUF>] [n_layers=32]`. Also accepts key and out_gguf. Export uses vector times envelope (not alpha); alpha/mode are reported metadata. Does not edit base weights. Current export handler writes directly when out is supplied; do not use an existing or protected path, including during simulation, until write guards are added. |
+| `train` | `arch=<wsparch> data=<corpus> out=<new checkpoint>` plus training and architecture overrides. Requires budget allow_training=true; with allow_write disabled it only constructs the model and reports simulated. Actual training uses backward and is not donor-free analytic synthesis. |
+
+Comparative operations without an explicit base use the runtime default Qwen base GGUF. Prefer explicit paths for reproducibility. Optional spectral-vector export is a file side effect; do not provide an existing or protected output path. These contracts document current behavior, not an endorsement of unguarded exports.
+
+Minimal examples (paths and tensor names must match the selected model):
+
+```wspl
+step spectral_delta tensor=blk.19.attn_output.weight base=models/base.gguf k=5
+step semantic_delta tensor=blk.19.attn_output.weight base=models/base.gguf top=5
+step ssm_dynamics_diff layer=1 base=models/base.gguf
+step imprint_batch file=data/pairs.json layer=1 eta=5.0 out=models/imprinted.safetensors
+```
 
 ## 6. Security Model & Runtime Guardrails
 
