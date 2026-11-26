@@ -341,6 +341,186 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
+    if named.get('method') == 'register_program':
+        from engine import wsp_register
+        for key in ('arch', 'program', 'out'):
+            if key not in named:
+                raise ValueError(f'register_program requires {key}=')
+        source = (ROOT / str(named['program'])).read_text(encoding='utf-8')
+        cfg = wsp_register.config(source)
+        d, layers, ff = cfg['d'], cfg['layers'], cfg['ff']
+        estimate = layers*(4*d*d+2*d*ff+2*d)+d*(cfg['vocab']+cfg['block']+1)
+        if ctx.max_modified_weights is not None and estimate > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        if ctx.max_delta_norm is not None:
+            raise ValueError('register synthesis has no source delta')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False, 'architecture': cfg}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        compiled = wsp_register.compile_program(ROOT / str(named['arch']), source,
+                                                  seed=int(named.get('seed', 1337)))
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        import hashlib
+        info = {'provenance': 'closed_form_data_free', 'method': 'register_program',
+                'backward_calls': '0', 'program_sha256': hashlib.sha256(source.encode()).hexdigest(),
+                'architecture': json.dumps(cfg)}
+        compiled.save(out_p, metadata=info)
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
+    if named.get('method') == 'primitive':
+        from engine import wsp_primitives
+        for key in ('arch', 'skill', 'out'):
+            if key not in named:
+                raise ValueError(f'primitive requires {key}=')
+        if named['skill'] not in ('copy', 'associate', 'composition'):
+            raise ValueError('unknown primitive')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        if ctx.max_delta_norm is not None:
+            raise ValueError('primitive synthesis has no source delta')
+        if named['skill'] == 'composition':
+            from engine import wsp_composition
+            compiled = wsp_composition.compile_composition(ROOT / str(named['arch']), seed=int(named.get('seed', 1337)))
+        else:
+            compiled = wsp_primitives.compile_primitive(ROOT / str(named['arch']), str(named['skill']),
+                                                         seed=int(named.get('seed', 1337)))
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = {'provenance': 'closed_form_data_free', 'skill': str(named['skill']), 'backward_calls': '0'}
+        compiled.save(out_p, metadata=info)
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
+    if named.get('method') in ('spectral_v6', 'spectral_v6_random_features'):
+        from engine import wsp_spectral
+        for key in ('arch', 'data', 'out'):
+            if key not in named:
+                raise ValueError(f'spectral synthesis requires {key}=')
+        if not ctx.budgets.get('allow_training'):
+            raise ValueError('spectral synthesis fits data and requires allow_training=true')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        data = wsp_train.char_dataset((ROOT / str(named['data'])).read_text(encoding='utf-8'))
+        estimate = 4*(4*256**2+2*256*1024+2*256)+256*(128+len(data.chars)+1)
+        if ctx.max_modified_weights is not None and estimate > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        if ctx.max_delta_norm is not None:
+            raise ValueError('spectral synthesis does not define a source checkpoint delta')
+        compiled = wsp_spectral.compile_spectral(ROOT / str(named['arch']), data.train, data.chars,
+                          seed=int(named.get('seed', 1337)), spectral=named.get('method') == 'spectral_v6')
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = compiled.synthesis_info
+        compiled.save(out_p, metadata={'provenance': info['provenance'],
+                         'method': info['method'], 'backward_calls': '0',
+                         'synthesis_info': json.dumps(info), 'vocab_chars': json.dumps(data.chars)})
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
+    if named.get('method') in ('structured_ridge', 'structured_ridge_v3', 'structured_ridge_v4', 'structured_ridge_v5', 'structured_table_v5'):
+        for key in ('arch', 'data', 'out'):
+            if key not in named:
+                raise ValueError(f'structured_ridge requires {key}=')
+        if not ctx.budgets.get('allow_training'):
+            raise ValueError('structured_ridge requires allow_training=true')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        dataset = wsp_train.char_dataset((ROOT / str(named['data'])).read_text(encoding='utf-8'))
+        # Four exact recent-token slots plus three older-context windows.
+        overrides = dict(d=512, heads=8, layers=6, ff=2048, block=256,
+                         bias=False, dropout=0.0)
+        v5 = named.get('method') in ('structured_ridge_v5', 'structured_table_v5')
+        if v5:
+            overrides['ff'] = 8192
+        estimate = 6 * (4 * 512**2 + 2 * 512 * overrides['ff'] + 2 * 512) + 512 * (256 + len(dataset.chars) + 1)
+        if ctx.max_modified_weights is not None and estimate > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        compiled = wsp_synth.compile_long_context(
+            ROOT / str(named['arch']), dataset.train, dataset.chars, overrides,
+            seed=int(named.get('seed', 1337)), order=5, free_blocks=2,
+            windows=(8, 32, 128), fit=named.get('method') != 'structured_table_v5', device=str(named.get('device', 'cpu')),
+            weighted=named.get('method') != 'structured_ridge',
+            induction=named.get('method') == 'structured_ridge_v4' or v5,
+            active_features=2048 if v5 else None, all_slots=v5)
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = compiled.synthesis_info
+        compiled.save(out_p, metadata={'provenance': info['provenance'],
+                                       'method': info['method'], 'backward_calls': '0',
+                                       'synthesis_info': json.dumps(info),
+                                       'vocab_chars': json.dumps(dataset.chars)})
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
+    if named.get('method') == 'context_ridge':
+        from engine import wsp_context_ridge
+        for key in ('arch', 'data', 'out'):
+            if key not in named:
+                raise ValueError(f'context_ridge requires {key}=')
+        if not ctx.budgets.get('allow_training'):
+            raise ValueError('context_ridge fits data and requires allow_training=true')
+        if not ctx.allow_write or ctx.dry_run:
+            res['execution_state'] = 'simulated'
+            res['result'] = {'written_to_disk': False}
+            return
+        out_p = ROOT / str(named['out'])
+        check_new_file(out_p, [ctx.model_path], ctx.written_paths)
+        dataset = wsp_train.char_dataset((ROOT / str(named['data'])).read_text(encoding='utf-8'))
+        seed = int(named.get('seed', 1337))
+        compiled = wsp_arch.load_arch_file(ROOT / str(named['arch']),
+                                           overrides={'bias': False, 'dropout': 0.0,
+                                                      'vocab': len(dataset.chars)}, seed=seed)
+        total = sum(p.numel() for p in compiled.parameters())
+        if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
+            raise ValueError('parameter budget exceeded')
+        info = wsp_context_ridge.fit(compiled, dataset.train, heads=4, block=256,
+                                     width=256, layers=4, seed=seed,
+                                     samples=int(named.get('samples', 32768)),
+                                     ridge=float(named.get('ridge', 0.01)),
+                                     device=str(named.get('device', 'cpu')))
+        if ctx.max_delta_norm is not None and info['delta_frobenius'] > ctx.max_delta_norm:
+            raise ValueError('delta Frobenius budget exceeded')
+        compiled.save(out_p, metadata={**{k: str(v) for k, v in info.items()},
+                                       'vocab_chars': json.dumps(dataset.chars)})
+        ctx.written_paths.add(out_p.resolve())
+        ctx.target_path = out_p
+        ctx.is_safetensors = True
+        res['execution_state'] = 'executed'
+        res['result'] = {**info, 'total_parameters': total, 'output_file': str(out_p)}
+        return
     if named.get('method') != 'ngram':
         raise ValueError(f"synthesize supports method=ngram, got {named.get('method')}")
     source_args = ('table',) if 'table' in named else ('data', 'order')

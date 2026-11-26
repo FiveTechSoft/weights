@@ -1,0 +1,62 @@
+{
+  "arithmetic": {
+    "compiled": {
+      "n": 512,
+      "correct": 512,
+      "accuracy": 1.0,
+      "sha256": "56bfe63b17b08cc331adf6e1b76afafe257a20835a50e9b4e909f27efc3b76a1"
+    },
+    "ablation": {
+      "n": 512,
+      "correct": 0,
+      "accuracy": 0.0,
+      "sha256": "0c938a31a83f42455e12d2726a35b5cfda1a3353fee7bc0598daca4e17fe6a87"
+    },
+    "pass": true
+  },
+  "mixed": {
+    "compiled": {
+      "n": 512,
+      "correct": 512,
+      "accuracy": 1.0,
+      "sha256": "f8711f6133db5d11ae7cab9a331ea810e37bd69becafa0dc09a4b7572e744cb1"
+    },
+    "ablation": {
+      "n": 512,
+      "correct": 0,
+      "accuracy": 0.0,
+      "sha256": "76599704f81236d018f79941c16fa5e5d76d054714c630186b8848b6b0b0104e"
+    },
+    "pass": true
+  },
+  "copy_sum": {
+    "compiled": {
+      "n": 512,
+      "correct": 512,
+      "accuracy": 1.0,
+      "sha256": "9ca13b4fdd17a9ce0ee48b764a1b9154dd077b86684ea6f6644c01ced0959e64"
+    },
+    "ablation": {
+      "n": 512,
+      "correct": 0,
+      "accuracy": 0.0,
+      "sha256": "bdf0398e53f85017a8487fb00000bd78ce1181327a59c792b390947faad76820"
+    },
+    "pass": true
+  },
+  "lookup_sum": {
+    "compiled": {
+      "n": 512,
+      "correct": 512,
+      "accuracy": 1.0,
+      "sha256": "d3668f66a78a30a004609e4f44c9e851aedd82a2e466886a866f842db5b7d9ee"
+    },
+    "ablation": {
+      "n": 512,
+      "correct": 0,
+      "accuracy": 0.0,
+      "sha256": "05389eda0dcecd91216f1c01a51534724cdadd1ee12d943bab982abc98e51809"
+    },
+    "pass": true
+  }
+}

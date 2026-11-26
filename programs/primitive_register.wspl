@@ -1,0 +1,11 @@
+experiment primitive_register:
+    model: nanoGPT
+    objective: compile_register_programs
+    budgets:
+        max_modified_weights = 4000000
+        allow_write = true
+    steps:
+        step synthesize method=register_program program=programs/register/arithmetic.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_arithmetic.safetensors seed=1337
+        step synthesize method=register_program program=programs/register/mixed.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_mixed.safetensors seed=1337
+        step synthesize method=register_program program=programs/register/copy_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_copy_sum.safetensors seed=1337
+        step synthesize method=register_program program=programs/register/lookup_sum.wspreg arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/register_lookup_sum.safetensors seed=1337

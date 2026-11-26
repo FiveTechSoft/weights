@@ -1,0 +1,10 @@
+experiment synthesize_nanowsp_lm:
+    model: nanoGPT
+    objective: contextual_language_prediction_without_backpropagation
+    budgets:
+        max_modified_weights = 4000000
+        max_delta_norm = 10000.0
+        allow_write = true
+        allow_training = true
+    steps:
+        step synthesize method=context_ridge arch=programs/arch/nanowsp_lm.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanowsp_lm_ridge/model.safetensors samples=32768 ridge=0.01 seed=1337 device=cpu

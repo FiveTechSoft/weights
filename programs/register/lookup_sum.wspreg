@@ -1,0 +1,3 @@
+a = ADD x y
+b = LOOKUP a
+RETURN b

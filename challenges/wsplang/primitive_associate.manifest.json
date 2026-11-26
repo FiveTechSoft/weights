@@ -1,0 +1,67 @@
+{
+  "wsplang_version": "0.8.3",
+  "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+  "programa": "primitive_associate",
+  "archivo": "programs/primitive_associate.wspl",
+  "steps_count": 3,
+  "steps": [
+    {
+      "sec": "budgets",
+      "expr": "max_modified_weights = 300000"
+    },
+    {
+      "sec": "budgets",
+      "expr": "allow_write = true"
+    },
+    {
+      "sec": "steps",
+      "expr": "step synthesize method=primitive skill=associate arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/associate_compiled.safetensors seed=1337",
+      "op": "synthesize",
+      "args": "method=primitive skill=associate arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/associate_compiled.safetensors seed=1337"
+    }
+  ],
+  "plan": {
+    "wsplang_version": "0.8.3",
+    "theoretical_framework": "Matrix Perturbation Theory (Weyl, Davis-Kahan) & Fast Weight Programming",
+    "secciones": {
+      "budgets": 2,
+      "steps": 1
+    },
+    "pasos": [
+      {
+        "op": "synthesize",
+        "args": "method=primitive skill=associate arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/associate_compiled.safetensors seed=1337"
+      }
+    ],
+    "pasos_mapeo": {
+      "synthesize": "custom operation"
+    },
+    "budgets": {
+      "max_modified_weights": 300000,
+      "target_parameter_fraction": null,
+      "max_delta_norm": null,
+      "allow_write": true,
+      "allow_training": false,
+      "unlock_tensors": []
+    },
+    "mapeo": {}
+  },
+  "errors": [],
+  "validated": true,
+  "ts": "2026-11-24T05:51:01",
+  "ejecucion": [
+    {
+      "op": "synthesize",
+      "args": "method=primitive skill=associate arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/associate_compiled.safetensors seed=1337",
+      "status": "ok",
+      "execution_state": "executed",
+      "result": {
+        "provenance": "closed_form_data_free",
+        "skill": "associate",
+        "backward_calls": "0",
+        "total_parameters": 273280,
+        "output_file": "/tmp/primitives-worktree/models/primitives/associate_compiled.safetensors"
+      }
+    }
+  ]
+}

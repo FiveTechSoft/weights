@@ -1,0 +1,8 @@
+experiment primitive_associate:
+    model: nanoGPT
+    objective: associate
+    budgets:
+        max_modified_weights = 300000
+        allow_write = true
+    steps:
+        step synthesize method=primitive skill=associate arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/associate_compiled.safetensors seed=1337

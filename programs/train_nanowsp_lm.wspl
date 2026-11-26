@@ -1,0 +1,12 @@
+# Gradient-trained reference, explicitly not donor-free synthesis.
+# always_save_checkpoint=true keeps the last iteration: wsp_train's val split is the last 10 % of the
+# corpus, which also contains verify_llmness's held-out text, so no checkpoint is chosen on it.
+experiment train_nanowsp_lm:
+    model: nanoGPT
+    objective: train_reference_causal_language_model
+    budgets:
+        max_modified_weights = 4000000
+        allow_write = true
+        allow_training = true
+    steps:
+        step train arch=programs/arch/nanowsp_lm.wsparch data=lab/data/shakespeare_char/input.txt out=models/nanowsp_lm/model.safetensors seed=1337 dropout=0.2 device=cuda batch_size=16 gradient_accumulation_steps=4 max_iters=5000 eval_interval=250 eval_iters=100 log_interval=100 always_save_checkpoint=true learning_rate=1e-3 min_lr=1e-4 beta2=0.99 warmup_iters=100 lr_decay_iters=5000

@@ -1,0 +1,11 @@
+experiment build_nanowsp_lm:
+    model: nanoGPT
+    objective: instantiate_causal_language_model
+    budgets:
+        max_modified_weights = 4000000
+        target_parameter_fraction = 1.0
+        max_delta_norm = 100.0
+        allow_write = true
+    steps:
+        step init_architecture arch=programs/arch/nanowsp_lm.wsparch seed=1337 out=models/nanowsp_lm_w0/model.safetensors
+        step audit transformer.h.0.attn.c_proj.weight model=models/nanowsp_lm_w0/model.safetensors

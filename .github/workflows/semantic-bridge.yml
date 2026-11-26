@@ -1,0 +1,42 @@
+name: WSPLang Semantic Bridge V1
+on:
+  pull_request:
+    paths:
+      - 'lab/probes/zarp10/semantic_bridge.py'
+      - 'lab/probes/zarp10/PLAN_SEMANTIC_BRIDGE.md'
+      - '.github/workflows/semantic-bridge.yml'
+      - 'lab/probes/zarp10/coproc_v3.py'
+      - 'programs/register/coproc_v3.json'
+      - 'programs/register/coproc_*.wspreg'
+      - 'engine/wsp_register.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  semantic-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU inference dependencies
+        run: |
+          pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-dev.txt
+          pip install transformers==5.24.0 huggingface_hub==2.4.0 safetensors==0.8.0 numpy==2.4.6
+      - name: Evaluate semantic routing and result return
+        run: python -u lab/probes/zarp10/semantic_bridge.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semantic-bridge-results
+          path: |
+            lab/runs/semantic_bridge/report.json
+            lab/runs/semantic_bridge/*.safetensors
+          if-no-files-found: warn

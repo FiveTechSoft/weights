@@ -1,0 +1,8 @@
+experiment primitive_composition:
+    model: nanoGPT
+    objective: compose_dynamic_associations
+    budgets:
+        max_modified_weights = 1100000
+        allow_write = true
+    steps:
+        step synthesize method=primitive skill=composition arch=programs/arch/nanowsp_lm.wsparch out=models/primitives/composition_compiled.safetensors seed=1337
