@@ -1,0 +1,32 @@
+name: NanoWSP natural language N21
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n21.py'
+      - 'lab/nanowsp/PLAN_N21.md'
+      - 'lab/nanowsp/corpora/wizard_oz_55.txt'
+      - '.github/workflows/nanowsp-natural-n21.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy==2.4.6 scipy==1.17.1 scikit-learn==1.9.1
+      - run: git hash-object lab/nanowsp/corpora/wizard_oz_55.txt | grep -Fx 4d978dfeb6b30ead21f73beca1eb51d8cb9686cc
+      - run: python -u lab/nanowsp/natural_n21.py --corpus lab/nanowsp/corpora/wizard_oz_55.txt --out lab/runs/n21
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-natural-n21
+          path: lab/runs/n21/report.json
