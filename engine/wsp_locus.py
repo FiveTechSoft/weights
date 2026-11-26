@@ -57,12 +57,12 @@ def probe_columns(tensors, candidates, evaluate, *, dose, seed=1337,
     rng = torch.Generator(device="cpu").manual_seed(seed)
     edits = {}
     rows = []
-    def trial(c, delta, split):
+    def trial(c, replacement, split):
         w = tensors[c.tensor]
         col = w[:,c.column]
         old = col.clone()
         try:
-            col.copy_(old + delta.to(old))
+            col.copy_(replacement.to(old))
             if not torch.isfinite(col).all():
                 raise ValueError("nonfinite intervention")
             return score(split)
@@ -71,20 +71,20 @@ def probe_columns(tensors, candidates, evaluate, *, dose, seed=1337,
 
     for c in candidates:
         col = tensors[c.tensor][:,c.column].detach()
-        delta = ((1-dose)*col-col)
-        norm = float(delta.double().norm())
+        replacement = (1-dose)*col
+        norm = float((replacement.double()-col.double()).norm())
         if norm == 0:
             continue
         random = torch.randn(col.shape,generator=rng,dtype=torch.float64)
         random = (random/random.norm()*norm).to(col)
-        placebo = (col + random)-col
-        placebo_norm = float(placebo.double().norm())
+        placebo = col + random
+        placebo_norm = float((placebo.double()-col.double()).norm())
         if abs(placebo_norm-norm) > .02*norm:
             continue
-        edits[c] = (delta,placebo)
-        effect = trial(c,delta,"discovery")-baseline["discovery"]
+        edits[c] = (replacement,placebo)
+        effect = trial(c,replacement,"discovery")-baseline["discovery"]
         control = trial(c,placebo,"discovery")-baseline["discovery"]
-        drift = trial(c,delta,"preservation")-baseline["preservation"]
+        drift = trial(c,replacement,"preservation")-baseline["preservation"]
         rows.append(dict(tensor=c.tensor,column=c.column,discovery_gain=effect,
                          discovery_placebo_gain=control,preservation_gain=drift,
                          delta_norm=norm,placebo_norm=placebo_norm,
@@ -97,8 +97,8 @@ def probe_columns(tensors, candidates, evaluate, *, dose, seed=1337,
     baseline["heldout"] = score("heldout")
     for r in shortlist:
         c = Candidate(r["tensor"],r["column"])
-        delta,placebo = edits[c]
-        gain = trial(c,delta,"heldout")-baseline["heldout"]
+        replacement,placebo = edits[c]
+        gain = trial(c,replacement,"heldout")-baseline["heldout"]
         control = trial(c,placebo,"heldout")-baseline["heldout"]
         r.update(heldout_gain=gain,heldout_placebo_gain=control,
                  passed=gain>=min_gain and gain-control>=min_control_gap)
