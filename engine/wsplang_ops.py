@@ -235,19 +235,6 @@ def _op_decoupled_delta(ctx, op, positional, named, res):
         res['result'] = {'status': 'unsupported_backend', 'message': 'decoupled_delta requires SafeTensors backend.'}
 
 
-def _op_surprise_fwp(ctx, op, positional, named, res):
-    threshold = float(named.get('threshold', named.get('tau', 3.0)))
-    metric = named.get('metric', 'perplexity_surprise')
-    prompt = named.get('prompt', 'test prompt')
-    tokens = prompt.split()
-    unique_ratio = len(set(tokens)) / max(len(tokens), 1)
-    repetition_score = 1.0 - unique_ratio
-    rep_threshold = threshold if threshold < 1.0 else 0.5
-    triggered = repetition_score > rep_threshold and len(tokens) >= 4
-    res['execution_state'] = 'heuristic_trigger_only'
-    res['result'] = {'rule': 'Titans Surprisal Monitor [STUB: Lexical Repetition Heuristic]', 'status': 'heuristic_trigger_only', 'note': 'Lexical word-ratio trigger stub; does not compute neural perplexity or synthesize live runtime overlay.', 'metric': metric, 'repetition_score': round(repetition_score, 4), 'unique_ratio': round(unique_ratio, 4), 'threshold': rep_threshold, 'memory_update_triggered': triggered, 'action': 'flag_repetition_detected' if triggered else 'maintain_quiescent_memory'}
-
-
 def _op_rosetta_align(ctx, op, positional, named, res):
     source_file = named.get('source', positional[0] if positional else None)
     target_file = named.get('target', positional[1] if len(positional) > 1 else None)
@@ -2224,8 +2211,6 @@ def dispatch(ctx, op, positional, named, res):
         return _op_cov_imprint_memit_imprint(ctx, op, positional, named, res)
     elif op == 'decoupled_delta':
         return _op_decoupled_delta(ctx, op, positional, named, res)
-    elif op == 'surprise_fwp':
-        return _op_surprise_fwp(ctx, op, positional, named, res)
     elif op == 'rosetta_align':
         return _op_rosetta_align(ctx, op, positional, named, res)
     elif op == 'cross_project':
