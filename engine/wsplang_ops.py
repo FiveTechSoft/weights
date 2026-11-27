@@ -924,6 +924,24 @@ def _op_fwp_overlay(ctx, op, positional, named, res):
     res['result'] = {'overlay_type': 'Transient Fast Weight Memory State', 'execution_state': 'artifact_exported', 'is_active_inference_hook': False, 'target_tensor': tensor_name, 'key_vector_dims': len(u_vec), 'alpha_scale': alpha, 'overlay_file': str(out_p), 'file_size': out_p.stat().st_size, 'note': 'Transient Fast Weight overlay artifact exported for runtime engine; not patched into live generation loop.'}
 
 
+def _guard_vector_export(ctx, out, suffix, inputs):
+    """Require a new explicit artifact path; never overwrite model or vector inputs."""
+    out = Path(out)
+    out = out if out.is_absolute() else ROOT / out
+    if out.suffix.lower() != suffix:
+        raise WriteGuardError(f'vector export requires {suffix} suffix')
+    resolved = out.resolve()
+    if out.exists() or out.is_symlink() or resolved in ctx.written_paths:
+        raise WriteGuardError(f'vector export refuses existing path {out}')
+    for source in [ctx.model_path, ctx.target_path, *inputs]:
+        if source is None:
+            continue
+        p = Path(source).resolve()
+        if resolved == p or (p.is_dir() and p in resolved.parents):
+            raise WriteGuardError(f'vector export refuses protected path {out}')
+    return out
+
+
 def _op_layer_envelope_multi_layer_envelope(ctx, op, positional, named, res):
     layers_arg = named.get('layers', positional[0] if positional else '10..22')
     if '..' in str(layers_arg):
@@ -964,7 +982,13 @@ def _op_layer_envelope_multi_layer_envelope(ctx, op, positional, named, res):
         out_p = Path(out_gguf)
         if not out_p.is_absolute():
             out_p = ROOT / out_p
-        out_p.parent.mkdir(parents=True, exist_ok=True)
+        if ctx.allow_write and not ctx.dry_run:
+            out_p = _guard_vector_export(ctx, out_p, '.gguf', [vec_p, ctx.default_gguf])
+        else:
+            out_p = None
+        if out_p is not None:
+            out_p.parent.mkdir(parents=True, exist_ok=True)
+    if out_p is not None:
         try:
             import gguf
             writer = gguf.GGUFWriter(str(out_p), 'controlvector')
@@ -982,6 +1006,7 @@ def _op_layer_envelope_multi_layer_envelope(ctx, op, positional, named, res):
             writer.write_tensors_to_file()
             writer.close()
             gguf_exported = True
+            ctx.written_paths.add(out_p.resolve())
         except Exception as e:
             res['warnings'].append(f'Could not export GGUF control vector: {e}')
     res['execution_state'] = 'envelope_computed'
@@ -1854,7 +1879,12 @@ def _op_spectral_delta(ctx, op, positional, named, res):
     k_rank = int(named.get('k', 5))
     out_vec = named.get('out', named.get('save_vector'))
     out_p = ROOT / out_vec if out_vec and (not Path(out_vec).is_absolute()) else Path(out_vec) if out_vec else None
+    if out_p is not None:
+        out_p = (_guard_vector_export(ctx, out_p, '.npz', [base_p, ctx.default_gguf])
+                 if ctx.allow_write and not ctx.dry_run else None)
     spec_res = compute_spectral_delta(ctx.target_path, base_p, tensor_name, k=k_rank, out_vector=out_p)
+    if out_p is not None and spec_res.get('saved_dominant_vector'):
+        ctx.written_paths.add(out_p.resolve())
     res['result'] = spec_res
 
 
