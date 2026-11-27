@@ -190,6 +190,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `probe_columns` | read / report | §5.11 |
 | `probe_neurons` | read / report | §5.11 |
 | `rank_candidates` | read / report | §5.11 |
+| `assert_preservation` | read / report | §5.13 |
 <!-- ops:end -->
 
 ### 5.1. `step semantic_map`
@@ -404,6 +405,16 @@ No checkpoint is written. Reports are new JSON files, including with allow_write
 `surprise_fwp` is retired: lexical repetition is not neural surprisal or a Titans memory update. The validator and runtime reject it. Historical reports and the 0.5 specification are not current executable contracts.
 
 `leace_erase` now requires explicit covariance (NPY or single-array NPZ) and validates rank-one leakage in the original checkpoint dtype. It remains a stub for causal claims until certification tests pass. No general LEACE or semantic erasure claim is made.
+
+### 5.13. Mandatory-control preservation assertion
+
+```wspl
+step assert_preservation base=lab/base.json arm=lab/edited.json placebo=lab/placebo.json base2=lab/base2.json target=gsm8k out=lab/certification.json
+```
+
+All six arguments are required. This explicit assertion checks four paired behavioral run records, full model and suite SHA256, matching decoding, repeat-base identity, provenance relation, distinct arms, HumanEval-164 and compliance-40 with paired item identities and garbage indicators. The declared target must beat base and placebo on both graders and exceed repeat-base noise. Significant benchmark regressions or a failed preservation battery reject the assertion. A negative result is saved to a new JSON report and returns assertion_failed; malformed inputs return error. Dry-run does not write.
+
+This is record-level screening, not authentication of reports, a physical placebo-norm certificate, or a sealed scientific result. Existing bench_compare remains descriptive and is not implicitly promoted to a certificate. The assertion is not yet automatically enforced by all weight-edit operations, nor does it roll back earlier edits.
 
 ## 6. Security Model & Runtime Guardrails
 
