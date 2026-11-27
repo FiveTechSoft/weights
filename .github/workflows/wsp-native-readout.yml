@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'engine/wsp_native_readout.py'
+      - 'engine/wsp_native_margins.py'
       - 'lab/probes/zarp10/native_readout.py'
       - '.github/workflows/wsp-native-readout.yml'
   workflow_dispatch:
@@ -10,6 +11,10 @@ permissions:
   contents: read
 jobs:
   evaluate:
+    strategy:
+      fail-fast: false
+      matrix:
+        solver: [equality, margin]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -31,11 +36,11 @@ jobs:
           curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
           echo '86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed  lab/data/shakespeare_char/input.txt' | sha256sum -c -
       - name: Construct and evaluate native weights
-        run: python -u lab/probes/zarp10/native_readout.py --prose lab/data/shakespeare_char/input.txt
+        run: python -u lab/probes/zarp10/native_readout.py --solver ${{ matrix.solver }} --revision 060db6499f32faf8b98477b0a26969ef7d8b9987 --prose lab/data/shakespeare_char/input.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: native-readout-report
+          name: native-readout-report-${{ matrix.solver }}
           path: lab/runs/native_readout/report.json
           if-no-files-found: error
       - name: Enforce scientific gate
