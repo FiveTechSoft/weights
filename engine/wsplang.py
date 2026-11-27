@@ -85,6 +85,7 @@ OPS_ALLOWED = {
     "apply_patch", "rollback_last", "list_patches", "commit_manifest",  # .weightpatch.json runtime (engine/wsplpatch.py)
     "ternarize", "imprint_ternary",  # ternary NanoWSP checkpoints and the projected closed-form write (engine/ternary_write.py)
     "probe_columns", "probe_neurons", "rank_candidates",
+    "assert_preservation",
     "bench_run", "bench_compare", "bench_table",  # the language's standard benchmarks (engine/wsplang_bench.py); reports only
     # Architectural & Comparative Analysis (WSP-Lang 0.7: Base vs Distill Transformation)
     "architectural_drift", "drift_profile", "spectral_delta", "semantic_delta", "ssm_dynamics_diff",
@@ -265,6 +266,7 @@ READ_ONLY_OPS = {
     "ternary_survival",  # writes one JSON report, never weights
     "rollback_last", "list_patches", "commit_manifest",  # patch stack bookkeeping: JSON under the session dir only
     "probe_columns", "probe_neurons", "rank_candidates",
+    "assert_preservation",
     "bench_run", "bench_compare", "bench_table",  # benchmark runs, comparisons and the rendered table: JSON / markdown only
 }
 IMPLEMENTED_OPS = READ_ONLY_OPS | {
@@ -401,6 +403,11 @@ def validate(prog: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], List[str]]:
                     elif step_op not in OPS_ALLOWED:
                         errors.append(f"operacion de paso no permitida: {step_op}")
                     else:
+                        if step_op == "assert_preservation":
+                            _, args = parse_named_args(m_step.group(2) or "")
+                            for key in ("base", "arm", "placebo", "base2", "target", "out"):
+                                if not args.get(key):
+                                    errors.append(f"{step_op} requires {key}=")
                         if step_op in ("probe_columns", "probe_neurons", "rank_candidates"):
                             _, args = parse_named_args(m_step.group(2) or "")
                             required = ("from", "out") if step_op == "rank_candidates" else ("model", "eval", "tensor", "out", "placebo")
