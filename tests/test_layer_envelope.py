@@ -40,7 +40,8 @@ class TestLayerEnvelope(unittest.TestCase):
                 }
             ]
         }
-        prog = {"__root__": [("model", "MiMo-9B")]}
+        plan["budgets"] = {"allow_write": True}
+        prog = {"__root__": [("model", "MiMo-9B")], "budgets": [("allow_write", "true")]}
         results = execute_plan_v4(plan, prog, model_path=str(self.tmppath))
         self.assertEqual(len(results), 1)
         res = results[0]
