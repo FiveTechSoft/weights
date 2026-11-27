@@ -15,6 +15,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from engine.wsp_native_readout import compile_rows
+from engine.wsp_native_margins import compile_margins
 from compile_eval import MODEL, SEED, arithmetic, batches, encode, evaluate, prose_nll, file_hash
 
 
@@ -40,6 +41,7 @@ def main():
     p.add_argument("--out", default="lab/runs/native_readout")
     p.add_argument("--prose", required=True)
     p.add_argument("--revision")
+    p.add_argument("--solver", choices=("equality", "margin"), default="equality")
     a = p.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=False)
@@ -66,12 +68,18 @@ def main():
     head = model.get_output_embeddings()
     original = head.weight[idx].clone()
     desired = torch.zeros(len(x),10)
+    selected_logits = torch.empty_like(desired)
+    outside_max = torch.empty(len(x))
     for start in range(0,len(x),16):
         logits = head(x[start:start+16])
+        selected_logits[start:start+len(logits)] = logits[:,idx]
+        frozen = logits.clone()
+        frozen[:,idx] = -torch.inf
+        outside_max[start:start+len(logits)] = frozen.max(dim=1).values
         for j,(_,label) in enumerate(discovery[start:start+16]):
             k = int(label)
             desired[start+j,k] = (logits[j].max()-logits[j,idx[k]]+2).clamp_min(0)
-    report = dict(model=MODEL,revision=rev,prose_sha256=file_hash(a.prose),
+    report = dict(model=MODEL,revision=rev,solver=a.solver,prose_sha256=file_hash(a.prose),
                   calibration=len(x),protected=len(h),width=x.shape[-1],
                   protected_rank=int(torch.linalg.matrix_rank(h.double(),rtol=1e-8)),
                   backward_calls=0,optimizer_steps=0)
@@ -79,7 +87,12 @@ def main():
         (out/"report.json").write_text(json.dumps(report,indent=2))
         print("SUMMARY",json.dumps(report),flush=True)
     try:
-        candidate, cert = compile_rows(original,x,h,desired,max_delta=10.,atol=1e-3,rtol=1e-8)
+        if a.solver == "margin":
+            labels = torch.tensor([int(label) for _,label in discovery],dtype=torch.long)
+            candidate, cert = compile_margins(original,x,h,selected_logits,labels,outside_max,
+                                               max_delta=10.,margin=2.,atol=1e-3,rtol=1e-8)
+        else:
+            candidate, cert = compile_rows(original,x,h,desired,max_delta=10.,atol=1e-3,rtol=1e-8)
     except ValueError as exc:
         report.update(gate=False,status="rejected",reason=str(exc))
         if hasattr(exc, "certificate"):
