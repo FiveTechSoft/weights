@@ -98,8 +98,7 @@ OPS_ALLOWED = {
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift", "tie_weights",
     "train", "synthesize", "decompile",
     # Experimental / stubs
-    "leace_erase",   # Exact LEACE when covariance is supplied; falls back to weight-Gram proxy
-    "surprise_fwp",  # STUB: word-frequency repetition heuristic, not neural Titans surprisal
+    "leace_erase",   # Certified rank-one erasure; explicit covariance required
 }
 
 TYPES = {
@@ -117,7 +116,7 @@ INT_OPS = {
     "rosetta_align", "cross_project",
     "layer_envelope", "multi_layer_envelope",
     "jepa_steer", "vicreg_preserve", "permute_align", "compile_synthetic", "assert_behavioral_drift",
-    "leace_erase", "surprise_fwp"
+    "leace_erase"
 }
 METADATA = {
     "model", "format", "target_format", "objective", "constraints", "budgets",
@@ -272,7 +271,7 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "edit_column", "edit_neurons", "apply_patch",  # new model dirs beside the inputs, never over them
     "quantize",  # a new quantised GGUF + manifest beside the input (engine/quantize_op.py), never over it
     "ternarize", "imprint_ternary",  # new ternary checkpoint dirs beside the inputs, never over them
-    "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta", "surprise_fwp",
+    "leace_erase", "cov_imprint", "memit_imprint", "decoupled_delta",
     "rosetta_align", "cross_project", "init_architecture", "imprint_association",
     "imprint_batch", "imprint_corpus", "delta_unlearn", "fwp_overlay", "layer_envelope",
     "multi_layer_envelope", "spectral_decay",
@@ -281,7 +280,8 @@ IMPLEMENTED_OPS = READ_ONLY_OPS | {
     "jepa_steer", "permute_align", "compile_synthetic", "tie_weights", "train", "synthesize", "decompile",
     "subspace_transfer",
 }
-STUB_OPS = {"leace_erase", "surprise_fwp"}
+STUB_OPS = {"leace_erase"}
+RETIRED_OPS = {"surprise_fwp", "distributed_memit"}
 # GGUF-native writers: new file beside a GGUF input through llama.cpp tools, no torch backend
 GGUF_WRITE_OPS = {"quantize"}
 WRITE_BACKEND_OPS = IMPLEMENTED_OPS - READ_ONLY_OPS - GGUF_WRITE_OPS
@@ -396,7 +396,9 @@ def validate(prog: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], List[str]]:
                 m_step = re.match(r"^step\s+(\S+)(?:\s+(.*))?$", s)
                 if m_step:
                     step_op = m_step.group(1)
-                    if step_op not in OPS_ALLOWED:
+                    if step_op in RETIRED_OPS:
+                        errors.append(f"op {step_op} retired; no neural implementation")
+                    elif step_op not in OPS_ALLOWED:
                         errors.append(f"operacion de paso no permitida: {step_op}")
                     else:
                         if step_op in ("probe_columns", "probe_neurons", "rank_candidates"):
@@ -538,9 +540,8 @@ def plan_run(prog: Dict[str, Any], steps: List[Dict[str, Any]]) -> Dict[str, Any
         "imprint_batch": "Moore-Penrose closed-form multi-associative weight synthesis without backpropagation",
         "cov_imprint": "MEMIT/EMMET covariance-regularized mass memory editing Delta W = (V - W_0 K)(K^T K + lambda C_0)^-1 K^T",
         "memit_imprint": "MEMIT/EMMET covariance-regularized mass memory editing",
-        "leace_erase": "LEACE closed-form least-squares concept erasure minimizing Frobenius distortion with exact zero target leakage",
+        "leace_erase": "rank-one covariance-directed erasure with rounded-weight certificate",
         "decoupled_delta": "Gated DeltaNet-2 decoupled channel-wise erase and write linear attention update",
-        "surprise_fwp": "Titans surprisal-driven test-time memory trigger for breaking runaway attractors"
     }
 
     step_cmds = []
@@ -1075,6 +1076,8 @@ def execute_plan_v4(
 
         delivered = False
         try:
+            if op in RETIRED_OPS:
+                raise ValueError(f"op {op} retired; no neural implementation")
             delivered = bool(dispatch(ctx, op, positional, named, res))
         except AssertionError as e:
             res["status"] = "assertion_failed"
@@ -1279,7 +1282,7 @@ def main():
                     print(f"  Dimensions:     {res.get('vector_dimension')} dims x {res.get('layers_configured')} layers")
             elif op == "leace_erase":
                 if status == "ok":
-                    print(f"  Concept Erasure:   {res.get('tensor')} (Efficiency: {res.get('erasure_efficiency')})")
+                    print(f"  Linear Erasure:    {res.get('tensor')}")
                     print(f"  Energy Delta:      {res.get('concept_energy_before'):.4f} -> {res.get('concept_energy_after'):.4f}")
                     print(f"  Distortion:        Frobenius = {res.get('frobenius_distortion'):.4f}, Max Delta = {res.get('max_weight_delta'):.6f}")
             elif op in ("cov_imprint", "memit_imprint"):
@@ -1291,10 +1294,6 @@ def main():
                 if status == "ok":
                     print(f"  Decoupled Delta:   {res.get('tensor')} (beta_erase={res.get('beta_erase')}, beta_write={res.get('beta_write')})")
                     print(f"  Attractor Energy:  {res.get('attractor_energy_before'):.4f} -> {res.get('attractor_energy_after'):.4f} ({res.get('reduction_pct')})")
-            elif op == "surprise_fwp":
-                if status == "ok":
-                    print(f"  Titans Surprisal:  Repetition Score = {res.get('repetition_score')}, Triggered = {res.get('memory_update_triggered')}")
-                    print(f"  Action:            {res.get('action')}")
             elif op == "rosetta_align":
                 if status == "ok":
                     print(f"  Rosetta Procrustes: {res.get('d_source')} dims -> {res.get('d_target')} dims (Alignment: {res.get('mean_anchor_cosine')})")
