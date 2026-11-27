@@ -1356,6 +1356,67 @@ def _op_bench_run(ctx, op, positional, named, res):
     res['execution_state'] = 'executed'
 
 
+def _op_probe_locus(ctx, op, positional, named, res):
+    from engine.wsp_locus_nanogpt import probe
+    for key in ('model', 'eval', 'tensor', 'out'):
+        if not named.get(key):
+            raise ValueError(f'{op} requires {key}=')
+    if str(named.get('placebo', '')).lower() != 'true':
+        raise ValueError('causal probe requires placebo=true')
+    if named.get('metric', 'task_acc') != 'task_acc':
+        raise ValueError('NanoGPT probe supports task_acc only')
+    if ctx.max_delta_norm is not None:
+        raise ValueError('probe does not yet support max_delta_norm')
+    model, data = (_model_path(named[k]) for k in ('model', 'eval'))
+    out = check_report_path(named['out'], [])
+    if out.suffix != '.json':
+        raise ValueError('probe requires JSON output')
+    out = _guard_vector_export(ctx, out, '.json', [model, data])
+    if ctx.dry_run:
+        res['execution_state'] = 'simulated'
+        return
+    report = probe(model, data, named['tensor'],
+                   axis='column' if op == 'probe_columns' else 'row',
+                   n_probe=int(named.get('n_probe', 64)),
+                   dose=float(named.get('dose', .5)), seed=int(named.get('seed', 1337)),
+                   top=int(named.get('top', 5)),
+                   max_modified_weights=min(4096, ctx.max_modified_weights)
+                   if ctx.max_modified_weights is not None else 4096)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open('x', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, allow_nan=False)
+    ctx.written_paths.add(out.resolve())
+    res['result'] = {'out': str(out), 'candidates': len(report['candidates']),
+                     'passed': sum(r.get('passed') is True for r in report['shortlist'])}
+    res['execution_state'] = 'executed'
+
+
+def _op_rank_candidates(ctx, op, positional, named, res):
+    from engine.wsp_locus import rank_candidates
+    if not named.get('from') or not named.get('out'):
+        raise ValueError('rank_candidates requires from= and out=')
+    source = _model_path(named['from'])
+    out = _guard_vector_export(ctx, check_report_path(named['out'], []), '.json', [source])
+    if ctx.dry_run:
+        res['execution_state'] = 'simulated'
+        return
+    report = json.loads(source.read_text(encoding='utf-8'))
+    if report.get('placebo') is not True or not all(report.get('split_sizes', {}).get(k, 0)>0
+                for k in ('discovery', 'heldout', 'preservation')):
+        raise ValueError('missing probe controls')
+    rows = rank_candidates(report)
+    result = {'schema_version': 1, 'model_sha256': report['model_sha256'],
+              'data_sha256': report['data_sha256'], 'axis': report['axis'],
+              'dose': report['dose'], 'candidates': rows,
+              'verdict': 'locus_candidates_ok' if rows else 'no_locus'}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open('x', encoding='utf-8') as f:
+        json.dump(result, f, indent=2, allow_nan=False)
+    ctx.written_paths.add(out.resolve())
+    res['result'] = {'out': str(out), 'verdict': result['verdict'], 'count': len(rows)}
+    res['execution_state'] = 'executed'
+
+
 def _op_bench_compare(ctx, op, positional, named, res):
     from engine import wsplang_bench as wbench
     for key in ('base', 'arm', 'out'):
@@ -2227,6 +2288,10 @@ def dispatch(ctx, op, positional, named, res):
         return _op_evaluate_benchmark(ctx, op, positional, named, res)
     elif op == 'bench_run':
         return _op_bench_run(ctx, op, positional, named, res)
+    elif op in ('probe_columns', 'probe_neurons'):
+        return _op_probe_locus(ctx, op, positional, named, res)
+    elif op == 'rank_candidates':
+        return _op_rank_candidates(ctx, op, positional, named, res)
     elif op == 'bench_compare':
         return _op_bench_compare(ctx, op, positional, named, res)
     elif op == 'bench_table':
