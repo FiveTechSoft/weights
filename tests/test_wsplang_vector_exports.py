@@ -1,6 +1,5 @@
 """Regression tests for vector artifact write guards."""
 from types import SimpleNamespace
-from pathlib import Path
 import numpy as np
 import pytest
 from engine import wsplang_ops as ops
