@@ -45,6 +45,8 @@ def certify(base, arm, placebo, base2, *, target):
     caller. No significant loss on any other target-suite benchmark.
     """
     runs = (base,arm,placebo,base2)
+    if any(r.get("model_class") == "llm-logits" for r in runs):
+        raise ValueError("behavioral certification requires scored task runs")
     sha = [_identity(r) for r in runs]
     suite = base.get("suite_sha")
     decoding = base.get("decoding")
@@ -73,6 +75,9 @@ def certify(base, arm, placebo, base2, *, target):
         reasons.append("benchmark comparison did not improve")
     if target not in cmp["significant_up"]:
         reasons.append("predeclared target did not improve")
+    elif target not in band or abs(cmp["benchmarks"][target]["g1"]["arm"] -
+                                   cmp["benchmarks"][target]["g1"]["base"]) < 2 * band[target]["abs_delta"]:
+        reasons.append("predeclared target did not exceed repeat-base noise")
     if cmp["significant_down"]:
         reasons.append("significant benchmark regression")
     if target not in direct["significant_up"]:
