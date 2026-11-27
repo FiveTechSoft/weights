@@ -45,5 +45,14 @@ def test_zero_direction_rejected():
 def test_rounding_is_certified_or_rejected():
     w = torch.tensor([[.1234, .5678], [.2345, .6789]], dtype=torch.bfloat16)
     u = torch.tensor([1., 2.])
-    with pytest.raises(ValueError, match="rounded weights"):
-        erase_direction(w, u, torch.eye(2), atol=1e-12)
+    unit = u.double() / u.double().norm()
+    rounded = (w.double() - unit[:, None] * (unit @ w.double())[None, :]).to(w.dtype)
+    leak = float((unit @ rounded.double()).norm())
+    limit = 1e-12 * max(1., float((unit @ w.double()).norm()))
+    if leak > limit:
+        with pytest.raises(ValueError, match="rounded weights"):
+            erase_direction(w, u, torch.eye(2), atol=1e-12)
+    else:
+        result, cert = erase_direction(w, u, torch.eye(2), atol=1e-12)
+        assert torch.equal(result, rounded)
+        assert cert["leak_after"] <= limit
