@@ -57,6 +57,8 @@ class Fixture(unittest.TestCase):
         u = np.random.RandomState(0).randn(8).astype(np.float32)
         self.u_file = self.dir / "u.npz"
         np.savez(self.u_file, u=u / np.linalg.norm(u))
+        self.cov_file = self.dir / "cov.npy"
+        np.save(self.cov_file, np.eye(8, dtype=np.float64))
         self.before = digest(self.model)
 
     def assertUntouched(self):
@@ -65,7 +67,7 @@ class Fixture(unittest.TestCase):
 
 class TestNoOverwriteOfInput(Fixture):
     EDITS = [
-        "leace_erase layers.1.mlp_out.weight vector={u}",
+        "leace_erase layers.1.mlp_out.weight vector={u} covariance={cov}",
         "decoupled_delta layers.1.mlp_out.weight erase_vector={u}",
         "spectral_decay layers.1.mlp_out.weight decay=0.5",
         "delta_unlearn layers.1.mlp_out.weight key={u} eta=1.0 target=0.0",
@@ -75,13 +77,13 @@ class TestNoOverwriteOfInput(Fixture):
     def test_edit_without_destination_is_an_error_and_leaves_input_intact(self):
         for edit in self.EDITS:
             with self.subTest(edit=edit.split()[0]):
-                r = run([edit.format(u=self.u_file.as_posix())], self.model_dir)[0]
+                r = run([edit.format(u=self.u_file.as_posix(), cov=self.cov_file.as_posix())], self.model_dir)[0]
                 self.assertEqual(r["status"], "error", r)
                 self.assertIn("out=", r["error"])
                 self.assertUntouched()
 
     def test_out_dir_equal_to_input_dir_is_refused(self):
-        r = run([self.EDITS[0].format(u=self.u_file.as_posix())], self.model_dir, out_dir=self.model_dir)[0]
+        r = run([self.EDITS[0].format(u=self.u_file.as_posix(), cov=self.cov_file.as_posix())], self.model_dir, out_dir=self.model_dir)[0]
         self.assertEqual(r["status"], "error", r)
         self.assertIn("overwrite", r["error"])
         self.assertUntouched()
@@ -120,7 +122,7 @@ class TestBudgetsOnEveryWrite(Fixture):
     def test_budget_applies_to_ops_that_never_checked_it(self):
         out = self.dir / "edited"
         for edit in ("spectral_decay layers.1.mlp_out.weight decay=0.5",
-                     f"leace_erase layers.1.mlp_out.weight vector={self.u_file.as_posix()}"):
+                     f"leace_erase layers.1.mlp_out.weight vector={self.u_file.as_posix()} covariance={self.cov_file.as_posix()}"):
             with self.subTest(edit=edit.split()[0]):
                 r = run([edit], self.model_dir, out_dir=out,
                         budgets="allow_write = true\nmax_modified_weights = 10")[0]
