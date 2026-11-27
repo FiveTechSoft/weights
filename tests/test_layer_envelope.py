@@ -42,7 +42,9 @@ class TestLayerEnvelope(unittest.TestCase):
         }
         plan["budgets"] = {"allow_write": True}
         prog = {"__root__": [("model", "MiMo-9B")], "budgets": [("allow_write", "true")]}
-        results = execute_plan_v4(plan, prog, model_path=str(self.tmppath))
+        model_dir = self.tmppath / "model"
+        model_dir.mkdir()
+        results = execute_plan_v4(plan, prog, model_path=str(model_dir))
         self.assertEqual(len(results), 1)
         res = results[0]
         self.assertEqual(res["execution_state"], "envelope_computed")
