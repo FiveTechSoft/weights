@@ -181,7 +181,6 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `spectral_delta` | read / report | §5.10 (runtime contract) |
 | `ssm_dynamics_diff` | read / report | §5.10 (runtime contract) |
 | `subspace_transfer` | writes weights | this file |
-| `surprise_fwp` | stub | `wsplang_0.5_spec.md` |
 | `synthesize` | writes weights | `wsplang_0.7_spec.md` |
 | `ternarize` | writes weights | `wsplang_0.8_ternary_addendum.md` |
 | `ternary_survival` | read / report | `wsplang_0.8_spec.md` |
@@ -399,6 +398,12 @@ The model must be a NanoGPT SafeTensors checkpoint with architecture metadata. O
 Optional probe arguments: n_probe (64, maximum 256), dose (0.5), seed (1337), top (5). The intervention attenuates a column or row by dose; a seeded same-location random perturbation is matched to its actual norm within 2%. Selection uses discovery and preservation only; heldout accepts or rejects the fixed shortlist. The metric is next-token exact accuracy (higher is better). The default per-intervention weight budget is 4096; a stricter plan budget applies. max_delta_norm is not supported and is rejected.
 
 No checkpoint is written. Reports are new JSON files, including with allow_write=false; dry_run does not create them. Probe reports include axis, model and data hashes, split sizes, controls, baseline, candidates and shortlist. The rank operation preserves discovery ordering, and returns no_locus if none pass. These are screening results, not a sealed behavioral proof. The rank report is not yet an authenticated edit authorization.
+
+### 5.12. Retired operations and certified erasure
+
+`surprise_fwp` is retired: lexical repetition is not neural surprisal or a Titans memory update. The validator and runtime reject it. Historical reports and the 0.5 specification are not current executable contracts.
+
+`leace_erase` now requires explicit covariance (NPY or single-array NPZ) and validates rank-one leakage in the original checkpoint dtype. It remains a stub for causal claims until certification tests pass. No general LEACE or semantic erasure claim is made.
 
 ## 6. Security Model & Runtime Guardrails
 
