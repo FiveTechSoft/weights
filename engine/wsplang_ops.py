@@ -40,7 +40,6 @@ from engine.wsplang import (
     check_new_file,
     check_report_path,
     compute_jepa_steer,
-    compute_leace_projection,
     compute_memit_update,
     compute_permute_align,
     compute_procrustes_alignment,
@@ -111,44 +110,41 @@ class PlanContext:
 
 
 def _op_leace_erase(ctx, op, positional, named, res):
+    from engine.wsp_leace import erase_direction
     tensor_name = positional[0] if positional else named.get('tensor')
     vec_file = named.get('vector', named.get('key', positional[1] if len(positional) > 1 else None))
     cov_file = named.get('covariance', named.get('cov'))
-    if not tensor_name:
-        raise ValueError('Tensor name must be specified in leace_erase')
-    if not vec_file:
-        raise ValueError('Target concept vector must be specified in leace_erase')
-    vec_p = Path(vec_file)
-    if not vec_p.is_absolute():
-        vec_p = ROOT / vec_p
-    u_vec = load_vector_numpy(vec_p)
-    cov_mat = None
-    if cov_file:
-        cov_p = Path(cov_file)
-        if not cov_p.is_absolute():
-            cov_p = ROOT / cov_p
-        if cov_p.exists():
-            cov_np = np.load(cov_p)
-            cov_mat = torch.from_numpy(cov_np[list(cov_np.files)[0]] if hasattr(cov_np, 'files') else cov_np).float()
-    if ctx.is_safetensors:
-        W, shard_to_edit, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
-        u_t = torch.from_numpy(u_vec).float().to(W.device)
-        P_leace = compute_leace_projection(u_t, sigma=cov_mat)
-        energy_before = float(torch.norm(torch.matmul(u_t, W)).item())
-        norm_before = float(torch.norm(W).item())
-        W_erased = torch.matmul(P_leace, W)
-        delta = W - W_erased
-        actual_delta_norm = float(torch.max(torch.abs(delta)).item())
-        energy_after = float(torch.norm(torch.matmul(u_t, W_erased)).item())
-        norm_after = float(torch.norm(W_erased).item())
-        tensors[tensor_name] = W_erased.to(tensors[tensor_name].dtype)
-        saved, res['write_guard'] = ctx.write_edit(op, named, tensors, shard_to_edit)
-        saved_path = str(saved) if saved else None
-        res['execution_state'] = 'executed' if saved_path else 'simulated'
-        res['result'] = {'rule': 'LEACE Closed-Form Concept Erasure (Belrose et al. 2023)', 'tensor': tensor_name, 'shard': shard_to_edit.name, 'concept_energy_before': energy_before, 'concept_energy_after': energy_after, 'erasure_efficiency': f'{(energy_before - energy_after) / max(energy_before, 1e-12):.4%}', 'frobenius_norm_before': norm_before, 'frobenius_norm_after': norm_after, 'frobenius_distortion': float(torch.norm(delta).item()), 'max_weight_delta': actual_delta_norm, 'written_to_disk': ctx.allow_write and saved_path is not None}
+    if not tensor_name or not vec_file or not cov_file:
+        raise ValueError('leace_erase requires tensor, vector and covariance')
+    if not ctx.is_safetensors:
+        raise ValueError('leace_erase requires SafeTensors')
+    vec_p, cov_p = (_model_path(p) for p in (vec_file, cov_file))
+    u = torch.from_numpy(load_vector_numpy(vec_p))
+    cov = np.load(cov_p, allow_pickle=False)
+    if isinstance(cov, np.lib.npyio.NpzFile):
+        with cov:
+            if len(cov.files) != 1:
+                raise ValueError('covariance NPZ must contain exactly one array')
+            sigma = torch.from_numpy(cov[cov.files[0]])
     else:
-        res['execution_state'] = 'unsupported_backend'
-        res['result'] = {'status': 'unsupported_backend', 'message': 'LEACE erasure currently supported on SafeTensors.'}
+        sigma = torch.from_numpy(cov)
+    _, shard, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
+    original = tensors[tensor_name]
+    erased, certificate = erase_direction(original, u, sigma)
+    delta = original.double() - erased.double()
+    tensors[tensor_name] = erased
+    saved, res['write_guard'] = ctx.write_edit(op, named, tensors, shard)
+    res['execution_state'] = 'executed' if saved else 'simulated'
+    res['result'] = {
+        'rule': 'rank-one covariance-directed linear erasure',
+        'tensor': tensor_name, 'shard': shard.name,
+        'concept_energy_before': certificate['leak_before'],
+        'concept_energy_after': certificate['leak_after'],
+        'frobenius_distortion': float(delta.norm()),
+        'max_weight_delta': float(delta.abs().max()),
+        'certificate': certificate,
+        'written_to_disk': saved is not None,
+    }
 
 
 def _op_cov_imprint_memit_imprint(ctx, op, positional, named, res):
