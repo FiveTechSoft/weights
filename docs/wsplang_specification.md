@@ -188,6 +188,9 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `tie_weights` | writes weights | `wsplang_0.7_spec.md` |
 | `train` | writes weights | §5.10 (runtime contract) |
 | `vicreg_preserve` | read / report | `wsplang_0.7_spec.md` |
+| `probe_columns` | read / report | §5.11 |
+| `probe_neurons` | read / report | §5.11 |
+| `rank_candidates` | read / report | §5.11 |
 <!-- ops:end -->
 
 ### 5.1. `step semantic_map`
@@ -369,10 +372,10 @@ These operations are classified according to the runtime table above, including 
 | `imprint_association` | `prompt=<text> target=<text> [layer=1] [eta=5.0] [out=<new checkpoint>]`. NanoWSP/NanoWSP2 checkpoint required. Multi-character target is expanded to successive prefix/character pairs. Uses write guard. |
 | `imprint_batch` | `file=<JSON array> [layer=1] [eta=5.0] [out=<new checkpoint>]` or `pairs="p->t;p2->t2"`. JSON entries have prompt and target keys. Not JSONL. Uses write guard. |
 | `decompile` | `method=structural|behavior arch=<wsparch> model=<checkpoint> out=<program>`. Behavior requires `data=<corpus> order=<int>`, optional `limit_tokens`. Structural needs vocab_chars metadata. Produces text, not a new weight checkpoint; classified as write operation by runtime. Behavior averages predictions per context; not recovery of arbitrary learned algorithms. |
-| `multi_layer_envelope` | Alias of `layer_envelope`; `[layers=10..22] [peak=<int>] [bandwidth=2.5] [envelope=gaussian] [alpha=0.04] [mode=boost] [vector=<path>] [out=<control GGUF>] [n_layers=32]`. Also accepts key and out_gguf. Export uses vector times envelope (not alpha); alpha/mode are reported metadata. Does not edit base weights. Current export handler writes directly when out is supplied; do not use an existing or protected path, including during simulation, until write guards are added. |
+| `multi_layer_envelope` | Alias of `layer_envelope`; `[layers=10..22] [peak=<int>] [bandwidth=2.5] [envelope=gaussian] [alpha=0.04] [mode=boost] [vector=<path>] [out=<control GGUF>] [n_layers=32]`. Also accepts key and out_gguf. Export uses vector times envelope (not alpha); alpha/mode are reported metadata. Does not edit base weights. Export requires allow_write=true, a new .gguf path outside protected model directories, and non-dry-run execution. |
 | `train` | `arch=<wsparch> data=<corpus> out=<new checkpoint>` plus training and architecture overrides. Requires budget allow_training=true; with allow_write disabled it only constructs the model and reports simulated. Actual training uses backward and is not donor-free analytic synthesis. |
 
-Comparative operations without an explicit base use the runtime default Qwen base GGUF. Prefer explicit paths for reproducibility. Optional spectral-vector export is a file side effect; do not provide an existing or protected output path. These contracts document current behavior, not an endorsement of unguarded exports.
+Comparative operations without an explicit base use the runtime default Qwen base GGUF. Prefer explicit paths for reproducibility. Optional spectral-vector export requires allow_write=true, a new .npz path outside protected model directories, and non-dry-run execution. These contracts document current behavior, not an endorsement of unguarded exports.
 
 Minimal examples (paths and tensor names must match the selected model):
 
@@ -382,6 +385,20 @@ step semantic_delta tensor=blk.19.attn_output.weight base=models/base.gguf top=5
 step ssm_dynamics_diff layer=1 base=models/base.gguf
 step imprint_batch file=data/pairs.json layer=1 eta=5.0 out=models/imprinted.safetensors
 ```
+
+### 5.11. Causal locus discovery (experimental NanoGPT backend)
+
+```wspl
+step probe_columns model=models/nano.safetensors tensor=transformer.h.*.mlp.c_proj.weight eval=data/probe.json metric=task_acc placebo=true n_probe=64 out=lab/probe.json
+step probe_neurons model=models/nano.safetensors tensor=transformer.h.*.mlp.c_fc.weight eval=data/probe.json placebo=true out=lab/neurons.json
+step rank_candidates from=lab/probe.json out=lab/ranked.json
+```
+
+The model must be a NanoGPT SafeTensors checkpoint with architecture metadata. Only MLP matrices are eligible. The evaluation JSON contains three nonempty arrays named discovery, heldout and preservation; each entry has ids (a list of token IDs) and target (one token ID). Duplicate input sequences are rejected across all splits. This is not a semantic independence guarantee.
+
+Optional probe arguments: n_probe (64, maximum 256), dose (0.5), seed (1337), top (5). The intervention attenuates a column or row by dose; a seeded same-location random perturbation is matched to its actual norm within 2%. Selection uses discovery and preservation only; heldout accepts or rejects the fixed shortlist. The metric is next-token exact accuracy (higher is better). The default per-intervention weight budget is 4096; a stricter plan budget applies. max_delta_norm is not supported and is rejected.
+
+No checkpoint is written. Reports are new JSON files, including with allow_write=false; dry_run does not create them. Probe reports include axis, model and data hashes, split sizes, controls, baseline, candidates and shortlist. The rank operation preserves discovery ordering, and returns no_locus if none pass. These are screening results, not a sealed behavioral proof. The rank report is not yet an authenticated edit authorization.
 
 ## 6. Security Model & Runtime Guardrails
 
