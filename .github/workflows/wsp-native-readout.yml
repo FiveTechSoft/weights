@@ -4,6 +4,8 @@ on:
     paths:
       - 'engine/wsp_native_readout.py'
       - 'engine/wsp_native_margins.py'
+      - 'engine/wsp_native_qp.py'
+      - 'tests/test_wsp_native_qp.py'
       - 'lab/probes/zarp10/native_readout.py'
       - '.github/workflows/wsp-native-readout.yml'
   workflow_dispatch:
@@ -14,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        solver: [equality, margin]
+        solver: [equality, margin, qp]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -30,6 +32,11 @@ jobs:
         run: |
           pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
           pip install transformers==5.24.0 huggingface_hub==2.4.0 safetensors==0.8.0 numpy==2.4.6
+      - name: Install and test convex solver
+        if: matrix.solver == 'qp'
+        run: |
+          pip install scipy==1.17.1 pytest
+          python -m pytest -q tests/test_wsp_native_qp.py
       - name: Obtain fixed corpus
         run: |
           mkdir -p lab/data/shakespeare_char
