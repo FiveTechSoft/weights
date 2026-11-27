@@ -82,6 +82,8 @@ def main():
         candidate, cert = compile_rows(original,x,h,desired,max_delta=10.,atol=1e-3,rtol=1e-8)
     except ValueError as exc:
         report.update(gate=False,status="rejected",reason=str(exc))
+        if hasattr(exc, "certificate"):
+            report["rejection_diagnostics"] = exc.certificate
         finish()
         return
     report["certificate"] = cert
