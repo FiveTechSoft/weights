@@ -16,6 +16,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from engine.wsp_native_readout import compile_rows
 from engine.wsp_native_margins import compile_margins
+from engine.wsp_native_qp import compile_qp
 from compile_eval import MODEL, SEED, arithmetic, batches, encode, evaluate, prose_nll, file_hash
 
 
@@ -41,7 +42,7 @@ def main():
     p.add_argument("--out", default="lab/runs/native_readout")
     p.add_argument("--prose", required=True)
     p.add_argument("--revision")
-    p.add_argument("--solver", choices=("equality", "margin"), default="equality")
+    p.add_argument("--solver", choices=("equality", "margin", "qp"), default="equality")
     a = p.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=False)
@@ -87,7 +88,11 @@ def main():
         (out/"report.json").write_text(json.dumps(report,indent=2))
         print("SUMMARY",json.dumps(report),flush=True)
     try:
-        if a.solver == "margin":
+        if a.solver == "qp":
+            labels = torch.tensor([int(label) for _,label in discovery],dtype=torch.long)
+            candidate, cert = compile_qp(original,x,h,selected_logits,labels,outside_max,
+                                          max_delta=10.,margin=2.,atol=1e-3,rtol=1e-8)
+        elif a.solver == "margin":
             labels = torch.tensor([int(label) for _,label in discovery],dtype=torch.long)
             candidate, cert = compile_margins(original,x,h,selected_logits,labels,outside_max,
                                                max_delta=10.,margin=2.,atol=1e-3,rtol=1e-8)
