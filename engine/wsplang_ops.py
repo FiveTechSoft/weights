@@ -1400,6 +1400,30 @@ def _op_rank_candidates(ctx, op, positional, named, res):
     res['execution_state'] = 'executed'
 
 
+def _op_assert_preservation(ctx, op, positional, named, res):
+    from engine.wsp_preservation_gate import certify
+    required = ('base', 'arm', 'placebo', 'base2', 'target', 'out')
+    for key in required:
+        if not named.get(key):
+            raise ValueError(f'assert_preservation requires {key}=')
+    sources = [_model_path(named[k]) for k in required[:4]]
+    out = _guard_vector_export(ctx, check_report_path(named['out'], []), '.json', sources)
+    if ctx.dry_run:
+        res['execution_state'] = 'simulated'
+        return
+    runs = [json.loads(p.read_text(encoding='utf-8')) for p in sources]
+    report = certify(*runs, target=named['target'])
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open('x', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, allow_nan=False)
+    ctx.written_paths.add(out.resolve())
+    res['result'] = {'out': str(out), 'certified': report['certified'],
+                     'reasons': report['reasons'], 'scope': report['scope']}
+    res['execution_state'] = 'executed'
+    if not report['certified']:
+        raise AssertionError('preservation gate rejected: ' + '; '.join(report['reasons']))
+
+
 def _op_bench_compare(ctx, op, positional, named, res):
     from engine import wsplang_bench as wbench
     for key in ('base', 'arm', 'out'):
@@ -2273,6 +2297,8 @@ def dispatch(ctx, op, positional, named, res):
         return _op_probe_locus(ctx, op, positional, named, res)
     elif op == 'rank_candidates':
         return _op_rank_candidates(ctx, op, positional, named, res)
+    elif op == 'assert_preservation':
+        return _op_assert_preservation(ctx, op, positional, named, res)
     elif op == 'bench_compare':
         return _op_bench_compare(ctx, op, positional, named, res)
     elif op == 'bench_table':
