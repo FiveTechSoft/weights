@@ -55,11 +55,13 @@ class TestWSPLangV5(unittest.TestCase):
 
     def test_leace_concept_erasure_closed_form(self):
         """Verify LEACE closed-form concept erasure eliminates target projection to 0.0."""
+        covariance = self.temp_path / "covariance.npy"
+        np.save(covariance, np.eye(64, dtype=np.float64))
         code = f"""experiment test_leace:
 budgets:
     allow_write = true
 steps:
-    step leace_erase layers.1.mlp_out.weight vector={self.u_file}
+    step leace_erase layers.1.mlp_out.weight vector={self.u_file} covariance={covariance}
 """
         prog = wsplang.parse_args_lines(code)
         steps, errors = wsplang.validate(prog)
@@ -73,14 +75,13 @@ steps:
 
         self.assertEqual(len(results), 1)
         res = results[0]
-        # AUDIT 2026-11-04: leace_erase es STUB declarado (proxy weight-Gram),
-        # su status ejecutable es "stub_result" — el calculo matematico sigue verificable.
+        # Keep the stub status until the new certified runtime path passes CI.
         self.assertIn(res["status"], ("ok", "stub_result"))
         self.assertEqual(res["execution_state"], "executed")
 
         erasure_res = res["result"]
         self.assertLess(erasure_res["concept_energy_after"], 1e-5)
-        self.assertEqual(erasure_res["erasure_efficiency"], "100.0000%")
+        self.assertEqual(erasure_res["certificate"]["certificate"], "rank_one_linear_erasure")
 
         # Verify on repaired file from disk
         repaired = load_file(str(out_dir / "model.safetensors"))
@@ -111,24 +112,20 @@ steps:
         self.assertEqual(res["execution_state"], "executed")
         self.assertLess(res["result"]["attractor_energy_after"], 1e-5)
 
-    def test_surprise_fwp_titans_trigger(self):
-        """Verify Titans surprisal monitor detects repetitive loop patterns."""
+    def test_surprise_fwp_retired(self):
+        """A lexical repetition heuristic is not a neural memory update."""
         code = """experiment test_surprise:
 steps:
     step surprise_fwp prompt="ls app ls app ls app ls app" threshold=2.0
-    step surprise_fwp prompt="unique productive reasoning trace" threshold=2.0
 """
         prog = wsplang.parse_args_lines(code)
-        steps, errors = wsplang.validate(prog)
-        self.assertEqual(len(errors), 0)
-
-        plan = wsplang.plan_run(prog, steps)
-        results = wsplang.execute_plan_v4(plan, prog, model_path=str(self.temp_path), dry_run=True)
-
-        self.assertEqual(len(results), 2)
-        # Repetitive prompt triggers memory update
-        self.assertTrue(results[0]["result"]["memory_update_triggered"])
-        self.assertEqual(results[0]["result"]["action"], "flag_repetition_detected")
+        _, errors = wsplang.validate(prog)
+        self.assertTrue(any("surprise_fwp" in e and "retired" in e.lower() for e in errors))
+        results = wsplang.execute_plan_v4(
+            {"pasos":[{"op":"surprise_fwp","args":""}]}, prog,
+            model_path=str(self.temp_path), dry_run=True)
+        self.assertEqual(results[0]["status"], "error")
+        self.assertIn("retired", results[0]["error"].lower())
 
     def test_memit_covariance_regularization(self):
         """Verify MEMIT closed-form update stabilizes condition number under ridge regularization."""
