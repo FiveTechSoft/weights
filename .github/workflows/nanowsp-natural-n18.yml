@@ -1,0 +1,31 @@
+name: NanoWSP natural language N18
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n18.py'
+      - 'lab/nanowsp/PLAN_N18.md'
+      - '.github/workflows/nanowsp-natural-n18.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy scipy scikit-learn
+      - run: git hash-object lab/nanowsp/corpora/alice_gutenberg_11.txt | grep -Fx 0f25e9af379233267a09623e0c650472f9e463ea
+      - run: python -u lab/nanowsp/natural_n18.py --corpus lab/nanowsp/corpora/alice_gutenberg_11.txt --out lab/runs/n18
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-natural-n18
+          path: lab/runs/n18/report.json

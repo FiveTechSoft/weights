@@ -120,7 +120,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | op | kind | documented in |
 |---|---|---|
 | `apply_patch` | writes weights | `wsplang_0.8_spec.md` |
-| `architectural_drift` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `architectural_drift` | read / report | §5.10 (runtime contract) |
 | `assert_behavioral_drift` | read / report | `wsplang_0.7_spec.md` |
 | `assert_davis_kahan` | writes weights | `wsplang_0.4_spec.md` |
 | `assert_orthogonal_preservation` | writes weights | `wsplang_0.3_spec.md` |
@@ -136,7 +136,7 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `contrast_vector` | read / report | this file |
 | `cov_imprint` | writes weights | `wsplang_0.5_spec.md` |
 | `cross_project` | writes weights | `wsplang_0.6_spec.md` |
-| `decompile` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `decompile` | writes weights | §5.10 (runtime contract) |
 | `decoupled_delta` | writes weights | `wsplang_0.5_spec.md` |
 | `delta_compare` | read / report | this file |
 | `delta_signature` | read / report | this file |
@@ -144,15 +144,15 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `delta_to_lora` | read / report | this file |
 | `delta_unlearn` | writes weights | this file, `wsplang_0.3_spec.md`, `wsplang_0.4_spec.md` |
 | `diff` | read / report | `wsplang_0.2_spec.md` |
-| `drift_profile` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `drift_profile` | read / report | §5.10 (runtime contract) |
 | `edit_column` | writes weights | `wsplang_0.8_spec.md` |
 | `edit_neurons` | writes weights | `wsplang_0.8_spec.md` |
 | `evaluate` | read / report | this file |
 | `evaluate_benchmark` | read / report | this file |
 | `export_control_vector` | writes weights | this file, `wsplang_0.2_spec.md` |
 | `fwp_overlay` | writes weights | `wsplang_0.3_spec.md` |
-| `imprint_association` | writes weights | not documented yet (see `engine/wsplang.py`) |
-| `imprint_batch` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `imprint_association` | writes weights | §5.10 (runtime contract) |
+| `imprint_batch` | writes weights | §5.10 (runtime contract) |
 | `imprint_corpus` | writes weights | `wsplang_0.7_spec.md` |
 | `imprint_ternary` | writes weights | `wsplang_0.8_ternary_addendum.md` |
 | `init_architecture` | writes weights | `wsplang_0.7_spec.md` |
@@ -164,30 +164,33 @@ A step whose op is not in this table is rejected by the validator. *read / repor
 | `model_report` | read / report | this file |
 | `adapter_report` | read / report | this file |
 | `quantize` | writes weights | this file |
-| `multi_layer_envelope` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `multi_layer_envelope` | writes weights | §5.10 (runtime contract) |
 | `peek` | read / report | this file, `wsplang_0.2_spec.md` |
 | `permute_align` | writes weights | `wsplang_0.7_spec.md` |
 | `project_in` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.3_spec.md` |
 | `project_out` | writes weights | this file, `wsplang_0.2_spec.md`, `wsplang_0.4_spec.md` |
 | `rollback_last` | read / report | `wsplang_0.8_spec.md` |
 | `rosetta_align` | writes weights | `wsplang_0.6_spec.md` |
-| `semantic-areas` | read / report | not documented yet (see `engine/wsplang.py`) |
-| `semantic-map` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `semantic-areas` | read / report | §5.10 (runtime contract) |
+| `semantic-map` | read / report | §5.10 (runtime contract) |
 | `semantic_areas` | read / report | `wsplang_0.2_spec.md` |
-| `semantic_delta` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `semantic_delta` | read / report | §5.10 (runtime contract) |
 | `semantic_map` | read / report | this file, `wsplang_0.2_spec.md` |
 | `spectral_audit` | writes weights | `wsplang_0.4_spec.md` |
 | `spectral_decay` | writes weights | `wsplang_0.3_spec.md` |
-| `spectral_delta` | read / report | not documented yet (see `engine/wsplang.py`) |
-| `ssm_dynamics_diff` | read / report | not documented yet (see `engine/wsplang.py`) |
+| `spectral_delta` | read / report | §5.10 (runtime contract) |
+| `ssm_dynamics_diff` | read / report | §5.10 (runtime contract) |
 | `subspace_transfer` | writes weights | this file |
-| `surprise_fwp` | stub | `wsplang_0.5_spec.md` |
 | `synthesize` | writes weights | `wsplang_0.7_spec.md` |
 | `ternarize` | writes weights | `wsplang_0.8_ternary_addendum.md` |
 | `ternary_survival` | read / report | `wsplang_0.8_spec.md` |
 | `tie_weights` | writes weights | `wsplang_0.7_spec.md` |
-| `train` | writes weights | not documented yet (see `engine/wsplang.py`) |
+| `train` | writes weights | §5.10 (runtime contract) |
 | `vicreg_preserve` | read / report | `wsplang_0.7_spec.md` |
+| `probe_columns` | read / report | §5.11 |
+| `probe_neurons` | read / report | §5.11 |
+| `rank_candidates` | read / report | §5.11 |
+| `assert_preservation` | read / report | §5.13 |
 <!-- ops:end -->
 
 ### 5.1. `step semantic_map`
@@ -352,6 +355,66 @@ report, an `edit_column` manifest or a `commit_manifest` bundle, verified agains
 `bench_compare base= arm= out= [placebo=] [base2=]` applies the fixed verdict rule to an edit against its base and
 reports paired statistics only for two unrelated models; `bench_table` renders the registry to
 `docs/wsplang_benchmarks.md`. `evaluate_benchmark` runs on the same path (its defaults are the `dev-2048` suite).
+
+
+### 5.10. Additional runtime contracts
+
+These operations are classified according to the runtime table above, including guarded artifact creation. None establishes a causal behavioral effect without independent evaluation, placebo and preservation controls. Relative paths are resolved from the repository root unless otherwise specified.
+
+| Operation | Accepted arguments and behavior |
+|---|---|
+| `architectural_drift`, `drift_profile` | `base=<path> [family=<filter>] [top=10]`; base may also be positional; `filter` aliases `family`. Compares current target with base by architectural family. |
+| `spectral_delta` | Tensor positional or `tensor=<name>`, `[base=<path>] [k=5] [out=<vector path>]`; `save_vector` aliases `out`. Computes spectral delta; optional vector export is not a JSON report. |
+| `semantic_delta` | Tensor positional or `tensor=<name>`, `[base=<path>] [top=5]`. Computes semantic delta for one tensor, not a tensor glob. |
+| `ssm_dynamics_diff` | `[layer=1] [base=<path>]`; numeric positional layer also accepted. Compares SSM dynamics for one layer. |
+| `semantic-map` | Alias of `semantic_map`, `[top=3]`. Lists semantic areas and centroid availability; with SafeTensors context it uses the default GGUF for centroids. |
+| `semantic-areas` | Alias of `semantic_areas` / peek semantic-area handler; `[tensor=<name>] [row=<int>] [col=<int>] [k=8] [top=3]`. SafeTensors path reports statistics and optional element, not centroid scores. |
+| `imprint_association` | `prompt=<text> target=<text> [layer=1] [eta=5.0] [out=<new checkpoint>]`. NanoWSP/NanoWSP2 checkpoint required. Multi-character target is expanded to successive prefix/character pairs. Uses write guard. |
+| `imprint_batch` | `file=<JSON array> [layer=1] [eta=5.0] [out=<new checkpoint>]` or `pairs="p->t;p2->t2"`. JSON entries have prompt and target keys. Not JSONL. Uses write guard. |
+| `decompile` | `method=structural|behavior arch=<wsparch> model=<checkpoint> out=<program>`. Behavior requires `data=<corpus> order=<int>`, optional `limit_tokens`. Structural needs vocab_chars metadata. Produces text, not a new weight checkpoint; classified as write operation by runtime. Behavior averages predictions per context; not recovery of arbitrary learned algorithms. |
+| `multi_layer_envelope` | Alias of `layer_envelope`; `[layers=10..22] [peak=<int>] [bandwidth=2.5] [envelope=gaussian] [alpha=0.04] [mode=boost] [vector=<path>] [out=<control GGUF>] [n_layers=32]`. Also accepts key and out_gguf. Export uses vector times envelope (not alpha); alpha/mode are reported metadata. Does not edit base weights. Export requires allow_write=true, a new .gguf path outside protected model directories, and non-dry-run execution. |
+| `train` | `arch=<wsparch> data=<corpus> out=<new checkpoint>` plus training and architecture overrides. Requires budget allow_training=true; with allow_write disabled it only constructs the model and reports simulated. Actual training uses backward and is not donor-free analytic synthesis. |
+
+Comparative operations without an explicit base use the runtime default Qwen base GGUF. Prefer explicit paths for reproducibility. Optional spectral-vector export requires allow_write=true, a new .npz path outside protected model directories, and non-dry-run execution. These contracts document current behavior, not an endorsement of unguarded exports.
+
+Minimal examples (paths and tensor names must match the selected model):
+
+```wspl
+step spectral_delta tensor=blk.19.attn_output.weight base=models/base.gguf k=5
+step semantic_delta tensor=blk.19.attn_output.weight base=models/base.gguf top=5
+step ssm_dynamics_diff layer=1 base=models/base.gguf
+step imprint_batch file=data/pairs.json layer=1 eta=5.0 out=models/imprinted.safetensors
+```
+
+### 5.11. Causal locus discovery (experimental NanoGPT backend)
+
+```wspl
+step probe_columns model=models/nano.safetensors tensor=transformer.h.*.mlp.c_proj.weight eval=data/probe.json metric=task_acc placebo=true n_probe=64 out=lab/probe.json
+step probe_neurons model=models/nano.safetensors tensor=transformer.h.*.mlp.c_fc.weight eval=data/probe.json placebo=true out=lab/neurons.json
+step rank_candidates from=lab/probe.json out=lab/ranked.json
+```
+
+The model must be a NanoGPT SafeTensors checkpoint with architecture metadata. Only MLP matrices are eligible. The evaluation JSON contains three nonempty arrays named discovery, heldout and preservation; each entry has ids (a list of token IDs) and target (one token ID). Duplicate input sequences are rejected across all splits. This is not a semantic independence guarantee.
+
+Optional probe arguments: n_probe (64, maximum 256), dose (0.5), seed (1337), top (5). The intervention attenuates a column or row by dose; a seeded same-location random perturbation is matched to its actual norm within 2%. Selection uses discovery and preservation only; heldout accepts or rejects the fixed shortlist. The metric is next-token exact accuracy (higher is better). The default per-intervention weight budget is 4096; a stricter plan budget applies. max_delta_norm is not supported and is rejected.
+
+No checkpoint is written. Reports are new JSON files, including with allow_write=false; dry_run does not create them. Probe reports include axis, model and data hashes, split sizes, controls, baseline, candidates and shortlist. The rank operation preserves discovery ordering, and returns no_locus if none pass. These are screening results, not a sealed behavioral proof. The rank report is not yet an authenticated edit authorization.
+
+### 5.12. Retired operations and certified erasure
+
+`surprise_fwp` is retired: lexical repetition is not neural surprisal or a Titans memory update. The validator and runtime reject it. Historical reports and the 0.5 specification are not current executable contracts.
+
+`leace_erase` now requires explicit covariance (NPY or single-array NPZ) and validates rank-one leakage in the original checkpoint dtype. It remains a stub for causal claims until certification tests pass. No general LEACE or semantic erasure claim is made.
+
+### 5.13. Mandatory-control preservation assertion
+
+```wspl
+step assert_preservation base=lab/base.json arm=lab/edited.json placebo=lab/placebo.json base2=lab/base2.json target=gsm8k out=lab/certification.json
+```
+
+All six arguments are required. This explicit assertion checks four paired behavioral run records, full model and suite SHA256, matching decoding, repeat-base identity, provenance relation, distinct arms, HumanEval-164 and compliance-40 with paired item identities and garbage indicators. The declared target must beat base and placebo on both graders and exceed repeat-base noise. Significant benchmark regressions or a failed preservation battery reject the assertion. A negative result is saved to a new JSON report and returns assertion_failed; malformed inputs return error. Dry-run does not write.
+
+This is record-level screening, not authentication of reports, a physical placebo-norm certificate, or a sealed scientific result. Existing bench_compare remains descriptive and is not implicitly promoted to a certificate. The assertion is not yet automatically enforced by all weight-edit operations, nor does it roll back earlier edits.
 
 ## 6. Security Model & Runtime Guardrails
 

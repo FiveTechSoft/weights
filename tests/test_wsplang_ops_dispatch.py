@@ -28,7 +28,7 @@ KNOWN_STATUSES = {"ok", "simulated", "unsupported_backend", "stub_result",
 
 
 def dispatch_tests():
-    """The 57 if/elif tests in the dispatch, in order, plus the single else body."""
+    """The if/elif tests in the dispatch, in order, plus the single else body."""
     tree = ast.parse(OPS_SRC)
     dispatch = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "dispatch")
     tests = []
@@ -62,13 +62,13 @@ def dispatch_ops():
 
 
 class TestDispatchStructure(unittest.TestCase):
-    def test_dispatch_chain_has_57_ops(self):
-        self.assertEqual(len(dispatch_tests()), 57)
+    def test_dispatch_chain_has_59_branches(self):
+        self.assertEqual(len(dispatch_tests()), 59)
 
     def test_every_handler_named_by_the_chain_exists_with_signature(self):
         tree = ast.parse(OPS_SRC)
         handlers = {n.name: n for n in tree.body if isinstance(n, ast.FunctionDef)}
-        self.assertEqual(len(handlers), 58, "57 op handlers + the else-free dispatch")
+        self.assertEqual(len(handlers), 61, "handlers, helpers and dispatch")
 
         # each test in the chain calls exactly one handler
         dispatch_fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "dispatch")
@@ -84,7 +84,7 @@ class TestDispatchStructure(unittest.TestCase):
                 node = node.orelse[0]
             else:
                 break
-        self.assertEqual(len(called), 57)
+        self.assertEqual(len(called), 59)
         for name in called:
             handler = handlers.get(name)
             self.assertIsNotNone(handler, f"{name} missing from module")

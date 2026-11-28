@@ -1,0 +1,32 @@
+name: NanoWSP compact language N19
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n19.py'
+      - 'lab/nanowsp/PLAN_N19.md'
+      - '.github/workflows/nanowsp-natural-n19.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy scipy scikit-learn
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: curl --max-time 120 -fL https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o /tmp/shakespeare.txt
+      - run: python -u lab/nanowsp/natural_n19.py --corpus /tmp/shakespeare.txt --out lab/runs/n19
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-compact-n19
+          path: lab/runs/n19/

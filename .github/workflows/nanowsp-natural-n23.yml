@@ -1,0 +1,32 @@
+name: NanoWSP natural language N23
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n23.py'
+      - 'lab/nanowsp/PLAN_N23.md'
+      - 'lab/nanowsp/corpora/sherlock_1661.txt'
+      - '.github/workflows/nanowsp-natural-n23.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy==2.4.6 scipy==1.17.1 scikit-learn==1.9.1
+      - run: git hash-object lab/nanowsp/corpora/sherlock_1661.txt | grep -Fx 70349ec04e577406123e9d89af4863cd610ccc1e
+      - run: python -u lab/nanowsp/natural_n23.py --corpus lab/nanowsp/corpora/sherlock_1661.txt --out lab/runs/n23
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-natural-n23
+          path: lab/runs/n23/report.json

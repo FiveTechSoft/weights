@@ -1,0 +1,44 @@
+name: NanoWSP VO Jacobian
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/vo_jacobian.py'
+      - 'lab/nanowsp/PLAN_VO_JACOBIAN.md'
+      - '.github/workflows/nanowsp-vo-jacobian.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  isolate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements-dev.txt
+      - name: Recover reference checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          name: nanowsp-language-reference
+          run-id: 45445464293
+          github-token: ${{ github.token }}
+          path: lab/runs/reference_archive
+      - name: Fetch fixed corpus
+        run: |
+          mkdir -p lab/data/shakespeare_char
+          curl --fail --location --retry 3 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt -o lab/data/shakespeare_char/input.txt
+          echo '86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed  lab/data/shakespeare_char/input.txt' | sha256sum -c -
+      - name: Solve and audit local Jacobian law
+        run: python -u lab/nanowsp/vo_jacobian.py --corpus lab/data/shakespeare_char/input.txt --checkpoints lab/runs/reference_archive --out lab/runs/vo_jacobian
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-vo-jacobian
+          path: lab/runs/vo_jacobian/
+          if-no-files-found: warn

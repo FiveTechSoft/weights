@@ -1,0 +1,9 @@
+experiment discover_affine:
+    model: nanoGPT
+    objective: discover_modular_affine_capability
+    budgets:
+        max_modified_weights = 4000000
+        allow_write = true
+        allow_training = true
+    steps:
+        step synthesize method=discover_register arch=programs/arch/nanowsp_lm.wsparch data=programs/register/discover_affine.json out=models/primitives/discovered_affine.safetensors seed=1337

@@ -40,7 +40,6 @@ from engine.wsplang import (
     check_new_file,
     check_report_path,
     compute_jepa_steer,
-    compute_leace_projection,
     compute_memit_update,
     compute_permute_align,
     compute_procrustes_alignment,
@@ -111,44 +110,41 @@ class PlanContext:
 
 
 def _op_leace_erase(ctx, op, positional, named, res):
+    from engine.wsp_leace import erase_direction
     tensor_name = positional[0] if positional else named.get('tensor')
     vec_file = named.get('vector', named.get('key', positional[1] if len(positional) > 1 else None))
     cov_file = named.get('covariance', named.get('cov'))
-    if not tensor_name:
-        raise ValueError('Tensor name must be specified in leace_erase')
-    if not vec_file:
-        raise ValueError('Target concept vector must be specified in leace_erase')
-    vec_p = Path(vec_file)
-    if not vec_p.is_absolute():
-        vec_p = ROOT / vec_p
-    u_vec = load_vector_numpy(vec_p)
-    cov_mat = None
-    if cov_file:
-        cov_p = Path(cov_file)
-        if not cov_p.is_absolute():
-            cov_p = ROOT / cov_p
-        if cov_p.exists():
-            cov_np = np.load(cov_p)
-            cov_mat = torch.from_numpy(cov_np[list(cov_np.files)[0]] if hasattr(cov_np, 'files') else cov_np).float()
-    if ctx.is_safetensors:
-        W, shard_to_edit, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
-        u_t = torch.from_numpy(u_vec).float().to(W.device)
-        P_leace = compute_leace_projection(u_t, sigma=cov_mat)
-        energy_before = float(torch.norm(torch.matmul(u_t, W)).item())
-        norm_before = float(torch.norm(W).item())
-        W_erased = torch.matmul(P_leace, W)
-        delta = W - W_erased
-        actual_delta_norm = float(torch.max(torch.abs(delta)).item())
-        energy_after = float(torch.norm(torch.matmul(u_t, W_erased)).item())
-        norm_after = float(torch.norm(W_erased).item())
-        tensors[tensor_name] = W_erased.to(tensors[tensor_name].dtype)
-        saved, res['write_guard'] = ctx.write_edit(op, named, tensors, shard_to_edit)
-        saved_path = str(saved) if saved else None
-        res['execution_state'] = 'executed' if saved_path else 'simulated'
-        res['result'] = {'rule': 'LEACE Closed-Form Concept Erasure (Belrose et al. 2023)', 'tensor': tensor_name, 'shard': shard_to_edit.name, 'concept_energy_before': energy_before, 'concept_energy_after': energy_after, 'erasure_efficiency': f'{(energy_before - energy_after) / max(energy_before, 1e-12):.4%}', 'frobenius_norm_before': norm_before, 'frobenius_norm_after': norm_after, 'frobenius_distortion': float(torch.norm(delta).item()), 'max_weight_delta': actual_delta_norm, 'written_to_disk': ctx.allow_write and saved_path is not None}
+    if not tensor_name or not vec_file or not cov_file:
+        raise ValueError('leace_erase requires tensor, vector and covariance')
+    if not ctx.is_safetensors:
+        raise ValueError('leace_erase requires SafeTensors')
+    vec_p, cov_p = (_model_path(p) for p in (vec_file, cov_file))
+    u = torch.from_numpy(load_vector_numpy(vec_p))
+    cov = np.load(cov_p, allow_pickle=False)
+    if isinstance(cov, np.lib.npyio.NpzFile):
+        with cov:
+            if len(cov.files) != 1:
+                raise ValueError('covariance NPZ must contain exactly one array')
+            sigma = torch.from_numpy(cov[cov.files[0]])
     else:
-        res['execution_state'] = 'unsupported_backend'
-        res['result'] = {'status': 'unsupported_backend', 'message': 'LEACE erasure currently supported on SafeTensors.'}
+        sigma = torch.from_numpy(cov)
+    _, shard, tensors = load_safetensors_tensor(ctx.target_path, tensor_name)
+    original = tensors[tensor_name]
+    erased, certificate = erase_direction(original, u, sigma)
+    delta = original.double() - erased.double()
+    tensors[tensor_name] = erased
+    saved, res['write_guard'] = ctx.write_edit(op, named, tensors, shard)
+    res['execution_state'] = 'executed' if saved else 'simulated'
+    res['result'] = {
+        'rule': 'rank-one covariance-directed linear erasure',
+        'tensor': tensor_name, 'shard': shard.name,
+        'concept_energy_before': certificate['leak_before'],
+        'concept_energy_after': certificate['leak_after'],
+        'frobenius_distortion': float(delta.norm()),
+        'max_weight_delta': float(delta.abs().max()),
+        'certificate': certificate,
+        'written_to_disk': saved is not None,
+    }
 
 
 def _op_cov_imprint_memit_imprint(ctx, op, positional, named, res):
@@ -237,19 +233,6 @@ def _op_decoupled_delta(ctx, op, positional, named, res):
     else:
         res['execution_state'] = 'unsupported_backend'
         res['result'] = {'status': 'unsupported_backend', 'message': 'decoupled_delta requires SafeTensors backend.'}
-
-
-def _op_surprise_fwp(ctx, op, positional, named, res):
-    threshold = float(named.get('threshold', named.get('tau', 3.0)))
-    metric = named.get('metric', 'perplexity_surprise')
-    prompt = named.get('prompt', 'test prompt')
-    tokens = prompt.split()
-    unique_ratio = len(set(tokens)) / max(len(tokens), 1)
-    repetition_score = 1.0 - unique_ratio
-    rep_threshold = threshold if threshold < 1.0 else 0.5
-    triggered = repetition_score > rep_threshold and len(tokens) >= 4
-    res['execution_state'] = 'heuristic_trigger_only'
-    res['result'] = {'rule': 'Titans Surprisal Monitor [STUB: Lexical Repetition Heuristic]', 'status': 'heuristic_trigger_only', 'note': 'Lexical word-ratio trigger stub; does not compute neural perplexity or synthesize live runtime overlay.', 'metric': metric, 'repetition_score': round(repetition_score, 4), 'unique_ratio': round(unique_ratio, 4), 'threshold': rep_threshold, 'memory_update_triggered': triggered, 'action': 'flag_repetition_detected' if triggered else 'maintain_quiescent_memory'}
 
 
 def _op_rosetta_align(ctx, op, positional, named, res):
@@ -341,12 +324,29 @@ def _op_init_architecture_arch(ctx, op, positional, named, res):
 def _op_synthesize(ctx, op, positional, named, res):
     from engine import wsp_arch, wsp_synth, wsp_train
     from engine import wsp_decompile
-    if named.get('method') == 'register_program':
+    if named.get('method') in ('register_program', 'discover_register'):
         from engine import wsp_register
-        for key in ('arch', 'program', 'out'):
+        import hashlib
+        method = named['method']
+        input_key = 'data' if method == 'discover_register' else 'program'
+        for key in ('arch', input_key, 'out'):
             if key not in named:
-                raise ValueError(f'register_program requires {key}=')
-        source = (ROOT / str(named['program'])).read_text(encoding='utf-8')
+                raise ValueError(f'{method} requires {key}=')
+        raw = (ROOT / str(named[input_key])).read_bytes()
+        discovery = {}
+        if method == 'discover_register':
+            from engine import wsp_discover_register
+            if not ctx.budgets.get('allow_training'):
+                raise ValueError('discover_register fits examples and requires allow_training=true')
+            examples = json.loads(raw.decode('utf-8'))
+            if not isinstance(examples, list) or not examples or len(examples) > 256:
+                raise ValueError('discover_register requires 1..256 example triples')
+            law = wsp_discover_register.discover(examples)
+            source = wsp_discover_register.lower(law)
+            discovery = {'law': json.dumps(list(law)), 'examples_sha256': hashlib.sha256(raw).hexdigest(),
+                         'examples_count': str(len(examples)), 'discovered_program': source}
+        else:
+            source = raw.decode('utf-8')
         cfg = wsp_register.config(source)
         d, layers, ff = cfg['d'], cfg['layers'], cfg['ff']
         estimate = layers*(4*d*d+2*d*ff+2*d)+d*(cfg['vocab']+cfg['block']+1)
@@ -356,7 +356,7 @@ def _op_synthesize(ctx, op, positional, named, res):
             raise ValueError('register synthesis has no source delta')
         if not ctx.allow_write or ctx.dry_run:
             res['execution_state'] = 'simulated'
-            res['result'] = {'written_to_disk': False, 'architecture': cfg}
+            res['result'] = {'written_to_disk': False, 'architecture': cfg, 'method': method, **discovery}
             return
         out_p = ROOT / str(named['out'])
         check_new_file(out_p, [ctx.model_path], ctx.written_paths)
@@ -365,10 +365,10 @@ def _op_synthesize(ctx, op, positional, named, res):
         total = sum(p.numel() for p in compiled.parameters())
         if ctx.max_modified_weights is not None and total > ctx.max_modified_weights:
             raise ValueError('parameter budget exceeded')
-        import hashlib
-        info = {'provenance': 'closed_form_data_free', 'method': 'register_program',
-                'backward_calls': '0', 'program_sha256': hashlib.sha256(source.encode()).hexdigest(),
-                'architecture': json.dumps(cfg)}
+        info = {'provenance': 'closed_form_symbolic_discovery' if discovery else 'closed_form_data_free',
+                'method': method, 'backward_calls': '0',
+                'program_sha256': hashlib.sha256(source.encode()).hexdigest(),
+                'architecture': json.dumps(cfg), **discovery}
         compiled.save(out_p, metadata=info)
         ctx.written_paths.add(out_p.resolve())
         ctx.target_path = out_p
@@ -907,6 +907,24 @@ def _op_fwp_overlay(ctx, op, positional, named, res):
     res['result'] = {'overlay_type': 'Transient Fast Weight Memory State', 'execution_state': 'artifact_exported', 'is_active_inference_hook': False, 'target_tensor': tensor_name, 'key_vector_dims': len(u_vec), 'alpha_scale': alpha, 'overlay_file': str(out_p), 'file_size': out_p.stat().st_size, 'note': 'Transient Fast Weight overlay artifact exported for runtime engine; not patched into live generation loop.'}
 
 
+def _guard_vector_export(ctx, out, suffix, inputs):
+    """Require a new explicit artifact path; never overwrite model or vector inputs."""
+    out = Path(out)
+    out = out if out.is_absolute() else ROOT / out
+    if out.suffix.lower() != suffix:
+        raise WriteGuardError(f'vector export requires {suffix} suffix')
+    resolved = out.resolve()
+    if out.exists() or out.is_symlink() or resolved in ctx.written_paths:
+        raise WriteGuardError(f'vector export refuses existing path {out}')
+    for source in [ctx.model_path, ctx.target_path, *inputs]:
+        if source is None:
+            continue
+        p = Path(source).resolve()
+        if resolved == p or (p.is_dir() and p in resolved.parents):
+            raise WriteGuardError(f'vector export refuses protected path {out}')
+    return out
+
+
 def _op_layer_envelope_multi_layer_envelope(ctx, op, positional, named, res):
     layers_arg = named.get('layers', positional[0] if positional else '10..22')
     if '..' in str(layers_arg):
@@ -947,7 +965,13 @@ def _op_layer_envelope_multi_layer_envelope(ctx, op, positional, named, res):
         out_p = Path(out_gguf)
         if not out_p.is_absolute():
             out_p = ROOT / out_p
-        out_p.parent.mkdir(parents=True, exist_ok=True)
+        if ctx.allow_write and not ctx.dry_run:
+            out_p = _guard_vector_export(ctx, out_p, '.gguf', [vec_p, ctx.default_gguf])
+        else:
+            out_p = None
+        if out_p is not None:
+            out_p.parent.mkdir(parents=True, exist_ok=True)
+    if out_p is not None:
         try:
             import gguf
             writer = gguf.GGUFWriter(str(out_p), 'controlvector')
@@ -965,6 +989,7 @@ def _op_layer_envelope_multi_layer_envelope(ctx, op, positional, named, res):
             writer.write_tensors_to_file()
             writer.close()
             gguf_exported = True
+            ctx.written_paths.add(out_p.resolve())
         except Exception as e:
             res['warnings'].append(f'Could not export GGUF control vector: {e}')
     res['execution_state'] = 'envelope_computed'
@@ -1312,6 +1337,91 @@ def _op_bench_run(ctx, op, positional, named, res):
     rep = wbench.bench_run(suite, port=named.get('port'), out=out_p, arm=str(named['arm']), extra_body=extra_body, lora=named.get('lora'), control_vector=named.get('control_vector'), scale=float(named['scale']) if named.get('scale') is not None else None, provenance=_model_path(named['provenance']) if named.get('provenance') else None, binary=named.get('binary'), force_reuse=truthy('force_reuse'), unknown_model=truthy('unknown_model'), model=_model_path(named['model']) if named.get('model') else None, base=_model_path(named['base']) if named.get('base') else None, log=lambda s: None)
     res['result'] = {'out': str(out_p), 'suite': rep['suite'], 'suite_sha': rep['suite_sha'][:12], 'identity': rep['identity'], 'provenance': rep['provenance'], 'benchmarks': rep['benchmarks'], 'preservation': rep['preservation']}
     res['execution_state'] = 'executed'
+
+
+def _op_probe_locus(ctx, op, positional, named, res):
+    from engine.wsp_locus_nanogpt import probe
+    for key in ('model', 'eval', 'tensor', 'out'):
+        if not named.get(key):
+            raise ValueError(f'{op} requires {key}=')
+    if str(named.get('placebo', '')).lower() != 'true':
+        raise ValueError('causal probe requires placebo=true')
+    if named.get('metric', 'task_acc') != 'task_acc':
+        raise ValueError('NanoGPT probe supports task_acc only')
+    if ctx.max_delta_norm is not None:
+        raise ValueError('probe does not yet support max_delta_norm')
+    model, data = (_model_path(named[k]) for k in ('model', 'eval'))
+    out = check_report_path(named['out'], [])
+    if out.suffix != '.json':
+        raise ValueError('probe requires JSON output')
+    out = _guard_vector_export(ctx, out, '.json', [model, data])
+    if ctx.dry_run:
+        res['execution_state'] = 'simulated'
+        return
+    report = probe(model, data, named['tensor'],
+                   axis='column' if op == 'probe_columns' else 'row',
+                   n_probe=int(named.get('n_probe', 64)),
+                   dose=float(named.get('dose', .5)), seed=int(named.get('seed', 1337)),
+                   top=int(named.get('top', 5)),
+                   max_modified_weights=min(4096, ctx.max_modified_weights)
+                   if ctx.max_modified_weights is not None else 4096)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open('x', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, allow_nan=False)
+    ctx.written_paths.add(out.resolve())
+    res['result'] = {'out': str(out), 'candidates': len(report['candidates']),
+                     'passed': sum(r.get('passed') is True for r in report['shortlist'])}
+    res['execution_state'] = 'executed'
+
+
+def _op_rank_candidates(ctx, op, positional, named, res):
+    from engine.wsp_locus import rank_candidates
+    if not named.get('from') or not named.get('out'):
+        raise ValueError('rank_candidates requires from= and out=')
+    source = _model_path(named['from'])
+    out = _guard_vector_export(ctx, check_report_path(named['out'], []), '.json', [source])
+    if ctx.dry_run:
+        res['execution_state'] = 'simulated'
+        return
+    report = json.loads(source.read_text(encoding='utf-8'))
+    if report.get('placebo') is not True or not all(report.get('split_sizes', {}).get(k, 0)>0
+                for k in ('discovery', 'heldout', 'preservation')):
+        raise ValueError('missing probe controls')
+    rows = rank_candidates(report)
+    result = {'schema_version': 1, 'model_sha256': report['model_sha256'],
+              'data_sha256': report['data_sha256'], 'axis': report['axis'],
+              'dose': report['dose'], 'candidates': rows,
+              'verdict': 'locus_candidates_ok' if rows else 'no_locus'}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open('x', encoding='utf-8') as f:
+        json.dump(result, f, indent=2, allow_nan=False)
+    ctx.written_paths.add(out.resolve())
+    res['result'] = {'out': str(out), 'verdict': result['verdict'], 'count': len(rows)}
+    res['execution_state'] = 'executed'
+
+
+def _op_assert_preservation(ctx, op, positional, named, res):
+    from engine.wsp_preservation_gate import certify
+    required = ('base', 'arm', 'placebo', 'base2', 'target', 'out')
+    for key in required:
+        if not named.get(key):
+            raise ValueError(f'assert_preservation requires {key}=')
+    sources = [_model_path(named[k]) for k in required[:4]]
+    out = _guard_vector_export(ctx, check_report_path(named['out'], []), '.json', sources)
+    if ctx.dry_run:
+        res['execution_state'] = 'simulated'
+        return
+    runs = [json.loads(p.read_text(encoding='utf-8')) for p in sources]
+    report = certify(*runs, target=named['target'])
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open('x', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, allow_nan=False)
+    ctx.written_paths.add(out.resolve())
+    res['result'] = {'out': str(out), 'certified': report['certified'],
+                     'reasons': report['reasons'], 'scope': report['scope']}
+    res['execution_state'] = 'executed'
+    if not report['certified']:
+        raise AssertionError('preservation gate rejected: ' + '; '.join(report['reasons']))
 
 
 def _op_bench_compare(ctx, op, positional, named, res):
@@ -1837,7 +1947,12 @@ def _op_spectral_delta(ctx, op, positional, named, res):
     k_rank = int(named.get('k', 5))
     out_vec = named.get('out', named.get('save_vector'))
     out_p = ROOT / out_vec if out_vec and (not Path(out_vec).is_absolute()) else Path(out_vec) if out_vec else None
+    if out_p is not None:
+        out_p = (_guard_vector_export(ctx, out_p, '.npz', [base_p, ctx.default_gguf])
+                 if ctx.allow_write and not ctx.dry_run else None)
     spec_res = compute_spectral_delta(ctx.target_path, base_p, tensor_name, k=k_rank, out_vector=out_p)
+    if out_p is not None and spec_res.get('saved_dominant_vector'):
+        ctx.written_paths.add(out_p.resolve())
     res['result'] = spec_res
 
 
@@ -2120,8 +2235,6 @@ def dispatch(ctx, op, positional, named, res):
         return _op_cov_imprint_memit_imprint(ctx, op, positional, named, res)
     elif op == 'decoupled_delta':
         return _op_decoupled_delta(ctx, op, positional, named, res)
-    elif op == 'surprise_fwp':
-        return _op_surprise_fwp(ctx, op, positional, named, res)
     elif op == 'rosetta_align':
         return _op_rosetta_align(ctx, op, positional, named, res)
     elif op == 'cross_project':
@@ -2180,6 +2293,12 @@ def dispatch(ctx, op, positional, named, res):
         return _op_evaluate_benchmark(ctx, op, positional, named, res)
     elif op == 'bench_run':
         return _op_bench_run(ctx, op, positional, named, res)
+    elif op in ('probe_columns', 'probe_neurons'):
+        return _op_probe_locus(ctx, op, positional, named, res)
+    elif op == 'rank_candidates':
+        return _op_rank_candidates(ctx, op, positional, named, res)
+    elif op == 'assert_preservation':
+        return _op_assert_preservation(ctx, op, positional, named, res)
     elif op == 'bench_compare':
         return _op_bench_compare(ctx, op, positional, named, res)
     elif op == 'bench_table':

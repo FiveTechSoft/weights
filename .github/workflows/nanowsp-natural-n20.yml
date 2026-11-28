@@ -1,0 +1,32 @@
+name: NanoWSP natural language N20
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n20.py'
+      - 'lab/nanowsp/PLAN_N20.md'
+      - 'lab/nanowsp/corpora/looking_glass_12.txt'
+      - '.github/workflows/nanowsp-natural-n20.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy==2.4.6 scipy==1.17.1 scikit-learn==1.9.1
+      - run: git hash-object lab/nanowsp/corpora/looking_glass_12.txt | grep -Fx 234dfd1b72a9743955e828b3052cb0e5680ef949
+      - run: python -u lab/nanowsp/natural_n20.py --corpus lab/nanowsp/corpora/looking_glass_12.txt --out lab/runs/n20
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-natural-n20
+          path: lab/runs/n20/report.json

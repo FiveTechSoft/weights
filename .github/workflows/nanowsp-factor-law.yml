@@ -1,0 +1,30 @@
+name: NanoWSP factor law
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/factor_law.py'
+      - 'lab/nanowsp/PLAN_FACTORS.md'
+      - '.github/workflows/nanowsp-factor-law.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements-dev.txt
+      - run: python -u lab/nanowsp/factor_law.py --out lab/runs/factor_law
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-factor-law
+          path: lab/runs/factor_law/
+          if-no-files-found: warn

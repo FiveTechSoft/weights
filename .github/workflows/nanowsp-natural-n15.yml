@@ -1,0 +1,26 @@
+name: NanoWSP natural law N15
+on:
+  pull_request:
+    paths:
+      - 'lab/nanowsp/natural_n15.py'
+      - 'lab/nanowsp/PLAN_N15.md'
+      - '.github/workflows/nanowsp-natural-n15.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -u lab/nanowsp/natural_n15.py --out lab/runs/n15
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nanowsp-natural-n15
+          path: lab/runs/n15/
