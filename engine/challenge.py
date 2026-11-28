@@ -16,6 +16,7 @@ import argparse
 import json
 import os
 import platform
+import re
 import subprocess
 import sys
 import time
@@ -160,6 +161,62 @@ class RH:
 
 # ================= jueces =================
 JCM = {}
+
+
+# ---- vocab byte-level (BPE estilo GPT-2/Qwen) ----
+def _byte_unicode_inv():
+    bs = list(range(ord("!"), ord("~") + 1)) + list(range(0xA1, 0xAC + 1)) + list(range(0xAE, 0xFF + 1))
+    cs = bs[:]
+    n = 0
+    for b in range(256):
+        if b not in bs:
+            bs.append(b)
+            cs.append(256 + n)
+            n += 1
+    return dict(zip(cs, bs))
+
+
+_BUI = _byte_unicode_inv()
+
+
+def vocab_texts():
+    """Tokens del vocab como texto UTF-8 real. Si el vocab guarda los tokens
+    en alfabeto byte-level (ningun char > U+2FFF en crudo), decodifica cada
+    token bytes->utf-8; si ya es plain, lo devuelve tal cual."""
+    toks = RH.tokens()
+    if any(any(ord(c) > 0x2FFF for c in t) for t in toks):
+        return toks
+    out = []
+    for t in toks:
+        try:
+            out.append(bytes(_BUI[ord(c)] for c in t if ord(c) in _BUI).decode("utf-8", "ignore"))
+        except Exception:
+            out.append(t)
+    return out
+
+
+def _dec_rows(t, i, j):
+    tt = t.tensor_type
+    if tt == gguf.GGMLQuantizationType.F32:
+        return np.asarray(t.data[i:j], dtype=np.float32)
+    if tt == gguf.GGMLQuantizationType.F16:
+        return t.data[i:j].view(np.float16).astype(np.float32)
+    return gguf.dequantize(t.data[i:j], tt).astype(np.float32).reshape(j - i, -1)
+
+
+def rel_drift_rows_chunked(nm, chunk=2048):
+    """Misma metrica que rel_drift_rows, acumulada por bloques de filas para
+    tensores grandes (token_embd/output) que no caben dequantizados en RAM."""
+    tD = RH.tensor(nm)
+    tB = RH.tensor(nm, base=True)
+    n = tD.data.shape[0]
+    out = np.zeros(n, dtype=np.float64)
+    for i in range(0, n, chunk):
+        j = min(i + chunk, n)
+        D = _dec_rows(tD, i, j)
+        B = _dec_rows(tB, i, j)
+        out[i:j] = np.abs(D - B).sum(axis=1) / (np.abs(B).sum(axis=1) + 1e-12)
+    return out
 
 
 def judge(kind, spec):
@@ -386,11 +443,82 @@ def judge_toy(ans, spec):
 
 @judge("lang_rows", None)
 def j_lang(ans, spec):
-    toks = RH.tokens()
-    pat = [t for t in toks if any("\u4e00" <= c <= "\u9fff" or "\u3040" <= c <= "\u30ff" or "\u0e00" <= c <= "\u0e7f" for c in t)]
+    toks = vocab_texts()
+    lang_ids = [i for i, t in enumerate(toks)
+                if any("\u4e00" <= c <= "\u9fff" or "\u3040" <= c <= "\u30ff" or "\u0e00" <= c <= "\u0e7f" for c in t)]
+    rr = rel_drift_rows_chunked("token_embd.weight")
+    ref_ids = sorted(lang_ids, key=lambda i: -rr[i])[:200]
+    ref = {toks[i] for i in ref_ids}
     got = [x for x in ans.get("tokens", []) if isinstance(x, str)]
-    inter = len(set(pat[:200]) & set(got))
-    return {"score": min(10, 3.3 * inter), "pass": inter >= spec.get("min_match", 3)}
+    inter = len(ref & set(got))
+    return {"score": min(10, 3.3 * inter), "pass": inter >= spec.get("min_match", 3),
+            "detalle": {"n_lang_vocab": len(lang_ids), "hits": inter}}
+
+
+@judge("instr_family", None)
+def j_instr(ans, spec):
+    toks = vocab_texts()
+    pat = re.compile(r"<\|[^|>]*\|>|function")
+    instr_ids = [i for i, t in enumerate(toks) if pat.search(t)]
+    if not instr_ids:
+        return {"score": -2, "pass": False, "error": "vocab sin tokens de instruccion"}
+    cands = ["token_embd.weight", "output.weight"]
+    ratio = {}
+    top = {}
+    for nm in cands:
+        rr = rel_drift_rows_chunked(nm)
+        ratio[nm] = float(np.mean(rr[instr_ids]) / (np.median(rr) + 1e-12))
+        top[nm] = set(sorted(instr_ids, key=lambda i: -rr[i])[:20])
+    ref_fam = max(ratio, key=ratio.get)
+    key = "embd" if "embd" in ref_fam else "output"
+    got_f = str(ans.get("familia", "")).lower()
+    fam_ok = (key in got_f) or ("lm_head" in got_f and key == "output") or ("embedding" in got_f and key == "embd")
+    got_ids = set()
+    for x in ans.get("tokens", []):
+        try:
+            got_ids.add(int(x))
+        except (TypeError, ValueError):
+            continue
+    inter = len(top[ref_fam] & got_ids)
+    score = 5.0 * fam_ok + min(5.0, 0.25 * inter)
+    return {"score": score, "pass": score >= 7.5,
+            "detalle": {"ratios": {k: round(v, 3) for k, v in ratio.items()}, "n_instr": len(instr_ids), "hits": inter}}
+
+
+@judge("rig_contrast", None)
+def j_rigc(ans, spec):
+    files = {}
+    for p in sorted(RIG.glob("*.json")):
+        try:
+            rs = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(rs, list):
+            continue
+        nn = [r for r in rs if isinstance(r, dict) and "summary" not in r]
+        if not nn or not any(("loop" in r) or ("ok" in r) for r in nn):
+            continue
+        files[p.stem] = {"n": len(nn), "ok": sum(1 for r in nn if r.get("ok")),
+                         "loops": sum(1 for r in nn if r.get("loop")),
+                         "caps": sum(1 for r in nn if r.get("finish") == "length")}
+    if not files:
+        return {"score": -2, "pass": False, "error": "rig_runs sin corridas tipo lista"}
+    n = sum(s["n"] for s in files.values())
+    ok = sum(s["ok"] for s in files.values())
+    loops = sum(s["loops"] for s in files.values())
+    caps = sum(s["caps"] for s in files.values())
+    fams = {"loops": loops, "caps_length": caps, "fallo_limpio": (n - ok) - loops - caps}
+    ref = max(fams, key=fams.get)
+    got = str(ans.get("familia_fallo", "")).lower()
+    fam_ok = ref.split("_")[0] in got or got.split("_")[0] in ref
+    score = 6.0 * fam_ok
+    gl = ans.get("loops")
+    if isinstance(gl, (int, float)) and abs(gl - loops) <= max(2, round(0.1 * loops)):
+        score += 4.0
+    con_ok = [s for s in files.values() if s["ok"] > 0]
+    return {"score": score, "pass": score >= 6.0,
+            "detalle": {"archivos": len(files), "n": n, "ok": ok, "familias": fams,
+                        "loops_en_runs_con_aciertos": sum(s["loops"] for s in con_ok)}}
 
 
 JCM_NULL = {"rms": None}
@@ -420,7 +548,13 @@ def submit(id_, ansfile):
         return {"error": f"respuesta JSON invalida: {repr(e)[:120]}"}
     cat = catalogo()
     rr = next((x for x in cat["retos"] if x["id"] == id_.zfill(2)), None)
-    out = _judget(rr["juez"]["kind"], rr["juez"], ans)
+    if rr is None:
+        return {"error": "reto no existe"}
+    jj = rr.get("juez")
+    if not jj or "kind" not in jj:
+        return {"error": "reto sin juez mecanico: clase PC (edicion de pesos + holdouts locales); no se puntua desde el engine",
+                "reto": rr["id"], "clase": "pc"}
+    out = _judget(jj["kind"], jj, ans)
     exp["intentos"] = int(exp.get("intentos", 0)) + 1
     exp["score"] = max(float(exp.get("score", 0)), max(0.0, float(out.get("score", 0))))
     if out.get("pass"):
