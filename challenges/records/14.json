@@ -1,15 +1,22 @@
 {
  "id": "14",
- "intentos": 1,
- "estado": "en_curso",
+ "intentos": 2,
+ "estado": "aprobado",
  "hits": [
   {
    "ts": "06:46:39",
    "score": -1.0,
    "pass": false,
    "detalle": ""
+  },
+  {
+   "ts": "06:57:52",
+   "score": 10.0,
+   "pass": true,
+   "detalle": "{'ratios': {'token_embd.weight': 0.963, 'output.weight': 1.221}, 'n_instr': 52, 'hits': 20}"
   }
  ],
- "score": 0.0,
- "ts": "2026-11-28T06:46:39"
+ "score": 10.0,
+ "ts": "2026-11-28T06:57:52",
+ "aprendizaje": "componente para comportamiento: no prueba causalidad"
 }

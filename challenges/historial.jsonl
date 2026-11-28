@@ -31,3 +31,6 @@
 {"ts": "2026-11-28T06:46:29", "event": "submit", "reto": "13", "score": 27.5, "passed": true}
 {"ts": "2026-11-28T06:46:39", "event": "submit", "reto": "14", "score": -1, "passed": false}
 {"ts": "2026-11-28T06:46:40", "event": "submit", "reto": "15", "score": -1, "passed": false}
+{"ts": "2026-11-28T06:56:06", "event": "submit", "reto": "11", "score": 10, "passed": true}
+{"ts": "2026-11-28T06:57:52", "event": "submit", "reto": "14", "score": 10.0, "passed": true}
+{"ts": "2026-11-28T06:57:58", "event": "submit", "reto": "15", "score": 10.0, "passed": true}

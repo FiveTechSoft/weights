@@ -1,0 +1,16 @@
+{
+ "id": "11",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "06:56:06",
+   "score": 10.0,
+   "pass": true,
+   "detalle": "{'n_lang_vocab': 64629, 'hits': 60}"
+  }
+ ],
+ "score": 10.0,
+ "aprendizaje": "especializacion en embeddings",
+ "ts": "2026-11-28T06:56:06"
+}

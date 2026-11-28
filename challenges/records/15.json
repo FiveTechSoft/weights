@@ -1,15 +1,22 @@
 {
  "id": "15",
- "intentos": 1,
- "estado": "en_curso",
+ "intentos": 2,
+ "estado": "aprobado",
  "hits": [
   {
    "ts": "06:46:40",
    "score": -1.0,
    "pass": false,
    "detalle": ""
+  },
+  {
+   "ts": "06:57:58",
+   "score": 10.0,
+   "pass": true,
+   "detalle": "{'archivos': 17, 'n': 145, 'ok': 4, 'familias': {'loops': 90, 'caps_length': 2, 'fallo_limpio': 49}, 'loops_en_runs_con_aciertos': 0}"
   }
  ],
- "score": 0.0,
- "ts": "2026-11-28T06:46:40"
+ "score": 10.0,
+ "ts": "2026-11-28T06:57:58",
+ "aprendizaje": "metricas de comportamiento son la fuente"
 }
