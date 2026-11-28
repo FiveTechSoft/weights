@@ -1,0 +1,16 @@
+{
+ "id": "37",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "08:00:02",
+   "score": 10.0,
+   "pass": true,
+   "detalle": "[]"
+  }
+ ],
+ "score": 10.0,
+ "aprendizaje": "meta-aprendizaje",
+ "ts": "2026-11-28T08:00:02"
+}

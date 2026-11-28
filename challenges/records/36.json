@@ -1,0 +1,16 @@
+{
+ "id": "36",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "08:00:01",
+   "score": 10.0,
+   "pass": true,
+   "detalle": "[]"
+  }
+ ],
+ "score": 10.0,
+ "aprendizaje": "lab experimental discriminante (cite libro de Wu)",
+ "ts": "2026-11-28T08:00:01"
+}
