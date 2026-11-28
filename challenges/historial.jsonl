@@ -25,3 +25,9 @@
 {"ts": "2026-11-03T14:54:22", "event": "submit", "reto": "41", "score": 10.0, "passed": true}
 {"ts": "2026-11-03T14:54:25", "event": "submit", "reto": "42", "score": 10.0, "passed": true}
 {"ts": "2026-11-03T14:54:28", "event": "submit", "reto": "43", "score": 10.0, "passed": true}
+{"ts": "2026-11-28T06:45:09", "event": "submit", "reto": "10", "score": 10.0, "passed": true}
+{"ts": "2026-11-28T06:45:09", "event": "submit", "reto": "12", "score": 10, "passed": true}
+{"ts": "2026-11-28T06:45:25", "event": "submit", "reto": "16", "score": 10.0, "passed": true}
+{"ts": "2026-11-28T06:46:29", "event": "submit", "reto": "13", "score": 27.5, "passed": true}
+{"ts": "2026-11-28T06:46:39", "event": "submit", "reto": "14", "score": -1, "passed": false}
+{"ts": "2026-11-28T06:46:40", "event": "submit", "reto": "15", "score": -1, "passed": false}

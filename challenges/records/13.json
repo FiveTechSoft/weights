@@ -1,0 +1,16 @@
+{
+ "id": "13",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "06:46:29",
+   "score": 27.5,
+   "pass": true,
+   "detalle": "{'blk.17.ffn_down.weight~blk.19.ffn_down.weight': 11, 'blk.17.ffn_down.weight~blk.22.ssm_beta.weight': 0}"
+  }
+ ],
+ "score": 27.5,
+ "aprendizaje": "correlacion-vs-causalidad",
+ "ts": "2026-11-28T06:46:29"
+}

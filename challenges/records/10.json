@@ -1,0 +1,16 @@
+{
+ "id": "10",
+ "intentos": 1,
+ "estado": "aprobado",
+ "hits": [
+  {
+   "ts": "06:45:09",
+   "score": 10.0,
+   "pass": true,
+   "detalle": "[]"
+  }
+ ],
+ "score": 10.0,
+ "aprendizaje": "proces cientifico: hipotesis falsable+evidencia opuesta",
+ "ts": "2026-11-28T06:45:09"
+}
