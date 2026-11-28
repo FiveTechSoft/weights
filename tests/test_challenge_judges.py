@@ -147,6 +147,37 @@ class TestRigContrast(unittest.TestCase):
         self.assertEqual(out["score"], 0.0)
 
 
+class TestInvestigacion(unittest.TestCase):
+    CAMPOS = ["hipotesis", "prediccion_falsable", "experimento", "resultado", "veredicto"]
+
+    def _ans(self, text="x" * 60):
+        return {k: text for k in self.CAMPOS}
+
+    def test_full_answer_passes(self):
+        out = challenge.j_invest(self._ans(), {"campos": self.CAMPOS})
+        self.assertTrue(out["pass"])
+        self.assertEqual(out["score"], 10.0)
+
+    def test_missing_field_fails(self):
+        ans = self._ans()
+        del ans["veredicto"]
+        out = challenge.j_invest(ans, {"campos": self.CAMPOS})
+        self.assertFalse(out["pass"])
+        self.assertEqual(out["falta"], ["veredicto"])
+        self.assertEqual(out["score"], 8.0)
+
+    def test_thin_field_fails(self):
+        ans = self._ans()
+        ans["resultado"] = "salio bien"
+        out = challenge.j_invest(ans, {"campos": self.CAMPOS})
+        self.assertFalse(out["pass"])
+        self.assertEqual(out["escaso"], ["resultado"])
+
+    def test_default_campos(self):
+        out = challenge.j_invest(self._ans(), {})
+        self.assertTrue(out["pass"])
+
+
 class TestSubmitGuardPCClass(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

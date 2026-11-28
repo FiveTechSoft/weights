@@ -445,7 +445,17 @@
    "datos": "libre",
    "herramientas": "todo",
    "criterio": "prediccion falsable + experimento + veredicto",
-   "aprendizaje": "bucle cientifico completo"
+   "aprendizaje": "bucle cientifico completo",
+   "juez": {
+    "kind": "investigacion",
+    "campos": [
+     "hipotesis",
+     "prediccion_falsable",
+     "experimento",
+     "resultado",
+     "veredicto"
+    ]
+   }
   },
   {
    "id": "36",
@@ -455,7 +465,17 @@
    "datos": "libre",
    "herramientas": "todo",
    "criterio": "predicciones DIF y ejecución",
-   "aprendizaje": "lab experimental discriminante (cite libro de Wu)"
+   "aprendizaje": "lab experimental discriminante (cite libro de Wu)",
+   "juez": {
+    "kind": "investigacion",
+    "campos": [
+     "explicaciones_rivales",
+     "predicciones_divergentes",
+     "experimento",
+     "resultado",
+     "veredicto"
+    ]
+   }
   },
   {
    "id": "37",
@@ -465,7 +485,16 @@
    "datos": "expedientes",
    "herramientas": "motor historial",
    "criterio": "principio formal articulado + predice nueva situación",
-   "aprendizaje": "meta-aprendizaje"
+   "aprendizaje": "meta-aprendizaje",
+   "juez": {
+    "kind": "investigacion",
+    "campos": [
+     "principio",
+     "evidencia_fallos",
+     "prediccion_falsable",
+     "veredicto"
+    ]
+   }
   },
   {
    "id": "38",
@@ -475,7 +504,17 @@
    "datos": "libre",
    "herramientas": "todo",
    "criterio": "e demostrar con evidencia no reportada",
-   "aprendizaje": "descubrimiento"
+   "aprendizaje": "descubrimiento",
+   "juez": {
+    "kind": "investigacion",
+    "campos": [
+     "defecto",
+     "evidencia",
+     "por_que_no_reportado",
+     "impacto",
+     "veredicto"
+    ]
+   }
   },
   {
    "id": "39",

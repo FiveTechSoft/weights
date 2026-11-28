@@ -521,6 +521,18 @@ def j_rigc(ans, spec):
                         "loops_en_runs_con_aciertos": sum(s["loops"] for s in con_ok)}}
 
 
+@judge("investigacion", None)
+def j_invest(ans, spec):
+    """Retos abiertos (35-38): el criterio es estructural, como 'estructura',
+    pero exige sustancia minima por campo (>=40 chars) para no aprobar humo."""
+    req = spec.get("campos", ["hipotesis", "prediccion_falsable", "experimento", "resultado", "veredicto"])
+    falta = [k for k in req if not ans.get(k)]
+    escaso = [k for k in req if ans.get(k) and len(str(ans[k])) < 40]
+    n = sum(1 for k in req if ans.get(k) and len(str(ans[k])) >= 40)
+    return {"score": round((10.0 / len(req)) * n, 2), "pass": not falta and not escaso,
+            "falta": falta, "escaso": escaso}
+
+
 JCM_NULL = {"rms": None}
 
 
