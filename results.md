@@ -4075,3 +4075,34 @@ estar mostrada en **las tres** familias probadas, en Llama-8B solo a dosis 0,35,
 cortes (§45.21); a 0,5 no (§45.19-45.20). "El compilado = el vector" y "la placebo de la misma norma no hace nada" en las
 tres. En R1-Distill-Llama-8B la dirección ahorra tokens (−31 % / −18 %) y recupera cortes a costa de perder el 10 % de lo
 que la base acierta acabando. Predicciones: 40 filas, 36 puntuables, ✅ 6 / ◐ 14 / ❌ 16 / ⏳ 4.
+
+### 45.38 Huella de Adam en un ajuste completo real (DeepSeek-R1-Distill-Qwen-7B − Qwen2.5-Math-7B): filas a cero sí; decaimiento y un-paso no; las filas más movidas son tokens frecuentes (hueco 11, fila 54 —) (2026-11-28)
+
+Plan `lab/probes/adam_sig/PLAN.md` (el de §45.18), que dejó este par como propuesto, no lanzado. Ejecutado en sandbox
+CPU **sin descarga**: lectura por HTTP range de los dos tensores (bf16, [152 064 × 3 584], troceo por filas de 8 192)
+con el clasificador `classify()` del plan **sin modificar** (DECAY_TOL 0,05; STEP_CV 0,15). Script:
+`lab/probes/adam_sig/adam_stream.py`.
+
+| matriz | filas | cero | decaimiento | un paso | otras | mediana ‖D‖ (no cero) |
+|---|---|---|---|---|---|---|
+| `embed_tokens` | 152 064 | **18 704 (12,3 %)** | 0 | 3 | 133 357 | 0,118 |
+| `lm_head` | 152 064 | **0** | 0 | 0 | 152 064 | 0,200 |
+
+- **Ajuste completo, leído de pesos:** `lm_head` reescrito al 100 % y el 87,7 % de las filas de embeddings movidas.
+  Contraste con Jackrong y MiMo (LoRA fusionadas: ambas matrices idénticas a la base, §45.18). Es la referencia sin
+  puerta que pedía `implant_detect`: un ajuste completo deja `lm_head` entero movido y embeddings con filas
+  exactamente a cero en los tokens no usados.
+- **La parte "nunca vistos no se mueven" del hilo de Chaudhuri confirma:** las 18 704 filas a cero son tokens raros
+  (muestra: fragmentos CJK, tailandés, hebreo y árabe, "ETwitter", "GtkWidget", "À").
+- **Decaimiento no aparece** (0 filas con D = −c·w, tolerancia 0,05) **y la clase un-paso no aparece** (3 filas de
+  152 064, |Δ| ≈ 1,3·10⁻⁴): a resolución bf16 la marca de paso único no es legible en este par.
+- **Top-20 por ‖D‖:** en embeddings, tokens frecuentes de matemáticas y razonamiento — "lemma", "(sqrt", " :=",
+  "Examples", " Please", " your", " Read", " alternatively", " Define", " Hopefully", "?" — a 2,2-2,6 × mediana, con
+  2 tokens CJK; en `lm_head`, los dos primeros son `<|box_start|>` y `<|box_end|>` (2,8 y 2,1 × mediana), seguidos de
+  " hmm", " WAIT" y reglas horizontales. Contra la lectura de h5 ("tokens raros basura: ruido", sobre MiMo Q6_K): en
+  este par las filas más cambiadas son los tokens más entrenados, como decía el hilo.
+
+Qué no dice: nada sobre MiMo (solo lo tenemos en GGUF; la línea h5 sigue sin prueba directa) ni sobre el mecanismo a
+resolución superior a bf16.
+
+**Puntuación (fila 54): —** medición sin apuesta fijada de antemano; pedida por §45.18.

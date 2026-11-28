@@ -167,8 +167,10 @@ cf6, placebo) terminan y se anotan, sin seguirlas con más variantes (el placebo
     filas de |Δ| constante, agrupación en pasos, en Jackrong y MiMo menos la base. CPU, minutos. Diría si el relato
     del hilo se sostiene en artefactos que ya tenemos, y daría a `implant_detect` una referencia sin base.
     **Hecho en Jackrong (§45.18, fila 39 ❌): embeddings y `lm_head` idénticos a la base; solo difieren las
-    proyecciones lineales → LoRA fusionada, sin huella posible.** MiMo no está en HF en disco. Queda: un donante de
-    ajuste completo con base HF sin puerta (p. ej. DeepSeek-R1-Distill-Qwen-7B sobre Qwen2.5-Math-7B, ≈ 30 GB); no lanzado.
+    proyecciones lineales → LoRA fusionada, sin huella posible.** MiMo no está en HF en disco. **Hecho en un ajuste completo real (§45.38, fila 54 —, 28-nov;
+    DeepSeek-R1-Distill-Qwen-7B − Qwen2.5-Math-7B, leído por HTTP range sin descarga): `lm_head` 100 % movido, 12,3 % de filas de embeddings
+    exactamente a cero (tokens raros), decaimiento y un-paso no legibles en bf16, top-20 por ‖D‖ = tokens
+    frecuentes de razonamiento. Referencia sin puerta para `implant_detect`.**
 12. **Tercera familia (decisión del driver 2026-11-16: "verificación en tres").** `DeepSeek-R1-Distill-Llama-8B`
     (Llama, 32 capas, d 4 096; plantilla escribe `<think>\n`, regla de filas de Qwen). Plan `lab/probes/cc_llama/PLAN.md`
     fijado 2026-11-17 antes de correr, filas 37 (vector) y 38 (compilado) en predictions; misma op, mismos criterios
